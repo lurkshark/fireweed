@@ -1,6 +1,6 @@
 ---
 module: project
-phase: audit
+phase: evals
 run: 5380157128981dbe965919f7
 ---
 
@@ -51,7 +51,8 @@ Running hooks during discovery would make read commands stateful and conflate st
 - evals | 2026-10-22T08:05:51Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 24 | failing: 24 | passing: 0
 - audit | 2026-10-22T08:08:24Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T08:09:07Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 24 | failing: 24 | passing: 0
+- audit | 2026-10-22T08:10:29Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- PRJ-002: "Symlink escapes MUST produce an error diagnostic without reading their contents" — add a guarded escaping archive link, a read positive control and a path-specific C05 assertion.
+- PRJ-002: "Symlink escapes MUST produce an error diagnostic" — aggregate diagnostic count permits duplicate module errors to substitute for absent queue/archive errors; require each exact path/code independently.
