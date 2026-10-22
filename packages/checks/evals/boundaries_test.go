@@ -53,7 +53,7 @@ printf ready > "$6"
 case "$4" in
  signal) kill -TERM $$ ;;
  hold) sleep 2; printf late > "$7"; wait ;;
- brief) sleep 0.4 ;;
+ gated) while [ ! -f "$7.release" ]; do sleep 0.01; done ;;
 esac
 exit "$5"
 `
@@ -220,7 +220,7 @@ func Test_CHK010AttributionAndExactBaseline(t *testing.T) {
 		name, baseline, output string
 		paths, lines           []string
 	}{
-		{"no baseline", "", " \talpha: first violation \r\n beta second violation\t\nAlpha: informational\nalpha-extra: informational\ngamma: intentionally ignored\n", []string{coverageBoundaryAlphaDir(), "units/beta"}, []string{"alpha: first violation", "beta second violation"}},
+		{"no baseline", "", " \talpha: first violation \r\n beta second violation\t\nAlpha: informational\nalpha informational: detail\nalpha-extra: informational\ngamma: intentionally ignored\n", []string{coverageBoundaryAlphaDir(), "units/beta"}, []string{"alpha: first violation", "beta second violation"}},
 		{"exact trimmed", " \talpha: existing \r\n", " alpha: existing \r\ngamma ignored\n", []string{}, nil},
 		{"prefix", "alpha:\n", "alpha: different violation\n", []string{coverageBoundaryAlphaDir()}, []string{"alpha: different violation"}},
 		{"substring", "existing\n", "alpha: existing\n", []string{coverageBoundaryAlphaDir()}, []string{"alpha: existing"}},
@@ -311,7 +311,7 @@ func Test_CHK011OrdinaryExitEvidence(t *testing.T) {
 					if d.Code != "C15" || d.Severity != "error" || !strings.Contains(d.Message, fmt.Sprint(tt.code)) {
 						t.Fatalf("missing actual exit %+v", ds)
 					}
-					if strings.TrimSpace(tt.output) == "" || strings.Contains(d.Message, strings.TrimSpace(tt.output)) || strings.Contains(d.Message, "compiler failed") {
+					if strings.Contains(d.Message, tt.output) {
 						found = true
 					}
 				}
@@ -512,6 +512,8 @@ func Test_CHK012OwnershipAndSafetyAcrossResults(t *testing.T) {
 			boundaryPut(t, filepath.Join(root, boundaryBaseline), baseline)
 			hookGit(t, root, "add", ".")
 			hookGit(t, root, "commit", "-qm", "boundary fixture")
+			alphaDir := h.Snapshot.Modules[0].Dir
+			h.Snapshot.Modules = []c.Module{h.Snapshot.Modules[2], h.Snapshot.Modules[0], h.Snapshot.Modules[1]}
 			marker := installHookTraps(t, root)
 			snapshotBefore := jsonSnapshot(t, h.Snapshot)
 			filesBefore := boundaryFiles(t, root)
@@ -528,7 +530,7 @@ func Test_CHK012OwnershipAndSafetyAcrossResults(t *testing.T) {
 				boundaryExpected(t, first, "", []string{}, nil)
 				boundaryExpected(t, second, "", []string{}, nil)
 			} else if mode == "violation" {
-				boundaryExpected(t, first, "C15", []string{h.Snapshot.Modules[0].Dir}, []string{strings.TrimSpace(output)})
+				boundaryExpected(t, first, "C15", []string{alphaDir}, []string{strings.TrimSpace(output)})
 				if !reflect.DeepEqual(first, second) {
 					t.Fatalf("nondeterministic diagnostics %+v %+v", first, second)
 				}
@@ -538,6 +540,14 @@ func Test_CHK012OwnershipAndSafetyAcrossResults(t *testing.T) {
 				boundaryNoLate(t, h)
 			}
 			saved := jsonSnapshot(t, second)
+			if len(first) == 0 && len(second) == 0 {
+				first = append(first, k.Diagnostic{Message: "first empty result"})
+				second = append(second, k.Diagnostic{Message: "second empty result"})
+				if first[0].Message != "first empty result" || second[0].Message != "second empty result" {
+					t.Fatal("empty results share writable backing storage")
+				}
+				first, second = first[:0], second[:0]
+			}
 			if len(first) > 0 {
 				first[0].Message = "mutated first result"
 			}
@@ -573,15 +583,26 @@ func Test_CHK012SortDeduplicateAndOverlap(t *testing.T) {
 	boundaryPut(t, long.Output, "alpha: existing\n")
 	boundaryPut(t, filepath.Join(long.Snapshot.Root, boundaryBaseline), "alpha: existing\n")
 	long.Snapshot.Modules[0].Hooks.Boundaries = long.command("long", "hold", 0)
-	brief.Snapshot.Modules[0].Hooks.Boundaries = brief.command("brief", "brief", 0)
+	brief.Snapshot.Modules[0].Hooks.Boundaries = brief.command("brief", "gated", 0)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	longDone := make(chan []k.Diagnostic, 1)
 	briefDone := make(chan []k.Diagnostic, 1)
+	long.Snapshot.Modules = []c.Module{long.Snapshot.Modules[2], long.Snapshot.Modules[0], long.Snapshot.Modules[1]}
+	brief.Snapshot.Modules = []c.Module{brief.Snapshot.Modules[2], brief.Snapshot.Modules[0], brief.Snapshot.Modules[1]}
+	envBefore := os.Environ()
+	cwdBefore, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	longFiles, briefFiles := boundaryFiles(t, long.Snapshot.Root), boundaryFiles(t, brief.Snapshot.Root)
 	before := jsonSnapshot(t, []p.Snapshot{long.Snapshot, brief.Snapshot})
+	briefCtx, briefCancel := context.WithCancel(context.Background())
+	defer briefCancel()
+	t.Cleanup(func() { boundaryPut(t, brief.Late+".release", "release") })
 	go func() { longDone <- k.Boundaries(ctx, long.Snapshot) }()
 	boundaryWaitReady(t, long, longDone, true)
-	go func() { briefDone <- k.Boundaries(context.Background(), brief.Snapshot) }()
+	go func() { briefDone <- k.Boundaries(briefCtx, brief.Snapshot) }()
 	boundaryWaitReady(t, brief, briefDone, false)
 	cancel()
 	select {
@@ -593,18 +614,106 @@ func Test_CHK012SortDeduplicateAndOverlap(t *testing.T) {
 	select {
 	case ds := <-briefDone:
 		t.Fatalf("independent checker was cancelled early %+v", ds)
-	case <-time.After(100 * time.Millisecond):
+	default:
 	}
+	boundaryPut(t, brief.Late+".release", "release")
 	select {
 	case ds := <-briefDone:
 		boundaryExpected(t, ds, "", []string{}, nil)
 	case <-time.After(1500 * time.Millisecond):
 		t.Fatal("independent checker did not finish")
 	}
-	if before != jsonSnapshot(t, []p.Snapshot{long.Snapshot, brief.Snapshot}) {
-		t.Fatal("overlap mutated inputs")
+	cwdAfter, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if before != jsonSnapshot(t, []p.Snapshot{long.Snapshot, brief.Snapshot}) || cwdBefore != cwdAfter || !reflect.DeepEqual(envBefore, os.Environ()) || !reflect.DeepEqual(longFiles, boundaryFiles(t, long.Snapshot.Root)) || !reflect.DeepEqual(briefFiles, boundaryFiles(t, brief.Snapshot.Root)) {
+		t.Fatal("overlap mutated inputs, parent state or baseline/repository files")
 	}
 	boundaryTrace(t, long, []string{"long"})
 	boundaryTrace(t, brief, []string{"brief"})
 	boundaryNoLate(t, long)
+}
+
+func Test_CHK010NestedCanonicalBaseline(t *testing.T) {
+	boundaryEnv(t)
+	h := boundaryFixture(t)
+	boundaryPut(t, h.Output, "alpha: existing\n")
+	boundaryPut(t, filepath.Join(h.Snapshot.Root, boundaryBaseline), "alpha: existing\n")
+	h.Snapshot.Root = filepath.Join(h.Snapshot.Root, "nested")
+	boundaryPut(t, filepath.Join(h.Snapshot.Root, boundaryBaseline), "alpha: unrelated nested policy\n")
+	before := boundaryFiles(t, filepath.Dir(h.Snapshot.Root))
+	ds := k.Boundaries(context.Background(), h.Snapshot)
+	boundaryExpected(t, ds, "", []string{}, nil)
+	boundaryTrace(t, h, []string{"A"})
+	if !reflect.DeepEqual(before, boundaryFiles(t, filepath.Dir(h.Snapshot.Root))) {
+		t.Fatal("canonical baseline lookup mutated files")
+	}
+}
+func Test_CHK011NonzeroAttributedViolations(t *testing.T) {
+	boundaryEnv(t)
+	h := boundaryFixture(t)
+	h.Snapshot.Modules[0].Hooks.Boundaries = h.command("A", "stderr", 17)
+	boundaryPut(t, h.Output, "beta: unexpected dependency\nalpha: unexpected interface reach\ngamma: ignored\n")
+	boundaryPut(t, filepath.Join(h.Snapshot.Root, boundaryBaseline), "alpha: existing\n")
+	ds := k.Boundaries(context.Background(), h.Snapshot)
+	boundaryExpected(t, ds, "C15", []string{h.Snapshot.Modules[0].Dir, "units/beta"}, []string{"alpha: unexpected interface reach", "beta: unexpected dependency"})
+	boundaryTrace(t, h, []string{"A"})
+}
+func Test_CHK012BoundaryGateHelperControl(t *testing.T) {
+	boundaryEnv(t)
+	h := boundaryFixture(t)
+	repo, err := g.Open(h.Snapshot.Root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	exe, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	args := append([]string{h.Script}, h.args("gate-control", "gated", 0)...)
+	args = append(args, "", "", "", repo.CommonDir)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	command := exec.CommandContext(ctx, "sh", args...)
+	command.Dir = repo.Root
+	command.Env = append(os.Environ(), "FIREWEED_MODULE=", "FIREWEED_MODULE_DIR=", "FIREWEED_REPORT=", "FIREWEED_BIN="+exe)
+	type completion struct {
+		output string
+		err    error
+	}
+	done := make(chan completion, 1)
+	go func() { output, err := command.CombinedOutput(); done <- completion{string(output), err} }()
+	ready := time.NewTimer(2 * time.Second)
+	defer ready.Stop()
+	tick := time.NewTicker(5 * time.Millisecond)
+	defer tick.Stop()
+	waiting := true
+	for waiting {
+		if _, err := os.Stat(h.Ready); err == nil {
+			break
+		}
+		select {
+		case c := <-done:
+			t.Fatalf("gate helper ended before ready: %+v", c)
+		case <-ready.C:
+			t.Fatal("gate helper not ready")
+		case <-tick.C:
+		}
+	}
+	select {
+	case c := <-done:
+		t.Fatalf("gate helper completed before release: %+v", c)
+	case <-time.After(50 * time.Millisecond):
+	}
+	boundaryPut(t, h.Late+".release", "release")
+	select {
+	case c := <-done:
+		if c.err != nil || c.output != "" {
+			t.Fatalf("gate helper failed after release: %+v", c)
+		}
+	case <-time.After(time.Second):
+		t.Fatal("gate helper ignored release")
+	}
+	boundaryTrace(t, h, []string{"gate-control"})
 }

@@ -1,6 +1,6 @@
 ---
 module: checks
-phase: evals
+phase: audit
 run: ac8e6a308cf709bbfebc0f36
 ---
 
@@ -46,6 +46,7 @@ Running the project default once would ignore resolved overrides. Treating a kil
 
 - evals | 2026-10-22T18:10:12Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 105 | failing: 42 | passing: 63
 - audit | 2026-10-22T18:15:55Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-22T18:17:50Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 108 | failing: 44 | passing: 64
 
 ## Audit
 
