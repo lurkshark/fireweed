@@ -1,6 +1,6 @@
 # Restartable rebuild progress
 
-Status: stage 1, seven behavioral changes archived; project discovery/static graph next. Goal remains active.
+Status: stage 1, eight behavioral changes archived; actual modules/check CLI commands next. Goal remains active.
 
 ## Controller pin
 
@@ -85,3 +85,17 @@ Restart at this boundary: previous goal turn was progress (archived code/evals a
 ## Discovery eval recovery
 
 First discovery-validation cycle assigned PRJ-001–006 and passed a separate assertion audit, then implementation exposed three fixture errors (unknown metadata, too-short filenames, permitted adjacent-star pattern). See D008. Released the claim and fully reverted that cycle's eight phase commits to restore the original queue entry. Implementation/evals preserved under /tmp/fireweed-discovery-recovery-5380157 and earlier commits; only our uncommitted implementation was restored to its stub before reverting. Restart from evals with valid contract-derived fixtures; do not treat the reverted cycle as completed behavior or edit frozen evals in impl.
+
+## discovery-validation (PRJ-001–PRJ-006)
+
+Archive changes/archive/0008-discovery-validation.md. Permanent public evals in packages/project/evals/{discovery,isolation}_test.go produce 24 JUnit cases. They cover canonical nested-root/config/base discovery, embedded-version pins, module sorting/defaults/empty overrides and complete document retention; malformed/out-of-glob/module/change diagnostics; variable-width numeric queue/archive ordering and slug ties; target prefixes, duplicate slugs, lifecycle/author provenance; graph identities/ownership/missing/self/cyclic/diamond dependencies; invalid/future-overlap zones; required hooks/visible opt-outs; removed-ID reservations; deterministic diagnostics and deeply populated snapshot immutability.
+
+The superseded initial cycle and its full revert are documented in D008. Restarted fail-first 2d28706c270ec152c0d0518cdd85ddae78595751 had 24 compiled executed failures and zero verification diagnostics. Independent audit 7608183b7bd2458387f137e4e6fce9be142bb67b caught remaining too-short guarded change filenames; corrected fail-first 1b8bc6f7a503cef2e3d06de6a6e90b5d1458b71c; passing independent re-audit 977866d54d0c1c64ca6e39cec1b1bd6b18d4500e; applied implementation 2b0be2ef8f71ed829b11fa3995a44db15b6737c3. Auditor read only the change/specs/public contracts/interfaces/evals, never implementations/history/bootstrap or test execution. Corrected evals/interfaces remained immutable during implementation. Controller verify passed project 24 + app 8 and scaffold dependent hooks/boundaries with zero diagnostics. Local phase evidence .fireweed/evidence/discovery-validation/.
+
+Native project isolation uses a separately compiled public-API Go/cgo probe and temporary test-only Darwin interposer. Live TCP, direct/escaping file read, readlink, stat, write, directory, mkdir and unlink controls must terminate with 42 even if their errors are ignored. Load guards detect escaping module/queue/archive reads and network attempts; shell traps detect hooks/agents/network commands and Git network operations. Check's armed guard detects filesystem I/O. Repository refs/status and ignored bytes are preserved separately after Load and Check. Requires local cc plus permission for the test parent's loopback listener. Non-macOS skips native guards; no cross-platform runtime isolation is claimed. Product remains pure Go.
+
+## Checkpoint at 2b0be2e
+
+`go test ./...`, `go test -race ./...`, `go vet ./...`, and `go build -o bin/fireweed .` all exit 0. Full tests use the necessary outer sandbox escalation for native guard controls; source product needs no special test dependency. Controller `ci 14cec73e1126ee37d33f1138d19936b6a05a59a6..2b0be2ef8f71ed829b11fa3995a44db15b6737c3 --json` passes valid:true, doctor enabled, zero diagnostics. Coverage app 8, assets 6, contracts 25, gitstore 8, project 24; checks/runner/workflow still 0. This range includes the initial discovery phase commits and all full reverts, so their history is checked rather than omitted. JSON .fireweed/evidence/ci-discovery-checkpoint.json; Go logs .fireweed/evidence/go-{test,race}-discovery-checkpoint.log. Rebuilt bin/fireweed returns the expected schema-1 version. Queue/claims empty, target clean before author evidence, bootstrap checkout unchanged.
+
+Next: author an app slice exposing actual executable `modules` and `check` using the project public API, including project/config/validation exit semantics and versioned diagnostics. Then project projection/set/bases/ID planning and executable list/status/show/authoring. Read commands have only help/version/explain/playbook implemented so far. All remaining checks/lifecycle/runner/history/recipes/distribution gates, real regeneration of every disposable module, and isolated self-hosting remain unfinished. Goal active; no final acceptance claimed.
