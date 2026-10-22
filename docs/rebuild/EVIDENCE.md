@@ -37,6 +37,8 @@ Every inventory row remains incomplete until assertion-level command, workflow, 
 
 | R17/R04 executable queue checks | APP-008 / Test_APP008QueueComposition, Test_APP008QueueOrderAndWarnings, Test_APP008MissingBasesAndQueueSafety: exact composed diagnostics/order/exits/streams, numeric intent, current-only modules values, guarded files/refs/commands | 0012-queue-check-cli | NEW executable verified with 15 app cases; narrow stale-base bootstrap/product comparison agrees on status/data/code/path. Authoring/allocation/lifecycle still pending |
 
+| R04/R07 authored new-spec already_satisfied | CON-016 / Test_CON016AlreadySatisfiedLocalHandles, Test_CON016SatisfiedHandleScopeAndTypes: ordered local/real values, no cross-parse namespace, malformed/type rejection, bases/fixes restrictions and immediate deep value independence | 0013-satisfied-handles | Grammar correction verified; actual fail-first exemption enforcement and late start rewrite remain pending |
+
 All R01–R21 remain unverified overall. Controller CI/doctor is process evidence, not a product doctor or lifecycle pass. No real regeneration/self-hosting is claimed. Full phase commits, audit findings/retries, checks and next work are in PROGRESS.md.
 
 Assets isolation uses a test-only native dylib armed after loader startup. Controls prove file and network attempts are intercepted even when errors are ignored. The source-free public probe checks build version and both formats, all valid content lookups, and all tested unknown-input paths. This is actual macOS execution only; portable content/hash tests run elsewhere, but the native isolation case skips elsewhere. Product code contains no C or dylib dependency.
