@@ -1,6 +1,6 @@
 ---
 module: checks
-phase: evals
+phase: audit
 run: 22b2367a5ab7064e801a1243
 set:
     interface:
@@ -38,6 +38,8 @@ ParseJUnit and Analyze MUST return independently owned results across calls. Ana
 
 This slice handles in-memory evidence only. Later checked hooks will attach output and convert missing/invalid report and invocation errors to C11 before composing these checks. BySpec records all references for inspection; coverage and fail-first separately exclude skips. Evidence contradictory to the process exit is always a reporter error, even for review/quarantine specs; those tags suspend spec enforcement, not report consistency. The already list only relaxes the failing-before requirement for a changed spec, and cannot excuse a failing unchanged spec or missing executed coverage. Known project prefixes allow foreign-module references to be reported explicitly as unknown to the selected module; an unrecognized spelling still fails C12 for having no recognized ID. Diagnostics use the established C11–C14 and P1-02 catalog meanings.
 
+Missing executed coverage and missing failing-before evidence are distinct violations: an unenforced exemption is never inferred from C13. For an enforced failFirst ID with no executed testcase and no already exemption, return both C13 and P1-02. Ordinary reference inspection of coverage.go shows a C13 early-continue suppressing P1-02; the authored contract deliberately reports both checks rather than hiding the second unmet requirement.
+
 ## Rejected alternatives
 
 Trusting suite counts permits collection failures or fabricated summary counts to masquerade as executed tests. Joining only against existing IDs would discard removed-ID references. Sharing result backing storage would allow consumers to corrupt evidence used in later checks.
@@ -46,6 +48,7 @@ Trusting suite counts permits collection failures or fabricated summary counts t
 
 - evals | 2026-10-22T16:21:22Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 29 | failing: 24 | passing: 5
 - audit | 2026-10-22T16:25:07Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-22T16:26:32Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 32 | failing: 26 | passing: 6
 
 ## Audit
 

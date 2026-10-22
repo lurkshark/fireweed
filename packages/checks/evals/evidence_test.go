@@ -178,15 +178,16 @@ func Test_CHK003CoverageAndFailFirst(t *testing.T) {
 		{name: "failfirst failure", tests: []k.TestCase{fail}, exit: 1, first: []string{"ALP-001"}},
 		{name: "failfirst error", tests: []k.TestCase{errCase}, exit: 1, first: []string{"ALP-001"}},
 		{name: "failfirst passing", tests: []k.TestCase{pass}, first: []string{"ALP-001"}, codes: []string{"P1-02"}},
-		{name: "missing failfirst", first: []string{"ALP-001"}, codes: []string{"C13"}},
+		{name: "missing failfirst", first: []string{"ALP-001"}, codes: []string{"C13", "P1-02"}},
+		{name: "already with genuine failfirst", tests: []k.TestCase{fail}, exit: 1, first: []string{"ALP-001"}, already: []string{"ALP-001"}},
 		{name: "allowed passing", tests: []k.TestCase{pass}, first: []string{"ALP-001"}, already: []string{"ALP-001"}},
 		{name: "allowed missing", already: []string{"ALP-001"}, first: []string{"ALP-001"}, codes: []string{"C13"}},
 		{name: "allowed skipped", tests: []k.TestCase{skip}, already: []string{"ALP-001"}, first: []string{"ALP-001"}, codes: []string{"C13"}},
 		{name: "allowed ordinary failure", tests: []k.TestCase{fail}, exit: 1, already: []string{"ALP-001"}, codes: []string{"C14"}},
 		{name: "fake hook failure", tests: []k.TestCase{pass}, exit: 42, first: []string{"ALP-001"}, codes: []string{"C11", "P1-02"}},
 		{name: "fake hook success", tests: []k.TestCase{fail}, first: []string{"ALP-001"}, codes: []string{"C11"}},
-		{name: "skip beats failure", tests: []k.TestCase{mixedSkip}, exit: 1, first: []string{"ALP-001"}, codes: []string{"C11", "C13"}},
-		{name: "skip fake success", tests: []k.TestCase{mixedSkip}, first: []string{"ALP-001"}, codes: []string{"C13"}},
+		{name: "skip beats failure", tests: []k.TestCase{mixedSkip}, exit: 1, first: []string{"ALP-001"}, codes: []string{"C11", "C13", "P1-02"}},
+		{name: "skip fake success", tests: []k.TestCase{mixedSkip}, first: []string{"ALP-001"}, codes: []string{"C13", "P1-02"}},
 		{name: "pass and failure", tests: []k.TestCase{pass, fail, skip}, exit: 1, first: []string{"ALP-001"}},
 		{name: "duplicates", tests: []k.TestCase{pass}, first: []string{"ALP-001", "ALP-001"}, codes: []string{"P1-02"}},
 		{name: "unknown wanted", tests: []k.TestCase{pass}, first: []string{"ALP-999", "ALP-999"}, codes: []string{"C12"}},
@@ -212,6 +213,8 @@ func Test_CHK003TagsAndReporterConsistency(t *testing.T) {
 		m.Specs[0].Tag = tag
 		cov := k.Analyze(m, nil, nil, 0, []string{"ALP-001"}, nil)
 		requireCodes(t, cov)
+		requireCodes(t, k.Analyze(m, nil, []k.TestCase{{Name: "ALP001"}}, 0, []string{"ALP-001"}, nil))
+		requireCodes(t, k.Analyze(m, nil, []k.TestCase{{Name: "ALP001", Failures: []k.Message{{}}}}, 1, nil, nil))
 		cases := []k.TestCase{{Name: "ALP001", Errors: []k.Message{{}}}, {Name: "ALP001", Skipped: &k.Message{}}}
 		cov = k.Analyze(m, nil, cases, 1, []string{"ALP-001"}, nil)
 		requireCodes(t, cov)
@@ -227,7 +230,7 @@ func Test_CHK003TagsAndReporterConsistency(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		requireCodes(t, k.Analyze(evidenceModule("ALP-001"), nil, cases, 1, []string{"ALP-001"}, nil), "C11", "C13")
+		requireCodes(t, k.Analyze(evidenceModule("ALP-001"), nil, cases, 1, []string{"ALP-001"}, nil), "C11", "C13", "P1-02")
 	}
 }
 func jsonSnapshot(t *testing.T, v any) string {
@@ -243,8 +246,8 @@ func Test_CHK004OwnershipDeterminismAndEmptyValues(t *testing.T) {
 	m.DependsOn = []string{"beta"}
 	m.Document = c.Document{Metadata: map[string]any{"nested": []any{"retained"}}, Sections: []c.Section{{Name: "Specs", Body: "original"}}}
 	prefixes := []string{"BET", "ALP", "BET"}
-	first := []string{"ALP-002", "ALP-002"}
-	already := []string{"ALP-002", "ALP-002"}
+	first := []string{"ALP-002", "ALP-001", "ALP-002"}
+	already := []string{"ALP-002", "ALP-001", "ALP-002"}
 	tests := []k.TestCase{{Name: "ALP001", Failures: []k.Message{{Message: "failure", Text: "trace"}}, Errors: []k.Message{{Message: "error", Text: "stack"}}, IDs: []string{"untrusted"}}, {Name: "ALP002", Skipped: &k.Message{Message: "skip", Text: "why"}, IDs: []string{"wrong"}}, {Name: "no ID"}}
 	before := jsonSnapshot(t, []any{m, prefixes, tests, first, already})
 	a := k.Analyze(m, prefixes, tests, 1, first, already)
@@ -346,6 +349,11 @@ func Test_CHK004ParserCallsAreIndependent(t *testing.T) {
 	a[0].Skipped.Message = "changed"
 	a[0].Skipped.Text = "changed"
 	a[0].IDs = append(a[0].IDs, "changed")
+	b[0].IDs = append(b[0].IDs, "other result")
+	if a[0].IDs[0] != "changed" {
+		t.Fatal("empty parser IDs shared between results")
+	}
+	b[0].IDs = b[0].IDs[:0]
 	if saved != jsonSnapshot(t, b) || raw != string(xml) {
 		t.Fatal("parser results alias")
 	}
@@ -354,5 +362,85 @@ func Test_CHK004ParserCallsAreIndependent(t *testing.T) {
 	}
 	if saved != jsonSnapshot(t, b) {
 		t.Fatal("parsed strings alias bytes")
+	}
+}
+
+func Test_CHK003MultipleCoverageObligations(t *testing.T) {
+	cov := k.Analyze(evidenceModule("ALP-003", "ALP-001", "ALP-002"), nil, []k.TestCase{{Name: "ALP001", Skipped: &k.Message{}}}, 0, []string{"ALP-003", "ALP-001"}, nil)
+	requireCodes(t, cov, "C13", "C13", "C13", "P1-02", "P1-02")
+	for _, id := range []string{"ALP-001", "ALP-002", "ALP-003"} {
+		count := 0
+		for _, d := range cov.Diagnostics {
+			if d.Code == "C13" && strings.Contains(d.Message, id) {
+				count++
+			}
+		}
+		if count != 1 {
+			t.Fatalf("coverage for %s count%d: %+v", id, count, cov.Diagnostics)
+		}
+	}
+}
+func Test_CHK004SameCodeOrderingAndEmptyStorage(t *testing.T) {
+	// Distinct messages under one code require the last comparison key.
+	cases := []k.TestCase{}
+	for _, name := range []string{"zeta", "omega", "nu", "mu", "lambda", "kappa", "iota", "gamma", "eta", "epsilon", "delta", "alpha"} {
+		cases = append(cases, k.TestCase{Name: name})
+	}
+	cov := k.Analyze(evidenceModule(), nil, cases, 0, nil, nil)
+	if len(cov.Diagnostics) != len(cases) {
+		t.Fatalf("missing testcase diagnostics %+v", cov)
+	}
+	messages := []string{}
+	seen := map[string]bool{}
+	for _, d := range cov.Diagnostics {
+		if d.Code != "C12" || seen[d.Message] {
+			t.Fatalf("diagnostic fixture %+v", cov.Diagnostics)
+		}
+		seen[d.Message] = true
+		messages = append(messages, d.Message)
+	}
+	evidenceCodes(t, cov)
+	if !sort.StringsAreSorted(messages) {
+		t.Fatalf("same-code messages unsorted %v", messages)
+	}
+	// Fallback must not append into the caller's empty prefix slice.
+	backing := []string{"sentinel prefix"}
+	prefixes := backing[:0]
+	own := k.Analyze(evidenceModule("ALP-001"), prefixes, []k.TestCase{{Name: "ALP001"}}, 0, nil, nil)
+	requireCodes(t, own)
+	if backing[0] != "sentinel prefix" || len(prefixes) != 0 {
+		t.Fatal("target-prefix fallback changed caller storage")
+	}
+	// Independently empty results must not share maps, slices or hidden storage.
+	a := k.Analyze(evidenceModule(), nil, nil, 0, nil, nil)
+	b := k.Analyze(evidenceModule(), nil, nil, 0, nil, nil)
+	if a.Tests == nil || b.Tests == nil || a.BySpec == nil || b.BySpec == nil || a.Diagnostics == nil || b.Diagnostics == nil {
+		t.Fatal("nil empty result")
+	}
+	a.Tests = append(a.Tests, k.TestCase{Name: "first"})
+	b.Tests = append(b.Tests, k.TestCase{Name: "second"})
+	a.Diagnostics = append(a.Diagnostics, k.Diagnostic{Message: "first"})
+	b.Diagnostics = append(b.Diagnostics, k.Diagnostic{Message: "second"})
+	a.BySpec["first"] = []int{1}
+	b.BySpec["second"] = []int{2}
+	if a.Tests[0].Name != "first" || a.Diagnostics[0].Message != "first" || len(a.BySpec) != 1 || len(b.BySpec) != 1 {
+		t.Fatal("empty results shared storage")
+	}
+	inputMessages := []k.Message{{Text: "hidden"}}
+	inputIDs := []string{"hidden"}
+	tc := k.TestCase{Name: "no ID", Failures: inputMessages[:0], Errors: inputMessages[:0], IDs: inputIDs[:0]}
+	a = k.Analyze(evidenceModule(), nil, []k.TestCase{tc}, 0, nil, nil)
+	b = k.Analyze(evidenceModule(), nil, []k.TestCase{tc}, 0, nil, nil)
+	if len(a.Tests) != 1 || len(b.Tests) != 1 || a.Tests[0].IDs == nil || b.Tests[0].IDs == nil {
+		t.Fatal("missing empty-ID cases")
+	}
+	a.Tests[0].Failures = append(a.Tests[0].Failures, k.Message{Text: "failure A"})
+	b.Tests[0].Failures = append(b.Tests[0].Failures, k.Message{Text: "failure B"})
+	a.Tests[0].Errors = append(a.Tests[0].Errors, k.Message{Text: "error A"})
+	b.Tests[0].Errors = append(b.Tests[0].Errors, k.Message{Text: "error B"})
+	a.Tests[0].IDs = append(a.Tests[0].IDs, "ID A")
+	b.Tests[0].IDs = append(b.Tests[0].IDs, "ID B")
+	if a.Tests[0].Failures[0].Text != "failure A" || a.Tests[0].Errors[0].Text != "error A" || a.Tests[0].IDs[0] != "ID A" || inputMessages[0].Text != "hidden" || inputIDs[0] != "hidden" {
+		t.Fatal("empty nested result storage shared")
 	}
 }
