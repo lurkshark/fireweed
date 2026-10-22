@@ -4,6 +4,9 @@ depends_on:
     - gitstore
     - assets
 id_prefix: PRJ
+interface:
+    - api.go
+    - model/*.go
 name: project
 ---
 
@@ -71,6 +74,15 @@ Finalize MUST start from the module's typed Decisions, overriding a stale retain
 ### PRJ-020
 Finalize MUST be deterministic and pure on successful and failed inputs, without filesystem/network I/O or execution of Git, hooks or agents. It MUST NOT mutate or return mutable aliases to the supplied module, change, retained documents, metadata maps or slices. Separate calls and input values MUST remain unchanged immediately when a returned result is mutated, including valid maintenance changes with no spec edits. Errors MUST return no partial module. ApplyChange MUST remain a preview retaining existing Decisions without performing final decision additions/removals.
 
+### PRJ-021
+ResolvePlaybook MUST recognize exactly the five names in public assets.Playbooks and resolve the canonical Git checkout from start, including nested directories and linked worktrees. Without the selected .fireweed/playbooks/<name>.md override it MUST return the exact public embedded Text and Hash, EmbeddedHash equal to that embedded Hash, Name equal to the requested name, BasedOn empty, Overridden false and Stale false. With a readable regular selected override it MUST return every exact byte of that file as Text, SHA-256 of those exact bytes as lowercase full Hash, the unchanged embedded hash as EmbeddedHash, and Overridden true, including empty files and CRLF text. Only the selected override may affect the result; unrelated overrides and project configuration MUST NOT be read. Unknown or path-like names MUST error with valid-name guidance before repository discovery or override reads; a known name outside any Git repository MUST error with corrective repository guidance. Every error MUST return a zero Playbook.
+
+### PRJ-022
+For an override, ResolvePlaybook MUST extract BasedOn only from a string-valued based_on key in valid public Markdown frontmatter. Stale MUST be false exactly when that string equals the selected current embedded hash, and true for missing, wrong, differently cased or non-string hashes and malformed frontmatter. Staleness MUST NOT replace or reject readable override text: Text and its exact-byte Hash remain the override's values, even for invalid frontmatter, absent based_on or an empty file. The full file including frontmatter MUST remain in Text and Hash. Embedded-only resolution MUST remain non-stale independently of other overrides.
+
+### PRJ-023
+ResolvePlaybook MUST check selected override containment using the public Git SafePath contract before opening its contents, including when a read error would otherwise be ignored. Missing selected overrides MAY fall back to embedded text only when the missing path remains contained. Unreadable files, directories and escaping or dangling symlinks, including missing descendants of escaping directory symlinks, MUST return a corrective error mentioning D05 and the selected repository-relative override path, never silently fall back or read outside contents. Contained regular-file symlink targets MAY be used. Resolution MUST be deterministic, noninteractive and read-only on success, stale overrides and all errors: preserve tracked/untracked/ignored/outside files, index bytes, HEAD/branches/claim/other refs, parent cwd/environment and temporary storage; never run hooks/agents/bootstrap/network commands or mutate project configuration. Calls and returned values MUST remain independent without mutable aliases or input mutation.
+
 ## Decisions
 
 [discovery-validation]
@@ -95,3 +107,8 @@ The highest reserved number plus one implements next-free allocation without reu
 
 [final-application]
 Removed-decision quoting follows the pinned reference's line-wise exact-text convention, including optional Markdown blockquote markers and harmless unmatched quotes. Public rendering/parsing defines normalization of remaining whitespace and human content. Each change appends one slug-tagged body, preserving multiline choices and fenced examples as text. Finalize is not an idempotent transaction: the workflow validates, writes and archives once, and handles rollback separately. Existing ApplyChange remains the placeholder-capable preview and therefore does not perform final Decisions edits. Current CON-016 permits locally declared Added handles in already_satisfied before allocation; fixes and bases remain real-ID-only. Allocation must rewrite those handles before this final transform can produce a current SPEC.md.
+
+[project-playbooks]
+This API binds explicitly to an existing Git checkout without reading fireweed.yaml. The CLI retains its existing embedded-only behavior outside a project and will opt into this resolver when project binding is appropriate. Hashes cover the complete exact override file, including frontmatter, because that is the text supplied to workers and recorded in provenance. based_on inspection uses the public Markdown parser; malformed metadata is advisory staleness, while failed or unsafe reads are errors. Empty override files remain author-owned instructions and produce a stale flag. SafePath defines containment; inside links remain permitted without weakening worker zone rules.
+
+The reference Project.Playbook reads complete override bytes and hashes them, and Doctor compares based_on with its embedded hash (internal/fireweed/playbooks.go and doctor.go). This fresh API exposes those two observations together without running doctor or hooks. Static input validation and command rendering remain callers' responsibilities.
