@@ -1,5 +1,7 @@
 ---
 module: workflow
+phase: audit
+run: 87cb84b4509b66f7b60d7a0e
 ---
 
 ## Motivation
@@ -12,16 +14,16 @@ Add retained workflow/model WorktreeCheck with Edits []gitstore.Edit and Diagnos
 
 ## Added
 
-### new:worktree-preconditions
+### FLOW-012
 CheckWorktree MUST discover the canonical checkout from snapshot.Root, require the exact current stored Claim including Object and fields, require that claim's owner to be this checkout, and require HEAD to equal Claim.Base. It MUST validate Claim.State as an unchanged valid started document through CheckState and public change grammar, with parsed Module, Run and Slug agreeing with the supplied module and Claim. changePath MUST name that queued change directly under changes/, never an archive or escaping/invalid path. Unavailable repositories, missing/stale/tampered/foreign claims, moved HEAD or invalid approved state/identity/path MUST return a corrective P02 at changePath, empty non-null Edits, and stop before current-file comparison or edit collection. Linked worktrees and SHA-1/SHA-256 claim records MUST be supported without changing HEAD or ownership.
 
-### new:worktree-current-state
+### FLOW-013
 After valid preconditions, CheckWorktree MUST read the exact current change only after checking its path's containment with the public SafePath contract. Missing, unreadable, directory or escaping/dangling-symlink current changes MUST produce corrective P2-01 at changePath; escaping file contents MUST NOT be read even when read errors would be ignored. Safe in-repository links MAY be read, but their actual type-change edits MUST still obey CheckEdits. Valid current text MUST be compared with Claim.State through CheckState, using the approved phase rather than worker-modified metadata. Invalid current grammar, immutable metadata or protected body edits MUST retain those exact public state diagnostics. Allowed worker prose and blocked edits MUST remain permitted by this guard; blocking/Questions policy is separate.
 
-### new:worktree-edits
+### FLOW-014
 With valid preconditions, CheckWorktree MUST collect the public Git Edits since the exact Claim.Base, including staged, unstaged and untracked files and preserving rename source/destination records. Collection failures MUST return corrective P02 at changePath. It MUST check containment of every edit destination and every rename/copy source, recording corrective P2-01 at each unsafe endpoint, including nonexisting descendants of escaping directory symlinks. It MUST compose CheckEdits using the supplied approved projected target and validated snapshot, retaining independent state, safety and phase/ownership/append-only violations instead of accepting edits after one check fails. Normal permitted changes MUST pass; protected/global/spec/foreign/other-change edits, impl eval/interface renames and evals existing disposable edits MUST fail through the established public policy. No coverage, boundary hook or agent MUST run in this operation.
 
-### new:worktree-result-safety
+### FLOW-015
 CheckWorktree MUST return fresh non-null Edits and Diagnostics with diagnostics deduplicated and sorted by Path, Code, Severity and Message. Errors MUST have severity error, their specified path and nonempty corrective guidance. Repeated results, including empty results, and input snapshots/modules/claims/maps/slices MUST remain independent and unchanged immediately after result mutation, on successes and rejections. The operation MUST remain local and noninteractive, preserve HEAD, branches, claim/other refs, index bytes, tracked/untracked/ignored/user files, private outside files and parent cwd/environment, and MUST NOT commit, reset, stage, fetch, push, create branches, execute hooks/agents/bootstrap/network commands or leave owned temporary storage. It MAY perform necessary local read-only Git/filesystem inspection. Supplied snapshots' hook/agent strings MUST NOT be executed even on success or failure.
 
 ## Decisions
@@ -33,3 +35,7 @@ Precondition failures return one P02 before collecting edits or reading the curr
 ## Rejected alternatives
 
 Trusting only caller-supplied Claim fields would allow stale ownership or a moved HEAD to be accepted. Reading current text before path containment could disclose private files through symlinks. Running evals first could execute hooks for a forbidden step. Reconstructing approval from current worker metadata would allow a phase switch or zone change to grant permissions.
+
+## Provenance
+
+- evals | 2026-10-22T20:14:08Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 915 | failing: 93 | passing: 822

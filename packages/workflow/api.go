@@ -9,6 +9,7 @@ import (
 	"github.com/lurkshark/fireweed/packages/workflow/internal/claims"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/policy"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/state"
+	"github.com/lurkshark/fireweed/packages/workflow/internal/worktree"
 	"github.com/lurkshark/fireweed/packages/workflow/model"
 )
 
@@ -32,4 +33,10 @@ func UpdateClaim(start string, previous Claim, base, state string) (Claim, error
 }
 func ReleaseClaim(start, slug, expectedObject string) error {
 	return claims.Release(start, slug, expectedObject)
+}
+
+type WorktreeCheck = model.WorktreeCheck
+
+func CheckWorktree(snapshot project.Snapshot, approvedModule contracts.Module, changePath string, claim Claim) WorktreeCheck {
+	return worktree.Check(snapshot, approvedModule, changePath, claim)
 }
