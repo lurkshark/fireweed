@@ -6,6 +6,9 @@ depends_on:
     - project
     - checks
 id_prefix: FLOW
+interface:
+    - api.go
+    - model/*.go
 name: workflow
 ---
 
@@ -34,6 +37,18 @@ For an approved impl phase, CheckEdits MUST permit target disposable, preserved 
 ### FLOW-007
 CheckEdits MUST reject a missing run, mismatched approved target or approved phase outside evals/audit/impl with P02 at the current change path and corrective guidance, stopping file-policy comparison. It MUST reject malformed edits with P2-01: only A/M/D/T/R/C statuses are accepted; all paths MUST be canonical slash-separated repository-relative file paths without empty, dot, parent, absolute, backslash or NUL components; R/C MUST have a distinct valid OldPath and other statuses MUST NOT have OldPath. It MUST return fresh non-null diagnostics sorted by Path, Code, Severity and Message, deduplicating identical diagnostics, with severity error and nonempty corrective messages. Inputs, nested maps/slices and earlier results MUST remain unchanged, including immediately after result mutation and on rejected calls. Successful and rejected calls MUST remain noninteractive outside a repository and MUST NOT read or mutate files/refs, run Git, hooks, agents, the bootstrap or network commands, or change parent cwd/environment.
 
+### FLOW-008
+CreateClaim MUST store a JSON blob at refs/fireweed/claims/<slug> using an atomic create-only Git ref update, with the canonical current worktree root, exact slug/run/state and a full resolved local commit ID for Base. It MUST return that stored Claim and its full blob Object token, without committing or moving HEAD. Only nonempty slugs matching lowercase letters/digits followed by lowercase letters/digits/hyphens and a nonblank run are valid; invalid slugs, missing runs, unavailable repositories and unresolvable commit bases MUST fail with P02 and corrective guidance and create no claim. Empty State MUST be allowed as an initial reservation. Competing creates for the same slug, including from linked worktrees, MUST have exactly one winner; a conflict MUST preserve the winner and report its ownership/release guidance. Different slugs MUST remain independent.
+
+### FLOW-009
+UpdateClaim MUST require the exact current Claim, including its Object token, held by the calling canonical worktree; it MUST preserve Worktree, Change and Run, replace State exactly, resolve the new Base to a full local commit ID and atomically replace only the expected blob ref. A stale, modified or foreign-worktree previous Claim MUST fail with P02 and corrective guidance without overwriting current ownership. ReleaseClaim MUST atomically delete only the named ref matching the supplied full Object token, and MUST reject missing/stale/invalid tokens or missing claims with P02 and corrective guidance. Explicit release MAY be performed from another linked worktree; it MUST NOT delete a replacement claim. Updates and releases racing on one token MUST NOT both succeed, except that a genuinely unchanged update MAY retain the same content-addressed token.
+
+### FLOW-010
+LoadClaim MUST read the exact shared claim ref, return its complete independent stored fields and full Object token, and reject missing refs, non-blob objects, malformed JSON, trailing JSON values, missing or incorrectly typed required fields, invalid slug/run/worktree/base values and stored Change differing from the requested slug with P02 and corrective guidance. Worktree MUST be an absolute clean path, but its directory MAY no longer exist so stale claims remain inspectable. Claims MUST list every shared claim in ascending Change order, excluding unrelated refs; an empty inventory MUST be non-null. It MUST reject malformed claim refs or payloads atomically rather than silently skipping them or returning a partial inventory. Failed Claim-returning calls MUST return a zero Claim, and separate returned inventories/claims MUST remain independent.
+
+### FLOW-011
+Every claim operation MUST remain local and noninteractive, use literal Git arguments, and MUST NOT run fireweed hooks, native Git ref-transaction hooks, agents, the bootstrap or network commands. Successes and rejections MUST preserve HEAD, branches, the caller's index, working files, ignored/user files, other refs, input Claim values, parent cwd and environment; only the selected claim ref and necessary Git object storage MAY change. Temporary owned storage MUST be cleaned on success and failure, including duplicate-create and stale-update failures. Reads and failed precondition checks MUST NOT change refs. Claims MUST work across linked worktrees and in SHA-1 and SHA-256 repositories supported by installed Git, without a hard-coded object-ID width. Claim operations MUST NOT fetch, push, create branches or require author identity, authenticated agents or network access.
+
 ## Decisions
 
 [approved-state]
@@ -47,3 +62,10 @@ The initial incomplete cycle was fully reverted before this restart (D017). Temp
 This pure policy consumes the approved projected target, rather than deriving zones from worker-edited change metadata. Lifecycle composition will obtain that target through Project/ApplyChange before calling it. Snapshot ownership is already statically validated; stale target zones are replaced, while foreign module ownership/append-only rules remain effective. This API does not validate live claims, HEAD, symlink containment or actual edit collection; those remain a separate checked worktree operation. CheckState owns current-change body/metadata restrictions.
 
 A rename's original R status applies to both endpoints. Evals cannot rename an existing disposable file into or out of a stub path, and implementation cannot rename a retained eval/interface away. Copies leave their source unchanged and check destination additions. Append-only H03 is independently visible even when stricter worker-zone rules reject the same endpoint. Evals keeps append-only read-only, including additions; implementation permits only additions/copy destinations. Every basename SPEC.md is controller-owned, including nested/outside-module paths. Current-change exemption permits only ordinary M, never deletion, type change, copy or rename.
+
+[local-claims]
+This is claim storage, not queue eligibility, one-change-per-worktree policy, approval validation or phase transitions. Start will reserve with empty State before assigning IDs and then update its approved text. Update can move Base after a controller-owned phase commit; a later live-worktree guard checks HEAD against that baseline. Base input may name any locally resolvable commit and is normalized to its full object ID. State is opaque text here; CheckState owns started-document grammar and worker permissions.
+
+Stored JSON consists of the five required string fields. Additional JSON fields are tolerated for forward-compatible reference data; unknown fields do not replace required validation. Empty State is valid. Run is preserved byte-for-byte when nonblank. Load validates Base names as full stored commit IDs and checks local existence; it does not require the stale owner's directory to exist. Git's native reference-transaction hooks are disabled for these metadata operations, so claiming cannot run unrelated project hooks. No fireweed enforcement hook is changed or bypassed in this rebuild.
+
+Update compares the supplied previous record with the actual stored record before a compare-and-swap, then Git enforces the final atomic token check. A content-identical update naturally retains its object ID. Explicit ReleaseClaim is an ownership-token operation rather than an owner-only action, matching manual release intent while preventing a stale release from deleting a newer claim. Unreachable blob objects left by a lost ref race are normal Git object storage, not leaked temporary files. Git errors carry P02 plus a corrective action; callers never receive partial successful data.
