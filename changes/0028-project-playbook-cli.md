@@ -3,6 +3,8 @@ bases:
     APP-002: 101697fd
     APP-003: e86b3428
 module: app
+phase: audit
+run: 004e57240af95b8e0d0fb8ab
 ---
 
 ## Motivation
@@ -23,10 +25,10 @@ Every command in this foundational slice MUST accept --json before or after the 
 
 ## Added
 
-### new:project-binding
+### APP-017
 playbook MUST discover a project from a nested working directory, binding only to the nearest enclosing checkout's root fireweed.yaml and ignoring nested config/override decoys and parent-project instructions across a nested checkout boundary. A checkout includes ordinary .git directories and linked-worktree .git files. When that root has no config, or no enclosing checkout exists, it MUST return embedded instructions without executing Git or reading any config/override contents. When root config exists it MUST safely read and validate it with public ParseConfig and the embedded binary version, then use public ResolvePlaybook; it MUST NOT require valid unrelated modules/specs/queued changes or read their contents. Project override absence MUST return embedded fallback. Readable selected overrides, including stale/malformed frontmatter, empty files and CRLF bytes, MUST succeed with exit 0 and empty diagnostics. Plain stdout MUST be exactly the selected Text with no added newline; JSON data MUST contain exactly name, text, hash, embedded_hash and overridden, retaining public resolver values. No based_on or stale field is added to this CLI surface; stale warnings belong to doctor.
 
-### new:errors-safety
+### APP-018
 Project-bound config errors, incompatible pins, unreadable config, directories or unsafe/dangling config links MUST return C01 severity error at fireweed.yaml with exit 2, null JSON data, corrective guidance and no fallback. Git discovery failure after binding MUST also return that C01 error. Public override read/containment failures MUST return D05 severity error at .fireweed/playbooks/<name>.md with exit 2 and null data, preserving corrective resolver detail. Plain errors MUST have empty stdout and coded/path-attributed stderr; JSON MUST have only the schema-1 canonical playbook envelope and non-null diagnostics on stdout with empty stderr. Unknown names, missing/excess operands, unknown/valued flags and help MUST be handled before project/config/override access, preserving the existing -- and --json rules. Output writer failures MUST return exit 2 for embedded, override and operational-error output. Successful and rejected calls MUST remain noninteractive, preserve files/ignored/outside content/index/HEAD/branches/claim/other refs/common Git and parent cwd/environment/temp storage, and MUST NOT execute hooks, agents, bootstrap or network commands. Config, override and unrelated contents MUST NOT be read through escaping paths, including when an eventual read error would be ignored.
 
 ## Decisions
@@ -38,3 +40,7 @@ The five existing JSON data keys remain unchanged. Full override bytes and their
 ## Rejected alternatives
 
 Loading all modules and queued documents for one playbook read introduces unrelated failures and unnecessary reads. Running Git before any standalone lookup breaks embedded-only operation. Falling back after unsafe or unreadable project state hides a broken configuration. Normalizing override bytes or adding a plain newline changes the hashed worker instructions.
+
+## Provenance
+
+- evals | 2026-10-22T21:20:16Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 134 | failing: 66 | passing: 68
