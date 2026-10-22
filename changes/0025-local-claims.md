@@ -1,5 +1,7 @@
 ---
 module: workflow
+phase: audit
+run: 0f9f3212efebe4892f28a2e7
 set:
     interface:
         - api.go
@@ -16,16 +18,16 @@ Add retained workflow/model Claim data and a public workflow Claim alias. Claim 
 
 ## Added
 
-### new:claim-create
+### FLOW-008
 CreateClaim MUST store a JSON blob at refs/fireweed/claims/<slug> using an atomic create-only Git ref update, with the canonical current worktree root, exact slug/run/state and a full resolved local commit ID for Base. It MUST return that stored Claim and its full blob Object token, without committing or moving HEAD. Only nonempty slugs matching lowercase letters/digits followed by lowercase letters/digits/hyphens and a nonblank run are valid; invalid slugs, missing runs, unavailable repositories and unresolvable commit bases MUST fail with P02 and corrective guidance and create no claim. Empty State MUST be allowed as an initial reservation. Competing creates for the same slug, including from linked worktrees, MUST have exactly one winner; a conflict MUST preserve the winner and report its ownership/release guidance. Different slugs MUST remain independent.
 
-### new:claim-cas
+### FLOW-009
 UpdateClaim MUST require the exact current Claim, including its Object token, held by the calling canonical worktree; it MUST preserve Worktree, Change and Run, replace State exactly, resolve the new Base to a full local commit ID and atomically replace only the expected blob ref. A stale, modified or foreign-worktree previous Claim MUST fail with P02 and corrective guidance without overwriting current ownership. ReleaseClaim MUST atomically delete only the named ref matching the supplied full Object token, and MUST reject missing/stale/invalid tokens or missing claims with P02 and corrective guidance. Explicit release MAY be performed from another linked worktree; it MUST NOT delete a replacement claim. Updates and releases racing on one token MUST NOT both succeed, except that a genuinely unchanged update MAY retain the same content-addressed token.
 
-### new:claim-read
+### FLOW-010
 LoadClaim MUST read the exact shared claim ref, return its complete independent stored fields and full Object token, and reject missing refs, non-blob objects, malformed JSON, trailing JSON values, missing or incorrectly typed required fields, invalid slug/run/worktree/base values and stored Change differing from the requested slug with P02 and corrective guidance. Worktree MUST be an absolute clean path, but its directory MAY no longer exist so stale claims remain inspectable. Claims MUST list every shared claim in ascending Change order, excluding unrelated refs; an empty inventory MUST be non-null. It MUST reject malformed claim refs or payloads atomically rather than silently skipping them or returning a partial inventory. Failed Claim-returning calls MUST return a zero Claim, and separate returned inventories/claims MUST remain independent.
 
-### new:claim-operation-safety
+### FLOW-011
 Every claim operation MUST remain local and noninteractive, use literal Git arguments, and MUST NOT run fireweed hooks, native Git ref-transaction hooks, agents, the bootstrap or network commands. Successes and rejections MUST preserve HEAD, branches, the caller's index, working files, ignored/user files, other refs, input Claim values, parent cwd and environment; only the selected claim ref and necessary Git object storage MAY change. Temporary owned storage MUST be cleaned on success and failure, including duplicate-create and stale-update failures. Reads and failed precondition checks MUST NOT change refs. Claims MUST work across linked worktrees and in SHA-1 and SHA-256 repositories supported by installed Git, without a hard-coded object-ID width. Claim operations MUST NOT fetch, push, create branches or require author identity, authenticated agents or network access.
 
 ## Decisions
@@ -39,3 +41,7 @@ Update compares the supplied previous record with the actual stored record befor
 ## Rejected alternatives
 
 A lock file in one worktree would not arbitrate linked worktrees. Unconditional updates/deletions could overwrite or release a newer owner after a race. Storing claims as commits or branch tips would require author configuration or alter implementation history. Copying an entire controller implementation is unnecessary; use the public local Git/process primitives and new code.
+
+## Provenance
+
+- evals | 2026-10-22T19:36:09Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 769 | failing: 94 | passing: 675
