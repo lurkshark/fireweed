@@ -1,6 +1,6 @@
 # Restartable rebuild progress
 
-Status: twenty-two changes archived; stage 2 executable coverage and boundary hooks verified, lifecycle policy next. Goal remains active.
+Status: twenty-three changes archived; approved-state text permissions verified. Stage 2 workflow file permissions and lifecycle remain next. Goal remains active.
 
 ## Controller pin
 
@@ -273,3 +273,14 @@ Saved the full attempt at /tmp/fireweed-state-recovery-c5ee487, released the cla
 
 
 Recovery release correction: the first0023 release was run without the required Git metadata permissions and returned U01, which was missed in a multi-command shell. Its stale own claim persisted through the author recovery commits; the next start correctly rejected with P02. No restarted phase or implementation was accepted. Reissued release with the authorized normal-permissions parent, inspected diagnostics[] and an empty claims ref list, preserved the unclaimed corrected eval draft and restored the tree to its author baseline before starting again. This supersedes the earlier statement that the initial release had succeeded. Keep approved-state-recovery-release.json, approved-state-recovery-release-permitted.json and the rejected restart reports; check every state-changing command result before dependent work.
+
+
+## approved-state (FLOW-001–FLOW-003), corrected cycle applied
+
+Archive changes/archive/0023-approved-state.md. Public CheckState validates approved/current change grammar, immutable parsed metadata including explicit nested key presence, approved-phase section permissions, protected preamble/order/content, independent deterministic diagnostics and supplied-text side-effect safety. Workflow now has220 cases, including standalone parser/fence/normalization and canonical-cwd controls. The corrected fail-first has218 actual stub failures and2 passing controls. Canonical temporary paths resolve the D017 fixture mistake; no frozen eval/interface was edited in implementation.
+
+Restart author d43b0e3 and release correction7d522db preceded actual successful run ef22fc2aa1201dcfce75aa2f. Corrected eval commit da18a28afa9c3734edfbc3001b70503abb003b26; fresh restricted audit038d6d0feb7a64f330f334610db11b93e5d6c561 checked FLOW-001–003 and canonical fixture premises, with no findings and no private/history/bootstrap reads or test execution. Applied15bfe03641f49cf32cbebc139a2d2f5dbd4bb7d3. Bootstrap verify/done passed workflow220/app45 and dependent boundaries with diagnostics[]. Original failed/rejected reports and full revert remain evidence, never counted as an applied cycle. Corrected reports are approved-state-canonical-{fail-first,evals-done,audit-pass,impl-verify,impl-done}.json.
+
+At15bfe036, go test ./..., fresh go test -race -count=1 ./..., go vet ./... and independent product build pass. Bootstrap ci14cec73e1126ee37d33f1138d19936b6a05a59a6..15bfe03641f49cf32cbebc139a2d2f5dbd4bb7d3 passes with doctor enabled, valid:true and diagnostics[]: workflow220/app45/checks108/project72/contracts27/gitstore17/assets6, runner0. Actual NEW coverage workflow runs220 cases with hook_exit0/diagnostics[]; NEW check valid:true/diagnostics[]. Queue and claims empty; bootstrap source clean, controller/design checksums unchanged. Evidence ci-state-checkpoint.json, go-{test,race}-state-checkpoint.log, product-coverage-workflow-checkpoint.json, product-check-state-checkpoint.json and status-state-checkpoint.json. Build's denied external module-stat-cache write is harmless (exit0); no Go failure is hidden.
+
+D016 is demonstrated on the same scratch input: bootstrap verify accepts adding fixes: [], while a separately compiled NEW public CheckState probe returns P2-01. Evidence approved-state-reference-empty-key.json. This is text-guard API evidence, not an implemented NEW verify CLI. Next author phase-file policy, then real worktree/claim/context/start/verify/done composition. All overall R01–R21, remaining command families, per-module real regeneration and isolated self-hosting remain unfinished. Do not declare full completion.

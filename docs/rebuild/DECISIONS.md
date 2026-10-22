@@ -83,3 +83,6 @@ Preserved API/evals/stub/implementation/change under /tmp/fireweed-state-recover
 
 
 Recovery release correction: the first0023 release was run without the required Git metadata permissions and returned U01, which was missed in a multi-command shell. Its stale own claim persisted through the author recovery commits; the next start correctly rejected with P02. No restarted phase or implementation was accepted. Reissued release with the authorized normal-permissions parent, inspected diagnostics[] and an empty claims ref list, preserved the unclaimed corrected eval draft and restored the tree to its author baseline before starting again. This supersedes the earlier statement that the initial release had succeeded. Keep approved-state-recovery-release.json, approved-state-recovery-release-permitted.json and the rejected restart reports; check every state-changing command result before dependent work.
+
+
+D016 evidence update at15bfe036: corrected0023 is archived and all220 workflow cases pass. A separately compiled public CheckState probe reads the exact recorded reference approved/current documents and returns P2-01 for the added fixes: [] key, while reference verify remains0/diagnostics[]. The updated approved-state-reference-empty-key.json records both actual observations. CLI lifecycle composition remains pending.
