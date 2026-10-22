@@ -1,6 +1,6 @@
 ---
 module: gitstore
-phase: audit
+phase: impl
 run: 9bbd51b0dfcfca62133286a5
 ---
 
@@ -40,8 +40,8 @@ Killing only a shell leaves children holding pipes or writing stale results. Imp
 - evals | 2026-10-22T16:35:44Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 17 | failing: 8 | passing: 9
 - audit | 2026-10-22T16:37:36Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T16:38:57Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 17 | failing: 8 | passing: 9
+- audit | 2026-10-22T16:39:25Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- GIT-005: "including empty values" — missing assertion that the overridden variable remains present with an empty value; os.Getenv also returns empty when the variable is absent.
-- GIT-006: "Cancellation MUST leave unrelated processes alive." — missing assertion during deadline termination: the unrelated helper exits after 250 ms, before the 2-second deadline fires.
+No findings. Checked GIT-005, GIT-006 and GIT-007. Separate restricted same-model auditor checked permanent public assertions and Decisions, including empty-variable presence and unrelated-process survival at deadline. No internal implementation/history/bootstrap access or test execution.
