@@ -268,11 +268,14 @@ func Change(text, path, prefix string) (model.Change, error) {
 			return result, fmt.Errorf("invalid base %s: %s", id, hash)
 		}
 	}
-	for _, list := range [][]string{result.Fixes, result.AlreadySatisfied} {
-		for _, id := range list {
-			if !realID.MatchString(id) {
-				return result, fmt.Errorf("invalid spec ID %s", id)
-			}
+	for _, id := range result.Fixes {
+		if !realID.MatchString(id) {
+			return result, fmt.Errorf("invalid fixes spec ID %s", id)
+		}
+	}
+	for _, id := range result.AlreadySatisfied {
+		if !realID.MatchString(id) && !declared[id] {
+			return result, fmt.Errorf("invalid already_satisfied spec ID %s", id)
 		}
 	}
 	if err = validateSet(result.Set); err != nil {
