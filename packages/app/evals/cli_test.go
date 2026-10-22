@@ -335,3 +335,32 @@ func Test_APP004NoAgentOrMutation(t *testing.T) {
 		t.Errorf("inspection created directory entries %v %v", after, err)
 	}
 }
+
+func Test_APP001ExitMeanings(t *testing.T) {
+	got := invoke(t, t.TempDir(), "help")
+	if got.code != 0 {
+		t.Fatalf("help failed %+v", got)
+	}
+	for _, meaning := range []string{"0 success or empty queue", "1 failed checks or blocked changes", "2 usage or configuration errors", "3 time or usage limit"} {
+		if !strings.Contains(got.out, meaning) {
+			t.Errorf("help missing associated exit meaning %q", meaning)
+		}
+	}
+}
+func Test_APP002JSONExplainData(t *testing.T) {
+	dir := t.TempDir()
+	for _, code := range a.Codes() {
+		value := successJSON(t, invoke(t, dir, "explain", code, "--json"), "explain")
+		var data struct{ Code, Explanation string }
+		if err := json.Unmarshal(value.Data, &data); err != nil {
+			t.Fatal(err)
+		}
+		expected, err := a.Explain(code)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if data.Code != code || data.Explanation != expected {
+			t.Errorf("JSON explanation %+v, want %s %q", data, code, expected)
+		}
+	}
+}
