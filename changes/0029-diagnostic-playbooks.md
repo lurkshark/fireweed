@@ -2,6 +2,8 @@
 bases:
     AST-003: c7f349e8
 module: assets
+phase: audit
+run: c1ac7617e119bf2d94d51e0b
 ---
 
 ## Motivation
@@ -24,3 +26,7 @@ D05 retains its existing code and covers both operational override failures (PRJ
 ## Rejected alternatives
 
 An explanation describing only stale hashes cannot guide the unsafe/unreadable error path. Reassigning stable diagnostic codes would needlessly change the already checked resolver/CLI contracts. Silently editing embedded data without a failing regression would bypass the governed process.
+
+## Provenance
+
+- evals | 2026-10-22T21:35:54Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 12 | failing: 6 | passing: 6

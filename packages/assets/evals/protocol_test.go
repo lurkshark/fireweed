@@ -89,7 +89,7 @@ func Test_AST003ActionableDiagnostics(t *testing.T) {
 		"D02":   "Scratch setup failed. Repair the setup hook/templates and inspect worktrees under the common Git directory.",
 		"D03":   "Audit reuses the worker command. Configure an independent audit command to reduce shared review blind spots.",
 		"D04":   "Boundary enforcement is absent or opted out. Review the module's reason and keep the exception visible in status and PR bodies.",
-		"D05":   "A playbook override has stale based_on metadata. Compare the embedded hash, review the override and update its recorded base.",
+		"D05":   "A playbook override is unsafe, unreadable or has stale based_on metadata. Restore a readable contained override; for stale metadata, compare the embedded hash, review the instructions and update based_on.",
 		"D06":   "A doctor canary or recovery check failed. Repair protected hooks and all four canaries; an always-success hook is invalid.",
 		"D07":   "Regeneration failed. Review the drill report/ref and author focused changes for accepted gaps.",
 		"H01":   "A worker edited protected files. Restore them and move author configuration/glue changes to a separate author commit.",
@@ -105,5 +105,30 @@ func Test_AST003ActionableDiagnostics(t *testing.T) {
 	}
 	if len(messages) != len(a.Codes()) {
 		t.Errorf("not every diagnostic has an asserted problem and remedy")
+	}
+}
+
+func Test_AST003OverrideProblemsAndRemedies(t *testing.T) {
+	text, err := a.Explain("D05")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, clause := range []struct {
+		name  string
+		terms []string
+	}{
+		{"unsafe-override", []string{"playbook override", "unsafe"}},
+		{"unreadable-override", []string{"playbook override", "unreadable"}},
+		{"stale-metadata", []string{"stale", "based_on"}},
+		{"contained-readable-remedy", []string{"restore", "readable", "contained", "override"}},
+		{"stale-remedy", []string{"compare", "embedded hash", "review", "instructions", "update based_on"}},
+	} {
+		t.Run(clause.name, func(t *testing.T) {
+			for _, term := range clause.terms {
+				if !strings.Contains(strings.ToLower(text), term) {
+					t.Errorf("D05 %s guidance missing %q: %q", clause.name, term, text)
+				}
+			}
+		})
 	}
 }
