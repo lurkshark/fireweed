@@ -1,6 +1,6 @@
 # Restartable rebuild progress
 
-Status: seventeen behavioral changes archived; stage 2 checks and lifecycle foundations underway. Goal remains active.
+Status: nineteen changes archived; stage 2 checks and lifecycle foundations underway. Goal remains active.
 
 ## Controller pin
 
@@ -212,3 +212,12 @@ Authoring0019 race-helper-exit with fixes/already_satisfied GIT-006 for the expl
 
 
 Race repair authoring correction: the controller rejected the first0019 start because already_satisfied cannot exempt a fixes-only entry. No claim or phase was created. Restored the one-line unclaimed helper edit before refining the author draft to Modified GIT-006, explicitly clarifying its already-existing unrelated-process guarantee for race-instrumented callers. Stamp/check and commit the refinement before restarting. The rejected start and unclaimed verification outputs remain evidence; neither is counted as governed phase success.
+
+
+## race-helper-exit (GIT-006 clarification / eval-only repair)
+
+Archive changes/archive/0019-race-helper-exit.md. The initial fixes-only exemption draft was rejected before any claim. Refined author6f6d2a9 restates GIT-006 with an already-implemented race-instrumented-caller clarification and a valid already_satisfied entry; stamped and checked before successful start. Evals2bd6f57 change only helper subprocess GORACE=atexit_sleep_ms=0. Parent detector settings, process implementation, every cancellation bound, unrelated-live predicate and delayed-write assertion remain unchanged. Independent restricted audit8580398 confirmed those facts against public context; applied916334e9202b48d3c72b42787eade360d320b553 through normal impl verification with no product-code edits. No failing-before product behavior is claimed for this legitimate existing-behavior clarification. Original full-race failure remains saved.
+
+At916334e, go test ./..., fresh go test -race -count=1 ./..., go vet ./... and independent product build all pass. Bootstrap ci14cec73e1126ee37d33f1138d19936b6a05a59a6..916334e9202b48d3c72b42787eade360d320b553 passes with doctor enabled, zero diagnostics; gitstore17/checks32/app22/project72/contracts27/assets6, runner/workflow0. Actual product check valid:true/diagnostics[]. Queue/claims clear, bootstrap source clean, controller/design hashes unchanged. Evidence go-test-race-repair-checkpoint.log, go-race-race-repair-checkpoint.log, ci-race-repair-checkpoint.json, product-check-race-repair-checkpoint.json and status-race-repair-checkpoint.json. This supersedes the failed process race checkpoint, without erasing it.
+
+Next0020 hook-evaluation composes real hook execution, quoting/environment/timeout handling and owned JUnit reports with the pure analyzer. Then expose executable coverage, boundary checks and phase enforcement/lifecycle. Full product init/authoring/doctor/workflow/runner/history/recipes/packaging, all acceptance rows, real regeneration and isolated self-hosting remain unfinished. Goal active.
