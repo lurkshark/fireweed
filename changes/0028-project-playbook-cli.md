@@ -3,7 +3,7 @@ bases:
     APP-002: 101697fd
     APP-003: e86b3428
 module: app
-phase: audit
+phase: evals
 run: 004e57240af95b8e0d0fb8ab
 ---
 
@@ -44,3 +44,10 @@ Loading all modules and queued documents for one playbook read introduces unrela
 ## Provenance
 
 - evals | 2026-10-22T21:20:16Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 134 | failing: 66 | passing: 68
+- audit | 2026-10-22T21:23:54Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+- APP-018: "corrective guidance and no fallback" — plaintext C01 assertions check only exit, empty stdout, code and path; they never assert corrective guidance, so a bare C01/fireweed.yaml message passes.
+- APP-018: "preserving corrective resolver detail" — exact D05 resolver detail is asserted only in JSON. Plaintext override errors can discard the resolver's corrective detail while satisfying the code/path assertions.
+- APP-018: "Unknown names, missing/excess operands, unknown/valued flags and help MUST be handled before project/config/override access" — the native no-I/O guard covers unknown names and help only. Missing/excess operand and unknown/valued-flag cases assert U01 precedence against malformed config, allowing config/override reads whose errors are ignored; those rejected argument paths need guarded no-access assertions too.
