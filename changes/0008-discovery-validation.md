@@ -1,6 +1,6 @@
 ---
 module: project
-phase: evals
+phase: audit
 run: 5380157128981dbe965919f7
 ---
 
@@ -49,8 +49,24 @@ Running hooks during discovery would make read commands stateful and conflate st
 - evals | 2026-10-22T07:58:56Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 16 | failing: 16 | passing: 0
 - audit | 2026-10-22T08:02:05Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T08:05:51Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 24 | failing: 24 | passing: 0
-- audit | 2026-10-22T08:08:24Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- PRJ-002: "Symlink escapes MUST produce an error diagnostic without reading their contents" — add a guarded escaping archive link, a read positive control and a path-specific C05 assertion.
+- PRJ-001: "Modules MUST be sorted by name then directory" — name/directory order coincides and no equal-name secondary-key fixture exists.
+- PRJ-001: "using the running embedded version" — version constraints are fixed rather than derived from assets.Info.
+- PRJ-001: "retain resolved module defaults, explicit empty overrides, dependencies, hooks, specs, Decisions and original documents" — spec tags/bodies, full documents, preserve/append defaults and empty hook overrides lack exact assertions.
+- PRJ-001: "run hooks/agents, use the network or mutate repository files/refs" — agent/network traps and ignored-content preservation are missing; Load and Check guards are combined.
+- PRJ-002: "without reading their contents" — ordinary escaping symlinks do not detect read-before-reject behavior.
+- PRJ-002: "each list MUST sort by numeric filename then slug" — padded numbers mask lexical sorting and archive lacks a slug tie.
+- PRJ-002: "parsed with each target's prefix" — changes use only handles, omitting valid and wrong target-prefix fixtures.
+- PRJ-002: "immediate Markdown files only" — archive nested/non-Markdown exclusions and malformed/unknown cases are missing.
+- PRJ-002: "Duplicate slugs across either list MUST produce C05" — only a cross-list duplicate is tested.
+- PRJ-002: "retaining lifecycle/provenance/author sections" — complete lifecycle and author documents in both lists lack assertions.
+- PRJ-003: "including shared transitive dependencies" — add a diamond, long valid chain and three-module cycle.
+- PRJ-003: "duplicate module names or prefixes with C03" — duplicate-name fixture has an unrelated missing dependency; require exact participating paths.
+- PRJ-004: "invalid module-relative zone patterns" — absolute, malformed bracket and invalid globstar cases are missing, as are nonoverlapping patterns sharing wildcard prefixes.
+- PRJ-004: "execute hooks" — Check needs an independent observable hook/I/O guard.
+- PRJ-005: "require a nonblank resolved eval hook" — missing eval with no disposable globs is untested.
+- PRJ-005: "Every explicit opt-out MUST emit a D04 warning containing its reason" — opt-outs without disposable globs are untested.
+- PRJ-006: "sorted diagnostic list by path, code, severity and message" — code/message tie-breakers are unexercised.
+- PRJ-006: "Check MUST NOT mutate the supplied snapshot" — use unsorted multi-entry slices and populated nested metadata maps/documents.
