@@ -1,6 +1,6 @@
 # Restartable rebuild progress
 
-Status: stage 0 passed; authoring first contracts change. Goal remains active.
+Status: stage 1, first behavioral change archived; contracts continuation next. Goal remains active.
 
 ## Controller pin
 
@@ -21,3 +21,15 @@ All R01–R21 remain unverified. No product acceptance, real regeneration or sel
 ## Restart procedure
 
 Inspect git status, pinned controller checksum/version, controller status/list and refs/fireweed/claims before any edit. Read current change/context if claimed; resume its phase without resetting work. Only update protected evidence between active changes. Final history/CI uses explicit setup-SHA..HEAD, never main default range.
+
+## spec-primitives (CON-001–CON-004)
+
+- Archive: changes/archive/0001-spec-primitives.md. Four permanent public-API evals in packages/contracts/evals/specs_test.go cover precise ID matching, normalized heading/tag/body hashes, fenced Markdown grammar, tags and local handles.
+- Evals commit 372cc4f; independent passing audit 4a7d559; implementation commit listed by `fireweed-bootstrap commits spec-primitives`.
+- Controller fail-first JSON has four compiled/executed failed cases, one per ID; no coverage/zone diagnostics. `done` committed evals before implementation. Local ignored evidence: .fireweed/evidence/spec-primitives/{fail-first,evals-done,audit-done,impl-verify,impl-done}.json.
+- Auditor /root/audit_spec_primitives used fresh context restricted to change, spec, interface and evals. No findings, all four IDs listed. Controller impl verify ran own + all seven transitive dependents and boundaries: no diagnostics; four own cases passed. Empty scaffold dependents do not prove product functionality.
+- Normal P04 unapproved-on-base warning acknowledged under goal authority; no human merge claimed.
+
+## Agent access
+
+The default CLI model gpt-6.1-sol was rejected by ChatGPT auth (HTTP 400 unsupported model). Local models_cache.json listed gpt-6-sol; an explicit ephemeral read-only probe returned FIREWEED_AGENT_READY with exit 0. Pin `codex exec --ephemeral --model gpt-6-sol --sandbox workspace-write {prompt}` for worker and audit commands. Do not change global config. Logs are local ignored evidence. This is capability evidence only, not a regeneration pass. Official model documentation: https://learn.chatgpt.com/docs/models .

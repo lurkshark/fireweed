@@ -7,3 +7,7 @@ Adopt PLAN.md eight-module DAG. api.go is the public facade, evals/ permanent bl
 ## D002 — Local authority and controller
 
 Work in the existing clean main checkout. The goal authorizes local changes and commits, including manual start without claiming a human merge. Product approval tests will use an independent base ref. Do not change product enforcement. Keep the bootstrap source clean and all generated caches/build artifacts outside its checkout.
+
+## D003 — Working real-agent CLI
+
+Use explicit gpt-6-sol only in this repository worker/audit argv after the configured default returned unsupported-model errors and a cached supported-model probe succeeded. Keep CLI sessions ephemeral. Do not alter global user configuration. Fresh independent auditing contexts are used throughout; identical model choice is disclosed rather than claimed to be a different-model review.
