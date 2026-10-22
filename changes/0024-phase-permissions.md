@@ -1,5 +1,7 @@
 ---
 module: workflow
+phase: audit
+run: 1715897da7ee515af06978e7
 ---
 
 ## Motivation
@@ -12,16 +14,16 @@ Add CheckEdits(snapshot project.Snapshot, approvedModule contracts.Module, appro
 
 ## Added
 
-### new:phase-ownership
+### FLOW-004
 CheckEdits MUST use the supplied approved module's projected zones in preference to the snapshot's stale selected-module zones, and repository-relative ownership from every other snapshot module. It MUST reject protected paths, every basename SPEC.md, other modules' paths and every changes/ path except a modification of the exact current change with P2-01. worker_writable MUST permit only otherwise unowned paths and MUST NOT override protected, spec, other-module or other-change restrictions. Exact current-change modifications MUST be allowed for all worker phases; CheckState separately enforces its content. Paths outside modules and worker_writable MUST be rejected with P2-01. Prefix-similar module/change paths MUST NOT be mistaken for owned or current paths.
 
-### new:eval-file-policy
+### FLOW-005
 For an approved evals phase, CheckEdits MUST permit target evals, other module files such as manifests, permitted worker_writable paths, and new disposable files only. Interface edits MUST require a nonempty exact Interface section in the approved change, otherwise returning P1-01. Preserved and append-only additions or edits, and modification, deletion, type change or rename of disposable files MUST return P1-01. Both source and destination of every rename MUST be checked against their own zones and owners, so moving protected, other-module, eval, interface, preserved, append-only or existing disposable files cannot evade their phase restrictions. A copy's source is unchanged: it MUST have a valid path but MUST NOT be treated as an edit; its destination MUST be checked as a new addition.
 
-### new:impl-audit-append-policy
+### FLOW-006
 For an approved impl phase, CheckEdits MUST permit target disposable, preserved and other module files and permitted worker_writable paths, but reject every target eval or interface addition, modification, deletion, type change or rename with P2-01. For audit, it MUST reject every edit except modification of the exact current change with P2-01. Independently of phase and zone precedence, every modified, deleted, type-changed or renamed endpoint matching any owning module's append_only glob MUST return H03, including overlaps with stricter zones and edits to other modules. Append-only destinations of additions or copies MAY be accepted in impl when other restrictions permit; evals MUST reject them with P1-01. All independent H03 and phase/ownership violations MUST remain visible at their own paths.
 
-### new:edit-policy-safety
+### FLOW-007
 CheckEdits MUST reject a missing run, mismatched approved target or approved phase outside evals/audit/impl with P02 at the current change path and corrective guidance, stopping file-policy comparison. It MUST reject malformed edits with P2-01: only A/M/D/T/R/C statuses are accepted; all paths MUST be canonical slash-separated repository-relative file paths without empty, dot, parent, absolute, backslash or NUL components; R/C MUST have a distinct valid OldPath and other statuses MUST NOT have OldPath. It MUST return fresh non-null diagnostics sorted by Path, Code, Severity and Message, deduplicating identical diagnostics, with severity error and nonempty corrective messages. Inputs, nested maps/slices and earlier results MUST remain unchanged, including immediately after result mutation and on rejected calls. Successful and rejected calls MUST remain noninteractive outside a repository and MUST NOT read or mutate files/refs, run Git, hooks, agents, the bootstrap or network commands, or change parent cwd/environment.
 
 ## Decisions
@@ -33,3 +35,7 @@ A rename's original R status applies to both endpoints. Evals cannot rename an e
 ## Rejected alternatives
 
 Checking only rename destinations would permit erasing frozen evals or protected files. Matching worker_writable before module/protected ownership would broaden worker authority. Reading current filesystem contents here would mix policy with later Git/claim and symlink checks and make pure assertions harder to isolate.
+
+## Provenance
+
+- evals | 2026-10-22T19:13:12Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 662 | failing: 434 | passing: 228
