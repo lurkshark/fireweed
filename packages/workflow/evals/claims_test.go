@@ -169,8 +169,12 @@ func Test_FLOW008InvalidCreateAndConflict(t *testing.T) {
 	}
 	for _, run := range []string{"", " \t\n"} {
 		t.Run(fmt.Sprintf("run_%q", run), func(t *testing.T) {
+			before := claimGit(t, root, "show-ref")
 			got, err := w.CreateClaim(root, "valid", run, base, "state")
 			claimError(t, got, err)
+			if claimGit(t, root, "show-ref") != before {
+				t.Fatal("invalid run created a claim ref")
+			}
 		})
 	}
 	for _, base := range []string{"", "missing-commit", "--help"} {
@@ -475,7 +479,11 @@ func Test_FLOW010ClaimsInventoryAndOwnership(t *testing.T) {
 	})
 	for _, slot := range []string{"bad", "Upper", "nested/child"} {
 		t.Run(slot, func(t *testing.T) {
-			claimRaw(t, root, slot, "{malformed")
+			payload := claimPayload(t, expected[0])
+			if slot == "bad" {
+				payload = "{malformed"
+			}
+			claimRaw(t, root, slot, payload)
 			defer claimGit(t, root, "update-ref", "-d", "refs/fireweed/claims/"+slot)
 			got, err := w.Claims(root)
 			if err == nil || !strings.Contains(err.Error(), "P02") || !policyCorrective(err.Error()) || len(got) != 0 {
@@ -619,6 +627,13 @@ func Test_FLOW011ClaimSafetyAndNativeHookControl(t *testing.T) {
 	if err := os.Remove(marker); err != nil {
 		t.Fatal(err)
 	}
+	isolatedTemp := stateCanonicalDirectory(t, t.TempDir())
+	t.Setenv("TMPDIR", isolatedTemp)
+	t.Setenv("TMP", isolatedTemp)
+	t.Setenv("TEMP", isolatedTemp)
+	claimGit(t, root, "--version") // Establish native Git's own cache before measuring owned temporary cleanup.
+	beforeTemp := claimTree(t, isolatedTemp, func(string) bool { return false })
+	beforeObjects := claimTree(t, filepath.Join(common, "objects"), func(string) bool { return false })
 	beforeFiles := claimTree(t, root, func(path string) bool { return path == ".git" })
 	beforeMeta := claimMetadata(t, common, "safe")
 	env := os.Environ()
@@ -631,6 +646,33 @@ func Test_FLOW011ClaimSafetyAndNativeHookControl(t *testing.T) {
 		after, err := os.Getwd()
 		if err != nil || after != cwd || !reflect.DeepEqual(env, os.Environ()) || !reflect.DeepEqual(beforeFiles, claimTree(t, root, func(path string) bool { return path == ".git" })) || !reflect.DeepEqual(beforeMeta, claimMetadata(t, common, "safe")) {
 			t.Fatal("mutated user files, index/HEAD/other refs, leaked temporary storage, or parent state")
+		}
+		if !reflect.DeepEqual(beforeTemp, claimTree(t, isolatedTemp, func(string) bool { return false })) {
+			t.Fatal("leaked or changed dedicated temporary files")
+		}
+		afterObjects := claimTree(t, filepath.Join(common, "objects"), func(string) bool { return false })
+		for path, value := range beforeObjects {
+			if afterObjects[path] != value {
+				t.Fatalf("removed or changed existing object storage %s", path)
+			}
+		}
+		for path, value := range afterObjects {
+			if old, ok := beforeObjects[path]; ok {
+				if old != value {
+					t.Fatalf("changed existing Git object storage %s", path)
+				}
+				continue
+			}
+			parts := strings.Split(path, "/")
+			if len(parts) == 1 && len(parts[0]) == 2 && strings.Trim(parts[0], "0123456789abcdef") == "" {
+				continue
+			}
+			if len(parts) != 2 || len(parts[0]) != 2 || len(parts[0]+parts[1]) != len(base) || strings.Trim(parts[0]+parts[1], "0123456789abcdef") != "" {
+				t.Fatalf("leaked unexpected temporary storage under objects: %s", path)
+			}
+			if claimGit(t, root, "cat-file", "-t", parts[0]+parts[1]) != "blob" {
+				t.Fatalf("unexpected new non-claim object %s", path)
+			}
 		}
 		for _, path := range []string{marker, nativeMarker} {
 			if _, err := os.Stat(path); !os.IsNotExist(err) {
@@ -680,41 +722,47 @@ func Test_FLOW011ReadAndRejectedCallsPreserveRefs(t *testing.T) {
 	input := previous
 	for _, call := range []struct {
 		name string
-		run  func()
+		run  func(*testing.T)
 	}{
-		{"read", func() {
+		{"read", func(t *testing.T) {
 			got, err := w.LoadClaim(root, "owned")
 			if err != nil || got != previous {
 				t.Fatalf("load %+v %v", got, err)
 			}
 		}},
-		{"list", func() {
+		{"list", func(t *testing.T) {
 			got, err := w.Claims(root)
 			if err != nil || !reflect.DeepEqual(got, []w.Claim{previous}) {
 				t.Fatalf("list %+v %v", got, err)
 			}
 		}},
-		{"bad_create", func() {
+		{"bad_create", func(t *testing.T) {
 			got, err := w.CreateClaim(root, "../invalid", "run", previous.Base, "state")
 			claimError(t, got, err)
 		}},
-		{"bad_base_create", func() { got, err := w.CreateClaim(root, "valid", "run", "missing", "state"); claimError(t, got, err) }},
-		{"literal_base", func() {
+		{"bad_base_create", func(t *testing.T) {
+			got, err := w.CreateClaim(root, "valid", "run", "missing", "state")
+			claimError(t, got, err)
+		}},
+		{"literal_base", func(t *testing.T) {
 			got, err := w.CreateClaim(root, "valid", "run", "HEAD; printf injected > "+claimQuote(filepath.Join(root, "injected")), "state")
 			claimError(t, got, err)
 		}},
-		{"missing_read", func() { got, err := w.LoadClaim(root, "missing"); claimError(t, got, err) }},
-		{"bad_token_update", func() {
+		{"missing_read", func(t *testing.T) { got, err := w.LoadClaim(root, "missing"); claimError(t, got, err) }},
+		{"bad_token_update", func(t *testing.T) {
 			changed := previous
 			changed.Object = "bad-token"
 			got, err := w.UpdateClaim(root, changed, previous.Base, "new")
 			claimError(t, got, err)
 		}},
-		{"bad_base_update", func() { got, err := w.UpdateClaim(root, previous, "missing", "new"); claimError(t, got, err) }},
-		{"bad_token_release", func() { claimReleaseError(t, w.ReleaseClaim(root, "owned", "bad-token")) }},
+		{"bad_base_update", func(t *testing.T) {
+			got, err := w.UpdateClaim(root, previous, "missing", "new")
+			claimError(t, got, err)
+		}},
+		{"bad_token_release", func(t *testing.T) { claimReleaseError(t, w.ReleaseClaim(root, "owned", "bad-token")) }},
 	} {
 		t.Run(call.name, func(t *testing.T) {
-			call.run()
+			call.run(t)
 			if previous != input || !reflect.DeepEqual(before, claimTree(t, common, func(path string) bool { return false })) || !reflect.DeepEqual(files, claimTree(t, root, func(path string) bool { return path == ".git" })) {
 				t.Fatal("read or failed precondition mutated inputs, files, refs or Git storage")
 			}
@@ -751,4 +799,234 @@ func Test_FLOW008_FLOW009_FLOW010_FLOW011ClaimFixtureControls(t *testing.T) {
 			}
 		})
 	}
+}
+
+func Test_FLOW008_FLOW009NonCommitBases(t *testing.T) {
+	root := claimRepo(t, "sha1")
+	original := claimSeed(t, root, "owned", "old")
+	blob := claimRaw(t, root, "blob-source", "opaque blob")
+	refs := claimGit(t, root, "show-ref")
+	t.Run("create", func(t *testing.T) {
+		got, err := w.CreateClaim(root, "new", "run", blob, "state")
+		claimError(t, got, err)
+		if claimGit(t, root, "show-ref") != refs {
+			t.Fatal("non-commit create changed refs")
+		}
+	})
+	t.Run("update", func(t *testing.T) {
+		got, err := w.UpdateClaim(root, original, blob, "state")
+		claimError(t, got, err)
+		if claimGit(t, root, "show-ref") != refs {
+			t.Fatal("non-commit update changed refs")
+		}
+	})
+}
+func Test_FLOW009FullReleaseTokenRequired(t *testing.T) {
+	root := claimRepo(t, "sha1")
+	original := claimSeed(t, root, "owned", "state")
+	short := claimGit(t, root, "rev-parse", "--short=12", original.Object)
+	for _, token := range []string{short, "refs/fireweed/claims/owned"} {
+		t.Run(token, func(t *testing.T) {
+			claimReleaseError(t, w.ReleaseClaim(root, "owned", token))
+			if claimGit(t, root, "rev-parse", "refs/fireweed/claims/owned") != original.Object {
+				t.Fatal("non-full token released claim")
+			}
+		})
+	}
+}
+func Test_FLOW011LinkedUpdateAndInventory(t *testing.T) {
+	for _, format := range []string{"sha1", "sha256"} {
+		t.Run(format, func(t *testing.T) {
+			root := claimRepo(t, format)
+			peer := claimPeer(t, root)
+			previous := claimSeed(t, peer, "peer-owned", "old")
+			updated, err := w.UpdateClaim(peer, previous, previous.Base, "new")
+			if err != nil {
+				t.Fatal(err)
+			}
+			claimAssert(t, peer, updated, previous.Change, previous.Run, previous.Base, "new")
+			for _, dir := range []string{root, peer} {
+				inventory, err := w.Claims(dir)
+				if err != nil || !reflect.DeepEqual(inventory, []w.Claim{updated}) {
+					t.Fatalf("shared %s inventory %+v %v", format, inventory, err)
+				}
+			}
+		})
+	}
+}
+
+// Observe Git's public compare-and-swap protocol. This accepts either argv or
+// documented text/NUL stdin transactions, without reading implementation code.
+func claimCASProtocol(raw, input []byte, kind, ref, newObject, oldObject string) bool {
+	args := strings.Split(string(raw), "\x00")
+	if len(args) > 0 && args[len(args)-1] == "" {
+		args = args[:len(args)-1]
+	}
+	index := -1
+	for i, arg := range args {
+		if arg == "update-ref" {
+			index = i
+			break
+		}
+	}
+	if index < 0 {
+		return false
+	}
+	args = args[index+1:]
+	stdin := false
+	for _, arg := range args {
+		if arg == "--stdin" {
+			stdin = true
+		}
+	}
+	validNew := func(value string) bool { return value == newObject && value != "" }
+	if stdin {
+		// A transaction may contain start/prepare/commit lines around its single ref operation.
+		chunks := strings.Split(strings.ReplaceAll(string(input), "\x00", "\n"), "\n")
+		for i, line := range chunks {
+			fields := strings.Fields(line)
+			if len(fields) < 2 || fields[1] != ref {
+				continue
+			}
+			values := append([]string{}, fields[2:]...)
+			for j := i + 1; len(values) < 2 && j < len(chunks); j++ {
+				if strings.Contains(chunks[j], " ") {
+					break
+				}
+				values = append(values, chunks[j])
+			}
+			switch kind {
+			case "create":
+				if fields[0] == "create" && len(values) >= 1 && validNew(values[0]) {
+					return true
+				}
+				if fields[0] == "update" && len(values) >= 2 && validNew(values[0]) && (values[1] == "" || strings.Trim(values[1], "0") == "") {
+					return true
+				}
+			case "update":
+				if fields[0] == "update" && len(values) >= 2 && validNew(values[0]) && values[1] == oldObject {
+					return true
+				}
+			case "delete":
+				if fields[0] == "delete" && len(values) >= 1 && values[0] == oldObject {
+					return true
+				}
+			}
+		}
+		return false
+	}
+	for i, arg := range args {
+		if arg != ref {
+			continue
+		}
+		switch kind {
+		case "create":
+			return i+2 < len(args) && validNew(args[i+1]) && (args[i+2] == "" || strings.Trim(args[i+2], "0") == "")
+		case "update":
+			return i+2 < len(args) && validNew(args[i+1]) && args[i+2] == oldObject
+		case "delete":
+			deleted := false
+			for _, flag := range args[:i] {
+				deleted = deleted || flag == "-d"
+			}
+			return deleted && i+1 < len(args) && args[i+1] == oldObject
+		}
+	}
+	return false
+}
+func Test_FLOW008_FLOW009CASProtocolFixtureControl(t *testing.T) {
+	ref, newOID, oldOID := "refs/fireweed/claims/control", strings.Repeat("a", 40), strings.Repeat("b", 40)
+	encode := func(args ...string) []byte { return []byte(strings.Join(args, "\x00") + "\x00") }
+	for _, row := range []struct {
+		kind        string
+		args, input []byte
+		valid       bool
+	}{
+		{"create", encode("update-ref", ref, newOID, ""), nil, true}, {"create", encode("update-ref", ref, newOID), nil, false},
+		{"update", encode("update-ref", ref, newOID, oldOID), nil, true}, {"update", encode("update-ref", ref, newOID), nil, false}, {"update", encode("update-ref", ref, newOID, strings.Repeat("0", 40)), nil, false},
+		{"delete", encode("update-ref", "-d", ref, oldOID), nil, true}, {"delete", encode("update-ref", "-d", ref), nil, false},
+		{"create", encode("update-ref", "--stdin"), []byte("create " + ref + " " + newOID + "\n"), true},
+		{"update", encode("update-ref", "--stdin"), []byte("start\nupdate " + ref + " " + newOID + " " + oldOID + "\nprepare\ncommit\n"), true},
+		{"delete", encode("update-ref", "-z", "--stdin"), []byte("delete " + ref + "\x00" + oldOID + "\x00"), true},
+	} {
+		if got := claimCASProtocol(row.args, row.input, row.kind, ref, newOID, oldOID); got != row.valid {
+			t.Fatalf("CAS observer premise %s %q %q: %v", row.kind, row.args, row.input, got)
+		}
+	}
+}
+func Test_FLOW008_FLOW009NativeCASUpdates(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("POSIX Git argument observer; portable race/control fixtures still execute")
+	}
+	for _, format := range []string{"sha1", "sha256"} {
+		t.Run(format, func(t *testing.T) { claimNativeCASUpdates(t, format) })
+	}
+}
+func claimNativeCASUpdates(t *testing.T, format string) {
+	root := claimRepo(t, format)
+	base := claimBase(t, root)
+	realGit, err := exec.LookPath("git")
+	if err != nil {
+		t.Fatal(err)
+	}
+	traps := t.TempDir()
+	trace := filepath.Join(t.TempDir(), "git-cas-arguments")
+	script := "#!/bin/sh\nfound=\nstdin=\nfor a in \"$@\"; do [ \"$a\" = update-ref ] && found=1; [ \"$a\" = --stdin ] && stdin=1; done\nif [ -n \"$found\" ]; then\n printf '%s\\000' \"$@\" > " + claimQuote(trace) + "\n if [ -n \"$stdin\" ]; then cat > " + claimQuote(trace+".stdin") + "; exec " + claimQuote(realGit) + " \"$@\" < " + claimQuote(trace+".stdin") + "; fi\nfi\nexec " + claimQuote(realGit) + " \"$@\"\n"
+	if err := os.WriteFile(filepath.Join(traps, "git"), []byte(script), 0755); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", traps+string(os.PathListSeparator)+os.Getenv("PATH"))
+	observe := func(t *testing.T, kind, slug, newOID, oldOID string) {
+		t.Helper()
+		raw, err := os.ReadFile(trace)
+		if err != nil {
+			t.Fatal("operation did not reach an atomic Git ref update", err)
+		}
+		input, err := os.ReadFile(trace + ".stdin")
+		if err != nil && !os.IsNotExist(err) {
+			t.Fatal(err)
+		}
+		if !claimCASProtocol(raw, input, kind, "refs/fireweed/claims/"+slug, newOID, oldOID) {
+			t.Fatalf("missing native Git %s compare-and-swap: %q stdin %q", kind, raw, input)
+		}
+	}
+	clear := func() {
+		t.Helper()
+		for _, path := range []string{trace, trace + ".stdin"} {
+			if err := os.Remove(path); err != nil && !os.IsNotExist(err) {
+				t.Fatal(err)
+			}
+		}
+	}
+	// Positive control verifies the observer against an actual Git create-only write.
+	claimGit(t, root, "update-ref", "refs/fireweed/claims/observer", base, "")
+	observe(t, "create", "observer", base, "")
+	claimGit(t, root, "update-ref", "-d", "refs/fireweed/claims/observer", base)
+	clear()
+	t.Run("create", func(t *testing.T) {
+		got, err := w.CreateClaim(root, "created", "run", base, "")
+		if err != nil {
+			t.Fatal(err)
+		}
+		observe(t, "create", "created", got.Object, "")
+	})
+	clear()
+	previous := claimSeed(t, root, "updated", "old")
+	clear()
+	t.Run("update", func(t *testing.T) {
+		got, err := w.UpdateClaim(root, previous, base, "changed")
+		if err != nil {
+			t.Fatal(err)
+		}
+		observe(t, "update", "updated", got.Object, previous.Object)
+	})
+	clear()
+	released := claimSeed(t, root, "released", "old")
+	clear()
+	t.Run("release", func(t *testing.T) {
+		if err := w.ReleaseClaim(root, "released", released.Object); err != nil {
+			t.Fatal(err)
+		}
+		observe(t, "delete", "released", "", released.Object)
+	})
 }
