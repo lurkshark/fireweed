@@ -1,6 +1,6 @@
 ---
 module: project
-phase: impl
+phase: audit
 run: 9bd006b5aa4148ac8257841b
 ---
 
@@ -43,8 +43,10 @@ A temporary checkout/export introduces filesystem mutation, setup hooks and clea
 - evals | 2026-10-22T23:42:38Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 368 | failing: 134 | passing: 234
 - audit | 2026-10-22T23:47:09Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T23:53:50Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 381 | failing: 147 | passing: 234
-- audit | 2026-10-22T23:56:00Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-No findings. Checked PRJ-024, PRJ-025, PRJ-026 and PRJ-027.
+- PRJ-024: "resolve one explicit nonblank local revision to a full commit before reading its tree" — invalid/unknown-revision cases assert the final fatal result but do not reject preliminary HEAD tree/body reads whose results are discarded. The unknown-revision native case still whitelists ordinary HEAD metadata; add an ordering guard that rejects tree/body access before successful revision resolution.
+- PRJ-025: "resolve BaseRef from that config and locally known refs" — every successful selected configuration uses base main with no distinguishing remote/ref setup. No LoadAt assertion distinguishes resolution from the selected config/local refs from a hard-coded main or current-HEAD-derived BaseRef.
+- PRJ-027: "it MUST NOT read current working-file contents" — the native content guard checks absolute path prefixes only, and every read control supplies an absolute path. Relative open/openat requests such as fireweed.yaml from the probe's repository cwd bypass the guard, allowing ignored current-content reads; add relative/dirfd controls and effective-path enforcement.
+- PRJ-027: "LoadAt MUST read only necessary local Git metadata and selected config/module/immediate queue/archive blobs and their committed link targets" — the Git body guard accepts any revision prefix before an allowed :path, and accepts arbitrary ^{tree}/^{commit} queries. It therefore permits unselected HEAD/newer-ref metadata reads whose results are ignored; restrict accepted revision-qualified reads to the selected resolved commit and prove an unselected-revision body is rejected while the selected body remains readable.
