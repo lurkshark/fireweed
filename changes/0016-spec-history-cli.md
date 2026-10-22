@@ -1,5 +1,7 @@
 ---
 module: app
+phase: audit
+run: 795dbbe2bbf903abdce7ba7c
 ---
 
 ## Motivation
@@ -12,16 +14,16 @@ No public Go interface change. Extend the existing executable Run dispatcher wit
 
 ## Added
 
-### new:show-current
+### APP-009
 show MUST resolve an exact named module from a nested project directory and return its complete current module in JSON when ID is omitted, or the exact case-sensitive spec item when ID is supplied. Plain output MUST render only the selected ordered specs as level-three headings with retained tags and complete bodies, one blank line between items and one final newline; no specs MUST produce empty plain output. It MUST retain current/discovery diagnostics from public Check, globally sorted by path/code/severity/message, with exit 0 for no errors or warnings alone and exit 1 when errors exist while retaining selected data. Unknown modules or exact IDs MUST produce U01 exit 2 with corrective guidance. Fatal project/configuration failures MUST produce C01 exit 2 and null JSON data.
 
-### new:show-projected
+### APP-010
 show --projected MUST use public Project over the complete numeric/slug ordered queue and expose resulting specs and resolved metadata without changing current state or replaying archives. It MUST combine current/discovery and CheckQueue diagnostics, preserving change paths and globally sorted order, and return projected data with exit 0/1 by diagnostic severity. A failed projection MUST return exit 1 with C05 error diagnostics and null JSON data rather than a partial projection. Exact projected ID lookup MUST work for real IDs and local handles; multiple matching local handles MUST produce a corrective U01 ambiguity error rather than choosing one. --projected and --history MUST be mutually exclusive.
 
-### new:show-history
+### APP-011
 show --history MUST return a non-null array of archive rows for the selected module, optionally filtered to exact IDs in Added/Modified/Removed, including retags and removed IDs that are no longer current. It MUST exclude pending entries and fix-only references from ID-filtered history; unfiltered module history MUST include all that module's archived changes. Each row MUST contain the complete change plus its retained Motivation, Decisions and Provenance bodies, preserving historical handle examples. Newest history MUST come first: rows with a parseable RFC3339 timestamp in their final parseable impl provenance line MUST sort before undated rows and by that timestamp descending, then numeric Number, Slug and Path descending to break ties; undated rows MUST use the same numeric/slug/path fallback. Missing history, including an unknown historical ID, MUST return an empty array with exit 0 absent other validation errors. Plain history MUST render the same row array as JSON data, and current/discovery diagnostics MUST follow the current show severity and stream contract without projecting pending changes.
 
-### new:show-safety
+### APP-012
 All show modes MUST accept --json before or after command/operands and use the schema-1 canonical show/data/non-null diagnostics envelope without plaintext on JSON streams. Plain data MUST go to stdout and coded/path-attributed diagnostics to stderr. Missing/excess operands, unknown or valued flags, mutually exclusive modes and mode flags on other implemented commands MUST be U01 exit 2 before loading a project. -- MUST end option parsing; help MUST work without loading a project. Output write failures MUST return exit 2. Current, projected and historical reads on valid and invalid queues MUST remain noninteractive and MUST NOT run hooks, agents, the bootstrap or network commands or mutate repository files, ignored contents or refs.
 
 ## Modified
@@ -37,3 +39,7 @@ History uses the final parseable impl provenance line because the design explici
 ## Rejected alternatives
 
 Requiring a spec to be current before showing history would hide why removed behavior disappeared. Sorting only by queue filename numbers would mislabel newer archives when an earlier-numbered authored change applies later. Sorting by timestamps only when both compared rows have dates would not define a transitive order across mixed legacy data.
+
+## Provenance
+
+- evals | 2026-10-22T16:05:32Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 22 | failing: 6 | passing: 16
