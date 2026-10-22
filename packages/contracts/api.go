@@ -2,8 +2,10 @@
 package contracts
 
 import (
+	"github.com/lurkshark/fireweed/packages/contracts/internal/config"
 	"github.com/lurkshark/fireweed/packages/contracts/internal/globs"
 	"github.com/lurkshark/fireweed/packages/contracts/internal/specs"
+	"github.com/lurkshark/fireweed/packages/contracts/model"
 )
 
 // Spec is a normative Markdown item. Tag retains bracketed verification/enforcement tags.
@@ -28,7 +30,7 @@ func SpecHash(item Spec) string                 { return specs.Hash(item.ID, ite
 func MatchesID(name, classname, id string) bool { return specs.Match(name, classname, id) }
 
 // Zones declares module-relative file patterns in strictness order.
-type Zones struct{ Interface, Evals, Disposable, Preserve, AppendOnly []string }
+type Zones = model.Zones
 type Zone string
 
 const (
@@ -48,4 +50,16 @@ func GlobsOverlap(a, b string) (bool, error)       { return globs.Overlap(a, b) 
 func ZoneFor(path, moduleDir string, zones Zones, protected []string) (Zone, error) {
 	zone, err := globs.Zone(path, moduleDir, [5][]string{zones.Evals, zones.Interface, zones.AppendOnly, zones.Preserve, zones.Disposable}, protected)
 	return Zone(zone), err
+}
+
+type Config = model.Config
+type Hooks = model.Hooks
+type Agent = model.Agent
+type Audit = model.Audit
+
+func ParseConfig(text, binaryVersion string) (Config, error) {
+	return config.Parse(text, binaryVersion)
+}
+func CheckVersion(binaryVersion, constraint string) error {
+	return config.Version(binaryVersion, constraint)
 }

@@ -1,7 +1,11 @@
 ---
 module: contracts
+phase: audit
+run: aec3bf251ada4a0f504b8195
 set:
-  interface: [api.go, 'model/*.go']
+    interface:
+        - api.go
+        - model/*.go
 ---
 
 ## Motivation
@@ -14,16 +18,16 @@ Add retained model/*.go data declarations, aliased through api.go: Zones (same e
 
 ## Added
 
-### new:config-defaults
+### CON-008
 Configuration parsing MUST supply format version 1, binary range >=0.4 and <0.5, remote origin, module glob packages/*, interface src/index.ts, evals evals/**, disposable src/**, audit enabled, attempts 2, timeout 90m, verify_dependents all, limit patterns usage limit and rate limit, limit_wait 30m and limit_budget 4h when omitted. Explicit empty lists MUST remain empty, including each module-default zone list, protected paths, worker-writable paths and limit patterns. Omitted base MUST remain unresolved for local Git discovery.
 
-### new:config-fields
+### CON-009
 Configuration parsing MUST retain every design field, including shell hooks and agent argv/wrap values, per-project zone defaults and audit settings, without executing commands or expanding placeholders. It MUST reject malformed YAML, duplicate keys, multiple YAML documents, non-mapping roots and fields of the wrong type. Returned configurations MUST be independent values, so mutating one parse result cannot affect later parses.
 
-### new:config-version
+### CON-010
 Configuration parsing MUST accept the current and previous file formats (1 and 0) and reject older or future formats. It MUST reject a binary outside the configured comma- or whitespace-separated conjunction of numeric version comparisons, supporting >, >=, <, <=, = and exact major.minor[.patch] versions. It MUST reject malformed binary versions, constraints and empty explicit constraints. A leading v on binary versions MUST be accepted.
 
-### new:config-validation
+### CON-011
 Configuration parsing MUST reject attempts below one, nonpositive timeout, negative limit wait or budget, invalid Go duration syntax, and verify_dependents values other than all, direct or none. Explicit audit.enabled false MUST disable audit; omission MUST leave it enabled.
 
 ## Modified
@@ -37,3 +41,7 @@ Only nonnegative numeric release versions are supported initially; prerelease/bu
 ## Rejected alternatives
 
 Using zero values for omission would lose audit's default enabled state and confuse empty zone lists with inheritance. A mutable global default configuration would leak state across independent projects.
+
+## Provenance
+
+- evals | 2026-10-22T06:37:23Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 12 | failing: 4 | passing: 8
