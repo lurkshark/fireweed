@@ -30,6 +30,15 @@ A context already cancelled or expired before Run MUST prevent process startup, 
 ### GIT-007
 Independent Run calls MUST NOT share captured output or cancellation state, even when overlapping. Run MUST NOT mutate caller argv or override slices, including backing storage beyond their lengths, or the parent environment/current directory. Empty or invalid calls and pre-cancelled calls MUST leave no process-created marker. Invalid inputs and completed successful, failed or cancelled calls MUST NOT poison a later valid call. Process tests MUST use local bounded helpers and no agent/bootstrap/network dependency.
 
+### GIT-008
+Capture MUST execute exactly the supplied executable/argument vector in dir without shell expansion and return complete byte-exact stdout and stderr separately in Stdout and Stderr, including empty streams, NUL/non-UTF8 bytes, long output and concurrently emitted streams, without truncation or deadlock. It MUST inherit the parent environment and apply KEY=value overrides with last entry winning, preserving empty values and equals signs; Windows keys follow OS case-insensitivity. It MUST preserve caller argv/override slices including spare backing storage and parent environment/current directory. Existing Run combined-output behavior MUST remain unchanged.
+
+### GIT-009
+Capture MUST return Exit 0 and nil Err on success, the actual exit and useful non-nil Err for ordinary nonzero termination, and Exit 2/useful non-nil Err for nil context, empty argv/executable, malformed overrides, nonexistent directories or launch failures without starting a fallback process. Invalid and pre-cancelled calls MUST produce empty streams and no process-created marker. Already cancelled/expired contexts MUST prevent startup with Exit -1 and an Err matching the original context error through errors.Is. Invalid, successful, failing and cancelled calls MUST NOT poison later valid calls. All outcome paths MUST retain caller state and inputs.
+
+### GIT-010
+Cancellation or deadline during Capture MUST terminate its entire owned process tree on Linux/macOS/Windows, including children/grandchildren holding output streams, return promptly with Exit -1 and matching context Err, and retain each stream's bytes emitted before termination. Descendants MUST NOT survive to perform delayed writes. Unrelated processes and overlapping Run/Capture calls MUST remain alive and retain independent output/cancellation state, including in a race-instrumented calling executable. Ordinary termination MUST remain distinguishable from context termination. Evals MUST use bounded local helpers without agent/bootstrap/network dependencies.
+
 ## Decisions
 
 [local-repository]
@@ -40,3 +49,6 @@ Exit -1 identifies context termination inside this process API, while CLI layers
 
 [race-helper-exit]
 Use the Go race runtime's exit-sleep setting only for bounded helper subprocesses. Do not increase the tested process termination bound or remove the live unrelated-process predicate. This is a test harness repair for already implemented behavior, governed through evals/audit/impl/archive so permanent eval changes are reviewable and never smuggled into an implementation commit. Implementation phase requires no product code edits. Keep the original race failure in .fireweed/evidence/go-race-process-checkpoint.log and record the corrected full-run result separately.
+
+[process-capture]
+Separate streams are protocol inputs; no inter-stream ordering is promised. Retain Run's combined stream semantics for existing hooks/agents. Both entry points may share a disposable process execution core with independently owned writers. The adapter itself grants no permission to run Git hooks or remote commands: callers remain responsible for their explicit argv and environment. Exit -1 is the existing internal context-termination convention, distinct from CLI exit meanings.

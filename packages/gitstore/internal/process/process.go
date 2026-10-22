@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"strings"
@@ -19,31 +20,37 @@ type treeControl interface {
 }
 
 func Run(ctx context.Context, dir string, argv, overrides []string) (string, int, error) {
+	var output bytes.Buffer
+	code, err := execute(ctx, dir, argv, overrides, &output, &output)
+	return output.String(), code, err
+}
+
+// execute owns the subprocess lifecycle; each caller supplies its own output sinks.
+func execute(ctx context.Context, dir string, argv, overrides []string, stdout, stderr io.Writer) (int, error) {
 	if ctx == nil {
-		return "", 2, fmt.Errorf("process requires a non-nil context")
+		return 2, fmt.Errorf("process requires a non-nil context")
 	}
 	if err := ctx.Err(); err != nil {
-		return "", -1, err
+		return -1, err
 	}
 	if len(argv) == 0 || argv[0] == "" {
-		return "", 2, fmt.Errorf("provide a nonempty executable argument vector")
+		return 2, fmt.Errorf("provide a nonempty executable argument vector")
 	}
 	for _, entry := range overrides {
 		if strings.IndexByte(entry, '=') <= 0 || strings.ContainsRune(entry, '\x00') {
-			return "", 2, fmt.Errorf("environment override must be a nonempty KEY=value without NUL bytes: %q", entry)
+			return 2, fmt.Errorf("environment override must be a nonempty KEY=value without NUL bytes: %q", entry)
 		}
 	}
 	args := append([]string(nil), argv...)
 	command := exec.CommandContext(ctx, args[0], args[1:]...)
 	command.Dir = dir
 	command.Env = append(os.Environ(), overrides...)
-	var output bytes.Buffer
-	command.Stdout = &output
-	command.Stderr = &output
+	command.Stdout = stdout
+	command.Stderr = stderr
 	command.WaitDelay = time.Second
 	control, err := newTree(command)
 	if err != nil {
-		return "", 2, fmt.Errorf("prepare process tree: %w", err)
+		return 2, fmt.Errorf("prepare process tree: %w", err)
 	}
 	defer control.close()
 	// Cancellation cannot race assignment/resumption of a suspended Windows child.
@@ -62,23 +69,23 @@ func Run(ctx context.Context, dir string, argv, overrides []string) (string, int
 	startup.Unlock()
 	if startErr != nil {
 		if err := ctx.Err(); err != nil {
-			return output.String(), -1, err
+			return -1, err
 		}
-		return output.String(), 2, fmt.Errorf("start executable %q: %w", args[0], startErr)
+		return 2, fmt.Errorf("start executable %q: %w", args[0], startErr)
 	}
 	waitErr := command.Wait()
 	if err := ctx.Err(); err != nil {
-		return output.String(), -1, err
+		return -1, err
 	}
 	if setupErr != nil {
-		return output.String(), 2, fmt.Errorf("establish process tree: %w", setupErr)
+		return 2, fmt.Errorf("establish process tree: %w", setupErr)
 	}
 	if waitErr == nil {
-		return output.String(), 0, nil
+		return 0, nil
 	}
 	var exited *exec.ExitError
 	if errors.As(waitErr, &exited) {
-		return output.String(), exited.ExitCode(), waitErr
+		return exited.ExitCode(), waitErr
 	}
-	return output.String(), 2, fmt.Errorf("wait for executable %q: %w", args[0], waitErr)
+	return 2, fmt.Errorf("wait for executable %q: %w", args[0], waitErr)
 }
