@@ -1,6 +1,6 @@
 ---
 module: checks
-phase: audit
+phase: evals
 run: ac8e6a308cf709bbfebc0f36
 ---
 
@@ -45,3 +45,15 @@ Running the project default once would ignore resolved overrides. Treating a kil
 ## Provenance
 
 - evals | 2026-10-22T18:10:12Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 105 | failing: 42 | passing: 63
+- audit | 2026-10-22T18:15:55Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+- CHK-010: "or the first whitespace-delimited word when there is no colon" — missing assertion for a line with a colon whose full prefix is not a module name but whose first word is one, such as `alpha informational: detail`; an implementation that always attributes by first word would pass the current fixtures.
+- CHK-010: "The baseline MUST be read from the canonical repository" — missing suppression assertion with a baseline at the repository root and snapshot.Root set to a nested directory; the nested-root selection fixture has no baseline.
+- CHK-010: "C15 severity error at the matching module directory for every unignored attributed violation, even after exit 0" — missing assertion for an ordinary nonzero checker with an unignored attributed violation; every attributed line in the current ordinary nonzero fixtures is suppressed, so that path's module attribution is unasserted.
+- CHK-011: "containing its actual exit and output" — missing assertion retaining the complete combined output in the mixed-attribution fixture; its predicate accepts only `compiler failed` and can lose the preceding baselined line.
+- CHK-012: "Repeated and overlapping calls MUST have independent results" — missing an assertion exposing shared backing storage between empty diagnostic results; appending to the first empty result and serializing the still-empty second result cannot detect that alias.
+- CHK-012: "preserve all snapshot/module/config/document inputs" — missing preservation assertion with an unsorted module-name order; snapshots covered by the existing preservation assertions are already sorted by module name, so in-place sorting would pass.
+- CHK-012: "parent environment and current directory, and leave the baseline unchanged" — missing parent-state and baseline preservation assertions around the overlapping calls; that fixture compares only snapshot values, while these guarantees are checked only on sequential calls.
+- CHK-012: "overlapping calls MUST have independent results, hook state and cancellation" — the overlap fixture can reject normal completion: the brief checker sleeps only 0.4 seconds, but long-checker cancellation is allowed 1.5 seconds; if cancellation takes longer than 0.4 seconds, the already-successful brief result is incorrectly classified as cancellation. Assert its actual outcome or establish a controlled still-running premise before making that timing assertion.
