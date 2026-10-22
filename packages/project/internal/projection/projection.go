@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/lurkshark/fireweed/packages/contracts"
+	"github.com/lurkshark/fireweed/packages/project/internal/changeview"
 	"github.com/lurkshark/fireweed/packages/project/internal/inspection"
 )
 
@@ -210,38 +211,11 @@ func target(modules []contracts.Module, name string) (int, error) {
 // Build a canonical change for public contract validation. Arbitrary author
 // sections are retained so all handle references must be declared locally.
 func validateChange(m contracts.Module, ch contracts.Change) (contracts.Change, error) {
-	d := clone(ch.Document)
-	if d.Metadata == nil {
-		d.Metadata = map[string]any{}
-	}
-	d.Metadata["module"] = ch.Module
-	values := map[string]any{"set": ch.Set, "bases": ch.Bases, "fixes": ch.Fixes, "already_satisfied": ch.AlreadySatisfied, "regenerate": ch.Regenerate, "run": ch.Run, "phase": ch.Phase, "blocked": ch.Blocked}
-	for key, value := range values {
-		if value == nil || reflect.ValueOf(value).IsZero() {
-			delete(d.Metadata, key)
-		} else {
-			d.Metadata[key] = clone(value)
-		}
-	}
-	if len(d.Sections) == 0 {
-		d.Sections = []contracts.Section{{Name: "Motivation", Body: "Project the typed change."}}
-	}
-	section(&d, "Added", items(ch.Added))
-	section(&d, "Modified", items(ch.Modified))
-	section(&d, "Removed", items(ch.Removed))
-	text, err := contracts.RenderMarkdown(d)
+	text, err := changeview.Text(ch)
 	if err != nil {
 		return contracts.Change{}, err
 	}
-	file := ch.Path
-	if file == "" {
-		slug := ch.Slug
-		if slug == "" {
-			slug = "projection"
-		}
-		file = fmt.Sprintf("changes/%04d-%s.md", ch.Number, slug)
-	}
-	parsed, err := contracts.ParseChange(text, file, m.IDPrefix)
+	parsed, err := contracts.ParseChange(text, changeview.Path(ch), m.IDPrefix)
 	if err != nil {
 		return parsed, fmt.Errorf("invalid typed change: %w", err)
 	}

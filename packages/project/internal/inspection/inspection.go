@@ -12,6 +12,7 @@ import (
 	"github.com/lurkshark/fireweed/packages/assets"
 	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/gitstore"
+	"github.com/lurkshark/fireweed/packages/project/internal/changeview"
 )
 
 type Diagnostic struct{ Code, Severity, Message, Path string }
@@ -223,11 +224,20 @@ func (d *Data) loadChanges(dir string, prefixes map[string]string) []contracts.C
 			d.add("C05", "error", relative, fmt.Sprintf("Target module %q is unknown; select an existing valid module.", target))
 			continue
 		}
-		ch, err := contracts.ParseChange(text, relative, prefix)
+		validationText := text
+		if dir == "changes/archive" {
+			validationText, err = changeview.ArchiveText(doc)
+			if err != nil {
+				d.add("C05", "error", relative, "Correct the archived change document: "+err.Error())
+				continue
+			}
+		}
+		ch, err := contracts.ParseChange(validationText, relative, prefix)
 		if err != nil {
-			d.add("C05", "error", relative, "Correct the change document for its target module: "+err.Error())
+			d.add(changeview.ErrorCode(err), "error", relative, "Correct the change document for its target module; declare each live handle locally: "+err.Error())
 			continue
 		}
+		ch.Document = doc
 		out = append(out, ch)
 	}
 	sort.Slice(out, func(i, j int) bool {
