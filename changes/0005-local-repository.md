@@ -1,6 +1,6 @@
 ---
 module: gitstore
-phase: audit
+phase: impl
 run: 28ec83301f9665518f908c01
 ---
 
@@ -43,14 +43,8 @@ String-prefix path containment would allow sibling-directory escapes. Line-based
 - evals | 2026-10-22T07:00:43Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 4 | failing: 4 | passing: 0
 - audit | 2026-10-22T07:03:32Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T07:03:56Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 8 | failing: 8 | passing: 0
+- audit | 2026-10-22T07:05:31Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- GIT-001: "as canonical absolute paths" — symlink-based discovery and full linked GitDir canonicalization are not asserted.
-- GIT-001: "Inspection MUST NOT create branches, change refs, fetch or push." — fetch/push attempts and ref changes during Clean/Edits are not asserted.
-- GIT-002: "It MUST NOT contact a remote." — unreachable URLs do not detect attempted contact.
-- GIT-003: "Clean-tree inspection MUST detect tracked staged or unstaged edits, deletions and untracked files" — unstaged edits/deletions are not asserted in isolation.
-- GIT-003: "against an explicit local commit" — an older-than-HEAD explicit base is not asserted.
-- GIT-003: "staged and unstaged additions/modifications/deletions" — staged deletion is not asserted.
-- GIT-004: "inside the canonical root" — a symlink-supplied root is not asserted.
-- GIT-004: "It MUST NOT create or modify files." — existing in-root file contents are not asserted unchanged.
+No findings. Independent auditor /root/audit_local_repository checked GIT-001, GIT-002, GIT-003 and GIT-004 against concrete assertions and Decisions. All eight prior findings are resolved in the committed evals; findings and retry remain in phase history.
