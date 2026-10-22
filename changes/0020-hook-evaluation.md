@@ -34,6 +34,8 @@ Use one-pass placeholder expansion so a value containing another placeholder's s
 
 Evaluate is a low-level selected-module operation. App/workflow callers will choose current or projected specs and supply fail-first IDs explicitly. It neither loads/reprojects an entire queue nor infers an exemption. Missing/malformed/fatal process evidence stops before Analyze; otherwise existing CHK-001–004 determine coverage, including reporter exit inconsistencies. A timeout with a valid failure report is still invalid hook evidence and always C11. Reports are fresh per call and cleaned independently of authored hook side effects. Boundary hook execution remains a separate change.
 
+Fixture commands must distinguish template text from values: use ordinary paths for source/marker literals embedded in a command, and inject placeholder-looking paths through placeholder values when testing one-pass expansion. The initial incomplete cycle accidentally embedded {report} in those original template literals; its four phase commits were fully reverted without applying specs or editing frozen evals. Restart with a direct helper positive control and corrected fixtures.
+
 ## Rejected alternatives
 
 Sequential string replacement can reinterpret placeholder text in paths. A shared report file admits stale success and concurrent corruption. Treating every nonzero exit as a launch failure would reject real fail-first; treating cancelled partial reports as ordinary failure could accept unfinished verification.
