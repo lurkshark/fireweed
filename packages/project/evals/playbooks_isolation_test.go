@@ -245,7 +245,19 @@ func main(){
 		t.Fatal("outside descendant is not missing")
 	}
 	t.Run("missing-descendant-control", func(t *testing.T) { control(t, "selected-control") })
-	t.Run("missing-descendant", func(t *testing.T) { check(t, "escape") })
+	missing := filepath.Join(outside, "evals.md")
+	t.Run("missing-resolved-endpoint-control", func(t *testing.T) {
+		out, err := runAt("private-control", root, missing)
+		exit, ok := err.(*exec.ExitError)
+		if !ok || exit.ExitCode() != 42 {
+			t.Fatalf("ignored ENOENT read was not intercepted: %v %s", err, out)
+		}
+	})
+	t.Run("missing-descendant", func(t *testing.T) {
+		if out, err := runAt("escape", root, missing); err != nil || len(out) != 0 {
+			t.Fatalf("resolved missing endpoint containment failure: %v %s", err, out)
+		}
+	})
 	if raw, err := os.ReadFile(private); err != nil || string(raw) != "PRIVATE-UNCHANGED" {
 		t.Fatal("changed outside private contents")
 	}

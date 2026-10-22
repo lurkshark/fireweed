@@ -131,6 +131,7 @@ func Test_PRJ021_PRJ022ExactOverrideBytesAndStaleness(t *testing.T) {
 			{"case_key", "---\nBased_On: '" + asset.Hash + "'\n---\nInstructions.\n", "", true},
 
 			{"case", "---\nbased_on: " + strings.ToUpper(asset.Hash) + "\n---\nInstructions.\n", strings.ToUpper(asset.Hash), true},
+			{"quoted_whitespace", "---\nbased_on: ' " + asset.Hash + " '\n---\nInstructions.\n", " " + asset.Hash + " ", true},
 			{"numeric", "---\nbased_on: 42\n---\nInstructions.\n", "", true},
 			{"null", "---\nbased_on: null\n---\nInstructions.\n", "", true},
 			{"list", "---\nbased_on: [hash]\n---\nInstructions.\n", "", true},
