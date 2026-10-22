@@ -1,6 +1,6 @@
 # Restartable rebuild progress
 
-Status: stage 1, first behavioral change archived; contracts continuation next. Goal remains active.
+Status: stage 1, first behavioral change archived; contracts configuration/document model next. Goal remains active.
 
 ## Controller pin
 
@@ -25,7 +25,7 @@ Inspect git status, pinned controller checksum/version, controller status/list a
 ## spec-primitives (CON-001–CON-004)
 
 - Archive: changes/archive/0001-spec-primitives.md. Four permanent public-API evals in packages/contracts/evals/specs_test.go cover precise ID matching, normalized heading/tag/body hashes, fenced Markdown grammar, tags and local handles.
-- Evals commit 372cc4f; independent passing audit 4a7d559; implementation commit listed by `fireweed-bootstrap commits spec-primitives`.
+- Evals commit 372cc4f; independent passing audit 4a7d559; implementation ac75deecc8c6ec9a3e871035639c6ed9aadfd880.
 - Controller fail-first JSON has four compiled/executed failed cases, one per ID; no coverage/zone diagnostics. `done` committed evals before implementation. Local ignored evidence: .fireweed/evidence/spec-primitives/{fail-first,evals-done,audit-done,impl-verify,impl-done}.json.
 - Auditor /root/audit_spec_primitives used fresh context restricted to change, spec, interface and evals. No findings, all four IDs listed. Controller impl verify ran own + all seven transitive dependents and boundaries: no diagnostics; four own cases passed. Empty scaffold dependents do not prove product functionality.
 - Normal P04 unapproved-on-base warning acknowledged under goal authority; no human merge claimed.
@@ -33,3 +33,9 @@ Inspect git status, pinned controller checksum/version, controller status/list a
 ## Agent access
 
 The default CLI model gpt-6.1-sol was rejected by ChatGPT auth (HTTP 400 unsupported model). Local models_cache.json listed gpt-6-sol; an explicit ephemeral read-only probe returned FIREWEED_AGENT_READY with exit 0. Pin `codex exec --ephemeral --model gpt-6-sol --sandbox workspace-write {prompt}` for worker and audit commands. Do not change global config. Logs are local ignored evidence. This is capability evidence only, not a regeneration pass. Official model documentation: https://learn.chatgpt.com/docs/models .
+
+## zone-primitives (CON-005–CON-007)
+
+Archive changes/archive/0002-zone-primitives.md. Permanent Test_CON005GlobMatching, Test_CON006FutureOverlap, Test_CON007ZonePrecedence and Test_CON007AuditRegressions cover whole relative-path globs, nonexistent-path intersection, all precedence levels, module-relative matching, protected documents and invalid inputs. Initial fail-first commit 5402f70990472dd91ff84db90679c359fd6d5a0c. Independent audit found four concrete CON-007 assertion gaps: recorded in 9bc68250a4322bc4046f0b944ffccf80b99b289d and returned to evals. Strengthened fail-first evals b5624fd1362dff7fc2e1ee430a8cc87e74a986bc; passing independent re-audit 7d7f600e92a8ff6ff6ab61e45adfe27b834b4e0f; applied implementation d7dfbd90bf4cebfdeb168268bd710f67dd6b43bb. All eight contracts cases plus dependent scaffold hooks and boundaries pass. Explicit setup..HEAD history check has no diagnostics. Local JSON evidence is .fireweed/evidence/zone-primitives/. No active claims or pending changes at this boundary.
+
+Next: retained typed data/configuration grammar, then Git/assets/project discovery and early CLI inspection slices. Product binary still only the setup placeholder; do not confuse its successful build with implemented command behavior.
