@@ -86,3 +86,10 @@ Recovery release correction: the first0023 release was run without the required 
 
 
 D016 evidence update at15bfe036: corrected0023 is archived and all220 workflow cases pass. A separately compiled public CheckState probe reads the exact recorded reference approved/current documents and returns P2-01 for the added fixes: [] key, while reference verify remains0/diagnostics[]. The updated approved-state-reference-empty-key.json records both actual observations. CLI lifecycle composition remains pending.
+
+
+## D018 — claim updates preserve newer owners and unrelated refs
+
+Ordinary inspection of pinned bootstrap internal/fireweed/git.go writeClaim/release shows create uses an empty expected-old argument, but later updates and deletion are unconditional. New FLOW-008–011 storage retains exact five-field wire compatibility while requiring full object tokens for refresh/release, owner matching for refresh, atomic expected-old updates, and --no-deref plus explicit symbolic-ref rejection. This prevents a stale operation or selected symbolic alias from modifying newer ownership or an unrelated target. Product metadata operations suppress native reference-transaction hooks so a claim never starts unrelated project commands; fireweed's own eval/boundary/audit enforcement remains enabled. These are design-consistent local ownership safeguards, not controller changes or a claim that reference manual lifecycle was self-hosted.
+
+Permanent claims evals assert these races/aliases and native Git CAS arguments with real Git protocol controls. The actual two-way scratch wire experiment at a38c826 proves NEW LoadClaim reads bootstrap's record exactly and bootstrap verify accepts the NEW-created identical blob; NEW matching-token release cleans up. Evidence local-claims-reference-wire.json. No unsafe stale overwrite was needed for this compatibility experiment; the unconditional reference helper observation is explicitly source-derived.
