@@ -2,7 +2,7 @@
 bases:
     CON-016: 922d6d1b
 module: contracts
-phase: audit
+phase: evals
 run: a0503a38234a37bc8153e97a
 ---
 
@@ -34,3 +34,8 @@ Requiring authors to predict real IDs would defeat late allocation. Requiring st
 ## Provenance
 
 - evals | 2026-10-22T14:45:32Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 27 | failing: 2 | passing: 25
+- audit | 2026-10-22T14:47:05Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+- CON-016: "parsing MUST retain independence between results." — assert immediately after mutating the first result that the already parsed second result still contains its original slice, nested metadata and sections, before parsing again. Shared reusable storage could reset both second and third results and evade the current comparison. Independent auditor /root/audit_document_grammar used permitted public context only, without implementation/history/bootstrap or test execution.
