@@ -1,6 +1,6 @@
 # Restartable rebuild progress
 
-Status: stage 0 setup; no behavioral changes started. Goal remains active.
+Status: stage 0 passed; authoring first contracts change. Goal remains active.
 
 ## Controller pin
 
@@ -14,7 +14,7 @@ Status: stage 0 setup; no behavioral changes started. Goal remains active.
 
 ## Setup and next work
 
-Eight scaffold modules with proposed dependency DAG; protected design/planning/build/enforcement files; updated Go canary imports; compiling app facade/placeholder. Controller check and go test ./... pass (no behavioral tests yet). Setup baseline and doctor results will be recorded after the setup commit. Next: prove all canaries and recovery; author contracts grammar/ID/hash changes through fail-first, independent audit and impl.
+Eight scaffold modules with proposed dependency DAG; protected design/planning/build/enforcement files; updated Go canary imports; compiling app facade/placeholder. Controller check and go test ./... pass (no behavioral tests yet). Setup baseline: 14cec73e1126ee37d33f1138d19936b6a05a59a6. Controller doctor --json passed boundaries/interface/failing-eval/missing-id, including recovery, with zero diagnostics. Git metadata writes and scratch creation require the sandbox escalation used for authorized local operations. Next: contracts spec-primitives through fail-first, independent audit and impl.
 
 All R01–R21 remain unverified. No product acceptance, real regeneration or self-hosting is claimed.
 
