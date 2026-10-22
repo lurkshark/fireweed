@@ -1,6 +1,6 @@
 ---
 module: assets
-phase: evals
+phase: audit
 run: 4294b7757eb823403f72c0b8
 ---
 
@@ -31,6 +31,8 @@ The diagnostic catalog MUST contain U01, C01 through C16, P01 through P06, P1-01
 
 Version and format are data, not mutable global process settings. New binaries may override the version at build time for releases, while these default evals verify an ordinary source build. Playbook hashes are over exact UTF-8 bytes including final newline. Diagnostic wording is fresh; codes and designed meanings retain compatibility with the behavioral reference. Recipe copying, project-owned overrides, stale based_on detection and AGENTS refresh are composed later by project/checks/app.
 
+Isolation evidence uses a separately compiled public-API probe. On macOS the native policy denies all workspace source reads, an independent private-file control and network access; it permits OS loader/runtime files. Guard controls verify actual denial before asset lookups. Paths are canonicalized to avoid /var aliases. Other operating systems retain portable content checks but skip this macOS-only isolation probe; no runtime isolation claim is made for them. Installing the profile requires running the test outside the outer agent sandbox, not weakening the project's hooks.
+
 ## Rejected alternatives
 
 Runtime reads from the bootstrap or a source directory would break the single-binary and independent-regeneration requirements. Hashing normalized prose would hide meaningful playbook edits.
@@ -39,6 +41,7 @@ Runtime reads from the bootstrap or a source directory would break the single-bi
 
 - evals | 2026-10-22T07:11:21Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 3 | failing: 3 | passing: 0
 - audit | 2026-10-22T07:14:45Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-22T07:23:20Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 6 | failing: 6 | passing: 0
 
 ## Audit
 
