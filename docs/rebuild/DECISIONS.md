@@ -15,3 +15,7 @@ Use explicit gpt-6-sol only in this repository worker/audit argv after the confi
 ## D004 — Retained data types without import cycles
 
 The upcoming contracts configuration change will add a retained `model/*.go` interface subpackage with public aliases through api.go. Disposable contracts implementation can import the retained types without importing its public parent; dependent modules still import only the public contracts facade. Update interface zones through that authored change, not a protected setup shortcut.
+
+## D005 — Vet-only facade repair between claims
+
+Moving Spec to the retained model package made an existing unkeyed facade conversion fail vet. With no active claim, an author commit keys that exact literal; it changes neither the public contract nor executable behavior and does not edit evals, specs or implementation. This is retained entry/facade glue repair, not an unverified behavioral change. The prior evidence claim that vet passed is corrected; rerun vet before recording success.

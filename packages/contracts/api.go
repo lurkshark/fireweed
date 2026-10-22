@@ -23,7 +23,7 @@ func ParseItems(section, prefix string, allowHandles bool) ([]Spec, error) {
 func publicSpecs(items []specs.Item) []Spec {
 	result := make([]Spec, len(items))
 	for i, item := range items {
-		result[i] = Spec{item.ID, item.Tag, item.Body}
+		result[i] = Spec{ID: item.ID, Tag: item.Tag, Body: item.Body}
 	}
 	return result
 }
