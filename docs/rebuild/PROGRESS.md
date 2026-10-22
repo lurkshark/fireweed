@@ -1,6 +1,6 @@
 # Restartable rebuild progress
 
-Status: thirty changes archived; safe projected worker context API verified. Latest full Go/race/vet/bootstrap CI checkpoint is0c1aeae; scoped workflow race/vet, dependent verification, history and NEW coverage/check pass at8224693. Stage 2 approved metadata restoration, executable context and lifecycle remain next. Goal remains active.
+Status: thirty-one changes archived; separate process capture prerequisite verified at041b331. Latest full Go/race/vet/bootstrap CI checkpoint remains0c1aeae; scoped gitstore race/vet, all dependent verification and NEW build/check pass. Stage 2 approved metadata restoration, executable context and lifecycle remain next. Goal remains incomplete.
 
 ## Controller pin
 
@@ -376,3 +376,16 @@ Next: read-only approved metadata loading from a local Git baseline so separate 
 ## Baseline prerequisite insertion
 
 Authored baseline-snapshot at a4c3223 remains unapplied. Its compiled/executed fail-first report has362 project records/128 expected failures, all existing cases and controls passing; no phase commit was made. D021 records the verified draft backup and successful own-claim release. The queue now puts0032-process-capture before renamed0033-baseline-snapshot so Git stdout can be read independently of stderr without changing existing Run semantics. Next govern gitstore Capture through fail-first/audit/impl/archive, then restore only saved source API/evals/stub and restart baseline evals. All goal acceptance gates remain unfinished; no regeneration/self-hosting claimed.
+
+
+## process-capture (GIT-008–010)
+
+Archive changes/archive/0032-process-capture.md; applied041b3316955bf21774ec95ea17c1900789db7503. Public Capture returns exact independently buffered stdout/stderr with the existing literal argument/environment, error and owned-tree cancellation contract; Run keeps combined output. Both wrappers share one disposable execution core; platform tree controls are unchanged. Retained API/evals were immutable during impl.
+
+Author6135c63; initial fail-first55d2557 (41 gitstore records/22 genuine failures, all17 existing cases and two controls pass); independent findings106dccf; strengthened fail-firstcd30ba3 (41/22); restricted passing re-audit006103a. Findings cover invalid/pre-cancel spare storage, ordinary error text and proof of pre-deadline overlap readiness. Parent raised the first concern; auditor independently confirmed it and found the other two. Auditor read public approved change/spec/API/evals only, no private/history/bootstrap/evidence, and executed no tests/Git/controller. Both audit passes completed edits before controller done.
+
+Controller verify/done pass gitstore41/app138/checks108/project229/workflow1078/runner0 plus boundaries, diagnostics[]. Fresh gitstore race count=1 (17.126s), gitstore vet and focused count=1 tests pass. Actual macOS subprocess tests cover exact NUL/non-UTF8 bytes, concurrent long streams, empty streams, literal argv/env, valid/invalid/pre-cancel caller/backing preservation, real exits, cancelled/deadline child/grandchild pipes, delayed-write absence and unrelated overlapping Run/Capture survival. Other-platform runtime execution is not claimed. NEW build and NEW check valid:true/diagnostics[] pass; the build retains the known harmless denied external module-stat-cache warning. Latest full Go/race/vet/bootstrap CI/doctor checkpoint remains0c1aeae; these are scoped results.
+
+Evidence process-capture-{start,fail-first,evals-done,audit-findings,strengthened-fail-first,strengthened-evals-done,audit-pass,impl-verify,impl-done}.json, process-capture-{focused-impl,race,vet}.log and product-check-capture-checkpoint.json. Bootstrap source clean at its pin; binary/design checksums match. Claim clear after archive; only0033-baseline-snapshot remains queued. Next restore the six-file saved draft's API/evals/stub only (never started change metadata), strengthen remaining source/ref edge assertions, and restart its full fail-first/audit/impl cycle. No overall R01–R21 completion, real regeneration or NEW self-hosting claimed.
+
+Explicit controller check-commits14cec73e1126ee37d33f1138d19936b6a05a59a6..041b3316955bf21774ec95ea17c1900789db7503 passed with diagnostics[] (history-capture-checkpoint.json). This includes the prerequisite author reorder and all recorded phase commits.
