@@ -108,6 +108,13 @@ func main(){
  }
  args:=[]string{"playbook","evals","--json"};command:="playbook";wantCode:=0;errorCode,errorPath:="",""
  if mode=="unknown"{C.fw_guard_arm(2,C.CString(private));args=[]string{"playbook","../impl","--json"};wantCode=2;errorCode="U01"}
+ switch mode {
+ case "missing-operand":C.fw_guard_arm(2,C.CString(private));args=[]string{"playbook","--json"};wantCode=2;errorCode="U01"
+ case "excess-operands":C.fw_guard_arm(2,C.CString(private));args=[]string{"playbook","evals","extra","--json"};wantCode=2;errorCode="U01"
+ case "unknown-flag":C.fw_guard_arm(2,C.CString(private));args=[]string{"playbook","evals","--unknown","--json"};wantCode=2;errorCode="U01"
+ case "valued-flag":C.fw_guard_arm(2,C.CString(private));args=[]string{"playbook","evals","--json=true","--json"};wantCode=2;errorCode="U01"
+ }
+
  if mode=="help"{C.fw_guard_arm(2,C.CString(private));args=[]string{"playbook","--help","--json"};command="help"}
  if mode=="override_escape"{C.fw_guard_arm(3,C.CString(private));wantCode=2;errorCode="D05";errorPath=".fireweed/playbooks/evals.md"}
  if mode=="config_escape"{C.fw_guard_arm(4,C.CString(private));wantCode=2;errorCode="C01";errorPath="fireweed.yaml"}
@@ -162,7 +169,7 @@ func main(){
 	for _, mode := range []string{"private-control", "module-control", "queue-control", "unselected-control", "stdin-control", "prompt-control", "write-control", "network-control"} {
 		t.Run(mode, func(t *testing.T) { control(t, mode, private) })
 	}
-	for _, mode := range []string{"embedded", "unknown", "help"} {
+	for _, mode := range []string{"embedded", "unknown", "help", "missing-operand", "excess-operands", "unknown-flag", "valued-flag"} {
 		t.Run(mode, func(t *testing.T) { check(t, mode, private) })
 	}
 	asset, _ := a.Playbook("evals")

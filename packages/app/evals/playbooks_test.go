@@ -117,6 +117,15 @@ func boundPlaybookFailure(t *testing.T, where, name, code, path string) {
 	if plain.code != 2 || plain.out != "" || !strings.Contains(plain.err, code) || !strings.Contains(plain.err, path) {
 		t.Fatalf("plain operational failure %+v", plain)
 	}
+	if !playbookAction(plain.err) {
+		t.Fatalf("plain error lacks corrective guidance: %q", plain.err)
+	}
+	if code == "D05" {
+		_, err := p.ResolvePlaybook(where, name)
+		if err == nil || !strings.Contains(plain.err, err.Error()) {
+			t.Fatalf("plain error lost public resolver detail: %q; want %v", plain.err, err)
+		}
+	}
 	got := invoke(t, where, "--json", "playbook", name)
 	env := decode(t, got, "playbook")
 	ds := detailedDiagnostics(t, got)

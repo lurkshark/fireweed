@@ -3,7 +3,7 @@ bases:
     APP-002: 101697fd
     APP-003: e86b3428
 module: app
-phase: evals
+phase: audit
 run: 004e57240af95b8e0d0fb8ab
 ---
 
@@ -45,6 +45,7 @@ Loading all modules and queued documents for one playbook read introduces unrela
 
 - evals | 2026-10-22T21:20:16Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 134 | failing: 66 | passing: 68
 - audit | 2026-10-22T21:23:54Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-22T21:26:01Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 138 | failing: 66 | passing: 72
 
 ## Audit
 
