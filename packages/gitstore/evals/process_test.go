@@ -108,7 +108,9 @@ func Test_GIT005_GIT006_GIT007ProcessHelper(t *testing.T) {
 	}
 	os.Exit(0)
 }
-func processEnvironment() []string { return []string{"FIREWEED_PROCESS_EVAL=1"} }
+func processEnvironment() []string {
+	return []string{"FIREWEED_PROCESS_EVAL=1", "GORACE=atexit_sleep_ms=0"}
+}
 func boundedProcess(t *testing.T, dir string, argv, env []string) g.CommandResult {
 	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)

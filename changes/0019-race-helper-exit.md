@@ -4,6 +4,8 @@ already_satisfied:
 bases:
     GIT-006: 9f347585
 module: gitstore
+phase: audit
+run: d89e9a707529696cba0a7a6b
 ---
 
 ## Motivation
@@ -32,3 +34,7 @@ Use the Go race runtime's exit-sleep setting only for bounded helper subprocesse
 ## Rejected alternatives
 
 Globally changing the parent GORACE configuration would hide that the default full race command must pass. Extending process cancellation bounds would change product evidence to accommodate a reporter shutdown delay. Editing the already archived eval commit would destroy the original evidence trail.
+
+## Provenance
+
+- evals | 2026-10-22T16:48:34Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 17 | failing: 0 | passing: 17
