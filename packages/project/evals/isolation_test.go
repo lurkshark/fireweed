@@ -54,10 +54,10 @@ func Test_PRJ001_PRJ002_PRJ004NoExternalIO(t *testing.T) {
 	if err = os.Symlink(forbidden, filepath.Join(fixtureRoot, "units/escape/SPEC.md")); err != nil {
 		t.Fatal(err)
 	}
-	if err = os.Symlink(forbidden, filepath.Join(fixtureRoot, "changes/1-escape.md")); err != nil {
+	if err = os.Symlink(forbidden, filepath.Join(fixtureRoot, "changes/0001-escape.md")); err != nil {
 		t.Fatal(err)
 	}
-	if err = os.Symlink(forbidden, filepath.Join(fixtureRoot, "changes/archive/1-escape.md")); err != nil {
+	if err = os.Symlink(forbidden, filepath.Join(fixtureRoot, "changes/archive/0001-escape.md")); err != nil {
 		t.Fatal(err)
 	}
 	put(t, fixtureRoot, ".gitignore", "ignored\n")
@@ -94,7 +94,7 @@ func Test_PRJ001_PRJ002_PRJ004NoExternalIO(t *testing.T) {
 #include <sys/attr.h>
 static int armed=0;static const char*forbidden=0;
 void fw_guard_arm(int mode,const char*p){armed=mode;forbidden=p;}
-static void pathcheck(const char*p){if(armed==2||(armed&&forbidden&&p&&(strcmp(p,forbidden)==0||strstr(p,"units/escape/SPEC.md")||strstr(p,"changes/1-escape.md")||strstr(p,"changes/archive/1-escape.md"))))_exit(42);}
+static void pathcheck(const char*p){if(armed==2||(armed&&forbidden&&p&&(strcmp(p,forbidden)==0||strstr(p,"units/escape/SPEC.md")||strstr(p,"changes/0001-escape.md")||strstr(p,"changes/archive/0001-escape.md"))))_exit(42);}
 static void iocheck(void){if(armed==2)_exit(42);}
 static void netcheck(void){if(armed)_exit(42);}
 static int fw_open(const char*p,int f,...){pathcheck(p);mode_t m=0;if(f&O_CREAT){va_list a;va_start(a,f);m=va_arg(a,int);va_end(a);}return open(p,f,m);}
@@ -146,7 +146,7 @@ func main(){
  switch os.Args[1]{case "check-control":os.ReadFile(root);case "readlink-control":os.Readlink(target);case "stat-control":os.Stat(target);case "write-control":os.WriteFile(root,[]byte("bad"),0644);case "dir-control":os.ReadDir(root);case "mkdir-control":os.Mkdir(root,0755);case "unlink-control":os.Remove(root)};os.Exit(72)}
  s,err:=p.Load(root);if err!=nil{os.Exit(10)}
  if len(s.Modules)!=1||len(s.Changes)!=0||len(s.Archive)!=0{os.Exit(11)}
- found:=map[string]bool{};for _,d:=range s.Diagnostics{if d.Severity=="error"&&((d.Code=="C03"&&d.Path=="units/escape/SPEC.md")||(d.Code=="C05"&&(d.Path=="changes/1-escape.md"||d.Path=="changes/archive/1-escape.md"))){found[d.Path]=true}};if len(found)!=3{os.Exit(12)}
+ found:=map[string]bool{};for _,d:=range s.Diagnostics{if d.Severity=="error"&&((d.Code=="C03"&&d.Path=="units/escape/SPEC.md")||(d.Code=="C05"&&(d.Path=="changes/0001-escape.md"||d.Path=="changes/archive/0001-escape.md"))){found[d.Path]=true}};if len(found)!=3{os.Exit(12)}
  if os.Args[1]=="check"{C.fw_guard_arm(2,C.CString(target));ds:=p.Check(s);if len(ds)!=3{os.Exit(13)};C.fw_guard_arm(0,nil)}
 }`, temp)
 	put(t, temp, "probe.go", program)
@@ -162,9 +162,9 @@ func main(){
 		t.Fatal(err)
 	}
 	defer listener.Close()
-	for _, args := range [][]string{{"read-control", fixtureRoot, forbidden}, {"read-control", fixtureRoot, filepath.Join(fixtureRoot, "units/escape/SPEC.md")}, {"read-control", fixtureRoot, filepath.Join(fixtureRoot, "changes/1-escape.md")}, {"network-control", listener.Addr().String(), forbidden}, {"read-control", fixtureRoot, filepath.Join(fixtureRoot, "changes/archive/1-escape.md")},
+	for _, args := range [][]string{{"read-control", fixtureRoot, forbidden}, {"read-control", fixtureRoot, filepath.Join(fixtureRoot, "units/escape/SPEC.md")}, {"read-control", fixtureRoot, filepath.Join(fixtureRoot, "changes/0001-escape.md")}, {"network-control", listener.Addr().String(), forbidden}, {"read-control", fixtureRoot, filepath.Join(fixtureRoot, "changes/archive/0001-escape.md")},
 		{"check-control", filepath.Join(fixtureRoot, "fireweed.yaml"), forbidden},
-		{"readlink-control", fixtureRoot, filepath.Join(fixtureRoot, "changes/1-escape.md")},
+		{"readlink-control", fixtureRoot, filepath.Join(fixtureRoot, "changes/0001-escape.md")},
 		{"stat-control", fixtureRoot, forbidden},
 		{"write-control", filepath.Join(temp, "mutation-control"), forbidden},
 		{"dir-control", fixtureRoot, forbidden},
