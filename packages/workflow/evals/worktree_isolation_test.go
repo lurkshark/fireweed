@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func Test_FLOW013_FLOW015EscapingReadGuard(t *testing.T) {
+func Test_FLOW012_FLOW013_FLOW015EscapingReadGuard(t *testing.T) {
 	if runtime.GOOS != "darwin" {
 		t.Skip("native post-startup read/network interception runs on macOS")
 	}
@@ -104,12 +104,13 @@ I(fw_mkdir,mkdir) I(fw_unlink,unlink) I(fw_rmdir,rmdir) I(fw_rename,rename) I(fw
 void fw_guard_arm(int mode,const char*p);
 */
 import "C"
-import("encoding/json";"os";"path/filepath";"net";"time";p "github.com/lurkshark/fireweed/packages/project";c "github.com/lurkshark/fireweed/packages/contracts";w "github.com/lurkshark/fireweed/packages/workflow")
+import("encoding/json";"os";"path/filepath";"net";"time";"strings";p "github.com/lurkshark/fireweed/packages/project";c "github.com/lurkshark/fireweed/packages/contracts";w "github.com/lurkshark/fireweed/packages/workflow")
 func main(){
  var in struct{Snapshot p.Snapshot;Module c.Module;Claim w.Claim;Path,Object string}
  raw,err:=os.ReadFile(os.Args[2]);if err!=nil{os.Exit(80)};if err=json.Unmarshal(raw,&in);err!=nil{os.Exit(81)};in.Claim.Object=in.Object
  loaded,err:=w.LoadClaim(in.Snapshot.Root,in.Claim.Change);if err!=nil||loaded!=in.Claim{os.Exit(82)}
  if os.Args[1]=="fixture-control"{return}
+ if os.Args[1]=="bad-claim"{in.Claim.Object=strings.Repeat("f",len(in.Object));if in.Claim.Object==loaded.Object{os.Exit(83)}}
  C.fw_guard_arm(1,C.CString(os.Args[3]))
  switch os.Args[1]{
  case "read-private-control":os.ReadFile(os.Args[3]);os.Exit(70)
@@ -118,7 +119,8 @@ func main(){
  default:
   result:=w.CheckWorktree(in.Snapshot,in.Module,in.Path,in.Claim)
   if result.Edits==nil||result.Diagnostics==nil||len(result.Diagnostics)==0{os.Exit(10)}
-  for _,d:=range result.Diagnostics{if d.Code!="P2-01"||d.Path!=in.Path||d.Severity!="error"||d.Message==""{os.Exit(11)}}
+  code:="P2-01";if os.Args[1]=="bad-claim"{code="P02";if len(result.Edits)!=0||len(result.Diagnostics)!=1{os.Exit(12)}}
+  for _,d:=range result.Diagnostics{if d.Code!=code||d.Path!=in.Path||d.Severity!="error"||d.Message==""{os.Exit(11)}}
  }
  C.fw_guard_arm(0,nil)
 }`, temp)
@@ -160,6 +162,11 @@ func main(){
 	t.Run("safe-rejection", func(t *testing.T) {
 		if out, err := run("check"); err != nil {
 			t.Fatalf("worktree inspected private contents or failed to reject escape: %v %s", err, out)
+		}
+	})
+	t.Run("bad-claim-short-circuits-current-read", func(t *testing.T) {
+		if out, err := run("bad-claim"); err != nil {
+			t.Fatalf("rejected claim read current/private bytes or failed short-circuit contract: %v %s", err, out)
 		}
 	})
 	if raw, err := os.ReadFile(private); err != nil || string(raw) != "PRIVATE-UNTOUCHED" {

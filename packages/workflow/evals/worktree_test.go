@@ -339,6 +339,9 @@ func Test_FLOW013MissingAndLinkedCurrentFiles(t *testing.T) {
 					t.Fatal(err)
 				}
 				defer os.Chmod(full, 0644)
+				if _, err := os.ReadFile(full); !os.IsPermission(err) {
+					t.Skipf("host does not establish an unreadable-file premise: %v", err)
+				}
 			case "outside_link", "dangling_link":
 				outside := filepath.Join(t.TempDir(), "private")
 				if name == "outside_link" {
@@ -670,4 +673,168 @@ func Test_FLOW013_FLOW014IndependentViolationsCompose(t *testing.T) {
 	expected := worktreePublicDiagnostics(t, f, current, edits)
 	got := w.CheckWorktree(f.Snapshot, f.Module, f.Path, f.Claim)
 	worktreeCheckPublic(t, got, edits, expected, path)
+}
+
+func Test_FLOW013_FLOW014CollectionFailureRetainsState(t *testing.T) {
+	if os.PathSeparator == '\\' {
+		t.Skip("POSIX Git failure injection")
+	}
+	f := worktreeFixture(t, "impl", "sha1")
+	current := strings.Replace(f.Claim.State, "run: approved-run", "run: worker", 1)
+	worktreePut(t, f.Root, f.Path, current)
+	expected := w.CheckState(f.Module, f.Claim.State, current, f.Path)
+	if len(expected) == 0 {
+		t.Fatal("state rejection premise absent")
+	}
+	_, marker := worktreeTraps(t, true)
+	got := w.CheckWorktree(f.Snapshot, f.Module, f.Path, f.Claim)
+	worktreeShape(t, got, []g.Edit{})
+	for _, d := range expected {
+		found := false
+		for _, actual := range got.Diagnostics {
+			found = found || d == actual
+		}
+		if !found {
+			t.Fatalf("lost exact state diagnostic %+v in %+v", d, got.Diagnostics)
+		}
+	}
+	p02 := 0
+	for _, d := range got.Diagnostics {
+		if d.Code == "P02" && d.Path == f.Path {
+			p02++
+		}
+	}
+	if p02 != 1 || len(got.Diagnostics) != len(expected)+1 {
+		t.Fatalf("missing independent collection failure: %+v", got.Diagnostics)
+	}
+	if _, err := os.Stat(marker); err != nil {
+		t.Fatal("collection failure was never reached")
+	}
+}
+func Test_FLOW013_FLOW014EscalationRetainsApprovedFilePolicy(t *testing.T) {
+	f := worktreeFixture(t, "audit", "sha1")
+	current := strings.Replace(f.Claim.State, "phase: audit", "phase: impl", 1)
+	worktreePut(t, f.Root, f.Path, current)
+	worktreePut(t, f.Root, "units/a/internal/existing.go", "forbidden in approved audit phase")
+	worktreePut(t, f.Root, "go.sum", "also forbidden in approved audit phase")
+	edits := worktreeEdits(t, f)
+	expected := worktreePublicDiagnostics(t, f, current, edits)
+	for _, path := range []string{f.Path, "units/a/internal/existing.go", "go.sum"} {
+		found := false
+		for _, d := range expected {
+			found = found || (d.Code == "P2-01" && d.Path == path)
+		}
+		if !found {
+			t.Fatalf("approved-phase premise missing %s: %+v", path, expected)
+		}
+	}
+	worktreeCheckPublic(t, w.CheckWorktree(f.Snapshot, f.Module, f.Path, f.Claim), edits, expected)
+}
+func Test_FLOW014SuppliedProjectedZonesOverrideStaleSnapshot(t *testing.T) {
+	for _, path := range []string{"units/a/internal/existing.go", "units/a/evals/frozen.txt"} {
+		t.Run(path, func(t *testing.T) {
+			f := worktreeFixture(t, "impl", "sha1")
+			f.Claim.State = strings.Replace(f.Claim.State, "module: alpha\n", "module: alpha\nset:\n  evals: [internal/**]\n  disposable: [evals/**]\n", 1)
+			worktreePut(t, f.Root, f.Path, f.Claim.State)
+			worktreeReseed(t, &f)
+			parsed, err := c.ParseChange(f.Claim.State, f.Path, f.Module.IDPrefix)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var stale c.Module
+			for _, m := range f.Snapshot.Modules {
+				if m.Name == "alpha" {
+					stale = m
+				}
+			}
+			f.Module, err = p.ApplyChange(stale, parsed)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if reflect.DeepEqual(f.Module.Zones, stale.Zones) {
+				t.Fatal("projected zones did not change")
+			}
+			worktreePut(t, f.Root, path, "changed worker bytes")
+			edits := worktreeEdits(t, f)
+			expected := worktreePublicDiagnostics(t, f, f.Claim.State, edits)
+			staleDS := w.CheckEdits(f.Snapshot, stale, parsed, edits)
+			if reflect.DeepEqual(expected, staleDS) {
+				t.Fatal("fixture does not distinguish stale target from approved projection")
+			}
+			if path == "units/a/internal/existing.go" {
+				policyAssert(t, expected, policyWant(path, "P2-01"))
+			} else {
+				policyAssert(t, expected, nil)
+			}
+			worktreeCheckPublic(t, w.CheckWorktree(f.Snapshot, f.Module, f.Path, f.Claim), edits, expected)
+		})
+	}
+}
+func Test_FLOW014UnsafeOldEndpointsWithSafeDestinations(t *testing.T) {
+	if os.PathSeparator == '\\' {
+		t.Skip("POSIX symlink and literal-argv Git wrapper fixture")
+	}
+	for _, status := range []string{"R", "C"} {
+		t.Run(status, func(t *testing.T) {
+			f := worktreeFixture(t, "impl", "sha1")
+			from, to := "units/a/internal/existing.go", "units/a/keep/moved.go"
+			outside := stateCanonicalDirectory(t, t.TempDir())
+			bytes, err := os.ReadFile(filepath.Join(f.Root, from))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if status == "R" {
+				if err := os.Rename(filepath.Join(f.Root, from), filepath.Join(f.Root, to)); err != nil {
+					t.Fatal(err)
+				}
+			} else {
+				worktreePut(t, f.Root, to, string(bytes))
+				// Keep the native index's source unchanged while its live path becomes unsafe.
+				claimGit(t, f.Root, "update-index", "--assume-unchanged", from)
+				if err := os.Remove(filepath.Join(f.Root, from)); err != nil {
+					t.Fatal(err)
+				}
+				worktreePut(t, outside, "existing.go", string(bytes))
+			}
+			if err := os.Remove(filepath.Join(f.Root, "units/a/internal")); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.Symlink(outside, filepath.Join(f.Root, "units/a/internal")); err != nil {
+				t.Skipf("symlink unavailable: %v", err)
+			}
+			if status == "R" {
+				claimGit(t, f.Root, "add", "units/a")
+			} else {
+				claimGit(t, f.Root, "add", to)
+				realGit, err := exec.LookPath("git")
+				if err != nil {
+					t.Fatal(err)
+				}
+				wrappers := t.TempDir()
+				// Request real native copy discovery while preserving every original argument.
+				script := "#!/bin/sh\ncopy=0;for a in \"$@\"; do [ \"$a\" = diff ] && copy=1;done\nif [ \"$copy\" = 1 ]; then n=$#;while [ \"$n\" -gt 0 ]; do a=$1;shift;n=$((n-1));if [ \"$a\" = -- ];then set -- \"$@\" --find-copies-harder --find-copies=100% --;else set -- \"$@\" \"$a\";fi;done;fi\nexec " + claimQuote(realGit) + " \"$@\"\n"
+				if err := os.WriteFile(filepath.Join(wrappers, "git"), []byte(script), 0755); err != nil {
+					t.Fatal(err)
+				}
+				t.Setenv("PATH", wrappers+string(os.PathListSeparator)+os.Getenv("PATH"))
+			}
+			edits := worktreeEdits(t, f)
+			want := g.Edit{Status: status, OldPath: from, Path: to}
+			found := false
+			for _, e := range edits {
+				found = found || e == want
+			}
+			if !found {
+				t.Fatalf("native Git fixture lacks exact %+v: %+v", want, edits)
+			}
+			if _, err := g.SafePath(f.Root, from); err == nil {
+				t.Fatal("old endpoint is not unsafe")
+			}
+			if _, err := g.SafePath(f.Root, to); err != nil {
+				t.Fatalf("destination must be safe: %v", err)
+			}
+			expected := worktreePublicDiagnostics(t, f, f.Claim.State, edits)
+			worktreeCheckPublic(t, w.CheckWorktree(f.Snapshot, f.Module, f.Path, f.Claim), edits, expected, "units/a/internal", from)
+		})
+	}
 }
