@@ -1,6 +1,6 @@
 ---
 module: contracts
-phase: audit
+phase: evals
 run: aec3bf251ada4a0f504b8195
 set:
     interface:
@@ -45,3 +45,14 @@ Using zero values for omission would lose audit's default enabled state and conf
 ## Provenance
 
 - evals | 2026-10-22T06:37:23Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 12 | failing: 4 | passing: 8
+- audit | 2026-10-22T06:39:21Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+- CON-008: "Explicit empty lists MUST remain empty" — no assertion preserves explicit empty agent.command, agent.wrap, or audit.command lists.
+- CON-009: "Returned configurations MUST be independent values, so mutating one parse result cannot affect later parses." — isolation assertions cover default slices only; populated preserve, append-only, protected, worker-writable, agent, and audit slices are never mutated and reparsed.
+- CON-009: "non-mapping roots" — no rejection assertion covers a YAML null root, which can otherwise be mistaken for omitted configuration.
+- CON-010: "whitespace-separated conjunction" — its only assertion expects success; no rejected case proves both comparisons are enforced.
+- CON-010: "exact major.minor[.patch] versions" — bare exact constraints have only a matching patch-version assertion; no mismatch rejection or bare major.minor acceptance assertion.
+- CON-010: "numeric version comparisons" — no multi-digit component assertion distinguishes numeric comparison from lexical comparison, such as 0.4.10 > 0.4.9.
+- CON-010: "malformed binary versions, constraints" — no assertions cover build metadata or negative numeric components, which Decisions explicitly exclude.
