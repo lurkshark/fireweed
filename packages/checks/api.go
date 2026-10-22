@@ -3,6 +3,7 @@ package checks
 
 import (
 	"context"
+	"github.com/lurkshark/fireweed/packages/checks/internal/boundaries"
 	"github.com/lurkshark/fireweed/packages/checks/internal/evidence"
 	"github.com/lurkshark/fireweed/packages/checks/internal/hooks"
 	"github.com/lurkshark/fireweed/packages/checks/model"
@@ -26,4 +27,8 @@ func RunHook(ctx context.Context, snapshot project.Snapshot, module *contracts.M
 }
 func Evaluate(ctx context.Context, snapshot project.Snapshot, module contracts.Module, failFirst, already []string) Coverage {
 	return hooks.Evaluate(ctx, snapshot, module, failFirst, already)
+}
+
+func Boundaries(ctx context.Context, snapshot project.Snapshot) []Diagnostic {
+	return boundaries.Check(ctx, snapshot)
 }
