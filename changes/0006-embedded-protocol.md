@@ -1,6 +1,6 @@
 ---
 module: assets
-phase: audit
+phase: evals
 run: 4294b7757eb823403f72c0b8
 ---
 
@@ -38,3 +38,12 @@ Runtime reads from the bootstrap or a source directory would break the single-bi
 ## Provenance
 
 - evals | 2026-10-22T07:11:21Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 3 | failing: 3 | passing: 0
+- audit | 2026-10-22T07:14:45Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+- AST-001: "independent of working directory or repository files" — CWD isolation does not establish independence from absolute repository-file reads.
+- AST-002: "Text MUST give concrete commands and rules for its step" — detached keywords do not establish the specified instructions, complete specs, human approval, allowed zones, genuine failed testcase evidence or passing dependent/boundary checks.
+- AST-002: "Lookups MUST perform no runtime file or network reads." — no assertion detects runtime file/network reads.
+- AST-003: "Each explanation MUST identify the problem and a corrective action." — a word count does not assert problems or corrective actions.
+- AST-003: "H01 MUST cover protected worker files, H02 immutable impl evals/interfaces, H03 append-only changes by anyone including merge resolutions, and H04 immutable archives with deletion for revert allowed plus duplicate recovery by aborting the merge, listing commits, reverting the incoming duplicate and merging again." — keywords do not establish rules, immutability or the required incoming-duplicate recovery sequence.
