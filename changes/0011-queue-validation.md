@@ -2,7 +2,7 @@
 bases:
     PRJ-002: 785bd51b
 module: project
-phase: audit
+phase: evals
 run: f6f7a58489768db3ab6b9ece
 ---
 
@@ -48,3 +48,16 @@ Validating only the final state would allow a change to weaken enforcement until
 ## Provenance
 
 - evals | 2026-10-22T14:12:18Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 51 | failing: 11 | passing: 40
+- audit | 2026-10-22T14:18:05Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+- PRJ-011: "Every Modified and Removed ID MUST exist immediately before its change" — missing target fixtures also omit their bases; provide hashes and separately test stale Removed hashes.
+- PRJ-011: "Stale or missing hashes MUST NOT stop projecting structurally valid intent" — observe removal intent in a later change, not only modification bodies.
+- PRJ-012: "Newly introduced C03, C06, C07, C08 and D04 diagnostics" — test persistence through an intervening change, repair/reintroduction, and a new same-code problem in another module.
+- PRJ-013: "invalid typed changes/applications MUST emit C05" — add invalid set types/fields, phase/hash format, and valid native Motivation documents.
+- PRJ-013: "Structurally invalid applications MUST be skipped" — include valid modification/set plus invalid edit and check later same-module bases against the original state.
+- PRJ-013: "already_satisfied IDs MUST exist in the resulting module" — add acceptance of newly added assigned-state IDs.
+- PRJ-013: "undeclared or cross-change-only handles anywhere in a change MUST emit C09" — add nested metadata local acceptance versus undeclared references.
+- PRJ-002: "Archive human sections MUST preserve literal handle examples" — add historical preamble/Motivation/Provenance literals and full retained document assertions.
+- PRJ-014: "fresh non-null diagnostic slice" — poison an error slice then repeat; compare valid populated snapshots before/after and seed multiple unrelated discovery codes.
