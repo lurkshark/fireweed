@@ -73,11 +73,3 @@ func Finalize(module contracts.Module, change contracts.Change) (contracts.Modul
 type Playbook = model.Playbook
 
 func ResolvePlaybook(start, name string) (Playbook, error) { return playbooks.Resolve(start, name) }
-
-func LoadAt(start, revision string) (Snapshot, error) {
-	d, err := inspection.LoadAt(start, revision)
-	if err != nil {
-		return Snapshot{}, err
-	}
-	return Snapshot{Root: d.Root, BaseRef: d.BaseRef, Config: d.Config, Modules: d.Modules, Changes: d.Changes, Archive: d.Archive, Diagnostics: publicDiagnostics(d.Diagnostics)}, nil
-}
