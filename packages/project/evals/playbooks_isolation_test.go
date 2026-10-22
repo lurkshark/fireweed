@@ -21,6 +21,10 @@ func Test_PRJ021_PRJ022_PRJ023NativeReadAndNetworkGuards(t *testing.T) {
 	}
 	root := playbookRoot(t)
 	outside := t.TempDir()
+	outside, err := filepath.EvalSymlinks(outside)
+	if err != nil {
+		t.Fatal(err)
+	}
 	put(t, outside, "private", "PRIVATE-UNCHANGED")
 	private, err := filepath.EvalSymlinks(filepath.Join(outside, "private"))
 	if err != nil {
