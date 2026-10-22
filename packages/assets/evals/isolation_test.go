@@ -91,6 +91,8 @@ func main(){
  for _,name:=range a.Playbooks(){text,err:=a.Playbook(name);if err!=nil||text.Text==""||text.Hash==""{os.Exit(6)}}
  if len(a.Playbooks())!=5{os.Exit(7)}
  for _,code:=range a.Codes(){if text,err:=a.Explain(code);err!=nil||text==""{os.Exit(8)}}
+ for _,name:=range []string{"","missing","../author-change","AUDIT"}{if _,err:=a.Playbook(name);err==nil{os.Exit(12)}}
+ for _,code:=range []string{"","unknown","C00","H05","c01"}{if _,err:=a.Explain(code);err==nil{os.Exit(13)}}
  fmt.Println("EMBEDDED_ASSETS_OK")
 }`, temp)
 	if err := os.WriteFile(source, []byte(program), 0644); err != nil {
