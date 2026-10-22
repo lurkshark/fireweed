@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: audit
+phase: impl
 run: 6ec380df90af73c41671e42a
 ---
 
@@ -41,13 +41,8 @@ Reading entire module trees exposes disposable implementations to reconstruction
 - evals | 2026-10-22T21:59:47Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1067 | failing: 123 | passing: 944
 - audit | 2026-10-22T22:05:09Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T22:16:29Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1078 | failing: 133 | passing: 945
+- audit | 2026-10-22T22:17:52Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- FLOW-016: "including current specs, metadata, zones and Decisions behavior of those APIs." — missing assertion with a meaningful preceding or selected Decisions edit/removal; current fixtures retain the original module Decisions without changing them.
-- FLOW-016: "this operation does not reload worker-modified config or module metadata." — missing assertion that valid worker-edited SPEC metadata cannot alter the returned projected module, dependencies or file selection; the authority case corrupts config but changes SPEC text only through equivalent line endings.
-- FLOW-017: "Resolver errors MUST retain their public corrective details." — missing assertion comparing a resolver rejection with the public ResolvePlaybook error details; current error helpers require only a code, corrective wording and path fragment.
-- FLOW-017: "A missing current change MAY use only the exact State from a valid stored claim" — missing assertion that an otherwise valid owned claim cannot replace an existing empty current file or recover a directory/unreadable current-file error; valid claims currently accompany only missing or unsafe-path recovery cases.
-- FLOW-018: "protected and SPEC.md files MUST NOT appear in Files or have their contents read by this enumeration." — missing assertion for a SPEC.md inside an otherwise selected zone, such as units/a/e/SPEC.md; existing SPEC paths do not match selected file globs, so their exclusion does not exercise this restriction.
-- FLOW-019: "Successful results and their nested maps/slices MUST be independent of inputs and repeated results, including immediately after mutation and on empty collections." — missing assertion mutating one of two already-returned contexts and checking the other immediately; the next context is currently built only after the first is mutated, which does not establish independence between existing results.
-- FLOW-019: "MUST NOT run hooks, agents, bootstrap or network commands" — missing native Git read-triggered hook control, such as an enabled fsmonitor hook with an independently verified marker; configured fireweed hook traps and mutation-command traps do not establish that enumeration suppresses native hooks.
+No findings. Checked FLOW-016, FLOW-017, FLOW-018, FLOW-019.
