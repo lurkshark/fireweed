@@ -31,6 +31,8 @@ This is a text-state guard, not full lifecycle verification: filesystem zones, s
 
 The approved phase selects section permissions, so an auditor cannot grant itself implementation permissions by changing phase. Non-audit workers may edit Notes as well as Decisions/Questions, matching the reference's documented free-prose workflow. All occurrences of an allowed section are mutable only when public grammar accepts them; every retained protected section occurrence remains compared. Unknown sections and the preamble remain protected. Parser-normalized whitespace and YAML syntax are not independent approval fields. A metadata violation and a protected-body violation produce separate diagnostics, in stable order; invalid text produces one parse/baseline diagnostic first.
 
+The initial incomplete cycle was fully reverted before this restart (D017). Temporary cwd fixtures must resolve filesystem aliases before comparing with os.Getwd; establish that premise independently. The public guard must preserve actual parent state, rather than manipulating cwd or environment to satisfy a raw alias string. Duplicate-heading invalid-input cases use raw text because the document renderer correctly rejects duplicate sections before the state guard.
+
 ## Rejected alternatives
 
 Comparing only typed change metadata loses unknown protected body edits and exact explicit-key presence. Trusting current phase permits self-authorized escalation. A line-based section stripper mistakes fenced examples for actual headings. Reparsing the repository during this text comparison would make its claim baseline dependent on worker-controlled files.
