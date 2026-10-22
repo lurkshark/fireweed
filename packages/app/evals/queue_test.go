@@ -94,9 +94,12 @@ func Test_APP008QueueComposition(t *testing.T) {
 		t.Fatal(err)
 	}
 	cliQueueResult(t, nested, false, want)
-	_, current := projectExpected(t, root)
+	currentSnapshot, current := projectExpected(t, root)
 	got := invoke(t, nested, "modules", "--json")
-	decode(t, got, "modules")
+	moduleJSON := decode(t, got, "modules")
+	if !reflect.DeepEqual(decodeData(t, moduleJSON.Data), canonical(t, currentSnapshot.Modules)) {
+		t.Fatal("modules data leaked projected queue state")
+	}
 	if got.code != 1 || !reflect.DeepEqual(detailedDiagnostics(t, got), current) {
 		t.Fatalf("modules projected errors %+v", got)
 	}
@@ -125,14 +128,21 @@ func Test_APP008QueueOrderAndWarnings(t *testing.T) {
 	}
 	cliQueueResult(t, root, true, want)
 	got := invoke(t, root, "modules", "--json")
-	decode(t, got, "modules")
+	moduleJSON := decode(t, got, "modules")
+	currentSnapshot, _ := projectExpected(t, root)
+	if !reflect.DeepEqual(decodeData(t, moduleJSON.Data), canonical(t, currentSnapshot.Modules)) {
+		t.Fatal("modules data leaked queued hooks/specs")
+	}
 	if got.code != 0 || len(detailedDiagnostics(t, got)) != 1 || detailedDiagnostics(t, got)[0].Code != "C02" {
 		t.Fatalf("modules included queued warning %+v", got)
 	}
 	// A structurally valid projected error affects only check.
 	cliQueueChange(t, root, "changes/0012-dependency.md", "alpha", "ALP", "set: {depends_on: [missing]}\n", "")
 	got = invoke(t, root, "modules", "--json")
-	decode(t, got, "modules")
+	moduleJSON = decode(t, got, "modules")
+	if !reflect.DeepEqual(decodeData(t, moduleJSON.Data), canonical(t, currentSnapshot.Modules)) {
+		t.Fatal("modules data leaked queued dependencies")
+	}
 	if got.code != 0 || len(detailedDiagnostics(t, got)) != 1 {
 		t.Fatalf("modules included projected errors %+v", got)
 	}
