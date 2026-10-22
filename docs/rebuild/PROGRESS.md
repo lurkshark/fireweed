@@ -1,6 +1,6 @@
 # Restartable rebuild progress
 
-Status: stage 1, six behavioral changes archived; early CLI inspection slice next. Goal remains active.
+Status: stage 1, seven behavioral changes archived; project discovery/static graph next. Goal remains active.
 
 ## Controller pin
 
@@ -73,3 +73,11 @@ Isolation details: a separately compiled Go public-API probe loads a test-only D
 At a8eabefafe937d11c5de10b1510192319ee701ee, go test ./..., go test -race ./..., go vet ./... and go build -o bin/fireweed . all exited 0 (including the native guarded probe). Controller ci 14cec73e1126ee37d33f1138d19936b6a05a59a6..a8eabefafe937d11c5de10b1510192319ee701ee passed with doctor enabled and zero diagnostics; invocation used ..HEAD at that exact endpoint. Coverage: contracts 25 cases, gitstore 8, assets 6; other five scaffold modules 0. Evidence .fireweed/evidence/ci-assets-checkpoint.json. Queue and claims empty, bootstrap checkout clean.
 
 Next action: author an app command slice for actual executable help/version and embedded explain/playbook reads with versioned JSON/usage exits. Use explicit NEW subject binaries in permanent app evals, separate from controller. Then build project discovery/graph/projection/static validation and extend CLI inspection/authoring; continue all later lifecycle/runner/history/recipes/distribution gates. bin/fireweed still contains the setup app placeholder at this boundary. No full design completion, real regeneration, self-hosting or final acceptance is claimed.
+
+## cli-inspection (APP-001–APP-004)
+
+Archive changes/archive/0007-cli-inspection.md. Eight permanent app evals build and execute a separately named NEW product binary from temporary directories, checking help/inventory/exit meanings, version aliases, all embedded explanations/playbooks, JSON envelope/data/error paths, option boundaries, writer failures and external-agent/controller traps. No controller is used as subject. Initial fail-first 3ac20ca; two independent audit findings cb63082; stronger fail-first c3fc980; passing independent re-audit c01421b; applied c3e9428dc7c61344d7cee6f4dbb2fdbb2f560463. Controller impl verify passed app's eight cases and boundaries. bin/fireweed was rebuilt and its version --json returns schema 1, version 0.4.0, diagnostics [].
+
+Playbook JSON retains embedded_hash and adds overridden:false for later project-owned overrides. Embedded playbooks now work outside a project (intentional reference difference D007); pin/override integration is still pending. Remaining commands printed in help are not yet implemented. Next author project discovery/config/module/queue loading and graph/zone/hook validation, then extend actual executable inspection. Goal remains active and full acceptance incomplete.
+
+Restart at this boundary: previous goal turn was progress (archived code/evals and full checkpoint evidence); current turn added real product CLI behavior. Queue/claims clear after archive; bootstrap remains the pinned controller.
