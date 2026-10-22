@@ -1,6 +1,6 @@
 ---
 module: project
-phase: impl
+phase: applied
 run: 5bac8caec4836214c46ee6c9
 ---
 
@@ -36,6 +36,8 @@ Projection is an intent preview: it does not enforce existing bases or allocate 
 
 ApplyChange errors return the zero Module, never a partial result. Existing-ID addition collisions mean real allocated IDs; handle placeholders are local declarations, so two queued changes may each declare new:local and their preview retains both items without treating that shared spelling as an allocated-ID collision. References in each change must still be declared locally. A preview document can therefore contain repeated placeholder headings from different changes, and is never written as a current SPEC.md until start has allocated real IDs. Invalid excluded target/tail applications are not executed or validated by Project(before); ambiguity of the selector itself is still an error. Base hashes follow typed spec fields, including normalized whitespace, rather than stale retained document text.
 
+The public diagnostic conversion keeps the established non-null slice convention; diagnostic contents and ordering are preserved. Projection otherwise preserves nil versus explicit empty configuration/module lists through independent copies.
+
 ## Rejected alternatives
 
 Reading working files during projection would break determinism for callers holding a snapshot. Allocating IDs while previewing would reintroduce parallel author collisions. Applying queue input order would make same-number changes depend on filesystem iteration.
@@ -46,6 +48,7 @@ Reading working files during projection would break determinism for callers hold
 - audit | 2026-10-22T08:55:26Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T08:58:10Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 40 | failing: 13 | passing: 27
 - audit | 2026-10-22T09:00:52Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- impl | 2026-10-22T13:56:29Z | agent: manual | fireweed: 0.4.0 | playbook: 653912b194316c62181f62d0a69dc213f7668481ea8b1b9926ef889dd48a9e08 | tests: 52 | failing: 0 | passing: 52
 
 ## Audit
 
