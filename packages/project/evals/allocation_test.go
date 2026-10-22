@@ -46,6 +46,12 @@ func Test_PRJ015ReservationsAndDeclarationOrder(t *testing.T) {
 	if encoded(t, s) != before {
 		t.Fatal("allocation mutated input")
 	}
+	reversed := allocationFixture(t)
+	reversed.Changes[2].Added = []c.Spec{reversed.Changes[2].Added[1], reversed.Changes[2].Added[0]}
+	reverseResult, reverseMap, e := p.Allocate(reversed, "allocate")
+	if e != nil || reverseMap["new:aa"] != "ALP-1006" || reverseMap["new:a"] != "ALP-1007" || reverseResult.Added[0].ID != "ALP-1006" {
+		t.Fatalf("declaration order sorted lexically: %+v %+v %v", reverseResult, reverseMap, e)
+	}
 	for _, state := range []struct{ run, phase string }{{"", ""}, {"held", ""}, {"", "evals"}} {
 		v := allocationFixture(t)
 		v.Changes[0].Run = state.run
@@ -85,6 +91,72 @@ func Test_PRJ015ReservationsAndDeclarationOrder(t *testing.T) {
 		}
 	}
 }
+
+func Test_PRJ015AllNumericReservationSourcesAndScope(t *testing.T) {
+	for _, source := range []string{"current", "archive-added", "archive-modified", "archive-removed", "queued-assigned"} {
+		for _, width := range []struct{ high, want string }{{"ALP-0999", "ALP-1000"}, {"ALP-999999999999999999999999999999", "ALP-1000000000000000000000000000000"}} {
+			s := allocationFixture(t)
+			s.Modules = s.Modules[:1]
+			s.Modules[0].Specs = []c.Spec{}
+			s.Archive = nil
+			s.Changes = []c.Change{s.Changes[2]}
+			items := []c.Spec{{ID: width.high, Body: "It MUST reserve the numeric maximum."}, {ID: "ALP-100", Body: "It MUST distinguish variable widths."}}
+			switch source {
+			case "current":
+				s.Modules[0].Specs = items
+			case "archive-added":
+				s.Archive = []c.Change{{Module: "alpha", Added: items}}
+			case "archive-modified":
+				s.Archive = []c.Change{{Module: "alpha", Modified: items}}
+			case "archive-removed":
+				s.Archive = []c.Change{{Module: "alpha", Removed: []c.Spec{{ID: width.high}, {ID: "ALP-100"}}}}
+			case "queued-assigned":
+				s.Changes = append(s.Changes, c.Change{Module: "alpha", Run: "held", Phase: "impl", Added: items})
+			}
+			got, mp, err := p.Allocate(s, "allocate")
+			if err != nil || got.Added[0].ID != width.want || mp["new:a"] != width.want {
+				t.Fatalf("%s %s: %+v %+v %v", source, width.high, got, mp, err)
+			}
+		}
+	}
+	s := allocationFixture(t)
+	// Prefix uniqueness is a separate validator's responsibility. The selected
+	// allocator must filter module ownership even when another record is invalid.
+	s.Modules[1].IDPrefix = "ALP"
+	s.Modules[1].Specs = []c.Spec{{ID: "ALP-999999999", Body: "It MUST belong to the other module."}}
+	s.Archive = append(s.Archive, c.Change{Module: "beta", Added: []c.Spec{{ID: "ALP-999999998"}}, Modified: []c.Spec{{ID: "ALP-999999997"}}, Removed: []c.Spec{{ID: "ALP-999999996"}}})
+	s.Changes = append(s.Changes, c.Change{Module: "beta", Run: "other", Phase: "evals", Added: []c.Spec{{ID: "ALP-999999995"}}})
+	s.Changes[1].Modified = []c.Spec{{ID: "ALP-7777777", Body: "It MUST only reference an existing ID."}}
+	s.Changes[1].Removed = []c.Spec{{ID: "ALP-6666666"}}
+	// A malformed predecessor must not be replayed to allocate the selected change.
+	predecessor := s.Changes[0]
+	predecessor.Number = 0
+	predecessor.Slug = "invalid-before"
+	predecessor.Path = "changes/0000-invalid-before.md"
+	predecessor.Set = map[string]any{"name": "forbidden"}
+	s.Changes = append(s.Changes, predecessor)
+	got, mp, err := p.Allocate(s, "allocate")
+	if err != nil || got.Added[0].ID != "ALP-1006" || mp["new:aa"] != "ALP-1007" {
+		t.Fatalf("excluded owners/references/predecessor affected allocation: %+v %+v %v", got, mp, err)
+	}
+}
+
+func allocationDocumentAgreement(t *testing.T, ch c.Change) {
+	t.Helper()
+	text, err := c.RenderMarkdown(ch.Document)
+	if err != nil {
+		t.Fatal(err)
+	}
+	parsed, err := c.ParseChange(text, ch.Path, "ALP")
+	if err != nil {
+		t.Fatal(err)
+	}
+	parsed.Number = ch.Number
+	if !reflect.DeepEqual(parsed, ch) {
+		t.Fatalf("document/typed disagreement: %+v %+v", parsed, ch)
+	}
+}
+
 func Test_PRJ015WidthsAndResume(t *testing.T) {
 	for _, v := range []struct{ reserved, want string }{{"", "ALP-001"}, {"ALP-009", "ALP-010"}, {"ALP-0999", "ALP-1000"}, {"ALP-999999999999999999999999999999", "ALP-1000000000000000000000000000000"}} {
 		s := allocationFixture(t)
@@ -104,10 +176,28 @@ func Test_PRJ015WidthsAndResume(t *testing.T) {
 		s := allocationFixture(t)
 		ch := s.Changes[1]
 		ch.Phase = phase
+		ch.Number = 83
+		ch.Run = "typed-run"
 		s.Changes = []c.Change{ch}
+		before := encoded(t, s)
 		got, mp, err := p.Allocate(s, ch.Slug)
-		if err != nil || mp == nil || len(mp) != 0 || got.Added[0].ID != "ALP-1005" || got.Run != "assigned" || got.Phase != phase {
+		if err != nil || mp == nil || len(mp) != 0 || got.Added[0].ID != "ALP-1005" || got.Run != "typed-run" || got.Phase != phase || got.Number != 83 {
 			t.Fatalf("resume %+v %+v %v", got, mp, err)
+		}
+		allocationDocumentAgreement(t, got)
+		second, mp2, err := p.Allocate(s, ch.Slug)
+		if err != nil {
+			t.Fatal(err)
+		}
+		secondBefore, mapBefore := encoded(t, second), encoded(t, mp2)
+		poison(reflect.ValueOf(&got).Elem())
+		mp["poison"] = "poison"
+		if encoded(t, s) != before || encoded(t, second) != secondBefore || encoded(t, mp2) != mapBefore {
+			t.Fatal("real-ID resume aliases input or another result")
+		}
+		third, _, err := p.Allocate(s, ch.Slug)
+		if err != nil || !reflect.DeepEqual(second, third) {
+			t.Fatal("real-ID resume mutation poisoned future results")
 		}
 	}
 }
@@ -133,11 +223,38 @@ func Test_PRJ016RewriteEveryLocationAndTypedIdentity(t *testing.T) {
 	}
 	ch.Document.Sections = append(ch.Document.Sections, c.Section{Name: "Decisions", Body: "Choose new:a and new:aa."}, c.Section{Name: "Extra author text", Body: "Preserve this unrelated text exactly."})
 	ch.Modified = []c.Spec{{ID: "ALP-001", Tag: "[review]", Body: "It MUST refer to new:a and new:aa."}}
+	ch.Removed = []c.Spec{{ID: "ALP-002", Tag: "[review]"}}
+	ch.Regenerate = true
+	ch.Blocked = "Wait for new:aa"
+	ch.Set["preserve"] = []any{}
+	ch.Set["depends_on"] = []any{"beta"}
+	for i := range ch.Document.Sections {
+		if ch.Document.Sections[i].Name == "Extra author text" {
+			ch.Document.Sections[i].Body = "\r\nPreserve this unrelated text exactly.  \r\nSecond line.\r\n\r\n"
+		}
+	}
 	// All of these retained fields are stale; typed values define the transform.
 	ch.Document.Metadata["already_satisfied"] = []any{"ALP-999"}
 	ch.Document.Metadata["set"] = map[string]any{"hooks": map[string]any{"setup": "stale"}}
 	ch.Document.Metadata["module"] = "stale"
 	ch.Document.Metadata["blocked"] = "stale"
+	ch.Document.Metadata["regenerate"] = false
+	ch.Document.Metadata["run"] = "stale-run"
+	ch.Document.Metadata["phase"] = "impl"
+	normalizedText, err := c.RenderMarkdown(ch.Document)
+	if err != nil {
+		t.Fatal(err)
+	}
+	normalizedDoc, err := c.ParseMarkdown(normalizedText)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var expectedHumanBody string
+	for _, section := range normalizedDoc.Sections {
+		if section.Name == "Extra author text" {
+			expectedHumanBody = section.Body
+		}
+	}
 	s.Changes = []c.Change{ch}
 	s.Archive = nil
 	s.Modules[0].Specs = s.Modules[0].Specs[:3]
@@ -145,11 +262,19 @@ func Test_PRJ016RewriteEveryLocationAndTypedIdentity(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if mp["new:a"] != "ALP-004" || mp["new:aa"] != "ALP-005" || got.Path != ch.Path || got.Slug != ch.Slug || got.Number != 77 || got.Module != "alpha" || got.Blocked != "" || got.Added[0].Tag != "[quarantine: authored reason]" {
+	if mp["new:a"] != "ALP-004" || mp["new:aa"] != "ALP-005" || got.Path != ch.Path || got.Slug != ch.Slug || got.Number != 77 || got.Module != "alpha" || got.Blocked != "Wait for ALP-005" || got.Added[0].Tag != "[quarantine: authored reason]" {
 		t.Fatalf("typed identity %+v %+v", got, mp)
 	}
 	if !reflect.DeepEqual(got.AlreadySatisfied, []string{"ALP-004"}) || got.Set["hooks"].(map[string]any)["setup"] != "show ALP-005 and ALP-004" || got.Modified[0].Body != "It MUST refer to ALP-004 and ALP-005." || got.Modified[0].Tag != "[review]" {
 		t.Fatalf("typed rewrite %+v", got)
+	}
+	if !reflect.DeepEqual(got.Bases, ch.Bases) || !reflect.DeepEqual(got.Fixes, ch.Fixes) || !reflect.DeepEqual(got.Removed, ch.Removed) || got.Modified[0].ID != "ALP-001" || !got.Regenerate || got.Kind != "regenerate" || got.Run != "" || got.Phase != "" || !reflect.DeepEqual(got.Set["preserve"], []any{}) || !reflect.DeepEqual(got.Set["depends_on"], []any{"beta"}) {
+		t.Fatalf("lost unrelated real IDs/metadata: %+v", got)
+	}
+	for _, section := range got.Document.Sections {
+		if section.Name == "Extra author text" && section.Body != expectedHumanBody {
+			t.Fatalf("human normalization changed: %q want %q", section.Body, expectedHumanBody)
+		}
 	}
 	text, err := c.RenderMarkdown(got.Document)
 	if err != nil {
@@ -181,7 +306,7 @@ func Test_PRJ016RewriteEveryLocationAndTypedIdentity(t *testing.T) {
 	}
 }
 func Test_PRJ017AllocationErrorsAreAtomic(t *testing.T) {
-	for _, kind := range []string{"empty", "missing", "duplicate", "target", "duplicate-target", "body", "set", "handle-body", "handle-meta", "phase", "hash", "author-id", "run-only", "phase-only", "applied", "started-handles"} {
+	for _, kind := range []string{"empty", "missing", "duplicate", "target", "duplicate-target", "body", "set", "handle-body", "handle-meta", "cross-only", "malformed-handle", "duplicate-handle", "phase", "hash", "author-id", "run-only", "phase-only", "applied", "started-handles"} {
 		s := allocationFixture(t)
 		s.Changes = []c.Change{s.Changes[2]}
 		slug := "allocate"
@@ -197,13 +322,24 @@ func Test_PRJ017AllocationErrorsAreAtomic(t *testing.T) {
 		case "duplicate-target":
 			s.Modules = append(s.Modules, s.Modules[0])
 		case "body":
-			s.Changes[0].Added = []c.Spec{{ID: "new:bad", Body: "No normative text."}}
+			s.Changes[0].Added[0].Body = "No normative text."
 		case "set":
 			s.Changes[0].Set = map[string]any{"name": "renamed"}
 		case "handle-body":
 			s.Changes[0].Added[0].Body = "It MUST reject new:foreign."
 		case "handle-meta":
 			s.Changes[0].Blocked = "Waiting for new:foreign"
+		case "cross-only":
+			s.Changes[0].Added[0].Body = "It MUST reject borrowing new:foreign."
+			other := projectionChange(t, s.Modules[1], 2, "foreign", "", []c.Spec{{ID: "new:foreign", Body: "It MUST remain local to another change."}}, nil, nil)
+			s.Changes = append(s.Changes, other)
+		case "malformed-handle":
+			s.Changes[0].Added = []c.Spec{{ID: "new:UPPER", Body: "It MUST reject malformed declarations."}}
+			s.Changes[0].AlreadySatisfied = nil
+			s.Changes[0].Set = nil
+		case "duplicate-handle":
+			s.Changes[0].Added = []c.Spec{{ID: "new:a", Body: "It MUST remain unique."}, {ID: "new:a", Body: "It MUST remain unique."}}
+			s.Changes[0].Set = nil
 		case "phase":
 			s.Changes[0].Phase = "invalid"
 		case "hash":
@@ -213,8 +349,14 @@ func Test_PRJ017AllocationErrorsAreAtomic(t *testing.T) {
 			s.Changes[0].AlreadySatisfied = nil
 			s.Changes[0].Set = nil
 		case "run-only":
+			s.Changes[0].Added = []c.Spec{{ID: "ALP-099", Body: "It MUST keep its assigned ID."}}
+			s.Changes[0].Set = nil
+			s.Changes[0].AlreadySatisfied = nil
 			s.Changes[0].Run = "run"
 		case "phase-only":
+			s.Changes[0].Added = []c.Spec{{ID: "ALP-099", Body: "It MUST keep its assigned ID."}}
+			s.Changes[0].Set = nil
+			s.Changes[0].AlreadySatisfied = nil
 			s.Changes[0].Phase = "evals"
 		case "applied":
 			s.Changes[0].Added = []c.Spec{{ID: "ALP-099", Body: "It MUST keep its assigned ID."}}
@@ -230,6 +372,10 @@ func Test_PRJ017AllocationErrorsAreAtomic(t *testing.T) {
 		got, mp, err := p.Allocate(s, slug)
 		if err == nil || mp != nil || !reflect.DeepEqual(got, c.Change{}) {
 			t.Fatalf("%s non-atomic error %+v %+v %v", kind, got, mp, err)
+		}
+		repeated, repeatedMap, repeatedError := p.Allocate(s, slug)
+		if repeatedError == nil || repeatedError.Error() != err.Error() || !reflect.DeepEqual(repeated, got) || !reflect.DeepEqual(repeatedMap, mp) {
+			t.Fatalf("%s error is nondeterministic", kind)
 		}
 		if encoded(t, s) != before {
 			t.Fatalf("%s error mutated input", kind)
