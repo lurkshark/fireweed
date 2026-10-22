@@ -1,6 +1,6 @@
 ---
 module: checks
-phase: evals
+phase: audit
 run: 8223759748a516c9ab1de10c
 ---
 
@@ -43,17 +43,3 @@ Sequential string replacement can reinterpret placeholder text in paths. A share
 ## Provenance
 
 - evals | 2026-10-22T17:01:24Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 53 | failing: 20 | passing: 33
-- audit | 2026-10-22T17:05:18Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
-
-## Audit
-
-- CHK-005: "replace each recognized {module}, {module_dir}, {report} and {git_common_dir} placeholder exactly once" — Missing an assertion with repeated occurrences of a recognized placeholder; replacing only its first occurrence would pass.
-- CHK-005: "report MUST retain its supplied value" — Missing a relative-report assertion. Equality checks use absolute paths, so unwanted path canonicalization would pass.
-- CHK-005: "The child MUST inherit the parent environment" — Missing a child-observed parent environment sentinel unrelated to the four overridden variables.
-- CHK-006: "Context cancellation/deadline MUST terminate the hook process tree" — Missing a descendant-process fixture. The cancellation command uses exec, and its helper spawns no children.
-- CHK-007: "hook launch/configuration/context/signal failures MUST yield C11" — Missing an Evaluate assertion for cancellation of the supplied parent context; every Evaluate call uses context.Background(), so ignoring its context would pass the configured-timeout fixture.
-- CHK-007: "remove that directory on success and every failure path" — Missing a temporary-directory leak assertion for the missing/blank-hook C07 paths.
-- CHK-008: "For a valid report and ordinary completed hook" — Missing acceptance of a valid report with ordinary exit 0. The valid-report composition fixture exits 37.
-- CHK-008: "the target module" — Missing a fixture where the supplied module’s specs differ from its snapshot counterpart, distinguishing selected/projected specs from stale snapshot specs.
-- CHK-008: "the supplied failFirst/already lists into Analyze" — Missing an Evaluate assertion with a nonempty already list.
-- CHK-008: "retaining its exact testcase evidence, ID mappings, policy diagnostics and deterministic order" — Missing valid-report composition assertions producing C13, P1-02 or C14 and multiple ordered diagnostics; the current comparison contains only one C12.
