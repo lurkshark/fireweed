@@ -2,6 +2,8 @@
 bases:
     CON-016: 922d6d1b
 module: contracts
+phase: audit
+run: a0503a38234a37bc8153e97a
 ---
 
 ## Motivation
@@ -28,3 +30,7 @@ This corrects the earlier real-ID-only already_satisfied restriction using the d
 ## Rejected alternatives
 
 Requiring authors to predict real IDs would defeat late allocation. Requiring start before authoring already_satisfied would make the authored approved change incomplete and separate it from the normal authoring workflow.
+
+## Provenance
+
+- evals | 2026-10-22T14:45:32Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 27 | failing: 2 | passing: 25
