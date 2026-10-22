@@ -6,8 +6,10 @@ import (
 	"github.com/lurkshark/fireweed/packages/project/internal/allocation"
 	"github.com/lurkshark/fireweed/packages/project/internal/finalization"
 	"github.com/lurkshark/fireweed/packages/project/internal/inspection"
+	"github.com/lurkshark/fireweed/packages/project/internal/playbooks"
 	"github.com/lurkshark/fireweed/packages/project/internal/projection"
 	"github.com/lurkshark/fireweed/packages/project/internal/queuecheck"
+	"github.com/lurkshark/fireweed/packages/project/model"
 )
 
 type Diagnostic struct{ Code, Severity, Message, Path string }
@@ -67,3 +69,7 @@ func Allocate(snapshot Snapshot, slug string) (contracts.Change, map[string]stri
 func Finalize(module contracts.Module, change contracts.Change) (contracts.Module, error) {
 	return finalization.Finalize(module, change)
 }
+
+type Playbook = model.Playbook
+
+func ResolvePlaybook(start, name string) (Playbook, error) { return playbooks.Resolve(start, name) }
