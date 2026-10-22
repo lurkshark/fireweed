@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: impl
+phase: audit
 run: 634e20449818a1f3eee56425
 ---
 
@@ -42,8 +42,8 @@ Comparing only typed change metadata loses unknown protected body edits and exac
 - evals | 2026-10-22T18:41:22Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 160 | failing: 159 | passing: 1
 - audit | 2026-10-22T18:44:22Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T18:46:58Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 219 | failing: 218 | passing: 1
-- audit | 2026-10-22T18:49:25Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-No findings. Checked FLOW-001, FLOW-002, FLOW-003.
+- FLOW-002: "adding or removing metadata keys" — missing assertion for adding or removing an explicit empty nested set or hook key; current explicit-key cases cover only top-level metadata keys.
+- FLOW-002: "Every other parsed section, its body and relative order, and the parsed preamble MUST remain unchanged." — missing assertion for removing a protected section while keeping current text parseable; the missing-Motivation case exercises invalid grammar instead.
