@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"sort"
 	"strings"
 
 	"github.com/lurkshark/fireweed/packages/assets"
@@ -55,10 +54,11 @@ Exit statuses:
 `
 
 type options struct {
-	command    string
-	operands   []string
-	json, help bool
-	problem    string
+	command            string
+	operands           []string
+	json, help         bool
+	projected, history bool
+	problem            string
 }
 
 func parse(args []string) options {
@@ -73,6 +73,10 @@ func parse(args []string) options {
 		switch arg {
 		case "--":
 			stopped = true
+		case "--projected":
+			result.projected = true
+		case "--history":
+			result.history = true
 		case "--json":
 			result.json = true
 		case "--help", "-h":
@@ -82,7 +86,7 @@ func parse(args []string) options {
 		default:
 			if strings.HasPrefix(arg, "-") {
 				if result.problem == "" {
-					result.problem = fmt.Sprintf("unknown or valued option %q; valid options: --json, --help/-h, --version/-v", arg)
+					result.problem = fmt.Sprintf("unknown or valued option %q; valid options: --json, --help/-h, --version/-v; show also accepts --projected or --history", arg)
 				}
 			} else {
 				positional = append(positional, arg)
@@ -151,16 +155,22 @@ func emit(out, errOut io.Writer, option options, data any, diagnostics []diagnos
 func Run(args []string, out, errOut io.Writer) int {
 	option := parse(args)
 	fail := func(problem string) int {
-		message := problem + ". Run fireweed help. Valid commands: help, version, explain, playbook, modules, check."
+		message := problem + ". Run fireweed help. Valid commands: help, version, explain, playbook, modules, check, show."
 		return emit(out, errOut, option, nil, []diagnostic{{Code: "U01", Severity: "error", Message: message}}, 2)
 	}
 	if option.problem != "" {
 		return fail(option.problem)
 	}
 	switch option.command {
-	case "help", "version", "explain", "playbook", "modules", "check":
+	case "help", "version", "explain", "playbook", "modules", "check", "show":
 	default:
 		return fail("unknown command " + option.command)
+	}
+	if (option.projected || option.history) && option.command != "show" {
+		return fail("--projected and --history are only valid with show")
+	}
+	if option.projected && option.history {
+		return fail("choose only one of --projected or --history")
 	}
 	if option.help && option.command != "help" {
 		option.command = "help"
@@ -170,40 +180,22 @@ func Run(args []string, out, errOut io.Writer) int {
 	if option.command == "explain" || option.command == "playbook" {
 		required = 1
 	}
-	if len(option.operands) != required {
+	if option.command == "show" {
+		if len(option.operands) < 1 || len(option.operands) > 2 {
+			return fail("show requires a module and optional exact spec ID")
+		}
+	} else if len(option.operands) != required {
 		return fail(fmt.Sprintf("%s requires %d positional arguments", option.command, required))
 	}
 	switch option.command {
+	case "show":
+		return show(out, errOut, option, fail)
 	case "modules", "check":
 		snapshot, err := project.Load(".")
 		if err != nil {
-			return emit(out, errOut, option, nil, []diagnostic{{Code: "C01", Severity: "error", Path: "fireweed.yaml", Message: "Cannot load project: " + err.Error() + ". Run from a Git project and correct fireweed.yaml."}}, 2)
+			return loadFailure(out, errOut, option, err)
 		}
-		diagnostics := []diagnostic{}
-		code := 0
-		checked := project.Check(snapshot)
-		if option.command == "check" {
-			checked = append(checked, project.CheckQueue(snapshot)...)
-		}
-		sort.SliceStable(checked, func(i, j int) bool {
-			a, b := checked[i], checked[j]
-			if a.Path != b.Path {
-				return a.Path < b.Path
-			}
-			if a.Code != b.Code {
-				return a.Code < b.Code
-			}
-			if a.Severity != b.Severity {
-				return a.Severity < b.Severity
-			}
-			return a.Message < b.Message
-		})
-		for _, d := range checked {
-			diagnostics = append(diagnostics, diagnostic{Code: d.Code, Severity: d.Severity, Message: d.Message, Path: d.Path})
-			if d.Severity == "error" {
-				code = 1
-			}
-		}
+		diagnostics, code := checkedDiagnostics(snapshot, option.command == "check")
 		var data any = snapshot.Modules
 		if option.command == "check" {
 			data = map[string]bool{"valid": code == 0}
