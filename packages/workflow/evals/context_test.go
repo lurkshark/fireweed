@@ -118,6 +118,24 @@ func contextError(t *testing.T, f contextFixtureData, slug, code, path string) {
 	if !reflect.DeepEqual(got, w.WorkerContext{}) {
 		t.Fatalf("partial context on rejection: %+v", got)
 	}
+
+	if code == "D05" {
+		selected := contextChange(t, f)
+		name := selected.Phase
+		if name == "" {
+			name = "author-change"
+		}
+		if selected.Regenerate {
+			name = "regenerate"
+		}
+		_, publicErr := p.ResolvePlaybook(f.Root, name)
+		if publicErr == nil {
+			t.Fatal("public resolver rejection premise missing")
+		}
+		if err == nil || !strings.Contains(err.Error(), publicErr.Error()) {
+			t.Fatalf("resolver corrective detail lost: %v; want detail %q", err, publicErr)
+		}
+	}
 	if err == nil || !strings.Contains(err.Error(), code) || !policyCorrective(err.Error()) || (path != "" && !strings.Contains(err.Error(), path)) {
 		t.Fatalf("want corrective %s at %q; got %v", code, path, err)
 	}
@@ -428,6 +446,8 @@ func Test_FLOW019ContextOwnershipAndEmptyCollections(t *testing.T) {
 		t.Fatal(err)
 	}
 	got := contextAssert(t, f, "impl")
+	peer := contextAssert(t, f, "impl")
+	peerBefore := policyJSON(t, peer)
 	got.Change.Document.Metadata["module"] = "mutated"
 	got.Change.Set["depends_on"].([]any)[0] = "mutated"
 	got.Change.Added[0].Body = "mutated"
@@ -444,6 +464,9 @@ func Test_FLOW019ContextOwnershipAndEmptyCollections(t *testing.T) {
 	if string(after) != string(original) {
 		t.Fatal("result mutation changed input immediately")
 	}
+	if peerBefore != policyJSON(t, peer) {
+		t.Fatal("mutating first returned result changed an already-returned peer immediately")
+	}
 	contextAssert(t, f, "impl")
 	for i := range f.Snapshot.Modules {
 		if f.Snapshot.Modules[i].Name == "alpha" {
@@ -459,8 +482,26 @@ func Test_FLOW019ContextOwnershipAndEmptyCollections(t *testing.T) {
 	if empty.Files == nil || empty.Dependencies == nil || len(empty.Files) != 0 || len(empty.Dependencies) != 0 {
 		t.Fatalf("nonnull empties %+v", empty)
 	}
+	emptyPeer, err := w.BuildContext(f.Snapshot, "current")
+	if err != nil {
+		t.Fatal(err)
+	}
+	emptyPeerBefore := policyJSON(t, emptyPeer)
 	empty.Files = append(empty.Files, w.FileContent{Path: "mutated"})
 	empty.Dependencies = append(empty.Dependencies, c.Module{Name: "mutated"})
+	if emptyPeerBefore != policyJSON(t, emptyPeer) {
+		t.Fatal("empty result mutation affected existing peer")
+	}
+	emptyPeer.Files = append(emptyPeer.Files, w.FileContent{Path: "independent peer"})
+	emptyPeer.Dependencies = append(emptyPeer.Dependencies, c.Module{Name: "independent peer"})
+	if empty.Files[0].Path != "mutated" || empty.Dependencies[0].Name != "mutated" {
+		t.Fatal("appending an existing empty peer overwrote the first result's spare capacity")
+	}
+	empty.Files[0].Content = "first stays independent"
+	empty.Dependencies[0].Name = "first stays independent"
+	if emptyPeer.Files[0].Content != "" || emptyPeer.Dependencies[0].Name != "independent peer" {
+		t.Fatal("empty peer shared appended backing storage")
+	}
 	again, err := w.BuildContext(f.Snapshot, "current")
 	if err != nil || len(again.Files) != 0 || len(again.Dependencies) != 0 {
 		t.Fatalf("empty collection alias %+v %v", again, err)
@@ -592,6 +633,7 @@ func Test_FLOW019ContextPreservesCompleteState(t *testing.T) {
 						t.Fatal(err)
 					}
 				}
+				nativeHookMarker := contextNativeHook(t, f.Root)
 				traps, marker := worktreeTraps(t, false)
 				for _, name := range []string{"context-hook-trap", "context-agent-trap"} {
 					if err := os.WriteFile(filepath.Join(traps, name), []byte("#!/bin/sh\nprintf attempted >> "+claimQuote(marker)+"\nexit 97\n"), 0755); err != nil {
@@ -626,6 +668,9 @@ func Test_FLOW019ContextPreservesCompleteState(t *testing.T) {
 				if err != nil || afterCWD != cwd || !reflect.DeepEqual(env, os.Environ()) || input != policyJSON(t, f.Snapshot) {
 					t.Fatal("context changed parent/input state")
 				}
+				if _, err = os.Stat(nativeHookMarker); !os.IsNotExist(err) {
+					t.Fatal("context executed the independently proven native Git fsmonitor hook")
+				}
 				if _, err = os.Stat(marker); !os.IsNotExist(err) {
 					t.Fatal("forbidden command executed")
 				}
@@ -652,5 +697,128 @@ func Test_FLOW018DeduplicatedNULInventory(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Setenv("PATH", traps+string(os.PathListSeparator)+os.Getenv("PATH"))
+	contextAssert(t, f, "impl")
+}
+
+func contextNativeHook(t *testing.T, root string) string {
+	t.Helper()
+	hook := filepath.Join(claimCommon(t, root), "hooks", "context-fsmonitor")
+	marker := filepath.Join(t.TempDir(), "native-hook-attempt")
+	script := "#!/bin/sh\nprintf triggered >> " + claimQuote(marker) + "\nprintf 'controlled-token\\000/\\000'\n"
+	if err := os.MkdirAll(filepath.Dir(hook), 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(hook, []byte(script), 0755); err != nil {
+		t.Fatal(err)
+	}
+	claimGit(t, root, "config", "core.fsmonitor", claimQuote(hook))
+	claimGit(t, root, "config", "core.fsmonitorHookVersion", "2")
+	claimGit(t, root, "status", "--porcelain=v1")
+	if b, err := os.ReadFile(marker); err != nil || len(b) == 0 {
+		t.Fatalf("native Git fsmonitor positive control failed %v %q", err, b)
+	}
+	if err := os.Remove(marker); err != nil {
+		t.Fatal(err)
+	}
+	claimGit(t, root, "-c", "core.fsmonitor=false", "status", "--porcelain=v1")
+	if _, err := os.Stat(marker); !os.IsNotExist(err) {
+		t.Fatal("native hook suppression control failed")
+	}
+	return marker
+}
+func Test_FLOW019NativeGitHookFixtureControl(t *testing.T) {
+	if os.PathSeparator == '\\' {
+		t.Skip("POSIX native hook fixture")
+	}
+	contextNativeHook(t, claimRepo(t, "sha1"))
+}
+func Test_FLOW016ContextDecisionsProjection(t *testing.T) {
+	f := contextFixture(t, "impl", "sha1")
+	for idx := range f.Snapshot.Changes {
+		old := f.Snapshot.Changes[idx]
+		doc := old.Document
+		doc.Sections = append(doc.Sections, c.Section{Name: "Removed decisions", Body: "> original choice\n"}, c.Section{Name: "Decisions", Body: "meaningful " + old.Slug + " replacement\n"})
+		raw, err := c.RenderMarkdown(doc)
+		if err != nil {
+			t.Fatal(err)
+		}
+		prefix := "ALP"
+		if old.Module == "beta" {
+			prefix = "BET"
+		}
+		change, err := c.ParseChange(raw, old.Path, prefix)
+		if err != nil {
+			t.Fatal(err)
+		}
+		f.Snapshot.Changes[idx] = change
+		worktreePut(t, f.Root, old.Path, raw)
+		if old.Slug == "current" {
+			f.Raw = raw
+		}
+	}
+	got := contextAssert(t, f, "impl")
+	if strings.TrimSpace(got.Module.Decisions) != "original choice" || strings.TrimSpace(got.Dependencies[1].Decisions) != "original choice" {
+		t.Fatal("preview prematurely finalized or lost Decisions")
+	}
+	found := false
+	for _, section := range got.Change.Document.Sections {
+		if section.Name == "Decisions" && strings.Contains(section.Body, "meaningful current replacement") {
+			found = true
+		}
+	}
+	if !found {
+		t.Fatal("approved authored Decisions absent from Change")
+	}
+}
+func Test_FLOW016ApprovedMetadataWinsOverValidWorkerSpec(t *testing.T) {
+	f := contextFixture(t, "impl", "sha1")
+	f.Spec = strings.Replace(f.Spec, "id_prefix: ALP\n", "id_prefix: ALP\nevals: [leaked/**]\n", 1)
+	worktreePut(t, f.Root, "units/a/SPEC.md", f.Spec)
+	worktreePut(t, f.Root, "units/a/leaked/private.txt", "worker metadata must not expose these bytes")
+	parsed, err := c.ParseModule(f.Spec, "units/a", f.Snapshot.Config.ModuleDefaults, f.Snapshot.Config.Hooks)
+	if err != nil || !reflect.DeepEqual(parsed.Evals, []string{"leaked/**"}) {
+		t.Fatalf("valid changed metadata premise %+v %v", parsed, err)
+	}
+	got := contextAssert(t, f, "impl")
+	if !reflect.DeepEqual(got.Module.Evals, []string{"e/**"}) {
+		t.Fatal("worker metadata replaced approved zones")
+	}
+}
+func Test_FLOW017ClaimDoesNotReplaceExistingOrUnreadableChange(t *testing.T) {
+	for _, kind := range []string{"empty", "directory", "unreadable"} {
+		t.Run(kind, func(t *testing.T) {
+			f := contextFixture(t, "impl", "sha1")
+			claim := w.Claim{Worktree: f.Root, Change: "current", Run: "context-run", Base: claimBase(t, f.Root), State: f.Raw}
+			claimRaw(t, f.Root, "current", claimPayload(t, claim))
+			full := filepath.Join(f.Root, f.Path)
+			if err := os.Remove(full); err != nil {
+				t.Fatal(err)
+			}
+			switch kind {
+			case "empty":
+				worktreePut(t, f.Root, f.Path, "")
+				f.Raw = ""
+				contextAssert(t, f, "impl")
+				return
+			case "directory":
+				if err := os.Mkdir(full, 0755); err != nil {
+					t.Fatal(err)
+				}
+			case "unreadable":
+				if err := os.WriteFile(full, []byte("unreadable current"), 0000); err != nil {
+					t.Fatal(err)
+				}
+				t.Cleanup(func() { _ = os.Chmod(full, 0600) })
+				if _, err := os.ReadFile(full); err == nil {
+					t.Skip("current identity cannot establish unreadability")
+				}
+			}
+			contextError(t, f, "current", "C01", f.Path)
+		})
+	}
+}
+func Test_FLOW018NestedSpecNeverBecomesPromptFile(t *testing.T) {
+	f := contextFixture(t, "impl", "sha1")
+	worktreePut(t, f.Root, "units/a/e/SPEC.md", "private nested spec source")
 	contextAssert(t, f, "impl")
 }

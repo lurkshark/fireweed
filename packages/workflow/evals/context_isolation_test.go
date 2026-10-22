@@ -193,7 +193,7 @@ func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil{os.Exit(8
 			}
 		})
 	}
-	for _, kind := range []string{"queued", "evals", "impl", "audit", "stale", "empty", "regenerate", "claim-recovery", "selected-missing", "selection", "phase", "projection", "ambiguous", "missing-module", "archive-path", "nested-path", "mismatched-path", "dependency", "system-escape", "spec-escape", "change-escape", "own-escape", "dependency-escape", "playbook-escape", "resolved-missing-escape", "directory-missing-escape"} {
+	for _, kind := range []string{"queued", "evals", "impl", "audit", "stale", "empty", "regenerate", "claim-recovery", "selected-missing", "worker-metadata", "nested-spec", "claim-existing-empty", "selection", "phase", "projection", "ambiguous", "missing-module", "archive-path", "nested-path", "mismatched-path", "dependency", "system-escape", "spec-escape", "change-escape", "own-escape", "dependency-escape", "playbook-escape", "resolved-missing-escape", "directory-missing-escape"} {
 		t.Run(kind, func(t *testing.T) {
 			phase := "impl"
 			if kind == "queued" {
@@ -232,6 +232,19 @@ func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil{os.Exit(8
 				f.Snapshot.Changes[1].Set["depends_on"] = []string{"absent"}
 				code = "C05"
 				mode = "no-io"
+			case "worker-metadata":
+				f.Spec = strings.Replace(f.Spec, "id_prefix: ALP\n", "id_prefix: ALP\nevals: [leaked/**]\n", 1)
+				worktreePut(t, f.Root, "units/a/SPEC.md", f.Spec)
+				worktreePut(t, f.Root, "units/a/leaked/private.txt", "forbidden by approved zone map")
+				extras = append(extras, "units/a/leaked/private.txt", filepath.Join(f.Root, "units/a/leaked/private.txt"))
+			case "nested-spec":
+				worktreePut(t, f.Root, "units/a/e/SPEC.md", "excluded nested spec bytes")
+				extras = append(extras, "units/a/e/SPEC.md", filepath.Join(f.Root, "units/a/e/SPEC.md"))
+			case "claim-existing-empty":
+				claim := w.Claim{Worktree: f.Root, Change: "current", Run: "context-run", Base: claimBase(t, f.Root), State: f.Raw}
+				claimRaw(t, f.Root, "current", claimPayload(t, claim))
+				worktreePut(t, f.Root, f.Path, "")
+				f.Raw = ""
 			case "claim-recovery":
 				claim := w.Claim{Worktree: f.Root, Change: "current", Run: "context-run", Base: claimBase(t, f.Root), State: f.Raw}
 				claimRaw(t, f.Root, "current", claimPayload(t, claim))

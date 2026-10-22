@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: evals
+phase: audit
 run: 6ec380df90af73c41671e42a
 ---
 
@@ -40,6 +40,7 @@ Reading entire module trees exposes disposable implementations to reconstruction
 
 - evals | 2026-10-22T21:59:47Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1067 | failing: 123 | passing: 944
 - audit | 2026-10-22T22:05:09Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-22T22:16:29Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1078 | failing: 133 | passing: 945
 
 ## Audit
 
