@@ -59,13 +59,16 @@ type options struct {
 	json, help         bool
 	projected, history bool
 	problem            string
+	withChange         string
+	withChangeSet      bool
 }
 
 func parse(args []string) options {
 	result := options{command: "help"}
 	positional := []string{}
 	stopped := false
-	for _, arg := range args {
+	for i := 0; i < len(args); i++ {
+		arg := args[i]
 		if stopped {
 			positional = append(positional, arg)
 			continue
@@ -73,6 +76,16 @@ func parse(args []string) options {
 		switch arg {
 		case "--":
 			stopped = true
+		case "--with-change":
+			result.withChangeSet = true
+			if i+1 >= len(args) || strings.TrimSpace(args[i+1]) == "" || strings.HasPrefix(args[i+1], "-") {
+				if result.problem == "" {
+					result.problem = "--with-change requires a nonempty queued change slug"
+				}
+			} else {
+				i++
+				result.withChange = args[i]
+			}
 		case "--projected":
 			result.projected = true
 		case "--history":
@@ -84,9 +97,15 @@ func parse(args []string) options {
 		case "--version", "-v":
 			positional = append(positional, "version")
 		default:
-			if strings.HasPrefix(arg, "-") {
+			if value, matched := strings.CutPrefix(arg, "--with-change="); matched {
+				result.withChangeSet = true
+				result.withChange = value
+				if strings.TrimSpace(value) == "" && result.problem == "" {
+					result.problem = "--with-change requires a nonempty queued change slug"
+				}
+			} else if strings.HasPrefix(arg, "-") {
 				if result.problem == "" {
-					result.problem = fmt.Sprintf("unknown or valued option %q; valid options: --json, --help/-h, --version/-v; show also accepts --projected or --history", arg)
+					result.problem = fmt.Sprintf("unknown or valued option %q; valid options: --json, --help/-h, --version/-v; show also accepts --projected or --history; coverage accepts --with-change <slug>", arg)
 				}
 			} else {
 				positional = append(positional, arg)
@@ -155,16 +174,19 @@ func emit(out, errOut io.Writer, option options, data any, diagnostics []diagnos
 func Run(args []string, out, errOut io.Writer) int {
 	option := parse(args)
 	fail := func(problem string) int {
-		message := problem + ". Run fireweed help. Valid commands: help, version, explain, playbook, modules, check, show."
+		message := problem + ". Run fireweed help. Valid commands: help, version, explain, playbook, modules, check, show, coverage."
 		return emit(out, errOut, option, nil, []diagnostic{{Code: "U01", Severity: "error", Message: message}}, 2)
 	}
 	if option.problem != "" {
 		return fail(option.problem)
 	}
 	switch option.command {
-	case "help", "version", "explain", "playbook", "modules", "check", "show":
+	case "help", "version", "explain", "playbook", "modules", "check", "show", "coverage":
 	default:
 		return fail("unknown command " + option.command)
+	}
+	if option.withChangeSet && option.command != "coverage" {
+		return fail("--with-change is only valid with coverage")
 	}
 	if (option.projected || option.history) && option.command != "show" {
 		return fail("--projected and --history are only valid with show")
@@ -177,7 +199,7 @@ func Run(args []string, out, errOut io.Writer) int {
 		option.operands = nil
 	}
 	required := 0
-	if option.command == "explain" || option.command == "playbook" {
+	if option.command == "explain" || option.command == "playbook" || option.command == "coverage" {
 		required = 1
 	}
 	if option.command == "show" {
@@ -188,6 +210,8 @@ func Run(args []string, out, errOut io.Writer) int {
 		return fail(fmt.Sprintf("%s requires %d positional arguments", option.command, required))
 	}
 	switch option.command {
+	case "coverage":
+		return coverage(out, errOut, option, fail)
 	case "show":
 		return show(out, errOut, option, fail)
 	case "modules", "check":
