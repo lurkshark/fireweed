@@ -21,3 +21,5 @@ R01–R21 overall: unverified. Setup/checkpoint controller CI and doctor are pro
 
 | R02 module defaults and metadata | CON-013 / Test_CON013ModuleInheritance, Test_CON013TypedMetadata | 0004-document-grammar | Parser verified; graph/path ownership validation pending |
 | R04/R05 documents and change grammar | CON-012, CON-014–CON-016 / Test_CON012Markdown, Test_CON012IndependentRoundTrip, Test_CON014ChangeMetadata, Test_CON014ClassificationAndRequiredValues, Test_CON015ChangeSections, Test_CON015ProseAndHandleReferences, Test_CON016SetFields, Test_CON016SetAndIDValidation | 0004-document-grammar | Public parser/round-trip verified; projection, stale bases, late IDs and archive application pending |
+
+| R06/R14 local Git reads and paths | GIT-001–GIT-004 / Test_GIT001DiscoveryAndWorktrees, Test_GIT001CanonicalAndNonmutating, Test_GIT002LocalBaseResolution, Test_GIT002NoRemoteContact, Test_GIT003CleanAndDiff, Test_GIT003IsolatedEditsAndOlderBase, Test_GIT004SafePaths, Test_GIT004CanonicalRootAndNoMutation | 0005-local-repository | Read-only primitives verified; claims/commits/scratch/recovery still pending |

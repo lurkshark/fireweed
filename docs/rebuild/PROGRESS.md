@@ -1,6 +1,6 @@
 # Restartable rebuild progress
 
-Status: stage 1, four behavioral changes archived; Git/path primitives next. Goal remains active.
+Status: stage 1, five behavioral changes archived; embedded assets and early CLI next. Goal remains active.
 
 ## Controller pin
 
@@ -48,6 +48,12 @@ Checkpoint after be9fe8b: go test -race ./..., go vet ./..., go build -o bin/fir
 
 ## document-grammar (CON-012–CON-016)
 
-Archive changes/archive/0004-document-grammar.md. Ten permanent testcases in packages/contracts/evals/documents_test.go assert fenced Markdown and independent metadata round trips, module default inheritance/overrides and slice isolation, complete typed change state/classification, normative edit sections/Removed headings, local handles, retained author prose, set allowlist and hash/ID grammar. Initial fail-first dd6098a; independent audit ea3f868 records twelve concrete missing-assertion findings; retry fail-first a38906e; independent passing re-audit b6a39ae. Applied implementation is the newest document-grammar impl commit listed by controller commits. Controller verify: 25 contracts cases, all own/dependent hooks and boundaries pass; explicit baseline history check passes. One implementation iteration fixed a real YAML block-scalar trailing-newline failure; evals/interfaces stayed unchanged. Local evidence .fireweed/evidence/document-grammar/.
+Archive changes/archive/0004-document-grammar.md. Ten permanent testcases in packages/contracts/evals/documents_test.go assert fenced Markdown and independent metadata round trips, module default inheritance/overrides and slice isolation, complete typed change state/classification, normative edit sections/Removed headings, local handles, retained author prose, set allowlist and hash/ID grammar. Initial fail-first dd6098a; independent audit ea3f868 records twelve concrete missing-assertion findings; retry fail-first a38906e; independent passing re-audit b6a39ae. Applied implementation 45f5bb5b878b6e46f06f7c034c9f96a59f41c6dd. Controller verify: 25 contracts cases, all own/dependent hooks and boundaries pass; explicit baseline history check passes. One implementation iteration fixed a real YAML block-scalar trailing-newline failure; evals/interfaces stayed unchanged. Local evidence .fireweed/evidence/document-grammar/.
 
 Restart audit: prior goal turn classified as progress (authoritative archived code, evals and CI evidence). At this turn's start checksum matched, queue/claims empty, target clean. Goal still requires the full design; contracts primitives do not satisfy CLI/lifecycle/regeneration/self-hosting gates. Next implement gitstore local discovery/base refs/clean-tree/diffs/safe paths, then assets/project and an early CLI inspection slice.
+
+## local-repository (GIT-001–GIT-004)
+
+Archive changes/archive/0005-local-repository.md. Eight permanent Git fixture testcases verify canonical discovery and linked-worktree directories, local base/default remote resolution, no-network Git traces and ref immutability, clean-tree cases, explicit older-base NUL-delimited diffs/renames/unusual filenames, and symlink-safe paths without file mutations. Fail-first 83f6008d70787f25877aa8fac8822c582332cb37; eight independent audit findings e04fc7295c642442ab871ef88adc163ca8c89d22; stronger fail-first 849cb6cd9f71174957971105a8e6562486b48e80; passing independent re-audit f731985fdcebceb480685531797797aec0e628a7; applied aea039d2aa9dfff238435df66403859edb6e6f80. Own/dependent coverage and boundaries pass. An implementation iteration removed unsupported Git --path-format=absolute and resolved relative --git-common-dir output against the checkout root; tests stayed fixed. No bootstrap source edits.
+
+After aea039d, go test -race ./... and go vet ./... pass. Explicit baseline history check passes. Next: assets version/playbooks, then a real help/version CLI slice while project discovery is built. Remaining CLI/lifecycle/recovery/drill/packaging gates are still unfinished.
