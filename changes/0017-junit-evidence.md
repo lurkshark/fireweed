@@ -1,6 +1,6 @@
 ---
 module: checks
-phase: audit
+phase: impl
 run: 22b2367a5ab7064e801a1243
 set:
     interface:
@@ -49,13 +49,8 @@ Trusting suite counts permits collection failures or fabricated summary counts t
 - evals | 2026-10-22T16:21:22Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 29 | failing: 24 | passing: 5
 - audit | 2026-10-22T16:25:07Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T16:26:32Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 32 | failing: 26 | passing: 6
+- audit | 2026-10-22T16:27:11Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- CHK-003: "For each enforced failFirst ID, at least one executed matching failure/error MUST be required (P1-02 otherwise), unless that ID is explicitly in already" — Missing assertions for P1-02 when coverage is missing or entirely skipped; current fixtures expect only C13.
-- CHK-003: "C13 for every current enforced spec without a non-skipped referencing testcase" — Missing an assertion with multiple uncovered specs requiring separate C13 diagnostics.
-- CHK-003: "review and reasoned quarantine tags, alone or combined, MUST suspend C13, P1-02 and C14" — Missing tagged executed-passing failFirst cases to establish P1-02 suspension, and tagged ordinary failures without failFirst to establish C14 suspension.
-- CHK-004: "Analyze MUST preserve all input module, prefix, testcase/message/ID slices and policy lists" — Missing preservation assertions for mixed, unsorted failFirst/already lists. Existing ownership fixtures contain identical repeated IDs, so in-place sorting would pass.
-- CHK-004: "Analyze MUST preserve all input module, prefix, testcase/message/ID slices and policy lists" — Missing an assertion that target-prefix fallback preserves an empty caller prefix slice’s spare backing storage.
-- CHK-004: "or another result, including empty slices backed by spare capacity" — Missing cross-result assertions exposing shared empty backing storage. Appending parser IDs and serializing another length-zero IDs slice cannot detect such sharing; existing spare-capacity assertions cover input storage.
-- CHK-004: "sort diagnostics deterministically by Path, Code, Severity and Message" — Missing an ordering assertion for diagnostics sharing a code but differing in Message. The sorting fixture has distinct codes; the multiple-C12 fixture checks only codes and attribution.
+No findings. Checked CHK-001, CHK-002, CHK-003 and CHK-004. Independent restricted same-model auditor confirmed all seven prior findings resolved by concrete public assertions; no implementation/history/bootstrap access or test execution.
