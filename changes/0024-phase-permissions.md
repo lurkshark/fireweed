@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: audit
+phase: evals
 run: 1715897da7ee515af06978e7
 ---
 
@@ -39,3 +39,11 @@ Checking only rename destinations would permit erasing frozen evals or protected
 ## Provenance
 
 - evals | 2026-10-22T19:13:12Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 662 | failing: 434 | passing: 228
+- audit | 2026-10-22T19:16:46Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+- FLOW-004: "worker_writable MUST permit only otherwise unowned paths" — missing assertion that an overlapping worker_writable pattern cannot bypass the selected module's phase restrictions, such as implementation edits to eval/interface files or evals edits to existing disposable files.
+- FLOW-006: "evals MUST reject them with P1-01." — missing rejection assertions for additions and copy destinations matching append_only while also matching target eval/interface zones; the overlap matrix currently expects success for those cases.
+- FLOW-007: "stopping file-policy comparison." — missing assertion that an invalid approval takes precedence over malformed edits; the approval-precedence cases contain only well-formed denied edits.
+- FLOW-007: "nonempty corrective messages" — missing assertion that diagnostic messages provide corrective guidance; policyAssert checks only that messages are nonempty.
