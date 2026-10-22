@@ -1,6 +1,6 @@
 ---
 module: assets
-phase: audit
+phase: impl
 run: 4294b7757eb823403f72c0b8
 ---
 
@@ -46,7 +46,8 @@ Runtime reads from the bootstrap or a source directory would break the single-bi
 - evals | 2026-10-22T07:30:03Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 6 | failing: 6 | passing: 0
 - audit | 2026-10-22T07:31:43Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T07:31:50Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 6 | failing: 6 | passing: 0
+- audit | 2026-10-22T07:33:21Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- AST-002: "Lookups MUST perform no runtime file or network reads." — armed isolation probe exercises known lookups only; unknown-name/code checks run without interception, leaving error paths unasserted.
+No findings. Independent auditor /root/audit_embedded_protocol checked AST-001, AST-002 and AST-003. Initial semantic-content findings, isolation strengthening, and error-path findings are resolved by committed assertions; all review/evals iterations remain in phase history.
