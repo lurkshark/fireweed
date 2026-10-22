@@ -1,6 +1,6 @@
 ---
 module: project
-phase: audit
+phase: evals
 run: 72ae08640c3a077e700e83a5
 set:
     interface:
@@ -44,7 +44,8 @@ Automatically replacing stale overrides discards author instructions. Silently t
 - evals | 2026-10-22T20:53:11Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 223 | failing: 137 | passing: 86
 - audit | 2026-10-22T20:55:38Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T20:56:54Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 229 | failing: 142 | passing: 87
+- audit | 2026-10-22T20:58:30Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- PRJ-023: "ResolvePlaybook MUST check selected override containment using the public Git SafePath contract before opening its contents, including when a read error would otherwise be ignored." — the missing-descendant native probe traps the selected alias, but still supplies outside/private as its exact forbidden target. The fully resolved missing endpoint outside/evals.md is not trapped. An incorrect resolver can resolve the escaping parent, attempt to read that outside endpoint, receive ENOENT and then return the expected D05 error while passing every current assertion. Pass the missing outside/evals.md endpoint as the forbidden target for this case and add a direct ignored-error read positive control for that same endpoint, while retaining the selected-alias control.
+- PRJ-023: "ResolvePlaybook MUST check selected override containment using the public Git SafePath contract before opening its contents, including when a read error would otherwise be ignored." — the new missing-endpoint argument and control use filepath.Join(outside, "evals.md"), but outside is raw t.TempDir() and is never canonicalized. Only the separate existing private file is passed through EvalSymlinks. On macOS temporary-path aliases such as /var versus /private/var, an incorrect resolver can canonicalize the escaping parent and open the canonical missing endpoint without matching the guard's exact forbidden raw path; the direct-read control currently checks only the raw alias. Canonicalize the existing outside directory before appending evals.md, and use that canonical endpoint in both the ignored-ENOENT read control and resolution probe, retaining the selected-alias control.
