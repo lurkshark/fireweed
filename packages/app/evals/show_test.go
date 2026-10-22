@@ -26,7 +26,7 @@ func showFixture(t *testing.T) string {
 	if err != nil {
 		t.Fatal(err)
 	}
-	text := strings.Replace(string(raw), "## Decisions", "### ALP-002 [quarantine: past clock]\nSecond SHOULD stay quarantined.\n\n### ALP-003\nThird MUST remain current.\n\n## Decisions", 1) + "\n## Extra module context\n\nRetain this module context.\n"
+	text := strings.Replace(string(raw), "## Decisions", "### ALP-002 [quarantine: past clock]\nSecond SHOULD stay quarantined.\n\n### ALP-003\n"+thirdShowBody+"\n\n## Decisions", 1) + "\n## Extra module context\n\nRetain this module context.\n"
 	cfg, err := c.ParseConfig(projectConfig, "0.4.0")
 	if err != nil {
 		t.Fatal(err)
@@ -82,7 +82,17 @@ func showUsageJSON(t *testing.T, root string, args ...string) {
 	}
 }
 
-const currentShowText = "### ALP-001 [review]\nIt MUST retain this body.\n\n### ALP-002 [quarantine: past clock]\nSecond SHOULD stay quarantined.\n\n### ALP-003\nThird MUST remain current.\n"
+const thirdShowBody = "Third MUST remain current.\n\nFurther explanation stays intact.\n\n```text\n## not a section\n```"
+
+const currentShowText = "### ALP-001 [review]\nIt MUST retain this body.\n\n### ALP-002 [quarantine: past clock]\nSecond SHOULD stay quarantined.\n\n### ALP-003\n" + thirdShowBody + "\n"
+
+func assertShowLookupGuidance(t *testing.T, message string) {
+	t.Helper()
+	lower := strings.ToLower(message)
+	if !strings.Contains(lower, "show alpha") || !(strings.Contains(lower, "without") || strings.Contains(lower, "omit") || strings.Contains(lower, "no id")) {
+		t.Fatalf("lookup error must guide the user to show alpha without an ID: %q", message)
+	}
+}
 
 func Test_APP009CurrentSpecReads(t *testing.T) {
 	root := showFixture(t)
@@ -117,8 +127,22 @@ func Test_APP009CurrentSpecReads(t *testing.T) {
 	}
 	for _, id := range []string{"alp-001", "ALP001", "ALP-999"} {
 		showUsageJSON(t, nested, "show", "alpha", id, "--json")
+		got := invoke(t, nested, "show", "alpha", id, "--json")
+		x := decode(t, got, "show")
+		assertShowLookupGuidance(t, x.Diagnostics[0].Message)
+		plain := invoke(t, nested, "show", "alpha", id)
+		if plain.code != 2 || plain.out != "" || !strings.Contains(plain.err, "U01") {
+			t.Fatalf("unknown ID plain %+v", plain)
+		}
+		assertShowLookupGuidance(t, plain.err)
 	}
-	showUsageJSON(t, nested, "show", "missing", "--json")
+	for _, name := range []string{"missing", "Alpha", "ALPHA"} {
+		showUsageJSON(t, nested, "show", name, "--json")
+		plain := invoke(t, nested, "show", name)
+		if plain.code != 2 || plain.out != "" || !strings.Contains(plain.err, "U01") || !strings.Contains(plain.err, "alpha") || !strings.Contains(plain.err, "beta") {
+			t.Fatalf("module exact lookup %+v", plain)
+		}
+	}
 	got := invoke(t, nested, "show", "missing", "--json")
 	x := decode(t, got, "show")
 	if !strings.Contains(x.Diagnostics[0].Message, "alpha") || !strings.Contains(x.Diagnostics[0].Message, "beta") {
@@ -237,7 +261,7 @@ func Test_APP010ProjectedSpecReads(t *testing.T) {
 		t.Fatal(err)
 	}
 	m := showModule(t, projected, "alpha")
-	if len(m.Specs) != 3 || m.Specs[0].Body != "It MUST become second." || m.Specs[1].ID != "ALP-003" || m.Specs[1].Body != "Third MUST remain current." || m.Specs[2].ID != "new:fresh" || m.Preserve == nil || len(m.Preserve) != 0 || !reflect.DeepEqual(m.Interface, []string{"next.go"}) || m.Hooks.Setup != "projected setup" {
+	if len(m.Specs) != 3 || m.Specs[0].Body != "It MUST become second." || m.Specs[1].ID != "ALP-003" || m.Specs[1].Body != thirdShowBody || m.Specs[2].ID != "new:fresh" || m.Preserve == nil || len(m.Preserve) != 0 || !reflect.DeepEqual(m.Interface, []string{"next.go"}) || m.Hooks.Setup != "projected setup" {
 		t.Fatalf("projection premise %+v", m)
 	}
 	for _, args := range [][]string{{"show", "alpha", "--projected", "--json"}, {"--json", "show", "--projected", "alpha"}} {
@@ -246,7 +270,7 @@ func Test_APP010ProjectedSpecReads(t *testing.T) {
 	assertShow(t, root, []string{"show", "alpha", "ALP-001", "--projected", "--json"}, m.Specs[0], []pathDiagnostic{}, 0)
 	assertShow(t, root, []string{"show", "alpha", "new:fresh", "--projected", "--json"}, m.Specs[2], []pathDiagnostic{}, 0)
 	plain := invoke(t, root, "show", "alpha", "--projected")
-	want := "### ALP-001 [review]\nIt MUST become second.\n\n### ALP-003\nThird MUST remain current.\n\n### new:fresh\nIt MUST echo new:fresh.\n"
+	want := "### ALP-001 [review]\nIt MUST become second.\n\n### ALP-003\n" + thirdShowBody + "\n\n### new:fresh\nIt MUST echo new:fresh.\n"
 	if plain.code != 0 || plain.err != "" || plain.out != want {
 		t.Fatalf("projected plain %+v", plain)
 	}
@@ -330,6 +354,15 @@ func Test_APP010ProjectionFailuresAndAmbiguity(t *testing.T) {
 	x := decode(t, got, "show")
 	if !strings.Contains(strings.ToLower(x.Diagnostics[0].Message), "ambig") {
 		t.Fatal("missing handle ambiguity guidance")
+	}
+	assertShowLookupGuidance(t, x.Diagnostics[0].Message)
+	plain = invoke(t, duplicate, "show", "alpha", "new:fresh", "--projected")
+	if plain.code != 2 || plain.out != "" || !strings.Contains(strings.ToLower(plain.err), "ambig") || !strings.Contains(plain.err, "--projected") {
+		t.Fatalf("ambiguity plain %+v", plain)
+	}
+	assertShowLookupGuidance(t, plain.err)
+	if !strings.Contains(x.Diagnostics[0].Message, "--projected") {
+		t.Fatal("ambiguity correction must retain the projection mode")
 	}
 	showUsageJSON(t, duplicate, "show", "alpha", "new:fresh", "--json")
 }
