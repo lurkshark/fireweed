@@ -219,3 +219,154 @@ func Test_GIT004SafePaths(t *testing.T) {
 		t.Errorf("outside file modified: %q %v", data, err)
 	}
 }
+
+func assertLocalTrace(t *testing.T, path string) {
+	t.Helper()
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, line := range strings.Split(string(data), "\n") {
+		index := strings.Index(line, "built-in: git ")
+		if index < 0 {
+			continue
+		}
+		fields := strings.Fields(line[index+len("built-in: git "):])
+		for len(fields) > 0 && strings.HasPrefix(fields[0], "-") {
+			if (fields[0] == "-c" || fields[0] == "-C") && len(fields) > 1 {
+				fields = fields[2:]
+			} else {
+				fields = fields[1:]
+			}
+		}
+		if len(fields) == 0 {
+			continue
+		}
+		switch fields[0] {
+		case "fetch", "push", "pull", "clone", "ls-remote", "branch":
+			t.Errorf("prohibited inspection command: %s", line)
+		}
+		if fields[0] == "remote" && len(fields) > 1 && fields[1] == "update" {
+			t.Errorf("networking remote update: %s", line)
+		}
+	}
+}
+func Test_GIT001CanonicalAndNonmutating(t *testing.T) {
+	root := fixture(t)
+	alias := filepath.Join(t.TempDir(), "alias")
+	if err := os.Symlink(root, alias); err != nil {
+		t.Fatal(err)
+	}
+	git(t, root, "remote", "add", "origin", "file:///must-not-contact")
+	refs := git(t, root, "show-ref")
+	trace := filepath.Join(t.TempDir(), "git-trace.log")
+	t.Setenv("GIT_TRACE", trace)
+	repo, err := g.Open(alias)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if repo.Root != root || repo.GitDir != filepath.Join(root, ".git") || repo.CommonDir != filepath.Join(root, ".git") {
+		t.Errorf("canonical alias %+v", repo)
+	}
+	if _, err := g.Clean(root); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := g.Edits(root, "HEAD"); err != nil {
+		t.Fatal(err)
+	}
+	if git(t, root, "show-ref") != refs {
+		t.Error("inspection changed refs/branches")
+	}
+	assertLocalTrace(t, trace)
+	linked := filepath.Join(t.TempDir(), "linked")
+	git(t, root, "worktree", "add", "-b", "fixture-canonical", linked)
+	defer git(t, root, "worktree", "remove", "--force", linked)
+	opened, err := g.Open(linked)
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected := git(t, linked, "rev-parse", "--absolute-git-dir")
+	expected, err = filepath.EvalSymlinks(expected)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if opened.GitDir != expected {
+		t.Errorf("canonical linked GitDir %q, want %q", opened.GitDir, expected)
+	}
+}
+func Test_GIT002NoRemoteContact(t *testing.T) {
+	root := fixture(t)
+	git(t, root, "remote", "add", "origin", "file:///must-not-contact")
+	trace := filepath.Join(t.TempDir(), "git-trace.log")
+	t.Setenv("GIT_TRACE", trace)
+	if _, err := g.BaseRef(root, "", ""); err != nil {
+		t.Fatal(err)
+	}
+	assertLocalTrace(t, trace)
+}
+func Test_GIT003IsolatedEditsAndOlderBase(t *testing.T) {
+	root := fixture(t)
+	write(t, root, "tracked.txt", "unstaged only\n")
+	if clean, err := g.Clean(root); err != nil || clean {
+		t.Errorf("isolated unstaged: %v %v", clean, err)
+	}
+	git(t, root, "restore", "tracked.txt")
+	if err := os.Remove(filepath.Join(root, "tracked.txt")); err != nil {
+		t.Fatal(err)
+	}
+	if clean, err := g.Clean(root); err != nil || clean {
+		t.Errorf("isolated deletion: %v %v", clean, err)
+	}
+	git(t, root, "restore", "tracked.txt")
+	old := git(t, root, "rev-parse", "HEAD")
+	weird := "tracked\twith\nnewline.txt"
+	write(t, root, weird, "original\n")
+	write(t, root, "committed later.txt", "later\n")
+	git(t, root, "add", ".")
+	git(t, root, "commit", "-m", "later than requested base")
+	write(t, root, weird, "changed\n")
+	git(t, root, "rm", "tracked.txt")
+	got, err := g.Edits(root, old)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []g.Edit{{Status: "A", Path: "committed later.txt"}, {Status: "D", Path: "tracked.txt"}, {Status: "A", Path: weird}}
+	sort.Slice(want, func(i, j int) bool { return want[i].Path < want[j].Path })
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("older base edits %+v, want %+v", got, want)
+	}
+	againstHead, err := g.Edits(root, "HEAD")
+	if err != nil {
+		t.Fatal(err)
+	}
+	want = []g.Edit{{Status: "D", Path: "tracked.txt"}, {Status: "M", Path: weird}}
+	sort.Slice(want, func(i, j int) bool { return want[i].Path < want[j].Path })
+	if !reflect.DeepEqual(againstHead, want) {
+		t.Errorf("tracked unusual path %+v, want %+v", againstHead, want)
+	}
+}
+func Test_GIT004CanonicalRootAndNoMutation(t *testing.T) {
+	root := fixture(t)
+	alias := filepath.Join(t.TempDir(), "alias")
+	if err := os.Symlink(root, alias); err != nil {
+		t.Fatal(err)
+	}
+	before, err := os.ReadFile(filepath.Join(root, "tracked.txt"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := g.SafePath(alias, "tracked.txt")
+	if err != nil || got != filepath.Join(root, "tracked.txt") {
+		t.Errorf("canonical safe path %q %v", got, err)
+	}
+	if _, err := g.SafePath(alias, "missing/path"); err != nil {
+		t.Fatal(err)
+	}
+	after, err := os.ReadFile(filepath.Join(root, "tracked.txt"))
+	if err != nil || string(before) != string(after) {
+		t.Errorf("inside file modified %q %v", after, err)
+	}
+	if _, err := os.Stat(filepath.Join(root, "missing")); !os.IsNotExist(err) {
+		t.Errorf("canonical resolution created paths: %v", err)
+	}
+}
