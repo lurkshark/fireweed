@@ -1,5 +1,7 @@
 ---
 module: workflow
+phase: audit
+run: 634e20449818a1f3eee56425
 ---
 
 ## Motivation
@@ -12,13 +14,13 @@ Add CheckState(module contracts.Module, approvedText, currentText, path string) 
 
 ## Added
 
-### new:state-input
+### FLOW-001
 CheckState MUST parse approved and current text with the public change grammar, using the supplied module's ID prefix and the supplied change path. An invalid approved document, an approved target different from the supplied module name, a missing run, or an approved phase outside evals/audit/impl MUST return a P02 error at that path with corrective claim guidance. Once approval is valid, invalid current text MUST return P2-01 at that path with corrective worker-edit guidance. Invalid state MUST NOT be accepted as an unchanged change. A valid unchanged started change, including maintenance and regenerate changes, MUST return an empty non-null diagnostic slice.
 
-### new:approved-permissions
+### FLOW-002
 CheckState MUST reject semantic changes to every approved metadata field except blocked with P2-01, including module, nested set/hook/zone values, bases, fixes, already_satisfied, regenerate, run and phase, and adding or removing metadata keys. Valid blocked reasons MAY be added, replaced or removed. For an approved evals or impl phase it MUST permit adding, changing, moving or removing Decisions, Questions and Notes sections; for an approved audit phase it MUST permit only Audit and Questions sections. Every other parsed section, its body and relative order, and the parsed preamble MUST remain unchanged. Protected edits MUST yield P2-01, including Motivation, Interface, Added/Modified/Removed, Removed decisions, Rejected alternatives, Provenance, unknown sections and changes hidden after duplicate or fenced headings. Permissions MUST derive from the approved phase even when current metadata attempts to switch phase. Metadata ordering/quoting and line-ending changes with the same public parsed values MUST NOT be rejected. Exact case-sensitive section names and public fenced-Markdown parsing MUST determine permissions rather than substring replacement.
 
-### new:state-results
+### FLOW-003
 CheckState MUST return fresh non-null diagnostics sorted deterministically by Path, Code, Severity and Message, with severity error, the supplied path and nonempty corrective messages for every rejection. Metadata and protected-body violations in the same valid current document MUST both remain visible; invalid approved or current grammar MUST stop that comparison rather than inventing partial acceptance. Results, including writable empty results, MUST remain independent across repeated calls, and supplied module fields/maps/slices and input strings MUST remain unchanged. It MUST work from supplied text outside any repository, remain noninteractive and MUST NOT create or edit files/refs, execute Git, hooks, agents, the bootstrap or network commands on successful or rejected calls.
 
 ## Modified
@@ -34,3 +36,7 @@ The approved phase selects section permissions, so an auditor cannot grant itsel
 ## Rejected alternatives
 
 Comparing only typed change metadata loses unknown protected body edits and exact explicit-key presence. Trusting current phase permits self-authorized escalation. A line-based section stripper mistakes fenced examples for actual headings. Reparsing the repository during this text comparison would make its claim baseline dependent on worker-controlled files.
+
+## Provenance
+
+- evals | 2026-10-22T18:41:22Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 160 | failing: 159 | passing: 1
