@@ -69,3 +69,14 @@ Ordinary source inspection of pinned bootstrap internal/fireweed/coverage.go, Bo
 
 
 D015 evidence update at52dd898: archived0022 implements CHK-009–012 with108 permanent checks cases. A scratch reference maintenance verify returned0/diagnostics[] after its boundary checker printed an exact baselined module violation and killed itself with SIGTERM. A separately compiled NEW public Boundaries probe on that same fixture returned C15, retained exit-1 and full checker output. Evidence .fireweed/evidence/boundary-hooks-reference-cancelled-baseline.json; the scratch claim was released. This demonstrates the intentional difference at the public boundary API; product verify CLI composition remains future work. All full Go/race/vet/bootstrap CI gates at this endpoint pass.
+
+
+## D016 — immutable explicit metadata key presence
+
+Ordinary inspection of bootstrap internal/fireweed/lifecycle.go verifyState and model.go ChangeMeta shows it compares JSON of typed metadata with omitempty fields. A separate scratch maintenance change starts without fixes, then a worker adds fixes: []; bootstrap verify returns0/diagnostics[]. Evidence .fireweed/evidence/approved-state-reference-empty-key.json records approved/current text and released scratch claim. The authored workflow state guard compares parsed metadata key presence as well as nested values, excluding only blocked, so an explicit empty immutable key remains a worker edit. This conservative permission detail follows approved-intent immutability and is explicit in0023's specs/Decisions. It is an intentional comparison difference, not a relaxation of enforcement; NEW passing evidence remains pending after the fixture recovery below.
+
+## D017 — canonical temporary current-directory fixtures
+
+The initial0023 eval/audit cycle passed assertion review, but implementation verification exposed a macOS fixture alias error: t.TempDir returned /var/folders/... and os.Getwd returned the same directory as /private/var/folders/.... The safety test compared the raw path string and therefore failed even for a CheckState call that preserved the actual working directory. A separately compiled public-API probe proves before==after, diagnostics[], canonical==after and literal_matches:false; evidence approved-state-cwd-alias-probe.json.
+
+Preserved API/evals/stub/implementation/change under /tmp/fireweed-state-recovery-c5ee487, released only our claim, restored only our uncommitted implementation to its committed stub, and fully reverted all four incomplete phase commits in977bbcf,f17b272,36cca42,94fec7a. No workflow spec was applied and no frozen eval was edited during implementation. Canonicalize the fixture path before changing directories, establish that premise with a standalone control, and restart the complete fail-first/audit/impl cycle. Keep the original failed evidence; it is not a product failure or a reason to mutate current directory in the state guard.
