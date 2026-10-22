@@ -1,6 +1,6 @@
 ---
 module: project
-phase: audit
+phase: impl
 run: 459766a63aaf9fc4803ca635
 ---
 
@@ -40,16 +40,8 @@ Predicting IDs during authoring would recreate parallel author collisions. Repla
 - evals | 2026-10-22T14:58:34Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 63 | failing: 5 | passing: 58
 - audit | 2026-10-22T15:05:10Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T15:09:12Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 64 | failing: 6 | passing: 58
+- audit | 2026-10-22T15:10:56Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- PRJ-015: "assign each local Added handle in declaration order" — reverse lexical declaration order to reject alphabetic sorting.
-- PRJ-015: "support existing larger decimal widths without overflow" — independently exercise huge decimal IDs in every archive/assigned queue reservation source, with competing variable widths to reject lexical maximum selection.
-- PRJ-015: "Other modules, author prose, bases/reference-only mentions and other unstarted handles MUST NOT reserve numbers." — use same-prefix foreign-module current/archive/queue IDs, and high Modified/Removed references in other assigned changes.
-- PRJ-015: "partial run/phase state and applied queued state MUST error." — isolate run-only and phase-only selected states using otherwise-valid real additions, rather than handles that independently require rejection.
-- PRJ-016: "unrelated author text, section order, tags, real IDs, lifecycle state and metadata MUST retain their semantic values under the public Markdown normalization contract." — explicitly expect Bases, Fixes, existing real edit IDs, Removed items and unrelated metadata, including direct CRLF/trailing-whitespace normalization.
-- PRJ-016: "Returned typed fields and Document MUST agree" — render/reparse resumed changes with stale retained lifecycle metadata and compare complete canonical fields, preserving typed Number.
-- PRJ-017: "undeclared/cross-only handle references" — actually declare the foreign handle in another queued change and still reject borrowing it.
-- PRJ-017: "without replaying or requiring validity of excluded queue entries." — require success with an invalid preceding entry as well as a tail.
-- PRJ-017: "invalid selected typed change grammar" — preserve declarations/references while invalidating only a normative body; also reject malformed handle spelling and duplicate declarations atomically.
-- PRJ-017: "Successful results and mappings MUST have no mutable aliases" — poison a resumed real-ID result and compare inputs and another returned result immediately, exercising the separate resume branch.
+No findings. Independent auditor /root/audit_discovery_validation checked PRJ-015, PRJ-016 and PRJ-017. Revised assertions resolve prior reservation arithmetic/scope, declaration order, state validation, canonical preservation, atomic error, excluded predecessor and resume-independence findings. Fixture premises conform to current CON-016 and typed-field authority. Historical real-ID-only Decision concern was retracted after consulting the superseding current contract. Auditor inspected no implementation/history/bootstrap, executed no tests and edited no files.
