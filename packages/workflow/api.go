@@ -7,6 +7,7 @@ import (
 	"github.com/lurkshark/fireweed/packages/gitstore"
 	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/claims"
+	workercontext "github.com/lurkshark/fireweed/packages/workflow/internal/context"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/policy"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/state"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/worktree"
@@ -39,4 +40,11 @@ type WorktreeCheck = model.WorktreeCheck
 
 func CheckWorktree(snapshot project.Snapshot, approvedModule contracts.Module, changePath string, claim Claim) WorktreeCheck {
 	return worktree.Check(snapshot, approvedModule, changePath, claim)
+}
+
+type FileContent = model.FileContent
+type WorkerContext = model.WorkerContext
+
+func BuildContext(snapshot project.Snapshot, slug string) (WorkerContext, error) {
+	return workercontext.Build(snapshot, slug)
 }
