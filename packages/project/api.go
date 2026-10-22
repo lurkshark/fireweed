@@ -3,6 +3,7 @@ package project
 
 import (
 	"github.com/lurkshark/fireweed/packages/contracts"
+	"github.com/lurkshark/fireweed/packages/project/internal/allocation"
 	"github.com/lurkshark/fireweed/packages/project/internal/inspection"
 	"github.com/lurkshark/fireweed/packages/project/internal/projection"
 	"github.com/lurkshark/fireweed/packages/project/internal/queuecheck"
@@ -56,4 +57,8 @@ func internalSnapshot(s Snapshot) inspection.Data {
 
 func CheckQueue(snapshot Snapshot) []Diagnostic {
 	return publicDiagnostics(queuecheck.Check(internalSnapshot(snapshot)))
+}
+
+func Allocate(snapshot Snapshot, slug string) (contracts.Change, map[string]string, error) {
+	return allocation.Allocate(internalSnapshot(snapshot), slug)
 }

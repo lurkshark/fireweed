@@ -33,7 +33,10 @@ func Test_PRJ007_PRJ008_PRJ009_PRJ010ProjectionNoIO(t *testing.T) {
 	runProjectIsolation(t, true, false)
 }
 func Test_PRJ011_PRJ012_PRJ013_PRJ014QueueNoIO(t *testing.T) { runProjectIsolation(t, true, true) }
-func runProjectIsolation(t *testing.T, projection bool, queue bool) {
+func Test_PRJ015_PRJ016_PRJ017AllocationNoIO(t *testing.T) {
+	runProjectIsolation(t, false, false, true)
+}
+func runProjectIsolation(t *testing.T, projection bool, queue bool, allocation ...bool) {
 	if runtime.GOOS != "darwin" {
 		t.Skip("Darwin syscall interposition probe; portable fixtures exercise content elsewhere")
 	}
@@ -154,6 +157,14 @@ func main(){
  found:=map[string]bool{};for _,d:=range s.Diagnostics{if d.Severity=="error"&&((d.Code=="C03"&&d.Path=="units/escape/SPEC.md")||(d.Code=="C05"&&(d.Path=="changes/0001-escape.md"||d.Path=="changes/archive/0001-escape.md"))){found[d.Path]=true}};if len(found)!=3{os.Exit(12)}
  if os.Args[1]=="check"{
  C.fw_guard_arm(2,C.CString(target));ds:=p.Check(s);if len(ds)!=3{os.Exit(13)}
+ if len(os.Args)>4&&os.Args[4]=="allocation"{
+  ch:=c.Change{Module:s.Modules[0].Name,Slug:"native-allocation",Number:1,Path:"changes/0001-native-allocation.md",AlreadySatisfied:[]string{"new:native"},Set:map[string]any{"hooks":map[string]any{"setup":"show new:native-two and new:native"}},Added:[]c.Spec{{ID:"new:native",Body:"It MUST refer to new:native-two."},{ID:"new:native-two",Body:"It MUST refer to new:native."}},Document:c.Document{Metadata:map[string]any{"module":s.Modules[0].Name},Sections:[]c.Section{{Name:"Motivation",Body:"Allocate new:native and new:native-two."}}}}
+  s.Changes=[]c.Change{ch};s.Archive=[]c.Change{{Module:ch.Module,Removed:[]c.Spec{{ID:"ALP-010"}}}}
+  allocated,mp,err:=p.Allocate(s,ch.Slug);if err!=nil||mp["new:native"]!="ALP-011"||mp["new:native-two"]!="ALP-012"||allocated.AlreadySatisfied[0]!="ALP-011"{os.Exit(22)}
+  allocated.Run="held";allocated.Phase="evals";s.Changes=[]c.Change{allocated};resumed,empty,err:=p.Allocate(s,ch.Slug);if err!=nil||empty==nil||len(empty)!=0||resumed.Added[0].ID!="ALP-011"{os.Exit(23)}
+  if _,mp,err:=p.Allocate(s,"missing");err==nil||mp!=nil{os.Exit(24)}
+  ch.Added[0].Body="Invalid normative text.";s.Changes=[]c.Change{ch};if _,mp,err:=p.Allocate(s,ch.Slug);err==nil||mp!=nil{os.Exit(25)}
+ }
  if len(os.Args)>4&&os.Args[4]=="projection"{
  s.Modules[0].Specs=append(s.Modules[0].Specs,c.Spec{ID:"ALP-002",Body:"Second MUST retain its base."})
  predecessor:=c.Change{Module:s.Modules[0].Name,Slug:"native-before",Number:0,Path:"changes/0000-native-before.md",Modified:[]c.Spec{{ID:"ALP-001",Tag:"[review]",Body:"It MUST be the preceding base."}}}
@@ -209,6 +220,9 @@ func main(){
 		}
 		if queue {
 			args = append(args, "queue")
+		}
+		if len(allocation) > 0 && allocation[0] {
+			args = append(args, "allocation")
 		}
 		cmd = exec.CommandContext(ctx, binary, args...)
 		cmd.Dir = fixtureRoot

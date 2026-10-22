@@ -1,5 +1,7 @@
 ---
 module: project
+phase: audit
+run: 459766a63aaf9fc4803ca635
 ---
 
 ## Motivation
@@ -12,13 +14,13 @@ Add Allocate(snapshot Snapshot, slug string) (contracts.Change, map[string]strin
 
 ## Added
 
-### new:allocation
+### PRJ-015
 Allocate MUST select exactly one queued change by slug and resolve exactly one existing target module. For an unstarted change it MUST assign each local Added handle in declaration order, using the target prefix and consecutive numbers above the greatest numeric ID reserved by current target-module specs, every target-module archive Added/Modified/Removed item, and real Added IDs in other target-module queued changes with both run and phase. ID formatting MUST use at least three decimal digits and support existing larger decimal widths without overflow. Other modules, author prose, bases/reference-only mentions and other unstarted handles MUST NOT reserve numbers. Author-chosen real Added IDs, partial run/phase state and applied queued state MUST error. A valid already started change with real Added IDs MUST retain those IDs/run/phase and return an empty mapping; a started change still containing handles MUST error rather than allocate on resume.
 
-### new:rewrite
+### PRJ-016
 Allocate MUST rewrite every occurrence of each declared handle in canonical change metadata, preamble and every body section, including Added/Modified text, Interface, Decisions, Notes and fenced examples. Overlapping handle names MUST NOT corrupt one another. already_satisfied and nested set hook references MUST become the same assigned IDs as their Added declarations. Returned typed fields and Document MUST agree; unrelated author text, section order, tags, real IDs, lifecycle state and metadata MUST retain their semantic values under the public Markdown normalization contract. Typed change fields MUST override stale retained metadata/edit sections. Returned Path, Slug and Number MUST retain the selected typed identity even when filename numbering differs from Number.
 
-### new:allocation-purity
+### PRJ-017
 Allocate MUST return errors for missing/ambiguous selectors or targets, invalid selected typed change grammar and undeclared/cross-only handle references, without returning a partial change or allocation mapping. It MUST validate only the selected change's grammar, without replaying or requiring validity of excluded queue entries. Successful empty mappings MUST be fresh non-null maps. Successful results and mappings MUST have no mutable aliases to the supplied snapshot, modules, changes, archive, configuration or nested documents/maps/slices; neither success nor error MAY mutate inputs. Repeated calls with the same input MUST be deterministic. Allocate MUST NOT read/write files, execute hooks/agents/Git or use networking.
 
 ## Modified
@@ -32,3 +34,7 @@ The highest reserved number plus one implements next-free allocation without reu
 ## Rejected alternatives
 
 Predicting IDs during authoring would recreate parallel author collisions. Replacing shorter handles first with naive string replacement would corrupt longer handles. Replaying unrelated malformed predecessors would block allocation for independent eligible changes.
+
+## Provenance
+
+- evals | 2026-10-22T14:58:34Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 63 | failing: 5 | passing: 58
