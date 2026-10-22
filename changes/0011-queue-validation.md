@@ -10,7 +10,7 @@ Queue previews now exist, but check must detect stale authored intent and enforc
 
 ## Interface
 
-Add CheckQueue(snapshot Snapshot) []Diagnostic as a thin public facade to disposable pure queue validation. It returns queued issues only; callers combine existing Check results for current/static/discovery diagnostics. Extend Load's malformed-change categorization for undeclared handles. Preserve existing projection interfaces.
+Add CheckQueue(snapshot Snapshot) []Diagnostic as a thin public facade to disposable pure queue validation. It returns queued issues only; callers combine existing Check results for current/static/discovery diagnostics. Extend Load's malformed-change categorization for undeclared handles and preserve archived human prose as historical text. Preserve existing projection interfaces.
 
 ## Added
 
@@ -29,13 +29,15 @@ CheckQueue MUST return a fresh non-null diagnostic slice sorted by path, code, s
 ## Modified
 
 ### PRJ-002
-Load MUST continue past malformed module/change documents and retain path-attributed diagnostics: C02 warning for SPEC.md outside module globs, C03 error for invalid module metadata, C04 error for invalid Specs grammar, and C05 error for malformed changes or unknown target modules, except that undeclared handle references MUST produce C09 error diagnostics. Handle references anywhere in the change, including human sections and metadata, MUST be local to that change; a declaration in a different change MUST NOT satisfy them. It MUST ignore .git and .fireweed trees during module discovery. Queue and archive MUST include immediate Markdown files only, parsed with each target's prefix, retaining lifecycle/provenance/author sections; each list MUST sort by numeric filename then slug. Duplicate slugs across either list MUST produce C05. Symlink escapes MUST produce an error diagnostic without reading their contents.
+Load MUST continue past malformed module/change documents and retain path-attributed diagnostics: C02 warning for SPEC.md outside module globs, C03 error for invalid module metadata, C04 error for invalid Specs grammar, and C05 error for malformed changes or unknown target modules, except that undeclared live handle references MUST produce C09 error diagnostics. Queued handle references anywhere in the change, including human sections and metadata, MUST be local to that change; a declaration in a different change MUST NOT satisfy them. Archive human sections MUST preserve literal handle examples without treating them as live references; archive edit sections and metadata MUST still validate their live references. It MUST ignore .git and .fireweed trees during module discovery. Queue and archive MUST include immediate Markdown files only, parsed with each target's prefix, retaining lifecycle/provenance/author sections; each list MUST sort by numeric filename then slug. Duplicate slugs across either list MUST produce C05. Symlink escapes MUST produce an error diagnostic without reading their contents.
 
 ## Removed
 
 ## Decisions
 
 CheckQueue complements current-state Check and never repeats its input diagnostics. It checks transitions incrementally: newly introduced static diagnostics are compared with the previous projected state's diagnostic signatures; each new problem is attributed to its change. Stale-base errors do not erase the author's intent. Failed structural application skips that change's intent and continues with other queued changes. Numeric/slug application ordering follows typed fields. Assigned state means both nonempty run and phase; normal workflow/history enforcement proves ownership later. Metadata/body validation still uses the public change grammar, including its current real-ID-only fixes/already_satisfied fields. Decisions application, late allocation and all-occurrence rewriting remain separate upcoming changes.
+
+Archived non-edit human sections are historical prose, not live handle bindings. Validate archive metadata and Added/Modified/Removed with public change grammar using a validation-only view whose other bodies are neutral, then retain the original complete parsed document. Queued documents are validated in full. This permits worker Decisions to explain handle examples after allocation without modifying or losing immutable archive history. Author decision D010 records the live regression.
 
 ## Rejected alternatives
 
