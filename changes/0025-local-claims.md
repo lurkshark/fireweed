@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: audit
+phase: impl
 run: 0f9f3212efebe4892f28a2e7
 set:
     interface:
@@ -49,9 +49,8 @@ A lock file in one worktree would not arbitrate linked worktrees. Unconditional 
 - evals | 2026-10-22T19:45:07Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 796 | failing: 120 | passing: 676
 - audit | 2026-10-22T19:48:32Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T19:50:18Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 815 | failing: 124 | passing: 691
+- audit | 2026-10-22T19:51:16Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- FLOW-008: "using an atomic create-only Git ref update" — missing rejection control for an unconditional text-stdin update: claimCASProtocol accepts `update <ref> <newOID>\n` as create-only by treating the trailing empty split chunk as an explicit empty old-object field.
-- FLOW-009: "ReleaseClaim MUST atomically delete only the named ref matching the supplied full Object token" — missing assertion that releasing a symbolic claim ref cannot delete its unrelated target ref; every existing release fixture uses a direct ref, so default Git dereferencing could violate this restriction unnoticed.
-- FLOW-011: "Temporary owned storage MUST be cleaned on success and failure, including duplicate-create and stale-update failures." — missing directory-type assertion for newly added two-hex-character entries directly under objects; the cleanup checker currently accepts a regular file such as objects/ab as if it were a legitimate fanout directory.
+No findings. Checked FLOW-008, FLOW-009, FLOW-010, FLOW-011.
