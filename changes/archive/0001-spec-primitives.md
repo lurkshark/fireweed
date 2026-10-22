@@ -1,6 +1,6 @@
 ---
 module: contracts
-phase: impl
+phase: applied
 run: f511aa9df35ecc447d267333
 ---
 
@@ -42,6 +42,7 @@ Regex-only whole-document parsing would treat fenced examples as live headings. 
 
 - evals | 2026-10-22T06:23:30Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 4 | failing: 4 | passing: 0
 - audit | 2026-10-22T06:24:46Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- impl | 2026-10-22T06:25:42Z | agent: manual | fireweed: 0.4.0 | playbook: 653912b194316c62181f62d0a69dc213f7668481ea8b1b9926ef889dd48a9e08 | tests: 4 | failing: 0 | passing: 4
 
 ## Audit
 
