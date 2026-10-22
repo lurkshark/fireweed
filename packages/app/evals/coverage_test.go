@@ -1,6 +1,7 @@
 package evals
 
 import (
+	"bytes"
 	"encoding/json"
 	"io"
 	"os"
@@ -103,6 +104,27 @@ func coverageTrace(t *testing.T, root, label string, cleanup bool) string {
 	}
 	return parts[0]
 }
+func coveragePretty(t *testing.T, output string) {
+	t.Helper()
+	var formatted bytes.Buffer
+	if err := json.Indent(&formatted, []byte(strings.TrimSpace(output)), "", "  "); err != nil {
+		t.Fatal(err)
+	}
+	if output != formatted.String()+"\n" || !strings.Contains(output, "\n  ") {
+		t.Fatalf("coverage must be pretty JSON: %q", output)
+	}
+}
+func coverageCorrective(t *testing.T, d k.Diagnostic) {
+	t.Helper()
+	lower := strings.ToLower(d.Message)
+	useful := false
+	for _, verb := range []string{"configure", "repair", "correct", "fix", "provide", "ensure"} {
+		useful = useful || strings.Contains(lower, verb)
+	}
+	if d.Severity != "error" || strings.TrimSpace(d.Message) == "" || !useful {
+		t.Fatalf("missing corrective error diagnostic %+v", d)
+	}
+}
 func coverageExpected(t *testing.T, s p.Snapshot, m c.Module, xml, label string, exit int) k.Coverage {
 	t.Helper()
 	tests, err := k.ParseJUnit([]byte(xml))
@@ -154,6 +176,7 @@ func Test_APP013RealCurrentCoverage(t *testing.T) {
 	if plain.code != 0 || plain.err != "" || !reflect.DeepEqual(decodeData(t, json.RawMessage(plain.out)), canonical(t, want)) {
 		t.Fatalf("plain coverage %+v", plain)
 	}
+	coveragePretty(t, plain.out)
 	// Current evidence remains available despite unrelated queued/static errors.
 	cliQueueChange(t, root, "changes/0001-invalid.md", "alpha", "ALP", "bases: {ALP-999: deadbeef}\n", "## Modified\n\n### ALP-999\nIt MUST fail preview.\n")
 	projectPut(t, root, "outside/SPEC.md", "outside warning")
@@ -192,6 +215,7 @@ func Test_APP013FatalCoverageConfiguration(t *testing.T) {
 				t.Fatalf("configuration %+v", got)
 			}
 			plain := invoke(t, root, "coverage", "alpha")
+			coveragePretty(t, plain.out)
 			if plain.code != 2 || plain.out != "" || !strings.Contains(plain.err, "C01") || !strings.Contains(plain.err, "fireweed.yaml") {
 				t.Fatalf("plain configuration %+v", plain)
 			}
@@ -276,15 +300,33 @@ func Test_APP014InclusiveProjectedCoverage(t *testing.T) {
 }
 func Test_APP014ProjectionErrorsAndNoAllocation(t *testing.T) {
 	root := coverageProjectedFixture(t)
-	for _, args := range [][]string{{"coverage", "alpha", "--with-change=missing", "--json"}, {"coverage", "alpha", "--with-change=archived", "--json"}, {"coverage", "beta", "--with-change=target", "--json"}} {
+	for _, args := range [][]string{{"coverage", "alpha", "--with-change=missing", "--json"}, {"coverage", "alpha", "--with-change=archived", "--json"}, {"coverage", "alpha", "--with-change=Target", "--json"}, {"coverage", "beta", "--with-change=target", "--json"}} {
 		os.Remove(filepath.Join(root, coverageDir, "trace"))
 		got := invoke(t, root, args...)
 		x := decode(t, got, "coverage")
 		if got.code != 2 || string(x.Data) != "null" || len(x.Diagnostics) != 1 || x.Diagnostics[0].Code != "U01" || !strings.Contains(x.Diagnostics[0].Message, "coverage") {
 			t.Fatalf("selected usage %+v", got)
 		}
+		message := x.Diagnostics[0].Message
+		if args[1] == "beta" {
+			if !strings.Contains(message, "alpha") || !strings.Contains(message, "fireweed coverage alpha --with-change target") {
+				t.Fatalf("missing target correction %s", message)
+			}
+		} else {
+			for _, slug := range []string{"aa", "zulu", "target", "after"} {
+				if !strings.Contains(message, slug) {
+					t.Fatalf("missing queued choice %s: %s", slug, message)
+				}
+			}
+			if !strings.Contains(message, "fireweed coverage alpha --with-change") {
+				t.Fatalf("missing usable selection command %s", message)
+			}
+		}
 		if _, err := os.Stat(filepath.Join(root, coverageDir, "trace")); !os.IsNotExist(err) {
-			t.Fatal("bad selection ran hook")
+			t.Fatal("bad selection ran alpha hook")
+		}
+		if _, err := os.Stat(filepath.Join(root, "MUST-NOT-RUN")); !os.IsNotExist(err) {
+			t.Fatal("bad selection ran beta/default hook")
 		}
 	}
 	cliQueueChange(t, root, "changes/0000-invalid-before.md", "alpha", "ALP", "bases: {ALP-999: deadbeef}\n", "## Modified\n\n### ALP-999\nIt MUST reject preview.\n")
@@ -334,6 +376,22 @@ func Test_APP014ProjectionErrorsAndNoAllocation(t *testing.T) {
 	if !reflect.DeepEqual(before, after) {
 		t.Fatal("coverage allocated or rewrote state")
 	}
+}
+func Test_APP015CoverageRemovedIDs(t *testing.T) {
+	root := coverageProjectedFixture(t)
+	s, m := coverageSelected(t, root, "target")
+	data, err := os.ReadFile(filepath.Join(root, coverageDir, "projected.xml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	xml := strings.Replace(string(data), "</testsuite>", `<testcase name="ALP003"/></testsuite>`, 1)
+	coverageSet(t, root, "projected", "zero", xml)
+	want := coverageExpected(t, s, m, xml, "projected", 0)
+	if len(want.Diagnostics) != 1 || want.Diagnostics[0].Code != "C12" || !strings.Contains(want.Diagnostics[0].Message, "ALP-003") {
+		t.Fatalf("removed-ID fixture %+v", want)
+	}
+	coverageAssert(t, root, []string{"coverage", "alpha", "--with-change=target", "--json"}, want)
+	coverageTrace(t, root, "projected", true)
 }
 func Test_APP015CoverageDiagnostics(t *testing.T) {
 	root := coverageFixture(t)
@@ -393,6 +451,7 @@ func Test_APP015CoverageDiagnostics(t *testing.T) {
 			if got.code != 1 || cov.Module != "alpha" || cov.Tests == nil || len(cov.Tests) != 0 || cov.BySpec == nil || len(cov.BySpec) != 0 || len(cov.Diagnostics) != 1 || cov.Diagnostics[0].Code != "C11" || cov.Diagnostics[0].Path != coverageDir || cov.Output != "eval-current-out\neval-current-err\n" {
 				t.Fatalf("invalid report %+v", got)
 			}
+			coverageCorrective(t, cov.Diagnostics[0])
 			if !reflect.DeepEqual(canonical(t, cov.Diagnostics), canonical(t, detailedDiagnostics(t, got))) {
 				t.Fatal("envelope/data diagnostics differ")
 			}
@@ -432,8 +491,12 @@ func Test_APP015CoverageDiagnostics(t *testing.T) {
 	if err := json.Unmarshal(x.Data, &cov); err != nil {
 		t.Fatal(err)
 	}
-	if got.code != 1 || len(cov.Diagnostics) != 1 || cov.Diagnostics[0].Code != "C07" || cov.Diagnostics[0].Path != coverageDir {
+	if got.code != 1 || len(cov.Diagnostics) != 1 || cov.Diagnostics[0].Code != "C07" || cov.Diagnostics[0].Path != coverageDir || cov.Tests == nil || len(cov.Tests) != 0 || cov.BySpec == nil || len(cov.BySpec) != 0 {
 		t.Fatalf("missing hook %+v", got)
+	}
+	coverageCorrective(t, cov.Diagnostics[0])
+	if !reflect.DeepEqual(canonical(t, cov.Diagnostics), canonical(t, detailedDiagnostics(t, got))) {
+		t.Fatal("missing hook diagnostics differ")
 	}
 }
 func Test_APP016CoverageArgumentsAndWrites(t *testing.T) {
@@ -472,7 +535,8 @@ func Test_APP016CoverageArgumentsAndWrites(t *testing.T) {
 		t.Fatalf("stderr failure%d", code)
 	}
 }
-func Test_APP016CoverageSafetyAndHelperControl(t *testing.T) {
+func coverageControl(t *testing.T) string {
+	t.Helper()
 	root := coverageProjectedFixture(t)
 	// Positive control proves the authored script's report protocol without product dispatch.
 	control := filepath.Join(t.TempDir(), "control.xml")
@@ -489,6 +553,11 @@ func Test_APP016CoverageSafetyAndHelperControl(t *testing.T) {
 	}
 	coverageTrace(t, root, "current", false)
 	os.Remove(filepath.Join(root, coverageDir, "trace"))
+	return root
+}
+func Test_APP016CoverageHelperPositiveControl(t *testing.T) { coverageControl(t) }
+func Test_APP016CoverageSafetyAndHelperControl(t *testing.T) {
+	root := coverageControl(t)
 	projectPut(t, root, ".gitignore", "ignored-sentinel\n"+coverageDir+"/trace\n")
 	projectPut(t, root, "ignored-sentinel", "unchanged ignored bytes")
 	realGit, err := exec.LookPath("git")
@@ -538,22 +607,36 @@ func Test_APP016CoverageSafetyAndHelperControl(t *testing.T) {
 	if !reflect.DeepEqual(before, afterSuccess) || gitFixtureCommand(t, root, "status", "--porcelain=v1", "--untracked-files=all") != status {
 		t.Fatal("successful coverage mutated repository or ignored files")
 	}
-	coverageSet(t, root, "current", "missing", coveragePassing)
-	before = showFiles(t, root)
-	delete(before, coverageDir+"/trace")
-	got := invoke(t, root, "coverage", "alpha", "--json")
-	if got.code != 1 {
-		t.Fatal(got)
-	}
-	coverageTrace(t, root, "current", true)
-	after := showFiles(t, root)
-	delete(after, coverageDir+"/trace")
-	if !reflect.DeepEqual(before, after) {
-		t.Fatal("coverage mutated repository or ignored files")
-	}
-	// Only the deliberately authored mode fixture changed since the commit.
-	if refs == "" || gitFixtureCommand(t, root, "show-ref") != refs {
-		t.Fatal("coverage mutated refs")
+	for _, label := range []string{"current", "projected"} {
+		xml := coveragePassing
+		if label == "projected" {
+			data, err := os.ReadFile(filepath.Join(root, coverageDir, "projected.xml"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			xml = string(data)
+		}
+		coverageSet(t, root, label, "missing", xml)
+		beforeFailure := showFiles(t, root)
+		delete(beforeFailure, coverageDir+"/trace")
+		failureStatus := gitFixtureCommand(t, root, "status", "--porcelain=v1", "--untracked-files=all")
+		args := []string{"coverage", "alpha", "--json"}
+		if label == "projected" {
+			args = append(args, "--with-change=target")
+		}
+		got := invoke(t, root, args...)
+		if got.code != 1 {
+			t.Fatal(got)
+		}
+		coverageTrace(t, root, label, true)
+		afterFailure := showFiles(t, root)
+		delete(afterFailure, coverageDir+"/trace")
+		if !reflect.DeepEqual(beforeFailure, afterFailure) || gitFixtureCommand(t, root, "status", "--porcelain=v1", "--untracked-files=all") != failureStatus {
+			t.Fatal("failed coverage mutated repository or ignored files")
+		}
+		if gitFixtureCommand(t, root, "show-ref") != refs {
+			t.Fatal("coverage mutated refs")
+		}
 	}
 	if _, err := os.Stat(trapMarker); !os.IsNotExist(err) {
 		t.Fatal("coverage invoked forbidden external command")
