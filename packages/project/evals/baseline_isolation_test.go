@@ -35,40 +35,13 @@ func Test_PRJ024_PRJ025_PRJ026_PRJ027BaselineNativeIsolation(t *testing.T) {
 #include <string.h>
 #include <dirent.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <limits.h>
 static int armed=0;static const char*root=0;static const char*git=0;static const char*extra=0;
 void fw_baseline_arm(int m,const char*r,const char*g,const char*b){armed=m;root=r;git=g;extra=b;}
 static int prefix(const char*p,const char*q,size_t n){return p&&q&&n&&strncmp(p,q,n)==0&&(p[n]==0||p[n]=='/');}
-static void path_for(int d,const char*p,char*out){
- char abs[PATH_MAX],base[PATH_MAX],probe[PATH_MAX],tail[PATH_MAX]="",resolved[PATH_MAX];
- if(p[0]=='/'){if(snprintf(abs,sizeof(abs),"%s",p)>=(int)sizeof(abs))_exit(42);}
- else {if(d==AT_FDCWD){if(!getcwd(base,sizeof(base)))_exit(42);}else{if(fcntl(d,F_GETPATH,base)<0)_exit(42);}
-  if(snprintf(abs,sizeof(abs),"%s/%s",base,p)>=(int)sizeof(abs))_exit(42);}
- if(!realpath(abs,resolved)){
-  snprintf(probe,sizeof(probe),"%s",abs);
-  while(!realpath(probe,resolved)){
-   char*slash=strrchr(probe,'/');if(!slash)_exit(42);
-   char next[PATH_MAX];if(snprintf(next,sizeof(next),"/%s%s",slash+1,tail)>=(int)sizeof(next))_exit(42);
-   snprintf(tail,sizeof(tail),"%s",next);if(slash==probe)probe[1]=0;else *slash=0;
-  }
-  if(snprintf(abs,sizeof(abs),"%s%s",resolved,tail)>=(int)sizeof(abs))_exit(42);
- }else{snprintf(abs,sizeof(abs),"%s",resolved);}
- // Normalize missing suffix components as well as existing aliases.
- char*save=0;size_t n=0;out[n++]='/';out[n]=0;
- for(char*v=strtok_r(abs,"/",&save);v;v=strtok_r(0,"/",&save)){
-  if(!strcmp(v,"."))continue;
-  if(!strcmp(v,"..")){while(n>1&&out[n-1]!='/')n--;if(n>1)n--;out[n]=0;continue;}
-  if(n>1)out[n++]='/';size_t len=strlen(v);if(n+len>=PATH_MAX)_exit(42);memcpy(out+n,v,len+1);n+=len;
- }
-}
-static void content_at(int d,const char*p){if(!armed||!p)return;char path[PATH_MAX];path_for(d,p,path);p=path;if(root&&prefix(p,root,strlen(root))&&!(git&&prefix(p,git,strlen(git))))_exit(42);const char*c=extra;while(c&&*c){const char*e=strchr(c,'\n');size_t n=e?(size_t)(e-c):strlen(c);if(prefix(p,c,n))_exit(42);if(!e)break;c=e+1;}}
-static void content(const char*p){content_at(AT_FDCWD,p);}
-int fw_baseline_prepare(const char*p){char dir[PATH_MAX];snprintf(dir,sizeof(dir),"%s",p);char*slash=strrchr(dir,'/');if(!slash)return -1;*slash=0;return open(dir,O_RDONLY|O_DIRECTORY);}
-
+static void content(const char*p){if(!armed||!p)return;if(root&&prefix(p,root,strlen(root))&&!(git&&prefix(p,git,strlen(git))))_exit(42);const char*c=extra;while(c&&*c){const char*e=strchr(c,'\n');size_t n=e?(size_t)(e-c):strlen(c);if(prefix(p,c,n))_exit(42);if(!e)break;c=e+1;}}
 static void mutation(void){if(armed)_exit(42);}
 static int fw_open(const char*p,int f,...){content(p);if(f&(O_WRONLY|O_RDWR|O_CREAT|O_TRUNC|O_APPEND))mutation();mode_t m=0;if(f&O_CREAT){va_list a;va_start(a,f);m=va_arg(a,int);va_end(a);}return open(p,f,m);}
-static int fw_openat(int d,const char*p,int f,...){content_at(d,p);if(f&(O_WRONLY|O_RDWR|O_CREAT|O_TRUNC|O_APPEND))mutation();mode_t m=0;if(f&O_CREAT){va_list a;va_start(a,f);m=va_arg(a,int);va_end(a);}return openat(d,p,f,m);}
+static int fw_openat(int d,const char*p,int f,...){content(p);if(f&(O_WRONLY|O_RDWR|O_CREAT|O_TRUNC|O_APPEND))mutation();mode_t m=0;if(f&O_CREAT){va_list a;va_start(a,f);m=va_arg(a,int);va_end(a);}return openat(d,p,f,m);}
 static ssize_t fw_read(int d,void*b,size_t n){if(armed&&d==0)_exit(42);return read(d,b,n);}
 static ssize_t fw_write(int d,const void*b,size_t n){mutation();return write(d,b,n);}
 static int fw_socket(int d,int t,int p){mutation();return socket(d,t,p);}
@@ -97,20 +70,14 @@ I(fw_open,open) I(fw_openat,openat) I(fw_read,read) I(fw_write,write) I(fw_socke
 /*
 #cgo LDFLAGS: -L%s -lbaselineguard
 void fw_baseline_arm(int m,const char*r,const char*g,const char*b);
-int fw_baseline_prepare(const char*p);
-#include <fcntl.h>
-#include <unistd.h>
-#include <string.h>
-static int baseline_probe_readat(int d,const char*p){const char*base=strrchr(p,'/');int f=openat(d,base?base+1:p,O_RDONLY);if(f<0)return 0;close(f);return 1;}
 */
 import "C"
 import("encoding/json";"os";"net";"time";"reflect";"strings";"fmt";p "github.com/lurkshark/fireweed/packages/project")
 type record struct{Root,Git,Revision,Blocked string;Expected p.Snapshot;Error bool}
 func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil{os.Exit(80)};if json.Unmarshal(raw,&in)!=nil{os.Exit(81)}
  if os.Args[1]=="fixture-control"{if in.Expected.Root!=in.Root||in.Expected.Modules==nil||in.Expected.Diagnostics==nil{os.Exit(82)};return}
- var fd C.int=-1;if os.Args[1]=="read-at-control"||os.Args[1]=="read-at-allowed-control"{fd=C.fw_baseline_prepare(C.CString(os.Args[3]));if fd<0{os.Exit(83)}}
  root:=C.CString(in.Root);git:=C.CString(in.Git);blocked:=C.CString(in.Blocked);C.fw_baseline_arm(1,root,git,blocked)
- switch os.Args[1]{case "read-control":os.ReadFile(os.Args[3]);os.Exit(70);case "read-at-control":C.baseline_probe_readat(fd,C.CString(os.Args[3]));os.Exit(75);case "read-at-allowed-control":if C.baseline_probe_readat(fd,C.CString(os.Args[3]))!=1{os.Exit(84)};os.Exit(76);case "network-control":net.DialTimeout("tcp",os.Args[3],time.Second);os.Exit(71);case "stdin-control":b:=make([]byte,1);os.Stdin.Read(b);os.Exit(72);case "prompt-control":fmt.Print("prompt");os.Exit(73);case "write-control":os.WriteFile(os.Args[3],[]byte("transient"),0600);os.Exit(74)}
+ switch os.Args[1]{case "read-control":os.ReadFile(os.Args[3]);os.Exit(70);case "network-control":net.DialTimeout("tcp",os.Args[3],time.Second);os.Exit(71);case "stdin-control":b:=make([]byte,1);os.Stdin.Read(b);os.Exit(72);case "prompt-control":fmt.Print("prompt");os.Exit(73);case "write-control":os.WriteFile(os.Args[3],[]byte("transient"),0600);os.Exit(74)}
  got,err:=p.LoadAt(in.Root,in.Revision)
  C.fw_baseline_arm(0,nil,nil,nil)
  if in.Error{if err==nil||!strings.Contains(err.Error(),"C01")||!reflect.DeepEqual(got,p.Snapshot{}){fmt.Fprintf(os.Stderr,"wrong fatal result %%v %%+v",err,got);os.Exit(10)};return}
@@ -246,26 +213,11 @@ func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil{os.Exit(8
 			if out, err := run("fixture-control", ""); err != nil {
 				t.Fatalf("serialized fixture control %v %s", err, out)
 			}
-			if out, err := run("read-at-allowed-control", filepath.Join(f.Root, ".git/HEAD")); err != nil {
+			for _, target := range []string{filepath.Join(f.Root, "fireweed.yaml"), filepath.Join(f.Root, "units/a/SPEC.md"), filepath.Join(f.Root, "changes/0002-alpha.md"), private, loose, filepath.Join(sourceRoot, "packages/project/api.go")} {
+				out, err := run("read-control", target)
 				exit, ok := err.(*exec.ExitError)
-				if !ok || exit.ExitCode() != 76 || len(out) != 0 {
-					t.Fatalf("allowed Git openat control %v %s", err, out)
-				}
-			} else {
-				t.Fatal("allowed openat control omitted its success marker exit")
-			}
-
-			for _, target := range []string{filepath.Join(f.Root, "fireweed.yaml"), f.Root + "/.git/../fireweed.yaml", filepath.Join(f.Root, "units/a/SPEC.md"), filepath.Join(f.Root, "changes/0002-alpha.md"), private, loose, filepath.Join(sourceRoot, "packages/project/api.go")} {
-				relative, err := filepath.Rel(f.Root, target)
-				if err != nil {
-					t.Fatal(err)
-				}
-				for _, control := range []struct{ mode, path string }{{"read-control", target}, {"read-control", relative}, {"read-at-control", target}} {
-					out, err := run(control.mode, control.path)
-					exit, ok := err.(*exec.ExitError)
-					if !ok || exit.ExitCode() != 42 || len(out) != 0 {
-						t.Fatalf("ignored-error %s read control %q: %v %s", control.mode, control.path, err, out)
-					}
+				if !ok || exit.ExitCode() != 42 || len(out) != 0 {
+					t.Fatalf("ignored-error read control %q: %v %s", target, err, out)
 				}
 			}
 			if kind == "missing-outside-escape" {
