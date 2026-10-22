@@ -219,7 +219,7 @@ func Test_PRJ003Graph(t *testing.T) {
 	cases := []struct {
 		name, code string
 		mods       []c.Module
-	}{{"name", "C03", []c.Module{a, validModule("a", "ZZZ", "units/z")}}, {"prefix", "C03", []c.Module{b, validModule("z", "BBB", "units/z")}}, {"nested", "C06", []c.Module{b, validModule("z", "ZZZ", "units/b/future")}}, {"same-dir", "C06", []c.Module{b, validModule("z", "ZZZ", "units/b")}}, {"root", "C06", []c.Module{b, validModule("z", "ZZZ", ".")}}}
+	}{{"name", "C03", []c.Module{a, validModule("a", "ZZZ", "units/z"), d}}, {"prefix", "C03", []c.Module{b, validModule("z", "BBB", "units/z")}}, {"nested", "C06", []c.Module{b, validModule("z", "ZZZ", "units/b/future")}}, {"same-dir", "C06", []c.Module{b, validModule("z", "ZZZ", "units/b")}}, {"root", "C06", []c.Module{b, validModule("z", "ZZZ", ".")}}}
 	for _, kind := range []string{"missing", "self", "cycle"} {
 		x, y := b, d
 		if kind == "missing" {
@@ -242,7 +242,7 @@ func Test_PRJ003Graph(t *testing.T) {
 			ds := p.Check(p.Snapshot{Modules: v.mods})
 			found := false
 			for _, d := range ds {
-				if d.Code == v.code && d.Severity == "error" && strings.HasSuffix(d.Path, "SPEC.md") && d.Message != "" {
+				if d.Code == v.code && d.Severity == "error" && (d.Path == v.mods[0].Dir+"/SPEC.md" || d.Path == v.mods[1].Dir+"/SPEC.md") && d.Message != "" {
 					found = true
 				}
 			}
@@ -348,4 +348,228 @@ func Test_PRJ006ReservationsAndDeterminism(t *testing.T) {
 	}
 	m.Specs[0].ID = "AAA-003"
 	requireClean(t, p.Snapshot{Modules: []c.Module{m}, Archive: s.Archive})
+}
+
+func Test_PRJ001FullRetentionAndOrder(t *testing.T) {
+	root := fixture(t)
+	// Force name order to differ from path traversal, with duplicate names for the secondary key.
+	texts := map[string]string{
+		"units/first/SPEC.md": module("zulu", "ZUL", ""),
+		"units/z/SPEC.md":     module("alpha", "ALP", ""),
+		"units/m/SPEC.md":     module("alpha", "ALT", ""),
+	}
+	for path, text := range texts {
+		put(t, root, path, text)
+	}
+	s, err := p.Load(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	dirs := []string{}
+	for _, m := range s.Modules {
+		dirs = append(dirs, m.Dir)
+	}
+	if !reflect.DeepEqual(dirs, []string{"units/m", "units/z", "units/first"}) {
+		t.Fatalf("name/directory ordering: %+v", dirs)
+	}
+	// A separate valid fixture checks the entire resolved value against the public document contract.
+	root = fixture(t)
+	cfg := config + "  setup: touch SETUP-MUST-NOT-RUN\n" // continues hooks mapping
+	cfg = strings.Replace(cfg, "  disposable: [internal/**]", "  disposable: [internal/**]\n  preserve: [data/**]\n  append_only: [events/**]", 1)
+	put(t, root, "fireweed.yaml", cfg)
+	text := strings.Replace(module("full", "FUL", "custom: {nested: [one, two]}\nhooks:\n  eval: ''\n  setup: own setup\n"), "### FUL-001", "### FUL-001 [review]", 1) + "\n## Operational notes\n\nKeep all custom prose.\n"
+	put(t, root, "units/full/SPEC.md", text)
+	parsed, err := c.ParseConfig(cfg, "0.4.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected, err := c.ParseModule(text, "units/full", parsed.ModuleDefaults, parsed.Hooks)
+	if err != nil {
+		t.Fatal(err)
+	}
+	s, err = p.Load(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(s.Modules) != 1 || !reflect.DeepEqual(s.Modules[0], expected) || !reflect.DeepEqual(s.Config, parsed) {
+		t.Fatalf("lost resolved data\n got %#v\nwant %#v", s, expected)
+	}
+	if s.Modules[0].Hooks.Eval != "" || !reflect.DeepEqual(s.Modules[0].Preserve, []string{"data/**"}) || !reflect.DeepEqual(s.Modules[0].AppendOnly, []string{"events/**"}) || s.Modules[0].Specs[0].Tag != "[review]" || s.Modules[0].Specs[0].Body != "The module MUST retain this behavior." {
+		t.Fatalf("missing exact fields: %+v", s.Modules[0])
+	}
+}
+func Test_PRJ002BothQueues(t *testing.T) {
+	root := fixture(t)
+	put(t, root, "units/a/SPEC.md", module("alpha", "ALP", ""))
+	put(t, root, "units/b/SPEC.md", module("beta", "BET", ""))
+	for _, dir := range []string{"changes", "changes/archive"} {
+		for _, name := range []string{"10-last", "2-zebra", "2-alpha"} {
+			put(t, root, dir+"/"+name+".md", change("alpha", ""))
+		}
+		put(t, root, dir+"/7-invalid.md", "broken")
+		put(t, root, dir+"/8-unknown.md", change("missing", ""))
+		put(t, root, dir+"/nested/1-hidden.md", "broken")
+		put(t, root, dir+"/ignore.txt", "broken")
+	}
+	s, err := p.Load(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, cs := range [][]c.Change{s.Changes, s.Archive} {
+		if len(cs) != 3 || cs[0].Slug != "alpha" || cs[1].Slug != "zebra" || cs[2].Slug != "last" {
+			t.Fatalf("numeric/slug order %+v", cs)
+		}
+	}
+	for _, dir := range []string{"changes", "changes/archive"} {
+		requireDiag(t, s.Diagnostics, "C05", "error", dir+"/7-invalid.md")
+		requireDiag(t, s.Diagnostics, "C05", "error", dir+"/8-unknown.md")
+	}
+	for _, d := range s.Diagnostics {
+		if strings.Contains(d.Path, "nested") || strings.HasSuffix(d.Path, "ignore.txt") {
+			t.Fatalf("not immediate Markdown: %+v", d)
+		}
+	}
+	// Prefixes and complete queue/archive state are checked separately from duplicate ordering fixtures.
+	root = fixture(t)
+	put(t, root, "units/a/SPEC.md", module("alpha", "ALP", ""))
+	put(t, root, "units/b/SPEC.md", module("beta", "BET", ""))
+	for i, dir := range []string{"changes", "changes/archive"} {
+		prefix, target := "ALP", "alpha"
+		if i == 1 {
+			prefix, target = "BET", "beta"
+		}
+		text := "---\nmodule: " + target + "\nphase: impl\nrun: fixture-run\nblocked: reason\nfixes: [" + prefix + "-003]\nalready_satisfied: [" + prefix + "-003]\nbases: {" + prefix + "-001: deadbeef, " + prefix + "-002: deadbeef}\nset: {preserve: [data/**]}\n---\n\n## Motivation\n\nKeep author motivation.\n\n## Added\n\n## Modified\n\n### " + prefix + "-001\nIt MUST change.\n\n## Removed\n\n### " + prefix + "-002\n\n## Provenance\n\n- immutable provenance\n\n## Audit\n\nNo findings.\n\n## Author notes\n\nKeep this custom section.\n"
+		path := dir + "/4-retained-" + target + ".md"
+		put(t, root, path, text)
+		expected, err := c.ParseChange(text, path, prefix)
+		if err != nil {
+			t.Fatal(err)
+		}
+		s, err = p.Load(root)
+		if err != nil {
+			t.Fatal(err)
+		}
+		cs := s.Changes
+		if i == 1 {
+			cs = s.Archive
+		}
+		if len(cs) != 1 || !reflect.DeepEqual(cs[0], expected) {
+			t.Fatalf("lost complete document\n got %+v\nwant %+v", cs, expected)
+		}
+		wrong := strings.ReplaceAll(text, prefix+"-", "WRONG-")
+		put(t, root, dir+"/5-wrong-"+target+".md", wrong)
+	}
+	s, err = p.Load(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	requireDiag(t, s.Diagnostics, "C05", "error", "changes/5-wrong-alpha.md")
+	requireDiag(t, s.Diagnostics, "C05", "error", "changes/archive/5-wrong-beta.md")
+	for _, dir := range []string{"changes", "changes/archive"} {
+		root := fixture(t)
+		put(t, root, "units/a/SPEC.md", module("alpha", "ALP", ""))
+		put(t, root, dir+"/1-duplicate.md", change("alpha", ""))
+		put(t, root, dir+"/2-duplicate.md", change("alpha", ""))
+		s, err := p.Load(root)
+		if err != nil {
+			t.Fatal(err)
+		}
+		requireDiag(t, s.Diagnostics, "C05", "error", dir+"/2-duplicate.md")
+	}
+}
+func Test_PRJ003TransitiveGraph(t *testing.T) {
+	a, b, d, e := validModule("a", "AAA", "m/a"), validModule("b", "BBB", "m/b"), validModule("d", "DDD", "m/d"), validModule("e", "EEE", "m/e")
+	a.DependsOn = []string{"b", "d"}
+	b.DependsOn = []string{"e"}
+	d.DependsOn = []string{"e"}
+	requireClean(t, p.Snapshot{Modules: []c.Module{e, d, b, a}})
+	a.DependsOn = []string{"b"}
+	b.DependsOn = []string{"d"}
+	d.DependsOn = []string{"e"}
+	requireClean(t, p.Snapshot{Modules: []c.Module{e, d, b, a}})
+	d.DependsOn = []string{"a"}
+	ds := p.Check(p.Snapshot{Modules: []c.Module{a, b, d}})
+	found := false
+	for _, x := range ds {
+		if x.Code == "C06" && x.Severity == "error" && (x.Path == "m/a/SPEC.md" || x.Path == "m/b/SPEC.md" || x.Path == "m/d/SPEC.md") {
+			found = true
+		}
+	}
+	if !found {
+		t.Fatalf("three-node cycle %+v", ds)
+	}
+	a.DependsOn = nil
+	other := validModule("a", "XXX", "m/other")
+	ds = p.Check(p.Snapshot{Modules: []c.Module{a, other}})
+	found = false
+	for _, x := range ds {
+		if x.Code == "C03" && x.Severity == "error" && (x.Path == "m/a/SPEC.md" || x.Path == "m/other/SPEC.md") {
+			found = true
+		}
+	}
+	if !found {
+		t.Fatalf("duplicate name exact path %+v", ds)
+	}
+}
+func Test_PRJ004PatternBoundaries(t *testing.T) {
+	for zone := 0; zone < 5; zone++ {
+		for _, bad := range []string{"/absolute", "[", "bad/**suffix"} {
+			m := validModule("a", "AAA", "future/a")
+			switch zone {
+			case 0:
+				m.Interface = []string{bad}
+			case 1:
+				m.Evals = []string{bad}
+			case 2:
+				m.Disposable = []string{bad}
+			case 3:
+				m.Preserve = []string{bad}
+			case 4:
+				m.AppendOnly = []string{bad}
+			}
+			requireDiag(t, p.Check(p.Snapshot{Modules: []c.Module{m}}), "C03", "error", "future/a/SPEC.md")
+		}
+	}
+	m := validModule("a", "AAA", "future/a")
+	m.Evals = []string{"src/**/check[0-4].go"}
+	m.Disposable = []string{"src/**/check[5-9].go"}
+	requireClean(t, p.Snapshot{Modules: []c.Module{m}})
+}
+func Test_PRJ005NoDisposableHooks(t *testing.T) {
+	for _, eval := range []string{"", " \n\t"} {
+		m := validModule("a", "AAA", "units/a")
+		m.Hooks.Eval = eval
+		requireDiag(t, p.Check(p.Snapshot{Modules: []c.Module{m}}), "C07", "error", "units/a/SPEC.md")
+	}
+	for _, bound := range []string{"", "present"} {
+		m := validModule("a", "AAA", "units/a")
+		m.Hooks.Boundaries = bound
+		m.BoundariesOptOut = "explicit review reason"
+		ds := p.Check(p.Snapshot{Modules: []c.Module{m}})
+		requireDiag(t, ds, "D04", "warning", "units/a/SPEC.md")
+		for _, d := range ds {
+			if d.Code == "D04" && !strings.Contains(d.Message, m.BoundariesOptOut) {
+				t.Fatalf("hidden reason %+v", ds)
+			}
+			if d.Severity == "error" {
+				t.Fatalf("unexpected rejection %+v", ds)
+			}
+		}
+	}
+}
+func Test_PRJ006NestedImmutabilityAndSort(t *testing.T) {
+	a, z := validModule("a", "AAA", "m/a"), validModule("z", "ZZZ", "m/z")
+	z.Specs = []c.Spec{{ID: "ZZZ-009", Body: "MUST be second."}, {ID: "ZZZ-001", Body: "MUST be first."}}
+	z.DependsOn = []string{"a"}
+	z.Document = c.Document{Metadata: map[string]any{"nested": map[string]any{"items": []any{"z", "a"}}}, Sections: []c.Section{{Name: "Notes", Body: "Keep"}}}
+	s := p.Snapshot{Modules: []c.Module{z, a}, Archive: []c.Change{{Path: "changes/archive/9-z.md", Number: 9, Document: z.Document, Set: map[string]any{"preserve": []any{"z", "a"}}}, {Path: "changes/archive/1-a.md", Number: 1}}, Changes: []c.Change{{Number: 9, Document: z.Document}, {Number: 1}}, Config: c.Config{Modules: []string{"z/*", "a/*"}}, Diagnostics: []p.Diagnostic{{Path: "same", Code: "C06", Severity: "warning", Message: "Z fix"}, {Path: "same", Code: "C03", Severity: "error", Message: "Z fix"}, {Path: "same", Code: "C03", Severity: "error", Message: "A fix"}, {Path: "same", Code: "C03", Severity: "warning", Message: "A fix"}}}
+	before, _ := json.Marshal(s)
+	ds := p.Check(s)
+	after, _ := json.Marshal(s)
+	if string(before) != string(after) {
+		t.Fatalf("mutated nested snapshot: %s -> %s", before, after)
+	}
+	if len(ds) != 4 || ds[0].Code != "C03" || ds[0].Message != "A fix" || ds[1].Message != "Z fix" || ds[2].Severity != "warning" || ds[3].Code != "C06" {
+		t.Fatalf("sort tie-breakers %+v", ds)
+	}
 }
