@@ -1,6 +1,7 @@
 package evals
 
 import (
+	"encoding/json"
 	"reflect"
 	"strings"
 	"testing"
@@ -22,11 +23,19 @@ func Test_CON016AlreadySatisfiedLocalHandles(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	beforeMutation, err := json.Marshal(second)
+	if err != nil {
+		t.Fatal(err)
+	}
 	first.AlreadySatisfied[0] = "poison"
 	first.Added[0].Body = "poison"
 	first.Document.Metadata["already_satisfied"].([]any)[0] = "poison"
 	first.Document.Metadata["set"].(map[string]any)["hooks"].(map[string]any)["setup"] = "poison"
 	first.Document.Sections[0].Body = "poison"
+	afterMutation, err := json.Marshal(second)
+	if err != nil || string(beforeMutation) != string(afterMutation) {
+		t.Fatalf("earlier result changed before another parse: %v", err)
+	}
 	third, err := c.ParseChange(text, "changes/0001-satisfied.md", "AUTH")
 	if err != nil || !reflect.DeepEqual(second, third) {
 		t.Fatalf("parses share mutable results: %v", err)
