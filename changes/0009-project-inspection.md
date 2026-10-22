@@ -1,5 +1,7 @@
 ---
 module: app
+phase: audit
+run: bf80e89092f8451c72bbb1e5
 ---
 
 ## Motivation
@@ -12,13 +14,13 @@ Keep Run and protected main.go unchanged. Add modules and check dispatch using p
 
 ## Added
 
-### new:modules
+### APP-005
 modules MUST discover the project from a nested working directory and publish the resolved module array sorted by name then directory, including names, prefixes, directories, dependencies, resolved zone lists, hooks, specs and Decisions. It MUST apply current project defaults and explicit empty overrides and MUST NOT require a second language-specific graph. Empty projects MUST return an empty non-null array. Both plain output and JSON data MUST preserve these values.
 
-### new:check
+### APP-006
 check MUST run public project static validation and return data {valid:true} with exit 0 when there are no error diagnostics, including when warnings exist, and {valid:false} with exit 1 when errors exist. modules MUST return its module array with the same validation diagnostics and exit 0 or 1 by severity. JSON MUST use the schema-1 canonical command/data/non-null diagnostics envelope, with each diagnostic's code, severity, message and repository-relative path in deterministic project order. Plain diagnostics MUST go to stderr with their code and path; data MUST go to stdout. Invalid/missing/incompatible configuration or absence of a Git repository MUST return exit 2 with C01 error diagnostics and null data in JSON, without U01 or plaintext on JSON streams.
 
-### new:inspection-safety
+### APP-007
 modules and check MUST accept --json before or after the command, accept --help/-h without loading a project, and reject excess operands or unknown/valued flags with U01 exit 2 before loading a project. They MUST remain noninteractive and MUST NOT run hooks, agents, the bootstrap or network commands, nor change repository files, ignored content or refs. Project validation MUST expose invalid graph/zone/hook/document/reservation diagnostics from the public project validator rather than silently succeeding.
 
 ## Modified
@@ -32,3 +34,7 @@ The current graph comes exclusively from SPEC.md and fireweed.yaml through proje
 ## Rejected alternatives
 
 Calling the bootstrap would conceal missing product behavior. A separate graph in Go tooling would violate the design's single source of module ownership and dependencies.
+
+## Provenance
+
+- evals | 2026-10-22T08:27:25Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 12 | failing: 4 | passing: 8
