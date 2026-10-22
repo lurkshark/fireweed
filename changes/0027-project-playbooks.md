@@ -1,6 +1,6 @@
 ---
 module: project
-phase: audit
+phase: impl
 run: 72ae08640c3a077e700e83a5
 set:
     interface:
@@ -46,7 +46,8 @@ Automatically replacing stale overrides discards author instructions. Silently t
 - evals | 2026-10-22T20:56:54Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 229 | failing: 142 | passing: 87
 - audit | 2026-10-22T20:58:30Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T20:59:32Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 229 | failing: 142 | passing: 87
+- audit | 2026-10-22T21:00:23Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- PRJ-023: "ResolvePlaybook MUST check selected override containment using the public Git SafePath contract before opening its contents, including when a read error would otherwise be ignored." — the new missing-endpoint argument and control use filepath.Join(outside, "evals.md"), but outside is raw t.TempDir() and is never canonicalized. Only the separate existing private file is passed through EvalSymlinks. On macOS temporary-path aliases such as /var versus /private/var, an incorrect resolver can canonicalize the escaping parent and open the canonical missing endpoint without matching the guard's exact forbidden raw path; the direct-read control currently checks only the raw alias. Canonicalize the existing outside directory before appending evals.md, and use that canonical endpoint in both the ignored-ENOENT read control and resolution probe, retaining the selected-alias control.
+No findings. Checked PRJ-021, PRJ-022 and PRJ-023. The existing outside directory is canonicalized before constructing the missing endpoint; both the direct ignored-ENOENT control and resolver probe use that canonical endpoint, and the selected-alias control remains. The public eval assertions cover every clause and their fixture premises agree with the permitted public contracts. This separate restricted audit did not inspect implementation/history/bootstrap/evidence or execute tests or Git.
