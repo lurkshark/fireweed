@@ -1,6 +1,6 @@
 ---
 module: project
-phase: audit
+phase: evals
 run: 5bac8caec4836214c46ee6c9
 ---
 
@@ -41,3 +41,19 @@ Reading working files during projection would break determinism for callers hold
 ## Provenance
 
 - evals | 2026-10-22T08:46:12Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 34 | failing: 7 | passing: 27
+- audit | 2026-10-22T08:55:26Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+- PRJ-007: "replace Modified specs in their existing positions" — use reverse-declared multiple modifications with untouched items around them; prepend implementations currently pass.
+- PRJ-007: "append Added specs" — assert successful real-ID and mixed real-ID/handle additions, plus malformed Added bodies/tags/handles and duplicate new real IDs.
+- PRJ-007: "retain local Added handles" — qualify local scope in Decisions and assert same-spelling handles across changes succeed while cross-change-only references fail.
+- PRJ-008: "Explicit empty lists/strings MUST replace resolved values" — cover cleared dependencies/opt-out/setup and nonempty replacements for every set field/hook.
+- PRJ-008: "fields and document metadata MUST agree" — assert reparsed identity and valid synthesized Specs/hooks/zones; set-only preamble/unrelated sections need assertions.
+- PRJ-008: "re-inherit project defaults over explicit values" — test Project with conflicting config defaults/hooks and explicit empties.
+- PRJ-009: "numeric Number then Slug order" — typed Number should differ from filename ordering in a direct fixture.
+- PRJ-009: "preceding changes only" — excluded target/tail must include invalid applications so eager validation is caught.
+- PRJ-009: "return mutable aliases" — add explicit-clear slices with spare capacity and append after return.
+- PRJ-010: "public normalized eight-character SHA-256 item contract" — hash directly constructed CRLF/trailing/outer whitespace sources.
+- PRJ-010: "changing a returned map MUST NOT affect inputs or later calls" — mutate and repeat added-only/maintenance empty maps; add missing Modified target coverage.
+- PRJ-010: "pure and independent of files and Git" — native probe must hash Modified/Removed items after a preceding modification, rather than only early-return added-only.
