@@ -1,0 +1,47 @@
+fireweed: '>=0.4, <0.5'
+version: 1
+remote: origin
+modules:
+    - packages/*
+module_defaults:
+    interface:
+        - api.go
+    evals:
+        - evals/**
+    disposable:
+        - internal/**
+hooks:
+    eval: go run .fireweed/hooks.go eval {module_dir} {report}
+    boundaries: go run .fireweed/hooks.go boundaries
+protected:
+    - .github/**
+    - docs/**
+    - fireweed-design-v1.md
+    - go.mod
+    - main.go
+    - Makefile
+    - scripts/**
+    - .goreleaser.yaml
+    - README.md
+    - LICENSE
+    - .gitignore
+worker_writable:
+    - go.sum
+agent:
+    command:
+        - codex
+        - exec
+        - '{prompt}'
+audit:
+    command:
+        - codex
+        - exec
+        - '{prompt}'
+attempts: 2
+timeout: 90m
+verify_dependents: all
+limit_patterns:
+    - usage limit
+    - rate limit
+limit_wait: 30m
+limit_budget: 4h

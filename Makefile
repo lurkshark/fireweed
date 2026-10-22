@@ -1,0 +1,9 @@
+build:
+	go build -o bin/fireweed .
+
+test:
+	go test ./...
+
+check:
+	go test -race ./...
+	go vet ./...
