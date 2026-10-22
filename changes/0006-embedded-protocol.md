@@ -1,6 +1,6 @@
 ---
 module: assets
-phase: audit
+phase: evals
 run: 4294b7757eb823403f72c0b8
 ---
 
@@ -44,9 +44,8 @@ Runtime reads from the bootstrap or a source directory would break the single-bi
 - evals | 2026-10-22T07:23:20Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 6 | failing: 6 | passing: 0
 - audit | 2026-10-22T07:27:33Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T07:30:03Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 6 | failing: 6 | passing: 0
+- audit | 2026-10-22T07:31:43Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- AST-001: "current format 1 and previous format 0 from a compiled binary, independent of working directory or repository files." — isolated compiled probe checks only Version, not format values.
-- AST-002: "Text MUST give concrete commands and rules for its step" — regeneration instructions lack an asserted executable command.
-- AST-002: "Lookups MUST perform no runtime file or network reads." — allow-default policy permits unrelated file reads and does not detect ignored-error I/O attempts.
+- AST-002: "Lookups MUST perform no runtime file or network reads." — armed isolation probe exercises known lookups only; unknown-name/code checks run without interception, leaving error paths unasserted.
