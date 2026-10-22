@@ -171,6 +171,9 @@ func Test_APP006ValidationDiagnostics(t *testing.T) {
 		if got.code != 1 || got.out == "" {
 			t.Fatalf("plain failure %+v", got)
 		}
+		if !reflect.DeepEqual(decodeData(t, json.RawMessage(got.out)), want) {
+			t.Fatalf("plain failure data %s", got.out)
+		}
 		for _, d := range ds {
 			if !strings.Contains(got.err, d.Code) || !strings.Contains(got.err, d.Path) {
 				t.Fatalf("plain missing diagnostic path %+v", got)
@@ -193,9 +196,23 @@ func Test_APP006ValidationDiagnostics(t *testing.T) {
 		if command == "check" && !reflect.DeepEqual(decodeData(t, x.Data), map[string]any{"valid": true}) {
 			t.Fatal("warning made check invalid")
 		}
+		plain := invoke(t, warning, command)
+		expectedData := decodeData(t, x.Data)
+		if plain.code != 0 || !reflect.DeepEqual(decodeData(t, json.RawMessage(plain.out)), expectedData) {
+			t.Fatalf("plain warning data %+v", plain)
+		}
+		for _, d := range warningDS {
+			if !strings.Contains(plain.err, d.Code) || !strings.Contains(plain.err, d.Path) || !strings.Contains(plain.err, d.Message) {
+				t.Fatalf("plain warning diagnostic %+v", plain)
+			}
+		}
 	}
 	valid := projectFixture(t)
 	projectModule(t, valid, "units/a", "alpha", "ALP", "")
+	plain := invoke(t, valid, "check")
+	if plain.code != 0 || plain.err != "" || !reflect.DeepEqual(decodeData(t, json.RawMessage(plain.out)), map[string]any{"valid": true}) {
+		t.Fatalf("plain valid check %+v", plain)
+	}
 	for _, args := range [][]string{{"check", "--json"}, {"--json", "check"}} {
 		x := successJSON(t, invoke(t, valid, args...), "check")
 		if !reflect.DeepEqual(decodeData(t, x.Data), map[string]any{"valid": true}) {
