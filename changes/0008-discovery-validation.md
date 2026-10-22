@@ -38,6 +38,8 @@ Check MUST reject any current spec ID listed as Removed in the archive with C08,
 
 This slice validates the current static graph. Queued projection, set application, hash bases and late ID assignment are separate changes. Discovery scans all repository directories except .git and .fireweed to report out-of-glob specs; WalkDir does not traverse directory symlinks. Symlink file paths are checked by gitstore.SafePath before reads. Configured globs include module discovery, defaults, protected and worker_writable patterns. Module metadata is validated separately from its Specs body so malformed normative content receives C04. Unknown archived target modules are diagnosed C05, rather than silently dropping history. Hook strings remain opaque and are never evaluated by static checks. Module path attribution is <dir>/SPEC.md; queue/archive attribution is its repository-relative path. A root module directory is represented by '.'.
 
+Variable-width numeric-order fixtures use at least four digits, as required by the retained document contract. Original documents retain all valid known metadata and arbitrary human sections; unknown metadata is rejected by contracts. Adjacent stars inside a segment are ordinary wildcards; invalid-pattern tests use malformed classes, absolute/traversal paths and repeated separators. The superseded first cycle was fully reverted after these fixture mistakes surfaced (author decision D008).
+
 ## Rejected alternatives
 
 Running hooks during discovery would make read commands stateful and conflate static checks with enforcement. A second graph in language-specific tooling would drift from SPEC.md metadata. Ignoring malformed files would hide loss of ownership or archive reservations.

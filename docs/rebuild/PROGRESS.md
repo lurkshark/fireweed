@@ -81,3 +81,7 @@ Archive changes/archive/0007-cli-inspection.md. Eight permanent app evals build 
 Playbook JSON retains embedded_hash and adds overridden:false for later project-owned overrides. Embedded playbooks now work outside a project (intentional reference difference D007); pin/override integration is still pending. Remaining commands printed in help are not yet implemented. Next author project discovery/config/module/queue loading and graph/zone/hook validation, then extend actual executable inspection. Goal remains active and full acceptance incomplete.
 
 Restart at this boundary: previous goal turn was progress (archived code/evals and full checkpoint evidence); current turn added real product CLI behavior. Queue/claims clear after archive; bootstrap remains the pinned controller.
+
+## Discovery eval recovery
+
+First discovery-validation cycle assigned PRJ-001–006 and passed a separate assertion audit, then implementation exposed three fixture errors (unknown metadata, too-short filenames, permitted adjacent-star pattern). See D008. Released the claim and fully reverted that cycle's eight phase commits to restore the original queue entry. Implementation/evals preserved under /tmp/fireweed-discovery-recovery-5380157 and earlier commits; only our uncommitted implementation was restored to its stub before reverting. Restart from evals with valid contract-derived fixtures; do not treat the reverted cycle as completed behavior or edit frozen evals in impl.

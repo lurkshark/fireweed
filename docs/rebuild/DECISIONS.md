@@ -27,3 +27,9 @@ Native sandbox policies must permit the OS loader to start. The asset eval there
 ## D007 — Embedded CLI access before init
 
 Design playbooks/explanations are embedded binary protocol data. The first app slice makes help/version/explain and embedded playbook lookup usable without a project. The reference cli.go resolves explain before Load, but playbook after Load and therefore fails before init. Allowing embedded playbooks before init supports the design's setup/authoring flow. Later project integration must honor project-owned overrides and binary pins when a project is present; this first slice does not claim that integration. The reference error is an intentional comparison difference, not silently reproduced.
+
+## D008 — correct discovery eval fixtures through a full revert
+
+The first discovery-validation eval/audit run (9191c67 through d9fe6ed) passed assertion review, but implementation exposed three invalid fixture premises. CON-013 rejects unknown module metadata; the retention fixture's `custom` key was invalid. The retained document-grammar Decision requires filenames with at least four digits, so `2-alpha.md` never reaches numeric ordering. CON-005's Decision treats adjacent stars within a segment as ordinary wildcards, so `bad/**suffix` is valid. These are eval mistakes, not product behavior to reproduce or reasons to weaken contracts.
+
+Preserved the implementation and eval drafts locally, released the claim, and fully reverted all eight phase commits in reverse order (b3de999 through 0f4ffb1), restoring the queued authored change and unimplemented project facade. No frozen eval/interface was edited during implementation. Correct fixtures use known metadata, valid variable-width numbers (`00010` versus `0002`) and genuinely invalid repeated separators. Restart the complete fail-first/audit/impl cycle. The earlier commits/audits remain visible as superseded evidence; they do not prove this change complete.
