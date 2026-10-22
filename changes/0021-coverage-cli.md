@@ -1,5 +1,7 @@
 ---
 module: app
+phase: audit
+run: 2c1fa4000b6b828fb9cb84f4
 ---
 
 ## Motivation
@@ -12,16 +14,16 @@ No public Go API change. Extend Run with coverage <module> [--with-change <slug>
 
 ## Added
 
-### new:coverage-current
+### APP-013
 coverage MUST discover from a nested project directory, resolve the exact case-sensitive named module and run its resolved eval hook through public Evaluate with empty failFirst/already lists. It MUST return the complete Coverage result, including real testcase evidence/IDs/BySpec, module name, hook exit, captured Output and diagnostics, preserving deterministic public diagnostic order. No error diagnostics MUST mean exit 0; any coverage error MUST mean exit 1 while retaining Coverage data. Plain output MUST be pretty JSON of the same data on stdout with coded/path-attributed diagnostics on stderr; JSON MUST use the schema-1 canonical coverage/data/non-null diagnostics envelope with no plaintext on either stream. The envelope diagnostics MUST equal the data diagnostics. Unknown modules MUST be U01 exit 2 with exact valid choices and no hook startup. Fatal Git/configuration loading failures MUST be C01 exit 2 with null JSON data. Current coverage MUST use current specs/hooks and MUST NOT project or validate pending intent as a prerequisite, so unrelated queue errors cannot replace selected-module coverage.
 
-### new:coverage-projection
+### APP-014
 coverage --with-change MUST resolve an exact queued slug targeting the selected module and use public Project before that change followed by ApplyChange for the selected change, exposing the inclusive numeric/slug ordered projected module's specs and resolved hook metadata to Evaluate. It MUST exclude later queue entries and archives, and MUST NOT allocate IDs or edit current state. Unknown or archived-only slugs and a module/target mismatch MUST produce corrective U01 exit 2 without running a hook. Projection/application failure MUST produce C05 exit 1 attributed to the selected change path, null data and corrective guidance without hook startup. This command MUST still require ordinary passing coverage: Added/Modified/fixes and already_satisfied metadata MUST NOT infer failFirst or grant coverage exemptions. Stale bases alone MUST NOT prevent an otherwise valid preview, consistent with public Project; static queue validation remains check's responsibility.
 
-### new:coverage-errors
+### APP-015
 The executable MUST retain public Evaluate's C07/C11/C12/C13/C14 errors, target module paths, corrective messages, actual hook exits and output for missing hooks/reports, unreadable/malformed reports, timeouts, reporter exit inconsistencies, missing/unknown/removed IDs, skips/uncovered specs and ordinary failures. Review and reasoned quarantine suspensions MUST remain visible in testcase mappings without inventing enforcement errors. Malformed or fatally incomplete hook evidence MUST keep non-null empty Tests/BySpec and MUST NOT become successful coverage, including a timeout after a valid failing report was written. Errors MUST return exit 1 rather than a configuration/usage exit; arbitrary hook stdout/stderr MUST remain only inside Coverage.Output, without corrupting either output format.
 
-### new:coverage-arguments-safety
+### APP-016
 coverage MUST accept --json before or after command/operands, --with-change <slug> and --with-change=<slug> anywhere before --, and valid --help/-h without loading a project or running hooks. Repeated with-change values MUST use the last value. Missing/excess operands, empty/missing with-change values, unknown/valued boolean flags, show-only mode flags and with-change on other implemented commands MUST produce corrective U01 exit 2 before loading a project. -- MUST stop option parsing, so subsequent flag-looking text is an operand and cannot enable JSON or with-change. Output write failures MUST return exit 2. Current and projected coverage MUST remain noninteractive and MUST NOT independently run setup/boundaries hooks, agents, the bootstrap or network commands, create Git commits/refs/claims, rewrite specs/changes or modify ignored/user files, except explicitly authored eval-hook actions. Owned report directories MUST be cleaned after success and failure, and FIREWEED_BIN observed by the hook MUST identify the new subject executable rather than an inherited controller path.
 
 ## Modified
@@ -37,3 +39,7 @@ Normal coverage always passes nil failFirst/already to Evaluate, matching the re
 ## Rejected alternatives
 
 Automatically treating --with-change as evals-phase fail-first would make a normal coverage command accept failures. Reusing the controller to execute hooks would falsify product independence. Sharing a report file or forwarding raw hook output would corrupt evidence and JSON.
+
+## Provenance
+
+- evals | 2026-10-22T17:45:43Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 43 | failing: 21 | passing: 22
