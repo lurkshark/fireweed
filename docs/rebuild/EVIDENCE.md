@@ -18,3 +18,6 @@ Every inventory row remains incomplete until assertion-level command, workflow, 
 Audit retry evidence is in phase commits 9bc6825 (four real clause findings), b5624fd (added missing assertions), 7d7f600 (independent pass). Implementation d7dfbd9 did not change interface/evals.
 
 R01–R21 overall: unverified. Setup/checkpoint controller CI and doctor are process evidence, not product functionality. No real regeneration/self-hosting claimed. Configuration initial evals b61d96d, findings 75045c5, retry evals 8537546, passing audit 3d67cc6, impl be9fe8b.
+
+| R02 module defaults and metadata | CON-013 / Test_CON013ModuleInheritance, Test_CON013TypedMetadata | 0004-document-grammar | Parser verified; graph/path ownership validation pending |
+| R04/R05 documents and change grammar | CON-012, CON-014–CON-016 / Test_CON012Markdown, Test_CON012IndependentRoundTrip, Test_CON014ChangeMetadata, Test_CON014ClassificationAndRequiredValues, Test_CON015ChangeSections, Test_CON015ProseAndHandleReferences, Test_CON016SetFields, Test_CON016SetAndIDValidation | 0004-document-grammar | Public parser/round-trip verified; projection, stale bases, late IDs and archive application pending |

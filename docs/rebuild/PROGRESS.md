@@ -1,6 +1,6 @@
 # Restartable rebuild progress
 
-Status: stage 1, first behavioral change archived; contracts module/change document grammar next. Goal remains active.
+Status: stage 1, four behavioral changes archived; Git/path primitives next. Goal remains active.
 
 ## Controller pin
 
@@ -45,3 +45,9 @@ Next: retained typed data/configuration grammar, then Git/assets/project discove
 Archive changes/archive/0003-config-contract.md. Seven added permanent testcases in packages/contracts/evals/config_test.go verify defaults/explicit empty lists, exact typed field retention and opaque commands, independent parsed slices, strict YAML roots/types, current/previous formats, numeric version conjunctions and duration/retry settings. Initial fail-first b61d96d7e569dd497ca3f67722a14fefbd3a21f3. Audit 75045c563aaf490ef66e75debd98c034301f0b15 captured seven assertion gaps; retry evals 85375462e3f24fd0d0f820abb696d725ea90ed4f resolved them. Independent re-audit pass 3d67cc6be9f5ba0c81013b210e98cfe0b651806a. Applied implementation be9fe8b312380bfbc4a02334f375cdb2fa29ae57. Retained model/*.go was introduced using the change's projected interface set; only the controller applied that zone to SPEC.md.
 
 Checkpoint after be9fe8b: go test -race ./..., go vet ./..., go build -o bin/fireweed . all exit 0. Controller ci 14cec73e1126ee37d33f1138d19936b6a05a59a6..be9fe8b312380bfbc4a02334f375cdb2fa29ae57 passed with no diagnostics, including doctor (not skipped), own coverage and all scaffold modules. Fifteen actual contracts testcases. Saved JSON .fireweed/evidence/ci-contracts-checkpoint.json. Bootstrap checkout remains clean; no claims or pending changes. This is a partial checkpoint, not the final acceptance range. The Go build emits a harmless denied module-stat-cache write warning in the outer sandbox; build still succeeds.
+
+## document-grammar (CON-012–CON-016)
+
+Archive changes/archive/0004-document-grammar.md. Ten permanent testcases in packages/contracts/evals/documents_test.go assert fenced Markdown and independent metadata round trips, module default inheritance/overrides and slice isolation, complete typed change state/classification, normative edit sections/Removed headings, local handles, retained author prose, set allowlist and hash/ID grammar. Initial fail-first dd6098a; independent audit ea3f868 records twelve concrete missing-assertion findings; retry fail-first a38906e; independent passing re-audit b6a39ae. Applied implementation is the newest document-grammar impl commit listed by controller commits. Controller verify: 25 contracts cases, all own/dependent hooks and boundaries pass; explicit baseline history check passes. One implementation iteration fixed a real YAML block-scalar trailing-newline failure; evals/interfaces stayed unchanged. Local evidence .fireweed/evidence/document-grammar/.
+
+Restart audit: prior goal turn classified as progress (authoritative archived code, evals and CI evidence). At this turn's start checksum matched, queue/claims empty, target clean. Goal still requires the full design; contracts primitives do not satisfy CLI/lifecycle/regeneration/self-hosting gates. Next implement gitstore local discovery/base refs/clean-tree/diffs/safe paths, then assets/project and an early CLI inspection slice.
