@@ -16,11 +16,13 @@ import (
 )
 
 type baselinePolicy struct {
-	Real, Marker string
-	Allowed      map[string]bool
-	Paths        map[string]bool
-	Fail         string
-	FailBodies   map[string]bool
+	Real, Marker     string
+	Source, RootTree string
+	NoTree           bool
+	Allowed          map[string]bool
+	Paths            map[string]bool
+	Fail             string
+	FailBodies       map[string]bool
 }
 
 func baselineGuard(t *testing.T, f baselineFixtureData, fail string, extra ...string) (string, string) {
@@ -32,6 +34,11 @@ func baselineGuard(t *testing.T, f baselineFixtureData, fail string, extra ...st
 	temp := baselineCanonical(t, t.TempDir())
 	marker := filepath.Join(temp, "forbidden")
 	policy := baselinePolicy{Real: real, Marker: marker, Allowed: map[string]bool{f.Commit: true}, Paths: map[string]bool{}, Fail: fail, FailBodies: map[string]bool{}}
+	policy.Source = f.Commit
+	policy.NoTree = fail == "before-tree"
+	if policy.NoTree {
+		policy.Fail = ""
+	}
 	failedPath := ""
 	if strings.HasPrefix(fail, "body:") {
 		failedPath = strings.TrimPrefix(fail, "body:")
@@ -75,7 +82,8 @@ func baselineGuard(t *testing.T, f baselineFixtureData, fail string, extra ...st
 			policy.Allowed[header[2]] = true
 		}
 	}
-	policy.Allowed[baselineGit(t, f.Root, "rev-parse", f.Commit+"^{tree}")] = true
+	policy.RootTree = baselineGit(t, f.Root, "rev-parse", f.Commit+"^{tree}")
+	policy.Allowed[policy.RootTree] = true
 	input := filepath.Join(temp, "policy.json")
 	bytes, err := json.Marshal(policy)
 	if err != nil {
@@ -86,26 +94,27 @@ func baselineGuard(t *testing.T, f baselineFixtureData, fail string, extra ...st
 	}
 	program := `package main
 import("bufio";"encoding/json";"io";"os";"os/exec";"strings")
-type policy struct{Real,Marker string;Allowed,Paths,FailBodies map[string]bool;Fail string}
+type policy struct{Real,Marker,Source,RootTree string;NoTree bool;Allowed,Paths,FailBodies map[string]bool;Fail string}
 var p policy
 func bad(reason string){os.WriteFile(p.Marker,[]byte(reason),0600);os.Exit(97)}
 func allowed(query string)bool{
  q:=strings.TrimSuffix(strings.TrimSuffix(query,"\n"),"\x00");q=strings.TrimSpace(q)
  if p.FailBodies[q]{os.Exit(73)};if idx:=strings.Index(q,":");idx>=0&&p.FailBodies[q[idx+1:]]{os.Exit(73)};fields:=strings.Fields(q);if len(fields)>0&&p.FailBodies[fields[0]]{os.Exit(73)}
- if p.Allowed[q]{return true};if strings.HasSuffix(q,"^{tree}")||strings.HasSuffix(q,"^{commit}"){return true}
- if idx:=strings.Index(q,":");idx>=0&&p.Paths[q[idx+1:]]{return true}
+ if p.Allowed[q]{return true};if q==p.Source+"^{tree}"||q==p.Source+"^{commit}"{return true}
+ if idx:=strings.Index(q,":");idx>=0&&p.Paths[q[idx+1:]]&&(q[:idx]==p.Source||q[:idx]==p.RootTree){return true}
  first:=strings.Fields(q);if len(first)>0&&p.Allowed[strings.TrimSuffix(first[0],"^{blob}")]{return true};return false
 }
 func main(){raw,e:=os.ReadFile(os.Getenv("FW_BASELINE_GIT_POLICY"));if e!=nil{os.Exit(80)};if json.Unmarshal(raw,&p)!=nil{os.Exit(81)};args:=os.Args[1:];command:="";at:=0
  for i:=0;i<len(args);i++{a:=args[i];if a=="-c"||a=="-C"||a=="--git-dir"||a=="--work-tree"{i++;continue};if strings.HasPrefix(a,"-"){continue};command=a;at=i;break}
  tail:=args[at+1:];batch:=false;batchCommand:=false;metadataOnly:=false
+ if p.NoTree&&command=="ls-tree"{bad("tree read before valid explicit revision: "+command)}
  switch command{case "fetch","push","clone","ls-remote","commit","branch","checkout","switch","reset","restore","add","worktree","update-ref","hash-object","archive","grep","diff","status":bad("forbidden command "+command)}
  if p.Fail==command{os.Exit(73)}
- if command=="cat-file"{for _,a:=range tail{if a=="-t"||a=="-s"||a=="-e"||strings.HasPrefix(a,"--batch-check"){metadataOnly=true};if strings.HasPrefix(a,"--batch-command"){batch=true;batchCommand=true};if a=="--batch"||strings.HasPrefix(a,"--batch="){batch=true}};if !metadataOnly&&!batch{queries:=[]string{};for _,a:=range tail{if a=="blob"||a=="tree"||a=="commit"||strings.HasPrefix(a,"-"){continue};queries=append(queries,a)};for _,q:=range queries{if !allowed(q){bad("unrelated body "+q)}}}}
- if command=="show"||command=="log"{noPatch:=false;query:=false;for _,a:=range tail{if a=="--no-patch"||a=="-s"{noPatch=true};if strings.Contains(a,":")&&allowed(a){query=true}};if !noPatch&&!query{bad("unbounded historical content "+command)}}
+ if command=="cat-file"{for _,a:=range tail{if a=="-t"||a=="-s"||a=="-e"||strings.HasPrefix(a,"--batch-check"){metadataOnly=true};if strings.HasPrefix(a,"--batch-command"){batch=true;batchCommand=true};if a=="--batch"||strings.HasPrefix(a,"--batch="){batch=true}};if p.NoTree&&!metadataOnly&&!batch{bad("body read before valid explicit revision")};if !metadataOnly&&!batch{queries:=[]string{};for _,a:=range tail{if a=="blob"||a=="tree"||a=="commit"||strings.HasPrefix(a,"-"){continue};queries=append(queries,a)};for _,q:=range queries{if !allowed(q){bad("unrelated body "+q)}}}}
+ if command=="show"||command=="log"{noPatch:=false;query:=false;for _,a:=range tail{if a=="--no-patch"||a=="-s"{noPatch=true};if strings.Contains(a,":")&&allowed(a){query=true}};if p.NoTree&&!noPatch{bad("historical content before valid explicit revision")};if !noPatch&&!query{bad("unbounded historical content "+command)}}
  child:=exec.Command(p.Real,args...);child.Stdout=os.Stdout;child.Stderr=os.Stderr;child.Env=os.Environ()
  if batch&&!metadataOnly{pipe,e:=child.StdinPipe();if e!=nil{os.Exit(82)};if child.Start()!=nil{os.Exit(83)};reader:=bufio.NewReader(os.Stdin);delimiter:=byte('\n');for _,a:=range tail{if a=="-z"||a=="-Z"{delimiter=0}}
-  for{record,e:=reader.ReadString(delimiter);if len(record)>0{q:=strings.TrimSuffix(strings.TrimSuffix(record,"\n"),"\x00");check:=true;if batchCommand{if strings.HasPrefix(q,"info ")||q=="flush"{check=false}else{q=strings.TrimPrefix(q,"contents ")}};if check&&!allowed(q){child.Process.Kill();pipe.Close();child.Wait();bad("unrelated batch body "+q)};if _,err:=io.WriteString(pipe,record);err!=nil{break}};if e!=nil{break}};pipe.Close()
+  for{record,e:=reader.ReadString(delimiter);if len(record)>0{q:=strings.TrimSuffix(strings.TrimSuffix(record,"\n"),"\x00");check:=true;if batchCommand{if strings.HasPrefix(q,"info ")||q=="flush"{check=false}else{q=strings.TrimPrefix(q,"contents ")}};if check&&p.NoTree{child.Process.Kill();pipe.Close();child.Wait();bad("batch body before valid explicit revision")};if check&&!allowed(q){child.Process.Kill();pipe.Close();child.Wait();bad("unrelated batch body "+q)};if _,err:=io.WriteString(pipe,record);err!=nil{break}};if e!=nil{break}};pipe.Close()
  }else{child.Stdin=os.Stdin;if child.Start()!=nil{os.Exit(84)}}
  if err:=child.Wait();err!=nil{if e,ok:=err.(*exec.ExitError);ok{os.Exit(e.ExitCode())};os.Exit(85)}
 }`
@@ -468,4 +477,59 @@ func Test_PRJ024_PRJ025GitWarningsAreNotMetadata(t *testing.T) {
 		t.Fatalf("warning control %v stdout %q stderr %q", err, raw, warning.String())
 	}
 	baselineAssert(t, f, f.Root, f.Commit)
+}
+
+func Test_PRJ024_PRJ027PinnedBodyWhitelistControls(t *testing.T) {
+	f := baselineFixture(t, "sha1")
+	selected := f.Commit
+	put(t, f.Root, "newer-only", "different commit with identical selected config")
+	newer := baselineCommit(t, f.Root)
+	marker, _ := baselineGuard(t, f, "")
+	for _, q := range []string{"HEAD:fireweed.yaml", newer + ":fireweed.yaml", "refs/heads/main:fireweed.yaml"} {
+		for _, batch := range []bool{false, true} {
+			var err error
+			if batch {
+				_, err = baselineInput(t, f.Root, q+"\n", "cat-file", "--batch")
+			} else {
+				_, err = baselineInput(t, f.Root, "", "cat-file", "blob", q)
+			}
+			if err == nil {
+				t.Fatalf("unpinned query control passed %q batch %v", q, batch)
+			}
+			if _, err := os.Stat(marker); err != nil {
+				t.Fatal("missing unselected revision marker", err)
+			}
+			if err := os.Remove(marker); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+	raw, err := baselineInput(t, f.Root, "", "cat-file", "blob", selected+":fireweed.yaml")
+	if err != nil || raw != f.Files["fireweed.yaml"] {
+		t.Fatalf("selected revision control %v %q", err, raw)
+	}
+	baselineNoMarker(t, marker)
+	// Identical config bytes make ignored reads from a newer ref distinguishable only by the guard.
+	baselineAssert(t, f, f.Root, selected)
+	baselineNoMarker(t, marker)
+}
+func Test_PRJ024_PRJ027RejectInvalidRevisionBeforeTree(t *testing.T) {
+	f := baselineFixture(t, "sha1")
+	blob := baselineGit(t, f.Root, "rev-parse", f.Commit+":fireweed.yaml")
+	tree := baselineGit(t, f.Root, "rev-parse", f.Commit+"^{tree}")
+	marker, _ := baselineGuard(t, f, "before-tree")
+	for _, args := range [][]string{{"ls-tree", f.Commit}, {"cat-file", "blob", blob}} {
+		if _, err := baselineInput(t, f.Root, "", args...); err == nil {
+			t.Fatal("pre-resolution tree control passed")
+		}
+		if _, err := os.Stat(marker); err != nil {
+			t.Fatal("missing premature read marker", err)
+		}
+		if err := os.Remove(marker); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, revision := range []string{"", " ", "missing-ref", "--all", blob, tree} {
+		t.Run(revision, func(t *testing.T) { baselineError(t, f.Root, revision, ""); baselineNoMarker(t, marker) })
+	}
 }

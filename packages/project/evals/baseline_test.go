@@ -707,3 +707,40 @@ func Test_PRJ025_PRJ026HiddenTreeFixtureControl(t *testing.T) {
 		t.Fatal("object-only tree fixture changed working discovery")
 	}
 }
+
+func Test_PRJ025SelectedConfigResolvesLocalBase(t *testing.T) {
+	for _, mode := range []string{"remote-default", "tracking-over-local", "local-fallback", "missing-local"} {
+		t.Run(mode, func(t *testing.T) {
+			f := baselineFixture(t, "sha1")
+			cfg := strings.Replace(f.Files["fireweed.yaml"], "base: main\n", "remote: offline\n", 1)
+			branch := "release/approved"
+			want := "refs/heads/" + branch
+			if mode != "remote-default" {
+				cfg = "base: " + branch + "\n" + cfg
+			}
+			if mode == "remote-default" || mode == "tracking-over-local" {
+				baselineGit(t, f.Root, "update-ref", "refs/remotes/offline/"+branch, f.Commit)
+				want = "refs/remotes/offline/" + branch
+			}
+			if mode == "remote-default" {
+				baselineGit(t, f.Root, "symbolic-ref", "refs/remotes/offline/HEAD", want)
+			}
+			if mode == "tracking-over-local" || mode == "local-fallback" {
+				baselineGit(t, f.Root, "branch", branch, f.Commit)
+			}
+			put(t, f.Root, "fireweed.yaml", cfg)
+			baselineFresh(t, &f)
+			if f.Expected.BaseRef != want || f.Expected.Config.Remote != "offline" {
+				t.Fatalf("selected BaseRef premise %+v", f.Expected)
+			}
+			// A newer committed and current config must not determine the selected baseline's base.
+			put(t, f.Root, "fireweed.yaml", f.Files["fireweed.yaml"])
+			baselineCommit(t, f.Root)
+			current, err := p.Load(f.Root)
+			if err != nil || current.BaseRef == want {
+				t.Fatalf("distinguishing current base premise %+v %v", current, err)
+			}
+			baselineAssert(t, f, f.Root, f.Commit)
+		})
+	}
+}
