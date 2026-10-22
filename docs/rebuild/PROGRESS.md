@@ -1,6 +1,6 @@
 # Restartable rebuild progress
 
-Status: stage 1, ten behavioral changes archived; queued validation/late IDs next. Goal remains active.
+Status: seventeen behavioral changes archived; stage 2 checks and lifecycle foundations underway. Goal remains active.
 
 ## Controller pin
 
@@ -189,3 +189,14 @@ Author7d097ee; fail-first84a2ffc; independent findings0fc9d68 for corrective loo
 At9dcd848, go test ./..., go test -race ./..., go vet ./... and independent product build pass. Bootstrap ci14cec73e1126ee37d33f1138d19936b6a05a59a6..9dcd848b1355e44ab3631f07327891da6aa83775 passes with doctor enabled, zero diagnostics; app22/project72/contracts27/gitstore8/assets6, three scaffold modules0. NEW bin/fireweed show app APP-011 --json returns the implemented current spec and check returns valid:true/diagnostics[]. Queue/claims clear, bootstrap source clean and pinned hashes unchanged. Evidence ci-show-checkpoint.json, product-show-checkpoint.json, product-check-show-checkpoint.json, status-show-checkpoint.json and go-{test,race}-show-checkpoint.log.
 
 D012 records the ordinary reference chronology mismatch: product history follows final parseable impl time, with deterministic legacy fallback. Next implement pure JUnit parsing/ID joining/coverage/fail-first in checks, then hook execution/boundaries and lifecycle dependencies; list/status drift needs later drill records. Full command inventory, workflow/runner/doctor/history/recipes/packaging, real regeneration and self-hosting remain required and unfinished. Goal active.
+
+
+## junit-evidence (CHK-001–CHK-004)
+
+Archive changes/archive/0017-junit-evidence.md. Checks now has32 JUnit cases from ten top-level public tests plus policy subcases. Permanent evidence_test.go asserts nested single/multiple suite roots, complete case/messages/skips, ignored counts/metadata, strict atomic XML rejection; exact public ID matching with foreign/removed references and sorted complete mappings; executed coverage, real failure/error evidence, skipped precedence, already exemptions, unrelated failures, all tag suspensions and hook-exit contradictions; multiple obligations, sorted same-code messages, complete preservation and immediate independent nested/empty/spare-storage results. API and model/*.go are retained contracts, all behavior disposable.
+
+Authorc3c797e; initial executed fail-first543ee7f; seven independent findings010f13d; strengthened fail-first392cd92; passing restricted audit75ab6b9; applied3beae4e86f38738f1ff1df3a76959dbbd1e0fccd. Auditor checked public context only, no implementation/history/bootstrap or execution. Frozen evals/interfaces stayed unchanged in impl. Controller verify/done passed checks32/app22 and dependent scaffold hooks/boundaries with zero diagnostics. Phase evidence .fireweed/evidence/junit-evidence-*.json.
+
+At3beae4e, full go test ./..., go test -race ./..., go vet ./... and independent product build pass. Bootstrap ci14cec73e1126ee37d33f1138d19936b6a05a59a6..3beae4e86f38738f1ff1df3a76959dbbd1e0fccd passes with doctor enabled, zero diagnostics; checks32/app22/project72/contracts27/gitstore8/assets6, runner/workflow0. Product check returns valid:true/diagnostics[]. Queue/claims clear and reference checkout unchanged. Evidence ci-junit-checkpoint.json, status-junit-checkpoint.json, product-check-junit-checkpoint.json and go-{test,race}-junit-checkpoint.log.
+
+D013 records strict XML and dual missing-coverage/fail-first diagnostics compared with ordinary reference source inspection. Next: shared local command execution and process-tree cancellation, checked hooks/coverage/boundaries, then lifecycle. Current checks APIs consume supplied in-memory evidence only; no product hook command or own lifecycle is claimed. All remaining acceptance gates, real per-module regeneration and isolated self-hosting remain unfinished. Goal active.
