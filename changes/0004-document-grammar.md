@@ -1,6 +1,6 @@
 ---
 module: contracts
-phase: audit
+phase: impl
 run: 29ab73909c7b96c1b7b1ff0c
 ---
 
@@ -46,18 +46,8 @@ A generic mutable global document model would risk leaking inherited slices. Par
 - evals | 2026-10-22T06:49:43Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 20 | failing: 5 | passing: 15
 - audit | 2026-10-22T06:53:09Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T06:53:17Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 25 | failing: 9 | passing: 16
+- audit | 2026-10-22T06:54:26Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- CON-012: "Render followed by parse MUST preserve metadata values and human content." — round trip starts with parser output; independently supplied nested metadata values are not asserted.
-- CON-013: "valid name and id_prefix" — malformed string prefix such as lowercase auth is not rejected by an assertion.
-- CON-013: "typed known metadata fields" — non-string list elements are not asserted invalid.
-- CON-014: "a module" — explicitly empty or null required module values are not asserted invalid.
-- CON-014: "otherwise spec when any spec edits exist, fix when fixes exist" — spec edits taking precedence over fixes is not asserted.
-- CON-014: "Kind MUST be regenerate when requested" — retaining parsed spec edits when regenerating is not asserted.
-- CON-015: "Added and Modified MUST contain full normative spec items" — a nonempty Modified body without normative language is not asserted invalid.
-- CON-015: "every handle reference in the change MUST refer to one declared in its Added section" — a dangling reference within a spec body is not asserted invalid.
-- CON-015: "All author prose" — change preamble and prose before spec items are not asserted retained.
-- CON-016: "retain explicit empty lists or hook strings" — set.depends_on empty list retention is not asserted.
-- CON-016: "eight lowercase hexadecimal hashes" — eight lowercase nonhexadecimal characters are not asserted invalid.
-- CON-016: "keyed by real IDs; fixes and already_satisfied MUST contain real IDs rather than handles" — malformed non-handle IDs are not asserted invalid.
+No findings. Independent auditor /root/audit_document_grammar rechecked CON-012, CON-013, CON-014, CON-015 and CON-016, including their interpreting decisions. All twelve prior findings are resolved by concrete assertions. Prior findings and the evals retry remain in phase history.
