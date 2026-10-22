@@ -116,6 +116,7 @@ func Test_CHK005_CHK006_CHK007_CHK008HookHelper(t *testing.T) {
 			put(path, data)
 		}
 		if args[0] == "partial" {
+			put(args[3]+".ready", []byte("ready"))
 			time.Sleep(3 * time.Second)
 			put(args[3]+".late", []byte("late"))
 		}
@@ -701,7 +702,8 @@ func Test_CHK007ParentContextCancellation(t *testing.T) {
 	defer cancel()
 	done := make(chan k.Coverage, 1)
 	go func() { done <- k.Evaluate(ctx, s, m, []string{"ALP-001"}, nil) }()
-	awaitHookReady(t, record, nil)
+	awaitHookReady(t, record+".ready", nil)
+	readyAt := time.Now()
 	cancel()
 	var cov k.Coverage
 	select {
@@ -713,8 +715,8 @@ func Test_CHK007ParentContextCancellation(t *testing.T) {
 	if cov.HookExit != -1 || cov.Output != "eval output\neval err\n" {
 		t.Fatalf("parent cancellation outcome %+v", cov)
 	}
-	written := readReportRecord(t, record)
-	if wait := time.Until(written.Started.Add(3300 * time.Millisecond)); wait > 0 {
+	readReportRecord(t, record)
+	if wait := time.Until(readyAt.Add(3300 * time.Millisecond)); wait > 0 {
 		time.Sleep(wait)
 	}
 	if _, err := os.Stat(record + ".late"); !os.IsNotExist(err) {
