@@ -37,3 +37,16 @@ func Run(ctx context.Context, dir string, argv, overrides []string) CommandResul
 	out, code, err := process.Run(ctx, dir, argv, overrides)
 	return CommandResult{Output: out, Exit: code, Err: err}
 }
+
+// CaptureResult keeps protocol output separate from process diagnostics.
+type CaptureResult struct {
+	Stdout string
+	Stderr string
+	Exit   int
+	Err    error
+}
+
+func Capture(ctx context.Context, dir string, argv, overrides []string) CaptureResult {
+	out, stderr, code, err := process.Capture(ctx, dir, argv, overrides)
+	return CaptureResult{Stdout: out, Stderr: stderr, Exit: code, Err: err}
+}
