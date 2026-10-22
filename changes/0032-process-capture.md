@@ -1,6 +1,6 @@
 ---
 module: gitstore
-phase: audit
+phase: evals
 run: 2000170d2701ba01eee050a6
 ---
 
@@ -34,3 +34,10 @@ Parsing Git protocol bytes out of merged warnings is ambiguous. Shell redirectio
 ## Provenance
 
 - evals | 2026-10-22T23:26:07Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 41 | failing: 22 | passing: 19
+- audit | 2026-10-22T23:29:23Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+- GIT-009: "All outcome paths MUST retain caller state and inputs." — missing spare-backing-storage assertions on invalid and pre-cancelled paths; those cases snapshot only argv/override lengths, unlike boundedCapture's full-capacity checks, and contain no explicit spare sentinels.
+- GIT-009: "useful non-nil Err for ordinary nonzero termination" — missing assertion that an ordinary nonzero Capture error has useful nonempty text; those cases require only a non-nil error and exclusion of context errors.
+- GIT-010: "Unrelated processes and overlapping Run/Capture calls MUST remain alive and retain independent output/cancellation state" — missing readiness assertion that both peer calls became live before the target deadline or completion; the deadline can expire while waiting for peer markers, allowing the survival checks to exercise peers started after termination instead of overlapping calls.
