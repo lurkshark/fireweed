@@ -148,3 +148,72 @@ func Test_CON011ConfigValidation(t *testing.T) {
 		t.Errorf("omitted audit enabled: %+v %v", got, err)
 	}
 }
+
+func Test_CON008EmptyCommands(t *testing.T) {
+	got, err := c.ParseConfig("agent: {command: [], wrap: []}\naudit: {command: []}", "0.4.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for name, list := range map[string][]string{"agent.command": got.Agent.Command, "agent.wrap": got.Agent.Wrap, "audit.command": got.Audit.Command} {
+		if list == nil || len(list) != 0 {
+			t.Errorf("explicit empty %s not retained: %#v", name, list)
+		}
+	}
+}
+
+func Test_CON009CustomIndependenceAndNull(t *testing.T) {
+	text := "module_defaults: {preserve: [kept], append_only: [added]}\nprotected: [protected]\nworker_writable: [writable]\nagent: {command: [worker], wrap: [wrapper]}\naudit: {command: [auditor]}"
+	first, err := c.ParseConfig(text, "0.4.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := c.ParseConfig(text, "0.4.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	first.ModuleDefaults.Preserve[0] = "mutated"
+	first.ModuleDefaults.AppendOnly[0] = "mutated"
+	first.Protected[0] = "mutated"
+	first.WorkerWritable[0] = "mutated"
+	first.Agent.Command[0] = "mutated"
+	first.Agent.Wrap[0] = "mutated"
+	first.Audit.Command[0] = "mutated"
+	third, err := c.ParseConfig(text, "0.4.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, got := range []c.Config{second, third} {
+		if got.ModuleDefaults.Preserve[0] != "kept" || got.ModuleDefaults.AppendOnly[0] != "added" || got.Protected[0] != "protected" || got.WorkerWritable[0] != "writable" || got.Agent.Command[0] != "worker" || got.Agent.Wrap[0] != "wrapper" || got.Audit.Command[0] != "auditor" {
+			t.Errorf("shared parse values: %+v", got)
+		}
+	}
+	fresh, err := c.ParseConfig("{}", "0.4.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(fresh.ModuleDefaults.Preserve)+len(fresh.ModuleDefaults.AppendOnly)+len(fresh.Protected)+len(fresh.WorkerWritable)+len(fresh.Agent.Command)+len(fresh.Agent.Wrap)+len(fresh.Audit.Command) != 0 {
+		t.Errorf("custom values leaked to defaults: %+v", fresh)
+	}
+	for _, bad := range []string{"null", "~", "---\n"} {
+		if _, err := c.ParseConfig(bad, "0.4.0"); err == nil {
+			t.Errorf("null root accepted %q", bad)
+		}
+	}
+}
+
+func Test_CON010VersionRegressions(t *testing.T) {
+	for _, tc := range []struct {
+		version, pin string
+		ok           bool
+	}{
+		{"0.3.9", ">=0.4 <0.5", false}, {"0.5.0", ">=0.4 <0.5", false},
+		{"0.4.0", "0.4", true}, {"0.4.1", "0.4", false}, {"0.4.2", "0.4.1", false},
+		{"0.4.10", ">0.4.9", true}, {"0.4.9", ">=0.4.10", false},
+		{"0.4.0+build", ">=0.4", false}, {"0.4.0", ">=0.4.0+build", false},
+		{"0.-4.0", ">=0.4", false}, {"0.4.0", ">=0.-4.0", false},
+	} {
+		if err := c.CheckVersion(tc.version, tc.pin); (err == nil) != tc.ok {
+			t.Errorf("%s vs %q = %v, want success %v", tc.version, tc.pin, err, tc.ok)
+		}
+	}
+}
