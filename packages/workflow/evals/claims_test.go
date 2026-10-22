@@ -664,7 +664,17 @@ func Test_FLOW011ClaimSafetyAndNativeHookControl(t *testing.T) {
 				continue
 			}
 			parts := strings.Split(path, "/")
-			if len(parts) == 1 && len(parts[0]) == 2 && strings.Trim(parts[0], "0123456789abcdef") == "" {
+			if len(parts) == 1 && len(parts[0]) == 2 && strings.Trim(parts[0], "0123456789abcdef") == "" && strings.HasPrefix(value, "d") {
+				populated := false
+				for child := range afterObjects {
+					if strings.HasPrefix(child, path+"/") {
+						populated = true
+						break
+					}
+				}
+				if !populated {
+					t.Fatalf("leaked empty object-directory temporary: %s", path)
+				}
 				continue
 			}
 			if len(parts) != 2 || len(parts[0]) != 2 || len(parts[0]+parts[1]) != len(base) || strings.Trim(parts[0]+parts[1], "0123456789abcdef") != "" {
@@ -900,7 +910,7 @@ func claimCASProtocol(raw, input []byte, kind, ref, newObject, oldObject string)
 				if fields[0] == "create" && len(values) >= 1 && validNew(values[0]) {
 					return true
 				}
-				if fields[0] == "update" && len(values) >= 2 && validNew(values[0]) && (values[1] == "" || strings.Trim(values[1], "0") == "") {
+				if fields[0] == "update" && len(values) >= 2 && validNew(values[0]) && len(values[1]) == len(newObject) && strings.Trim(values[1], "0") == "" {
 					return true
 				}
 			case "update":
@@ -946,6 +956,10 @@ func Test_FLOW008_FLOW009CASProtocolFixtureControl(t *testing.T) {
 		{"update", encode("update-ref", ref, newOID, oldOID), nil, true}, {"update", encode("update-ref", ref, newOID), nil, false}, {"update", encode("update-ref", ref, newOID, strings.Repeat("0", 40)), nil, false},
 		{"delete", encode("update-ref", "-d", ref, oldOID), nil, true}, {"delete", encode("update-ref", "-d", ref), nil, false},
 		{"create", encode("update-ref", "--stdin"), []byte("create " + ref + " " + newOID + "\n"), true},
+		{"create", encode("update-ref", "--stdin"), []byte("update " + ref + " " + newOID + "\n"), false},
+		{"create", encode("update-ref", "--stdin"), []byte("update " + ref + " " + newOID + " " + strings.Repeat("0", 40) + "\n"), true},
+		{"create", encode("update-ref", "-z", "--stdin"), []byte("update " + ref + "\x00" + newOID + "\x00\x00"), false},
+		{"create", encode("update-ref", "-z", "--stdin"), []byte("update " + ref + "\x00" + newOID + "\x00" + strings.Repeat("0", 40) + "\x00"), true},
 		{"update", encode("update-ref", "--stdin"), []byte("start\nupdate " + ref + " " + newOID + " " + oldOID + "\nprepare\ncommit\n"), true},
 		{"delete", encode("update-ref", "-z", "--stdin"), []byte("delete " + ref + "\x00" + oldOID + "\x00"), true},
 	} {
@@ -1029,4 +1043,103 @@ func claimNativeCASUpdates(t *testing.T, format string) {
 		}
 		observe(t, "delete", "released", "", released.Object)
 	})
+}
+
+func Test_FLOW008GitStdinCASFixtureControl(t *testing.T) {
+	for _, format := range []string{"sha1", "sha256"} {
+		t.Run(format, func(t *testing.T) {
+			root := claimRepo(t, format)
+			old := claimRaw(t, root, "old-source", "old")
+			newOID := claimRaw(t, root, "new-source", "new")
+			ref := "refs/fireweed/claims/stdin-control"
+			zeros := strings.Repeat("0", len(old))
+			for _, row := range []struct {
+				name        string
+				args        []string
+				input       string
+				conditional bool
+			}{
+				{"text_missing_old", []string{"update-ref", "--stdin"}, "update " + ref + " " + newOID + "\n", false},
+				{"text_full_zero", []string{"update-ref", "--stdin"}, "update " + ref + " " + newOID + " " + zeros + "\n", true},
+				{"nul_empty_old", []string{"update-ref", "--stdin", "-z"}, "update " + ref + "\x00" + newOID + "\x00\x00", false},
+				{"nul_full_zero", []string{"update-ref", "--stdin", "-z"}, "update " + ref + "\x00" + newOID + "\x00" + zeros + "\x00", true},
+				{"text_create", []string{"update-ref", "--stdin"}, "create " + ref + " " + newOID + "\n", true},
+				{"nul_create", []string{"update-ref", "--stdin", "-z"}, "create " + ref + "\x00" + newOID + "\x00", true},
+			} {
+				t.Run(row.name, func(t *testing.T) {
+					claimGit(t, root, "update-ref", ref, old)
+					out, err := claimCommand(t, root, row.input, row.args...)
+					if (err != nil) != row.conditional {
+						t.Fatalf("native Git CAS premise: conditional %v, err %v, output %s", row.conditional, err, out)
+					}
+					expected := newOID
+					if row.conditional {
+						expected = old
+					}
+					if claimGit(t, root, "rev-parse", ref) != expected {
+						t.Fatal("unexpected native Git ref result")
+					}
+					raw := []byte(strings.Join(row.args, "\x00") + "\x00")
+					if claimCASProtocol(raw, []byte(row.input), "create", ref, newOID, "") != row.conditional {
+						t.Fatalf("observer disagrees with actual Git create-only semantics: %s", row.name)
+					}
+				})
+			}
+		})
+	}
+}
+func Test_FLOW008_FLOW009_FLOW011SymbolicClaimRefSafety(t *testing.T) {
+	for _, operation := range []string{"create", "update", "release"} {
+		t.Run(operation, func(t *testing.T) {
+			root := claimRepo(t, "sha1")
+			base := claimBase(t, root)
+			previous := w.Claim{Worktree: root, Change: "alias", Run: "run", Base: base, State: "old"}
+			previous.Object = claimRaw(t, root, "source", claimPayload(t, previous))
+			claimGit(t, root, "update-ref", "-d", "refs/fireweed/claims/source", previous.Object)
+			target := "refs/fireweed/unrelated-target"
+			ref := "refs/fireweed/claims/alias"
+			claimGit(t, root, "update-ref", target, previous.Object)
+			claimGit(t, root, "symbolic-ref", ref, target)
+			common := claimCommon(t, root)
+			before := claimMetadata(t, common, "alias")
+			files := claimTree(t, root, func(path string) bool { return path == ".git" })
+			rawPath := filepath.Join(common, "refs/fireweed/claims/alias")
+			original, err := os.ReadFile(rawPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			rejected := false
+			switch operation {
+			case "create":
+				got, err := w.CreateClaim(root, "alias", "new-run", base, "new")
+				claimError(t, got, err)
+				rejected = true
+			case "update":
+				got, err := w.UpdateClaim(root, previous, base, "new")
+				if err != nil {
+					claimError(t, got, err)
+					rejected = true
+				} else {
+					claimAssert(t, root, got, "alias", "run", base, "new")
+				}
+			case "release":
+				err := w.ReleaseClaim(root, "alias", previous.Object)
+				if err != nil {
+					claimReleaseError(t, err)
+					rejected = true
+				} else if _, err := os.Lstat(rawPath); !os.IsNotExist(err) {
+					t.Fatalf("release did not delete selected alias: %v", err)
+				}
+			}
+			if rejected {
+				after, err := os.ReadFile(rawPath)
+				if err != nil || string(after) != string(original) {
+					t.Fatal("rejection changed selected alias")
+				}
+			}
+			if claimGit(t, root, "rev-parse", target) != previous.Object || !reflect.DeepEqual(before, claimMetadata(t, common, "alias")) || !reflect.DeepEqual(files, claimTree(t, root, func(path string) bool { return path == ".git" })) {
+				t.Fatal("claim operation dereferenced an alias and changed unrelated refs or files")
+			}
+		})
+	}
 }

@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: evals
+phase: audit
 run: 0f9f3212efebe4892f28a2e7
 set:
     interface:
@@ -48,6 +48,7 @@ A lock file in one worktree would not arbitrate linked worktrees. Unconditional 
 - audit | 2026-10-22T19:40:43Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T19:45:07Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 796 | failing: 120 | passing: 676
 - audit | 2026-10-22T19:48:32Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-22T19:50:18Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 815 | failing: 124 | passing: 691
 
 ## Audit
 
