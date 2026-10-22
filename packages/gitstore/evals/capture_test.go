@@ -139,6 +139,9 @@ func Test_GIT008_GIT009CaptureExactStreamsAndExits(t *testing.T) {
 			if errors.Is(got.Err, context.Canceled) || errors.Is(got.Err, context.DeadlineExceeded) {
 				t.Fatal("ordinary exit mislabeled context termination")
 			}
+			if code != 0 && strings.TrimSpace(got.Err.Error()) == "" {
+				t.Fatal("ordinary failure has no useful error text")
+			}
 		})
 	}
 }
@@ -224,7 +227,14 @@ func Test_GIT009CaptureInvalidPrecancelAndRecovery(t *testing.T) {
 		{"expired", root, expired, good, processEnvironment(), -1, context.DeadlineExceeded},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			a, e := append([]string(nil), tt.argv...), append([]string(nil), tt.env...)
+			// Keep nil argv nil; give every other input spare sentinel storage.
+			if tt.argv != nil {
+				backing := append(append([]string{}, tt.argv...), "invalid spare argv")
+				tt.argv = backing[:len(backing)-1]
+			}
+			backing := append(append([]string{}, tt.env...), "invalid spare env")
+			tt.env = backing[:len(backing)-1]
+			a, e := append([]string(nil), tt.argv[:cap(tt.argv)]...), append([]string(nil), tt.env[:cap(tt.env)]...)
 			cwd, _ := os.Getwd()
 			env := os.Environ()
 			got := g.Capture(tt.ctx, tt.dir, tt.argv, tt.env)
@@ -238,7 +248,7 @@ func Test_GIT009CaptureInvalidPrecancelAndRecovery(t *testing.T) {
 				t.Fatal("invalid input confused with cancellation")
 			}
 			after, _ := os.Getwd()
-			if cwd != after || !reflect.DeepEqual(env, os.Environ()) || !reflect.DeepEqual(a, append([]string(nil), tt.argv...)) || !reflect.DeepEqual(e, append([]string(nil), tt.env...)) {
+			if cwd != after || !reflect.DeepEqual(env, os.Environ()) || !reflect.DeepEqual(a, append([]string(nil), tt.argv[:cap(tt.argv)]...)) || !reflect.DeepEqual(e, append([]string(nil), tt.env[:cap(tt.env)]...)) {
 				t.Fatal("invalid call mutated caller")
 			}
 			if _, err := os.Stat(marker); !os.IsNotExist(err) {
@@ -313,6 +323,14 @@ func Test_GIT010CaptureTreeAndOverlappingOwnership(t *testing.T) {
 				run <- g.Run(peerCtx, root, helperCommand(t, "hold", runReady, "peer run", "3s"), processEnvironment())
 			}()
 			waitCaptureReady(t, []string{captureReady, runReady}, peer)
+			if ctx.Err() != nil {
+				t.Fatal("fixture peers did not start before target deadline")
+			}
+			select {
+			case result := <-first:
+				t.Fatalf("target completed before overlap premise: %+v", result)
+			default:
+			}
 			if !deadline {
 				cancel()
 			}
