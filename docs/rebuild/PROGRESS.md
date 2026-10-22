@@ -1,6 +1,6 @@
 # Restartable rebuild progress
 
-Status: stage 1, first behavioral change archived; contracts configuration/document model next. Goal remains active.
+Status: stage 1, first behavioral change archived; contracts module/change document grammar next. Goal remains active.
 
 ## Controller pin
 
@@ -39,3 +39,9 @@ The default CLI model gpt-6.1-sol was rejected by ChatGPT auth (HTTP 400 unsuppo
 Archive changes/archive/0002-zone-primitives.md. Permanent Test_CON005GlobMatching, Test_CON006FutureOverlap, Test_CON007ZonePrecedence and Test_CON007AuditRegressions cover whole relative-path globs, nonexistent-path intersection, all precedence levels, module-relative matching, protected documents and invalid inputs. Initial fail-first commit 5402f70990472dd91ff84db90679c359fd6d5a0c. Independent audit found four concrete CON-007 assertion gaps: recorded in 9bc68250a4322bc4046f0b944ffccf80b99b289d and returned to evals. Strengthened fail-first evals b5624fd1362dff7fc2e1ee430a8cc87e74a986bc; passing independent re-audit 7d7f600e92a8ff6ff6ab61e45adfe27b834b4e0f; applied implementation d7dfbd90bf4cebfdeb168268bd710f67dd6b43bb. All eight contracts cases plus dependent scaffold hooks and boundaries pass. Explicit setup..HEAD history check has no diagnostics. Local JSON evidence is .fireweed/evidence/zone-primitives/. No active claims or pending changes at this boundary.
 
 Next: retained typed data/configuration grammar, then Git/assets/project discovery and early CLI inspection slices. Product binary still only the setup placeholder; do not confuse its successful build with implemented command behavior.
+
+## config-contract (CON-008–CON-011)
+
+Archive changes/archive/0003-config-contract.md. Seven added permanent testcases in packages/contracts/evals/config_test.go verify defaults/explicit empty lists, exact typed field retention and opaque commands, independent parsed slices, strict YAML roots/types, current/previous formats, numeric version conjunctions and duration/retry settings. Initial fail-first b61d96d7e569dd497ca3f67722a14fefbd3a21f3. Audit 75045c563aaf490ef66e75debd98c034301f0b15 captured seven assertion gaps; retry evals 85375462e3f24fd0d0f820abb696d725ea90ed4f resolved them. Independent re-audit pass 3d67cc6be9f5ba0c81013b210e98cfe0b651806a. Applied implementation be9fe8b312380bfbc4a02334f375cdb2fa29ae57. Retained model/*.go was introduced using the change's projected interface set; only the controller applied that zone to SPEC.md.
+
+Checkpoint after be9fe8b: go test -race ./..., go vet ./..., go build -o bin/fireweed . all exit 0. Controller ci 14cec73e1126ee37d33f1138d19936b6a05a59a6..be9fe8b312380bfbc4a02334f375cdb2fa29ae57 passed with no diagnostics, including doctor (not skipped), own coverage and all scaffold modules. Fifteen actual contracts testcases. Saved JSON .fireweed/evidence/ci-contracts-checkpoint.json. Bootstrap checkout remains clean; no claims or pending changes. This is a partial checkpoint, not the final acceptance range. The Go build emits a harmless denied module-stat-cache write warning in the outer sandbox; build still succeeds.

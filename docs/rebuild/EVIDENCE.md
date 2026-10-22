@@ -9,8 +9,12 @@ Every inventory row remains incomplete until assertion-level command, workflow, 
 | R04 bases | CON-002 / Test_CON002BaseHash: exact SHA-256 truncation, CRLF/trailing-space normalization, meaningful body/ID/tag changes | 0001-spec-primitives | Public API verified, stamp/staleness pending |
 | R04 local handles | CON-004 / Test_CON004TagsAndHandles: explicit enablement, grammar, duplicate rejection | 0001-spec-primitives | Public API verified, cross-change validation/rewriting pending |
 
-R01–R21 overall: unverified. Setup controller doctor is process evidence, not product doctor evidence. No real regeneration/self-hosting claimed.
-
 | R02 globs/future overlap/strict zones | CON-005–CON-007 / Test_CON005GlobMatching, Test_CON006FutureOverlap, Test_CON007ZonePrecedence, Test_CON007AuditRegressions | 0002-zone-primitives | Public primitives verified; project graph/ownership/default inheritance and regeneration still pending |
 
+| R02 configuration default/empty-list distinction | CON-008–CON-009 / Test_CON008ConfigDefaults, Test_CON008EmptyCommands, Test_CON009ConfigFieldsAndIsolation, Test_CON009CustomIndependenceAndNull | 0003-config-contract | Configuration API verified; module inheritance/project discovery pending |
+| R20 binary/format compatibility | CON-010 / Test_CON010ConfigVersionGate, Test_CON010VersionRegressions | 0003-config-contract | Parser gates verified; CLI enforcement/migration pending |
+| R12–R13 configured controls | CON-011 / Test_CON011ConfigValidation | 0003-config-contract | Settings validation verified; actual retries/limits pending |
+
 Audit retry evidence is in phase commits 9bc6825 (four real clause findings), b5624fd (added missing assertions), 7d7f600 (independent pass). Implementation d7dfbd9 did not change interface/evals.
+
+R01–R21 overall: unverified. Setup/checkpoint controller CI and doctor are process evidence, not product functionality. No real regeneration/self-hosting claimed. Configuration initial evals b61d96d, findings 75045c5, retry evals 8537546, passing audit 3d67cc6, impl be9fe8b.
