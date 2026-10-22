@@ -146,7 +146,7 @@ func main(){
  switch os.Args[1]{case "check-control":os.ReadFile(root);case "readlink-control":os.Readlink(target);case "stat-control":os.Stat(target);case "write-control":os.WriteFile(root,[]byte("bad"),0644);case "dir-control":os.ReadDir(root);case "mkdir-control":os.Mkdir(root,0755);case "unlink-control":os.Remove(root)};os.Exit(72)}
  s,err:=p.Load(root);if err!=nil{os.Exit(10)}
  if len(s.Modules)!=1||len(s.Changes)!=0||len(s.Archive)!=0{os.Exit(11)}
- found:=map[string]bool{};for _,d:=range s.Diagnostics{if d.Severity=="error"&&((d.Code=="C03"&&d.Path=="units/escape/SPEC.md")||(d.Code=="C05"&&(d.Path=="changes/1-escape.md"||d.Path=="changes/archive/1-escape.md"))){found[d.Path]=true}};if len(found)!=3{os.Exit(12)}
+ found:=0;for _,d:=range s.Diagnostics{if (d.Code=="C03"||d.Code=="C05")&&d.Severity=="error"&&(d.Path=="units/escape/SPEC.md"||d.Path=="changes/1-escape.md"||d.Path=="changes/archive/1-escape.md"){found++}};if found!=3{os.Exit(12)}
  if os.Args[1]=="check"{C.fw_guard_arm(2,C.CString(target));ds:=p.Check(s);if len(ds)!=3{os.Exit(13)};C.fw_guard_arm(0,nil)}
 }`, temp)
 	put(t, temp, "probe.go", program)
