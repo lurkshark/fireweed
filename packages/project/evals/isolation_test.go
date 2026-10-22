@@ -152,10 +152,12 @@ func main(){
  if os.Args[1]=="check"{
  C.fw_guard_arm(2,C.CString(target));ds:=p.Check(s);if len(ds)!=3{os.Exit(13)}
  if len(os.Args)>4&&os.Args[4]=="projection"{
- ch:=c.Change{Module:s.Modules[0].Name,Slug:"native-projection",Number:1,Path:"changes/0001-native-projection.md",Set:map[string]any{"preserve":[]any{"native/**"}},Added:[]c.Spec{{ID:"new:native",Body:"It MUST remain pure."}}}
+ s.Modules[0].Specs=append(s.Modules[0].Specs,c.Spec{ID:"ALP-002",Body:"Second MUST retain its base."})
+ predecessor:=c.Change{Module:s.Modules[0].Name,Slug:"native-before",Number:0,Path:"changes/0000-native-before.md",Modified:[]c.Spec{{ID:"ALP-001",Tag:"[review]",Body:"It MUST be the preceding base."}}}
+ ch:=c.Change{Module:s.Modules[0].Name,Slug:"native-projection",Number:1,Path:"changes/0001-native-projection.md",Set:map[string]any{"preserve":[]any{"native/**"}},Added:[]c.Spec{{ID:"new:native",Body:"It MUST remain pure."}},Modified:[]c.Spec{{ID:"ALP-001",Body:"It MUST become final."}},Removed:[]c.Spec{{ID:"ALP-002"}}}
  applied,err:=p.ApplyChange(s.Modules[0],ch);if err!=nil||len(applied.Specs)!=2||applied.Preserve[0]!="native/**"{os.Exit(14)}
- s.Changes=[]c.Change{ch};projected,err:=p.Project(s,"");if err!=nil||len(projected.Modules[0].Specs)!=2{os.Exit(15)}
- hashes,err:=p.BaseHashes(s,ch.Slug);if err!=nil||hashes==nil||len(hashes)!=0{os.Exit(16)}
+ s.Changes=[]c.Change{ch,predecessor};projected,err:=p.Project(s,"");if err!=nil||len(projected.Modules[0].Specs)!=2{os.Exit(15)}
+ hashes,err:=p.BaseHashes(s,ch.Slug);if err!=nil||len(hashes)!=2||hashes["ALP-001"]!=c.SpecHash(predecessor.Modified[0])||hashes["ALP-002"]!=c.SpecHash(s.Modules[0].Specs[1]){os.Exit(16)}
  ch.Module="missing";if _,err=p.ApplyChange(s.Modules[0],ch);err==nil{os.Exit(17)}
  if _,err=p.Project(s,"missing");err==nil{os.Exit(18)};if _,err=p.BaseHashes(s,"missing");err==nil{os.Exit(19)}
  }

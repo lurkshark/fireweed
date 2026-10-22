@@ -376,3 +376,189 @@ func Test_PRJ010BaseErrors(t *testing.T) {
 		}
 	}
 }
+
+func Test_PRJ007PositionsAndAssignedAdditions(t *testing.T) {
+	m := projectionModule(t, "alpha", "ALP", "units/a")
+	m.Specs = append(m.Specs, c.Spec{ID: "ALP-004", Body: "The fourth MUST stay."}, c.Spec{ID: "ALP-005", Body: "The fifth MUST stay."})
+	mods := []c.Spec{{ID: "ALP-004", Tag: "[review]", Body: "Fourth MUST change in place."}, {ID: "ALP-002", Body: "Second MUST change in place."}}
+	adds := []c.Spec{{ID: "ALP-009", Body: "Assigned MUST append first."}, {ID: "new:local", Body: "Local MUST append second."}}
+	ch := projectionChange(t, m, 1, "assigned", "run: assigned-run\nphase: impl\n", adds, mods, nil)
+	out, err := p.ApplyChange(m, ch)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []c.Spec{m.Specs[0], mods[1], m.Specs[2], mods[0], m.Specs[4], adds[0], adds[1]}
+	if !reflect.DeepEqual(out.Specs, want) {
+		t.Fatalf("lost positions/assigned additions %+v", out.Specs)
+	}
+	for _, adds := range [][]c.Spec{{{ID: "new:valid", Body: "No normative words."}}, {{ID: "new:valid", Tag: "[unknown]", Body: "It MUST fail tag."}}, {{ID: "new:Bad", Body: "It MUST fail handle."}}, {{ID: "ALP-009", Body: "It MUST add."}, {ID: "ALP-009", Body: "It MUST duplicate."}}} {
+		bad := ch
+		bad.Added = adds
+		got, err := p.ApplyChange(m, bad)
+		if err == nil || !reflect.DeepEqual(got, c.Module{}) {
+			t.Fatalf("accepted Added %+v %v", adds, err)
+		}
+	}
+}
+func Test_PRJ007_PRJ009LocalHandleScopes(t *testing.T) {
+	m := projectionModule(t, "alpha", "ALP", "units/a")
+	one := projectionChange(t, m, 1, "one", "", []c.Spec{{ID: "new:local", Body: "First MUST use new:local."}}, nil, nil)
+	two := projectionChange(t, m, 2, "two", "", []c.Spec{{ID: "new:local", Body: "Second MUST use new:local."}}, nil, nil)
+	s := p.Snapshot{Modules: []c.Module{m}, Changes: []c.Change{two, one}}
+	out, err := p.Project(s, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := append(append([]c.Spec{}, m.Specs...), one.Added[0], two.Added[0])
+	if !reflect.DeepEqual(out.Modules[0].Specs, want) {
+		t.Fatalf("collapsed local scopes %+v", out.Modules[0].Specs)
+	}
+	bad := two
+	bad.Added = []c.Spec{{ID: "new:other", Body: "Second MUST NOT borrow new:local from another change."}}
+	s.Changes = []c.Change{one, bad}
+	if _, err = p.Project(s, ""); err == nil {
+		t.Fatal("accepted cross-change-only handle reference")
+	}
+}
+func moduleFields(m c.Module) c.Module { m.Document = c.Document{}; return m }
+func assertProjectedDocument(t *testing.T, m c.Module) {
+	t.Helper()
+	raw, err := c.RenderMarkdown(m.Document)
+	if err != nil {
+		t.Fatal(err)
+	}
+	again, err := c.ParseModule(raw, m.Dir, c.Zones{}, c.Hooks{})
+	if err != nil || !reflect.DeepEqual(moduleFields(again), moduleFields(m)) {
+		t.Fatalf("document/fields disagree\n%s\n%+v\n%+v %v", raw, again, m, err)
+	}
+}
+func Test_PRJ008EverySetFieldAndDocument(t *testing.T) {
+	m := projectionModule(t, "alpha", "ALP", "units/a")
+	m.BoundariesOptOut = "existing reason"
+	ch := projectionChange(t, m, 1, "matrix", "", nil, nil, nil)
+	cases := []struct {
+		key   string
+		value any
+		edit  func(*c.Module)
+	}{{"depends_on", []string{}, func(v *c.Module) { v.DependsOn = []string{} }}, {"interface", []string{"pub/**/*.go"}, func(v *c.Module) { v.Interface = []string{"pub/**/*.go"} }}, {"evals", []string{"tests/**"}, func(v *c.Module) { v.Evals = []string{"tests/**"} }}, {"disposable", []string{"src/**"}, func(v *c.Module) { v.Disposable = []string{"src/**"} }}, {"preserve", []string{"keep/**"}, func(v *c.Module) { v.Preserve = []string{"keep/**"} }}, {"append_only", []string{"events/**"}, func(v *c.Module) { v.AppendOnly = []string{"events/**"} }}, {"boundaries_opt_out", "", func(v *c.Module) { v.BoundariesOptOut = "" }}, {"hooks", map[string]any{"eval": "custom eval", "boundaries": "custom boundaries", "setup": ""}, func(v *c.Module) { v.Hooks = c.Hooks{Eval: "custom eval", Boundaries: "custom boundaries", Setup: ""} }}}
+	for _, v := range cases {
+		ch.Set = map[string]any{v.key: v.value}
+		out, err := p.ApplyChange(m, ch)
+		if err != nil {
+			t.Fatalf("set %s: %v", v.key, err)
+		}
+		want := m
+		v.edit(&want)
+		if !reflect.DeepEqual(moduleFields(out), moduleFields(want)) {
+			t.Fatalf("set %s %+v want %+v", v.key, out, want)
+		}
+		assertProjectedDocument(t, out)
+		if out.Document.Preamble != m.Document.Preamble {
+			t.Fatal("set-only lost preamble")
+		}
+		for _, s := range m.Document.Sections {
+			if s.Name == "Specs" {
+				continue
+			}
+			found := false
+			for _, v := range out.Document.Sections {
+				if v == s {
+					found = true
+				}
+			}
+			if !found {
+				t.Fatalf("set-only lost section %+v", s)
+			}
+		}
+	}
+	minimal := m
+	minimal.Document = c.Document{}
+	out, err := p.ApplyChange(minimal, projectionChange(t, m, 1, "synthesize", "", nil, nil, nil))
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertProjectedDocument(t, out)
+	if out.Name != m.Name || out.IDPrefix != m.IDPrefix || out.Dir != m.Dir || !reflect.DeepEqual(out.Specs, m.Specs) || !reflect.DeepEqual(out.Zones, m.Zones) || out.Hooks != m.Hooks {
+		t.Fatal("synthesis changed typed values")
+	}
+}
+func Test_PRJ008_PRJ009NoReinheritanceOrEmptyAlias(t *testing.T) {
+	m := projectionModule(t, "alpha", "ALP", "units/a")
+	m.Interface = []string{}
+	m.Hooks.Eval = ""
+	m.Preserve = make([]string, 2, 8)
+	copy(m.Preserve, []string{"keep-a", "keep-b"})
+	m.AppendOnly = make([]string, 2, 8)
+	copy(m.AppendOnly, []string{"history-a", "history-b"})
+	ch := projectionChange(t, m, 1, "empty", "set: {preserve: [], append_only: [], hooks: {setup: ''}}\n", nil, nil, nil)
+	s := p.Snapshot{Modules: []c.Module{m}, Changes: []c.Change{ch}, Config: c.Config{ModuleDefaults: c.Zones{Interface: []string{"WRONG/**"}, Evals: []string{"WRONG/**"}, Disposable: []string{"WRONG/**"}, Preserve: []string{"WRONG/**"}, AppendOnly: []string{"WRONG/**"}}, Hooks: c.Hooks{Eval: "WRONG", Boundaries: "WRONG", Setup: "WRONG"}}}
+	before := encoded(t, s)
+	out, err := p.Project(s, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	v := out.Modules[0]
+	if v.Interface == nil || len(v.Interface) != 0 || v.Preserve == nil || len(v.Preserve) != 0 || v.AppendOnly == nil || len(v.AppendOnly) != 0 || v.Hooks.Eval != "" || v.Hooks.Setup != "" || v.Hooks.Boundaries != m.Hooks.Boundaries || !reflect.DeepEqual(v.Evals, m.Evals) || !reflect.DeepEqual(v.Disposable, m.Disposable) {
+		t.Fatalf("re-inherited defaults %+v", v)
+	}
+	assertProjectedDocument(t, v)
+	v.Preserve = append(v.Preserve, "MUTATED")
+	v.AppendOnly = append(v.AppendOnly, "MUTATED")
+	v.Interface = append(v.Interface, "MUTATED")
+	if before != encoded(t, s) {
+		t.Fatal("cleared slice aliases original capacity")
+	}
+}
+func Test_PRJ009TypedNumbersAndExcludedTail(t *testing.T) {
+	s := projectionFixture(t)
+	s.Changes = append([]c.Change{}, s.Changes...)
+	first := s.Changes[2]
+	last := s.Changes[1]
+	first.Number = 20
+	last.Number = 1
+	s.Changes = []c.Change{first, last}
+	out, err := p.Project(s, "")
+	if err != nil || out.Modules[1].Specs[0].Body != "It MUST become first." {
+		t.Fatalf("sorted Path instead of typed Number %+v %v", out, err)
+	}
+	s = projectionFixture(t)
+	s.Changes = append([]c.Change{}, s.Changes...)
+	s.Changes[1].Modified = []c.Spec{{ID: "ALP-999", Body: "It MUST NOT apply at selector."}}
+	s.Changes[0].Module = "missing-tail"
+	out, err = p.Project(s, "zulu")
+	if err != nil || out.Modules[1].Specs[0].Body != "It MUST become first." {
+		t.Fatalf("evaluated excluded target/tail %+v %v", out, err)
+	}
+}
+func Test_PRJ010NormalizedAndFreshEmptyBases(t *testing.T) {
+	s := projectionFixture(t)
+	s.Modules = append([]c.Module{}, s.Modules...)
+	s.Modules[1].Specs = append([]c.Spec{}, s.Modules[1].Specs...)
+	raw := s.Modules[1].Specs[1]
+	raw.Body = "\r\nThe second MUST retain its body. \t\r\n\r\n"
+	s.Modules[1].Specs[1] = raw
+	s.Changes = append([]c.Change{}, s.Changes...)
+	s.Changes[1].Removed = []c.Spec{{ID: "ALP-002"}}
+	got, err := p.BaseHashes(s, "zulu")
+	normalized := c.Spec{ID: raw.ID, Tag: raw.Tag, Body: "The second MUST retain its body."}
+	if err != nil || got[raw.ID] != c.SpecHash(raw) || got[raw.ID] != c.SpecHash(normalized) || len(got[raw.ID]) != 8 {
+		t.Fatalf("normalization %+v %v", got, err)
+	}
+	maintenance := projectionChange(t, s.Modules[1], 20, "maintenance", "", nil, nil, nil)
+	s.Changes = append(s.Changes, maintenance)
+	for _, slug := range []string{"last", "maintenance"} {
+		empty, err := p.BaseHashes(s, slug)
+		if err != nil || empty == nil || len(empty) != 0 {
+			t.Fatalf("empty %s %+v %v", slug, empty, err)
+		}
+		empty["poison"] = "poison"
+		again, err := p.BaseHashes(s, slug)
+		if err != nil || again == nil || len(again) != 0 {
+			t.Fatalf("shared empty map %s %+v %v", slug, again, err)
+		}
+	}
+	s.Changes[1].Modified = []c.Spec{{ID: "ALP-999", Body: "It MUST be missing."}}
+	if _, err = p.BaseHashes(s, "zulu"); err == nil {
+		t.Fatal("accepted missing Modified base")
+	}
+}

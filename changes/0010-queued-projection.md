@@ -1,6 +1,6 @@
 ---
 module: project
-phase: evals
+phase: audit
 run: 5bac8caec4836214c46ee6c9
 ---
 
@@ -32,7 +32,9 @@ BaseHashes MUST compute a fresh non-null map containing exactly the Modified and
 
 ## Decisions
 
-Projection is an intent preview: it does not enforce existing bases or allocate real IDs. Later queue validation reports missing/stale bases, invalid graph/zones after set, and archive reservations; lifecycle allocation rewrites handles only at start. ApplyChange uses the typed Module and Change fields as authoritative, updating retained documents accordingly. Local handles may appear in Added and references, with the same uniqueness/locality rules as the public change parser; current module specs and Modified/Removed targets use real IDs. Field/type and spec-edit validation is required even for callers constructing typed values directly. An empty module Document is synthesized from typed fields; valid original documents retain preamble and human sections. Project keeps the original pending changes/archive lists and diagnostics as independent copies, preserving their original ordering; only the order of application is sorted. Diagnostics, canonical module ordering and graph validation remain separate existing Check responsibilities. Decisions application/removal will be a separately specified part of archival application; this preview retains existing module Decisions.
+Projection is an intent preview: it does not enforce existing bases or allocate real IDs. Later queue validation reports missing/stale bases, invalid graph/zones after set, and archive reservations; lifecycle allocation rewrites handles only at start. ApplyChange uses the typed Module and Change fields as authoritative, updating retained documents accordingly. Local handles may appear in Added and references, with the same uniqueness/locality rules as the public change parser; file-backed current module specs and Modified/Removed targets use real IDs. Projected intermediate modules may contain placeholders from preceding changes. Field/type and spec-edit validation is required even for callers constructing typed values directly. An empty module Document is synthesized from typed fields; valid original documents retain preamble and human sections. Project keeps the original pending changes/archive lists and diagnostics as independent copies, preserving their original ordering; only the order of application is sorted. Diagnostics, canonical module ordering and graph validation remain separate existing Check responsibilities. Decisions application/removal will be a separately specified part of archival application; this preview retains existing module Decisions.
+
+ApplyChange errors return the zero Module, never a partial result. Existing-ID addition collisions mean real allocated IDs; handle placeholders are local declarations, so two queued changes may each declare new:local and their preview retains both items without treating that shared spelling as an allocated-ID collision. References in each change must still be declared locally. A preview document can therefore contain repeated placeholder headings from different changes, and is never written as a current SPEC.md until start has allocated real IDs. Invalid excluded target/tail applications are not executed or validated by Project(before); ambiguity of the selector itself is still an error. Base hashes follow typed spec fields, including normalized whitespace, rather than stale retained document text.
 
 ## Rejected alternatives
 
@@ -42,6 +44,7 @@ Reading working files during projection would break determinism for callers hold
 
 - evals | 2026-10-22T08:46:12Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 34 | failing: 7 | passing: 27
 - audit | 2026-10-22T08:55:26Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-22T08:58:10Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 40 | failing: 13 | passing: 27
 
 ## Audit
 
