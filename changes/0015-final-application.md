@@ -1,6 +1,6 @@
 ---
 module: project
-phase: audit
+phase: evals
 run: c6ec82a472f9dbc5fc7b39ea
 ---
 
@@ -42,3 +42,14 @@ Writing final SPEC.md while previews still contain handles would leak temporary 
 ## Provenance
 
 - evals | 2026-10-22T15:25:49Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 71 | failing: 6 | passing: 65
+- audit | 2026-10-22T15:31:07Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+- PRJ-018: "Its result MUST be a valid current module with real IDs only" — reject invalid untouched current spec bodies/prefixes atomically, and assert public normalization of direct CRLF/outer-blank spec text.
+- PRJ-018: "nonempty valid slug consistent with its filename" — isolate malformed spelling using a matching malformed filename, rather than also triggering mismatch.
+- PRJ-019: "start from the module's typed Decisions, overriding a stale retained Decisions body." — typed empty Decisions must override a nonempty stale retained body.
+- PRJ-019: "trim surrounding whitespace and one optional leading blockquote marker" — cover a marker directly adjacent to quoted text, without a following space.
+- PRJ-018: "apply Added/Modified/Removed specs and all allowed set values" — assert applied cleared preserve metadata and Decisions plus canonical agreement on the maintenance branch.
+- PRJ-020: "including valid maintenance changes with no spec edits." — add spare-capacity empty slice append probes; existing deep poisoning skips empty storage.
+- PRJ-020: "pure on successful and failed inputs" — restore the native probe's valid real Added ID before testing the missing-target error, avoiding handle-error masking.
