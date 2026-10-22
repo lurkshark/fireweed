@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: audit
+phase: evals
 run: 0f9f3212efebe4892f28a2e7
 set:
     interface:
@@ -45,3 +45,17 @@ A lock file in one worktree would not arbitrate linked worktrees. Unconditional 
 ## Provenance
 
 - evals | 2026-10-22T19:36:09Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 769 | failing: 94 | passing: 675
+- audit | 2026-10-22T19:40:43Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+- FLOW-008: "a full resolved local commit ID for Base" — missing assertion that CreateClaim rejects a locally resolvable non-commit object rather than storing its object ID as Base.
+- FLOW-008: "using an atomic create-only Git ref update" — missing assertion across independent caller processes or of the actual create-only Git update arguments; goroutine races alone also permit a process-local mutex around a non-CAS ref write.
+- FLOW-008: "and create no claim." — missing assertion that rejected empty or blank runs leave claim refs unchanged; those cases check only the returned error and zero Claim.
+- FLOW-009: "resolve the new Base to a full local commit ID" — missing assertion that UpdateClaim rejects a locally resolvable non-commit object without changing the current ref.
+- FLOW-009: "matching the supplied full Object token" — missing assertion rejecting a valid abbreviated object ID or resolvable claim-ref name as the release token while preserving the claim.
+- FLOW-009: "atomically replace only the expected blob ref." — missing assertion across independent caller processes or of Git's expected-old-object argument; the current update/update and update/release races run only within one process.
+- FLOW-010: "reject malformed claim refs or payloads atomically" — missing assertion isolating malformed claim-ref names with otherwise valid payloads; every malformed-ref inventory fixture also contains malformed JSON.
+- FLOW-011: "Temporary owned storage MUST be cleaned on success and failure, including duplicate-create and stale-update failures." — missing assertion covering temporary storage outside the repository/common directory and temporary files inside objects; the safety snapshot excludes the entire objects tree and does not monitor a dedicated temporary directory.
+- FLOW-011: "Reads and failed precondition checks MUST NOT change refs." — missing independently reached rejection-preservation assertions: the table's closures capture the parent testing.T, so a failing assertion inside a subtest calls FailNow on the parent and aborts later cases.
+- FLOW-011: "Claims MUST work across linked worktrees and in SHA-1 and SHA-256 repositories supported by installed Git, without a hard-coded object-ID width." — missing successful update of a linked worktree's own claim and inventory assertions from a linked worktree or SHA-256 repository; the peer update currently tests only foreign-owner rejection.
