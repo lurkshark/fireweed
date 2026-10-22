@@ -1,7 +1,9 @@
 ---
+already_satisfied:
+    - GIT-006
+bases:
+    GIT-006: 9f347585
 module: gitstore
-fixes: [GIT-006]
-already_satisfied: [GIT-006]
 ---
 
 ## Motivation
@@ -12,11 +14,14 @@ already_satisfied is explicit because the existing product already implements GI
 
 ## Interface
 
-No interface or product implementation change. Configure only the helper subprocess environment to set GORACE=atexit_sleep_ms=0. Race detection remains enabled; the parent process environment, detector and process assertions remain unchanged. Existing tests exercise this helper protocol during go test -race without requiring a second recursive race build.
+No interface or product implementation change. Clarify the existing unrelated-process guarantee for race-instrumented callers. Configure only the helper subprocess environment to set GORACE=atexit_sleep_ms=0. Race detection remains enabled; the parent process environment, detector and process assertions remain unchanged. Existing tests exercise this helper protocol during go test -race without requiring a second recursive race build.
 
 ## Added
 
 ## Modified
+
+### GIT-006
+A context already cancelled or expired before Run MUST prevent process startup, return Exit -1 and an Err matching the context cancellation/deadline via errors.Is. Cancellation or deadline during execution MUST terminate the entire spawned process tree on supported platforms, including children and grandchildren that retain output streams, return promptly with Exit -1 and the matching context Err, and retain output emitted before termination. Descendants MUST NOT survive to perform delayed writes after Run returns. Cancellation MUST leave unrelated processes alive, including when the calling executable is instrumented for race detection. Ordinary successful and failing process termination MUST remain distinguishable from context termination.
 
 ## Removed
 
