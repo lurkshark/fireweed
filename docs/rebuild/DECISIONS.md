@@ -23,3 +23,7 @@ Moving Spec to the retained model package made an existing unkeyed facade conver
 ## D006 — Assets runtime-isolation evidence
 
 Native sandbox policies must permit the OS loader to start. The asset eval therefore combines source/network denial with a test-only Darwin file/socket interposer armed after startup; positive controls prove ignored errors cannot hide attempts. Its cc/dylib dependency belongs only to a temporary eval fixture, never the product. Other-platform isolation is explicitly unverified; portable content checks still run. Keep this platform/test prerequisite visible in final delivery evidence and README testing instructions.
+
+## D007 — Embedded CLI access before init
+
+Design playbooks/explanations are embedded binary protocol data. The first app slice makes help/version/explain and embedded playbook lookup usable without a project. The reference cli.go resolves explain before Load, but playbook after Load and therefore fails before init. Allowing embedded playbooks before init supports the design's setup/authoring flow. Later project integration must honor project-owned overrides and binary pins when a project is present; this first slice does not claim that integration. The reference error is an intentional comparison difference, not silently reproduced.
