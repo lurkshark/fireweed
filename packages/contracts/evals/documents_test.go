@@ -190,3 +190,83 @@ func Test_CON016SetFields(t *testing.T) {
 		}
 	}
 }
+
+func Test_CON012IndependentRoundTrip(t *testing.T) {
+	document := c.Document{Metadata: map[string]any{"name": "auth", "nested": map[string]any{"enabled": true, "list": []any{"one", "two"}}, "note": "## metadata text\n"}, Preamble: "# Auth", Sections: []c.Section{{Name: "Notes", Body: "Keep this."}}}
+	text, err := c.RenderMarkdown(document)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := c.ParseMarkdown(text)
+	if err != nil || !reflect.DeepEqual(got, document) {
+		t.Errorf("independent round trip: %+v %v, want %+v", got, err, document)
+	}
+}
+func Test_CON013TypedMetadata(t *testing.T) {
+	for _, text := range []string{
+		strings.Replace(moduleDoc("", ""), "id_prefix: AUTH", "id_prefix: auth", 1),
+		moduleDoc("interface: [123]\n", ""), moduleDoc("depends_on: [123]\n", ""),
+	} {
+		if _, err := c.ParseModule(text, "packages/auth", c.Zones{}, c.Hooks{}); err == nil {
+			t.Errorf("malformed module metadata accepted %q", text)
+		}
+	}
+}
+func Test_CON014ClassificationAndRequiredValues(t *testing.T) {
+	for _, value := range []string{"''", "null"} {
+		text := strings.Replace(changeDoc("", ""), "module: auth", "module: "+value, 1)
+		if _, err := c.ParseChange(text, "changes/0001-case.md", "AUTH"); err == nil {
+			t.Errorf("required module accepted %s", value)
+		}
+	}
+	got, err := c.ParseChange(changeDoc("fixes: [AUTH-001]\n", "## Added\n### new:one\nIt MUST work."), "changes/10000-priority.md", "AUTH")
+	if err != nil || got.Kind != "spec" || got.Number != 10000 {
+		t.Errorf("spec beats fix: %+v %v", got, err)
+	}
+	got, err = c.ParseChange(changeDoc("regenerate: true\n", "## Added\n### new:one\nIt MUST work."), "changes/0001-case.md", "AUTH")
+	if err != nil || got.Kind != "regenerate" || len(got.Added) != 1 || got.Added[0].ID != "new:one" {
+		t.Errorf("regenerate retained edits: %+v %v", got, err)
+	}
+}
+func Test_CON015ProseAndHandleReferences(t *testing.T) {
+	for _, body := range []string{
+		"## Modified\n### AUTH-001\nThis has no normative language.",
+		"## Added\n### new:one\nIt MUST call new:missing.",
+		"## Modified\n### AUTH-001\nIt MUST call new:missing.",
+	} {
+		if _, err := c.ParseChange(changeDoc("", body), "changes/0001-case.md", "AUTH"); err == nil {
+			t.Errorf("invalid body accepted %q", body)
+		}
+	}
+	text := strings.Replace(changeDoc("", "## Added\nIntroductory author prose.\n### new:one\nIt MUST work."), "## Motivation", "# Author title\n\n## Motivation", 1)
+	got, err := c.ParseChange(text, "changes/0001-case.md", "AUTH")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.Document.Preamble != "# Author title" {
+		t.Errorf("preamble lost: %q", got.Document.Preamble)
+	}
+	found := false
+	for _, section := range got.Document.Sections {
+		if section.Name == "Added" {
+			found = strings.HasPrefix(section.Body, "Introductory author prose.\n")
+		}
+	}
+	if !found {
+		t.Error("prose before spec item lost")
+	}
+}
+func Test_CON016SetAndIDValidation(t *testing.T) {
+	got, err := c.ParseChange(changeDoc("set: {depends_on: []}\n", ""), "changes/0001-case.md", "AUTH")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if list, ok := got.Set["depends_on"].([]any); !ok || len(list) != 0 {
+		t.Errorf("explicit empty dependencies lost: %#v", got.Set)
+	}
+	for _, meta := range []string{"bases: {AUTH-001: gggggggg}\n", "bases: {invalid: abcdef12}\n", "fixes: [invalid]\n", "already_satisfied: [invalid]\n"} {
+		if _, err := c.ParseChange(changeDoc(meta, ""), "changes/0001-case.md", "AUTH"); err == nil {
+			t.Errorf("invalid hash or ID accepted %q", meta)
+		}
+	}
+}
