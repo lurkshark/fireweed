@@ -52,7 +52,8 @@ func Test_GIT005_GIT006_GIT007ProcessHelper(t *testing.T) {
 		if err != nil {
 			os.Exit(92)
 		}
-		b, _ := json.Marshal(map[string]any{"args": args[1:], "dir": dir, "inherited": os.Getenv("FIREWEED_INHERITED"), "override": os.Getenv("FIREWEED_OVERRIDE"), "empty": os.Getenv("FIREWEED_EMPTY"), "equals": os.Getenv("FIREWEED_EQUALS")})
+		_, emptyPresent := os.LookupEnv("FIREWEED_EMPTY")
+		b, _ := json.Marshal(map[string]any{"empty_present": emptyPresent, "args": args[1:], "dir": dir, "inherited": os.Getenv("FIREWEED_INHERITED"), "override": os.Getenv("FIREWEED_OVERRIDE"), "empty": os.Getenv("FIREWEED_EMPTY"), "equals": os.Getenv("FIREWEED_EQUALS")})
 		fmt.Fprintln(os.Stdout, "OUT")
 		fmt.Fprintln(os.Stdout, string(b))
 		fmt.Fprintln(os.Stderr, "ERR")
@@ -69,7 +70,15 @@ func Test_GIT005_GIT006_GIT007ProcessHelper(t *testing.T) {
 	case "hold":
 		fmt.Fprintln(os.Stdout, args[2])
 		marker(args[1])
-		time.Sleep(250 * time.Millisecond)
+		duration := 250 * time.Millisecond
+		if len(args) > 3 {
+			var err error
+			duration, err = time.ParseDuration(args[3])
+			if err != nil {
+				os.Exit(95)
+			}
+		}
+		time.Sleep(duration)
 		fmt.Fprintln(os.Stderr, "held end")
 	case "tree", "branch":
 		mode := "branch"
@@ -85,7 +94,8 @@ func Test_GIT005_GIT006_GIT007ProcessHelper(t *testing.T) {
 		}
 		fmt.Fprintln(os.Stdout, args[0]+" ready")
 		marker(filepath.Join(args[1], args[0]+".ready"))
-		time.Sleep(4 * time.Second)
+		time.Sleep(3 * time.Second)
+		marker(filepath.Join(args[1], args[0]+".late"))
 		_ = child.Wait()
 	case "leaf":
 		fmt.Fprintln(os.Stderr, "leaf ready")
@@ -131,11 +141,12 @@ func Test_GIT005LiteralArgumentsAndEnvironment(t *testing.T) {
 	var data struct {
 		Args                                    []string
 		Dir, Inherited, Override, Empty, Equals string
+		EmptyPresent                            bool `json:"empty_present"`
 	}
 	if err := json.Unmarshal([]byte(strings.TrimSuffix(strings.TrimPrefix(got.Output, "OUT\n"), "\nERR\n")), &data); err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(data.Args, args) || data.Dir != dir || data.Inherited != "parent-value" || data.Override != "last" || data.Empty != "" || data.Equals != "a=b=c" {
+	if !reflect.DeepEqual(data.Args, args) || data.Dir != dir || data.Inherited != "parent-value" || data.Override != "last" || !data.EmptyPresent || data.Empty != "" || data.Equals != "a=b=c" {
 		t.Fatalf("child data %+v", data)
 	}
 	afterDir, _ := os.Getwd()
@@ -170,6 +181,8 @@ func Test_GIT005_GIT007InvalidCallsAndRecovery(t *testing.T) {
 	root := t.TempDir()
 	marker := filepath.Join(root, "started")
 	good := helperCommand(t, "marker", marker)
+	parentDir, _ := os.Getwd()
+	parentEnv := os.Environ()
 	for _, tt := range []struct {
 		name, dir  string
 		argv, env  []string
@@ -189,7 +202,15 @@ func Test_GIT005_GIT007InvalidCallsAndRecovery(t *testing.T) {
 		if tt.nilContext {
 			ctx = nil
 		}
+		argsBefore, _ := json.Marshal(tt.argv)
+		envBefore, _ := json.Marshal(tt.env)
 		got := g.Run(ctx, tt.dir, tt.argv, tt.env)
+		argsAfter, _ := json.Marshal(tt.argv)
+		envAfter, _ := json.Marshal(tt.env)
+		dirAfter, _ := os.Getwd()
+		if string(argsBefore) != string(argsAfter) || string(envBefore) != string(envAfter) || parentDir != dirAfter || !reflect.DeepEqual(parentEnv, os.Environ()) {
+			t.Fatalf("%s mutated invalid inputs or parent", tt.name)
+		}
 		if got.Exit != 2 || got.Err == nil || strings.TrimSpace(got.Err.Error()) == "" {
 			t.Fatalf("%s: %+v", tt.name, got)
 		}
@@ -210,7 +231,12 @@ func Test_GIT006PreCancelledDoesNotStart(t *testing.T) {
 	expired, finish := context.WithDeadline(context.Background(), time.Now().Add(-time.Second))
 	defer finish()
 	for _, ctx := range []context.Context{cancelled, expired} {
-		got := g.Run(ctx, root, helperCommand(t, "marker", marker), processEnvironment())
+		argv, overrides := helperCommand(t, "marker", marker), processEnvironment()
+		savedArgs, savedEnv := append([]string(nil), argv...), append([]string(nil), overrides...)
+		got := g.Run(ctx, root, argv, overrides)
+		if !reflect.DeepEqual(argv, savedArgs) || !reflect.DeepEqual(overrides, savedEnv) {
+			t.Fatal("pre-cancellation mutated inputs")
+		}
 		if got.Exit != -1 || !errors.Is(got.Err, ctx.Err()) || got.Output != "" {
 			t.Fatalf("pre-cancelled %+v", got)
 		}
@@ -267,13 +293,14 @@ func Test_GIT006CancellationKillsTree(t *testing.T) {
 			readyTime := time.Now()
 			// This process is outside Run's tree and must survive the cancellation.
 			outside := filepath.Join(root, "unrelated.ready")
-			unrelated := exec.Command(helperCommand(t, "hold", outside, "unrelated")[0], helperCommand(t, "hold", outside, "unrelated")[1:]...)
+			unrelated := exec.Command(helperCommand(t, "hold", outside, "unrelated", "3s")[0], helperCommand(t, "hold", outside, "unrelated", "3s")[1:]...)
 			unrelated.Env = append(os.Environ(), processEnvironment()...)
 			unrelatedDone := make(chan error, 1)
 			if err := unrelated.Start(); err != nil {
 				t.Fatal(err)
 			}
 			go func() { unrelatedDone <- unrelated.Wait() }()
+			waitProcessMarkers(t, []string{outside}, nil)
 			if !deadline {
 				cancel()
 			}
@@ -296,10 +323,15 @@ func Test_GIT006CancellationKillsTree(t *testing.T) {
 			}
 			select {
 			case err := <-unrelatedDone:
+				t.Fatalf("unrelated process ended before cancellation check: %v", err)
+			default:
+			}
+			select {
+			case err := <-unrelatedDone:
 				if err != nil {
 					t.Fatalf("unrelated process killed: %v", err)
 				}
-			case <-time.After(time.Second):
+			case <-time.After(3500 * time.Millisecond):
 				t.Fatal("unrelated process stuck")
 			}
 			if _, err := os.Stat(outside); err != nil {
@@ -308,8 +340,10 @@ func Test_GIT006CancellationKillsTree(t *testing.T) {
 			if wait := time.Until(readyTime.Add(3300 * time.Millisecond)); wait > 0 {
 				time.Sleep(wait)
 			}
-			if _, err := os.Stat(filepath.Join(root, "leaf.late")); !os.IsNotExist(err) {
-				t.Fatal("grandchild survived cancellation and performed delayed write")
+			for _, name := range []string{"tree.late", "branch.late", "leaf.late"} {
+				if _, err := os.Stat(filepath.Join(root, name)); !os.IsNotExist(err) {
+					t.Fatalf("%s survived cancellation and performed delayed write", name)
+				}
 			}
 			after := boundedProcess(t, root, helperCommand(t, "echo", "after tree"), processEnvironment())
 			if after.Exit != 0 || after.Err != nil {
