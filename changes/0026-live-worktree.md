@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: audit
+phase: impl
 run: 87cb84b4509b66f7b60d7a0e
 ---
 
@@ -41,12 +41,8 @@ Trusting only caller-supplied Claim fields would allow stale ownership or a move
 - evals | 2026-10-22T20:14:08Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 915 | failing: 93 | passing: 822
 - audit | 2026-10-22T20:22:24Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T20:27:01Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 924 | failing: 102 | passing: 822
+- audit | 2026-10-22T20:28:41Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- FLOW-012: "and stop before current-file comparison or edit collection." — missing assertion that a rejected precondition prevents reading the current change; the short-circuit fixture traps collection, while native current-path read interception is exercised only with valid preconditions.
-- FLOW-013: "Missing, unreadable, directory or escaping/dangling-symlink current changes MUST produce corrective P2-01 at changePath" — missing independent assertion that the unreadable fixture actually denies os.ReadFile, or a skip when it does not; chmod 0000 and a non-root UID alone do not establish this premise on every supported host.
-- FLOW-013: "Invalid current grammar, immutable metadata or protected body edits MUST retain those exact public state diagnostics." — missing assertion combining invalid current state with an edit-collection failure, so an early collection-error return could discard the independent public state diagnostics.
-- FLOW-014: "every rename/copy source" — missing assertion with an unsafe OldPath and a safe destination; the renamed-link fixture leaves its old path nonexistent and safe, while only its destination escapes.
-- FLOW-014: "using the supplied approved projected target and validated snapshot" — missing live composition assertion where the supplied target's projected zones differ from its stale snapshot zones; existing live fixtures differ in projected specs but retain identical zone definitions.
-- FLOW-014: "retaining independent state, safety and phase/ownership/append-only violations" — missing assertion combining worker phase escalation with an independently forbidden file edit; current escalation cases modify only the current change, whose ordinary modification is permitted in every phase.
+No findings. Checked FLOW-012, FLOW-013, FLOW-014, FLOW-015.
