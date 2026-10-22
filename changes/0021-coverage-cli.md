@@ -1,6 +1,6 @@
 ---
 module: app
-phase: audit
+phase: evals
 run: 2c1fa4000b6b828fb9cb84f4
 ---
 
@@ -45,12 +45,8 @@ Automatically treating --with-change as evals-phase fail-first would make a norm
 - evals | 2026-10-22T17:45:43Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 43 | failing: 21 | passing: 22
 - audit | 2026-10-22T17:49:29Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T17:52:37Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 45 | failing: 22 | passing: 23
+- audit | 2026-10-22T17:53:52Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- APP-013: "Plain output MUST be pretty JSON of the same data on stdout" — plain coverage assertions decode JSON and compare data, but never assert pretty formatting; compact JSON passes.
-- APP-014: "Unknown or archived-only slugs and a module/target mismatch MUST produce corrective U01 exit 2" — selection-error assertions require only the word coverage, not valid queued choices or the actual target and a usable corrective command.
-- APP-014: "without running a hook" — the module/target mismatch case watches alpha's trace although the selected beta module's resolved eval hook writes MUST-NOT-RUN; that marker is not checked in the selection-error test.
-- APP-015: "retain public Evaluate's C07/C11/C12/C13/C14 errors, target module paths, corrective messages" — fatal-evidence C11 and missing-hook C07 cases assert code/path but not error severity or corrective messages; blank or warning diagnostics pass those assertions.
-- APP-015: "Malformed or fatally incomplete hook evidence MUST keep non-null empty Tests/BySpec" — the missing-hook C07 case does not assert Tests or BySpec, allowing null collections despite the absence of usable evidence.
-- APP-016: "Current and projected coverage MUST remain noninteractive and MUST NOT independently run setup/boundaries hooks, agents, the bootstrap or network commands, create Git commits/refs/claims, rewrite specs/changes or modify ignored/user files" — safety assertions exercise projected success and current report failure, but no projected evaluation failure under the forbidden-command traps and file/ref/ignored-content comparisons.
+- APP-013: "Fatal Git/configuration loading failures MUST be C01 exit 2 with null JSON data." — Test_APP013FatalCoverageConfiguration calls coveragePretty on plain stdout and then requires that stdout to be empty. coveragePretty rejects empty input, making these assertions mutually exclusive; restrict the pretty-data assertion to executions that return Coverage data.
