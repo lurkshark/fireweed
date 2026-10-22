@@ -27,10 +27,13 @@ func Test_PRJ001RunningVersion(t *testing.T) {
 		t.Fatalf("incompatible running version %s: %v", version, err)
 	}
 }
-func shellQuote(s string) string                                  { return "'" + strings.ReplaceAll(s, "'", "'\"'\"'") + "'" }
-func Test_PRJ001_PRJ002_PRJ004NoExternalIO(t *testing.T)          { runProjectIsolation(t, false) }
-func Test_PRJ007_PRJ008_PRJ009_PRJ010ProjectionNoIO(t *testing.T) { runProjectIsolation(t, true) }
-func runProjectIsolation(t *testing.T, projection bool) {
+func shellQuote(s string) string                         { return "'" + strings.ReplaceAll(s, "'", "'\"'\"'") + "'" }
+func Test_PRJ001_PRJ002_PRJ004NoExternalIO(t *testing.T) { runProjectIsolation(t, false, false) }
+func Test_PRJ007_PRJ008_PRJ009_PRJ010ProjectionNoIO(t *testing.T) {
+	runProjectIsolation(t, true, false)
+}
+func Test_PRJ011_PRJ012_PRJ013_PRJ014QueueNoIO(t *testing.T) { runProjectIsolation(t, true, true) }
+func runProjectIsolation(t *testing.T, projection bool, queue bool) {
 	if runtime.GOOS != "darwin" {
 		t.Skip("Darwin syscall interposition probe; portable fixtures exercise content elsewhere")
 	}
@@ -158,6 +161,11 @@ func main(){
  applied,err:=p.ApplyChange(s.Modules[0],ch);if err!=nil||len(applied.Specs)!=2||applied.Preserve[0]!="native/**"{os.Exit(14)}
  s.Changes=[]c.Change{ch,predecessor};projected,err:=p.Project(s,"");if err!=nil||len(projected.Modules[0].Specs)!=2{os.Exit(15)}
  hashes,err:=p.BaseHashes(s,ch.Slug);if err!=nil||len(hashes)!=2||hashes["ALP-001"]!=c.SpecHash(predecessor.Modified[0])||hashes["ALP-002"]!=c.SpecHash(s.Modules[0].Specs[1]){os.Exit(16)}
+ if len(os.Args)>5&&os.Args[5]=="queue"{
+  predecessor.Bases=map[string]string{"ALP-001":c.SpecHash(s.Modules[0].Specs[0])};ch.Bases=hashes;s.Changes=[]c.Change{ch,predecessor}
+  if ds:=p.CheckQueue(s);ds==nil||len(ds)!=0{os.Exit(20)}
+  ch.Bases=map[string]string{"ALP-001":"deadbeef","ALP-002":hashes["ALP-002"]};s.Changes=[]c.Change{ch,predecessor};ds:=p.CheckQueue(s);found:=false;for _,d:=range ds{if d.Code=="C10"&&d.Path==ch.Path&&d.Severity=="error"{found=true}};if !found{os.Exit(21)}
+ }
  ch.Module="missing";if _,err=p.ApplyChange(s.Modules[0],ch);err==nil{os.Exit(17)}
  if _,err=p.Project(s,"missing");err==nil{os.Exit(18)};if _,err=p.BaseHashes(s,"missing");err==nil{os.Exit(19)}
  }
@@ -196,6 +204,9 @@ func main(){
 		args := []string{mode, fixtureRoot, forbidden}
 		if projection {
 			args = append(args, "projection")
+		}
+		if queue {
+			args = append(args, "queue")
 		}
 		cmd = exec.CommandContext(ctx, binary, args...)
 		cmd.Dir = fixtureRoot

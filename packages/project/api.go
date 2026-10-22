@@ -5,6 +5,7 @@ import (
 	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project/internal/inspection"
 	"github.com/lurkshark/fireweed/packages/project/internal/projection"
+	"github.com/lurkshark/fireweed/packages/project/internal/queuecheck"
 )
 
 type Diagnostic struct{ Code, Severity, Message, Path string }
@@ -51,4 +52,8 @@ func internalSnapshot(s Snapshot) inspection.Data {
 		d.Diagnostics = append(d.Diagnostics, inspection.Diagnostic{Code: v.Code, Severity: v.Severity, Message: v.Message, Path: v.Path})
 	}
 	return d
+}
+
+func CheckQueue(snapshot Snapshot) []Diagnostic {
+	return publicDiagnostics(queuecheck.Check(internalSnapshot(snapshot)))
 }
