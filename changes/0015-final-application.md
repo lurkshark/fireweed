@@ -1,5 +1,7 @@
 ---
 module: project
+phase: audit
+run: c6ec82a472f9dbc5fc7b39ea
 ---
 
 ## Motivation
@@ -12,13 +14,13 @@ Add Finalize(module contracts.Module, change contracts.Change) (contracts.Module
 
 ## Added
 
-### new:final-spec
+### PRJ-018
 Finalize MUST apply Added/Modified/Removed specs and all allowed set values through the existing public projection contract, retaining item order, tags, module identity, preamble and unrelated sections. Its result MUST be a valid current module with real IDs only, with resolved fields, Specs and metadata agreeing under public Markdown normalization. It MUST reject invalid applications and remaining local handles in current or resulting specs, returning a zero Module on error. The change MUST have a nonempty valid slug consistent with its filename; differing numeric filename/typed Number values MUST remain permitted. Finalize MUST NOT assign IDs, change run/phase, write the change, or incorporate the change's Motivation, Interface, Notes, Audit, Questions or Provenance into the module.
 
-### new:decisions
+### PRJ-019
 Finalize MUST start from the module's typed Decisions, overriding a stale retained Decisions body. For each nonempty line in the change's Removed decisions section, it MUST trim surrounding whitespace and one optional leading blockquote marker and remove every exact occurrence of that quoted text from existing Decisions; unmatched quotes MUST be harmless, and unrelated text MUST remain. It MUST then append the change's nonempty Decisions body, preceded by a bracketed change slug on its own line and separated from existing nonempty Decisions by one blank line. It MUST preserve multiline/fenced decision content and existing slug tags under public Markdown normalization. No new Decisions section MUST be invented when none exists and neither removal nor addition requests one; an explicit removal request MUST retain a Decisions section even if its resulting body is empty. The typed Decisions field and document body MUST agree.
 
-### new:final-purity
+### PRJ-020
 Finalize MUST be deterministic and pure on successful and failed inputs, without filesystem/network I/O or execution of Git, hooks or agents. It MUST NOT mutate or return mutable aliases to the supplied module, change, retained documents, metadata maps or slices. Separate calls and input values MUST remain unchanged immediately when a returned result is mutated, including valid maintenance changes with no spec edits. Errors MUST return no partial module. ApplyChange MUST remain a preview retaining existing Decisions without performing final decision additions/removals.
 
 ## Modified
@@ -36,3 +38,7 @@ Removed-decision quoting follows the pinned reference's line-wise exact-text con
 ## Rejected alternatives
 
 Writing final SPEC.md while previews still contain handles would leak temporary names into the permanent contract. Appending every change's author sections would mix transient implementation context into the module's durable Decisions. Performing commits here would couple a deterministic transform to workflow recovery.
+
+## Provenance
+
+- evals | 2026-10-22T15:25:49Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 71 | failing: 6 | passing: 65

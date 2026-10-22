@@ -34,9 +34,12 @@ func Test_PRJ007_PRJ008_PRJ009_PRJ010ProjectionNoIO(t *testing.T) {
 }
 func Test_PRJ011_PRJ012_PRJ013_PRJ014QueueNoIO(t *testing.T) { runProjectIsolation(t, true, true) }
 func Test_PRJ015_PRJ016_PRJ017AllocationNoIO(t *testing.T) {
-	runProjectIsolation(t, false, false, true)
+	runProjectIsolation(t, false, false, "allocation")
 }
-func runProjectIsolation(t *testing.T, projection bool, queue bool, allocation ...bool) {
+func Test_PRJ018_PRJ019_PRJ020FinalizationNoIO(t *testing.T) {
+	runProjectIsolation(t, false, false, "finalization")
+}
+func runProjectIsolation(t *testing.T, projection bool, queue bool, extraModes ...string) {
 	if runtime.GOOS != "darwin" {
 		t.Skip("Darwin syscall interposition probe; portable fixtures exercise content elsewhere")
 	}
@@ -157,6 +160,14 @@ func main(){
  found:=map[string]bool{};for _,d:=range s.Diagnostics{if d.Severity=="error"&&((d.Code=="C03"&&d.Path=="units/escape/SPEC.md")||(d.Code=="C05"&&(d.Path=="changes/0001-escape.md"||d.Path=="changes/archive/0001-escape.md"))){found[d.Path]=true}};if len(found)!=3{os.Exit(12)}
  if os.Args[1]=="check"{
  C.fw_guard_arm(2,C.CString(target));ds:=p.Check(s);if len(ds)!=3{os.Exit(13)}
+ if len(os.Args)>4&&os.Args[4]=="finalization"{
+  m:=s.Modules[0];m.Decisions="Old choice.\nKeep choice."
+  ch:=c.Change{Module:m.Name,Slug:"native-final",Number:1,Path:"changes/0001-native-final.md",Set:map[string]any{"preserve":[]any{"native/**"}},Added:[]c.Spec{{ID:"ALP-009",Body:"It MUST append a real spec."}},Document:c.Document{Sections:[]c.Section{{Name:"Motivation",Body:"Finalize the typed choice."},{Name:"Decisions",Body:"New choice."},{Name:"Removed decisions",Body:"> Old choice."}}}}
+  got,err:=p.Finalize(m,ch);if err!=nil||len(got.Specs)!=2||got.Decisions!="Keep choice.\n\n[native-final]\nNew choice."||got.Preserve[0]!="native/**"{os.Exit(26)}
+  preview,err:=p.ApplyChange(m,ch);if err!=nil||preview.Decisions!=m.Decisions{os.Exit(27)}
+  ch.Added[0].ID="new:pending";if _,err:=p.Finalize(m,ch);err==nil{os.Exit(28)}
+  ch.Module="missing";if _,err:=p.Finalize(m,ch);err==nil{os.Exit(29)}
+ }
  if len(os.Args)>4&&os.Args[4]=="allocation"{
   ch:=c.Change{Module:s.Modules[0].Name,Slug:"native-allocation",Number:1,Path:"changes/0001-native-allocation.md",AlreadySatisfied:[]string{"new:native"},Set:map[string]any{"hooks":map[string]any{"setup":"show new:native-two and new:native"}},Added:[]c.Spec{{ID:"new:native",Body:"It MUST refer to new:native-two."},{ID:"new:native-two",Body:"It MUST refer to new:native."}},Document:c.Document{Metadata:map[string]any{"module":s.Modules[0].Name},Sections:[]c.Section{{Name:"Motivation",Body:"Allocate new:native and new:native-two."}}}}
   s.Changes=[]c.Change{ch};s.Archive=[]c.Change{{Module:ch.Module,Removed:[]c.Spec{{ID:"ALP-010"}}}}
@@ -221,9 +232,7 @@ func main(){
 		if queue {
 			args = append(args, "queue")
 		}
-		if len(allocation) > 0 && allocation[0] {
-			args = append(args, "allocation")
-		}
+		args = append(args, extraModes...)
 		cmd = exec.CommandContext(ctx, binary, args...)
 		cmd.Dir = fixtureRoot
 		cmd.Env = append(os.Environ(), "PATH="+trapDir+string(os.PathListSeparator)+os.Getenv("PATH"))
