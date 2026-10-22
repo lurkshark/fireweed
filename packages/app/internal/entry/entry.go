@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sort"
 	"strings"
 
 	"github.com/lurkshark/fireweed/packages/assets"
@@ -180,7 +181,24 @@ func Run(args []string, out, errOut io.Writer) int {
 		}
 		diagnostics := []diagnostic{}
 		code := 0
-		for _, d := range project.Check(snapshot) {
+		checked := project.Check(snapshot)
+		if option.command == "check" {
+			checked = append(checked, project.CheckQueue(snapshot)...)
+		}
+		sort.SliceStable(checked, func(i, j int) bool {
+			a, b := checked[i], checked[j]
+			if a.Path != b.Path {
+				return a.Path < b.Path
+			}
+			if a.Code != b.Code {
+				return a.Code < b.Code
+			}
+			if a.Severity != b.Severity {
+				return a.Severity < b.Severity
+			}
+			return a.Message < b.Message
+		})
+		for _, d := range checked {
 			diagnostics = append(diagnostics, diagnostic{Code: d.Code, Severity: d.Severity, Message: d.Message, Path: d.Path})
 			if d.Severity == "error" {
 				code = 1

@@ -1,6 +1,6 @@
 ---
 module: app
-phase: impl
+phase: applied
 run: e4c61dafdcb7ae61cc827ec0
 ---
 
@@ -35,6 +35,7 @@ Checking only the final projected state would miss intermediate enforcement chan
 - audit | 2026-10-22T14:39:21Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T14:39:53Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 15 | failing: 3 | passing: 12
 - audit | 2026-10-22T14:40:38Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- impl | 2026-10-22T14:41:13Z | agent: manual | fireweed: 0.4.0 | playbook: 653912b194316c62181f62d0a69dc213f7668481ea8b1b9926ef889dd48a9e08 | tests: 15 | failing: 0 | passing: 15
 
 ## Audit
 

@@ -36,6 +36,9 @@ check MUST run public project static validation and return data {valid:true} wit
 ### APP-007
 modules and check MUST accept --json before or after the command, accept --help/-h without loading a project, and reject excess operands or unknown/valued flags with U01 exit 2 before loading a project. They MUST remain noninteractive and MUST NOT run hooks, agents, the bootstrap or network commands, nor change repository files, ignored content or refs. Project validation MUST expose invalid graph/zone/hook/document/reservation diagnostics from the public project validator rather than silently succeeding.
 
+### APP-008
+check MUST combine current/discovery diagnostics with public queued-change validation, including stale/missing bases, projected enforcement, handle scope and ID/reference errors. The combined diagnostics MUST sort by path, code, severity and message without repeating unchanged preexisting problems, preserving code, severity, corrective message and repository-relative path. It MUST return exit 1 and {valid:false} for any errors; a valid queue or warnings alone MUST return exit 0 and {valid:true}. Plain data MUST go to stdout with coded/path-attributed diagnostics on stderr; JSON MUST use the existing schema-1 envelope with no plaintext on either stream. From a nested directory, it MUST process numeric/slug ordered intent regardless of lexical filenames and MUST NOT modify files, ignored content or refs or run hooks, agents, the bootstrap or network commands. modules MUST retain its current-static-only behavior when queued projected errors exist.
+
 ## Decisions
 
 [cli-inspection]
@@ -45,3 +48,6 @@ Playbook JSON also includes embedded_hash equal to the selected embedded hash, p
 
 [project-inspection]
 The current graph comes exclusively from SPEC.md and fireweed.yaml through project.Load. Both commands call project.Check on the snapshot, so modules can publish a partial readable graph alongside error diagnostics while returning exit 1. Plain data is pretty JSON, matching the existing structured inspection convention. Validation errors retain data; configuration/discovery fatal errors return null data with C01 and path fireweed.yaml. Help is available before repository loading. These commands expose current static state; queued projection, run status, playbook overrides and workflow commands remain separate changes. Module arrays include the public model's retained document field, providing additional author context without dropping designed graph fields.
+
+[queue-check-cli]
+This is composition of the existing two pure validation surfaces. CheckQueue excludes existing Check diagnostics; the CLI globally sorts their concatenation. modules remains a current graph read, so a structurally valid queue that introduces errors affects check only. Discovery errors from loading malformed queue files remain visible to both commands through Check. Existing C01 and U01 behaviors and options stay intact.
