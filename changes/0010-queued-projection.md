@@ -1,5 +1,7 @@
 ---
 module: project
+phase: audit
+run: 5bac8caec4836214c46ee6c9
 ---
 
 ## Motivation
@@ -12,16 +14,16 @@ Add ApplyChange(module contracts.Module, change contracts.Change) (contracts.Mod
 
 ## Added
 
-### new:spec-application
+### PRJ-007
 ApplyChange MUST replace Modified specs in their existing positions, remove Removed specs, and append Added specs in declared order, retaining complete bodies and tags. It MUST retain local Added handles for preview without allocating IDs. It MUST reject a mismatched target module, missing Modified/Removed targets, repeated edit IDs, existing-ID additions, wrong-prefix IDs, malformed normative edits and invalid Removed bodies with an error rather than returning a partial result. It MUST update the document's Specs section to reflect the resulting ordered items while retaining the module preamble and unrelated sections.
 
-### new:metadata-projection
+### PRJ-008
 ApplyChange MUST apply only allowed set fields: depends_on, interface, evals, disposable, preserve, append_only, boundaries_opt_out and named eval/boundaries/setup hook overrides. Explicit empty lists/strings MUST replace resolved values, omitted fields MUST retain them, and partial hooks MUST retain other resolved hooks. Identity edits, unknown fields and wrong field types MUST fail. The returned module's fields and document metadata MUST agree, retaining original valid metadata and unrelated document sections; name, prefix and directory MUST remain unchanged. Projection MUST NOT read a configuration file or re-inherit project defaults over explicit values.
 
-### new:queue-projection
+### PRJ-009
 Project MUST apply changes in numeric Number then Slug order across their target modules, independent of input slice order. A nonempty before selector MUST return the state after preceding changes only; empty before MUST apply the entire queue. Same-number changes MUST follow slug order. Unknown/ambiguous selectors, unknown target modules and invalid application MUST return errors. Current archive entries MUST NOT be replayed as pending changes. Project MUST preserve unrelated snapshot data, and neither successful nor failed projection/application MAY mutate inputs or return mutable aliases of any input module, document, configuration, change, archive, metadata map or slice. These APIs MUST NOT read/write files, run hooks/agents/Git or use networking.
 
-### new:base-hashes
+### PRJ-010
 BaseHashes MUST compute a fresh non-null map containing exactly the Modified and Removed IDs of the selected queued change, hashing the target specs as projected immediately before that change. Hashes MUST use the public normalized eight-character SHA-256 item contract, including tags; existing bases MUST be replaced in the returned map without changing input state. Added-only or maintenance changes MUST return an empty map. Missing/ambiguous change, missing target module or missing edited spec MUST return an error. The function MUST remain pure and independent of files and Git, and changing a returned map MUST NOT affect inputs or later calls.
 
 ## Modified
@@ -35,3 +37,7 @@ Projection is an intent preview: it does not enforce existing bases or allocate 
 ## Rejected alternatives
 
 Reading working files during projection would break determinism for callers holding a snapshot. Allocating IDs while previewing would reintroduce parallel author collisions. Applying queue input order would make same-number changes depend on filesystem iteration.
+
+## Provenance
+
+- evals | 2026-10-22T08:46:12Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 34 | failing: 7 | passing: 27

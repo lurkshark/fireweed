@@ -4,6 +4,7 @@ package project
 import (
 	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project/internal/inspection"
+	"github.com/lurkshark/fireweed/packages/project/internal/projection"
 )
 
 type Diagnostic struct{ Code, Severity, Message, Path string }
@@ -32,4 +33,22 @@ func publicDiagnostics(ds []inspection.Diagnostic) []Diagnostic {
 		result[i] = Diagnostic{Code: v.Code, Severity: v.Severity, Message: v.Message, Path: v.Path}
 	}
 	return result
+}
+
+func ApplyChange(module contracts.Module, change contracts.Change) (contracts.Module, error) {
+	return projection.Apply(module, change)
+}
+func Project(snapshot Snapshot, before string) (Snapshot, error) {
+	result, err := projection.Project(internalSnapshot(snapshot), before)
+	return Snapshot{Root: result.Root, BaseRef: result.BaseRef, Config: result.Config, Modules: result.Modules, Changes: result.Changes, Archive: result.Archive, Diagnostics: publicDiagnostics(result.Diagnostics)}, err
+}
+func BaseHashes(snapshot Snapshot, slug string) (map[string]string, error) {
+	return projection.Bases(internalSnapshot(snapshot), slug)
+}
+func internalSnapshot(s Snapshot) inspection.Data {
+	d := inspection.Data{Root: s.Root, BaseRef: s.BaseRef, Config: s.Config, Modules: s.Modules, Changes: s.Changes, Archive: s.Archive}
+	for _, v := range s.Diagnostics {
+		d.Diagnostics = append(d.Diagnostics, inspection.Diagnostic{Code: v.Code, Severity: v.Severity, Message: v.Message, Path: v.Path})
+	}
+	return d
 }

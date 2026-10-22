@@ -27,8 +27,10 @@ func Test_PRJ001RunningVersion(t *testing.T) {
 		t.Fatalf("incompatible running version %s: %v", version, err)
 	}
 }
-func shellQuote(s string) string { return "'" + strings.ReplaceAll(s, "'", "'\"'\"'") + "'" }
-func Test_PRJ001_PRJ002_PRJ004NoExternalIO(t *testing.T) {
+func shellQuote(s string) string                                  { return "'" + strings.ReplaceAll(s, "'", "'\"'\"'") + "'" }
+func Test_PRJ001_PRJ002_PRJ004NoExternalIO(t *testing.T)          { runProjectIsolation(t, false) }
+func Test_PRJ007_PRJ008_PRJ009_PRJ010ProjectionNoIO(t *testing.T) { runProjectIsolation(t, true) }
+func runProjectIsolation(t *testing.T, projection bool) {
 	if runtime.GOOS != "darwin" {
 		t.Skip("Darwin syscall interposition probe; portable fixtures exercise content elsewhere")
 	}
@@ -137,7 +139,7 @@ I(fw_mkdir,mkdir) I(fw_unlink,unlink) I(fw_rmdir,rmdir) I(fw_rename,rename) I(fw
 void fw_guard_arm(int mode,const char*p);
 */
 import "C"
-import("os";"net";"time";p "github.com/lurkshark/fireweed/packages/project")
+import("os";"net";"time";p "github.com/lurkshark/fireweed/packages/project";c "github.com/lurkshark/fireweed/packages/contracts")
 func main(){
  root,target:=os.Args[2],os.Args[3]
  C.fw_guard_arm(1,C.CString(target))
@@ -147,7 +149,18 @@ func main(){
  s,err:=p.Load(root);if err!=nil{os.Exit(10)}
  if len(s.Modules)!=1||len(s.Changes)!=0||len(s.Archive)!=0{os.Exit(11)}
  found:=map[string]bool{};for _,d:=range s.Diagnostics{if d.Severity=="error"&&((d.Code=="C03"&&d.Path=="units/escape/SPEC.md")||(d.Code=="C05"&&(d.Path=="changes/0001-escape.md"||d.Path=="changes/archive/0001-escape.md"))){found[d.Path]=true}};if len(found)!=3{os.Exit(12)}
- if os.Args[1]=="check"{C.fw_guard_arm(2,C.CString(target));ds:=p.Check(s);if len(ds)!=3{os.Exit(13)};C.fw_guard_arm(0,nil)}
+ if os.Args[1]=="check"{
+ C.fw_guard_arm(2,C.CString(target));ds:=p.Check(s);if len(ds)!=3{os.Exit(13)}
+ if len(os.Args)>4&&os.Args[4]=="projection"{
+ ch:=c.Change{Module:s.Modules[0].Name,Slug:"native-projection",Number:1,Path:"changes/0001-native-projection.md",Set:map[string]any{"preserve":[]any{"native/**"}},Added:[]c.Spec{{ID:"new:native",Body:"It MUST remain pure."}}}
+ applied,err:=p.ApplyChange(s.Modules[0],ch);if err!=nil||len(applied.Specs)!=2||applied.Preserve[0]!="native/**"{os.Exit(14)}
+ s.Changes=[]c.Change{ch};projected,err:=p.Project(s,"");if err!=nil||len(projected.Modules[0].Specs)!=2{os.Exit(15)}
+ hashes,err:=p.BaseHashes(s,ch.Slug);if err!=nil||hashes==nil||len(hashes)!=0{os.Exit(16)}
+ ch.Module="missing";if _,err=p.ApplyChange(s.Modules[0],ch);err==nil{os.Exit(17)}
+ if _,err=p.Project(s,"missing");err==nil{os.Exit(18)};if _,err=p.BaseHashes(s,"missing");err==nil{os.Exit(19)}
+ }
+ C.fw_guard_arm(0,nil)
+ }
 }`, temp)
 	put(t, temp, "probe.go", program)
 	binary := filepath.Join(temp, "probe")
@@ -178,7 +191,11 @@ func main(){
 		}
 	}
 	for _, mode := range []string{"load", "check"} {
-		cmd = exec.CommandContext(ctx, binary, mode, fixtureRoot, forbidden)
+		args := []string{mode, fixtureRoot, forbidden}
+		if projection {
+			args = append(args, "projection")
+		}
+		cmd = exec.CommandContext(ctx, binary, args...)
 		cmd.Dir = fixtureRoot
 		cmd.Env = append(os.Environ(), "PATH="+trapDir+string(os.PathListSeparator)+os.Getenv("PATH"))
 		if out, err := cmd.CombinedOutput(); err != nil {
