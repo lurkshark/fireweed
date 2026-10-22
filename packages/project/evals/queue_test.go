@@ -48,7 +48,7 @@ func queueClean(t *testing.T, s p.Snapshot) {
 func Test_PRJ011QueueBasesAndIntent(t *testing.T) {
 	s := queueFixture(t)
 	queueClean(t, s)
-	for _, kind := range []string{"missing-first", "stale-first", "missing-removed", "missing-modified-target", "missing-removed-target"} {
+	for _, kind := range []string{"missing-first", "stale-first", "missing-removed", "stale-removed", "missing-modified-target", "missing-removed-target"} {
 		v := s
 		v.Changes = append([]c.Change{}, s.Changes...)
 		path := v.Changes[2].Path
@@ -60,16 +60,21 @@ func Test_PRJ011QueueBasesAndIntent(t *testing.T) {
 		case "missing-removed":
 			v.Changes[1].Bases = map[string]string{"ALP-001": s.Changes[1].Bases["ALP-001"]}
 			path = v.Changes[1].Path
+		case "stale-removed":
+			v.Changes[1].Bases = map[string]string{"ALP-001": s.Changes[1].Bases["ALP-001"], "ALP-002": "deadbeef"}
+			path = v.Changes[1].Path
 		case "missing-modified-target":
+			v.Changes[1].Bases = map[string]string{"ALP-999": c.SpecHash(c.Spec{}), "ALP-002": s.Changes[1].Bases["ALP-002"]}
 			v.Changes[1].Modified = []c.Spec{{ID: "ALP-999", Body: "It MUST be absent."}}
 			path = v.Changes[1].Path
 		case "missing-removed-target":
+			v.Changes[1].Bases = map[string]string{"ALP-001": s.Changes[1].Bases["ALP-001"], "ALP-999": c.SpecHash(c.Spec{})}
 			v.Changes[1].Removed = []c.Spec{{ID: "ALP-999"}}
 			path = v.Changes[1].Path
 		}
 		ds := p.CheckQueue(v)
 		requireDiag(t, ds, "C10", "error", path)
-		if kind == "missing-first" || kind == "stale-first" || kind == "missing-removed" {
+		if kind == "missing-first" || kind == "stale-first" || kind == "missing-removed" || kind == "stale-removed" {
 			if len(ds) != 1 {
 				t.Fatalf("lost stale but valid intent %s %+v", kind, ds)
 			}
@@ -278,15 +283,23 @@ func Test_PRJ014QueueDiagnosticsAndPurity(t *testing.T) {
 	if !reflect.DeepEqual(ds, p.CheckQueue(s)) {
 		t.Fatal("unstable diagnostics")
 	}
+	expected := append([]p.Diagnostic{}, ds...)
 	poison(reflect.ValueOf(&ds).Elem())
+	if !reflect.DeepEqual(p.CheckQueue(s), expected) {
+		t.Fatal("shared cached error diagnostics")
+	}
 	if encoded(t, s) != before {
 		t.Fatal("queue mutated or aliased input")
 	}
 	empty := s
 	empty.Changes = nil
 	queueClean(t, empty)
+	emptyBefore := encoded(t, empty)
 	list := p.CheckQueue(empty)
 	list = append(list, p.Diagnostic{Code: "poison"})
+	if encoded(t, empty) != emptyBefore {
+		t.Fatal("empty diagnostics alias input")
+	}
 	queueClean(t, empty)
 }
 
@@ -294,6 +307,21 @@ func Test_PRJ002ArchiveProseAndLiveReferences(t *testing.T) {
 	root := fixture(t)
 	put(t, root, "units/a/SPEC.md", module("alpha", "ALP", ""))
 	text := strings.ReplaceAll(change("alpha", "phase: applied\nrun: archive-run\n"), "new:fresh", "ALP-009") + "\n## Decisions\n\nExplain the literal new:historical example.\n\n## Extra author context\n\nPast notes mention new:another-example.\n"
+	doc, parseErr := c.ParseMarkdown(text)
+	if parseErr != nil {
+		t.Fatal(parseErr)
+	}
+	doc.Preamble = "Historical new:preamble example."
+	for i, section := range doc.Sections {
+		if section.Name != "Added" && section.Name != "Modified" && section.Name != "Removed" {
+			doc.Sections[i].Body += "\nHistorical new:example literal."
+		}
+	}
+	doc.Sections = append(doc.Sections, c.Section{Name: "Interface", Body: "Historical new:interface literal."}, c.Section{Name: "Questions", Body: "Historical new:question literal."}, c.Section{Name: "Removed decisions", Body: "Historical new:removed-decision literal."})
+	text, parseErr = c.RenderMarkdown(doc)
+	if parseErr != nil {
+		t.Fatal(parseErr)
+	}
 	put(t, root, "changes/archive/0007-prose.md", text)
 	original, err := c.ParseMarkdown(text)
 	if err != nil {
@@ -314,5 +342,123 @@ func Test_PRJ002ArchiveProseAndLiveReferences(t *testing.T) {
 	requireDiag(t, s.Diagnostics, "C09", "error", "changes/archive/0009-meta.md")
 	if len(s.Diagnostics) != 2 {
 		t.Fatalf("historical examples treated as live references %+v", s.Diagnostics)
+	}
+}
+
+func Test_PRJ011RemovalIntentSurvivesBaseErrors(t *testing.T) {
+	m := queueModule(t, "alpha", "ALP", "units/a")
+	remove := projectionChange(t, m, 1, "remove", "", nil, nil, []c.Spec{{ID: "ALP-002"}})
+	later := projectionChange(t, m, 2, "later", "", nil, nil, nil)
+	later.Fixes = []string{"ALP-002"}
+	for _, bases := range []map[string]string{nil, {"ALP-002": "deadbeef"}} {
+		remove.Bases = bases
+		ds := p.CheckQueue(p.Snapshot{Modules: []c.Module{m}, Changes: []c.Change{later, remove}})
+		requireDiag(t, ds, "C10", "error", remove.Path)
+		requireDiag(t, ds, "C05", "error", later.Path)
+	}
+}
+func Test_PRJ012PersistentAndReintroducedErrors(t *testing.T) {
+	m := queueModule(t, "alpha", "ALP", "units/a")
+	bad := projectionChange(t, m, 1, "introduce", "set: {evals: [internal/**]}\n", nil, nil, nil)
+	middle := projectionChange(t, m, 2, "middle", "", nil, nil, nil)
+	repair := projectionChange(t, m, 3, "repair", "set: {evals: [evals/**]}\n", nil, nil, nil)
+	again := projectionChange(t, m, 4, "again", "set: {evals: [internal/**]}\n", nil, nil, nil)
+	ds := p.CheckQueue(p.Snapshot{Modules: []c.Module{m}, Changes: []c.Change{again, repair, middle, bad}})
+	requireDiag(t, ds, "C06", "error", bad.Path)
+	requireDiag(t, ds, "C06", "error", again.Path)
+	if len(ds) != 2 {
+		t.Fatalf("repeated persistent or lost reintroduced error %+v", ds)
+	}
+	m.Hooks.Eval = ""
+	b := queueModule(t, "beta", "BET", "units/b")
+	other := projectionChange(t, b, 1, "other-error", "set: {hooks: {eval: ''}}\n", nil, nil, nil)
+	ds = p.CheckQueue(p.Snapshot{Modules: []c.Module{m, b}, Changes: []c.Change{other}})
+	requireDiag(t, ds, "C07", "error", other.Path)
+	if len(ds) != 1 {
+		t.Fatalf("suppressed new same-code error or repeated old %+v", ds)
+	}
+}
+func Test_PRJ013TypedGrammarAndSkippedIntent(t *testing.T) {
+	m := queueModule(t, "alpha", "ALP", "units/a")
+	valid := queueBases(projectionChange(t, m, 1, "grammar", "", nil, []c.Spec{{ID: "ALP-001", Body: "It MUST change."}}, nil), m)
+	for _, kind := range []string{"set-type", "set-field", "phase", "hash"} {
+		bad := valid
+		switch kind {
+		case "set-type":
+			bad.Set = map[string]any{"evals": "wrong type"}
+		case "set-field":
+			bad.Set = map[string]any{"name": "renamed"}
+		case "phase":
+			bad.Phase = "not-a-phase"
+		case "hash":
+			bad.Bases = map[string]string{"ALP-001": "not-a-hash"}
+		}
+		requireDiag(t, p.CheckQueue(p.Snapshot{Modules: []c.Module{m}, Changes: []c.Change{bad}}), "C05", "error", bad.Path)
+	}
+	bad := valid
+	bad.Set = map[string]any{"hooks": map[string]any{"eval": ""}}
+	bad.Added = []c.Spec{{ID: "new:invalid", Body: "Missing normative words."}}
+	later := queueBases(projectionChange(t, m, 2, "same-module", "", nil, []c.Spec{{ID: "ALP-001", Body: "It MUST use original base."}}, nil), m)
+	ds := p.CheckQueue(p.Snapshot{Modules: []c.Module{m}, Changes: []c.Change{later, bad}})
+	requireDiag(t, ds, "C05", "error", bad.Path)
+	for _, d := range ds {
+		if d.Path == later.Path || d.Code == "C07" {
+			t.Fatalf("invalid partial intent leaked %+v", ds)
+		}
+	}
+}
+func Test_PRJ013NewSatisfiedAndNestedHandles(t *testing.T) {
+	m := queueModule(t, "alpha", "ALP", "units/a")
+	assigned := projectionChange(t, m, 1, "satisfied", "run: assigned\nphase: evals\n", []c.Spec{{ID: "ALP-009", Body: "It MUST already be clear."}}, nil, nil)
+	assigned.AlreadySatisfied = []string{"ALP-009"}
+	queueClean(t, p.Snapshot{Modules: []c.Module{m}, Changes: []c.Change{assigned}})
+	local := projectionChange(t, m, 1, "nested", "", []c.Spec{{ID: "new:local", Body: "It MUST be local."}}, nil, nil)
+	local.Set = map[string]any{"hooks": map[string]any{"setup": "document new:local"}}
+	queueClean(t, p.Snapshot{Modules: []c.Module{m}, Changes: []c.Change{local}})
+	local.Set = map[string]any{"hooks": map[string]any{"setup": "document new:unknown"}}
+	requireDiag(t, p.CheckQueue(p.Snapshot{Modules: []c.Module{m}, Changes: []c.Change{local}}), "C09", "error", local.Path)
+}
+func Test_PRJ002NestedLiveReferencesAndArchiveGrammar(t *testing.T) {
+	root := fixture(t)
+	put(t, root, "units/a/SPEC.md", module("alpha", "ALP", ""))
+	put(t, root, "changes/0001-local.md", change("alpha", "set: {hooks: {setup: 'explain new:fresh'}}\n"))
+	put(t, root, "changes/0002-unknown.md", change("alpha", "set: {hooks: {setup: 'explain new:other'}}\n"))
+	for i, kind := range []string{"phase", "body", "prefix", "set-type"} {
+		text := strings.ReplaceAll(change("alpha", "phase: applied\n"), "new:fresh", "ALP-009")
+		switch kind {
+		case "phase":
+			text = strings.Replace(text, "phase: applied", "phase: invalid", 1)
+		case "body":
+			text = strings.Replace(text, "The fixture MUST work.", "No normative body.", 1)
+		case "prefix":
+			text = strings.Replace(text, "ALP-009", "WRONG-009", 1)
+		case "set-type":
+			text = strings.Replace(text, "phase: applied", "phase: applied\nset: {interface: false}", 1)
+		}
+		put(t, root, "changes/archive/001"+string(rune('0'+i))+"-"+kind+".md", text)
+	}
+	s, err := p.Load(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(s.Changes) != 1 || s.Changes[0].Slug != "local" {
+		t.Fatalf("lost valid nested local handle %+v", s.Changes)
+	}
+	requireDiag(t, s.Diagnostics, "C09", "error", "changes/0002-unknown.md")
+	for i, kind := range []string{"phase", "body", "prefix", "set-type"} {
+		requireDiag(t, s.Diagnostics, "C05", "error", "changes/archive/001"+string(rune('0'+i))+"-"+kind+".md")
+	}
+}
+func Test_PRJ014ValidQueueInputPreservation(t *testing.T) {
+	s := queueFixture(t)
+	archive := projectionChange(t, s.Modules[0], 0, "past", "set: {preserve: [past/**]}\n", []c.Spec{{ID: "ALP-099", Body: "It MUST retain past behavior."}}, nil, nil)
+	archive.Path = "changes/archive/0000-past.md"
+	s.Archive = []c.Change{archive}
+	s.Config = c.Config{Modules: []string{"units/*"}, ModuleDefaults: c.Zones{Preserve: []string{"default/**"}}, Hooks: c.Hooks{Setup: "opaque setup"}, Agent: c.Agent{Command: []string{"agent", "{prompt}"}, Wrap: []string{"wrapper"}}}
+	s.Diagnostics = []p.Diagnostic{{Code: "C02", Severity: "warning", Message: "Earlier warning", Path: "outside/SPEC.md"}, {Code: "C03", Severity: "error", Message: "Earlier error", Path: "elsewhere/SPEC.md"}, {Code: "C07", Severity: "error", Message: "Earlier hook error", Path: "third/SPEC.md"}}
+	before := encoded(t, s)
+	queueClean(t, s)
+	if encoded(t, s) != before {
+		t.Fatal("valid queue validation mutated input")
 	}
 }

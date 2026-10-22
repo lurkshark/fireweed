@@ -162,6 +162,8 @@ func main(){
  s.Changes=[]c.Change{ch,predecessor};projected,err:=p.Project(s,"");if err!=nil||len(projected.Modules[0].Specs)!=2{os.Exit(15)}
  hashes,err:=p.BaseHashes(s,ch.Slug);if err!=nil||len(hashes)!=2||hashes["ALP-001"]!=c.SpecHash(predecessor.Modified[0])||hashes["ALP-002"]!=c.SpecHash(s.Modules[0].Specs[1]){os.Exit(16)}
  if len(os.Args)>5&&os.Args[5]=="queue"{
+  predecessor.Document=c.Document{Metadata:map[string]any{"module":predecessor.Module},Sections:[]c.Section{{Name:"Motivation",Body:"Validate preceding intent."}}}
+  ch.Document=c.Document{Metadata:map[string]any{"module":ch.Module},Sections:[]c.Section{{Name:"Motivation",Body:"Validate selected intent."}}}
   predecessor.Bases=map[string]string{"ALP-001":c.SpecHash(s.Modules[0].Specs[0])};ch.Bases=hashes;s.Changes=[]c.Change{ch,predecessor}
   if ds:=p.CheckQueue(s);ds==nil||len(ds)!=0{os.Exit(20)}
   ch.Bases=map[string]string{"ALP-001":"deadbeef","ALP-002":hashes["ALP-002"]};s.Changes=[]c.Change{ch,predecessor};ds:=p.CheckQueue(s);found:=false;for _,d:=range ds{if d.Code=="C10"&&d.Path==ch.Path&&d.Severity=="error"{found=true}};if !found{os.Exit(21)}
