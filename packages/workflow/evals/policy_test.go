@@ -53,6 +53,15 @@ func policyLess(a, b k.Diagnostic) bool {
 	}
 	return a.Message < b.Message
 }
+func policyCorrective(message string) bool {
+	lower := strings.ToLower(message)
+	for _, action := range []string{"restore ", "use ", "remove ", "keep ", "provide ", "supply ", "edit only ", "revert ", "resolve ", "replace ", "check ", "retry ", "resume ", "fix "} {
+		if strings.Contains(lower, action) {
+			return true
+		}
+	}
+	return false
+}
 func policyAssert(t *testing.T, got []k.Diagnostic, expected map[string][]string) {
 	t.Helper()
 	if got == nil {
@@ -64,7 +73,7 @@ func policyAssert(t *testing.T, got []k.Diagnostic, expected map[string][]string
 	actual := map[string][]string{}
 	seen := map[k.Diagnostic]bool{}
 	for _, d := range got {
-		if d.Severity != "error" || strings.TrimSpace(d.Message) == "" {
+		if d.Severity != "error" || strings.TrimSpace(d.Message) == "" || !policyCorrective(d.Message) {
 			t.Fatalf("missing corrective diagnostic: %+v", d)
 		}
 		if seen[d] {
@@ -278,6 +287,9 @@ func Test_FLOW006AppendOnlyGlobalAndOverlap(t *testing.T) {
 					if status != "A" && status != "C" {
 						codes = append(codes, "H03")
 					}
+					if phase == "evals" && (status == "A" || status == "C") {
+						codes = append(codes, "P1-01")
+					}
 					switch {
 					case strings.HasPrefix(path, "units/b/") || strings.Contains(path, "/protected/") || phase != "evals":
 						codes = append(codes, "P2-01")
@@ -317,6 +329,8 @@ func Test_FLOW007InvalidApprovalStopsComparison(t *testing.T) {
 			s, m, ch := policyFixture("evals")
 			row.edit(&ch)
 			policyAssert(t, w.CheckEdits(s, m, ch, []g.Edit{{Status: "M", Path: "fireweed.yaml"}}), policyWant(ch.Path, "P02"))
+			malformed := []g.Edit{{Status: "M", Path: "../escape"}, {Status: "R100", Path: "units/a/new", OldPath: "/absolute"}, {Status: "C", Path: "units/a/new"}}
+			policyAssert(t, w.CheckEdits(s, m, ch, malformed), policyWant(ch.Path, "P02"))
 		})
 	}
 }
@@ -463,5 +477,41 @@ func Test_FLOW007OutsideRepositoryAndCommandSafety(t *testing.T) {
 				t.Fatal("executed a trapped command")
 			}
 		})
+	}
+}
+
+func Test_FLOW004_FLOW005_FLOW006WorkerWritableCannotWidenTarget(t *testing.T) {
+	for _, row := range []struct {
+		phase, path string
+		codes       []string
+	}{
+		{"impl", "units/a/tests/frozen.go", []string{"P2-01"}},
+		{"impl", "units/a/contract.go", []string{"P2-01"}},
+		{"evals", "units/a/impl/existing.go", []string{"P1-01"}},
+		{"evals", "units/a/keep/existing.go", []string{"P1-01"}},
+		{"evals", "units/a/migrations/existing.sql", []string{"H03", "P1-01"}},
+		{"audit", "units/a/package.json", []string{"P2-01"}},
+	} {
+		t.Run(row.phase+"_"+row.path, func(t *testing.T) {
+			s, m, ch := policyFixture(row.phase)
+			s.Config.WorkerWritable = []string{"**"}
+			policyAssert(t, w.CheckEdits(s, m, ch, []g.Edit{{Status: "M", Path: row.path}}), policyWant(row.path, row.codes...))
+		})
+	}
+	s, m, ch := policyFixture("evals")
+	s.Config.WorkerWritable = []string{"units/a/**"}
+	ch.Document.Sections = nil
+	policyAssert(t, w.CheckEdits(s, m, ch, []g.Edit{{Status: "M", Path: "units/a/contract.go"}}), policyWant("units/a/contract.go", "P1-01"))
+}
+func Test_FLOW007CorrectiveMessageFixtureControl(t *testing.T) {
+	for _, text := range []string{"", "Invalid edit.", "P02", "An error occurred."} {
+		if policyCorrective(text) {
+			t.Fatalf("non-guidance accepted: %q", text)
+		}
+	}
+	for _, text := range []string{"Restore the approved claim before continuing.", "Remove the forbidden edit.", "Use a canonical path.", "Keep worker edits in the permitted zones."} {
+		if !policyCorrective(text) {
+			t.Fatalf("corrective action rejected: %q", text)
+		}
 	}
 }
