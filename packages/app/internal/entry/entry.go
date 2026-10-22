@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/lurkshark/fireweed/packages/assets"
+	"github.com/lurkshark/fireweed/packages/project"
 )
 
 const helpText = `fireweed: checked spec-driven development and regeneration
@@ -98,6 +99,7 @@ type diagnostic struct {
 	Code     string `json:"code"`
 	Severity string `json:"severity"`
 	Message  string `json:"message"`
+	Path     string `json:"path,omitempty"`
 }
 type envelope struct {
 	SchemaVersion int          `json:"schema_version"`
@@ -135,7 +137,11 @@ func emit(out, errOut io.Writer, option options, data any, diagnostics []diagnos
 		}
 	}
 	for _, d := range diagnostics {
-		if !write(errOut, fmt.Sprintf("%s %s: %s\n", d.Severity, d.Code, d.Message)) {
+		where := ""
+		if d.Path != "" {
+			where = " " + d.Path
+		}
+		if !write(errOut, fmt.Sprintf("%s %s%s: %s\n", d.Severity, d.Code, where, d.Message)) {
 			return 2
 		}
 	}
@@ -144,14 +150,14 @@ func emit(out, errOut io.Writer, option options, data any, diagnostics []diagnos
 func Run(args []string, out, errOut io.Writer) int {
 	option := parse(args)
 	fail := func(problem string) int {
-		message := problem + ". Run fireweed help. Valid commands: help, version, explain, playbook."
+		message := problem + ". Run fireweed help. Valid commands: help, version, explain, playbook, modules, check."
 		return emit(out, errOut, option, nil, []diagnostic{{Code: "U01", Severity: "error", Message: message}}, 2)
 	}
 	if option.problem != "" {
 		return fail(option.problem)
 	}
 	switch option.command {
-	case "help", "version", "explain", "playbook":
+	case "help", "version", "explain", "playbook", "modules", "check":
 	default:
 		return fail("unknown command " + option.command)
 	}
@@ -167,6 +173,24 @@ func Run(args []string, out, errOut io.Writer) int {
 		return fail(fmt.Sprintf("%s requires %d positional arguments", option.command, required))
 	}
 	switch option.command {
+	case "modules", "check":
+		snapshot, err := project.Load(".")
+		if err != nil {
+			return emit(out, errOut, option, nil, []diagnostic{{Code: "C01", Severity: "error", Path: "fireweed.yaml", Message: "Cannot load project: " + err.Error() + ". Run from a Git project and correct fireweed.yaml."}}, 2)
+		}
+		diagnostics := []diagnostic{}
+		code := 0
+		for _, d := range project.Check(snapshot) {
+			diagnostics = append(diagnostics, diagnostic{Code: d.Code, Severity: d.Severity, Message: d.Message, Path: d.Path})
+			if d.Severity == "error" {
+				code = 1
+			}
+		}
+		var data any = snapshot.Modules
+		if option.command == "check" {
+			data = map[string]bool{"valid": code == 0}
+		}
+		return emit(out, errOut, option, data, diagnostics, code)
 	case "help":
 		return emit(out, errOut, option, helpText, nil, 0)
 	case "version":
