@@ -1,5 +1,7 @@
 ---
 module: app
+phase: audit
+run: e4c61dafdcb7ae61cc827ec0
 ---
 
 ## Motivation
@@ -12,7 +14,7 @@ No public interface change. Compose the existing public project Load, Check and 
 
 ## Added
 
-### new:queue-check
+### APP-008
 check MUST combine current/discovery diagnostics with public queued-change validation, including stale/missing bases, projected enforcement, handle scope and ID/reference errors. The combined diagnostics MUST sort by path, code, severity and message without repeating unchanged preexisting problems, preserving code, severity, corrective message and repository-relative path. It MUST return exit 1 and {valid:false} for any errors; a valid queue or warnings alone MUST return exit 0 and {valid:true}. Plain data MUST go to stdout with coded/path-attributed diagnostics on stderr; JSON MUST use the existing schema-1 envelope with no plaintext on either stream. From a nested directory, it MUST process numeric/slug ordered intent regardless of lexical filenames and MUST NOT modify files, ignored content or refs or run hooks, agents, the bootstrap or network commands. modules MUST retain its current-static-only behavior when queued projected errors exist.
 
 ## Modified
@@ -26,3 +28,7 @@ This is composition of the existing two pure validation surfaces. CheckQueue exc
 ## Rejected alternatives
 
 Checking only the final projected state would miss intermediate enforcement changes. Printing module-level paths for newly introduced queue errors would hide the authored change that needs correction.
+
+## Provenance
+
+- evals | 2026-10-22T14:37:24Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 15 | failing: 3 | passing: 12
