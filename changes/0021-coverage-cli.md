@@ -1,6 +1,6 @@
 ---
 module: app
-phase: evals
+phase: audit
 run: 2c1fa4000b6b828fb9cb84f4
 ---
 
@@ -46,6 +46,7 @@ Automatically treating --with-change as evals-phase fail-first would make a norm
 - audit | 2026-10-22T17:49:29Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T17:52:37Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 45 | failing: 22 | passing: 23
 - audit | 2026-10-22T17:53:52Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-22T17:54:46Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 45 | failing: 22 | passing: 23
 
 ## Audit
 

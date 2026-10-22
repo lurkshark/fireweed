@@ -215,7 +215,6 @@ func Test_APP013FatalCoverageConfiguration(t *testing.T) {
 				t.Fatalf("configuration %+v", got)
 			}
 			plain := invoke(t, root, "coverage", "alpha")
-			coveragePretty(t, plain.out)
 			if plain.code != 2 || plain.out != "" || !strings.Contains(plain.err, "C01") || !strings.Contains(plain.err, "fireweed.yaml") {
 				t.Fatalf("plain configuration %+v", plain)
 			}
@@ -428,6 +427,7 @@ func Test_APP015CoverageDiagnostics(t *testing.T) {
 			if plain.code != code || !reflect.DeepEqual(decodeData(t, json.RawMessage(plain.out)), canonical(t, want)) {
 				t.Fatalf("plain evidence %+v", plain)
 			}
+			coveragePretty(t, plain.out)
 			for _, d := range want.Diagnostics {
 				if !strings.Contains(plain.err, d.Code) || !strings.Contains(plain.err, d.Path) || !strings.Contains(plain.err, d.Message) {
 					t.Fatalf("plain diagnostic %+v", plain)
