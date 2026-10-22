@@ -19,3 +19,7 @@ The upcoming contracts configuration change will add a retained `model/*.go` int
 ## D005 — Vet-only facade repair between claims
 
 Moving Spec to the retained model package made an existing unkeyed facade conversion fail vet. With no active claim, an author commit keys that exact literal; it changes neither the public contract nor executable behavior and does not edit evals, specs or implementation. This is retained entry/facade glue repair, not an unverified behavioral change. The prior evidence claim that vet passed is corrected; rerun vet before recording success.
+
+## D006 — Assets runtime-isolation evidence
+
+Native sandbox policies must permit the OS loader to start. The asset eval therefore combines source/network denial with a test-only Darwin file/socket interposer armed after startup; positive controls prove ignored errors cannot hide attempts. Its cc/dylib dependency belongs only to a temporary eval fixture, never the product. Other-platform isolation is explicitly unverified; portable content checks still run. Keep this platform/test prerequisite visible in final delivery evidence and README testing instructions.

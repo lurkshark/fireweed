@@ -1,6 +1,6 @@
 # Restartable rebuild progress
 
-Status: stage 1, five behavioral changes archived; embedded assets and early CLI next. Goal remains active.
+Status: stage 1, six behavioral changes archived; early CLI inspection slice next. Goal remains active.
 
 ## Controller pin
 
@@ -10,7 +10,7 @@ Status: stage 1, five behavioral changes archived; embedded assets and early CLI
 - Binary SHA-256: f9c48ae6b14887ebc549110478c081bedc450847507c6967735ef8486c98a3ed. Ignored binary must be rebuilt and checksum checked if absent.
 - Design SHA-256: 1c17d0ab9496b1b15ad5ca18eed4f4ca623d01cff596bc557bf4c97400d00789.
 - Initial target: 1b27763, clean main. No remote changes, pushes or publication.
-- Bootstrap help/version/author-change read; Go recipe initialized with codex worker and codex auditor. Codex CLI present and login status reports ChatGPT authentication; a real invocation remains unverified.
+- Bootstrap help/version/author-change read; Go recipe initialized with codex worker and codex auditor. Codex CLI present and login status reports ChatGPT authentication; a real invocation was verified later (see Agent access).
 
 ## Setup and next work
 
@@ -59,3 +59,17 @@ Archive changes/archive/0005-local-repository.md. Eight permanent Git fixture te
 After aea039d, go test -race ./... passed; go vet ./... reported an unkeyed external model.Spec literal in the retained facade. The preceding evidence commit incorrectly recorded vet as passing; this correction supersedes that claim. The author repair keys that unchanged conversion literal without changing API shape or behavior, between claims. Explicit baseline history check passes. Next: assets version/playbooks, then a real help/version CLI slice while project discovery is built. Remaining CLI/lifecycle/recovery/drill/packaging gates are still unfinished.
 
 Vet repair verification: keyed facade literal; go vet ./..., go test ./... and controller check now exit 0. No behavioral specs/evals or disposable implementation were edited by the author repair.
+
+## embedded-protocol (AST-001–AST-003)
+
+Archive changes/archive/0006-embedded-protocol.md. Six permanent testcases assert compiled version/current/previous format, five complete step playbooks with exact SHA-256 text hashes and independent inventories, all 38 exact diagnostic problem/remedy messages, and a public compiled lookup probe without source/network access. Playbooks and diagnostics are fresh design-derived text; diagnostic codes/meaning were compared with the pinned reference catalog. No bootstrap content is read at runtime.
+
+Phase history: initial fail-first ac1cf4a; semantic/isolation findings 5161809; stronger fail-first 7e464aa; remaining format/command/I/O findings 96fdc7e; interception fail-first 6b0e96a; error-path finding bbbbb33; final failing evals a8bb493; independent passing audit 3868be2. Applied implementation a8eabefafe937d11c5de10b1510192319ee701ee. All findings are real separate-context audit outputs and retained in phase commits. Eval/interface files stayed immutable during implementation. Local JSON evidence .fireweed/evidence/embedded-protocol/.
+
+Isolation details: a separately compiled Go public-API probe loads a test-only Darwin I/O interposer, armed after OS loader startup. Positive controls terminate on private/repository file reads and real loopback network attempts even with ignored errors. A native policy independently denies workspace/sentinel reads and networking. Paths must be canonical to avoid /var aliases. Early overly broad native policies aborted in the OS loader, not the product; final controls pass and the implemented asset lookups pass under the armed guard on both valid and invalid inputs. Only the macOS isolation eval requires local cc and an unsandboxed parent to install the tighter child profile. Other-platform native-isolation execution is not claimed; the case skips there. The product remains Go-only.
+
+## Checkpoint 2026-10-22
+
+At a8eabefafe937d11c5de10b1510192319ee701ee, go test ./..., go test -race ./..., go vet ./... and go build -o bin/fireweed . all exited 0 (including the native guarded probe). Controller ci 14cec73e1126ee37d33f1138d19936b6a05a59a6..a8eabefafe937d11c5de10b1510192319ee701ee passed with doctor enabled and zero diagnostics; invocation used ..HEAD at that exact endpoint. Coverage: contracts 25 cases, gitstore 8, assets 6; other five scaffold modules 0. Evidence .fireweed/evidence/ci-assets-checkpoint.json. Queue and claims empty, bootstrap checkout clean.
+
+Next action: author an app command slice for actual executable help/version and embedded explain/playbook reads with versioned JSON/usage exits. Use explicit NEW subject binaries in permanent app evals, separate from controller. Then build project discovery/graph/projection/static validation and extend CLI inspection/authoring; continue all later lifecycle/runner/history/recipes/distribution gates. bin/fireweed still contains the setup app placeholder at this boundary. No full design completion, real regeneration, self-hosting or final acceptance is claimed.
