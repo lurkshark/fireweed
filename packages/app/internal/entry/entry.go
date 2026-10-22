@@ -237,15 +237,7 @@ func Run(args []string, out, errOut io.Writer) int {
 		}
 		return emit(out, errOut, option, map[string]string{"code": code, "explanation": text}, nil, 0)
 	case "playbook":
-		name := option.operands[0]
-		asset, err := assets.Playbook(name)
-		if err != nil {
-			return fail(fmt.Sprintf("unknown playbook %q; valid choices: %s", name, strings.Join(assets.Playbooks(), ", ")))
-		}
-		if option.json {
-			return emit(out, errOut, option, map[string]any{"name": name, "text": asset.Text, "hash": asset.Hash, "embedded_hash": asset.Hash, "overridden": false}, nil, 0)
-		}
-		return emit(out, errOut, option, asset.Text, nil, 0)
+		return playbook(out, errOut, option, fail)
 	}
 	return fail("unhandled command")
 }
