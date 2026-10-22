@@ -1,6 +1,6 @@
 ---
 module: project
-phase: impl
+phase: applied
 run: 459766a63aaf9fc4803ca635
 ---
 
@@ -41,6 +41,7 @@ Predicting IDs during authoring would recreate parallel author collisions. Repla
 - audit | 2026-10-22T15:05:10Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-22T15:09:12Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 64 | failing: 6 | passing: 58
 - audit | 2026-10-22T15:10:56Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- impl | 2026-10-22T15:13:34Z | agent: manual | fireweed: 0.4.0 | playbook: 653912b194316c62181f62d0a69dc213f7668481ea8b1b9926ef889dd48a9e08 | tests: 79 | failing: 0 | passing: 79
 
 ## Audit
 
