@@ -17,7 +17,7 @@ No public interface change. Existing ParseChange retains local Added handles in 
 ## Modified
 
 ### CON-016
-Change set metadata MUST allow only depends_on, interface, evals, disposable, preserve, append_only, boundaries_opt_out and per-module hooks. It MUST reject name/id_prefix identity edits, unknown fields and incorrectly typed values, and retain explicit empty lists or hook strings. Bases MUST contain eight lowercase hexadecimal hashes keyed by real IDs; fixes MUST contain real IDs rather than handles. already_satisfied MUST accept real IDs and locally declared Added handles, retain their order and exact strings, and reject undeclared/malformed handles and incorrectly typed values. A declaration in another change MUST NOT satisfy a handle reference; parsing MUST retain independence between results and MUST NOT mutate caller state or run external operations.
+Change set metadata MUST allow only depends_on, interface, evals, disposable, preserve, append_only, boundaries_opt_out and per-module hooks. It MUST reject name/id_prefix identity edits, unknown fields and incorrectly typed values, and retain explicit empty lists or hook strings. Bases MUST contain eight lowercase hexadecimal hashes keyed by real IDs; fixes MUST contain real IDs rather than handles. already_satisfied MUST accept real IDs and locally declared Added handles, retain their order and exact strings, and reject undeclared/malformed handles and incorrectly typed values. A declaration in another change MUST NOT satisfy a handle reference; parsing MUST retain independence between results.
 
 ## Removed
 
