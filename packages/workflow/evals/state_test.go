@@ -205,7 +205,7 @@ func Test_FLOW001UnchangedStartedStates(t *testing.T) {
 }
 func Test_FLOW001InvalidApprovalAndCurrent(t *testing.T) {
 	good := stateFixture(t, "evals")
-	for _, mode := range []string{"empty", "malformed", "wrong-prefix", "unknown-metadata", "wrong-module", "missing-run", "missing-phase", "applied-phase", "unknown-phase", "bad-path"} {
+	for _, mode := range []string{"empty", "malformed", "wrong-prefix", "unknown-metadata", "wrong-module", "missing-run", "empty-run", "blank-run", "missing-phase", "empty-phase", "applied-phase", "unknown-phase", "bad-path"} {
 		t.Run("approved_"+mode, func(t *testing.T) {
 			before := good
 			module := stateModule()
@@ -223,6 +223,12 @@ func Test_FLOW001InvalidApprovalAndCurrent(t *testing.T) {
 				module.Name = "Alpha"
 			case "missing-run":
 				before = stateAlter(t, before, func(d *c.Document) { delete(d.Metadata, "run") })
+			case "empty-run":
+				before = stateAlter(t, before, func(d *c.Document) { d.Metadata["run"] = "" })
+			case "blank-run":
+				before = stateAlter(t, before, func(d *c.Document) { d.Metadata["run"] = " \t" })
+			case "empty-phase":
+				before = stateAlter(t, before, func(d *c.Document) { d.Metadata["phase"] = "" })
 			case "missing-phase":
 				before = stateAlter(t, before, func(d *c.Document) { delete(d.Metadata, "phase") })
 			case "applied-phase":
@@ -464,17 +470,8 @@ func Test_FLOW002FencesDuplicatesAndNormalization(t *testing.T) {
 	})
 	for _, name := range []string{"Decisions", "Unknown human section"} {
 		t.Run("duplicate_"+name, func(t *testing.T) {
-			approved := stateAlter(t, before, func(d *c.Document) {
-				d.Sections = append(d.Sections, c.Section{Name: name, Body: "Second occurrence."})
-			})
-			current := stateAlter(t, approved, func(d *c.Document) {
-				for i := len(d.Sections) - 1; i >= 0; i-- {
-					if d.Sections[i].Name == name {
-						d.Sections[i].Body = "Worker changed the second occurrence."
-						break
-					}
-				}
-			})
+			approved := before + "\n## " + name + "\n\nSecond occurrence.\n"
+			current := strings.Replace(approved, "Second occurrence.", "Worker changed the second occurrence.", 1)
 			_, err := c.ParseChange(approved, statePath, "ALP")
 			if err != nil {
 				stateAssert(t, w.CheckState(stateModule(), approved, current, statePath), "P02", statePath, 1)
@@ -645,5 +642,83 @@ func Test_FLOW001_FLOW002_FLOW003StateFixtureControl(t *testing.T) {
 		if !reflect.DeepEqual(doc, stateDoc(t, stateRender(t, doc))) {
 			t.Fatal("document helper changes public normalized values")
 		}
+	}
+}
+
+func Test_FLOW002NestedExplicitMetadataKeys(t *testing.T) {
+	before := stateFixture(t, "evals")
+	keys := []string{"depends_on", "interface", "evals", "disposable", "preserve", "append_only", "boundaries_opt_out", "hooks", "hooks.eval", "hooks.boundaries", "hooks.setup"}
+	for _, key := range keys {
+		for _, action := range []string{"add", "remove"} {
+			t.Run(key+"_"+action, func(t *testing.T) {
+				omitted := stateAlter(t, before, func(d *c.Document) {
+					set := d.Metadata["set"].(map[string]any)
+					if strings.HasPrefix(key, "hooks.") {
+						delete(set["hooks"].(map[string]any), strings.TrimPrefix(key, "hooks."))
+					} else {
+						delete(set, key)
+					}
+				})
+				explicit := stateAlter(t, omitted, func(d *c.Document) {
+					set := d.Metadata["set"].(map[string]any)
+					if strings.HasPrefix(key, "hooks.") {
+						set["hooks"].(map[string]any)[strings.TrimPrefix(key, "hooks.")] = ""
+					} else {
+						switch key {
+						case "hooks":
+							set[key] = map[string]any{}
+						case "boundaries_opt_out":
+							set[key] = ""
+						default:
+							set[key] = []any{}
+						}
+					}
+				})
+				approved, current := omitted, explicit
+				if action == "remove" {
+					approved, current = current, approved
+				}
+				if _, err := c.ParseChange(approved, statePath, "ALP"); err != nil {
+					t.Fatalf("nested approved premise %v", err)
+				}
+				if _, err := c.ParseChange(current, statePath, "ALP"); err != nil {
+					t.Fatalf("nested current premise %v", err)
+				}
+				stateAssert(t, w.CheckState(stateModule(), approved, current, statePath), "P2-01", statePath, 1)
+			})
+		}
+	}
+}
+func Test_FLOW002ParseableProtectedRemovals(t *testing.T) {
+	for _, phase := range []string{"evals", "audit", "impl"} {
+		before := stateFixture(t, phase)
+		names := []string{"Interface", "Added", "Modified", "Removed", "Removed decisions", "Rejected alternatives", "Provenance", "Unknown human section"}
+		if phase == "audit" {
+			names = append(names, "Decisions", "Notes")
+		} else {
+			names = append(names, "Audit")
+		}
+		for _, name := range names {
+			t.Run(phase+"_"+name, func(t *testing.T) {
+				current := stateAlter(t, before, func(d *c.Document) { stateRemove(d, name) })
+				if _, err := c.ParseChange(current, statePath, "ALP"); err != nil {
+					t.Fatalf("parseable protected removal premise %v", err)
+				}
+				stateAssert(t, w.CheckState(stateModule(), before, current, statePath), "P2-01", statePath, 1)
+			})
+		}
+	}
+}
+
+func Test_FLOW002CurrentDuplicateHeadingsCannotHideEdits(t *testing.T) {
+	before := stateFixture(t, "evals")
+	for _, name := range []string{"Decisions", "Unknown human section", "Provenance"} {
+		t.Run(name, func(t *testing.T) {
+			current := before + "\n## " + name + "\n\nWorker appended a second occurrence after protected content.\n"
+			if _, err := c.ParseChange(current, statePath, "ALP"); err == nil {
+				t.Fatal("public grammar must reject duplicate-section fixture")
+			}
+			stateAssert(t, w.CheckState(stateModule(), before, current, statePath), "P2-01", statePath, 1)
+		})
 	}
 }
