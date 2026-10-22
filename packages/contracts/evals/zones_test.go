@@ -115,3 +115,41 @@ func Test_CON007ZonePrecedence(t *testing.T) {
 		t.Error("invalid module path accepted")
 	}
 }
+
+func Test_CON007AuditRegressions(t *testing.T) {
+	if got, err := c.ZoneFor("packages/m/SPEC.md", "packages/m", c.Zones{Evals: []string{"**"}}, []string{"packages/m/**"}); err != nil || got != c.Protected {
+		t.Errorf("protected SPEC: %s %v", got, err)
+	}
+	zones := []struct {
+		value c.Zones
+		want  c.Zone
+	}{
+		{c.Zones{Evals: []string{"deep/*.go"}}, c.EvalZone},
+		{c.Zones{Interface: []string{"deep/*.go"}}, c.InterfaceZone},
+		{c.Zones{AppendOnly: []string{"deep/*.go"}}, c.AppendOnlyZone},
+		{c.Zones{Preserve: []string{"deep/*.go"}}, c.PreserveZone},
+		{c.Zones{Disposable: []string{"deep/*.go"}}, c.DisposableZone},
+	}
+	for _, tc := range zones {
+		if got, err := c.ZoneFor("packages/m/deep/a.go", "packages/m", tc.value, nil); err != nil || got != tc.want {
+			t.Errorf("module relative %s: %s %v", tc.want, got, err)
+		}
+		if got, err := c.ZoneFor("packages/m/a.go", "packages/m", tc.value, nil); err != nil || got != c.OtherZone {
+			t.Errorf("nonmatching module relative %s: %s %v", tc.want, got, err)
+		}
+	}
+	for _, badZones := range []c.Zones{
+		{Evals: []string{"[broken"}}, {Interface: []string{"[broken"}},
+		{AppendOnly: []string{"[broken"}}, {Preserve: []string{"[broken"}},
+		{Disposable: []string{"[broken"}},
+	} {
+		if _, err := c.ZoneFor("fireweed.yaml", "packages/m", badZones, nil); err == nil {
+			t.Errorf("invalid glob hidden by protection: %+v", badZones)
+		}
+	}
+	for _, path := range []string{"", ".", "packages/m/./a.go", "packages/m/", "packages\\m\\a.go"} {
+		if _, err := c.ZoneFor(path, "packages/m", c.Zones{}, nil); err == nil {
+			t.Errorf("invalid path accepted %q", path)
+		}
+	}
+}

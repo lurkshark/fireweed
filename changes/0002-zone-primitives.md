@@ -1,6 +1,6 @@
 ---
 module: contracts
-phase: evals
+phase: audit
 run: b12d36d6d8aae9082a4bbeb2
 ---
 
@@ -39,6 +39,7 @@ Checking only tracked files would miss future eval/disposable collisions. Prefix
 
 - evals | 2026-10-22T06:28:56Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 7 | failing: 3 | passing: 4
 - audit | 2026-10-22T06:30:54Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-22T06:31:19Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 8 | failing: 4 | passing: 4
 
 ## Audit
 
