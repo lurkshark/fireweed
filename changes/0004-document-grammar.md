@@ -1,5 +1,7 @@
 ---
 module: contracts
+phase: audit
+run: 29ab73909c7b96c1b7b1ff0c
 ---
 
 ## Motivation
@@ -12,19 +14,19 @@ Add retained Document {Metadata map[string]any; Preamble string; Sections []Sect
 
 ## Added
 
-### new:markdown
+### CON-012
 Markdown document parsing MUST require an initial closed YAML frontmatter mapping, reject malformed or duplicate metadata keys and duplicate live level-two section names, and retain preamble, section order and bodies including fenced examples. Render followed by parse MUST preserve metadata values and human content. CRLF MUST be accepted. Fenced headings MUST NOT become sections.
 
-### new:module-metadata
+### CON-013
 Module parsing MUST require valid name and id_prefix, exactly one Specs section, valid normative spec items, and typed known metadata fields. Omitted zone lists and hooks MUST inherit supplied project defaults; explicit empty lists and explicitly empty hook strings MUST override them. Depends_on, boundaries_opt_out and Decisions MUST be retained. Parsing MUST NOT mutate or share inherited slices with the caller or other parsed modules.
 
-### new:change-metadata
+### CON-014
 Change parsing MUST require typed known metadata, a module, nonempty Motivation and a numbered lowercase slug filename under changes/ or changes/archive/. It MUST retain run, phase, blocked, bases, fixes, already_satisfied and regenerate; phase MUST be empty, evals, audit, impl or applied. Kind MUST be regenerate when requested, otherwise spec when any spec edits exist, fix when fixes exist, and maintenance otherwise. Invalid filenames and phases MUST be rejected.
 
-### new:change-sections
+### CON-015
 Added and Modified MUST contain full normative spec items; Removed MUST contain headings only. Local handles MUST be unique across Added, MUST NOT appear as Modified or Removed IDs, and every handle reference in the change MUST refer to one declared in its Added section. An ID MUST NOT appear in more than one edit section. Empty spec-edit sections MUST be accepted for maintenance. All author prose, Decisions, Removed decisions, Questions, Audit and Provenance MUST remain available in the parsed document.
 
-### new:set-fields
+### CON-016
 Change set metadata MUST allow only depends_on, interface, evals, disposable, preserve, append_only, boundaries_opt_out and per-module hooks. It MUST reject name/id_prefix identity edits, unknown fields and incorrectly typed values, and retain explicit empty lists or hook strings. Bases MUST contain eight lowercase hexadecimal hashes keyed by real IDs; fixes and already_satisfied MUST contain real IDs rather than handles.
 
 ## Modified
@@ -38,3 +40,7 @@ Module names and change slugs start with a lowercase letter or digit and continu
 ## Rejected alternatives
 
 A generic mutable global document model would risk leaking inherited slices. Parsing Removed through the normative body rule would reject its designed heading-only grammar.
+
+## Provenance
+
+- evals | 2026-10-22T06:49:43Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 20 | failing: 5 | passing: 15

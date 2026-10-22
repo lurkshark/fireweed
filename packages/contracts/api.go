@@ -3,13 +3,14 @@ package contracts
 
 import (
 	"github.com/lurkshark/fireweed/packages/contracts/internal/config"
+	"github.com/lurkshark/fireweed/packages/contracts/internal/documents"
 	"github.com/lurkshark/fireweed/packages/contracts/internal/globs"
 	"github.com/lurkshark/fireweed/packages/contracts/internal/specs"
 	"github.com/lurkshark/fireweed/packages/contracts/model"
 )
 
 // Spec is a normative Markdown item. Tag retains bracketed verification/enforcement tags.
-type Spec struct{ ID, Tag, Body string }
+type Spec = model.Spec
 
 func ParseSpecs(document, prefix string) ([]Spec, error) {
 	items, err := specs.ParseDocument(document, prefix)
@@ -62,4 +63,18 @@ func ParseConfig(text, binaryVersion string) (Config, error) {
 }
 func CheckVersion(binaryVersion, constraint string) error {
 	return config.Version(binaryVersion, constraint)
+}
+
+type Document = model.Document
+type Section = model.Section
+type Module = model.Module
+type Change = model.Change
+
+func ParseMarkdown(text string) (Document, error)      { return documents.Parse(text) }
+func RenderMarkdown(document Document) (string, error) { return documents.Render(document) }
+func ParseModule(text, dir string, defaults Zones, hooks Hooks) (Module, error) {
+	return documents.Module(text, dir, defaults, hooks)
+}
+func ParseChange(text, path, prefix string) (Change, error) {
+	return documents.Change(text, path, prefix)
 }
