@@ -1,6 +1,6 @@
 ---
 module: contracts
-phase: audit
+phase: evals
 run: b12d36d6d8aae9082a4bbeb2
 ---
 
@@ -38,3 +38,11 @@ Checking only tracked files would miss future eval/disposable collisions. Prefix
 ## Provenance
 
 - evals | 2026-10-22T06:28:56Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 7 | failing: 3 | passing: 4
+- audit | 2026-10-22T06:30:54Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+- CON-007: "protected, SPEC.md" — missing assertion that a configured protected glob matching the module’s SPEC.md takes precedence over SpecZone.
+- CON-007: "Zone classification MUST apply strict precedence: protected, SPEC.md, evals, interface, append-only, preserved, disposable, other module files." — missing assertions that Evals, Interface, AppendOnly, Preserve, and Disposable patterns use module-relative paths, as clarified in Decisions; all effective patterns are `**`.
+- CON-007: "Invalid repository paths or globs MUST fail classification." — missing assertions rejecting invalid Evals, Interface, AppendOnly, and Preserve globs when a protected path wins; only Disposable is tested.
+- CON-007: "Invalid repository paths or globs MUST fail classification." — missing assertions rejecting empty repository paths, `.` components, trailing slashes, and backslashes.
