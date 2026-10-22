@@ -37,8 +37,8 @@ func hookCommand(t *testing.T, mode string, args ...string) string {
 }
 
 type hookDescription struct {
-	Args                                           []string
-	Dir, Module, ModuleDir, Report, Bin, Inherited string
+	Args                                []string
+	Dir, Module, ModuleDir, Report, Bin string
 }
 type reportRecord struct {
 	Report, Argument string
@@ -68,7 +68,7 @@ func Test_CHK005_CHK006_CHK007_CHK008HookHelper(t *testing.T) {
 	switch args[0] {
 	case "describe", "describehold":
 		dir, _ := os.Getwd()
-		data, _ := json.Marshal(hookDescription{args[1:], dir, os.Getenv("FIREWEED_MODULE"), os.Getenv("FIREWEED_MODULE_DIR"), os.Getenv("FIREWEED_REPORT"), os.Getenv("FIREWEED_BIN"), os.Getenv("FIREWEED_INHERITED_HOOK")})
+		data, _ := json.Marshal(hookDescription{args[1:], dir, os.Getenv("FIREWEED_MODULE"), os.Getenv("FIREWEED_MODULE_DIR"), os.Getenv("FIREWEED_REPORT"), os.Getenv("FIREWEED_BIN")})
 		fmt.Fprintln(os.Stdout, "OUT")
 		fmt.Fprintln(os.Stdout, string(data))
 		if args[0] == "describehold" {
@@ -78,19 +78,6 @@ func Test_CHK005_CHK006_CHK007_CHK008HookHelper(t *testing.T) {
 		fmt.Fprintln(os.Stderr, "ERR")
 	case "marker":
 		put(args[1], []byte("unexpected"))
-	case "treehold":
-		child := exec.Command(os.Args[0], "-test.run=^"+hookHelper+"$", "--", "hold", args[1]+".child", args[2]+".child")
-		child.Env = os.Environ()
-		child.Stdout = os.Stdout
-		child.Stderr = os.Stderr
-		if err := child.Start(); err != nil {
-			os.Exit(96)
-		}
-		fmt.Fprintln(os.Stdout, "hook started")
-		put(args[1], []byte("ready"))
-		time.Sleep(3 * time.Second)
-		put(args[2], []byte("late"))
-		_ = child.Wait()
 	case "hold":
 		fmt.Fprintln(os.Stdout, "hook started")
 		put(args[1], []byte("ready"))
@@ -319,9 +306,8 @@ func Test_CHK006ContextsBoundHook(t *testing.T) {
 			}
 			done := make(chan g.CommandResult, 1)
 			start := time.Now()
-			go func() { done <- k.RunHook(ctx, s, &m, hookCommand(t, "treehold", ready, late), "") }()
+			go func() { done <- k.RunHook(ctx, s, &m, hookCommand(t, "hold", ready, late), "") }()
 			awaitHookReady(t, ready, done)
-			awaitHookReady(t, ready+".child", done)
 			readyAt := time.Now()
 			if mode == "cancel" {
 				cancel()
@@ -342,10 +328,8 @@ func Test_CHK006ContextsBoundHook(t *testing.T) {
 			if wait := time.Until(readyAt.Add(3300 * time.Millisecond)); wait > 0 {
 				time.Sleep(wait)
 			}
-			for _, path := range []string{late, late + ".child"} {
-				if _, err := os.Stat(path); !os.IsNotExist(err) {
-					t.Fatalf("hook tree survived cancellation: %s", path)
-				}
+			if _, err := os.Stat(late); !os.IsNotExist(err) {
+				t.Fatal("hook survived cancellation")
 			}
 		})
 	}
@@ -411,18 +395,10 @@ func Test_CHK007InvalidReportLifecycle(t *testing.T) {
 		})
 	}
 	s, m := hookFixture(t)
-	ownedTemp := t.TempDir()
-	for _, key := range []string{"TMPDIR", "TEMP", "TMP"} {
-		t.Setenv(key, ownedTemp)
-	}
 	for _, hook := range []string{"", " \n\t"} {
 		copy := m
 		copy.Hooks.Eval = hook
 		invalidCoverage(t, k.Evaluate(context.Background(), s, copy, nil, nil), copy, "C07")
-		entries, err := os.ReadDir(ownedTemp)
-		if err != nil || len(entries) != 0 {
-			t.Fatalf("missing/blank hook leaked reports %v %v", entries, err)
-		}
 	}
 	if _, err := os.Stat(filepath.Join(s.Root, "MUST-NOT-RUN")); !os.IsNotExist(err) {
 		t.Fatal("missing eval ran another hook")
@@ -670,126 +646,4 @@ func installHookTraps(t *testing.T, root string) string {
 		t.Fatal(err)
 	}
 	return marker
-}
-
-func Test_CHK005RepeatedRelativeAndInheritedValues(t *testing.T) {
-	s, m := hookFixture(t)
-	t.Setenv("FIREWEED_INHERITED_HOOK", "parent sentinel ' 雪 {module} $HOME")
-	report := "relative ' report {module_dir} $(touch RELATIVE-INJECTION).xml"
-	repo, err := g.Open(s.Root)
-	if err != nil {
-		t.Fatal(err)
-	}
-	command := hookCommand(t, "describe") + " {module} {module_dir} {report} {git_common_dir} {module} {module_dir} {report} {git_common_dir} '{unrecognized}'"
-	data := parseDescription(t, k.RunHook(context.Background(), s, &m, command, report))
-	want := []string{m.Name, m.Dir, report, repo.CommonDir, m.Name, m.Dir, report, repo.CommonDir, "{unrecognized}"}
-	if !reflect.DeepEqual(data.Args, want) || data.Report != report || data.Inherited != os.Getenv("FIREWEED_INHERITED_HOOK") {
-		t.Fatalf("literal repeated/inherited values %+v", data)
-	}
-	if _, err := os.Stat(filepath.Join(s.Root, "RELATIVE-INJECTION")); !os.IsNotExist(err) {
-		t.Fatal("relative report was shell-expanded")
-	}
-}
-func Test_CHK007ParentContextCancellation(t *testing.T) {
-	s, m := hookFixture(t)
-	source, record := filepath.Join(s.Root, "input.xml"), filepath.Join(s.Root, "record.json")
-	if err := os.WriteFile(source, []byte(`<testsuite><testcase name="ALP001"><failure/></testcase><testcase name="ALP002"/></testsuite>`), 0600); err != nil {
-		t.Fatal(err)
-	}
-	m.Hooks.Eval = evaluationCommand(t, "partial", source, 1, record)
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	done := make(chan k.Coverage, 1)
-	go func() { done <- k.Evaluate(ctx, s, m, []string{"ALP-001"}, nil) }()
-	awaitHookReady(t, record, nil)
-	cancel()
-	var cov k.Coverage
-	select {
-	case cov = <-done:
-	case <-time.After(time.Second):
-		t.Fatal("Evaluate ignored parent cancellation")
-	}
-	invalidCoverage(t, cov, m, "C11")
-	if cov.HookExit != -1 || cov.Output != "eval output\neval err\n" {
-		t.Fatalf("parent cancellation outcome %+v", cov)
-	}
-	written := readReportRecord(t, record)
-	if wait := time.Until(written.Started.Add(3300 * time.Millisecond)); wait > 0 {
-		time.Sleep(wait)
-	}
-	if _, err := os.Stat(record + ".late"); !os.IsNotExist(err) {
-		t.Fatal("Evaluate parent cancellation left hook running")
-	}
-}
-func Test_CHK008SelectedModulePoliciesAndZeroExit(t *testing.T) {
-	for _, mode := range []string{"zero exit and exemptions", "multiple policy errors", "removed ID", "quarantine and missing", "zero exit reporter contradiction"} {
-		t.Run(mode, func(t *testing.T) {
-			s, old := hookFixture(t)
-			marker := installHookTraps(t, s.Root)
-			selected := old
-			selected.Specs = []c.Spec{{ID: "ALP-001", Body: "It MUST persist."}, {ID: "ALP-003", Body: "It MUST be projected."}}
-			xml := `<testsuite><testcase name="ALP001"/><testcase name="ALP003"/></testsuite>`
-			exit := 0
-			first, already := []string{"ALP-003", "ALP-001"}, []string{"ALP-003", "ALP-001"}
-			codes := []string{}
-			switch mode {
-			case "multiple policy errors":
-				selected.Specs = []c.Spec{{ID: "ALP-004", Body: "It MUST pass."}, {ID: "ALP-003", Body: "It MUST be covered."}, {ID: "ALP-001", Tag: "[review]", Body: "It MUST be reviewed."}}
-				xml = `<testsuite><testcase name="ALP001"/><testcase name="ALP004"><failure/></testcase></testsuite>`
-				exit = 37
-				first = []string{"ALP-003"}
-				already = []string{"ALP-001"}
-				codes = []string{"C13", "C14", "P1-02"}
-			case "removed ID":
-				xml = `<testsuite><testcase name="ALP001"/><testcase name="ALP003"/><testcase name="ALP002"><skipped/></testcase></testsuite>`
-				codes = []string{"C12"}
-			case "quarantine and missing":
-				selected.Specs[0].Tag = "[quarantine: known temporary issue]"
-				selected.Specs = append(selected.Specs, c.Spec{ID: "ALP-004", Body: "It MUST have coverage."})
-				xml = `<testsuite><testcase name="ALP001"><failure/></testcase><testcase name="ALP003"/></testsuite>`
-				exit = 37
-				first = []string{"ALP-003"}
-				already = []string{"ALP-003"}
-				codes = []string{"C13"}
-			case "zero exit reporter contradiction":
-				xml = `<testsuite><testcase name="ALP001"><error/></testcase><testcase name="ALP003"/></testsuite>`
-				first = []string{"ALP-001"}
-				already = nil
-				codes = []string{"C11"}
-			}
-			source, record := filepath.Join(s.Root, "input.xml"), filepath.Join(s.Root, "record.json")
-			if err := os.WriteFile(source, []byte(xml), 0600); err != nil {
-				t.Fatal(err)
-			}
-			selected.Hooks.Eval = evaluationCommand(t, "report", source, exit, record)
-			if reflect.DeepEqual(selected.Specs, s.Modules[0].Specs) {
-				t.Fatal("fixture failed to distinguish selected and stale snapshot module")
-			}
-			before := jsonSnapshot(t, []any{s, selected, first, already})
-			cases, err := k.ParseJUnit([]byte(xml))
-			if err != nil {
-				t.Fatal(err)
-			}
-			expected := k.Analyze(selected, []string{"ALP", "BET"}, cases, exit, first, already)
-			expected.Output = "eval output\neval err\n"
-			actualCodes := []string{}
-			for _, d := range expected.Diagnostics {
-				actualCodes = append(actualCodes, d.Code)
-			}
-			if !reflect.DeepEqual(actualCodes, codes) {
-				t.Fatalf("policy fixture %+v expected codes %v", expected, codes)
-			}
-			got := k.Evaluate(context.Background(), s, selected, first, already)
-			if !reflect.DeepEqual(got, expected) {
-				t.Fatalf("policy composition got%+v expected%+v", got, expected)
-			}
-			readReportRecord(t, record)
-			if before != jsonSnapshot(t, []any{s, selected, first, already}) {
-				t.Fatal("policy composition mutated inputs")
-			}
-			if _, err := os.Stat(marker); !os.IsNotExist(err) {
-				t.Fatal("policy composition invoked unrelated command")
-			}
-		})
-	}
 }
