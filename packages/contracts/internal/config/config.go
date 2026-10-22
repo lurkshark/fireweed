@@ -84,12 +84,7 @@ func schema(node *yaml.Node, typ reflect.Type, path string) error {
 		if node.Kind != yaml.MappingNode {
 			return fmt.Errorf("%s must be a mapping", path)
 		}
-		fields := map[string]reflect.Type{}
-		for i := 0; i < typ.NumField(); i++ {
-			field := typ.Field(i)
-			key := strings.Split(field.Tag.Get("yaml"), ",")[0]
-			fields[key] = field.Type
-		}
+		fields := fieldsOf(typ)
 		seen := map[string]bool{}
 		for i := 0; i < len(node.Content); i += 2 {
 			key := node.Content[i]
@@ -108,6 +103,27 @@ func schema(node *yaml.Node, typ reflect.Type, path string) error {
 				return err
 			}
 		}
+	case reflect.Map:
+		if node.Kind != yaml.MappingNode || typ.Key().Kind() != reflect.String {
+			return fmt.Errorf("%s must be a string-keyed mapping", path)
+		}
+		seen := map[string]bool{}
+		for i := 0; i < len(node.Content); i += 2 {
+			key := node.Content[i]
+			if key.Tag != "!!str" {
+				return fmt.Errorf("%s keys must be strings", path)
+			}
+			if seen[key.Value] {
+				return fmt.Errorf("duplicate key %s", key.Value)
+			}
+			seen[key.Value] = true
+			if err := schema(node.Content[i+1], typ.Elem(), path+"."+key.Value); err != nil {
+				return err
+			}
+		}
+	case reflect.Interface:
+		// Dynamic set values are checked against their allowed typed fields later.
+		return nil
 	case reflect.Slice:
 		if node.Kind != yaml.SequenceNode {
 			return fmt.Errorf("%s must be a list", path)

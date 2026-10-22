@@ -44,6 +44,21 @@ Configuration parsing MUST accept the current and previous file formats (1 and 0
 ### CON-011
 Configuration parsing MUST reject attempts below one, nonpositive timeout, negative limit wait or budget, invalid Go duration syntax, and verify_dependents values other than all, direct or none. Explicit audit.enabled false MUST disable audit; omission MUST leave it enabled.
 
+### CON-012
+Markdown document parsing MUST require an initial closed YAML frontmatter mapping, reject malformed or duplicate metadata keys and duplicate live level-two section names, and retain preamble, section order and bodies including fenced examples. Render followed by parse MUST preserve metadata values and human content. CRLF MUST be accepted. Fenced headings MUST NOT become sections.
+
+### CON-013
+Module parsing MUST require valid name and id_prefix, exactly one Specs section, valid normative spec items, and typed known metadata fields. Omitted zone lists and hooks MUST inherit supplied project defaults; explicit empty lists and explicitly empty hook strings MUST override them. Depends_on, boundaries_opt_out and Decisions MUST be retained. Parsing MUST NOT mutate or share inherited slices with the caller or other parsed modules.
+
+### CON-014
+Change parsing MUST require typed known metadata, a module, nonempty Motivation and a numbered lowercase slug filename under changes/ or changes/archive/. It MUST retain run, phase, blocked, bases, fixes, already_satisfied and regenerate; phase MUST be empty, evals, audit, impl or applied. Kind MUST be regenerate when requested, otherwise spec when any spec edits exist, fix when fixes exist, and maintenance otherwise. Invalid filenames and phases MUST be rejected.
+
+### CON-015
+Added and Modified MUST contain full normative spec items; Removed MUST contain headings only. Local handles MUST be unique across Added, MUST NOT appear as Modified or Removed IDs, and every handle reference in the change MUST refer to one declared in its Added section. An ID MUST NOT appear in more than one edit section. Empty spec-edit sections MUST be accepted for maintenance. All author prose, Decisions, Removed decisions, Questions, Audit and Provenance MUST remain available in the parsed document.
+
+### CON-016
+Change set metadata MUST allow only depends_on, interface, evals, disposable, preserve, append_only, boundaries_opt_out and per-module hooks. It MUST reject name/id_prefix identity edits, unknown fields and incorrectly typed values, and retain explicit empty lists or hook strings. Bases MUST contain eight lowercase hexadecimal hashes keyed by real IDs; fixes and already_satisfied MUST contain real IDs rather than handles.
+
 ## Decisions
 
 [spec-primitives]
@@ -54,3 +69,6 @@ Globs are case-sensitive with bracket negation `!` or `^`. Path components equal
 
 [config-contract]
 Only nonnegative numeric release versions are supported initially; prerelease/build constraints are rejected rather than compared incorrectly. Omitted version pin defaults to the current 0.4 range, but an explicitly empty pin is invalid. Go duration zero is valid for limit_wait and limit_budget, enabling deterministic bounded protocol tests. Unrecognized configuration fields are rejected as typing errors to surface typos. Empty mapping input is valid; an empty YAML stream is rejected. Strings containing shell metacharacters are opaque data. ParseConfig performs no file, Git, shell or network operations. Module-level metadata inheritance/overrides and file-format migration are separate later changes.
+
+[document-grammar]
+Module names and change slugs start with a lowercase letter or digit and continue with lowercase letters, digits or hyphens; prefixes start with an uppercase letter and continue with uppercase letters or digits. Filenames use at least four decimal digits and are parsed from repository-relative changes paths, not shorthand arguments. Required metadata may not be null. Module depends_on defaults to an empty list. Explicit module hooks override only named hook values. The document representation normalizes line endings and insignificant outer blank lines; it does not preserve byte-level YAML formatting. Queued Added may contain handles or already assigned IDs; the workflow, not this parser, enforces late assignment. Regenerate classification does not suppress spec edits. Cross-change stale bases, queue ordering and ID allocation are validated by project/workflow. Unknown human section names are retained; duplicate names are rejected to avoid ambiguous projections.
