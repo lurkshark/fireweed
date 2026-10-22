@@ -50,6 +50,11 @@ func finalFixture(t *testing.T) (c.Module, c.Change) {
 func Test_PRJ018FinalSpecsMetadataAndAuthorSeparation(t *testing.T) {
 	m, ch := finalFixture(t)
 	ch.Number = 88
+	ch.Modified[0].Body = "\r\n\r\nIt MUST replace the first behavior.  \r\n\r\n"
+	normalizedItems, err := c.ParseItems("### ALP-001 [quarantine: test clock]\n\n"+ch.Modified[0].Body, m.IDPrefix, false)
+	if err != nil {
+		t.Fatal(err)
+	}
 	for _, name := range []string{"Motivation", "Interface", "Notes", "Audit", "Questions", "Provenance"} {
 		finalSection(&ch.Document, name, "PRIVATE "+name+" context.")
 	}
@@ -58,7 +63,7 @@ func Test_PRJ018FinalSpecsMetadataAndAuthorSeparation(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := []c.Spec{ch.Modified[0], m.Specs[2], ch.Added[0]}
+	want := []c.Spec{normalizedItems[0], m.Specs[2], ch.Added[0]}
 	if !reflect.DeepEqual(got.Specs, want) || got.Name != m.Name || got.IDPrefix != m.IDPrefix || got.Dir != m.Dir || got.Document.Preamble != m.Document.Preamble {
 		t.Fatalf("final item/identity/preamble values %+v", got)
 	}
@@ -117,7 +122,7 @@ func Test_PRJ019QuotedRemovalsAndMultilineAppend(t *testing.T) {
 	finalAgreement(t, got)
 }
 func Test_PRJ019QuoteModesAndAppendSpacing(t *testing.T) {
-	for _, quote := range []string{"Erase this.", "> Erase this.", "  > Erase this.  "} {
+	for _, quote := range []string{"Erase this.", "> Erase this.", ">Erase this.", "  > Erase this.  "} {
 		m, ch := finalFixture(t)
 		m.Decisions = "Erase this.\nKeep this."
 		finalSection(&ch.Document, "Decisions", "")
@@ -139,7 +144,7 @@ func Test_PRJ019QuoteModesAndAppendSpacing(t *testing.T) {
 }
 
 func Test_PRJ019DecisionSectionPresence(t *testing.T) {
-	for _, kind := range []string{"absent", "existing-empty", "remove-last", "unmatched-removal", "add-first", "blank-addition"} {
+	for _, kind := range []string{"absent", "existing-empty", "typed-empty-stale", "remove-last", "unmatched-removal", "add-first", "blank-addition"} {
 		m := queueModule(t, "alpha", "ALP", "units/a")
 		m.Decisions = ""
 		sections := []c.Section{}
@@ -155,6 +160,9 @@ func Test_PRJ019DecisionSectionPresence(t *testing.T) {
 		switch kind {
 		case "existing-empty":
 			finalSection(&m.Document, "Decisions", "")
+			present = true
+		case "typed-empty-stale":
+			finalSection(&m.Document, "Decisions", "STALE content must disappear.")
 			present = true
 		case "remove-last":
 			m.Decisions = "Choice."
@@ -183,13 +191,17 @@ func Test_PRJ019DecisionSectionPresence(t *testing.T) {
 	}
 }
 func Test_PRJ018FinalErrorsAreAtomic(t *testing.T) {
-	for _, kind := range []string{"target", "body", "missing-modified", "missing-removed", "duplicate-edit", "set", "wrong-prefix", "current-handle", "result-handle", "empty-slug", "malformed-slug", "slug-path", "bad-path"} {
+	for _, kind := range []string{"target", "body", "current-body", "current-prefix", "missing-modified", "missing-removed", "duplicate-edit", "set", "wrong-prefix", "current-handle", "result-handle", "empty-slug", "malformed-slug", "slug-path", "bad-path"} {
 		m, ch := finalFixture(t)
 		switch kind {
 		case "target":
 			ch.Module = "missing"
 		case "body":
 			ch.Added[0].Body = "No normative text."
+		case "current-body":
+			m.Specs[2].Body = "An untouched item without normative text."
+		case "current-prefix":
+			m.Specs[2].ID = "BAD-003"
 		case "missing-modified":
 			ch.Modified[0].ID = "ALP-999"
 		case "missing-removed":
@@ -208,6 +220,7 @@ func Test_PRJ018FinalErrorsAreAtomic(t *testing.T) {
 			ch.Slug = ""
 		case "malformed-slug":
 			ch.Slug = "INVALID"
+			ch.Path = "changes/0001-INVALID.md"
 		case "slug-path":
 			ch.Slug = "different"
 		case "bad-path":
@@ -241,6 +254,12 @@ func Test_PRJ020FinalResultIndependenceAndPreview(t *testing.T) {
 		if err != nil || !reflect.DeepEqual(first, second) {
 			t.Fatalf("unstable final result %v", err)
 		}
+		if maintenance {
+			if second.Preserve == nil || len(second.Preserve) != 0 || !strings.Contains(second.Decisions, "[maintenance]\nPreserve a maintenance choice.") {
+				t.Fatalf("maintenance transform omitted: %+v", second)
+			}
+			finalAgreement(t, second)
+		}
 		secondBefore := encoded(t, second)
 		poison(reflect.ValueOf(&first).Elem())
 		if encoded(t, []any{m, ch}) != input || encoded(t, second) != secondBefore {
@@ -262,4 +281,52 @@ func Test_PRJ020FinalResultIndependenceAndPreview(t *testing.T) {
 			t.Fatal("preview mutated finalization input")
 		}
 	}
+}
+
+func Test_PRJ020EmptySliceStorageIndependence(t *testing.T) {
+	m := queueModule(t, "alpha", "ALP", "units/a")
+	typedBacking := []string{"current backing"}
+	m.Preserve = typedBacking[:0]
+	docBacking := []any{"document backing"}
+	m.Document.Metadata["preserve"] = docBacking[:0]
+	ch := projectionChange(t, m, 1, "empty-storage", "set: {preserve: []}\n", nil, nil, nil)
+	changeBacking := []any{"change backing"}
+	ch.Set["preserve"] = changeBacking[:0]
+	before := encoded(t, []any{m, ch})
+	a, err := p.Finalize(m, ch)
+	if err != nil {
+		t.Fatal(err)
+	}
+	b, err := p.Finalize(m, ch)
+	if err != nil {
+		t.Fatal(err)
+	}
+	finalAgreement(t, a)
+	finalAgreement(t, b)
+	if a.Preserve == nil || b.Preserve == nil || len(a.Preserve) != 0 || len(b.Preserve) != 0 {
+		t.Fatal("explicit empty typed preserve lost")
+	}
+	a.Preserve = append(a.Preserve, "first typed append")
+	b.Preserve = append(b.Preserve, "second typed append")
+	if a.Preserve[0] != "first typed append" {
+		t.Fatal("returned empty typed slices share backing")
+	}
+	aMeta, aOK := a.Document.Metadata["preserve"].([]any)
+	bMeta, bOK := b.Document.Metadata["preserve"].([]any)
+	if !aOK || !bOK || aMeta == nil || bMeta == nil || len(aMeta) != 0 || len(bMeta) != 0 {
+		t.Fatal("explicit empty metadata preserve lost")
+	}
+	aMeta = append(aMeta, "first metadata append")
+	bMeta = append(bMeta, "second metadata append")
+	if aMeta[0] != "first metadata append" {
+		t.Fatal("returned empty metadata slices share backing")
+	}
+	if typedBacking[0] != "current backing" || docBacking[0] != "document backing" || changeBacking[0] != "change backing" || encoded(t, []any{m, ch}) != before {
+		t.Fatal("empty result append mutated input backing")
+	}
+	fresh, err := p.Finalize(m, ch)
+	if err != nil || len(fresh.Preserve) != 0 {
+		t.Fatal("empty append poisoned later call")
+	}
+	finalAgreement(t, fresh)
 }

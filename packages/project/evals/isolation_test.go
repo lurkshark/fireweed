@@ -166,7 +166,7 @@ func main(){
   got,err:=p.Finalize(m,ch);if err!=nil||len(got.Specs)!=2||got.Decisions!="Keep choice.\n\n[native-final]\nNew choice."||got.Preserve[0]!="native/**"{os.Exit(26)}
   preview,err:=p.ApplyChange(m,ch);if err!=nil||preview.Decisions!=m.Decisions{os.Exit(27)}
   ch.Added[0].ID="new:pending";if _,err:=p.Finalize(m,ch);err==nil{os.Exit(28)}
-  ch.Module="missing";if _,err:=p.Finalize(m,ch);err==nil{os.Exit(29)}
+  ch.Added[0].ID="ALP-009";ch.Module="missing";if _,err:=p.Finalize(m,ch);err==nil{os.Exit(29)}
  }
  if len(os.Args)>4&&os.Args[4]=="allocation"{
   ch:=c.Change{Module:s.Modules[0].Name,Slug:"native-allocation",Number:1,Path:"changes/0001-native-allocation.md",AlreadySatisfied:[]string{"new:native"},Set:map[string]any{"hooks":map[string]any{"setup":"show new:native-two and new:native"}},Added:[]c.Spec{{ID:"new:native",Body:"It MUST refer to new:native-two."},{ID:"new:native-two",Body:"It MUST refer to new:native."}},Document:c.Document{Metadata:map[string]any{"module":s.Modules[0].Name},Sections:[]c.Section{{Name:"Motivation",Body:"Allocate new:native and new:native-two."}}}}
