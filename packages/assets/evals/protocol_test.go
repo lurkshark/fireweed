@@ -36,6 +36,7 @@ func Test_AST002PrescriptiveContent(t *testing.T) {
 			"Run fireweed verify, then fireweed done to apply specs and archive the change; never commit yourself.",
 		},
 		"regenerate": {
+			"Use fireweed context <change> for a regenerate change; fireweed drill <module> is the author command for a scratch rehearsal.",
 			"Rebuild only deleted disposable files using retained specs, Decisions, interfaces, evals and allowed dependency interfaces.",
 			"You MUST NOT consult the old implementation, Git history, saved attempts, old binaries or bootstrap source as an oracle.",
 			"Preserve interfaces and evals; run own and transitive dependent evals plus boundaries.",
