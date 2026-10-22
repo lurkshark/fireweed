@@ -1,5 +1,7 @@
 ---
 module: project
+phase: audit
+run: 5380157128981dbe965919f7
 ---
 
 ## Motivation
@@ -12,22 +14,22 @@ Add Diagnostic {Code, Severity, Message, Path string}, Snapshot {Root, BaseRef s
 
 ## Added
 
-### new:discovery
+### PRJ-001
 Load MUST discover the canonical Git root from a nested directory, parse fireweed.yaml using the running embedded version, resolve the local base ref, and discover SPEC.md only in module directories matching configured modules globs. It MUST retain resolved module defaults, explicit empty overrides, dependencies, hooks, specs, Decisions and original documents. Modules MUST be sorted by name then directory. It MUST NOT follow directory symlinks or read files through escaping symlinks, run hooks/agents, use the network or mutate repository files/refs. Missing/invalid configuration or invalid configured globs MUST return an error mentioning C01; a nonrepository MUST return an error.
 
-### new:documents
+### PRJ-002
 Load MUST continue past malformed module/change documents and retain path-attributed diagnostics: C02 warning for SPEC.md outside module globs, C03 error for invalid module metadata, C04 error for invalid Specs grammar, and C05 error for malformed changes or unknown target modules. It MUST ignore .git and .fireweed trees during module discovery. Queue and archive MUST include immediate Markdown files only, parsed with each target's prefix, retaining lifecycle/provenance/author sections; each list MUST sort by numeric filename then slug. Duplicate slugs across either list MUST produce C05. Symlink escapes MUST produce an error diagnostic without reading their contents.
 
-### new:graph
+### PRJ-003
 Check MUST diagnose duplicate module names or prefixes with C03 and overlapping module directory ownership with C06, including future paths. Dependencies MUST name existing modules, exclude self and have no cycles; violations MUST produce C06. Valid acyclic graphs, including shared transitive dependencies, MUST pass this graph check.
 
-### new:zones
+### PRJ-004
 Check MUST reject invalid module-relative zone patterns with C03 and eval/disposable intersections with C06, including intersections at nonexistent paths. Nonintersecting zones MUST pass; interface/preserve/append-only overlap with disposable MUST remain permitted under strict precedence. It MUST NOT require files to exist or execute hooks.
 
-### new:hooks
+### PRJ-005
 Check MUST require a nonblank resolved eval hook (C07 error). Modules with disposable globs MUST have a nonblank boundaries hook or a nonblank boundaries_opt_out reason (C07 error otherwise). Every explicit opt-out MUST emit a D04 warning containing its reason; a module without disposable globs and without boundaries MUST emit a D04 warning. Boundary opt-outs MUST NOT waive the eval hook requirement.
 
-### new:reservations
+### PRJ-006
 Check MUST reject any current spec ID listed as Removed in the archive with C08, preserving removed-ID reservations. It MUST include all Load diagnostics and return a non-null deterministically sorted diagnostic list by path, code, severity and message, with nonempty corrective messages and path attribution for module/change issues. A valid snapshot with no warnings MUST return an empty list. Check MUST NOT mutate the supplied snapshot.
 
 ## Modified
@@ -41,3 +43,7 @@ This slice validates the current static graph. Queued projection, set applicatio
 ## Rejected alternatives
 
 Running hooks during discovery would make read commands stateful and conflate static checks with enforcement. A second graph in language-specific tooling would drift from SPEC.md metadata. Ignoring malformed files would hide loss of ownership or archive reservations.
+
+## Provenance
+
+- evals | 2026-10-22T07:58:56Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 16 | failing: 16 | passing: 0
