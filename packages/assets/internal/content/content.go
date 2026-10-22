@@ -82,7 +82,7 @@ var explanations = map[string]string{
 	"D02":   "Scratch setup failed. Repair the setup hook/templates and inspect worktrees under the common Git directory.",
 	"D03":   "Audit reuses the worker command. Configure an independent audit command to reduce shared review blind spots.",
 	"D04":   "Boundary enforcement is absent or opted out. Review the module's reason and keep the exception visible in status and PR bodies.",
-	"D05":   "A playbook override has stale based_on metadata. Compare the embedded hash, review the override and update its recorded base.",
+	"D05":   "A playbook override is unsafe, unreadable or has stale based_on metadata. Restore a readable contained override; for stale metadata, compare the embedded hash, review the instructions and update based_on.",
 	"D06":   "A doctor canary or recovery check failed. Repair protected hooks and all four canaries; an always-success hook is invalid.",
 	"D07":   "Regeneration failed. Review the drill report/ref and author focused changes for accepted gaps.",
 	"H01":   "A worker edited protected files. Restore them and move author configuration/glue changes to a separate author commit.",
