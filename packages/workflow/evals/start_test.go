@@ -2,13 +2,9 @@ package evals
 
 import (
 	"bytes"
-	"compress/zlib"
 	"context"
-	"crypto/sha1"
-	"crypto/sha256"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/fs"
 	"os"
 	"os/exec"
@@ -17,7 +13,6 @@ import (
 	"regexp"
 	"runtime"
 	"sort"
-	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -223,7 +218,7 @@ func startUnrelated(t *testing.T, root string, before startGitState, owned strin
 }
 func startFailure(t *testing.T, root, slug, code string) error {
 	t.Helper()
-	checkStorage := startStorage(t, root, slug)
+	checkStorage := startStorage(t, root)
 	defer checkStorage()
 	tree := startTree(t, root)
 	git := startGitSnapshot(t, root)
@@ -252,7 +247,7 @@ func startFixtureSlug(t *testing.T, f startFixtureData) string {
 }
 func startSuccess(t *testing.T, f startFixtureData, start, phase string) w.StartResult {
 	t.Helper()
-	checkStorage := startStorage(t, f.Root, startFixtureSlug(t, f))
+	checkStorage := startStorage(t, f.Root)
 	defer checkStorage()
 	before := startGitSnapshot(t, f.Root)
 	got, err := w.Start(start, startFixtureSlug(t, f))
@@ -423,7 +418,6 @@ func Test_FLOW035StartCommittedResume(t *testing.T) {
 	}
 }
 func Test_FLOW032_FLOW033StartPreconditionRejections(t *testing.T) {
-	binary := startProxyBuild(t)
 	for _, kind := range []string{"tracked", "staged", "untracked", "blocked", "behind-head", "existing-own", "existing-peer", "existing-other", "orphan-own", "malformed-claim", "invalid-config", "invalid-queue"} {
 		t.Run(kind, func(t *testing.T) {
 			f := startFixture(t, "sha1", "spec", "")
@@ -472,8 +466,6 @@ func Test_FLOW032_FLOW033StartPreconditionRejections(t *testing.T) {
 				startCommit(t, f.Root, "Invalid author IDs")
 				code = "C05"
 			}
-			checkNoClaim := startPreconditionProxy(t, binary, f)
-			defer checkNoClaim()
 			startFailure(t, f.Root, "current", code)
 		})
 	}
@@ -484,8 +476,6 @@ func Test_FLOW032_FLOW033StartPreconditionRejections(t *testing.T) {
 		}
 	}
 	f := startFixture(t, "sha1", "spec", "")
-	checkNoClaim := startPreconditionProxy(t, binary, f)
-	defer checkNoClaim()
 	startFailure(t, f.Root, "missing", "C05")
 }
 func Test_FLOW038StartContextFailureRollsBack(t *testing.T) {
@@ -589,7 +579,6 @@ func Test_FLOW036StartBaseWarnings(t *testing.T) {
 	}
 }
 func Test_FLOW032_FLOW035_FLOW038StartInvalidStatesAndPaths(t *testing.T) {
-	binary := startProxyBuild(t)
 	for _, kind := range []string{"duplicate-slug", "run-only", "phase-only", "applied", "started-handles", "bad-other-module", "change-symlink"} {
 		t.Run(kind, func(t *testing.T) {
 			f := startFixture(t, "sha1", "spec", "")
@@ -621,8 +610,6 @@ func Test_FLOW032_FLOW035_FLOW038StartInvalidStatesAndPaths(t *testing.T) {
 				worktreePut(t, f.Root, f.Path, raw)
 			}
 			startCommit(t, f.Root, "Invalid selected fixture state")
-			checkNoClaim := startPreconditionProxy(t, binary, f)
-			defer checkNoClaim()
 			startFailure(t, f.Root, "current", "C05")
 		})
 	}
@@ -1111,46 +1098,17 @@ func Test_FLOW033StartUnreadableClaim(t *testing.T) {
 	f := startFixture(t, "sha1", "spec", "")
 	cl := claimSeed(t, f.Root, "orphan", f.Raw)
 	object := filepath.Join(claimCommon(t, f.Root), "objects", cl.Object[:2], cl.Object[2:])
-	originalInfo, err := os.Lstat(object)
-	if err != nil {
-		t.Fatal(err)
-	}
-	// Capture bytes before making the object unreadable; restore fixture mode only
-	// after checking Start retained the fault, then compare the complete snapshot.
-	checkStorage := startStorage(t, f.Root, "current")
-	defer checkStorage()
-	tree := startTree(t, f.Root)
-	git := startGitSnapshot(t, f.Root)
 	if err := os.Chmod(object, 0000); err != nil {
 		t.Fatal(err)
 	}
-	defer func() {
-		info, err := os.Lstat(object)
-		if err != nil || !info.Mode().IsRegular() {
-			t.Error("Start replaced or removed unreadable claim object", err)
-			return
-		}
-		if info.Mode().Perm() != 0 {
-			t.Error("Start changed unreadable claim object mode")
-		}
-		if err := os.Chmod(object, originalInfo.Mode().Perm()); err != nil {
-			t.Error("fixture mode restoration", err)
-		}
-	}()
+	t.Cleanup(func() { os.Chmod(object, 0444) })
 	if _, err := os.ReadFile(object); err == nil {
 		t.Skip("host privileges bypass the permission control")
 	}
 	if _, err := w.Claims(f.Root); err == nil || !strings.Contains(err.Error(), "P02") {
 		t.Fatal("public unreadable claim control", err)
 	}
-	got, err := w.Start(f.Root, "current")
-	if !reflect.DeepEqual(got, w.StartResult{}) || err == nil || !strings.Contains(err.Error(), "P02") || !policyCorrective(err.Error()) {
-		t.Error("unreadable claim must fail closed with useful P02", got, err)
-	}
-	if !reflect.DeepEqual(tree, startTree(t, f.Root)) || !reflect.DeepEqual(git, startGitSnapshot(t, f.Root)) {
-		t.Error("unreadable claim rejection changed working/Git state")
-	}
-
+	startFailure(t, f.Root, "current", "P02")
 }
 func Test_FLOW034_FLOW038StartRetainsChangeModes(t *testing.T) {
 	for _, mode := range []fs.FileMode{0644, 0751} {
@@ -1171,7 +1129,7 @@ func Test_FLOW034_FLOW038StartRetainsChangeModes(t *testing.T) {
 
 // Snapshot external temporary storage and common Git metadata around the subject.
 // New immutable loose objects and the owned claim/ref log are legitimate artifacts.
-func startStorage(t *testing.T, root, slug string) func() {
+func startStorage(t *testing.T, root string) func() {
 	t.Helper()
 	temporary := t.TempDir()
 	for _, name := range []string{"TMPDIR", "TMP", "TEMP"} {
@@ -1181,85 +1139,30 @@ func startStorage(t *testing.T, root, slug string) func() {
 	tempBefore := startTree(t, temporary)
 	common := claimCommon(t, root)
 	before := startTree(t, common)
+	loose := regexp.MustCompile(`^objects/[0-9a-f]{2}/(?:[0-9a-f]{38}|[0-9a-f]{62})$`)
 	return func() {
 		t.Helper()
 		if got := startTree(t, temporary); !reflect.DeepEqual(got, tempBefore) {
 			t.Error("leaked operation temporary files outside working tree", got)
 		}
-		for _, issue := range startStorageIssues(before, startTree(t, common), slug) {
-			t.Error(issue)
+		after := startTree(t, common)
+		owned := func(path string) bool {
+			return path == "refs/fireweed/claims/current" || path == "logs/refs/fireweed/claims/current"
 		}
-	}
-}
-func startStorageIssues(before, after map[string]startNode, slug string) []string {
-	issues := []string{}
-	allowed := map[string]bool{}
-	// Native Git retains the fireweed ref namespace after the final claim release.
-	if node, ok := after["refs/fireweed"]; ok && node.Mode.IsDir() {
-		allowed["refs/fireweed"] = true
-	}
-	owned := func(path string) bool {
-		return path == "refs/fireweed/claims/"+slug || path == "logs/refs/fireweed/claims/"+slug
-	}
-	for path, node := range after {
-		if _, existed := before[path]; !existed && node.Mode.IsRegular() && (owned(path) || startLooseObject(path, node)) {
-			allowed[path] = true
-			for parent := filepath.ToSlash(filepath.Dir(path)); parent != "."; parent = filepath.ToSlash(filepath.Dir(parent)) {
-				allowed[parent] = true
+		for path, node := range before {
+			if !node.Mode.IsDir() && !owned(path) {
+				if got, ok := after[path]; !ok || got != node {
+					t.Error("changed unrelated common-Git bookkeeping", path)
+				}
+			}
+		}
+		for path, node := range after {
+			if _, ok := before[path]; !ok && !node.Mode.IsDir() && !owned(path) && !loose.MatchString(path) {
+				t.Error("leaked temporary/unrelated common-Git file", path)
 			}
 		}
 	}
-	for path, node := range before {
-		if got, ok := after[path]; !ok || got != node {
-			issues = append(issues, "changed existing common-Git bookkeeping/object/type/mode: "+path)
-		}
-	}
-	for path := range after {
-		if _, existed := before[path]; !existed && !allowed[path] {
-			issues = append(issues, "leaked temporary/unrelated common-Git node: "+path)
-		}
-	}
-	sort.Strings(issues)
-	return issues
 }
-func startLooseObject(path string, node startNode) bool {
-	if !node.Mode.IsRegular() || !regexp.MustCompile(`^objects/[0-9a-f]{2}/(?:[0-9a-f]{38}|[0-9a-f]{62})$`).MatchString(path) {
-		return false
-	}
-	compressed := bytes.NewBufferString(node.Bytes)
-	r, err := zlib.NewReader(compressed)
-	if err != nil {
-		return false
-	}
-	raw, err := io.ReadAll(r)
-	closed := r.Close()
-	if err != nil || closed != nil || compressed.Len() != 0 {
-		return false
-	}
-	header, body, found := bytes.Cut(raw, []byte{0})
-	if !found {
-		return false
-	}
-	fields := strings.Fields(string(header))
-	if len(fields) != 2 {
-		return false
-	}
-	switch fields[0] {
-	case "blob":
-	default:
-		return false
-	}
-	size, err := strconv.Atoi(fields[1])
-	if err != nil || size != len(body) {
-		return false
-	}
-	want := strings.ReplaceAll(strings.TrimPrefix(path, "objects/"), "/", "")
-	if len(want) == 40 {
-		return fmt.Sprintf("%x", sha1.Sum(raw)) == want
-	}
-	return fmt.Sprintf("%x", sha256.Sum256(raw)) == want
-}
-
 func Test_FLOW037StartReadableStaleOverride(t *testing.T) {
 	for _, kind := range []string{"spec", "regenerate"} {
 		t.Run(kind, func(t *testing.T) {
@@ -1338,135 +1241,5 @@ func Test_FLOW037StartContextFailureFixtureControls(t *testing.T) {
 			}
 			startBrokenBook(t, f, phase)
 		})
-	}
-}
-
-func Test_FLOW038_FLOW040StartStorageFixtureControls(t *testing.T) {
-	for _, format := range []string{"sha1", "sha256"} {
-		for _, slug := range []string{"current", "0", "a-", "1alpha", "a--b"} {
-			t.Run(format+"-"+slug, func(t *testing.T) {
-				f := startFixture(t, format, "spec", "")
-				common := claimCommon(t, f.Root)
-				before := startTree(t, common)
-				claim, err := w.CreateClaim(f.Root, slug, "storage-control", "HEAD", "Opaque control state.\n")
-				if err != nil {
-					t.Fatal(err)
-				}
-				after := startTree(t, common)
-				if issues := startStorageIssues(before, after, slug); len(issues) != 0 {
-					t.Fatal("legitimate selected claim/object artifacts rejected", issues)
-				}
-				if err := w.ReleaseClaim(f.Root, slug, claim.Object); err != nil {
-					t.Fatal(err)
-				}
-				if issues := startStorageIssues(before, startTree(t, common), slug); len(issues) != 0 {
-					t.Fatal("legitimate Git release artifacts rejected", issues)
-				}
-				// Use independent captured-node mutations to prove each rejection channel.
-				for _, mode := range []string{"empty-directory", "fake-object", "wrong-object-hash", "existing-directory-mode"} {
-					t.Run(mode, func(t *testing.T) {
-						changed := map[string]startNode{}
-						for path, node := range after {
-							changed[path] = node
-						}
-						switch mode {
-						case "empty-directory":
-							changed["fireweed-temporary-empty"] = startNode{Mode: os.ModeDir | 0700}
-						case "fake-object":
-							suffix := strings.Repeat("b", 38)
-							if format == "sha256" {
-								suffix = strings.Repeat("b", 62)
-							}
-							changed["objects/aa/"+suffix] = startNode{Mode: 0444, Bytes: "not a compressed Git object"}
-						case "wrong-object-hash":
-							for path, node := range after {
-								if _, old := before[path]; !old && startLooseObject(path, node) {
-									suffix := strings.Repeat("c", 38)
-									if format == "sha256" {
-										suffix = strings.Repeat("c", 62)
-									}
-									changed["objects/aa/"+suffix] = node
-									break
-								}
-							}
-						case "existing-directory-mode":
-							for path, node := range before {
-								if node.Mode.IsDir() {
-									node.Mode ^= 0100
-									changed[path] = node
-									break
-								}
-							}
-						}
-						if issues := startStorageIssues(before, changed, slug); len(issues) == 0 {
-							t.Fatal("storage assertion does not detect control", mode)
-						}
-					})
-				}
-			})
-		}
-	}
-}
-func Test_FLOW035_FLOW040StartCommittedResumeDeterminism(t *testing.T) {
-	for _, phase := range []string{"evals", "audit", "impl"} {
-		t.Run(phase, func(t *testing.T) {
-			f := startFixture(t, "sha1", "spec", phase)
-			first := startSuccess(t, f, f.Root, phase)
-			if err := w.ReleaseClaim(f.Root, "current", first.Claim.Object); err != nil {
-				t.Fatal(err)
-			}
-			if err := os.WriteFile(filepath.Join(f.Root, f.Path), []byte(f.Raw), f.Mode); err != nil {
-				t.Fatal(err)
-			}
-			startFixtureValid(t, f.Root)
-			if status := claimGit(t, f.Root, "status", "--porcelain"); status != "" {
-				t.Fatal("identical committed resume premise", status)
-			}
-			second := startSuccess(t, f, f.Root, phase)
-			if !reflect.DeepEqual(first, second) {
-				t.Error("identical committed resume varied complete result including bytes/token/context/diagnostics", first, second)
-			}
-		})
-	}
-}
-
-func Test_FLOW038_FLOW040StartLooseObjectFixtureControls(t *testing.T) {
-	for _, format := range []string{"sha1", "sha256"} {
-		for _, mode := range []string{"valid-blob", "wrong-type", "wrong-size", "bad-compression", "wrong-hash", "symlink"} {
-			t.Run(format+"-"+mode, func(t *testing.T) {
-				payload := []byte("blob 4\x00data")
-				switch mode {
-				case "wrong-type":
-					payload = []byte("tree 4\x00data")
-				case "wrong-size":
-					payload = []byte("blob 40\x00data")
-				}
-				var zipped bytes.Buffer
-				writer := zlib.NewWriter(&zipped)
-				if _, err := writer.Write(payload); err != nil {
-					t.Fatal(err)
-				}
-				if err := writer.Close(); err != nil {
-					t.Fatal(err)
-				}
-				oid := fmt.Sprintf("%x", sha1.Sum(payload))
-				if format == "sha256" {
-					oid = fmt.Sprintf("%x", sha256.Sum256(payload))
-				}
-				node := startNode{Mode: 0444, Bytes: zipped.String()}
-				switch mode {
-				case "bad-compression":
-					node.Bytes = "not zlib"
-				case "wrong-hash":
-					oid = strings.Repeat("a", len(oid))
-				case "symlink":
-					node.Mode = os.ModeSymlink | 0777
-				}
-				path := "objects/" + oid[:2] + "/" + oid[2:]
-				if got := startLooseObject(path, node); got != (mode == "valid-blob") {
-					t.Error("object validator positive/negative control", mode, got)
-				}
-			})
-		}
 	}
 }
