@@ -1,5 +1,7 @@
 ---
 module: project
+phase: audit
+run: 5ebb93dc888a62c1501afec8
 ---
 
 ## Motivation
@@ -12,16 +14,16 @@ Add LoadAt(start, revision string) (Snapshot, error) to api.go as a thin convers
 
 ## Added
 
-### new:baseline-selection
+### PRJ-024
 LoadAt MUST discover the canonical calling checkout from start, including nested directories and linked worktrees, and resolve one explicit nonblank local revision to a full commit before reading its tree. It MUST accept full commit IDs, local branches, annotated/lightweight tags and commit expressions supported by installed Git, in SHA-1 and SHA-256 repositories. An absent/invalid/option-like revision, blob/tree object, unborn HEAD, unavailable repository or Git resolution/enumeration failure MUST return a corrective C01 error and zero Snapshot. All subsequent tree/blob reads MUST be pinned to that resolved commit or its object IDs even if the input ref moves. No current file, index, HEAD or newer commit may replace selected metadata.
 
-### new:baseline-discovery
+### PRJ-025
 LoadAt MUST parse the selected commit's fireweed.yaml with public ParseConfig and the embedded binary version, validate configured glob syntax, resolve BaseRef from that config and locally known refs, and return canonical Root. It MUST discover module SPEC.md paths from the selected tree with the same configured-glob, ignored .git/.fireweed subtree, metadata/spec grammar, resolved-default/explicit-empty, retained document/Decisions and name/directory sorting contract as Load. It MUST parse immediate Markdown queue/archive files from that tree, using target prefixes, the existing live/archive handle rules and numeric/slug order; preserve all author/lifecycle/provenance sections; and diagnose duplicate slugs across both lists. It MUST continue past malformed selected documents with the same C02/C03/C04/C05/C09 severity, path and corrective categories as Load, while invalid/missing/unreadable configuration or invalid configured globs is fatal C01. Empty Modules, Changes, Archive and Diagnostics MUST be non-null on success, with diagnostics sorted by path/code/severity/message. Graph/zone/hook/static and queue checks remain the existing public validators' responsibility.
 
-### new:baseline-links
+### PRJ-026
 Metadata file links MUST resolve only within the selected Git tree. Relative symlink targets and absolute targets lexically within the canonical calling root MUST resolve to selected-tree regular blobs, preserving the target bytes and link-relative path semantics without consulting current worktree link targets. Chained contained links and executable regular blobs MUST work; escaping targets, dangling links, loops, NUL/backslash-invalid paths, directories or gitlinks in place of selected metadata MUST be rejected with the corresponding configuration/module/change category, never read outside/current content or silently substitute another source. Module discovery MUST NOT traverse directory symlinks, gitlinks or nested .git/.fireweed subtrees. Out-of-glob SPEC.md contents and unrelated blobs MUST NOT be read. Explicit queue/archive directory links that resolve within the selected tree MUST expose immediate Markdown entries at their logical changes/ or changes/archive/ paths. Directory links in selected metadata targets MUST use the same contained virtual-tree rules; no filesystem traversal is permitted.
 
-### new:baseline-isolation
+### PRJ-027
 LoadAt MUST read only necessary local Git metadata and selected config/module/immediate queue/archive blobs and their committed link targets; it MUST NOT read current working-file contents or unrelated historical code/private/playbook/recipe blobs, including when an eventual error would be ignored. Dirty, deleted, untracked, staged, ignored, symlinked or unreadable current metadata MUST NOT affect the selected snapshot. Successful snapshots and all nested data MUST be independent of inputs and existing repeated results, including empty append backing storage; failures MUST return no partial Snapshot. Every call MUST remain local/noninteractive, preserve files/index/HEAD/branches/claim/other refs/common Git/user/outside data and parent cwd/environment/temp storage, and MUST NOT create a temporary checkout/worktree/export, run native Git or fireweed hooks, agents, bootstrap or network commands, or commit/stage/reset/fetch/push/create branches. Literal Git arguments and hook suppression MUST keep configuration strings and unusual filenames inert. Existing Load behavior MUST remain unchanged.
 
 ## Decisions
@@ -35,3 +37,7 @@ This API does not trust or reload a worker's current config/SPEC, does not valid
 ## Rejected alternatives
 
 A temporary checkout/export introduces filesystem mutation, setup hooks and cleanup hazards for a read operation. Reading the current config or symlink targets defeats approval restoration. Loading every historical blob exposes disposable implementation to a later regeneration context. Returning partial successful metadata after fatal source errors can grant incomplete or incorrect permissions. Re-resolving a branch per file mixes incompatible approved states.
+
+## Provenance
+
+- evals | 2026-10-23T00:05:50Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 388 | failing: 154 | passing: 234
