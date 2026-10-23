@@ -2,6 +2,8 @@
 fixes:
     - GIT-002
 module: gitstore
+phase: audit
+run: 43bb6e51f2e637a7c66afc35
 ---
 
 ## Motivation
@@ -12,11 +14,11 @@ The environment hint GIT_NO_LAZY_FETCH=1 is ineffective on this installed suppor
 
 ## Interface
 
-No public API/type changes. Keep Open, BaseRef, Clean, Edits, SafePath, Run and Capture signatures and all existing contracts. Add permanent public-API regressions for GIT-002 and new:local-edits, plus independent real-Git controls proving marker-only transport and Trace2 fetch observations in allowed and denied protocol modes. Exercise ordinary/linked SHA-1/SHA-256 repositories supported by installed Git, required and irrelevant missing objects, valid single commit/tag/ancestor inputs, revision-set rejection and available built-in diff/index/worktree configuration and rename behavior. Compare successful available results against independently executed real Git rather than an implementation-specific command allowlist. Preserve all existing evals and their genuine success controls. Include a live configured agent-shaped fsmonitor callback control, and require both successful and rejected Edits calls to avoid that callback while preserving native built-in comparison behavior and original configuration/index state.
+No public API/type changes. Keep Open, BaseRef, Clean, Edits, SafePath, Run and Capture signatures and all existing contracts. Add permanent public-API regressions for GIT-002 and GIT-011, plus independent real-Git controls proving marker-only transport and Trace2 fetch observations in allowed and denied protocol modes. Exercise ordinary/linked SHA-1/SHA-256 repositories supported by installed Git, required and irrelevant missing objects, valid single commit/tag/ancestor inputs, revision-set rejection and available built-in diff/index/worktree configuration and rename behavior. Compare successful available results against independently executed real Git rather than an implementation-specific command allowlist. Preserve all existing evals and their genuine success controls. Include a live configured agent-shaped fsmonitor callback control, and require both successful and rejected Edits calls to avoid that callback while preserving native built-in comparison behavior and original configuration/index state.
 
 ## Added
 
-### new:local-edits
+### GIT-011
 Edits MUST inspect the requested local baseline without attempting fetch, push, branch creation or network commands, including partially populated repositories on supported Git versions. It MUST return a useful non-nil error and an empty edit result when objects required to resolve the selected commit or determine its edits are unavailable; it MUST NOT return partial successful edits. Missing unrelated ancestors, trees or blob bodies that are not needed for the requested comparison MUST NOT prevent otherwise available results. Available ordinary and linked SHA-1/SHA-256 repositories MUST retain the existing GIT-003 staged, unstaged, untracked, filename and rename semantics, including built-in Git configuration affecting index/worktree comparisons. Full commit IDs and valid single commit/tag/ancestor expressions MUST remain usable; revision sets MUST be rejected. Successful and rejected calls MUST remain noninteractive, use literal arguments, preserve HEAD, refs, original index bytes, working/ignored files and parent cwd/environment, and clean owned temporary storage. No bootstrap or authenticated agent MAY be required or invoked.
 
 ## Modified
@@ -35,6 +37,18 @@ The user's full rebuild goal authorizes local authored execution and commits wit
 
 The initial phase cycle was completely reverted under D037 after a configured native fsmonitor control exposed a missing permanent assertion. Its221-case fail-first and passing formal audit are retained historically but do not freeze this restarted cycle. Restore the three preserved eval sources only after fresh EVALS start, add a calibrated configured-monitor regression using a compiled local agent-shaped marker (no authenticated agent), and repeat complete fail-first and restricted audit. A selected original index metadata read can invoke the monitor even when an owned metadata view disables it later. Success and rejection paths must prevent that callback. Preserve the candidate separately and restore its two implementation files only after a new passing audit and impl context; never restore its old run/phase/Audit.
 
+Fresh EVALS restored only the three SHA-256-verified saved eval files and adds configured monitor available/rejected controls across ordinary/linked SHA-1/SHA-256 repositories. The focused nine-record test completes normally with four genuine available API codex-marker failures and four rejected-selector passes; all native enabled/disabled monitor premises are live. No implementation was restored or edited. The new start retains the normal P04 warning under the user's local authorization, without claiming human merge. Full230-record fail-first, new independent formal audit and full implementation verification remain required.
+
+Restricted pre-freeze review strengthens configured-monitor coverage further: require a nonempty manual/native staged+unstaged+untracked result, and add unavailable selected commit/root-tree rejections with live promisor controls rather than only an invalid selector. These16 monitor leaves supersede the initial eight-leaf monitor draft; all prior locality/configuration/native controls remain. The complete inventory is now238 records. No product implementation is present or edited.
+
+Final complete fresh-cycle verification runs238 records in86.538s with51 failure records/48 genuine terminal leaves:44 attempt fetch and8 invoke the agent-shaped monitor, with4 overlapping. All41 legacy and146 other records pass;0 skips/errors/diagnostics. Exact testcase inventory, seven eval/interface hashes, six unchanged implementation hashes and no new implementation files are independently checked. Restricted pre-freeze review reports No findings after the nonempty-result/required-object monitor strengthening. Explicit setup..b4195b2 history passes395 commits/inner+outer diagnostics[].
+
+Independent native split-index controls show core.fsmonitor=false is interpreted as an external false command on installed Git2.30.1, while an empty value suppresses callbacks and retains the exact native shared-index path. Any implementation choice must actually prevent callbacks rather than rely on modern boolean interpretation. This native experiment changes no eval/product source. EVALS done must repeat full enforcement before fresh formal audit.
+
 ## Rejected alternatives
 
 An environment hint or failed network request after the fact does not prevent fetch. Requiring all repository objects would reject the demonstrated valid comparisons. Returning a local branch after a broken preferred tracking target changes the configured base. Weakening frozen dependent/native evals, losing built-in comparison behavior, editing another module or calling the bootstrap to implement the product would hide rather than repair the problem.
+
+## Provenance
+
+- evals | 2026-10-23T23:12:36Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 238 | failing: 51 | passing: 187
