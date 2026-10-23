@@ -7,6 +7,7 @@ import (
 	"path"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/gitstore"
@@ -132,7 +133,9 @@ func Build(snapshot project.Snapshot, slug string) (out model.WorkerContext, err
 		return out, readError(".fireweed/playbooks/"+bookName+".md", bookErr)
 	}
 	out.Playbook, out.PlaybookHash = book.Text, book.Hash
-	inventory := gitstore.Run(context.Background(), repo.Root, []string{"git", "--no-optional-locks", "-c", "core.fsmonitor=false", "-c", "core.hooksPath=" + os.DevNull, "ls-files", "-z", "--cached", "--others", "--exclude-standard"}, []string{"GIT_OPTIONAL_LOCKS=0", "GIT_TERMINAL_PROMPT=0"})
+	inventoryContext, cancelInventory := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancelInventory()
+	inventory := gitstore.Run(inventoryContext, repo.Root, []string{"git", "--no-optional-locks", "-c", "core.fsmonitor=false", "-c", "core.hooksPath=" + os.DevNull, "ls-files", "-z", "--cached", "--others", "--exclude-standard"}, []string{"GIT_OPTIONAL_LOCKS=0", "GIT_TERMINAL_PROMPT=0"})
 	if inventory.Err != nil || inventory.Exit != 0 {
 		return out, readError(repo.Root, fmt.Errorf("Git file enumeration failed (exit %d): %v %s", inventory.Exit, inventory.Err, inventory.Output))
 	}

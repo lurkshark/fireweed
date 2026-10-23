@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: impl
+phase: applied
 run: 257858feeacf1af4c566b166
 ---
 
@@ -51,6 +51,10 @@ This is the default manual transaction; saved-attempt restoration belongs to Sta
 
 Regeneration rollback holds only the exact files deleted by this transaction and does not expose their contents in worker context or persist an old-code oracle. Generated replacement code and required real-agent drills remain future execution gates. A drill report is current only when its recorded passing base covers the module's reachable apply history; another module's later apply does not stale it. Current passing report metadata uses the reference's result: pass and base_commit fields. Histories are interpreted through archived change state and module identity, never commit subjects.
 
+Local Git object availability is checked before object reads because Apple Git 2.30 ignores GIT_NO_LAZY_FETCH. Enumerating local object identities does not read historical implementation bodies or select base content. Exact base file lookup uses the pinned commit and known local tree/blob objects; unavailable content remains unapproved. Ancestry and drill freshness use actual local commit/archive state, with archived module/run identities distinguishing new applies from inherited records or mere renames. No old implementation backup is persisted.
+
+Reservation uses a unique opaque nonce until exact started bytes replace State. Keeping the original atomic Git command outcome preserves useful lost-response detail; cleanup may release only the matching object token. Required context inventory receives a bounded subprocess context. Git metadata writes use the same local Fireweed committer identity as claim storage, without changing the parent environment.
+
 ## Rejected alternatives
 
 Starting from dirty work risks committing unrelated work and violates the manual lifecycle. Treating an existing same-owner claim as implicit resume could overwrite active work. Writing state before atomic reservation loses linked-worktree exclusion. Leaving allocated bytes or partial regeneration deletions after a context error breaks recoverability. Releasing by slug without its exact token can delete a concurrent winner. Approval by filename or spec hashes alone loses authored intent; unconditional approval-layout exemptions would hide allocator regressions. Running hooks during start conflates startup with verify. Recursive directory removal and matching disposable globs without zone precedence can destroy retained contracts.
@@ -63,3 +67,4 @@ No findings. Checked FLOW-032, FLOW-033, FLOW-034, FLOW-035, FLOW-036, FLOW-037,
 
 - evals | 2026-10-23T11:22:02Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1728 | failing: 135 | passing: 1593
 - audit | 2026-10-23T11:24:44Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- impl | 2026-10-23T11:55:07Z | agent: manual | fireweed: 0.4.0 | playbook: 653912b194316c62181f62d0a69dc213f7668481ea8b1b9926ef889dd48a9e08 | tests: 2003 | failing: 0 | passing: 2003
