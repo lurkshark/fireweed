@@ -4,7 +4,7 @@ fixes:
     - FLOW-009
     - FLOW-010
 module: workflow
-phase: audit
+phase: evals
 run: 288cf71ec47c45aee437c6c6
 ---
 
@@ -35,3 +35,9 @@ Parsing or stripping warning-looking lines from merged stdout loses byte-exact p
 ## Provenance
 
 - evals | 2026-10-23T00:31:10Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1098 | failing: 20 | passing: 1078
+- audit | 2026-10-23T00:36:48Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+- FLOW-009: "UpdateClaim MUST require the exact current Claim, including its Object token" — missing direct UpdateClaim assertions under active replacement JSON/type views: the original stored previous Claim must remain usable, and a previous Claim forged from replacement-view fields must be rejected without changing ownership. Current replacement cases call only LoadClaim and Claims.
+- FLOW-009: "ReleaseClaim MUST atomically delete only the named ref matching the supplied full Object token" — missing direct ReleaseClaim success assertions with active replacement JSON/type views, using the original valid full token and verifying replacement refs remain unchanged; warned releases and read-only replacement calls do not establish that outcome.
