@@ -641,6 +641,20 @@ func Test_FLOW020_FLOW021ExactApprovalSelectors(t *testing.T) {
 					claimGit(t, f.Root, "update-ref", "-d", "refs/fireweed/claims/current", f.Claim.Object)
 				}
 				if slug == "cur" {
+					if claimed {
+						exact := f.Claim
+						exact.Change = "cur"
+						exact.Object = claimRaw(t, f.Root, "cur", claimPayload(t, exact))
+						stored, err := w.LoadClaim(f.Root, "cur")
+						if err != nil || stored != exact {
+							t.Fatalf("exact partial-selector claim control: %+v %v", stored, err)
+						}
+						for _, change := range baseline.Changes {
+							if change.Slug == "cur" {
+								t.Fatal("partial-selector baseline unexpectedly contains exact slug")
+							}
+						}
+					}
 					approvalError(t, f.Root, slug, "C05")
 					return
 				}
