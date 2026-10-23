@@ -543,18 +543,7 @@ func worktreeTraps(t *testing.T, denyCollection bool) (string, string) {
 	t.Helper()
 	traps := t.TempDir()
 	marker := filepath.Join(traps, "forbidden")
-	realGit, err := exec.LookPath("git")
-	if err != nil {
-		t.Fatal(err)
-	}
-	deny := "fetch|push|clone|ls-remote|commit|branch|checkout|switch|reset|restore|add|worktree|update-ref|hash-object"
-	if denyCollection {
-		deny += "|diff|ls-files"
-	}
-	script := "#!/bin/sh\nfor a in \"$@\"; do case \"$a\" in " + deny + ") printf attempted >> " + claimQuote(marker) + ";exit 97;;esac;done\nexec " + claimQuote(realGit) + " \"$@\"\n"
-	if err := os.WriteFile(filepath.Join(traps, "git"), []byte(script), 0755); err != nil {
-		t.Fatal(err)
-	}
+	installWorkflowReadGitProxy(t, traps, marker, false, denyCollection)
 	for _, name := range []string{"hook-trap", "agent-trap", "codex", "claude", "fireweed", "fireweed-bootstrap", "curl", "wget", "ssh", "nc"} {
 		if err := os.WriteFile(filepath.Join(traps, name), []byte("#!/bin/sh\nprintf attempted >> "+claimQuote(marker)+"\nexit 97\n"), 0755); err != nil {
 			t.Fatal(err)

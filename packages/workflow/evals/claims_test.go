@@ -598,14 +598,7 @@ func Test_FLOW011ClaimSafetyAndNativeHookControl(t *testing.T) {
 		t.Fatal(err)
 	}
 	traps := t.TempDir()
-	realGit, err := exec.LookPath("git")
-	if err != nil {
-		t.Fatal(err)
-	}
-	wrapper := "#!/bin/sh\nfor a in \"$@\"; do case \"$a\" in fetch|push|clone|ls-remote|commit|branch|checkout|switch|reset|restore|add|worktree) printf forbidden >> " + claimQuote(marker) + "; exit 97;; esac; done\nexec " + claimQuote(realGit) + " \"$@\"\n"
-	if err := os.WriteFile(filepath.Join(traps, "git"), []byte(wrapper), 0755); err != nil {
-		t.Fatal(err)
-	}
+	installWorkflowReadGitProxy(t, traps, marker, true, false)
 	for _, name := range []string{"hook-trap", "agent-trap", "codex", "claude", "fireweed", "fireweed-bootstrap", "curl", "wget", "ssh", "nc"} {
 		if err := os.WriteFile(filepath.Join(traps, name), []byte("#!/bin/sh\nprintf forbidden >> "+claimQuote(marker)+"\nexit 97\n"), 0755); err != nil {
 			t.Fatal(err)

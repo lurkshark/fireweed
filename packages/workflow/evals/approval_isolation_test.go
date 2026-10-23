@@ -280,8 +280,9 @@ func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil||json.Unm
 
 			// Inspect object bodies only by approved identity, never by current revision/path.
 			real := protocolRealGit(t)
-			tree := protocolGit(t, real, f.Root, "", "--no-replace-objects", "ls-tree", "-r", "-z", fixtureBase)
+			tree := protocolGit(t, real, f.Root, "", "--no-replace-objects", "ls-tree", "-r", "-t", "-z", fixtureBase)
 			allowed := []string{fixtureBase}
+			trees := map[string]bool{strings.TrimSpace(protocolGit(t, real, f.Root, "", "rev-parse", fixtureBase+"^{tree}")): true}
 			if !current {
 				allowed = append(allowed, strings.TrimSpace(protocolGit(t, real, f.Root, "", "rev-parse", "refs/fireweed/claims/current")))
 			}
@@ -290,6 +291,9 @@ func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil||json.Unm
 				fields := strings.Fields(header)
 				if !ok || len(fields) != 3 {
 					t.Fatal("Git tree fixture record", line)
+				}
+				if fields[1] == "tree" {
+					trees[fields[2]] = true
 				}
 				if path == "fireweed.yaml" || (strings.HasPrefix(path, "units/") && strings.Count(path, "/") == 2 && strings.HasSuffix(path, "/SPEC.md")) || (strings.HasPrefix(path, "changes/") && strings.Count(path, "/") == 1) || (strings.HasPrefix(path, "changes/archive/") && strings.Count(path, "/") == 2) {
 					allowed = append(allowed, fields[2])
@@ -315,15 +319,14 @@ func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil||json.Unm
 
 			dir := t.TempDir()
 			marker := filepath.Join(dir, "forbidden")
-			reject := "printf attempted >> " + claimQuote(marker) + "; exit 93"
-			script := "#!/bin/sh\nfor a in \"$@\"; do case \"$a\" in fetch|push|clone|ls-remote|commit|branch|checkout|switch|reset|restore|add|worktree|update-ref|hash-object|show|archive|refs/fireweed/claims|refs/fireweed/claims/) " + reject + ";; esac; done\nbody=0; tree=0; last=''; for a in \"$@\"; do [ \"$a\" = cat-file ] && body=1; [ \"$a\" = ls-tree ] && tree=1; last=$a; done\nif [ \"$body\" = 1 ]; then case \"$last\" in " + strings.Join(allowed, "|") + ") ;; *) " + reject + ";; esac; fi\nif [ \"$tree\" = 1 ] && [ \"$last\" != " + claimQuote(fixtureBase) + " ]; then " + reject + "; fi\nexec " + claimQuote(real) + " \"$@\"\n"
-			if kind == "invalid-selector" {
-				script = "#!/bin/sh\n" + reject + "\n"
+
+			content := map[string]bool{}
+			for _, id := range allowed {
+				content[id] = true
 			}
-			worktreePut(t, dir, "git", script)
-			if err := os.Chmod(filepath.Join(dir, "git"), 0755); err != nil {
-				t.Fatal(err)
-			}
+			policy := approvalGitPolicy{Real: real, Marker: marker, Base: fixtureBase, Selected: "refs/fireweed/claims/current", Root: f.Root, Content: content, Trees: trees, RejectAll: kind == "invalid-selector"}
+			installApprovalGitProxy(t, dir, policy)
+			approvalGitObserverControls(t, f.Root, dir, policy, private, current)
 			out, _, err := protocolCommand(t, filepath.Join(dir, "git"), f.Root, "", "cat-file", "blob", private)
 			if err == nil || out != "" {
 				t.Fatal("unselected body denial control", err, out)
