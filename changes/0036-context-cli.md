@@ -1,6 +1,6 @@
 ---
 module: app
-phase: audit
+phase: impl
 run: 8baf00c555aa2a3caf96dc64
 ---
 
@@ -44,7 +44,8 @@ Loading current project metadata before claim ownership would let worker config 
 - evals | 2026-10-23T02:50:51Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 251 | failing: 50 | passing: 201
 - audit | 2026-10-23T02:54:02Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-23T03:00:14Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 275 | failing: 50 | passing: 225
+- audit | 2026-10-23T03:01:26Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- APP-021: "It MUST inspect only the exact selected claim rather than require every claim to decode" — missing assertion: the Git proxy permits bare show-ref and rev-parse --all, both of which inventory unrelated claim refs without an explicit refs/fireweed/claims argument. Its token guard therefore does not mark these broad reads, and an ignored inventory attempt still passes the subject assertions. Add independently controlled denials for broad inventory through these permitted commands while retaining allowed exact-ref inspection controls.
+No findings. Checked APP-019, APP-020 and APP-021.
