@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: audit
+phase: evals
 run: db1ac372ae0406218e1ccab6
 ---
 
@@ -43,3 +43,10 @@ Approving every file that exists on base accepts changed unauthorized intent. By
 ## Provenance
 
 - evals | 2026-10-23T04:48:41Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1392 | failing: 73 | passing: 1319
+- audit | 2026-10-23T04:54:30Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+- FLOW-028: "Current input MUST be checked even when baseText is absent or malformed." — missing assertion that a validly parsed current document targeting another module still returns corrective C05 when the base is absent or malformed. Those base conditions are combined only with current parser errors; the wrong-target case uses a valid base, so checking target equality after an early base rejection would pass.
+- FLOW-029: "the exact sections Decisions, Questions, Audit, Provenance and Notes MUST be excluded" — missing assertion that same-case prefix lookalikes such as `Notes appendix` or `Audit details` remain significant. Existing excluded-name negatives exercise case folding, but a prefix-based exclusion would still pass them.
+- FLOW-030: "every local Added handle in baseText MUST map positionally to the corresponding current Added ID or handle" — missing a matching valid pair whose base Added list mixes a fixed real ID and a local handle. Current positive bases have only handles or only real IDs, so an implementation that maps handles only when every base Added item is a handle would pass. Construct the mixed fixture directly under the public change grammar, retaining the real ID while mapping the local handle.
