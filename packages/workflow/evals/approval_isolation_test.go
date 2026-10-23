@@ -106,17 +106,18 @@ static int approval_readat(int d,const char*p){const char*base=strrchr(p,'/');in
 */
 import "C"
 import("encoding/json";"os";"fmt";"strings";"reflect";"net";"time";p "github.com/lurkshark/fireweed/packages/project";w "github.com/lurkshark/fireweed/packages/workflow")
-type record struct {Root,Start,Slug,Git,Blocked,Error string;Expected p.Snapshot;Claim w.Claim;Current bool}
+type record struct {Root,Start,Slug,Git,Blocked,Error,Object string;Expected p.Snapshot;Claim w.Claim;Current bool}
 func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil||json.Unmarshal(raw,&in)!=nil {os.Exit(80)}
  mode:=os.Args[1];target:=os.Args[3]
- if mode=="fixture-control" {if in.Root==""||in.Expected.Modules==nil||in.Expected.Diagnostics==nil {os.Exit(81)};return}
+ if in.Claim.Object!="" {os.Exit(88)};in.Claim.Object=in.Object
+ if mode=="fixture-control" {if in.Root==""||in.Expected.Modules==nil||in.Expected.Diagnostics==nil||in.Object!=target||((in.Claim.Change=="")!=(in.Object=="")) {os.Exit(81)};return}
  fd:=-1;if mode=="readat-control"||mode=="allowed-readat" {fd=int(C.fw_approval_prepare(C.CString(target)));if fd<0 {os.Exit(82)}}
  root:=C.CString(in.Root);if in.Current {root=nil}
  arm:=1;if mode=="no-io"||mode=="metadata-control" {arm=2}
  C.fw_approval_arm(C.int(arm),root,C.CString(in.Git),C.CString(in.Blocked))
  switch mode {case "read-control":os.ReadFile(target);os.Exit(75);case "readat-control":C.approval_readat(C.int(fd),C.CString(target));os.Exit(76);case "allowed-readat":ok:=C.approval_readat(C.int(fd),C.CString(target));C.fw_approval_arm(0,nil,nil,nil);if ok!=1 {os.Exit(77)};return;case "network-control":net.DialTimeout("tcp",target,time.Second);os.Exit(78);case "stdin-control":b:=make([]byte,1);os.Stdin.Read(b);os.Exit(79);case "prompt-control":fmt.Print("prompt");os.Exit(83);case "write-control":os.WriteFile(target,[]byte("forbidden"),0600);os.Exit(84);case "metadata-control":os.Stat(target);os.Exit(85)}
  if mode=="source-control" {var source p.Snapshot;if in.Current {source,err=p.Load(in.Start)}else{source,err=p.LoadAt(in.Start,in.Claim.Base)};C.fw_approval_arm(0,nil,nil,nil);if err!=nil||source.Root!=in.Root||len(source.Modules)==0 {fmt.Fprint(os.Stderr,err);os.Exit(86)};return}
- if mode=="claim-control" {cl,err:=w.LoadClaim(in.Start,"current");C.fw_approval_arm(0,nil,nil,nil);if err!=nil||cl.Run!=in.Claim.Run||cl.Base!=in.Claim.Base||cl.State!=in.Claim.State||cl.Worktree!=in.Claim.Worktree {fmt.Fprint(os.Stderr,err);os.Exit(87)};return}
+ if mode=="claim-control" {cl,err:=w.LoadClaim(in.Start,"current");C.fw_approval_arm(0,nil,nil,nil);if err!=nil||cl!=in.Claim {fmt.Fprint(os.Stderr,err);os.Exit(87)};return}
  got,cl,err:=w.LoadApproval(in.Start,in.Slug)
  C.fw_approval_arm(0,nil,nil,nil)
  if in.Error!="" {if err==nil||!strings.Contains(err.Error(),in.Error)||!reflect.DeepEqual(got,p.Snapshot{})||cl!=(w.Claim{}) {fmt.Fprintf(os.Stderr,"wrong rejection %%v %%+v %%+v",err,got,cl);os.Exit(10)};return}
@@ -142,7 +143,7 @@ func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil||json.Unm
 	fixture := approvalFixture(t, "impl", "sha1", true)
 	input := func(f approvalFixtureData, current bool, code, slug string, extra []string) string {
 		t.Helper()
-		value := map[string]any{"Root": f.Root, "Start": f.Root, "Slug": slug, "Git": claimCommon(t, f.Root), "Blocked": strings.Join(extra, "\n"), "Expected": f.Want, "Claim": f.Claim, "Error": code, "Current": current}
+		value := map[string]any{"Root": f.Root, "Start": f.Root, "Slug": slug, "Git": claimCommon(t, f.Root), "Blocked": strings.Join(extra, "\n"), "Expected": f.Want, "Claim": f.Claim, "Object": f.Claim.Object, "Error": code, "Current": current}
 		raw, err := json.Marshal(value)
 		if err != nil {
 			t.Fatal(err)
@@ -159,7 +160,7 @@ func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil||json.Unm
 		return cmd.CombinedOutput()
 	}
 	record := input(fixture, false, "", "current", nil)
-	if out, err := run(fixture.Root, "fixture-control", record, ""); err != nil {
+	if out, err := run(fixture.Root, "fixture-control", record, fixture.Claim.Object); err != nil {
 		t.Fatalf("serialized fixture control %v %s", err, out)
 	}
 	for _, path := range []string{"fireweed.yaml", "units/a/SPEC.md", "changes/0002-current.md", "changes/archive/0009-earlier.md", "SYSTEM.md", "units/a/e/current.txt", "units/a/impl/private.txt", "private/secret.txt", "shared/contract.txt", ".fireweed/playbooks/impl.md"} {
@@ -237,11 +238,11 @@ func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil||json.Unm
 				}
 			case "foreign":
 				f.Claim.Worktree = outside
-				claimRaw(t, f.Root, "current", claimPayload(t, f.Claim))
+				f.Claim.Object = claimRaw(t, f.Root, "current", claimPayload(t, f.Claim))
 				code = "P02"
 			case "reservation":
 				f.Claim.State = ""
-				claimRaw(t, f.Root, "current", claimPayload(t, f.Claim))
+				f.Claim.Object = claimRaw(t, f.Root, "current", claimPayload(t, f.Claim))
 				code = "P02"
 			case "malformed":
 				claimRaw(t, f.Root, "current", "invalid")
@@ -301,6 +302,9 @@ func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil||json.Unm
 			}
 			extra = append(extra, loose)
 			record = input(f, current, code, slug, extra)
+			if out, err := run(f.Root, "fixture-control", record, f.Claim.Object); err != nil {
+				t.Fatalf("explicit expected token serialization control %v %s", err, out)
+			}
 			for _, readMode := range []string{"read-control", "readat-control"} {
 				out, err := run(f.Root, readMode, record, loose)
 				exit, ok := err.(*exec.ExitError)
@@ -312,7 +316,7 @@ func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil||json.Unm
 			dir := t.TempDir()
 			marker := filepath.Join(dir, "forbidden")
 			reject := "printf attempted >> " + claimQuote(marker) + "; exit 93"
-			script := "#!/bin/sh\nfor a in \"$@\"; do case \"$a\" in fetch|push|clone|ls-remote|commit|branch|checkout|switch|reset|restore|add|worktree|update-ref|hash-object|show|archive) " + reject + ";; esac; done\nbody=0; tree=0; last=''; for a in \"$@\"; do [ \"$a\" = cat-file ] && body=1; [ \"$a\" = ls-tree ] && tree=1; last=$a; done\nif [ \"$body\" = 1 ]; then case \"$last\" in " + strings.Join(allowed, "|") + ") ;; *) " + reject + ";; esac; fi\nif [ \"$tree\" = 1 ] && [ \"$last\" != " + claimQuote(fixtureBase) + " ]; then " + reject + "; fi\nexec " + claimQuote(real) + " \"$@\"\n"
+			script := "#!/bin/sh\nfor a in \"$@\"; do case \"$a\" in fetch|push|clone|ls-remote|commit|branch|checkout|switch|reset|restore|add|worktree|update-ref|hash-object|show|archive|refs/fireweed/claims|refs/fireweed/claims/) " + reject + ";; esac; done\nbody=0; tree=0; last=''; for a in \"$@\"; do [ \"$a\" = cat-file ] && body=1; [ \"$a\" = ls-tree ] && tree=1; last=$a; done\nif [ \"$body\" = 1 ]; then case \"$last\" in " + strings.Join(allowed, "|") + ") ;; *) " + reject + ";; esac; fi\nif [ \"$tree\" = 1 ] && [ \"$last\" != " + claimQuote(fixtureBase) + " ]; then " + reject + "; fi\nexec " + claimQuote(real) + " \"$@\"\n"
 			if kind == "invalid-selector" {
 				script = "#!/bin/sh\n" + reject + "\n"
 			}
@@ -327,6 +331,10 @@ func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil||json.Unm
 			if _, err := os.Stat(marker); err != nil {
 				t.Fatal("body denial control not reached")
 			}
+			if out, _, err := protocolCommand(t, filepath.Join(dir, "git"), f.Root, "", "for-each-ref", "--format=%(refname)", "refs/fireweed/claims/"); err == nil || out != "" {
+				t.Fatal("claim inventory denial control", err, out)
+			}
+
 			if err := os.Remove(marker); err != nil {
 				t.Fatal(err)
 			}

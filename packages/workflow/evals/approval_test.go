@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -191,7 +192,7 @@ func Test_FLOW020_FLOW021DeletedCurrentMetadata(t *testing.T) {
 	}
 }
 func Test_FLOW020_FLOW022InvalidApprovalSources(t *testing.T) {
-	for _, mode := range []string{"foreign", "reservation", "invalid-state", "missing-run", "missing-phase", "applied", "wrong-run", "wrong-target", "missing-base", "malformed", "symbolic", "absent-selected", "archive-only", "missing-target", "duplicate-target", "duplicate-change", "nested-path", "inspection-failure", "no-config"} {
+	for _, mode := range []string{"foreign", "reservation", "invalid-state", "missing-run", "missing-phase", "applied", "wrong-run", "wrong-target", "missing-base", "malformed", "symbolic", "dangling-symbolic", "missing-object", "nonblob", "absent-selected", "archive-only", "missing-target", "duplicate-target", "duplicate-change", "nested-path", "inspection-failure", "no-config"} {
 		t.Run(mode, func(t *testing.T) {
 			f := approvalFixture(t, "impl", "sha1", false)
 			code := "P02"
@@ -216,8 +217,17 @@ func Test_FLOW020_FLOW022InvalidApprovalSources(t *testing.T) {
 				f.Claim.Base = strings.Repeat("f", len(f.Claim.Base))
 			case "malformed":
 				claimRaw(t, f.Root, "current", "not JSON")
-			case "symbolic":
-				claimGit(t, f.Root, "symbolic-ref", "refs/fireweed/claims/current", "refs/heads/main")
+			case "symbolic", "dangling-symbolic":
+				target := "refs/heads/main"
+				if mode == "dangling-symbolic" {
+					target = "refs/heads/missing-owner-target"
+				}
+				claimGit(t, f.Root, "symbolic-ref", "refs/fireweed/claims/current", target)
+			case "missing-object":
+				worktreePut(t, claimCommon(t, f.Root), "refs/fireweed/claims/current", strings.Repeat("f", len(f.Claim.Object))+"\n")
+			case "nonblob":
+				claimGit(t, f.Root, "update-ref", "refs/fireweed/claims/current", f.Claim.Base)
+
 			case "inspection-failure":
 				if os.PathSeparator == '\\' {
 					t.Skip("POSIX selected-ref fault injection")
@@ -271,13 +281,27 @@ func Test_FLOW020_FLOW022InvalidApprovalSources(t *testing.T) {
 				f.Claim.Object = claimRaw(t, f.Root, "current", claimPayload(t, f.Claim))
 			}
 			var detail string
+			var stateDetails []string
 			switch mode {
-			case "malformed", "symbolic", "missing-base":
+			case "malformed", "symbolic", "dangling-symbolic", "missing-object", "nonblob", "missing-base":
 				_, underlying := w.LoadClaim(f.Root, "current")
 				if underlying == nil {
 					t.Fatal("public claim error premise")
 				}
 				detail = underlying.Error()
+			case "invalid-state", "missing-run", "missing-phase", "applied", "wrong-target":
+				_, underlying := c.ParseChange(f.Claim.State, f.Path, "ALP")
+				if underlying != nil {
+					detail = underlying.Error()
+				} else {
+					ds := w.CheckState(f.Want.Modules[0], f.Claim.State, f.Claim.State, f.Path)
+					if len(ds) == 0 {
+						t.Fatal("public approved-state rejection premise missing")
+					}
+					for _, d := range ds {
+						stateDetails = append(stateDetails, d.Message)
+					}
+				}
 			case "inspection-failure":
 				detail = "selected claim read failed"
 			case "no-config":
@@ -291,6 +315,12 @@ func Test_FLOW020_FLOW022InvalidApprovalSources(t *testing.T) {
 			if detail != "" && !strings.Contains(err.Error(), detail) {
 				t.Fatalf("lost underlying public detail %q: %v", detail, err)
 			}
+			for _, detail := range stateDetails {
+				if detail == "" || !strings.Contains(err.Error(), detail) {
+					t.Fatalf("lost public approved-state problem %q: %v", detail, err)
+				}
+			}
+
 		})
 	}
 	for _, slug := range []string{"", "Upper", " current", "../current", "current/other", "-option", "current\x00"} {
@@ -360,6 +390,9 @@ func Test_FLOW023ApprovalResultOwnership(t *testing.T) {
 	}
 }
 func Test_FLOW023ApprovalReadOnlyState(t *testing.T) {
+	if os.PathSeparator == '\\' {
+		t.Skip("POSIX configured/native hook controls; portable approval cases run separately")
+	}
 	for _, linked := range []bool{false, true} {
 		for _, mode := range []string{"claimed", "unclaimed", "foreign", "invalid", "absent"} {
 			t.Run(fmt.Sprint(linked)+"/"+mode, func(t *testing.T) {
@@ -386,10 +419,22 @@ func Test_FLOW023ApprovalReadOnlyState(t *testing.T) {
 				native := contextNativeHook(t, f.Root)
 				traps, marker := worktreeTraps(t, false)
 				for _, name := range []string{"context-hook-trap", "context-agent-trap"} {
-					worktreePut(t, traps, name, "#!/bin/sh\nexit 97\n")
+					worktreePut(t, traps, name, "#!/bin/sh\nprintf attempted >> "+claimQuote(marker)+"\nexit 97\n")
 					if err := os.Chmod(filepath.Join(traps, name), 0755); err != nil {
 						t.Fatal(err)
 					}
+					_, _, err := protocolCommand(t, filepath.Join(traps, name), f.Root, "")
+					exit, ok := err.(*exec.ExitError)
+					if !ok || exit.ExitCode() != 97 {
+						t.Fatal("configured command control did not exit as expected", name, err)
+					}
+					if _, err := os.Stat(marker); err != nil {
+						t.Fatal("configured command marker control", name, err)
+					}
+					if err := os.Remove(marker); err != nil {
+						t.Fatal(err)
+					}
+
 				}
 				tmp := stateCanonicalDirectory(t, t.TempDir())
 				t.Setenv("TMPDIR", tmp)
@@ -566,5 +611,56 @@ func Test_FLOW020ApprovalWithGitWarnings(t *testing.T) {
 			protocolWarnings(t, f.Root)
 			approvalAssert(t, f.Root, f)
 		})
+	}
+}
+
+func Test_FLOW020_FLOW021ExactApprovalSelectors(t *testing.T) {
+	for _, claimed := range []bool{false, true} {
+		for _, slug := range []string{"current", "cur", "current-neighbor", "current-bad"} {
+			t.Run(fmt.Sprint(claimed)+"/"+slug, func(t *testing.T) {
+				f := approvalFixture(t, "impl", "sha1", false)
+				neighbor := "---\nmodule: alpha\n---\n\n## Motivation\n\nA separate prefix-neighbor maintenance change.\n"
+				worktreePut(t, f.Root, "changes/0042-current-neighbor.md", neighbor)
+				f.Claim.Base = approvalCommit(t, f.Root)
+				f.Claim.Object = claimRaw(t, f.Root, "current", claimPayload(t, f.Claim))
+				claimRaw(t, f.Root, "current-bad", "invalid prefix-neighbor claim")
+				baseline, err := p.LoadAt(f.Root, f.Claim.Base)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if len(baseline.Changes) != 4 || baseline.Changes[3].Slug != "current-neighbor" {
+					t.Fatal("prefix-neighbor queue premise")
+				}
+				parsed, err := c.ParseChange(f.Claim.State, f.Path, "ALP")
+				if err != nil {
+					t.Fatal(err)
+				}
+				baseline.Changes[1] = parsed
+				f.Want = baseline
+				if !claimed {
+					claimGit(t, f.Root, "update-ref", "-d", "refs/fireweed/claims/current", f.Claim.Object)
+				}
+				if slug == "cur" {
+					approvalError(t, f.Root, slug, "C05")
+					return
+				}
+				if slug == "current-bad" {
+					approvalError(t, f.Root, slug, "P02")
+					return
+				}
+				if slug == "current" && claimed {
+					approvalAssert(t, f.Root, f)
+					return
+				}
+				want, err := p.Load(f.Root)
+				if err != nil {
+					t.Fatal(err)
+				}
+				got, cl, err := w.LoadApproval(f.Root, slug)
+				if err != nil || cl != (w.Claim{}) || !reflect.DeepEqual(got, want) {
+					t.Fatalf("exact unclaimed selector %s: %+v %v", slug, cl, err)
+				}
+			})
+		}
 	}
 }
