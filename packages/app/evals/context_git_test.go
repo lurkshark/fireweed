@@ -93,7 +93,7 @@ func cliContextGitProxy(t *testing.T, root string) (directory, marker, loose str
 	directory = t.TempDir()
 	marker = filepath.Join(directory, "forbidden")
 	reject := "printf '%s\\n' \"$@\" >> " + coverageQuote(marker) + ";exit 93"
-	script := "#!/bin/sh\nop='';skip=0;last='';for a in \"$@\";do last=$a;case \"$a\" in refs/fireweed/claims/current|refs/fireweed/claims/current'^{object}'|refs/fireweed/claims/current'^{}') ;; refs/fireweed/claims*) " + reject + ";;esac;if [ -z \"$op\" ];then if [ \"$skip\" = 1 ];then skip=0;continue;fi;case \"$a\" in -c|--git-dir|--work-tree) skip=1;; -C) " + reject + ";; -*) ;; *) op=$a;;esac;fi;done\ncase \"$op\" in rev-parse|symbolic-ref|show-ref|check-ref-format|ls-files) ;; cat-file) case \"$last\" in " + strings.Join(allowed, "|") + ") ;; *) " + reject + ";;esac;; ls-tree) [ \"$last\" = " + coverageQuote(base) + " ] || { " + reject + "; };; *) " + reject + ";;esac\nexec " + coverageQuote(real) + " \"$@\"\n"
+	script := "#!/bin/sh\nop='';skip=0;last='';verify=0;for a in \"$@\";do last=$a;case \"$a\" in --verify) verify=1;; --exclude-standard) ;; --all|--glob|--glob=*|--branches*|--tags*|--remotes*|--exclude*|--batch*|--stdin) " + reject + ";; refs/fireweed/claims/current|refs/fireweed/claims/current'^{object}'|refs/fireweed/claims/current'^{}') ;; refs/fireweed/claims*) " + reject + ";;esac;if [ -z \"$op\" ];then if [ \"$skip\" = 1 ];then skip=0;continue;fi;case \"$a\" in -c|--git-dir|--work-tree) skip=1;; -C) " + reject + ";; -*) ;; *) op=$a;;esac;fi;done\ncase \"$op\" in show-ref) [ \"$verify\" = 1 ] || { " + reject + "; };case \"$last\" in refs/*|HEAD) ;; *) " + reject + ";;esac;; rev-parse|symbolic-ref|check-ref-format|ls-files) ;; cat-file) case \"$last\" in " + strings.Join(allowed, "|") + ") ;; *) " + reject + ";;esac;; ls-tree) [ \"$last\" = " + coverageQuote(base) + " ] || { " + reject + "; };; *) " + reject + ";;esac\nexec " + coverageQuote(real) + " \"$@\"\n"
 	projectPut(t, directory, "git", script)
 	binary := filepath.Join(directory, "git")
 	if err := os.Chmod(binary, 0755); err != nil {
@@ -107,6 +107,14 @@ func cliContextGitProxy(t *testing.T, root string) (directory, marker, loose str
 		{"for-each-ref", "--format=%(refname)"},
 		{"rev-parse", "--verify", "refs/fireweed/claims/current-neighbor"},
 		{"log", "-p", "--all"},
+		{"show-ref"},
+		{"show-ref", "--head"},
+		{"rev-parse", "--all"},
+		{"rev-parse", "--glob=refs/*"},
+		{"rev-parse", "--glob", "refs/*"},
+		{"rev-parse", "--branches"},
+		{"cat-file", "--batch-all-objects"},
+		{"rev-parse", "--exclude=refs/heads/*", "--all"},
 	}
 	for i, args := range forbidden {
 		t.Run("git-forbidden-control-"+string(rune('a'+i)), func(t *testing.T) {
