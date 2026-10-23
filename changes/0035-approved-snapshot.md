@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: audit
+phase: evals
 run: 4f474a62c65de2db4e4cc261
 ---
 
@@ -45,11 +45,8 @@ Reloading current config/SPEC before examining ownership lets worker edits selec
 - evals | 2026-10-23T01:19:08Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1220 | failing: 86 | passing: 1134
 - audit | 2026-10-23T01:24:56Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-23T01:39:14Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1232 | failing: 98 | passing: 1134
+- audit | 2026-10-23T01:42:56Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- FLOW-020: "return that exact Claim, including Object" — the native probe serializes its expected Claim through the public type, whose Object field has json:"-", then compares the returned Claim with that decoded value. The expected token is therefore empty, so a correct claimed result with its nonempty Object fails. Serialize the expected token separately and establish its preservation before the subject assertion.
-- FLOW-020: "It MUST inspect only the exact selected shared claim ref, independently of other claims" — the unrelated malformed ref has no prefix relationship to current. No near-prefix ref or absent-exact/present-prefix case distinguishes exact-ref inspection from prefix-based lookup.
-- FLOW-021: "select exactly one queued change by exact Slug" — selectors and queue fixtures never distinguish a partial selector or a prefix-neighbor slug from current, in either source. Prefix matching can satisfy the current success, missing-name and duplicate-exact cases.
-- FLOW-022: "claim lookup/decoding, ownership, baseline loading or approved State/identity failures MUST fail with corrective P02 and preserve useful underlying public error details" — invalid approved-state grammar, missing run/phase and applied-phase cases assert only generic corrective P02. They do not establish and assert retention of the corresponding public ParseChange/CheckState problem detail.
-- FLOW-023: "execute hooks/agents/bootstrap/network commands" — the read-only-state fixture replaces context-hook-trap and context-agent-trap with exit-only scripts. Unlike the other command traps, these configured commands leave no forbidden marker, so ignored invocations are undetected. Give both scripts marker-writing controls before checking the subject.
+- FLOW-021: "In either source LoadApproval MUST select exactly one queued change by exact Slug" — the cur selector has no selected cur claim in either claimed loop variant, so both negative partial-selector cases use the unclaimed source. Claimed current with a prefix-neighbor rejects prefix-as-ambiguity but permits a prefix-first matcher. Add a valid exact cur claim whose baseline contains current/current-neighbor but no cur change, establish that claim through public LoadClaim, and require C05 from the claimed source.
