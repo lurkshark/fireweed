@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: impl
+phase: audit
 run: 22da0470ce4466705c23c958
 ---
 
@@ -66,8 +66,12 @@ Starting from dirty work risks committing unrelated work and violates the manual
 - evals | 2026-10-23T09:35:34Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1688 | failing: 135 | passing: 1553
 - audit | 2026-10-23T09:42:48Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-23T09:56:52Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1688 | failing: 135 | passing: 1553
-- audit | 2026-10-23T09:58:50Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-No findings. Checked FLOW-032, FLOW-033, FLOW-034, FLOW-035, FLOW-036, FLOW-037, FLOW-038, FLOW-039, FLOW-040.
+- FLOW-032: "Missing or ambiguous targets, invalid project/static queue metadata, unavailable source files and malformed selected state MUST fail with useful corrective diagnostics before creating a claim or changing working files." — Start-level selection/static/source subjects still additionally require C05 for missing or ambiguous selections and invalid queue metadata, or C01 for invalid configuration/nonrepository discovery. These Start clauses require useful corrective rejection and preservation, but do not require a particular wrapper code for those cases. Returning a useful public validation/discovery error with zero result and no mutation is compliant even when it lacks the extra required code; independent public fixture controls may retain their own specified codes.
+- FLOW-033: "Before starting, this canonical worktree MUST hold no existing claim, even for a different or no-longer-queued change." — existing-own, existing-other and orphan-own subjects require P02 although this clause does not prescribe that code for valid same-owner metadata. A corrective existing-claim rejection without P02 is compliant. The separate expressly required P02 assertions for a foreign selected claim and malformed/unreadable claim metadata must remain.
+- FLOW-033: "Concurrent competing starts MUST leave one winner; a loser MUST NOT alter the winner's claim or files." — the generic concurrent-loser assertion accepts only errors containing P01 or P02, adding a code restriction to the winner/preservation contract. A loser reporting another useful corrective ownership/recovery error while returning zero and preserving the winner satisfies this clause; reason-specific codes remain required where an expressly coded Start precondition applies.
+- FLOW-035: "Incomplete run/phase pairs, applied queued state and unresolved local Added handles in a started change MUST fail before mutation." — run-only, phase-only, applied and started-handles subjects, plus the native incomplete-state subject, additionally require C05. PRJ-015/017 require Allocate to reject these states without prescribing C05, so a useful corrective allocation/state error without that code is compliant when rejection is before mutation and returns zero.
+- FLOW-037: "Failure to construct context, including an unsafe or unreadable required retained file or playbook override, MUST fail the whole start." — context-directory, unsafe-playbook and reference-hook rollback Start subjects still require D05. Public ResolvePlaybook fixture controls may require D05, but this Start clause does not mandate copying that code into its returned error. A useful path-attributed context error with zero result and complete rollback must not fail solely for lacking D05.
+- FLOW-038: "A selected change symlink or unsafe path MUST be rejected before mutation" — the contained selected-change symlink subject additionally requires C05. The public source document can be valid through a contained symlink; Start may reject its filesystem type with a useful path-specific error such as P02 while satisfying the required pre-mutation rejection. The authored clause does not require C05.
