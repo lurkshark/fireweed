@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -19,12 +20,13 @@ func cliContextGitProxy(t *testing.T, root string) (directory, marker, loose str
 	if err != nil {
 		t.Fatal(err)
 	}
-	run := func(binary string, args ...string) (string, int) {
+	runInput := func(binary, input string, args ...string) (string, int) {
 		t.Helper()
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 		cmd := exec.CommandContext(ctx, binary, args...)
 		cmd.Dir = root
+		cmd.Stdin = strings.NewReader(input)
 		cmd.Env = append(os.Environ(), "GIT_NO_REPLACE_OBJECTS=1", "GIT_NO_LAZY_FETCH=1")
 		out, err := cmd.CombinedOutput()
 		if ctx.Err() != nil {
@@ -40,6 +42,7 @@ func cliContextGitProxy(t *testing.T, root string) (directory, marker, loose str
 		}
 		return string(out), code
 	}
+	run := func(binary string, args ...string) (string, int) { return runInput(binary, "", args...) }
 	git := func(args ...string) string {
 		t.Helper()
 		out, code := run(real, args...)
@@ -49,8 +52,10 @@ func cliContextGitProxy(t *testing.T, root string) (directory, marker, loose str
 		return out
 	}
 	base := strings.TrimSpace(git("rev-parse", "HEAD"))
-	tree := git("ls-tree", "-r", "-z", base)
+	tree := git("ls-tree", "-r", "-t", "-z", base)
 	allowed := []string{base}
+	treeIDs := map[string]bool{strings.TrimSpace(git("rev-parse", base+"^{tree}")): true}
+	paths := map[string]bool{}
 	configObject := ""
 	for _, line := range strings.Split(strings.TrimSuffix(tree, "\x00"), "\x00") {
 		header, path, ok := strings.Cut(line, "\t")
@@ -58,8 +63,12 @@ func cliContextGitProxy(t *testing.T, root string) (directory, marker, loose str
 		if !ok || len(fields) != 3 {
 			t.Fatalf("tree fixture record %q", line)
 		}
+		if fields[1] == "tree" {
+			treeIDs[fields[2]] = true
+		}
 		if path == "fireweed.yaml" || (strings.HasPrefix(path, "units/") && strings.Count(path, "/") == 2 && strings.HasSuffix(path, "/SPEC.md")) || (strings.HasPrefix(path, "changes/") && strings.Count(path, "/") == 1) || (strings.HasPrefix(path, "changes/archive/") && strings.Count(path, "/") == 2) {
 			allowed = append(allowed, fields[2])
+			paths[path] = true
 		}
 		if path == "fireweed.yaml" {
 			configObject = fields[2]
@@ -92,13 +101,12 @@ func cliContextGitProxy(t *testing.T, root string) (directory, marker, loose str
 	}
 	directory = t.TempDir()
 	marker = filepath.Join(directory, "forbidden")
-	reject := "printf '%s\\n' \"$@\" >> " + coverageQuote(marker) + ";exit 93"
-	script := "#!/bin/sh\nop='';skip=0;last='';verify=0;for a in \"$@\";do last=$a;case \"$a\" in --verify) verify=1;; --exclude-standard) ;; --all|--glob|--glob=*|--branches*|--tags*|--remotes*|--exclude*|--batch*|--stdin) " + reject + ";; refs/fireweed/claims/current|refs/fireweed/claims/current'^{object}'|refs/fireweed/claims/current'^{}') ;; refs/fireweed/claims*) " + reject + ";;esac;if [ -z \"$op\" ];then if [ \"$skip\" = 1 ];then skip=0;continue;fi;case \"$a\" in -c|--git-dir|--work-tree) skip=1;; -C) " + reject + ";; -*) ;; *) op=$a;;esac;fi;done\ncase \"$op\" in show-ref) [ \"$verify\" = 1 ] || { " + reject + "; };case \"$last\" in refs/*|HEAD) ;; *) " + reject + ";;esac;; rev-parse|symbolic-ref|check-ref-format|ls-files) ;; cat-file) case \"$last\" in " + strings.Join(allowed, "|") + ") ;; *) " + reject + ";;esac;; ls-tree) [ \"$last\" = " + coverageQuote(base) + " ] || { " + reject + "; };; *) " + reject + ";;esac\nexec " + coverageQuote(real) + " \"$@\"\n"
-	projectPut(t, directory, "git", script)
-	binary := filepath.Join(directory, "git")
-	if err := os.Chmod(binary, 0755); err != nil {
-		t.Fatal(err)
+	content := map[string]bool{}
+	for _, id := range allowed {
+		content[id] = true
 	}
+	installContextGitProxy(t, directory, contextGitPolicy{Real: real, Marker: marker, Base: base, Selected: selected, Root: root, Content: content, Trees: treeIDs, Paths: paths})
+	binary := filepath.Join(directory, "git")
 	forbidden := [][]string{
 		{"cat-file", "blob", private},
 		{"show", base + ":units/a/internal/private.txt"},
@@ -113,7 +121,7 @@ func cliContextGitProxy(t *testing.T, root string) (directory, marker, loose str
 		{"rev-parse", "--glob=refs/*"},
 		{"rev-parse", "--glob", "refs/*"},
 		{"rev-parse", "--branches"},
-		{"cat-file", "--batch-all-objects"},
+		{"cat-file", "--batch-all-objects", "--batch"},
 		{"rev-parse", "--exclude=refs/heads/*", "--all"},
 	}
 	for i, args := range forbidden {
@@ -131,9 +139,26 @@ func cliContextGitProxy(t *testing.T, root string) (directory, marker, loose str
 		})
 	}
 	// Allowed real metadata/object/ref operations must remain byte-exact.
-	for _, args := range [][]string{{"cat-file", "blob", configObject}, {"ls-tree", "-r", "-z", base}, {"show-ref", "--verify", "--quiet", selected}} {
+	rootTree := strings.TrimSpace(git("rev-parse", base+"^{tree}"))
+	queries := [][]string{{"show", base + ":fireweed.yaml"}, {"cat-file", "blob", rootTree + ":fireweed.yaml"}, {"ls-tree", "-z", base + ":units"}, {"ls-tree", "-z", rootTree + ":units"}, {"ls-tree", "-z", base + "^{tree}"}, {"cat-file", "blob", configObject}, {"ls-tree", "-r", "-z", base}, {"show-ref", "--verify", "--quiet", selected}, {"cat-file", "--batch-all-objects", "--batch-check=%(objectname)"}, {"rev-list", "--no-walk", "--missing=print", "--end-of-options", base}}
+	if claimExit == 0 {
+		queries = append(queries, []string{"cat-file", "blob", selected}, []string{"cat-file", "blob", selected + "^{object}"}, []string{"show", selected})
+	}
+	ids := []string{}
+	for id := range treeIDs {
+		ids = append(ids, id)
+	}
+	sort.Strings(ids)
+	for _, id := range ids {
+		queries = append(queries, []string{"ls-tree", "-z", id})
+	}
+	queries = append(queries, []string{"-C", root, "cat-file", "blob", configObject}, []string{"rev-list", "--no-walk", base})
+	for _, args := range queries {
 		t.Run("git-allowed-control-"+args[0], func(t *testing.T) {
 			want, wantExit := run(real, args...)
+			if wantExit != 0 && !(wantExit == 1 && args[0] == "show-ref" && claimExit == 128) {
+				t.Fatalf("allowed real operation did not execute successfully: %v exit%d %s", args, wantExit, want)
+			}
 			out, code := run(binary, args...)
 			if code != wantExit || out != want {
 				t.Fatalf("allowed metadata differs %v exit%d/%d %q/%q", args, code, wantExit, out, want)
@@ -143,5 +168,32 @@ func cliContextGitProxy(t *testing.T, root string) (directory, marker, loose str
 			}
 		})
 	}
+	t.Run("git-allowed-selected-batch-control", func(t *testing.T) {
+		args := []string{"cat-file", "--batch"}
+		want, wantExit := runInput(real, configObject+"\n", args...)
+		if wantExit != 0 || want == "" {
+			t.Fatalf("selected batch premise exit%d %s", wantExit, want)
+		}
+		got, code := runInput(binary, configObject+"\n", args...)
+		if code != wantExit || got != want {
+			t.Fatalf("selected batch differs exit%d/%d %q/%q", code, wantExit, got, want)
+		}
+		if _, e := os.Stat(marker); !os.IsNotExist(e) {
+			t.Fatal("selected batch flagged", e)
+		}
+	})
+	t.Run("git-forbidden-private-batch-control", func(t *testing.T) {
+		got, code := runInput(binary, private+"\n", "cat-file", "--batch")
+		if code != 93 || got != "" {
+			t.Fatalf("private batch denial exit%d %q", code, got)
+		}
+		if _, e := os.Stat(marker); e != nil {
+			t.Fatal("private batch unobserved", e)
+		}
+		if e := os.Remove(marker); e != nil {
+			t.Fatal(e)
+		}
+	})
+
 	return directory, marker, loose
 }
