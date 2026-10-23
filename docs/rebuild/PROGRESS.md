@@ -389,3 +389,8 @@ Controller verify/done pass gitstore41/app138/checks108/project229/workflow1078/
 Evidence process-capture-{start,fail-first,evals-done,audit-findings,strengthened-fail-first,strengthened-evals-done,audit-pass,impl-verify,impl-done}.json, process-capture-{focused-impl,race,vet}.log and product-check-capture-checkpoint.json. Bootstrap source clean at its pin; binary/design checksums match. Claim clear after archive; only0033-baseline-snapshot remains queued. Next restore the six-file saved draft's API/evals/stub only (never started change metadata), strengthen remaining source/ref edge assertions, and restart its full fail-first/audit/impl cycle. No overall R01–R21 completion, real regeneration or NEW self-hosting claimed.
 
 Explicit controller check-commits14cec73e1126ee37d33f1138d19936b6a05a59a6..041b3316955bf21774ec95ea17c1900789db7503 passed with diagnostics[] (history-capture-checkpoint.json). This includes the prerequisite author reorder and all recorded phase commits.
+
+
+## Baseline fixture recovery
+
+First0033 cycle fully reverted before any implementation acceptance or spec application; D022 gives exact phase/revert commits and the four concrete fixture defects. All files and first implementation report are preserved. Confirmed successful own-claim release and empty refs before author recovery. Next restart0033 from authored new: handles; restore saved API/evals plus a fresh stub, correct and independently control the fixtures, then repeat fail-first and independent audit. Do not count the reverted381/147 run as proof of the defective/unexecuted premises. GIT-008–010 remain applied at041b331, and overall goal/real regeneration/self-hosting remain incomplete.
