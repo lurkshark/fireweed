@@ -2,7 +2,7 @@
 fixes:
     - PRJ-027
 module: project
-phase: audit
+phase: impl
 run: 24c228986ed5d6567a331bcf
 ---
 
@@ -28,6 +28,11 @@ Exercise unavailable selected commit, annotated-tag resolution, ancestor express
 
 Trusting GIT_NO_LAZY_FETCH alone fails on the installed supported Git. Denying a transport protocol still attempts fetch and changes error semantics. Rejecting every partial repository or reading all object bodies discards available committed snapshots and violates selective source access. Do not alter global or repository configuration to suppress the bug.
 
+## Audit
+
+No findings. Checked PRJ-027.
+
 ## Provenance
 
 - evals | 2026-10-23T12:39:05Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 581 | failing: 66 | passing: 515
+- audit | 2026-10-23T12:45:04Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
