@@ -412,12 +412,7 @@ func playbookCLITraps(t *testing.T) string {
 	t.Helper()
 	traps := t.TempDir()
 	marker := filepath.Join(traps, "attempted")
-	realGit, err := exec.LookPath("git")
-	if err != nil {
-		t.Fatal(err)
-	}
-	script := "#!/bin/sh\nfor a in \"$@\";do case \"$a\" in fetch|push|pull|clone|ls-remote|commit|branch|checkout|switch|reset|restore|add|worktree|update-ref|hash-object|stash|clean|rm|mv) printf attempted >> " + coverageQuote(marker) + ";exit 97;;esac;done\nexec " + coverageQuote(realGit) + " \"$@\"\n"
-	projectPut(t, traps, "git", script)
+	installReadOperationGitProxy(t, traps, marker)
 	for _, name := range []string{"git", "hook-trap", "touch", "agent-trap", "codex", "claude", "fireweed", "fireweed-bootstrap", "curl", "wget", "ssh", "nc", "sh", "bash", "zsh"} {
 		if name != "git" {
 			projectPut(t, traps, name, "#!/bin/sh\nprintf attempted >> "+coverageQuote(marker)+"\nexit 97\n")

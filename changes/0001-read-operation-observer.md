@@ -4,6 +4,8 @@ already_satisfied:
 bases:
     APP-021: "16461911"
 module: app
+phase: audit
+run: dc1b2eb21e4aa3eb71be25d0
 ---
 
 ## Motivation
@@ -27,6 +29,12 @@ context MUST accept --json before or after the command/operand and valid --help/
 
 Do not alter the preserved project's frozen evals or production algorithms to satisfy an invalid argv-wide observer. Product implementation is already conformant; the impl phase needs no source edits. Full app evals and boundaries must still pass, and project application requires fresh own and all dependent verification after owning-module corrections. Author ordering at0001 precedes the unclaimed0041 entry without changing eligibility rules.
 
+Pre-freeze independent review found that the first actual-verb observer missed remote add/notes add mutations formerly caught by argv-wide matching. Its running preflight was deliberately terminated and is not accepted evidence. The corrected observer explicitly denies nested mutations (with live remote/notes/bisect/submodule controls), while preserving harmless remote names and selected metadata. A real nested fixture now calibrates both root and subtree reads. A second pre-freeze review found sparse-checkout add and submodule foreach execution were still delegated; its incomplete preflight was also stopped, not accepted. The final observer delegates an explicit set of read operations, classifies config/symbolic-ref/remote/submodule read forms, and rejects remaining operations by default, with independent sparse-checkout/foreach/config/symbolic-ref mutation controls. A third review found flag-looking --file/-f operands were mistaken for config read actions; its incomplete preflight was stopped. Config option operands are now consumed explicitly and both filename forms have denial controls, alongside successful ordinary and explicit-file config reads. No product implementation or frozen eval was changed.
+
 ## Rejected alternatives
 
 Deleting dependent checks, allowing actual commit/fetch operations, or exempting private contents would weaken the contract. Editing app evals during project implementation would violate module and phase boundaries. Adapting product metadata reads to word matching would encode an observer bug as a product requirement.
+
+## Provenance
+
+- evals | 2026-10-23T17:43:07Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 476 | failing: 0 | passing: 476
