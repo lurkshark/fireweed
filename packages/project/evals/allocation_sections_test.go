@@ -341,66 +341,90 @@ func Test_PRJ016AllocationSectionFixtureControls(t *testing.T) {
 func Test_PRJ016AllocationMixedEmptyAndActiveHeadingPositions(t *testing.T) {
 	for _, phase := range []string{"", "evals", "audit", "impl"} {
 		for _, active := range []string{"Added", "Modified", "Removed"} {
-			t.Run("phase-"+phase+"-active-"+active, func(t *testing.T) {
-				source := allocationSectionInterleaved(t, allocationSectionChange(t, phase, "\n## Added\n\n## Modified\n\n## Removed\n"))
-				for _, empty := range []bool{false, true} {
-					ch := source
-					if empty {
-						ch.Added = []c.Spec{}
-						ch.Modified = []c.Spec{}
-						ch.Removed = []c.Spec{}
-					}
-					item := c.Spec{ID: "ALP-001", Body: "The active typed item MUST retain its place."}
-					switch active {
-					case "Added":
-						item.ID = "ALP-010"
-						if phase == "" {
-							item.ID = "new:mixed"
-						}
-						ch.Added = []c.Spec{item}
-					case "Modified":
-						ch.Modified = []c.Spec{item}
-					case "Removed":
-						item.Body = ""
-						ch.Removed = []c.Spec{item}
-					}
-					got, bindings := allocationSectionChecked(t, allocationSectionSnapshot(t, ch))
-					if !reflect.DeepEqual(allocationSectionNames(got.Document), allocationSectionNames(source.Document)) {
-						t.Errorf("moved mixed empty/active headings: %v", allocationSectionNames(got.Document))
-					}
-					wantBinding := map[string]string{}
-					if active == "Added" && phase == "" {
-						item.ID = "ALP-002"
-						wantBinding["new:mixed"] = item.ID
-					}
-					if !reflect.DeepEqual(bindings, wantBinding) {
-						t.Errorf("bindings %v want %v", bindings, wantBinding)
-					}
+			for _, missing := range []bool{false, true} {
+				t.Run(fmt.Sprintf("phase-%s-active-%s-missing-%v", phase, active, missing), func(t *testing.T) {
+					edits := ""
 					for _, name := range []string{"Added", "Modified", "Removed"} {
-						var items []c.Spec
-						switch name {
+						if !missing || name != active {
+							edits += "\n## " + name + "\n"
+						}
+					}
+					source := allocationSectionInterleaved(t, allocationSectionChange(t, phase, edits))
+					for _, empty := range []bool{false, true} {
+						ch := source
+						if empty {
+							ch.Added = []c.Spec{}
+							ch.Modified = []c.Spec{}
+							ch.Removed = []c.Spec{}
+						}
+						item := c.Spec{ID: "ALP-001", Body: "The active typed item MUST retain its place."}
+						switch active {
 						case "Added":
-							items = got.Added
-						case "Modified":
-							items = got.Modified
-						case "Removed":
-							items = got.Removed
-						}
-						if name == active {
-							if !reflect.DeepEqual(items, []c.Spec{item}) {
-								t.Errorf("active items %v want %v", items, item)
+							item.ID = "ALP-010"
+							if phase == "" {
+								item.ID = "new:mixed"
 							}
-						} else if len(items) != 0 {
-							t.Errorf("invented inactive %s items: %v", name, items)
+							ch.Added = []c.Spec{item}
+						case "Modified":
+							ch.Modified = []c.Spec{item}
+						case "Removed":
+							item.Body = ""
+							ch.Removed = []c.Spec{item}
 						}
-						for _, section := range got.Document.Sections {
-							if section.Name == name && name != active && section.Body != "" {
-								t.Errorf("empty %s body %q", name, section.Body)
+						got, bindings := allocationSectionChecked(t, allocationSectionSnapshot(t, ch))
+						actual := allocationSectionNames(got.Document)
+						if missing {
+							filtered := []string{}
+							count := 0
+							for _, name := range actual {
+								if name == active {
+									count++
+								} else {
+									filtered = append(filtered, name)
+								}
+							}
+							if count != 1 {
+								t.Errorf("created active heading count %d want 1", count)
+							}
+							actual = filtered
+						}
+						if !reflect.DeepEqual(actual, allocationSectionNames(source.Document)) {
+							t.Errorf("moved or pruned retained mixed headings: %v want %v", actual, allocationSectionNames(source.Document))
+						}
+						wantBinding := map[string]string{}
+						if active == "Added" && phase == "" {
+							item.ID = "ALP-002"
+							wantBinding["new:mixed"] = item.ID
+						}
+						if !reflect.DeepEqual(bindings, wantBinding) {
+							t.Errorf("bindings %v want %v", bindings, wantBinding)
+						}
+						for _, name := range []string{"Added", "Modified", "Removed"} {
+							var items []c.Spec
+							switch name {
+							case "Added":
+								items = got.Added
+							case "Modified":
+								items = got.Modified
+							case "Removed":
+								items = got.Removed
+							}
+							if name == active {
+								if !reflect.DeepEqual(items, []c.Spec{item}) {
+									t.Errorf("active items %v want %v", items, item)
+								}
+							} else if len(items) != 0 {
+								t.Errorf("invented inactive %s items: %v", name, items)
+							}
+							for _, section := range got.Document.Sections {
+								if section.Name == name && name != active && section.Body != "" {
+									t.Errorf("empty %s body %q", name, section.Body)
+								}
 							}
 						}
 					}
-				}
-			})
+				})
+			}
 		}
 	}
 }
