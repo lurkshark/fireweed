@@ -31,6 +31,37 @@ func allocationSectionChange(t *testing.T, phase, edits string) c.Change {
 	}
 	return ch
 }
+
+// Interleave real parsed edit headings with the retained human sections, then
+// round-trip through the public grammar so ordering premises are executable.
+func allocationSectionInterleaved(t *testing.T, ch c.Change) c.Change {
+	t.Helper()
+	humans := append([]c.Section{}, ch.Document.Sections[:4]...)
+	edits := map[string]c.Section{}
+	for _, section := range ch.Document.Sections[4:] {
+		edits[section.Name] = section
+	}
+	ch.Document.Sections = nil
+	for i, name := range []string{"Modified", "Added", "Removed"} {
+		if section, ok := edits[name]; ok {
+			ch.Document.Sections = append(ch.Document.Sections, section)
+		}
+		ch.Document.Sections = append(ch.Document.Sections, humans[i])
+	}
+	ch.Document.Sections = append(ch.Document.Sections, humans[3])
+	raw, err := c.RenderMarkdown(ch.Document)
+	if err != nil {
+		t.Fatal(err)
+	}
+	parsed, err := c.ParseChange(raw, ch.Path, "ALP")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(parsed.Document.Sections, ch.Document.Sections) {
+		t.Fatal("interleaved public fixture round trip")
+	}
+	return parsed
+}
 func allocationSectionNames(d c.Document) []string {
 	names := []string{}
 	for _, s := range d.Sections {
@@ -95,13 +126,16 @@ func Test_PRJ016AllocationEmptySectionPresence(t *testing.T) {
 						edits += "\n## " + name + "\n"
 					}
 				}
-				source := allocationSectionChange(t, phase, edits)
-				expected := []string{"Motivation", "Empty author section", "Notes", "Questions"}
+				source := allocationSectionInterleaved(t, allocationSectionChange(t, phase, edits))
+				expected := []string{}
+				humans := []string{"Motivation", "Empty author section", "Notes", "Questions"}
 				for i, name := range []string{"Modified", "Added", "Removed"} {
 					if mask&(1<<i) != 0 {
 						expected = append(expected, name)
 					}
+					expected = append(expected, humans[i])
 				}
+				expected = append(expected, humans[3])
 				if !reflect.DeepEqual(allocationSectionNames(source.Document), expected) {
 					t.Fatal("source/fenced heading premise")
 				}
@@ -139,13 +173,19 @@ func Test_PRJ016AllocationEmptySectionPresence(t *testing.T) {
 func Test_PRJ016AllocationTypedSectionsAreCreatedOrUpdated(t *testing.T) {
 	for _, phase := range []string{"", "impl"} {
 		for _, name := range []string{"Added", "Modified", "Removed"} {
-			for _, present := range []bool{false, true} {
-				t.Run(fmt.Sprintf("phase-%s-%s-present-%v", phase, name, present), func(t *testing.T) {
+			for _, retained := range []string{"absent", "empty", "conflicting"} {
+				t.Run(fmt.Sprintf("phase-%s-%s-retained-%s", phase, name, retained), func(t *testing.T) {
 					edits := ""
-					if present {
+					if retained != "absent" {
 						edits = "\n## " + name + "\n"
+						if retained == "conflicting" {
+							edits += "\n### ALP-050\n"
+							if name != "Removed" {
+								edits += "\nThe stale retained body MUST be discarded.\n"
+							}
+						}
 					}
-					ch := allocationSectionChange(t, phase, edits)
+					ch := allocationSectionInterleaved(t, allocationSectionChange(t, phase, edits))
 					item := c.Spec{ID: "ALP-001", Body: "The authoritative typed body MUST remain intact."}
 					switch name {
 					case "Added":
@@ -164,10 +204,24 @@ func Test_PRJ016AllocationTypedSectionsAreCreatedOrUpdated(t *testing.T) {
 					}
 					got, bindings := allocationSectionChecked(t, allocationSectionSnapshot(t, ch))
 					expected := allocationSectionNames(ch.Document)
-					if !present {
-						expected = append(expected, name)
+					actual := allocationSectionNames(got.Document)
+					if retained == "absent" {
+						// New heading placement is unspecified; retained headings keep relative order.
+						filtered := []string{}
+						count := 0
+						for _, heading := range actual {
+							if heading == name {
+								count++
+							} else {
+								filtered = append(filtered, heading)
+							}
+						}
+						if count != 1 {
+							t.Errorf("new heading count %d want 1", count)
+						}
+						actual = filtered
 					}
-					if !reflect.DeepEqual(allocationSectionNames(got.Document), expected) {
+					if !reflect.DeepEqual(actual, expected) {
 						t.Errorf("unexpected section creation/order %v want %v", allocationSectionNames(got.Document), expected)
 					}
 					var items []c.Spec
@@ -208,56 +262,58 @@ func Test_PRJ016AllocationTypedSectionsAreCreatedOrUpdated(t *testing.T) {
 	}
 }
 func Test_PRJ016AllocationStaleBodiesBecomeRetainedEmptyHeadings(t *testing.T) {
-	for _, name := range []string{"Added", "Modified", "Removed"} {
-		t.Run(name, func(t *testing.T) {
-			item := "### ALP-050\n\nThe stale retained item MUST be replaced by typed intent.\n"
-			if name == "Removed" {
-				item = "### ALP-050\n"
-			}
-			source := allocationSectionChange(t, "", "\n## "+name+"\n\n"+item)
-			for _, empty := range []bool{false, true} {
-				ch := source
-				switch name {
-				case "Added":
-					if empty {
-						ch.Added = []c.Spec{}
-					} else {
-						ch.Added = nil
-					}
-				case "Modified":
-					if empty {
-						ch.Modified = []c.Spec{}
-					} else {
-						ch.Modified = nil
-					}
-				case "Removed":
-					if empty {
-						ch.Removed = []c.Spec{}
-					} else {
-						ch.Removed = nil
-					}
+	for _, phase := range []string{"", "evals", "audit", "impl"} {
+		for _, name := range []string{"Added", "Modified", "Removed"} {
+			t.Run("phase-"+phase+"-"+name, func(t *testing.T) {
+				item := "### ALP-050\n\nThe stale retained item MUST be replaced by typed intent.\n"
+				if name == "Removed" {
+					item = "### ALP-050\n"
 				}
-				got, bindings := allocationSectionChecked(t, allocationSectionSnapshot(t, ch))
-				if !reflect.DeepEqual(allocationSectionNames(got.Document), allocationSectionNames(ch.Document)) {
-					t.Error("empty typed replacement moved or invented headings")
-				}
-				found := false
-				for _, section := range got.Document.Sections {
-					if section.Name == name {
-						found = true
-						if section.Body != "" {
-							t.Errorf("stale retained body survives: %q", section.Body)
+				source := allocationSectionInterleaved(t, allocationSectionChange(t, phase, "\n## "+name+"\n\n"+item))
+				for _, empty := range []bool{false, true} {
+					ch := source
+					switch name {
+					case "Added":
+						if empty {
+							ch.Added = []c.Spec{}
+						} else {
+							ch.Added = nil
+						}
+					case "Modified":
+						if empty {
+							ch.Modified = []c.Spec{}
+						} else {
+							ch.Modified = nil
+						}
+					case "Removed":
+						if empty {
+							ch.Removed = []c.Spec{}
+						} else {
+							ch.Removed = nil
 						}
 					}
+					got, bindings := allocationSectionChecked(t, allocationSectionSnapshot(t, ch))
+					if !reflect.DeepEqual(allocationSectionNames(got.Document), allocationSectionNames(ch.Document)) {
+						t.Error("empty typed replacement moved or invented headings")
+					}
+					found := false
+					for _, section := range got.Document.Sections {
+						if section.Name == name {
+							found = true
+							if section.Body != "" {
+								t.Errorf("stale retained body survives: %q", section.Body)
+							}
+						}
+					}
+					if !found {
+						t.Error("explicit edit heading removed")
+					}
+					if len(bindings) != 0 || len(got.Added) != 0 || len(got.Modified) != 0 || len(got.Removed) != 0 {
+						t.Error("stale items affected allocation")
+					}
 				}
-				if !found {
-					t.Error("explicit edit heading removed")
-				}
-				if len(bindings) != 0 || len(got.Added) != 0 || len(got.Modified) != 0 || len(got.Removed) != 0 {
-					t.Error("stale items affected allocation")
-				}
-			}
-		})
+			})
+		}
 	}
 }
 func Test_PRJ016AllocationSectionFixtureControls(t *testing.T) {
@@ -278,6 +334,73 @@ func Test_PRJ016AllocationSectionFixtureControls(t *testing.T) {
 		again, err := c.ParseChange(text, ch.Path, "ALP")
 		if err != nil || !reflect.DeepEqual(again, ch) {
 			t.Fatal("public fixture round trip", err)
+		}
+	}
+}
+
+func Test_PRJ016AllocationMixedEmptyAndActiveHeadingPositions(t *testing.T) {
+	for _, phase := range []string{"", "evals", "audit", "impl"} {
+		for _, active := range []string{"Added", "Modified", "Removed"} {
+			t.Run("phase-"+phase+"-active-"+active, func(t *testing.T) {
+				source := allocationSectionInterleaved(t, allocationSectionChange(t, phase, "\n## Added\n\n## Modified\n\n## Removed\n"))
+				for _, empty := range []bool{false, true} {
+					ch := source
+					if empty {
+						ch.Added = []c.Spec{}
+						ch.Modified = []c.Spec{}
+						ch.Removed = []c.Spec{}
+					}
+					item := c.Spec{ID: "ALP-001", Body: "The active typed item MUST retain its place."}
+					switch active {
+					case "Added":
+						item.ID = "ALP-010"
+						if phase == "" {
+							item.ID = "new:mixed"
+						}
+						ch.Added = []c.Spec{item}
+					case "Modified":
+						ch.Modified = []c.Spec{item}
+					case "Removed":
+						item.Body = ""
+						ch.Removed = []c.Spec{item}
+					}
+					got, bindings := allocationSectionChecked(t, allocationSectionSnapshot(t, ch))
+					if !reflect.DeepEqual(allocationSectionNames(got.Document), allocationSectionNames(source.Document)) {
+						t.Errorf("moved mixed empty/active headings: %v", allocationSectionNames(got.Document))
+					}
+					wantBinding := map[string]string{}
+					if active == "Added" && phase == "" {
+						item.ID = "ALP-002"
+						wantBinding["new:mixed"] = item.ID
+					}
+					if !reflect.DeepEqual(bindings, wantBinding) {
+						t.Errorf("bindings %v want %v", bindings, wantBinding)
+					}
+					for _, name := range []string{"Added", "Modified", "Removed"} {
+						var items []c.Spec
+						switch name {
+						case "Added":
+							items = got.Added
+						case "Modified":
+							items = got.Modified
+						case "Removed":
+							items = got.Removed
+						}
+						if name == active {
+							if !reflect.DeepEqual(items, []c.Spec{item}) {
+								t.Errorf("active items %v want %v", items, item)
+							}
+						} else if len(items) != 0 {
+							t.Errorf("invented inactive %s items: %v", name, items)
+						}
+						for _, section := range got.Document.Sections {
+							if section.Name == name && name != active && section.Body != "" {
+								t.Errorf("empty %s body %q", name, section.Body)
+							}
+						}
+					}
+				}
+			})
 		}
 	}
 }
