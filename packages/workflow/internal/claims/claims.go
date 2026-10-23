@@ -69,8 +69,10 @@ func (s *storage) git(args ...string) (string, error) {
 func (s *storage) oid(value string) bool {
 	return len(value) == s.width && strings.Trim(value, "0123456789abcdef") == "" && strings.Trim(value, "0") != ""
 }
+func ValidSlug(slug string) bool { return slugPattern.MatchString(slug) }
+
 func validSlug(slug string) error {
-	if !slugPattern.MatchString(slug) {
+	if !ValidSlug(slug) {
 		return failure("invalid claim slug %q", slug)
 	}
 	return nil
@@ -230,6 +232,39 @@ func Create(start, slug, run, base, state string) (model.Claim, error) {
 	}
 	return c, nil
 }
+
+// Lookup distinguishes absence from invalid ownership data without inspecting
+// any other claim. Symbolic refs, including dangling aliases, are never absent.
+func Lookup(start, slug string) (model.Claim, bool, error) {
+	zero := model.Claim{}
+	if err := validSlug(slug); err != nil {
+		return zero, false, err
+	}
+	s, close, err := open(start)
+	if err != nil {
+		return zero, false, err
+	}
+	defer close()
+	if err := s.direct(slug); err != nil {
+		return zero, true, err
+	}
+	r := s.capture("show-ref", "--verify", "--quiet", prefix+slug)
+	if r.Exit == 1 && s.ctx.Err() == nil {
+		return zero, false, nil
+	}
+	if r.Exit != 0 || r.Err != nil {
+		// Preserve the ordinary loader's specific payload/object error when an
+		// existing broken ref also makes show-ref fail. Never turn that failure
+		// into permission to inspect current worker metadata.
+		if _, loadErr := s.load(slug); loadErr != nil {
+			return zero, true, loadErr
+		}
+		return zero, true, failure("cannot inspect claim %s (exit %d): %s %v", slug, r.Exit, strings.TrimSpace(r.Stdout+r.Stderr), r.Err)
+	}
+	claim, err := s.load(slug)
+	return claim, true, err
+}
+
 func Load(start, slug string) (model.Claim, error) {
 	if err := validSlug(slug); err != nil {
 		return model.Claim{}, err
