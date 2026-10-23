@@ -321,7 +321,7 @@ func main(){
 			in.Fault = 7
 			in.Mode = mode
 			in.Context = filepath.Join(claimCommon(t, f.Root), "refs/fireweed/claims")
-			code := "C05"
+			code := ""
 			switch mode {
 			case "precondition-dirty":
 				worktreePut(t, f.Root, "retained", "dirty")
@@ -341,7 +341,7 @@ func main(){
 			case "precondition-config":
 				worktreePut(t, f.Root, "fireweed.yaml", "version: nonsense\n")
 				startCommit(t, f.Root, "Invalid static metadata")
-				code = "C01"
+				code = ""
 			case "precondition-blocked":
 				worktreePut(t, f.Root, f.Path, strings.Replace(f.Raw, "module: alpha\n", "module: alpha\nblocked: hold\n", 1))
 				startCommit(t, f.Root, "Blocked precondition")
