@@ -195,32 +195,7 @@ func Test_FLOW010ClaimObjectIdentityIgnoresReplacementViews(t *testing.T) {
 	for _, format := range []string{"sha1", "sha256"} {
 		for _, kind := range []string{"state", "type"} {
 			t.Run(format+"/"+kind, func(t *testing.T) {
-				protocolEnableReplacements(t)
-				root := claimRepo(t, format)
-				old := claimSeed(t, root, "replace-view", protocolState)
-				real := protocolRealGit(t)
-				replacement := old.Base
-				if kind == "state" {
-					altered := old
-					altered.State = "substituted unrelated state"
-					altered.Object = ""
-					replacement = strings.TrimSpace(protocolGit(t, real, root, claimPayload(t, altered), "hash-object", "-w", "--stdin"))
-				}
-				protocolGit(t, real, root, "", "replace", "-f", old.Object, replacement)
-				if kind == "state" {
-					raw := protocolGit(t, real, root, "", "cat-file", "blob", old.Object)
-					var got w.Claim
-					if json.Unmarshal([]byte(raw), &got) != nil || got.State != "substituted unrelated state" {
-						t.Fatal("replacement JSON control did not activate", raw)
-					}
-				} else if typ := protocolGit(t, real, root, "", "cat-file", "-t", old.Object); typ != "commit\n" {
-					t.Fatal("replacement type control did not activate", typ)
-				}
-				raw := protocolGit(t, real, root, "", "--no-replace-objects", "cat-file", "blob", old.Object)
-				var original w.Claim
-				if json.Unmarshal([]byte(raw), &original) != nil || original.State != protocolState {
-					t.Fatal("original blob control lost state", raw)
-				}
+				root, _, old := protocolReplacement(t, format, kind)
 				files := claimTree(t, root, func(string) bool { return false })
 				check := protocolParent(t)
 				// Both calls must inspect the stored object, and leave replacement refs untouched.
@@ -241,6 +216,98 @@ func Test_FLOW010ClaimObjectIdentityIgnoresReplacementViews(t *testing.T) {
 					t.Fatal("replacement reads changed repository")
 				}
 			})
+		}
+	}
+}
+
+func protocolReplacement(t *testing.T, format, kind string) (string, string, w.Claim) {
+	t.Helper()
+	protocolEnableReplacements(t)
+	root := claimRepo(t, format)
+	old := claimSeed(t, root, "replace-view", protocolState)
+	real := protocolRealGit(t)
+	replacement := old.Base
+	if kind == "state" {
+		altered := old
+		altered.State = "substituted unrelated state"
+		altered.Object = ""
+		replacement = strings.TrimSpace(protocolGit(t, real, root, claimPayload(t, altered), "hash-object", "-w", "--stdin"))
+	}
+	protocolGit(t, real, root, "", "replace", "-f", old.Object, replacement)
+	if kind == "state" {
+		raw := protocolGit(t, real, root, "", "cat-file", "blob", old.Object)
+		var got w.Claim
+		if json.Unmarshal([]byte(raw), &got) != nil || got.State != "substituted unrelated state" {
+			t.Fatal("replacement JSON control did not activate", raw)
+		}
+	} else if typ := protocolGit(t, real, root, "", "cat-file", "-t", old.Object); typ != "commit\n" {
+		t.Fatal("replacement type control did not activate", typ)
+	}
+	raw := protocolGit(t, real, root, "", "--no-replace-objects", "cat-file", "blob", old.Object)
+	var original w.Claim
+	if json.Unmarshal([]byte(raw), &original) != nil || original.State != protocolState {
+		t.Fatal("original blob control lost state", raw)
+	}
+	return root, real, old
+}
+
+func Test_FLOW009ClaimWritesIgnoreReplacementViews(t *testing.T) {
+	for _, format := range []string{"sha1", "sha256"} {
+		for _, kind := range []string{"state", "type"} {
+			for _, operation := range []string{"update", "forged", "release"} {
+				t.Run(format+"/"+kind+"/"+operation, func(t *testing.T) {
+					root, real, old := protocolReplacement(t, format, kind)
+					peer := claimSeed(t, root, "unrelated-owner", "unrelated state")
+					check := protocolParent(t)
+					defer check()
+					ref := "refs/fireweed/claims/" + old.Change
+					if operation == "forged" {
+						files := claimTree(t, root, func(string) bool { return false })
+						forged := old
+						forged.State = "substituted unrelated state"
+						got, err := w.UpdateClaim(root, forged, "HEAD", "forged update")
+						claimError(t, got, err)
+						if !reflect.DeepEqual(files, claimTree(t, root, func(string) bool { return false })) {
+							t.Fatal("forged previous record changed repository")
+						}
+						protocolStored(t, real, root, old)
+						return
+					}
+					// Successful writes may change objects and exactly the selected claim/ref log.
+					skip := func(path string) bool {
+						return path == ".git/objects" || path == ".git/"+ref || path == ".git/logs/"+ref
+					}
+					files := claimTree(t, root, skip)
+					replacements := protocolGit(t, real, root, "", "for-each-ref", "--format=%(refname) %(objectname)", "refs/replace/")
+					if operation == "update" {
+						state := protocolState + "updated\r\n"
+						got, err := w.UpdateClaim(root, old, "HEAD", state)
+						if err != nil {
+							t.Fatalf("original previous record rejected under replacement: %v", err)
+						}
+						want := old
+						want.State, want.Object = state, got.Object
+						if got != want || got.Object == old.Object {
+							t.Fatalf("replacement update %+v want %+v with a new token", got, want)
+						}
+						protocolStored(t, real, root, got)
+					} else {
+						if err := w.ReleaseClaim(root, old.Change, old.Object); err != nil {
+							t.Fatalf("valid release rejected under replacement: %v", err)
+						}
+						if refs := protocolGit(t, real, root, "", "for-each-ref", "--format=%(refname)", ref); refs != "" {
+							t.Fatal("released claim remains", refs)
+						}
+					}
+					protocolStored(t, real, root, peer)
+					if got := protocolGit(t, real, root, "", "for-each-ref", "--format=%(refname) %(objectname)", "refs/replace/"); got != replacements {
+						t.Fatal("claim write changed replacement refs")
+					}
+					if !reflect.DeepEqual(files, claimTree(t, root, skip)) {
+						t.Fatal("claim write changed unrelated files/index/refs/config")
+					}
+				})
+			}
 		}
 	}
 }
