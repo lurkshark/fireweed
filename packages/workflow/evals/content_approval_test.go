@@ -565,3 +565,82 @@ func Test_FLOW028_FLOW030ApprovalFixtureControls(t *testing.T) {
 		t.Fatal(fmt.Errorf("public render control: %w", err))
 	}
 }
+
+func Test_FLOW028ApprovalTargetErrorBeforeInvalidBase(t *testing.T) {
+	m, base, current := contentApprovalPair(t)
+	wrong := strings.Replace(current, "module: alpha", "module: bravo", 1)
+	contentApprovalParse(t, wrong)
+	for _, text := range []string{base, "", "not a change", "---\nmodule: [\n---\n"} {
+		contentApprovalError(t, m, text, wrong, contentApprovalPath, "")
+	}
+}
+func Test_FLOW029ApprovalExcludedPrefixLookalikes(t *testing.T) {
+	m := eligibleModule(t, "alpha")
+	base := contentApprovalText()
+	for _, name := range []string{"Decisions", "Questions", "Audit", "Provenance", "Notes"} {
+		t.Run(name, func(t *testing.T) {
+			for _, neighbor := range []string{name + " appendix", name + "-history", "Earlier " + name} {
+				changed := contentApprovalEdit(t, base, func(d *c.Document) {
+					d.Sections = append(d.Sections, c.Section{Name: neighbor, Body: "Different authored guidance."})
+				})
+				contentApprovalParse(t, changed)
+				contentApprovalAssert(t, m, base, changed, false)
+			}
+		})
+	}
+}
+func Test_FLOW030ApprovalMixedFixedAndLateIDs(t *testing.T) {
+	m := eligibleModule(t, "alpha")
+	for _, handleFirst := range []bool{false, true} {
+		t.Run(fmt.Sprint(handleFirst), func(t *testing.T) {
+			base := "---\nmodule: alpha\nalready_satisfied: [ALP-050, new:tail]\nset: {hooks: {eval: 'check new:tail ALP-050'}}\n---\n\nPreamble ALP-050 and new:tail.\n\n## Motivation\n\nKeep fixed ALP-050 and assigned new:tail.\n\n## Interface\n\nExpose new:tail beside ALP-050.\n\n## Added\n\n"
+			fixed := "### ALP-050\nThe fixed item MUST refer to new:tail.\n"
+			late := "### new:tail\nThe late item MUST refer to ALP-050.\n"
+			if handleFirst {
+				base += late + "\n" + fixed
+			} else {
+				base += fixed + "\n" + late
+			}
+			current := strings.ReplaceAll(base, "new:tail", "ALP-071")
+			contentApprovalParse(t, base)
+			contentApprovalParse(t, current)
+			contentApprovalAssert(t, m, base, current, true)
+			wrongFixed := strings.ReplaceAll(current, "ALP-050", "ALP-051")
+			contentApprovalParse(t, wrongFixed)
+			contentApprovalAssert(t, m, base, wrongFixed, false)
+		})
+	}
+}
+func Test_FLOW028_FLOW029ApprovalWithoutAddedItems(t *testing.T) {
+	m := eligibleModule(t, "alpha")
+	for _, row := range []struct{ name, meta, sections string }{
+		{"maintenance", "", ""},
+		{"fix", "fixes: [ALP-001]\n", ""},
+		{"regenerate", "regenerate: true\n", ""},
+		{"modified-only", "", "## Modified\n\n### ALP-001\nThe module MUST retain this authored behavior.\n"},
+		{"removed-only", "", "## Removed\n\n### ALP-001\n"},
+	} {
+		t.Run(row.name, func(t *testing.T) {
+			base := "---\nmodule: alpha\n" + row.meta + "---\n\n## Motivation\n\nRetain authored intent.\n\n" + row.sections
+			current := contentApprovalRuntime(t, base)
+			a, b := contentApprovalParse(t, base), contentApprovalParse(t, current)
+			if len(a.Added) != 0 || len(b.Added) != 0 {
+				t.Fatal("zero Added fixture premise")
+			}
+			contentApprovalAssert(t, m, base, current, true)
+			different := strings.Replace(current, "Retain authored intent", "Different authored intent", 1)
+			contentApprovalParse(t, different)
+			contentApprovalAssert(t, m, base, different, false)
+		})
+	}
+}
+func Test_FLOW029ApprovalEveryValidPhaseIsRuntime(t *testing.T) {
+	m, base, current := contentApprovalPair(t)
+	for _, phase := range []string{"", "evals", "audit", "impl", "applied"} {
+		t.Run("phase-"+phase, func(t *testing.T) {
+			changed := contentApprovalEdit(t, current, func(d *c.Document) { d.Metadata["phase"] = phase })
+			contentApprovalParse(t, changed)
+			contentApprovalAssert(t, m, base, changed, true)
+		})
+	}
+}
