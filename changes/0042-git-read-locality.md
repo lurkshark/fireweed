@@ -2,7 +2,7 @@
 fixes:
     - GIT-002
 module: gitstore
-phase: audit
+phase: impl
 run: 43bb6e51f2e637a7c66afc35
 ---
 
@@ -52,3 +52,16 @@ An environment hint or failed network request after the fact does not prevent fe
 ## Provenance
 
 - evals | 2026-10-23T23:12:36Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 238 | failing: 51 | passing: 187
+- audit | 2026-10-23T23:14:02Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+No findings. Checked GIT-002, projected GIT-011 and retained GIT-003 compatibility.
+
+Reviewed preferred tracking-ref identity despite unavailable targets, remote/default selection, symbolic defaults, slash-containing branches and absent-ref fallback. Required-object cases assert useful errors, empty results and no transport; independent native controls preserve available comparisons with irrelevant missing objects, older tags/ancestors, renames and built-in configuration across ordinary/linked SHA-1/SHA-256 fixtures.
+
+The configured-monitor matrix proves a nonempty manual/native staged, unstaged and untracked result. A live agent-shaped callback and paired native override calibrate marker observation before reset. Public success, invalid-selector rejection, unavailable-commit rejection and unavailable-tree rejection independently require no agent/transport marker and preserved state.
+
+Reviewed literal-baseline traps, revision-set rejection, actual-operation parsing, transient branch/ref observation, configuration/index/file/parent preservation, and TMP/repository-local temporary-storage cleanup. Native object and shared-index controls retain legitimate storage-layout freedom without exempting observed temporary files and locks.
+
+This audit read only the permitted change, public SPEC/API and eval source. No tests or commands were executed, no implementation/history/bootstrap/evidence was inspected, and no files were edited.
