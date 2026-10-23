@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: audit
+phase: impl
 run: 4f474a62c65de2db4e4cc261
 ---
 
@@ -47,7 +47,8 @@ Reloading current config/SPEC before examining ownership lets worker edits selec
 - evals | 2026-10-23T01:39:14Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1232 | failing: 98 | passing: 1134
 - audit | 2026-10-23T01:42:56Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-23T01:52:29Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1232 | failing: 98 | passing: 1134
+- audit | 2026-10-23T01:54:08Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- FLOW-021: "In either source LoadApproval MUST select exactly one queued change by exact Slug" — the cur selector has no selected cur claim in either claimed loop variant, so both negative partial-selector cases use the unclaimed source. Claimed current with a prefix-neighbor rejects prefix-as-ambiguity but permits a prefix-first matcher. Add a valid exact cur claim whose baseline contains current/current-neighbor but no cur change, establish that claim through public LoadClaim, and require C05 from the claimed source.
+No findings. Checked FLOW-020, FLOW-021, FLOW-022 and FLOW-023.
