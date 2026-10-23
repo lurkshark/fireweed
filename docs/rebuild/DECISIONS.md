@@ -130,3 +130,10 @@ Correct the object fixture to distinct valid documents with direct scoped-failur
 
 
 D022 recovery outcome: the fresh corrected cycle archived0033 ateb57c986e61fe73adadd94c621a7d5c2f5b5f1a1, after genuine388/154 fail-first, restricted passing audit and unchanged frozen evals/API in impl. The actual root-SPEC warning, both format variants, independent invalid selectors, distinct failed/allowed object controls and malformed selected-body allowance now execute before subject assertions. All project/dependent checks and scoped race/vet pass. This supersedes the reverted cycle's status without erasing its reports or implying full product acceptance.
+
+
+## D023 — claim protocol data follows stored object identity
+
+A successful local Git command may emit stderr without changing its stdout protocol. Claims therefore parse only captured stdout; merged output cannot be repaired by stripping warning-like lines because those same bytes can occur inside opaque State. Permanent independently warned operations prove the issue against the former adapter and preserve exact CRLF, Unicode, NUL and warning-like state content after the fix. Failure guidance still retains useful command diagnostics.
+
+Object is the exact content-addressed blob token held in the shared claim ref. Replacement views must not substitute a different JSON State or object type while returning that original token: otherwise an exact original previous record is rejected and a forged replacement-view record can be accepted. Metadata commands disable interpretation of replacement refs, preserving those refs/config and all unrelated state. The normal FLOW-009 atomic expected-token operation remains enforced. Real Git controls prove both replacement views are active and original blob bytes are still present before each independent regression. This is a design-derived content/ownership safeguard; no new full bootstrap/product comparison, lifecycle pass or regeneration claim is made. See0034 and PROGRESS.md for actual phase/evidence results.
