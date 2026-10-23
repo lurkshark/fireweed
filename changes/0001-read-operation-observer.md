@@ -4,7 +4,7 @@ already_satisfied:
 bases:
     APP-021: "16461911"
 module: app
-phase: audit
+phase: impl
 run: dc1b2eb21e4aa3eb71be25d0
 ---
 
@@ -35,6 +35,15 @@ Pre-freeze independent review found that the first actual-verb observer missed r
 
 Deleting dependent checks, allowing actual commit/fetch operations, or exempting private contents would weaken the contract. Editing app evals during project implementation would violate module and phase boundaries. Adapting product metadata reads to word matching would encode an observer bug as a product requirement.
 
+## Audit
+
+No findings. Checked APP-021.
+
+The modification legitimately clarifies the existing read-only source contract; already_satisfied does not exempt new product functionality. Reviewed actual operation parsing after global options, consumed config operands, Windows executable naming, and observer installation after fixture setup. Allowed controls require successful real Git execution, byte-identical observer output and no marker for selected commit headers, OID-only inventory, selected no-walk resolution, nonempty root/subtree IDs and harmless command-looking arguments. Denied controls cover mutation/network verbs, nested remote/notes/bisect/submodule/sparse-checkout operations, config and symbolic-ref writes, and flag-looking config filenames.
+
+The specialized selected-source and exact-claim observers, private/disposable/transitive/outside-content denial controls, native mutation/network/noninteractive controls, hook/fsmonitor markers, and complete file/index/HEAD/ref/common-Git/temp/cwd/environment preservation assertions remain in force. This audit inspected only the permitted public source and evals; it did not execute tests or inspect implementation, history, bootstrap or evidence.
+
 ## Provenance
 
 - evals | 2026-10-23T17:43:07Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 476 | failing: 0 | passing: 476
+- audit | 2026-10-23T17:44:34Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
