@@ -110,13 +110,14 @@ int fw_cli_context_prepare(const char*p);
 int cli_context_openat(int d,const char*p){return openat(d,p,O_RDONLY);}
 */
 import "C"
-import("bytes";"encoding/json";"os";"fmt";"io";"strings";"path/filepath";"net";"time";app "github.com/lurkshark/fireweed/packages/app";w "github.com/lurkshark/fireweed/packages/workflow")
+import("bytes";"encoding/json";"os";"fmt";"io";"strings";"path/filepath";"reflect";"net";"time";app "github.com/lurkshark/fireweed/packages/app";w "github.com/lurkshark/fireweed/packages/workflow")
 type record struct {Root,Blocked,Error,Address string;Args []string;Code int;Want w.WorkerContext}
 func same(a,b any)bool{x,e:=json.Marshal(a);y,f:=json.Marshal(b);return e==nil&&f==nil&&bytes.Equal(x,y)}
 func main(){
  raw,err:=os.ReadFile(os.Args[2]);if err!=nil{os.Exit(80)};var in record;if json.Unmarshal(raw,&in)!=nil{os.Exit(81)}
  if os.Chdir(in.Root)!=nil{os.Exit(82)};mode:=os.Args[1]
  private:=strings.Split(in.Blocked,"\n")[0];fd:=C.fw_cli_context_prepare(C.CString(private));if fd<0{os.Exit(83)}
+ beforeCwd,err:=os.Getwd();if err!=nil{os.Exit(86)};beforeEnv:=os.Environ()
  arm:=1;if mode=="no-io"{arm=2}
  C.fw_cli_context_arm(C.int(arm),nil,nil,C.CString(in.Blocked))
  switch mode{
@@ -130,10 +131,11 @@ func main(){
  case "mutation-control":os.WriteFile(filepath.Join(in.Root,"transient"),[]byte("bad"),0644);os.Remove(filepath.Join(in.Root,"transient"));os.Exit(67)
  case "network-control":net.DialTimeout("tcp",in.Address,time.Second);os.Exit(68)
  case "public-control":
-  s,_,e:=w.LoadApproval(in.Root,"current");if e!=nil{os.Exit(84)};got,e:=w.BuildContext(s,"current");if e!=nil||!same(got,in.Want){os.Exit(85)};C.fw_cli_context_arm(0,nil,nil,nil);return
+  s,_,e:=w.LoadApproval(in.Root,"current");if e!=nil{C.fw_cli_context_arm(0,nil,nil,nil);fmt.Fprintln(os.Stderr,e);os.Exit(84)};got,e:=w.BuildContext(s,"current");if e!=nil||!same(got,in.Want){os.Exit(85)};C.fw_cli_context_arm(0,nil,nil,nil);return
  }
  var out,errOut bytes.Buffer;code:=app.Run(in.Args,&out,&errOut)
  C.fw_cli_context_arm(0,nil,nil,nil)
+ afterCwd,err:=os.Getwd();if err!=nil||beforeCwd!=afterCwd||!reflect.DeepEqual(beforeEnv,os.Environ()){os.Exit(17)}
  if code!=in.Code||errOut.Len()!=0{fmt.Fprintf(os.Stderr,"code=%%d want=%%d stdout=%%s stderr=%%s",code,in.Code,out.String(),errOut.String());os.Exit(10)}
  var result struct{Schema int `+"`json:\"schema_version\"`"+`;Command string;Data json.RawMessage;Diagnostics []struct{Code,Severity,Message string}}
  d:=json.NewDecoder(&out);if d.Decode(&result)!=nil||result.Schema!=1||result.Diagnostics==nil{os.Exit(11)};var more any;if d.Decode(&more)!=io.EOF{os.Exit(12)}
@@ -165,6 +167,7 @@ func main(){
 		Code                          int
 		Want                          w.WorkerContext
 	}
+	proxyDir, proxyMarker := "", ""
 	run := func(t *testing.T, mode string, in record, exit int) {
 		t.Helper()
 		path := filepath.Join(temp, "record.json")
@@ -175,6 +178,9 @@ func main(){
 		projectPut(t, temp, "record.json", string(raw))
 		c := exec.CommandContext(ctx, binary, mode, path)
 		c.Dir = in.Root
+		if proxyDir != "" {
+			c.Env = append(os.Environ(), "PATH="+proxyDir+string(os.PathListSeparator)+os.Getenv("PATH"))
+		}
 		c.Stdin = strings.NewReader("")
 		out, err := c.CombinedOutput()
 		actual := 0
@@ -186,13 +192,27 @@ func main(){
 			actual = e.ExitCode()
 		}
 		if actual != exit {
-			t.Fatalf("guard %s exit%d want%d: %s", mode, actual, exit, out)
+			t.Errorf("guard %s exit%d want%d: %s", mode, actual, exit, out)
+		}
+		if proxyMarker != "" {
+			if _, err := os.Stat(proxyMarker); !os.IsNotExist(err) {
+				raw, _ := os.ReadFile(proxyMarker)
+				t.Fatalf("forbidden Git read/command in %s: %v %s", mode, err, raw)
+			}
 		}
 	}
 	root := cliContextFixture(t, "sha1")
 	private := filepath.Join(root, "private/secret.txt")
 	blocked := []string{private, filepath.Join(root, "units/a/internal/private.txt"), filepath.Join(root, "units/g/api.go"), filepath.Join(root, "units/a/api.go")}
 	in := record{Root: root, Blocked: strings.Join(blocked, "\n"), Address: listener.Addr().String(), Args: []string{"context", "current", "--json"}, Want: cliContextExpected(t, root)}
+	proxyDir, proxyMarker, loose := cliContextGitProxy(t, root)
+	in.Blocked += "\n" + loose
+	t.Run("loose-object-control", func(t *testing.T) {
+		x := in
+		x.Blocked = loose + "\n" + in.Blocked
+		run(t, "absolute-control", x, 42)
+		run(t, "fd-control", x, 42)
+	})
 	for _, mode := range []string{"absolute-control", "relative-control", "fd-control", "missing-control", "stdin-control", "prompt-control", "mutation-control", "network-control"} {
 		t.Run(mode, func(t *testing.T) { run(t, mode, in, 42) })
 	}
@@ -212,6 +232,8 @@ func main(){
 		})
 	}
 	cliContextClaim(t, root, "impl", false)
+	proxyDir, proxyMarker, loose = cliContextGitProxy(t, root)
+	blocked = append(blocked, loose)
 	blocked = append(blocked, filepath.Join(root, "fireweed.yaml"), filepath.Join(root, "units/b/SPEC.md"), filepath.Join(root, "changes/0001-before.md"), filepath.Join(root, "changes/0003-later.md"), filepath.Join(root, "changes/archive"))
 	in.Blocked = strings.Join(blocked, "\n")
 	in.Want = cliContextExpected(t, root)
@@ -242,4 +264,19 @@ func main(){
 		run(t, "absolute-control", x, 42)
 	})
 	t.Run("escape", func(t *testing.T) { run(t, "subject", in, 0) })
+	if err := os.Remove(selected); err != nil {
+		t.Fatal(err)
+	}
+	projectPut(t, root, "units/a/public/new.txt", "Restored selected feedback")
+	if err := os.MkdirAll(filepath.Join(root, ".fireweed/playbooks/impl.md"), 0755); err != nil {
+		t.Fatal(err)
+	}
+	in.Code, in.Error = 2, "D05"
+	t.Run("override-error-process-state", func(t *testing.T) { run(t, "subject", in, 0) })
+	projectPut(t, root, "corrupt-selected-claim", "invalid claim")
+	oid := strings.TrimSpace(gitFixtureCommand(t, root, "hash-object", "-w", "corrupt-selected-claim"))
+	gitFixtureCommand(t, root, "update-ref", "refs/fireweed/claims/current", oid)
+	proxyDir, proxyMarker, _ = cliContextGitProxy(t, root)
+	in.Code, in.Error = 1, "P02"
+	t.Run("claim-error-process-state", func(t *testing.T) { run(t, "subject", in, 0) })
 }

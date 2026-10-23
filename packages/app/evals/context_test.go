@@ -626,3 +626,37 @@ func Test_APP020ContextAllOperationalWriterFailures(t *testing.T) {
 		}
 	}
 }
+
+func Test_APP019_APP021ContextRetainsUnallocatedHandles(t *testing.T) {
+	root := cliContextFixture(t, "sha1")
+	for _, row := range []struct{ path, id, handle string }{{"changes/0001-before.md", "BET-002", "new:preceding"}, {contextChangePath, "ALP-002", "new:selected"}, {"changes/0003-later.md", "ALP-003", "new:later"}} {
+		raw, err := os.ReadFile(filepath.Join(root, row.path))
+		if err != nil {
+			t.Fatal(err)
+		}
+		text := strings.ReplaceAll(string(raw), row.id, row.handle)
+		if row.path == contextChangePath {
+			text += "\n## Interface\n\nReferences new:selected without allocating it.\n"
+		}
+		if _, err := c.ParseChange(text, row.path, map[string]string{"BET-002": "BET", "ALP-002": "ALP", "ALP-003": "ALP"}[row.id]); err != nil {
+			t.Fatal(err)
+		}
+		projectPut(t, root, row.path, text)
+	}
+	s, claim, err := w.LoadApproval(root, "current")
+	if err != nil || claim != (w.Claim{}) {
+		t.Fatalf("unclaimed handle source %v %+v", err, claim)
+	}
+	want, err := w.BuildContext(s, "current")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want.Module.Specs[1].ID != "new:selected" || want.Dependencies[0].Specs[1].ID != "new:preceding" || want.Change.Added[0].ID != "new:selected" || !strings.Contains(want.ChangeText, "References new:selected") {
+		t.Fatalf("handle fixture control %+v", want)
+	}
+	before := playbookCLIState(t, root)
+	cliContextAssert(t, root, want)
+	if !reflect.DeepEqual(before, playbookCLIState(t, root)) {
+		t.Fatal("context allocated or rewrote handle-bearing changes/specs/refs")
+	}
+}
