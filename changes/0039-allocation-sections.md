@@ -4,7 +4,7 @@ bases:
 fixes:
     - PRJ-016
 module: project
-phase: audit
+phase: impl
 run: 54064a814032fbec76c5c142
 ---
 
@@ -40,7 +40,8 @@ Appending every known heading changes source structure without authored intent. 
 - evals | 2026-10-23T05:49:28Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 467 | failing: 61 | passing: 406
 - audit | 2026-10-23T05:52:10Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-23T05:54:24Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 479 | failing: 61 | passing: 418
+- audit | 2026-10-23T05:55:54Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- PRJ-016: "Existing empty edit headings MUST retain their names and positions."; "Nonempty typed edit lists MUST create or update their corresponding sections without introducing unrelated empty edit sections." — the strengthened mixed matrix begins with all three edit headings present, while each missing-active-heading creation fixture has no other retained edit heading. Neither asserts creation of a missing active heading while another edit heading remains explicitly empty. A creation helper that prunes other empty edit headings still passes both matrices. Add interleaved fresh/resume cases with a missing active heading and at least one different retained empty edit heading, covering nil/empty inactive lists. Require exactly the active typed items, retain the authored empty heading/body, and compare prior heading presence/order after filtering only the newly created name so its placement remains unspecified. The previous four audit findings are otherwise resolved.
+No findings. Checked PRJ-016. The revised mixed matrix covers a present or newly created active heading alongside retained empty edit headings on fresh allocation and valid resume, requires exactly one created heading, and preserves prior relative order without specifying the new heading's placement. Together with the existing allocation assertions, the public evals cover all modified clauses and valid fixture premises, including nil/empty lists, stale clearing, conflicting typed updates, human/fenced sections, canonical agreement and retained identity. No implementation/history/bootstrap/evidence inspection or tests/Git/controller execution occurred in this restricted audit.
