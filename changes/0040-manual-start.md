@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: audit
+phase: impl
 run: 257858feeacf1af4c566b166
 ---
 
@@ -55,6 +55,11 @@ Regeneration rollback holds only the exact files deleted by this transaction and
 
 Starting from dirty work risks committing unrelated work and violates the manual lifecycle. Treating an existing same-owner claim as implicit resume could overwrite active work. Writing state before atomic reservation loses linked-worktree exclusion. Leaving allocated bytes or partial regeneration deletions after a context error breaks recoverability. Releasing by slug without its exact token can delete a concurrent winner. Approval by filename or spec hashes alone loses authored intent; unconditional approval-layout exemptions would hide allocator regressions. Running hooks during start conflates startup with verify. Recursive directory removal and matching disposable globs without zone precedence can destroy retained contracts.
 
+## Audit
+
+No findings. Checked FLOW-032, FLOW-033, FLOW-034, FLOW-035, FLOW-036, FLOW-037, FLOW-038, FLOW-039, FLOW-040.
+
 ## Provenance
 
 - evals | 2026-10-23T11:22:02Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1728 | failing: 135 | passing: 1593
+- audit | 2026-10-23T11:24:44Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
