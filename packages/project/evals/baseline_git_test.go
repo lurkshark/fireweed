@@ -95,6 +95,7 @@ func baselineGuard(t *testing.T, f baselineFixtureData, fail string, extra ...st
 	program := `package main
 import("bufio";"encoding/json";"io";"os";"os/exec";"strings")
 type policy struct{Real,Marker,Source,RootTree string;NoTree bool;Allowed,Paths,FailBodies map[string]bool;Fail string}
+` + projectGitOperationPolicy + `
 var p policy
 func bad(reason string){os.WriteFile(p.Marker,[]byte(reason),0600);os.Exit(97)}
 func allowed(query string)bool{
@@ -104,11 +105,9 @@ func allowed(query string)bool{
  if idx:=strings.Index(q,":");idx>=0&&p.Paths[q[idx+1:]]&&(q[:idx]==p.Source||q[:idx]==p.RootTree){return true}
  first:=strings.Fields(q);if len(first)>0&&p.Allowed[strings.TrimSuffix(first[0],"^{blob}")]{return true};return false
 }
-func main(){raw,e:=os.ReadFile(os.Getenv("FW_BASELINE_GIT_POLICY"));if e!=nil{os.Exit(80)};if json.Unmarshal(raw,&p)!=nil{os.Exit(81)};args:=os.Args[1:];command:="";at:=0
- for i:=0;i<len(args);i++{a:=args[i];if a=="-c"||a=="-C"||a=="--git-dir"||a=="--work-tree"{i++;continue};if strings.HasPrefix(a,"-"){continue};command=a;at=i;break}
- tail:=args[at+1:];batch:=false;batchCommand:=false;metadataOnly:=false
+func main(){raw,e:=os.ReadFile(os.Getenv("FW_BASELINE_GIT_POLICY"));if e!=nil{os.Exit(80)};if json.Unmarshal(raw,&p)!=nil{os.Exit(81)};args:=os.Args[1:];command,tail:=fwGitCommand(args);batch:=false;batchCommand:=false;metadataOnly:=false
  if p.NoTree&&command=="ls-tree"{bad("tree read before valid explicit revision: "+command)}
- switch command{case "fetch","push","clone","ls-remote","commit","branch","checkout","switch","reset","restore","add","worktree","update-ref","hash-object","archive","grep","diff","status":bad("forbidden command "+command)}
+ if fwGitForbidden(args){bad("forbidden command "+command)};switch command{case "archive","grep","diff","status":bad("forbidden command "+command)}
  if p.Fail==command{os.Exit(73)}
  if command=="cat-file"{for _,a:=range tail{if a=="-t"||a=="-s"||a=="-e"||strings.HasPrefix(a,"--batch-check"){metadataOnly=true};if strings.HasPrefix(a,"--batch-command"){batch=true;batchCommand=true};if a=="--batch"||strings.HasPrefix(a,"--batch="){batch=true}};if p.NoTree&&!metadataOnly&&!batch{bad("body read before valid explicit revision")};if !metadataOnly&&!batch{queries:=[]string{};for _,a:=range tail{if a=="blob"||a=="tree"||a=="commit"||strings.HasPrefix(a,"-"){continue};queries=append(queries,a)};for _,q:=range queries{if !allowed(q){bad("unrelated body "+q)}}}}
  if command=="show"||command=="log"{noPatch:=false;query:=false;for _,a:=range tail{if a=="--no-patch"||a=="-s"{noPatch=true};if strings.Contains(a,":")&&allowed(a){query=true}};if p.NoTree&&!noPatch{bad("historical content before valid explicit revision")};if !noPatch&&!query{bad("unbounded historical content "+command)}}

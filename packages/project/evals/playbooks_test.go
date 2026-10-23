@@ -321,7 +321,7 @@ func playbookTraps(t *testing.T) string {
 	if err != nil {
 		t.Fatal(err)
 	}
-	put(t, traps, "git", "#!/bin/sh\nfor a in \"$@\";do case \"$a\" in fetch|push|clone|ls-remote|commit|branch|checkout|switch|reset|restore|add|worktree|update-ref|hash-object) printf attempted >> "+shellQuote(marker)+";exit 97;;esac;done\nexec "+shellQuote(realGit)+" \"$@\"\n")
+	installProjectGitTrap(t, traps, realGit, marker)
 	names := []string{"git", "hook-trap", "agent-trap", "codex", "claude", "fireweed", "fireweed-bootstrap", "curl", "wget", "ssh", "nc"}
 	for _, name := range names {
 		if name != "git" {

@@ -15,6 +15,10 @@ import (
 )
 
 func Test_PRJ024_PRJ025_PRJ026_PRJ027BaselineNativeIsolation(t *testing.T) {
+	baselineNativeIsolation(t, false)
+}
+func Test_PRJ027PromisorNativeIsolation(t *testing.T) { baselineNativeIsolation(t, true) }
+func baselineNativeIsolation(t *testing.T, promisorOnly bool) {
 	if runtime.GOOS != "darwin" {
 		t.Skip("native ignored-read/mutation/network interception runs on macOS")
 	}
@@ -105,7 +109,7 @@ static int baseline_probe_readat(int d,const char*p){const char*base=strrchr(p,'
 */
 import "C"
 import("encoding/json";"os";"net";"time";"reflect";"strings";"fmt";p "github.com/lurkshark/fireweed/packages/project")
-type record struct{Root,Git,Revision,Blocked string;Expected p.Snapshot;Error bool}
+type record struct{Root,Git,Revision,Blocked,PartialPath,PartialCode string;Expected p.Snapshot;Error bool}
 func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil{os.Exit(80)};if json.Unmarshal(raw,&in)!=nil{os.Exit(81)}
  if os.Args[1]=="fixture-control"{if in.Expected.Root!=in.Root||in.Expected.Modules==nil||in.Expected.Diagnostics==nil{os.Exit(82)};return}
  var fd C.int=-1;if os.Args[1]=="read-at-control"||os.Args[1]=="read-at-allowed-control"{fd=C.fw_baseline_prepare(C.CString(os.Args[3]));if fd<0{os.Exit(83)}}
@@ -116,6 +120,7 @@ func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil{os.Exit(8
  if in.Error{if err==nil||!strings.Contains(err.Error(),"C01")||!reflect.DeepEqual(got,p.Snapshot{}){fmt.Fprintf(os.Stderr,"wrong fatal result %%v %%+v",err,got);os.Exit(10)};return}
  if err!=nil{fmt.Fprint(os.Stderr,err);os.Exit(11)}
  if got.Modules==nil||got.Changes==nil||got.Archive==nil||got.Diagnostics==nil{os.Exit(12)}
+ if in.PartialPath!=""{found:=false;for _,d:=range got.Diagnostics{if d.Path==in.PartialPath&&d.Code==in.PartialCode&&d.Severity=="error"&&d.Message!=""{found=true}};if !found{os.Exit(15)};return}
  for i:=range got.Diagnostics{if got.Diagnostics[i].Message==""{os.Exit(13)};got.Diagnostics[i].Message=""};for i:=range in.Expected.Diagnostics{in.Expected.Diagnostics[i].Message=""}
  if !reflect.DeepEqual(got,in.Expected){fmt.Fprint(os.Stderr,"selected metadata differs");os.Exit(14)}
 }`, temp)
@@ -135,7 +140,12 @@ func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil{os.Exit(8
 		t.Fatal(err)
 	}
 	defer listener.Close()
-	for _, kind := range []string{"normal", "dirty", "deleted", "outside-current", "config-link", "invalid-config", "diagnosed", "unknown-revision", "escape", "missing-outside-escape"} {
+	kinds := []string{"normal", "dirty", "deleted", "outside-current", "config-link", "invalid-config", "diagnosed", "unknown-revision", "escape", "missing-outside-escape"}
+	if promisorOnly {
+		baselinePromisorHelper(t)
+		kinds = []string{"promisor:config", "promisor:module", "promisor:queue", "promisor:archive", "promisor:commit", "promisor:ancestor", "promisor:tag", "promisor:tag-target", "promisor:root-tree", "promisor:nested-tree", "promisor:link-entry", "promisor:link-target", "promisor:private", "promisor:disposable", "promisor:hidden"}
+	}
+	for _, kind := range kinds {
 		t.Run(kind, func(t *testing.T) {
 			f := baselineFixture(t, "sha1")
 			privateRoot := baselineCanonical(t, t.TempDir())
@@ -145,6 +155,17 @@ func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil{os.Exit(8
 			extra := []string{}
 			revision := f.Commit
 			fatal := false
+			var promisor *baselinePromisorCase
+			if strings.HasPrefix(kind, "promisor:") {
+				v := baselinePromisorFixture(t, "sha1", strings.TrimPrefix(kind, "promisor:"), false)
+				promisor = &v
+				f = v.Fixture
+				revision = v.Revision
+				fatal = v.Fatal
+				if strings.HasPrefix(strings.TrimPrefix(kind, "promisor:"), "link-") {
+					extra = append(extra, "selected-config.yaml")
+				}
+			}
 			switch kind {
 			case "dirty":
 				put(t, f.Root, "fireweed.yaml", "current malformed: [")
@@ -223,12 +244,19 @@ func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil{os.Exit(8
 			}
 			blocked = append(blocked, loose)
 			policyFixture := f
-			if fatal && kind != "escape" && kind != "missing-outside-escape" && kind != "unknown-revision" {
+			if fatal && promisor == nil && kind != "escape" && kind != "missing-outside-escape" && kind != "unknown-revision" {
 				policyFixture.Expected.Modules = nil
 				policyFixture.Expected.Changes = nil
 				policyFixture.Expected.Archive = nil
 			}
 			bodyMarker, _ := baselineGuard(t, policyFixture, "", extra...)
+			if promisor != nil && kind == "promisor:nested-tree" {
+				raw, e := baselineInput(t, f.Root, "", "cat-file", "blob", f.Commit+":units/a/SPEC.md")
+				if e != nil || raw != f.Files["units/a/SPEC.md"] {
+					t.Fatal("selected other-module body must remain authorized before eventual enumeration failure", e, raw)
+				}
+				baselineNoMarker(t, bodyMarker)
+			}
 			if kind == "diagnosed" {
 				raw, err := baselineInput(t, f.Root, "", "cat-file", "blob", f.Commit+":units/bad/SPEC.md")
 				if err != nil || raw != module("invalid name", "BAD", "") {
@@ -238,6 +266,10 @@ func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil{os.Exit(8
 			}
 			commandMarker := playbookTraps(t)
 			values := map[string]any{"Root": f.Root, "Git": filepath.Join(f.Root, ".git"), "Revision": revision, "Blocked": strings.Join(blocked, "\n"), "Expected": f.Expected, "Error": fatal}
+			if promisor != nil && !promisor.Fatal && !promisor.Success {
+				values["PartialPath"] = promisor.Path
+				values["PartialCode"] = promisor.Code
+			}
 			raw, err := json.Marshal(values)
 			if err != nil {
 				t.Fatal(err)
@@ -295,10 +327,21 @@ func main(){var in record;raw,err:=os.ReadFile(os.Args[2]);if err!=nil{os.Exit(8
 					t.Fatalf("I/O control %s: %v %s", mode, err, out)
 				}
 			}
+			if promisor != nil {
+				baselinePromisorRemove(t, *promisor)
+			}
 			if out, err := run("load", ""); err != nil || len(out) != 0 {
 				t.Fatalf("baseline read attempted source/private I/O or failed contract: %v %s", err, out)
 			}
 			baselineNoMarker(t, bodyMarker)
+			if promisor != nil {
+				if baselineFetchTrace(t, promisor.Trace) {
+					t.Error("guarded LoadAt attempted forbidden fetch")
+				}
+				if raw, err := os.ReadFile(promisor.Marker); !os.IsNotExist(err) {
+					t.Errorf("guarded LoadAt invoked lazy transport: %s %v", raw, err)
+				}
+			}
 			baselineNoMarker(t, commandMarker)
 			if b, err := os.ReadFile(private); err != nil || string(b) != "outside sentinel" {
 				t.Fatal("outside data changed")
