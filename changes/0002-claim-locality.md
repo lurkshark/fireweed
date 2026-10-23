@@ -2,7 +2,7 @@
 fixes:
     - FLOW-011
 module: workflow
-phase: audit
+phase: impl
 run: 302e5571f4dc2b13329d9ff6
 ---
 
@@ -42,6 +42,15 @@ The available-base draft review caught two further assertion gaps before freeze:
 
 Relying only on GIT_NO_LAZY_FETCH reproduces the demonstrated old-Git bug. Blocking all object inventory or imposing complete repository availability would reject necessary metadata and independent claims. Disabling dependent/native checks, editing project frozen evals, or changing public error/ownership semantics would hide the regression. A live server, credentials or bootstrap delegation is unnecessary for marker-only transport evidence.
 
+## Audit
+
+No findings. Checked FLOW-011, related outcome fidelity FLOW-008, FLOW-009 and FLOW-010, and retained observer fidelity FLOW-020 and FLOW-023.
+
+Reviewed the required-unavailable-object matrix and its independent Trace2 and marker-only transport controls, including denied transport, snapshot/reset ordering, ordinary and linked SHA-1/SHA-256 fixtures, and required versus irrelevant missing objects. The assertions retain corrective zero/P02 rejections and atomic empty inventories, permit conforming exact-CAS updates when only old content is unavailable, and require exact-token release. Successful returned tokens are checked against local blob bytes and hashes. Per-call storage checks preserve existing entries, permit bounded selected claim/attempt blobs, and reject unrelated objects and garbage. Available tag, nested-tag and ancestor controls select the distinct older commit; range rejection does not replace those positive outcomes.
+
+Reviewed actual-operation and config-operand parsing, real-success byte-equal marker-free selected commit/OID-only inventory/no-walk/root/subtree controls, and retained private-body/batch, mutable-source, unrelated-claim, mutation and network denials. Native reference-transaction hook and fsmonitor controls, configured hook/agent/bootstrap traps, literal arguments, identity independence, and complete ref/index/HEAD/file/temp/input/parent-state preservation remain asserted. This is a genuine FLOW-011 regression without changed public claim or approval outcomes. The audit used only permitted public contracts and eval source; it did not execute tests or inspect implementation, history, bootstrap or evidence.
+
 ## Provenance
 
 - evals | 2026-10-23T19:10:10Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1914 | failing: 61 | passing: 1853
+- audit | 2026-10-23T19:15:07Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
