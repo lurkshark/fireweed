@@ -422,25 +422,19 @@ func Test_FLOW035StartCommittedResume(t *testing.T) {
 		}
 	}
 }
-
-// Exact Start codes are asserted only where FLOW-032–040 prescribe them.
-// Other failures still require corrective detail, zero results and preservation.
 func Test_FLOW032_FLOW033StartPreconditionRejections(t *testing.T) {
 	binary := startProxyBuild(t)
 	for _, kind := range []string{"tracked", "staged", "untracked", "blocked", "behind-head", "existing-own", "existing-peer", "existing-other", "orphan-own", "malformed-claim", "invalid-config", "invalid-queue"} {
 		t.Run(kind, func(t *testing.T) {
 			f := startFixture(t, "sha1", "spec", "")
-			code := ""
+			code := "P01"
 			switch kind {
 			case "tracked":
-				code = "P01"
 				worktreePut(t, f.Root, "retained", "dirty")
 			case "staged":
-				code = "P01"
 				worktreePut(t, f.Root, "retained", "staged")
 				claimGit(t, f.Root, "add", "retained")
 			case "untracked":
-				code = "P01"
 				worktreePut(t, f.Root, "new-untracked", "dirty")
 			case "blocked":
 				worktreePut(t, f.Root, f.Path, strings.Replace(f.Raw, "module: alpha\n", "module: alpha\nblocked: pending repair\n", 1))
@@ -452,16 +446,16 @@ func Test_FLOW032_FLOW033StartPreconditionRejections(t *testing.T) {
 				code = "P03"
 			case "existing-own":
 				claimSeed(t, f.Root, "current", f.Raw)
-				code = ""
+				code = "P02"
 			case "existing-other":
 				raw := strings.ReplaceAll(f.Raw, "new:feature", "new:other")
 				worktreePut(t, f.Root, "changes/0002-other.md", raw)
 				startCommit(t, f.Root, "Another queued change")
 				claimSeed(t, f.Root, "other", raw)
-				code = ""
+				code = "P02"
 			case "orphan-own":
 				claimSeed(t, f.Root, "orphan", f.Raw)
-				code = ""
+				code = "P02"
 			case "existing-peer":
 				peer := claimPeer(t, f.Root)
 				claimSeed(t, peer, "current", f.Raw)
@@ -472,11 +466,11 @@ func Test_FLOW032_FLOW033StartPreconditionRejections(t *testing.T) {
 			case "invalid-config":
 				worktreePut(t, f.Root, "fireweed.yaml", "version: nonsense\n")
 				startCommit(t, f.Root, "Invalid current configuration")
-				code = ""
+				code = "C01"
 			case "invalid-queue":
 				worktreePut(t, f.Root, f.Path, strings.Replace(f.Raw, "new:feature", "ALP-099", -1))
 				startCommit(t, f.Root, "Invalid author IDs")
-				code = ""
+				code = "C05"
 			}
 			checkNoClaim := startPreconditionProxy(t, binary, f)
 			defer checkNoClaim()
@@ -492,7 +486,7 @@ func Test_FLOW032_FLOW033StartPreconditionRejections(t *testing.T) {
 	f := startFixture(t, "sha1", "spec", "")
 	checkNoClaim := startPreconditionProxy(t, binary, f)
 	defer checkNoClaim()
-	startFailure(t, f.Root, "missing", "")
+	startFailure(t, f.Root, "missing", "C05")
 }
 func Test_FLOW038StartContextFailureRollsBack(t *testing.T) {
 	for _, kind := range []string{"spec", "regenerate"} {
@@ -503,7 +497,7 @@ func Test_FLOW038StartContextFailureRollsBack(t *testing.T) {
 				phase = "impl"
 			}
 			startBrokenBook(t, f, phase)
-			startFailure(t, f.Root, "current", "")
+			startFailure(t, f.Root, "current", "D05")
 		})
 	}
 }
@@ -629,7 +623,10 @@ func Test_FLOW032_FLOW035_FLOW038StartInvalidStatesAndPaths(t *testing.T) {
 			startCommit(t, f.Root, "Invalid selected fixture state")
 			checkNoClaim := startPreconditionProxy(t, binary, f)
 			defer checkNoClaim()
-			code := ""
+			code := "C05"
+			if kind == "bad-other-module" {
+				code = ""
+			}
 			err := startFailure(t, f.Root, "current", code)
 			if kind == "bad-other-module" && err != nil && (!strings.Contains(err.Error(), "missing") || !strings.Contains(err.Error(), "beta") && !strings.Contains(err.Error(), "units/b")) {
 				t.Error("lost useful module/dependency detail", err)
@@ -796,7 +793,7 @@ func Test_FLOW033_FLOW040StartConcurrentClaims(t *testing.T) {
 				for _, r := range results {
 					if r.Err == nil {
 						winners = append(winners, r)
-					} else if !reflect.DeepEqual(r.Result, w.StartResult{}) || !policyCorrective(r.Err.Error()) {
+					} else if !reflect.DeepEqual(r.Result, w.StartResult{}) || !policyCorrective(r.Err.Error()) || !strings.Contains(r.Err.Error(), "P01") && !strings.Contains(r.Err.Error(), "P02") {
 						t.Errorf("loser result/error %+v %v", r.Result, r.Err)
 					}
 				}
@@ -954,7 +951,7 @@ func Test_FLOW032_FLOW040StartNonRepository(t *testing.T) {
 	}
 	env := os.Environ()
 	got, err := w.Start(root, "current")
-	if !reflect.DeepEqual(got, w.StartResult{}) || err == nil || !policyCorrective(err.Error()) {
+	if !reflect.DeepEqual(got, w.StartResult{}) || err == nil || !strings.Contains(err.Error(), "C01") || !policyCorrective(err.Error()) {
 		t.Error("nonrepository rejection", got, err)
 	}
 	afterCwd, e := os.Getwd()
@@ -974,7 +971,7 @@ func Test_FLOW037_FLOW038StartUnsafeRequiredContext(t *testing.T) {
 			code := ""
 			if kind == "playbook" {
 				path = ".fireweed/playbooks/evals.md"
-				code = ""
+				code = "D05"
 				if err := os.MkdirAll(filepath.Dir(filepath.Join(f.Root, path)), 0755); err != nil {
 					t.Fatal(err)
 				}

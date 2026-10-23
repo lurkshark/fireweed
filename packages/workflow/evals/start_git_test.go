@@ -446,7 +446,7 @@ func Test_FLOW037_FLOW038_FLOW040StartSuppressesReferenceTransactionHook(t *test
 			}
 			marker := startReferenceHook(t, f.Root)
 			if failed {
-				startFailure(t, f.Root, "current", "")
+				startFailure(t, f.Root, "current", "D05")
 			} else {
 				startSuccess(t, f, f.Root, "evals")
 			}
