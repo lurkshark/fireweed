@@ -1,6 +1,6 @@
 ---
 module: app
-phase: audit
+phase: evals
 run: 8baf00c555aa2a3caf96dc64
 ---
 
@@ -42,9 +42,8 @@ Loading current project metadata before claim ownership would let worker config 
 - evals | 2026-10-23T02:31:59Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 216 | failing: 47 | passing: 169
 - audit | 2026-10-23T02:42:13Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-23T02:50:51Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 251 | failing: 50 | passing: 201
+- audit | 2026-10-23T02:54:02Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- APP-019: "allocate IDs" — missing assertion: every context fixture uses already allocated Added IDs. No handle-bearing context establishes that unallocated local handles remain in the complete structured context and exact source bytes, with specs, changes and refs unchanged. Allocating only when handles exist would pass the current assertions.
-- APP-021: "parent cwd/environment on success and rejection" — missing assertion: the preservation case compares the test parent's cwd/environment around executable subprocesses, which cannot expose changes inside app.Run's own process. The native probe calls app.Run but does not compare its process cwd/environment before and after successful and rejected calls.
-- APP-021: "It MUST inspect only the exact selected claim rather than require every claim to decode, and MUST NOT open disposable code, unrelated private content, transitive dependency contracts or inputs excluded by the public source/context selection contracts." — missing assertion: the worktree interposer cannot observe reads inside Git child processes, and no Git inventory/tree/body read guard limits them to the selected source. Successful context with a corrupt unrelated claim does not reject ignored broad claim reads, and ignored Git reads of excluded historical/private bodies also remain unobserved. Independently controlled allowed and forbidden selected-ref/tree/body reads are needed at the CLI boundary.
+- APP-021: "It MUST inspect only the exact selected claim rather than require every claim to decode" — missing assertion: the Git proxy permits bare show-ref and rev-parse --all, both of which inventory unrelated claim refs without an explicit refs/fireweed/claims argument. Its token guard therefore does not mark these broad reads, and an ignored inventory attempt still passes the subject assertions. Add independently controlled denials for broad inventory through these permitted commands while retaining allowed exact-ref inspection controls.
