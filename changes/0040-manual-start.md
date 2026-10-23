@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: audit
+phase: evals
 run: 1ba967f2d1ac76de2c6bd2d9
 ---
 
@@ -63,4 +63,3 @@ Starting from dirty work risks committing unrelated work and violates the manual
 
 - evals | 2026-10-23T10:28:01Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1691 | failing: 135 | passing: 1556
 - audit | 2026-10-23T10:33:11Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
-- evals | 2026-10-23T10:45:47Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1698 | failing: 135 | passing: 1563

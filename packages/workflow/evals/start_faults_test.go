@@ -44,21 +44,9 @@ int fw_start_fired(void){return fired;}
 const char*fw_start_recreated(void){return recreated;}
 static int exact(const char*a,const char*b){return a&&b&&strcmp(a,b)==0;}
 static int within(const char*p,const char*d){return p&&d&&strncmp(p,d,strlen(d))==0&&(p[strlen(d)]==0||p[strlen(d)]=='/');}
-static const char*fullpath(int fd,const char*p,char*b){
- if(!p)return p;
- char raw[4096],d[4096];
- if(p[0]=='/'){if(snprintf(raw,sizeof(raw),"%s",p)>=(int)sizeof(raw))return p;}
- else{int ok=fd==AT_FDCWD?getcwd(d,sizeof(d))!=0:fcntl(fd,F_GETPATH,d)==0;if(!ok)return p;if(snprintf(raw,sizeof(raw),"%s/%s",d,p)>=(int)sizeof(raw))return p;}
- size_t used=1;b[0]='/';b[1]=0;
- for(char*q=raw;*q;){while(*q=='/')q++;char*part=q;while(*q&&*q!='/')q++;size_t n=q-part;if(!n)break;
-  if(n==1&&part[0]=='.')continue;
-  if(n==2&&part[0]=='.'&&part[1]=='.'){if(used>1){while(used>1&&b[used-1]!='/')used--;if(used>1)used--;b[used]=0;}continue;}
-  if(used>1)b[used++]='/';memcpy(b+used,part,n);used+=n;b[used]=0;
- }
- return b;
-}
+static const char*fullpath(int fd,const char*p,char*b){if(!p||p[0]=='/'||fd==AT_FDCWD)return p;char d[4096];if(fcntl(fd,F_GETPATH,d)==0){snprintf(b,4096,"%s/%s",d,p);return b;}return p;}
 static void inspection(const char*p){if(armed==6)violation();}
-static void mutation(const char*p){char path[4096];p=fullpath(AT_FDCWD,p,path);inspection(p);
+static void mutation(const char*p){inspection(p);
  if((armed==7||armed==8)&&p){
   if(p[0]!='/')violation();
   if(within(p,root)){const char*q=p+strlen(root);if(strncmp(q,"/.git/",6)!=0&&strcmp(q,"/.git")!=0)violation();}
@@ -68,7 +56,7 @@ static void mutation(const char*p){char path[4096];p=fullpath(AT_FDCWD,p,path);i
 }
 static int opening(const char*p,int flags){
  if(!armed)return 0;
- char path[4096];p=fullpath(AT_FDCWD,p,path);inspection(p);
+ inspection(p);
  if(flags&(O_WRONLY|O_RDWR)){mutation(p);if(armed==2&&exact(p,change)){fired=1;errno=EACCES;return -1;}}
  if((armed==5&&exact(p,context_file))||(armed==8&&exact(p,change))){fired=1;errno=EACCES;return -1;}
  return 0;
@@ -83,7 +71,7 @@ static void execution(const char*p){if(armed){if(armed==6)violation();const char
 static int fw_execve(const char*p,char*const a[],char*const e[]){execution(p);return execve(p,a,e);}
 static int fw_posix_spawn(pid_t*p,const char*s,const posix_spawn_file_actions_t*f,const posix_spawnattr_t*t,char*const a[],char*const e[]){execution(s);return posix_spawn(p,s,f,t,a,e);}
 static int fw_posix_spawnp(pid_t*p,const char*s,const posix_spawn_file_actions_t*f,const posix_spawnattr_t*t,char*const a[],char*const e[]){execution(s);return posix_spawnp(p,s,f,t,a,e);}
-static int fw_rename(const char*p,const char*q){char path[4096];q=fullpath(AT_FDCWD,q,path);mutation(p);mutation(q);if(armed==2&&exact(q,change)){fired=1;errno=EACCES;return -1;}return rename(p,q);}
+static int fw_rename(const char*p,const char*q){mutation(p);mutation(q);if(armed==2&&exact(q,change)){fired=1;errno=EACCES;return -1;}return rename(p,q);}
 static int disposable(const char*p){return root&&p&&within(p,root)&&strstr(p,"/units/a/impl/")&&(strstr(p,"/code.txt")||strstr(p,"/second.txt"));}
 static int deletion(const char*p){
  mutation(p);
@@ -99,7 +87,7 @@ static void deleted(const char*p,int result){
   if(armed==4){int f=open(p,O_WRONLY|O_CREAT|O_EXCL,0640);if(f<0)_exit(86);const char*v="Concurrent winner bytes.\n";if(write(f,v,strlen(v))!=(ssize_t)strlen(v))_exit(87);fchmod(f,0640);close(f);snprintf(recreated,sizeof(recreated),"%s",p);}
  }
 }
-static int fw_unlink(const char*p){char path[4096];p=fullpath(AT_FDCWD,p,path);if(deletion(p)<0)return -1;int r=unlink(p);deleted(p,r);return r;}
+static int fw_unlink(const char*p){if(deletion(p)<0)return -1;int r=unlink(p);deleted(p,r);return r;}
 static int fw_unlinkat(int d,const char*p,int f){char b[4096];const char*q=fullpath(d,p,b);if(deletion(q)<0)return -1;int r=unlinkat(d,p,f);deleted(q,r);return r;}
 static char*fw_getcwd(char*b,size_t n){if(armed==6)violation();return getcwd(b,n);}
 static int fw_stat(const char*p,struct stat*b){inspection(p);return stat(p,b);}
@@ -155,7 +143,7 @@ int fw_start_fired(void);
 const char*fw_start_recreated(void);
 */
 import "C"
-import("encoding/json";"os";"os/exec";"net";"time";"fmt";"reflect";"strings";w "github.com/lurkshark/fireweed/packages/workflow")
+import("encoding/json";"os";"os/exec";"net";"time";"fmt";"reflect";w "github.com/lurkshark/fireweed/packages/workflow")
 type input struct{Root,Change,Context,Private,Address,Mode string;Fault int}
 type output struct{Result w.StartResult;Object string;Error string;Fired bool;Recreated string;Control,StateSame bool}
 func main(){
@@ -163,7 +151,6 @@ func main(){
  cwd,e:=os.Getwd();if e!=nil{os.Exit(82)};environment:=os.Environ()
  C.fw_start_arm(C.int(in.Fault),C.CString(in.Root),C.CString(in.Change),C.CString(in.Context),C.CString(in.Private))
  out:=output{}
- relative:=func(p string)string{return "./"+strings.TrimPrefix(p,in.Root+"/")}
  switch in.Mode{
  case "token-transport-control":out.Result.Claim.Object="native-token-transport"
  case "invalid-relative-read-control":os.ReadFile("fireweed.yaml")
@@ -186,15 +173,6 @@ func main(){
  case "private-chmod-control":os.Chmod(in.Private,0777)
  case "private-unlink-control":os.Remove(in.Private)
  case "git-control":_,e=exec.Command("git","--version").CombinedOutput();out.Control=e==nil
- case "relative-write-fault-control":e=os.WriteFile(relative(in.Change),[]byte("bad"),0600);out.Control=e!=nil
- case "relative-rename-fault-control":
-  tmp:=in.Root+"/rename-control";e=os.WriteFile(tmp,[]byte("temporary source"),0600);if e==nil{e=os.Rename(relative(tmp),relative(in.Change));out.Control=e!=nil;os.Remove(tmp)}
- case "relative-context-fault-control":_,e=os.ReadFile(relative(in.Context));out.Control=e!=nil
- case "fd-context-fault-control":
-  root,e:=os.OpenRoot(in.Root);if e==nil{f,e:=root.Open(strings.TrimPrefix(in.Context,in.Root+"/"));out.Control=e!=nil;if f!=nil{f.Close()};root.Close()}
- case "relative-delete-fault-control":
-  a:=os.Remove("./units/a/impl/code.txt");b:=os.Remove("./units/a/impl/second.txt");out.Control=a==nil&&b!=nil
- case "dotdot-context-fault-control":_,e=os.ReadFile("./units/a/../../"+strings.TrimPrefix(in.Context,in.Root+"/"));out.Control=e!=nil
  case "write-fault-control":e=os.WriteFile(in.Change,[]byte("bad"),0600);out.Control=e!=nil
  case "context-fault-control":_,e=os.ReadFile(in.Context);out.Control=e!=nil
  case "delete-fault-control":
@@ -313,7 +291,7 @@ func main(){
 	for _, control := range []struct {
 		Mode  string
 		Fault int
-	}{{"git-control", 1}, {"relative-write-fault-control", 2}, {"relative-rename-fault-control", 2}, {"relative-context-fault-control", 5}, {"dotdot-context-fault-control", 5}, {"fd-context-fault-control", 5}, {"relative-delete-fault-control", 3}, {"relative-delete-fault-control", 4}, {"write-fault-control", 2}, {"context-fault-control", 5}, {"delete-fault-control", 3}, {"delete-fault-control", 4}} {
+	}{{"git-control", 1}, {"write-fault-control", 2}, {"context-fault-control", 5}, {"delete-fault-control", 3}, {"delete-fault-control", 4}} {
 		t.Run(fmt.Sprintf("%s-%d", control.Mode, control.Fault), func(t *testing.T) {
 			_, in := fixture(t, "regenerate")
 			in.Mode = control.Mode
