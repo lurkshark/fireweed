@@ -4,6 +4,8 @@ bases:
 fixes:
     - PRJ-016
 module: project
+phase: audit
+run: 54064a814032fbec76c5c142
 ---
 
 ## Motivation
@@ -30,3 +32,7 @@ Known edit headings are synthesized only when their typed lists have items. A re
 ## Rejected alternatives
 
 Appending every known heading changes source structure without authored intent. Removing every empty heading also changes explicitly authored templates. Ignoring typed items when their headings are missing breaks typed authority and document agreement. Special-casing workflow approval would hide the allocator regression and leave other consumers with changed documents.
+
+## Provenance
+
+- evals | 2026-10-23T05:36:23Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 439 | failing: 46 | passing: 393
