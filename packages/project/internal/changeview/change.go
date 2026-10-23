@@ -42,7 +42,7 @@ func Text(ch contracts.Change) (string, error) {
 				found = true
 			}
 		}
-		if !found {
+		if !found && len(edit.items) > 0 {
 			d.Sections = append(d.Sections, contracts.Section{Name: edit.name, Body: body})
 		}
 	}
