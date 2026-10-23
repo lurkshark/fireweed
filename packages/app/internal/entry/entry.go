@@ -174,14 +174,14 @@ func emit(out, errOut io.Writer, option options, data any, diagnostics []diagnos
 func Run(args []string, out, errOut io.Writer) int {
 	option := parse(args)
 	fail := func(problem string) int {
-		message := problem + ". Run fireweed help. Valid commands: help, version, explain, playbook, modules, check, show, coverage, context."
+		message := problem + ". Run fireweed help. Valid commands: help, version, explain, playbook, modules, check, show, coverage, context, start."
 		return emit(out, errOut, option, nil, []diagnostic{{Code: "U01", Severity: "error", Message: message}}, 2)
 	}
 	if option.problem != "" {
 		return fail(option.problem)
 	}
 	switch option.command {
-	case "help", "version", "explain", "playbook", "modules", "check", "show", "coverage", "context":
+	case "help", "version", "explain", "playbook", "modules", "check", "show", "coverage", "context", "start":
 	default:
 		return fail("unknown command " + option.command)
 	}
@@ -199,7 +199,7 @@ func Run(args []string, out, errOut io.Writer) int {
 		option.operands = nil
 	}
 	required := 0
-	if option.command == "explain" || option.command == "playbook" || option.command == "coverage" || option.command == "context" {
+	if option.command == "explain" || option.command == "playbook" || option.command == "coverage" || option.command == "context" || option.command == "start" {
 		required = 1
 	}
 	if option.command == "show" {
@@ -210,6 +210,8 @@ func Run(args []string, out, errOut io.Writer) int {
 		return fail(fmt.Sprintf("%s requires %d positional arguments", option.command, required))
 	}
 	switch option.command {
+	case "start":
+		return start(out, errOut, option)
 	case "context":
 		return workerContext(out, errOut, option)
 	case "coverage":
