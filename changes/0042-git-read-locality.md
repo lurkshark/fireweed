@@ -2,7 +2,7 @@
 fixes:
     - GIT-002
 module: gitstore
-phase: audit
+phase: impl
 run: 3777b3658f1b2362845d933f
 ---
 
@@ -56,3 +56,14 @@ An environment hint or failed network request after the fact does not prevent fe
 ## Provenance
 
 - evals | 2026-10-23T22:42:27Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 221 | failing: 38 | passing: 183
+- audit | 2026-10-23T22:44:49Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+No findings. Checked GIT-002, projected GIT-011 and retained GIT-003 compatibility.
+
+Reviewed preferred tracking-ref identity despite unavailable targets, configured/default remote selection, symbolic defaults, slash-containing branches and absent-ref fallback. Reviewed required-object rejection with useful errors and empty results, independent available comparisons with irrelevant missing objects, older tag/nested-tag/ancestor selection, revision-set rejection, and ordinary/linked SHA-1/SHA-256 fixtures.
+
+Independent native controls calibrate transport markers, denied-protocol Trace2 detection, transient branch/ref transactions, command-option parsing and external-command traps. Successful native/manual premises retain staged, unstaged, untracked, filename, rename, configuration, attributes, excludes, modes and split-index behavior. Assertions preserve HEAD, refs, original index/configuration, working/ignored files and parent state; cleanup controls cover TMP, repository-local scratch, temporary object/pack files and locks while permitting legitimate object/shared-index storage.
+
+This audit read only the permitted change, public contracts/API and eval source. No tests or commands were executed, no implementation/history/bootstrap/evidence was inspected, and no files were edited.
