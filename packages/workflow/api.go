@@ -12,6 +12,7 @@ import (
 	workercontext "github.com/lurkshark/fireweed/packages/workflow/internal/context"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/eligibility"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/policy"
+	manualstart "github.com/lurkshark/fireweed/packages/workflow/internal/start"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/state"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/worktree"
 	"github.com/lurkshark/fireweed/packages/workflow/model"
@@ -63,3 +64,7 @@ func Eligible(snapshot project.Snapshot, slug string) (bool, error) {
 func ApprovalMatches(module contracts.Module, baseText, currentText, path string) (bool, error) {
 	return contentapproval.Matches(module, baseText, currentText, path)
 }
+
+type StartResult = model.StartResult
+
+func Start(start, slug string) (StartResult, error) { return manualstart.Start(start, slug) }
