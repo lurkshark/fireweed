@@ -2,7 +2,7 @@
 fixes:
     - FLOW-011
 module: workflow
-phase: impl
+phase: applied
 run: 302e5571f4dc2b13329d9ff6
 ---
 
@@ -38,6 +38,10 @@ The restored complete preflight finishes normally in611.822s with1909 records/61
 
 The available-base draft review caught two further assertion gaps before freeze: tags targeted HEAD, and object storage was only checked at the end. Corrected tags/nested tags now target the distinct older local commit. Every individual call preserves existing object entries and classifies only bounded exact selected states/attempt blobs; unrelated refs, files, temp and parent state remain checked. Corrected valid-base and existing independent CAS/storage/token controls pass10.674s. No product implementation edits.
 
+Final frozen EVALS complete normally in680.381s with1914 records,61 failed records and60 genuine terminal fetch/transport failures. All1728 legacy records and125 new controls pass with0 skips/errors/diagnostics. Independent formal audit checks FLOW-011 and related claim outcomes/source-observer fidelity with No findings. Implementation inventories only local object identities before required payload reads and checks selected commit availability after no-walk resolution under Git's missing-object policy. Explicit revision sets are rejected while valid tags and ancestors remain Git-resolved. Exact-token release does not acquire a payload or baseline precondition; unrelated claim bodies and object graphs remain uninspected. Public APIs, exact CAS semantics, hooks and frozen evals stay unchanged.
+
+Fresh implementation focused regressions/protocol cases pass191 records in156.231s. Claim API race coverage passes362 records in187.967s; this is not a full repository race claim. Vet and whitespace pass. Full controller verification passes workflow1914 records in672.292s, dependent app476 in485.929s, runner's current0 records and boundaries, with0 failures/errors/skips/diagnostics. The ten frozen eval/interface hashes and two disposable implementation hashes remain exact. Final done independently repeats all required checks before application.
+
 ## Rejected alternatives
 
 Relying only on GIT_NO_LAZY_FETCH reproduces the demonstrated old-Git bug. Blocking all object inventory or imposing complete repository availability would reject necessary metadata and independent claims. Disabling dependent/native checks, editing project frozen evals, or changing public error/ownership semantics would hide the regression. A live server, credentials or bootstrap delegation is unnecessary for marker-only transport evidence.
@@ -54,3 +58,4 @@ Reviewed actual-operation and config-operand parsing, real-success byte-equal ma
 
 - evals | 2026-10-23T19:10:10Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1914 | failing: 61 | passing: 1853
 - audit | 2026-10-23T19:15:07Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- impl | 2026-10-23T19:39:59Z | agent: manual | fireweed: 0.4.0 | playbook: 653912b194316c62181f62d0a69dc213f7668481ea8b1b9926ef889dd48a9e08 | tests: 2390 | failing: 0 | passing: 2390

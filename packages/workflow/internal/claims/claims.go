@@ -20,9 +20,10 @@ var slugPattern = regexp.MustCompile(`^[a-z0-9][a-z0-9-]*$`)
 const prefix = "refs/fireweed/claims/"
 
 type storage struct {
-	repo  gitstore.Repository
-	ctx   context.Context
-	width int
+	repo    gitstore.Repository
+	ctx     context.Context
+	width   int
+	objects map[string]bool
 }
 
 func failure(format string, args ...any) error {
@@ -81,12 +82,20 @@ func (s *storage) commit(value string) (string, error) {
 	if strings.TrimSpace(value) == "" {
 		return "", failure("a local commit baseline is required")
 	}
-	resolved, err := s.git("rev-parse", "--verify", "--end-of-options", value+"^{commit}")
+	if revisionSet(value) {
+		return "", failure("select one local commit baseline rather than a revision set")
+	}
+	// The missing-object policy also applies while Git resolves tags and
+	// ancestors. A rev-parse peel can fetch before returning its object ID.
+	resolved, err := s.git("rev-list", "--no-walk", "--missing=print", "--end-of-options", value)
 	if err != nil {
 		return "", err
 	}
 	if !s.oid(resolved) {
 		return "", failure("baseline %q did not resolve to a full commit ID", value)
+	}
+	if err := s.available(resolved); err != nil {
+		return "", err
 	}
 	return resolved, nil
 }
@@ -123,6 +132,9 @@ func (s *storage) load(slug string) (model.Claim, error) {
 	zero := model.Claim{}
 	object, err := s.object(slug)
 	if err != nil {
+		return zero, err
+	}
+	if err := s.available(object); err != nil {
 		return zero, err
 	}
 	kind, err := s.git("cat-file", "-t", object)
