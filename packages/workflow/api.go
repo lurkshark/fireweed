@@ -8,6 +8,7 @@ import (
 	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/approval"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/claims"
+	"github.com/lurkshark/fireweed/packages/workflow/internal/contentapproval"
 	workercontext "github.com/lurkshark/fireweed/packages/workflow/internal/context"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/eligibility"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/policy"
@@ -57,4 +58,8 @@ func LoadApproval(start, slug string) (project.Snapshot, Claim, error) {
 
 func Eligible(snapshot project.Snapshot, slug string) (bool, error) {
 	return eligibility.Check(snapshot, slug)
+}
+
+func ApprovalMatches(module contracts.Module, baseText, currentText, path string) (bool, error) {
+	return contentapproval.Matches(module, baseText, currentText, path)
 }

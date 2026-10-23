@@ -1,5 +1,7 @@
 ---
 module: workflow
+phase: audit
+run: db1ac372ae0406218e1ccab6
 ---
 
 ## Motivation
@@ -12,16 +14,16 @@ Add ApprovalMatches(module contracts.Module, baseText, currentText, path string)
 
 ## Added
 
-### new:approval-inputs
+### FLOW-028
 ApprovalMatches MUST parse currentText with the public change grammar at path using the supplied module prefix, require its target to equal module.Name, and return false with corrective C05 and useful public parser detail for invalid current input or target mismatch. Current input MUST be checked even when baseText is absent or malformed. Once current input is valid, empty, malformed or differently targeted baseText MUST return false with nil error. A valid content mismatch MUST also return false with nil error; a matching valid pair MUST return true with nil error. It MUST NOT certify static project validity, phase advancement, clean state, claim ownership, base provenance or queue eligibility.
 
-### new:approval-authored-content
+### FLOW-029
 After public Markdown normalization and handle mapping below, approval MUST compare the parsed authored Module, Set, Bases, Fixes, AlreadySatisfied and Regenerate metadata values, preamble, and ordered retained human/edit sections. Runtime Run, Phase and Blocked metadata and the exact sections Decisions, Questions, Audit, Provenance and Notes MUST be excluded. All other authored sections, including Motivation, Interface, Added, Modified, Removed, Removed decisions, Rejected alternatives and unknown names, MUST remain significant, including their names, order, tags, complete bodies and interior whitespace. Fenced headings and differently cased names MUST NOT become excluded sections. YAML key order, quoting/comments, CRLF and insignificant outer blank lines normalized by the public parser MUST NOT change approval. Omitted and explicitly empty top-level Set/Bases/Fixes/AlreadySatisfied collections MUST be equivalent; explicit empty values inside Set MUST remain significant. Ordered list values MUST NOT be silently sorted or treated as sets.
 
-### new:approval-late-handles
+### FLOW-030
 When both valid documents have the same number of Added items, every local Added handle in baseText MUST map positionally to the corresponding current Added ID or handle, and every occurrence of that declared handle in canonical metadata, preamble and retained section names/bodies MUST use that same binding before comparison. This MUST cover nested set hook strings, already_satisfied, Interface and fenced examples. Overlapping handle names MUST NOT corrupt one another, replacements MUST be simultaneous rather than cascade through another binding, and a base Added real ID MUST remain fixed. Differing Added counts or differing authored intent after this mapping MUST return false with nil error. This comparison MUST NOT allocate IDs, reserve numbers or infer approval merely from equal Added IDs or spec hashes.
 
-### new:approval-purity
+### FLOW-031
 ApprovalMatches MUST operate solely on supplied values outside a repository, remain deterministic/local/noninteractive, and MUST NOT inspect files, Git, claims, hooks, agents, bootstrap, network, cwd or environment, execute processes, allocate IDs or mutate files/refs/temporary storage or parent process state on success or rejection. It MUST preserve every supplied module field, nested map/slice/document and empty append backing storage after repeated true, false and error calls. Irrelevant module specs/zones/hooks/Decisions MUST NOT change its bool/error or trigger validation or execution. Ambient cwd/environment/files MUST NOT change results or error details.
 
 ## Modified
@@ -37,3 +39,7 @@ Public parsing defines normalized Markdown/YAML values. Compare meaningful autho
 ## Rejected alternatives
 
 Approving every file that exists on base accepts changed unauthorized intent. Byte comparison revokes approval for runtime state, late IDs and harmless YAML formatting. Ignoring all human sections permits unauthorized Motivation/Interface/unknown author instructions. Comparing only IDs or normalized spec hashes loses tags, metadata and author text. Reading Git here would make a pure comparison inseparable from base provenance and I/O policy.
+
+## Provenance
+
+- evals | 2026-10-23T04:48:41Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1392 | failing: 73 | passing: 1319
