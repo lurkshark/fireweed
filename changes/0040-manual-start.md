@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: evals
+phase: audit
 run: 1ba967f2d1ac76de2c6bd2d9
 ---
 
@@ -55,11 +55,6 @@ Regeneration rollback holds only the exact files deleted by this transaction and
 
 Starting from dirty work risks committing unrelated work and violates the manual lifecycle. Treating an existing same-owner claim as implicit resume could overwrite active work. Writing state before atomic reservation loses linked-worktree exclusion. Leaving allocated bytes or partial regeneration deletions after a context error breaks recoverability. Releasing by slug without its exact token can delete a concurrent winner. Approval by filename or spec hashes alone loses authored intent; unconditional approval-layout exemptions would hide allocator regressions. Running hooks during start conflates startup with verify. Recursive directory removal and matching disposable globs without zone precedence can destroy retained contracts.
 
-## Audit
-
-- FLOW-038: "Any failure after reservation MUST return a zero StartResult and roll back this operation's working-file writes/deletions and release only its own claim token." — The native fault oracle assumes absolute syscall paths: `fullpath` leaves AT_FDCWD-relative paths unchanged, `fw_open`/`fw_rename` compare them directly with absolute fault paths, and `disposable` requires the absolute root prefix. A compliant Start that validates containment and then reads, writes or deletes through repository-relative paths can bypass these injected faults; the required `Fired`/failure assertions then reject it even though no operation failed. Resolve relative syscall paths consistently before matching the selected-write, required-context-read and deletion fault targets, with independent relative-path fault controls, so rollback assertions run only from a genuine injected failure.
-
 ## Provenance
 
 - evals | 2026-10-23T10:28:01Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1691 | failing: 135 | passing: 1556
-- audit | 2026-10-23T10:33:11Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
