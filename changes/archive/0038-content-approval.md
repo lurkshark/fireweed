@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: impl
+phase: applied
 run: db1ac372ae0406218e1ccab6
 ---
 
@@ -36,6 +36,8 @@ This compares supplied content only. The future lifecycle/runner caller must ind
 
 Public parsing defines normalized Markdown/YAML values. Compare meaningful authored metadata rather than YAML presentation. Runtime state and the five worker-authored feedback sections are omitted; remaining section structure and prose stay approval-sensitive, rather than using normalized spec hashes as an authority check. Added declaration order determines late-handle correspondence, matching allocation's ordered binding model; current handles may remain handles before start. Neither input is changed or written back. A malformed base is unapproved rather than an operational error, while malformed current intent must be corrected before checking approval.
 
+Public allocation renders a blank separator after spec item headings. Compare that insignificant leading body layout consistently while preserving actual body lines and fenced examples. The ordinary minimal-source comparison also exposed project allocation adding absent empty Modified/Removed sections. That separate allocator preservation regression must be fixed through a project change before start composition; this comparator keeps retained authored section structure significant.
+
 ## Rejected alternatives
 
 Approving every file that exists on base accepts changed unauthorized intent. Byte comparison revokes approval for runtime state, late IDs and harmless YAML formatting. Ignoring all human sections permits unauthorized Motivation/Interface/unknown author instructions. Comparing only IDs or normalized spec hashes loses tags, metadata and author text. Reading Git here would make a pure comparison inseparable from base provenance and I/O policy.
@@ -46,6 +48,7 @@ Approving every file that exists on base accepts changed unauthorized intent. By
 - audit | 2026-10-23T04:54:30Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-23T05:03:50Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1414 | failing: 95 | passing: 1319
 - audit | 2026-10-23T05:04:52Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- impl | 2026-10-23T05:18:07Z | agent: manual | fireweed: 0.4.0 | playbook: 653912b194316c62181f62d0a69dc213f7668481ea8b1b9926ef889dd48a9e08 | tests: 1689 | failing: 0 | passing: 1689
 
 ## Audit
 
