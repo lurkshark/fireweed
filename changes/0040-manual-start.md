@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: audit
+phase: evals
 run: 22da0470ce4466705c23c958
 ---
 
@@ -58,3 +58,18 @@ Starting from dirty work risks committing unrelated work and violates the manual
 ## Provenance
 
 - evals | 2026-10-23T07:49:51Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1552 | failing: 113 | passing: 1439
+- audit | 2026-10-23T08:06:20Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+- FLOW-032: "Invalid selectors MUST fail with corrective C05 before repository access." — missing an assertion detecting repository access on an invalid selector. Passing a missing repository and checking C05 establishes error precedence, but permits Git/filesystem inspection whose failure is ignored before returning C05; the native subject cases do not guard this path.
+- FLOW-033: "a loser MUST NOT alter the winner's claim or files." — missing a final comparison of the winning selected file with the winner's exact Claim.State in the concurrent-start test. That test excludes the winner's selected path from both tree snapshots, so a losing same-worktree rollback can overwrite the winner's started bytes without failing an assertion.
+- FLOW-036: "It MUST resolve the chosen base commit locally once, read the exact selected file from that pinned commit" — the move-base proxy overconstrains when pinning occurs: it moves the ref on any matching old-HEAD show/cat-file/ls-tree read, including a permitted current-source LoadAt(HEAD) before the chosen base is resolved. The subject then requires no P04 even if the ref moved before resolution; the event must distinguish a read of an already pinned base from earlier current-project reads.
+- FLOW-036: "Start MUST return warning diagnostics P04 when HEAD does not contain the locally known base tip and independently when the selected authored content is absent or unapproved on that base." — the unavailable-base assertion additionally requires stale then unapproved warning order through DeepEqual on the collected slice. This clause requires both independent warnings and does not prescribe their relative order.
+- FLOW-037: "On success Start MUST return a complete BuildContext result for the exact newly owned started state" — Test_FLOW038StartContextFailureRollsBack incorrectly requires D05 for readable playbook overrides whose based_on is 00000000. PRJ-022 explicitly preserves readable stale overrides, including wrong/non-string based_on values, so this fixture does not establish a BuildContext failure and rejects a contract-compliant successful Start.
+- FLOW-038: "every deleted tracked file's contents/type/mode, MUST be restored when still owned by this operation." — missing rollback assertion for a deleted tracked disposable leaf symlink. The fault fixtures restore regular files and executable modes only; the symlink fixture covers successful deletion, so restoring a symlink as a regular file during rollback is not distinguished.
+- FLOW-038: "Lost ownership or incomplete rollback MUST produce useful corrective recovery details rather than falsely report a clean rollback." — missing recovery-detail assertions for replacement-claim and replacement-change failures. Those proxy subject cases accept any action-bearing error, while only the recreated-deletion case checks recovery/ownership/preservation wording; a generic corrective rejection does not establish that lost ownership is explained.
+- FLOW-038: "temporary files MUST be cleaned after success and recoverable rejection." — missing temporary-storage assertions outside the working tree. startTree excludes .git, no dedicated TMPDIR/TMP/TEMP tree is checked, and the common-Git success comparison permits every new objects/ entry; leaked owned temporary files in those locations are not detected.
+- FLOW-040: "invoke Git hooks or fsmonitor" — missing a proven native ref-transaction-hook assertion around Start's actual claim mutations. The configured native hook subject covers fsmonitor only; the armed parent process permits Git execution and does not install its interposition library into Git's hook subprocesses.
+- FLOW-040: "Failure paths MUST preserve the same unrelated state." — missing common-Git bookkeeping comparisons on rejection. Failure snapshots omit .git and compare only HEAD, refs and index bytes; the broader common-Git comparison is success-only, leaving existing config, hook files and linked-worktree bookkeeping unasserted during rollback/failure.
+- FLOW-040: "The operation MUST use bounded local subprocesses" — missing a subject case with an actually stalled Git subprocess and a generous external completion ceiling. Normal commands and concurrent starts finish quickly, while the proxy's own eight-second delegate timeout can bound an otherwise unbounded caller; those fixtures do not establish Start's subprocess bound.
