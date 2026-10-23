@@ -45,13 +45,20 @@ const char*fw_start_recreated(void){return recreated;}
 static int exact(const char*a,const char*b){return a&&b&&strcmp(a,b)==0;}
 static int within(const char*p,const char*d){return p&&d&&strncmp(p,d,strlen(d))==0&&(p[strlen(d)]==0||p[strlen(d)]=='/');}
 static const char*fullpath(int fd,const char*p,char*b){if(!p||p[0]=='/'||fd==AT_FDCWD)return p;char d[4096];if(fcntl(fd,F_GETPATH,d)==0){snprintf(b,4096,"%s/%s",d,p);return b;}return p;}
-static void inspection(const char*p){if(armed==6&&within(p,root))violation();}
-static void mutation(const char*p){inspection(p);if(armed&&within(p,private_file))_exit(42);}
+static void inspection(const char*p){if(armed==6)violation();}
+static void mutation(const char*p){inspection(p);
+ if((armed==7||armed==8)&&p){
+  if(p[0]!='/')violation();
+  if(within(p,root)){const char*q=p+strlen(root);if(strncmp(q,"/.git/",6)!=0&&strcmp(q,"/.git")!=0)violation();}
+  if(within(p,context_file))violation();
+ }
+ if(armed&&within(p,private_file))_exit(42);
+}
 static int opening(const char*p,int flags){
  if(!armed)return 0;
  inspection(p);
  if(flags&(O_WRONLY|O_RDWR)){mutation(p);if(armed==2&&exact(p,change)){fired=1;errno=EACCES;return -1;}}
- if(armed==5&&exact(p,context_file)){fired=1;errno=EACCES;return -1;}
+ if((armed==5&&exact(p,context_file))||(armed==8&&exact(p,change))){fired=1;errno=EACCES;return -1;}
  return 0;
 }
 static int fw_open(const char*p,int f,...){if(opening(p,f)<0)return -1;mode_t m=0;if(f&O_CREAT){va_list a;va_start(a,f);m=va_arg(a,int);va_end(a);}return open(p,f,m);}
@@ -82,6 +89,7 @@ static void deleted(const char*p,int result){
 }
 static int fw_unlink(const char*p){if(deletion(p)<0)return -1;int r=unlink(p);deleted(p,r);return r;}
 static int fw_unlinkat(int d,const char*p,int f){char b[4096];const char*q=fullpath(d,p,b);if(deletion(q)<0)return -1;int r=unlinkat(d,p,f);deleted(q,r);return r;}
+static char*fw_getcwd(char*b,size_t n){if(armed==6)violation();return getcwd(b,n);}
 static int fw_stat(const char*p,struct stat*b){inspection(p);return stat(p,b);}
 static int fw_lstat(const char*p,struct stat*b){inspection(p);return lstat(p,b);}
 static DIR*fw_opendir(const char*p){inspection(p);return opendir(p);}
@@ -91,7 +99,7 @@ static int fw_rmdir(const char*p){mutation(p);return rmdir(p);}
 static int fw_mkdir(const char*p,mode_t m){mutation(p);return mkdir(p,m);}
 static int fw_chmod(const char*p,mode_t m){mutation(p);return chmod(p,m);}
 #define I(r,o) __attribute__((used)) static struct{const void*replacement;const void*original;} fw_interpose_##o __attribute__((section("__DATA,__interpose")))={(const void*)(uintptr_t)&r,(const void*)(uintptr_t)&o};
-I(fw_stat,stat) I(fw_lstat,lstat) I(fw_opendir,opendir) I(fw_readlink,readlink) I(fw_access,access)
+I(fw_getcwd,getcwd) I(fw_stat,stat) I(fw_lstat,lstat) I(fw_opendir,opendir) I(fw_readlink,readlink) I(fw_access,access)
 I(fw_open,open) I(fw_openat,openat) I(fw_read,read) I(fw_write,write) I(fw_socket,socket) I(fw_connect,connect)
 I(fw_execve,execve) I(fw_posix_spawn,posix_spawn) I(fw_posix_spawnp,posix_spawnp) I(fw_rename,rename)
 I(fw_unlink,unlink) I(fw_unlinkat,unlinkat) I(fw_rmdir,rmdir) I(fw_mkdir,mkdir) I(fw_chmod,chmod)
@@ -143,6 +151,11 @@ func main(){
  C.fw_start_arm(C.int(in.Fault),C.CString(in.Root),C.CString(in.Change),C.CString(in.Context),C.CString(in.Private))
  out:=output{}
  switch in.Mode{
+ case "invalid-relative-read-control":os.ReadFile("fireweed.yaml")
+ case "invalid-relative-stat-control":os.Stat("fireweed.yaml")
+ case "precondition-read-control":_,e=os.ReadFile(in.Change);out.Control=e!=nil
+ case "precondition-write-control":os.WriteFile(in.Change,[]byte("transient bad mutation"),0600)
+ case "precondition-claim-control":os.WriteFile(in.Context+"/current",[]byte("transient bad claim"),0600)
  case "invalid-read-control":os.ReadFile(in.Change)
  case "invalid-stat-control":os.Stat(in.Change)
  case "invalid-git-control":exec.Command("git","--version").Run()
@@ -163,11 +176,11 @@ func main(){
  case "delete-fault-control":
   a:=os.Remove(in.Root+"/units/a/impl/code.txt");b:=os.Remove(in.Root+"/units/a/impl/second.txt");out.Control=a==nil&&b!=nil
  default:
-  out.Result,e=w.Start(in.Root,"current");if e!=nil{out.Error=e.Error()}
+  slug:="current";if in.Mode=="precondition-missing"{slug="missing"};out.Result,e=w.Start(in.Root,slug);if e!=nil{out.Error=e.Error()}
  }
  out.Fired=C.fw_start_fired()!=0;out.Recreated=C.GoString(C.fw_start_recreated());C.fw_start_arm(0,nil,nil,nil,nil)
  afterCwd,e:=os.Getwd();out.StateSame=e==nil&&cwd==afterCwd&&reflect.DeepEqual(environment,os.Environ())
- switch in.Mode{case "invalid-read-control","invalid-stat-control","invalid-git-control","stdin-control","prompt-control","stderr-control","network-control","process-control","hook-control","agent-control","private-write-control","private-chmod-control","private-unlink-control":os.Exit(70)}
+ switch in.Mode{case "invalid-relative-read-control","invalid-relative-stat-control","precondition-write-control","precondition-claim-control","invalid-read-control","invalid-stat-control","invalid-git-control","stdin-control","prompt-control","stderr-control","network-control","process-control","hook-control","agent-control","private-write-control","private-chmod-control","private-unlink-control":os.Exit(70)}
  json.NewEncoder(os.Stdout).Encode(out)
 }`, build)
 	worktreePut(t, build, "probe.go", program)
@@ -277,12 +290,12 @@ func main(){
 			}
 		})
 	}
-	for _, mode := range []string{"invalid-read-control", "invalid-stat-control", "invalid-git-control", "invalid-subject"} {
+	for _, mode := range []string{"invalid-read-control", "invalid-stat-control", "invalid-git-control", "invalid-relative-read-control", "invalid-relative-stat-control", "invalid-subject"} {
 		t.Run(mode, func(t *testing.T) {
 			f, in := fixture(t, "spec")
 			in.Mode = mode
 			in.Fault = 6
-			checkStorage := startStorage(t, f.Root)
+			checkStorage := startStorage(t, f.Root, "current")
 			defer checkStorage()
 			before := startTree(t, f.Root)
 			git := startGitSnapshot(t, f.Root)
@@ -301,6 +314,70 @@ func main(){
 			}
 		})
 	}
+	proxyBinary := startProxyBuild(t)
+	for _, mode := range []string{"precondition-write-control", "precondition-claim-control", "precondition-read-control", "precondition-dirty", "precondition-incomplete", "precondition-missing", "precondition-ambiguous", "precondition-config", "precondition-queue", "precondition-source", "precondition-blocked"} {
+		t.Run(mode, func(t *testing.T) {
+			f, in := fixture(t, "spec")
+			in.Fault = 7
+			in.Mode = mode
+			in.Context = filepath.Join(claimCommon(t, f.Root), "refs/fireweed/claims")
+			code := "C05"
+			switch mode {
+			case "precondition-dirty":
+				worktreePut(t, f.Root, "retained", "dirty")
+				code = "P01"
+			case "precondition-incomplete":
+				worktreePut(t, f.Root, f.Path, strings.Replace(f.Raw, "module: alpha\n", "module: alpha\nrun: incomplete\n", 1))
+				startCommit(t, f.Root, "Incomplete started state")
+			case "precondition-source", "precondition-read-control":
+				in.Fault = 8
+				code = ""
+			case "precondition-ambiguous":
+				worktreePut(t, f.Root, "changes/0002-current.md", f.Raw)
+				startCommit(t, f.Root, "Ambiguous selected slug")
+			case "precondition-queue":
+				worktreePut(t, f.Root, f.Path, strings.ReplaceAll(f.Raw, "new:feature", "ALP-099"))
+				startCommit(t, f.Root, "Invalid current queue metadata")
+			case "precondition-config":
+				worktreePut(t, f.Root, "fireweed.yaml", "version: nonsense\n")
+				startCommit(t, f.Root, "Invalid static metadata")
+				code = "C01"
+			case "precondition-blocked":
+				worktreePut(t, f.Root, f.Path, strings.Replace(f.Raw, "module: alpha\n", "module: alpha\nblocked: hold\n", 1))
+				startCommit(t, f.Root, "Blocked precondition")
+				code = "P03"
+			}
+			checkNoClaim := startPreconditionProxy(t, proxyBinary, f)
+			defer checkNoClaim()
+			checkStorage := startStorage(t, f.Root, "current")
+			defer checkStorage()
+			before := startTree(t, f.Root)
+			git := startGitSnapshot(t, f.Root)
+			got, status := run(t, in)
+			if mode == "precondition-read-control" {
+				if status != 0 || !got.Control || !got.Fired {
+					t.Error("precondition source-read fault not live", status, got)
+				}
+				return
+			}
+			if strings.HasSuffix(mode, "-control") {
+				if status != 42 {
+					t.Error("transient mutation guard not live", mode, status)
+				}
+				return
+			}
+			if mode == "precondition-source" && !got.Fired {
+				t.Error("Start did not reach required initial source read")
+			}
+			if status != 0 || !strings.Contains(got.Error, code) || !policyCorrective(got.Error) || !reflect.DeepEqual(got.Result, w.StartResult{}) || !got.StateSame {
+				t.Error("precondition performed transient mutation or returned invalid rejection", mode, status, got)
+			}
+			if !reflect.DeepEqual(before, startTree(t, f.Root)) || !reflect.DeepEqual(git, startGitSnapshot(t, f.Root)) {
+				t.Error("precondition changed final repository state")
+			}
+		})
+	}
+
 	for _, test := range []struct {
 		Name, Kind string
 		Fault      int
@@ -347,7 +424,7 @@ func main(){
 				in.Context = filepath.Join(f.Root, ".fireweed/drills/alpha.md")
 			}
 			in.Fault = test.Fault
-			checkStorage := startStorage(t, f.Root)
+			checkStorage := startStorage(t, f.Root, "current")
 			defer checkStorage()
 			before := startTree(t, f.Root)
 			git := startGitSnapshot(t, f.Root)

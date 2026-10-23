@@ -1,6 +1,7 @@
 package evals
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"os"
@@ -12,17 +13,19 @@ import (
 	"testing"
 	"time"
 
+	c "github.com/lurkshark/fireweed/packages/contracts"
+	p "github.com/lurkshark/fireweed/packages/project"
 	w "github.com/lurkshark/fireweed/packages/workflow"
 )
 
-type startProxyConfig struct{ Real, Mode, Marker, WinnerObject, Change, WinnerText, BaseRef, BaseOld, BaseNew, Blob string }
+type startProxyConfig struct{ Real, Mode, Marker, WinnerObject, Change, WinnerText, BaseRef, BaseOld, BaseNew, Blob, BaseText string }
 
 func startProxyBuild(t *testing.T) string {
 	t.Helper()
 	root := t.TempDir()
 	source := `package main
 import("os";"os/exec";"context";"time";"encoding/json";"bytes";"io";"strings";"path/filepath";c "github.com/lurkshark/fireweed/packages/contracts")
-type config struct{Real,Mode,Marker,WinnerObject,Change,WinnerText,BaseRef,BaseOld,BaseNew,Blob string}
+type config struct{Real,Mode,Marker,WinnerObject,Change,WinnerText,BaseRef,BaseOld,BaseNew,Blob,BaseText string}
 func main(){
  raw,e:=os.ReadFile(os.Getenv("START_PROXY_CONFIG"));if e!=nil{os.Exit(80)};var in config;if json.Unmarshal(raw,&in)!=nil{os.Exit(81)}
  if strings.HasPrefix(filepath.Base(os.Args[0]),"git-remote-"){os.WriteFile(in.Marker+"-transport",[]byte("attempted lazy transport\n"),0600);os.Exit(93)}
@@ -34,14 +37,12 @@ func main(){
  contains:=func(s string)bool{for _,a:=range args{if a==s{return true}};return false}
  forbidden:=false;for _,op:=range []string{"commit","commit-tree","add","reset","restore","checkout","switch","branch","worktree","fetch","push","clean","gc","update-index"}{if contains(op){forbidden=true}}
  if forbidden{os.WriteFile(in.Marker+"-forbidden",[]byte(strings.Join(args,"\n")),0600);os.Stderr.WriteString("injected forbidden Git operation\n");os.Exit(91)}
- if in.Mode=="move-base"&&!seen()&&(contains("show")||contains("cat-file")&&!contains("-e")&&!contains("-t")&&!contains("--batch-check")||contains("ls-tree")){
-  query:=strings.Join(args," ")+" "+string(input)
-  if strings.Contains(query,in.BaseOld)||strings.Contains(query,in.BaseRef){
-   _,detail,code:=run([]string{"update-ref",in.BaseRef,in.BaseNew},nil);if code!=0{os.Stderr.Write(detail);os.Exit(85)};mark()
-  }
- }
  if in.Mode=="warn"{os.Stderr.WriteString("warning: independent successful Git stderr must stay outside stdout protocol\n")}
+ if in.Mode=="precondition"&&contains("update-ref"){os.WriteFile(in.Marker+"-precondition",[]byte(strings.Join(args,"\n")),0600);os.Stderr.WriteString("injected prohibited precondition claim mutation\n");os.Exit(95)}
  out,detail,code:=run(args,input)
+ if code==0&&in.Mode=="move-base"&&!seen()&&(in.Blob!=""&&bytes.Contains(out,[]byte(in.Blob))||in.BaseText!=""&&bytes.Contains(out,[]byte(in.BaseText))){
+  _,d,status:=run([]string{"update-ref",in.BaseRef,in.BaseNew},nil);if status!=0{os.Stderr.Write(d);os.Exit(85)};mark()
+ }
  if code==0&&!seen()&&(in.Mode=="replace-reservation"||in.Mode=="replace-state"||in.Mode=="replace-change"||in.Mode=="lost-response"){
   ref:="refs/fireweed/claims/current";oid,_,status:=run([]string{"rev-parse","--verify","--end-of-options",ref},nil)
   if status==0{
@@ -126,39 +127,24 @@ func startWinner(t *testing.T, f startFixtureData) (string, string) {
 }
 func Test_FLOW038_FLOW040StartGitProxyControls(t *testing.T) {
 	binary := startProxyBuild(t)
-	for _, mode := range []string{"replace-reservation", "replace-state", "replace-change", "lost-response", "move-base"} {
+	for _, mode := range []string{"replace-reservation", "replace-state", "replace-change", "lost-response"} {
 		t.Run(mode, func(t *testing.T) {
 			f := startFixture(t, "sha1", "spec", "")
 			winner, raw := startWinner(t, f)
-			base := claimBase(t, f.Root)
 			cfg := startProxyConfig{Mode: mode, WinnerObject: winner}
 			if mode == "replace-change" {
 				cfg.WinnerObject = ""
 				cfg.Change = filepath.Join(f.Root, f.Path)
 				cfg.WinnerText = raw
 			}
-			if mode == "move-base" {
-				claimGit(t, f.Root, "-c", "user.name=Start Fixture", "-c", "user.email=start@example.invalid", "commit", "--allow-empty", "-m", "Distinct current commit")
-				cfg.BaseOld = base
-				cfg.BaseNew = claimGit(t, f.Root, "rev-parse", base+"^")
-				cfg.BaseRef = "refs/heads/approval-base"
-			}
 			cfg = startProxyInstall(t, binary, cfg)
 			var err error
-			if mode == "move-base" {
-				_, err = claimCommand(t, f.Root, "", "show", base+":"+f.Path)
-			} else {
-				_, err = claimCommand(t, f.Root, "", "update-ref", "refs/fireweed/claims/current", winner, strings.Repeat("0", 40))
-			}
+			_, err = claimCommand(t, f.Root, "", "update-ref", "refs/fireweed/claims/current", winner, strings.Repeat("0", 40))
 			if (err != nil) != (mode == "lost-response") {
 				t.Error("proxy response control", mode, err)
 			}
 			startProxyFired(t, cfg)
 			switch mode {
-			case "move-base":
-				if tip := claimGit(t, f.Root, "rev-parse", cfg.BaseRef); tip != cfg.BaseNew {
-					t.Error("base event did not move ref", tip)
-				}
 			case "replace-change":
 				b, e := os.ReadFile(cfg.Change)
 				if e != nil || string(b) != raw {
@@ -198,7 +184,7 @@ func Test_FLOW038StartConcurrentReplacementAndLostResponse(t *testing.T) {
 				cfg.WinnerObject = ""
 			}
 			cfg = startProxyInstall(t, binary, cfg)
-			checkStorage := startStorage(t, f.Root)
+			checkStorage := startStorage(t, f.Root, "current")
 			defer checkStorage()
 			tree := startTree(t, f.Root)
 			git := startGitSnapshot(t, f.Root)
@@ -254,7 +240,11 @@ func Test_FLOW036_FLOW040StartPinnedBaseAndWarnedGit(t *testing.T) {
 			f := startFixture(t, "sha1", "spec", "")
 			old := claimBase(t, f.Root)
 			cfg := startProxyConfig{Mode: mode}
-			if mode == "move-base" || mode == "replacement-base" {
+			if mode == "move-base" {
+				f, cfg = startPinnedFixture(t)
+				old = cfg.BaseOld
+			}
+			if mode == "replacement-base" {
 				worktreePut(t, f.Root, f.Path, strings.Replace(f.Raw, "Start the exact authored change.", "Unapproved replacement base content.", 1))
 				startCommit(t, f.Root, "Temporary alternate base content")
 				alternate := claimBase(t, f.Root)
@@ -263,9 +253,6 @@ func Test_FLOW036_FLOW040StartPinnedBaseAndWarnedGit(t *testing.T) {
 				cfg.BaseNew = alternate
 				cfg.BaseRef = "refs/heads/approval-base"
 				cfg.Blob = claimGit(t, f.Root, "rev-parse", old+":"+f.Path)
-				if mode == "move-base" {
-					claimGit(t, f.Root, "-c", "user.name=Start Fixture", "-c", "user.email=start@example.invalid", "commit", "--allow-empty", "-m", "Current source distinct from approval commit")
-				}
 				if mode == "replacement-base" {
 					replacement := claimGit(t, f.Root, "-c", "user.name=Start Fixture", "-c", "user.email=start@example.invalid", "commit-tree", claimGit(t, f.Root, "rev-parse", alternate+"^{tree}"), "-p", old+"^", "-m", "Replacement view with an acyclic parent")
 					claimGit(t, f.Root, "-c", "user.name=Start Fixture", "-c", "user.email=start@example.invalid", "commit", "--allow-empty", "-m", "Current HEAD with unchanged authored tree")
@@ -277,6 +264,9 @@ func Test_FLOW036_FLOW040StartPinnedBaseAndWarnedGit(t *testing.T) {
 						t.Fatal("replacement fixture not clean", status)
 					}
 				}
+			}
+			if err := os.Chmod(filepath.Join(f.Root, f.Path), f.Mode); err != nil {
+				t.Fatal(err)
 			}
 			cfg = startProxyInstall(t, binary, cfg)
 			before := startGitSnapshot(t, f.Root)
@@ -492,7 +482,7 @@ func main(){result,err:=w.Start(os.Args[1],"current");detail:="";if err!=nil{det
 		t.Run(map[bool]string{true: "live-control", false: "subject"}[control], func(t *testing.T) {
 			f := startFixture(t, "sha1", "spec", "")
 			cfg := startProxyInstall(t, binary, startProxyConfig{Mode: "hang"})
-			checkStorage := startStorage(t, f.Root)
+			checkStorage := startStorage(t, f.Root, "current")
 			defer checkStorage()
 			// Snapshot helpers use real Git: the stall is armed only in the child env.
 			before := startTree(t, f.Root)
@@ -550,5 +540,122 @@ func main(){result,err:=w.Start(os.Args[1],"current");detail:="";if err!=nil{det
 				t.Error("stalled subprocess changed repository state")
 			}
 		})
+	}
+}
+
+func startPinnedFixture(t *testing.T) (startFixtureData, startProxyConfig) {
+	t.Helper()
+	f := startFixture(t, "sha1", "spec", "")
+	baseText := strings.ReplaceAll(f.Raw, "\n", "\r\n")
+	worktreePut(t, f.Root, f.Path, baseText)
+	startCommit(t, f.Root, "Approved CRLF source")
+	old := claimBase(t, f.Root)
+	claimGit(t, f.Root, "update-ref", "refs/heads/approval-base", old)
+	worktreePut(t, f.Root, f.Path, f.Raw)
+	startCommit(t, f.Root, "Equivalent current LF source")
+	current := claimBase(t, f.Root)
+	blob := claimGit(t, f.Root, "rev-parse", old+":"+f.Path)
+	if blob == claimGit(t, f.Root, "rev-parse", current+":"+f.Path) {
+		t.Fatal("base and current selected blobs are not unique")
+	}
+	same, err := w.ApprovalMatches(c.Module{Name: "alpha", IDPrefix: "ALP"}, baseText, f.Raw, f.Path)
+	if err != nil || !same {
+		t.Fatal("LF/CRLF author approval premise", same, err)
+	}
+	worktreePut(t, f.Root, f.Path, strings.Replace(f.Raw, "Start the exact authored change.", "Unapproved replacement base content.", 1))
+	startCommit(t, f.Root, "Unapproved alternate base")
+	alternate := claimBase(t, f.Root)
+	claimGit(t, f.Root, "reset", "--hard", current)
+	if err := os.Chmod(filepath.Join(f.Root, f.Path), f.Mode); err != nil {
+		t.Fatal(err)
+	}
+	return f, startProxyConfig{Mode: "move-base", BaseRef: "refs/heads/approval-base", BaseOld: old, BaseNew: alternate, Blob: blob, BaseText: baseText}
+}
+func startProxyOutput(t *testing.T, root, input string, args ...string) []byte {
+	t.Helper()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "git", args...)
+	cmd.Dir = root
+	cmd.Stdin = strings.NewReader(input)
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+	out, err := cmd.Output()
+	if err != nil {
+		t.Fatal("observer Git control", err, stderr.String())
+	}
+	return out
+}
+func Test_FLOW036_FLOW040StartPinnedBaseObserverControls(t *testing.T) {
+	binary := startProxyBuild(t)
+	for _, shape := range []string{"show", "blob-oid", "ls-tree", "cat-file-blob", "cat-file-batch"} {
+		t.Run(shape, func(t *testing.T) {
+			f, cfg := startPinnedFixture(t)
+			args := []string{"show", cfg.BaseOld + ":" + f.Path}
+			input := ""
+			switch shape {
+			case "blob-oid":
+				args = []string{"rev-parse", cfg.BaseOld + ":" + f.Path}
+			case "ls-tree":
+				args = []string{"ls-tree", cfg.BaseOld, "--", f.Path}
+			case "cat-file-blob":
+				args = []string{"cat-file", "blob", cfg.Blob}
+			case "cat-file-batch":
+				args = []string{"cat-file", "--batch"}
+				input = cfg.Blob + "\n"
+			}
+			expected := startProxyOutput(t, f.Root, input, args...)
+			cfg = startProxyInstall(t, binary, cfg)
+			if _, err := p.Load(f.Root); err != nil {
+				t.Fatal("current project control", err)
+			}
+			if _, err := p.LoadAt(f.Root, "HEAD"); err != nil {
+				t.Fatal("current committed project control", err)
+			}
+			if _, err := os.Stat(cfg.Marker); !os.IsNotExist(err) {
+				t.Fatal("current-project load triggered base event", err)
+			}
+			if tip := claimGit(t, f.Root, "rev-parse", cfg.BaseRef); tip != cfg.BaseOld {
+				t.Fatal("base moved before base-source observation", tip)
+			}
+			got := startProxyOutput(t, f.Root, input, args...)
+			if !bytes.Equal(got, expected) {
+				t.Error("observer changed successful stdout", string(got), string(expected))
+			}
+			startProxyFired(t, cfg)
+			if tip := claimGit(t, f.Root, "rev-parse", cfg.BaseRef); tip != cfg.BaseNew {
+				t.Error("event did not move base", tip)
+			}
+			if shape == "blob-oid" {
+				content := startProxyOutput(t, f.Root, "", "cat-file", "blob", strings.TrimSpace(string(got)))
+				if string(content) != cfg.BaseText {
+					t.Error("resolved pinned blob changed")
+				}
+			}
+		})
+	}
+}
+func Test_FLOW032_FLOW035StartPreconditionProxyControl(t *testing.T) {
+	binary := startProxyBuild(t)
+	f := startFixture(t, "sha1", "spec", "")
+	cfg := startProxyInstall(t, binary, startProxyConfig{Mode: "precondition"})
+	out, err := claimCommand(t, f.Root, "", "update-ref", "refs/fireweed/claims/current", "HEAD")
+	if err == nil || !strings.Contains(out, "injected prohibited precondition claim mutation") {
+		t.Error("precondition Git mutation guard not live", err)
+	}
+	if _, err := os.Stat(cfg.Marker + "-precondition"); err != nil {
+		t.Error("precondition mutation control unobserved", err)
+	}
+}
+func startPreconditionProxy(t *testing.T, binary string, f startFixtureData) func() {
+	t.Helper()
+	cfg := startProxyInstall(t, binary, startProxyConfig{Mode: "precondition"})
+	return func() {
+		t.Helper()
+		if raw, err := os.ReadFile(cfg.Marker + "-precondition"); err == nil {
+			t.Error("claim mutation attempted before rejecting precondition", string(raw))
+		} else if !os.IsNotExist(err) {
+			t.Error(err)
+		}
 	}
 }
