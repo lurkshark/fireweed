@@ -51,16 +51,20 @@ func open(start string) (*storage, func(), error) {
 	}
 	return s, cancel, nil
 }
-func (s *storage) run(args ...string) gitstore.CommandResult {
+func (s *storage) capture(args ...string) gitstore.CaptureResult {
 	argv := append([]string{"git", "-c", "core.hooksPath=" + os.DevNull}, args...)
-	return gitstore.Run(s.ctx, s.repo.Root, argv, []string{"GIT_TERMINAL_PROMPT=0", "GIT_OPTIONAL_LOCKS=0", "GIT_COMMITTER_NAME=Fireweed", "GIT_COMMITTER_EMAIL=fireweed@localhost"})
+	return gitstore.Capture(s.ctx, s.repo.Root, argv, []string{"GIT_TERMINAL_PROMPT=0", "GIT_OPTIONAL_LOCKS=0", "GIT_NO_REPLACE_OBJECTS=1", "GIT_NO_LAZY_FETCH=1", "GIT_COMMITTER_NAME=Fireweed", "GIT_COMMITTER_EMAIL=fireweed@localhost"})
+}
+func (s *storage) run(args ...string) gitstore.CommandResult {
+	r := s.capture(args...)
+	return gitstore.CommandResult{Output: r.Stdout + r.Stderr, Exit: r.Exit, Err: r.Err}
 }
 func (s *storage) git(args ...string) (string, error) {
-	r := s.run(args...)
+	r := s.capture(args...)
 	if r.Err != nil || r.Exit != 0 {
-		return "", failure("local Git %s failed (exit %d): %s %v", args[0], r.Exit, strings.TrimSpace(r.Output), r.Err)
+		return "", failure("local Git %s failed (exit %d): %s %v", args[0], r.Exit, strings.TrimSpace(r.Stdout+r.Stderr), r.Err)
 	}
-	return strings.TrimSpace(r.Output), nil
+	return strings.TrimSpace(r.Stdout), nil
 }
 func (s *storage) oid(value string) bool {
 	return len(value) == s.width && strings.Trim(value, "0123456789abcdef") == "" && strings.Trim(value, "0") != ""
