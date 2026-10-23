@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: evals
+phase: audit
 run: d61fa60bbbecd202f1616c09
 ---
 
@@ -44,6 +44,7 @@ Treating the first blocked entry as a global stop prevents independent work. Loo
 
 - evals | 2026-10-23T03:57:05Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1287 | failing: 42 | passing: 1245
 - audit | 2026-10-23T04:06:31Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-23T04:16:19Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1305 | failing: 60 | passing: 1245
 
 ## Audit
 

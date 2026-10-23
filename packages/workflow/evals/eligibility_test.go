@@ -144,6 +144,29 @@ func Test_FLOW024EligibleExactSelectionAndQueueOrder(t *testing.T) {
 	s.Changes = append(s.Changes, eligibleChange(t, 99, "candidate", "delta", "", ""))
 	eligibleError(t, s, "candidate", "")
 }
+func Test_FLOW024EligibleSelectorGrammarBoundaries(t *testing.T) {
+	for _, slug := range []string{"0", "a", "1alpha", "a-"} {
+		t.Run("valid-"+slug, func(t *testing.T) {
+			s := eligibleSource(t)
+			s.Changes = []c.Change{eligibleChange(t, 1, slug, "alpha", "", "")}
+			if _, _, err := eligibleGraph(t, s, slug); err != nil {
+				t.Fatalf("valid boundary projection control: %v", err)
+			}
+			eligibleAssert(t, s, slug, true)
+		})
+	}
+	for _, slug := range []string{"Upper", "-bad", "a_b", "a/b", "a.b", "a b", ""} {
+		t.Run("invalid-matching-"+slug, func(t *testing.T) {
+			s := eligibleSource(t)
+			ch := eligibleChange(t, 1, "valid", "alpha", "", "")
+			ch.Slug = slug
+			ch.Path = "changes/0001-" + slug + ".md"
+			s.Changes = []c.Change{ch}
+			eligibleError(t, s, slug, "")
+		})
+	}
+}
+
 func Test_FLOW025EligibleBlockedDependencyMatrix(t *testing.T) {
 	for _, row := range []struct {
 		name, blocked, target, inter string
@@ -171,6 +194,19 @@ func Test_FLOW025EligibleBlockedDependencyMatrix(t *testing.T) {
 		})
 	}
 }
+func Test_FLOW025EligibleWhitespaceBlocked(t *testing.T) {
+	s := eligibleSource(t)
+	s.Changes = []c.Change{eligibleChange(t, 1, "blocker", "alpha", "blocked: '   '\n", ""), eligibleChange(t, 2, "candidate", "bravo", "", "")}
+	if s.Changes[0].Blocked != "   " {
+		t.Fatal("nonempty whitespace parse control")
+	}
+	if _, _, err := eligibleGraph(t, s, "candidate"); err != nil {
+		t.Fatalf("whitespace blocked projection control: %v", err)
+	}
+	eligibleAssert(t, s, "blocker", false)
+	eligibleAssert(t, s, "candidate", false)
+}
+
 func Test_FLOW025EligibleSkipsHeldAndKeepsEveryBlocker(t *testing.T) {
 	s := eligibleSource(t)
 	s.Changes = []c.Change{eligibleChange(t, 1, "first-block", "alpha", "blocked: first\n", ""), eligibleChange(t, 2, "second-block", "delta", "blocked: second\n", ""), eligibleChange(t, 3, "held", "charlie", "", ""), eligibleChange(t, 4, "candidate", "bravo", "", ""), eligibleChange(t, 5, "independent", "delta", "", "")}
@@ -211,6 +247,20 @@ func Test_FLOW026EligibleProjectedDependencyRelations(t *testing.T) {
 		s := eligibleSource(t)
 		s.Changes = []c.Change{eligibleChange(t, 1, "blocker", "echo", "blocked: waiting\n", ""), eligibleChange(t, 2, "held-meta", "bravo", "set: {depends_on: [alpha,delta]}\n", "## Interface\n\nChanges the dependency contract.\n"), eligibleChange(t, 3, "candidate", "delta", "", "## Interface\n\nReverse relation changes.\n")}
 		eligibleAssert(t, s, "candidate", false)
+	})
+	t.Run("earlier-candidate-own-prefix", func(t *testing.T) {
+		s := eligibleSource(t)
+		s.Changes = []c.Change{eligibleChange(t, 1, "blocker", "alpha", "blocked: waiting\n", ""), eligibleChange(t, 2, "earlier", "bravo", "", ""), eligibleChange(t, 3, "candidate", "bravo", "set: {depends_on: []}\n", "")}
+		_, earlier, err := eligibleGraph(t, s, "earlier")
+		if err != nil || !reflect.DeepEqual(earlier.DependsOn, []string{"alpha"}) {
+			t.Fatalf("earlier prefix control: %+v %v", earlier.DependsOn, err)
+		}
+		_, selected, err := eligibleGraph(t, s, "candidate")
+		if err != nil || len(selected.DependsOn) != 0 {
+			t.Fatalf("selected prefix control: %+v %v", selected.DependsOn, err)
+		}
+		eligibleAssert(t, s, "earlier", false)
+		eligibleAssert(t, s, "candidate", true)
 	})
 	t.Run("apply-selected-once", func(t *testing.T) {
 		s := eligibleSource(t)
@@ -380,6 +430,49 @@ func Test_FLOW027EligibleInputOwnershipAndAmbientIndependence(t *testing.T) {
 		t.Fatal("ambient file mutation")
 	}
 }
+func Test_FLOW027EligibleRejectedProjectionBacking(t *testing.T) {
+	for _, mode := range []string{"graph", "prefix-apply", "selected-apply"} {
+		t.Run(mode, func(t *testing.T) {
+			s := eligibleSource(t)
+			backing := []string{"reject-spare-one", "reject-spare-two"}
+			s.Modules[3].DependsOn = backing[:0]
+			s.Modules[3].Document.Metadata["depends_on"] = backing[:0]
+			broken := eligibleChange(t, 2, "candidate", "delta", "set: {depends_on: [absent]}\n", "")
+			if mode != "graph" {
+				broken = eligibleChange(t, 2, "candidate", "delta", "", "## Added\n\n### DEL-001 [review]\nDuplicate MUST fail.\n")
+			}
+			s.Changes = []c.Change{broken}
+			if mode == "prefix-apply" {
+				broken.Number = 1
+				broken.Slug = "broken"
+				broken.Path = "changes/0001-broken.md"
+				broken.Blocked = "waiting"
+				broken.Document.Metadata["blocked"] = "waiting"
+				s.Changes = []c.Change{broken, eligibleChange(t, 2, "candidate", "alpha", "", "")}
+			}
+			_, projected, err := eligibleGraph(t, s, "candidate")
+			detail := ""
+			if mode == "graph" {
+				if err != nil || !reflect.DeepEqual(projected.DependsOn, []string{"absent"}) {
+					t.Fatalf("graph rejection premise: %+v %v", projected.DependsOn, err)
+				}
+			} else {
+				if err == nil {
+					t.Fatal("public projection rejection premise")
+				}
+				detail = err.Error()
+			}
+			expected := append([]string(nil), backing...)
+			for i := 0; i < 2; i++ {
+				eligibleError(t, s, "candidate", detail)
+				if !reflect.DeepEqual(backing, expected) {
+					t.Fatalf("rejection mutated spare backing: %q", backing)
+				}
+			}
+		})
+	}
+}
+
 func Test_FLOW024_FLOW026EligibilityFixtureControls(t *testing.T) {
 	s := eligibleSource(t)
 	s.Changes = []c.Change{eligibleChange(t, 1, "blocker", "alpha", "blocked: waiting\n", ""), eligibleChange(t, 2, "candidate", "delta", "set: {depends_on: []}\n", "## Added\n\n### new:future [review]\nThe projected target MUST retain this item.\n")}
