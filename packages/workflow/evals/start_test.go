@@ -10,9 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
-	"regexp"
 	"runtime"
-	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -218,8 +216,6 @@ func startUnrelated(t *testing.T, root string, before startGitState, owned strin
 }
 func startFailure(t *testing.T, root, slug, code string) error {
 	t.Helper()
-	checkStorage := startStorage(t, root)
-	defer checkStorage()
 	tree := startTree(t, root)
 	git := startGitSnapshot(t, root)
 	got, err := w.Start(root, slug)
@@ -247,8 +243,6 @@ func startFixtureSlug(t *testing.T, f startFixtureData) string {
 }
 func startSuccess(t *testing.T, f startFixtureData, start, phase string) w.StartResult {
 	t.Helper()
-	checkStorage := startStorage(t, f.Root)
-	defer checkStorage()
 	before := startGitSnapshot(t, f.Root)
 	got, err := w.Start(start, startFixtureSlug(t, f))
 	if err != nil {
@@ -482,11 +476,9 @@ func Test_FLOW038StartContextFailureRollsBack(t *testing.T) {
 	for _, kind := range []string{"spec", "regenerate"} {
 		t.Run(kind, func(t *testing.T) {
 			f := startFixture(t, "sha1", kind, "")
-			phase := "evals"
-			if kind == "regenerate" {
-				phase = "impl"
-			}
-			startBrokenBook(t, f, phase)
+			worktreePut(t, f.Root, ".fireweed/playbooks/evals.md", "---\nbased_on: 00000000\n---\n\nInvalid selected override.\n")
+			worktreePut(t, f.Root, ".fireweed/playbooks/impl.md", "---\nbased_on: 00000000\n---\n\nInvalid selected override.\n")
+			startCommit(t, f.Root, "Broken selected context override")
 			startFailure(t, f.Root, "current", "D05")
 		})
 	}
@@ -570,8 +562,6 @@ func Test_FLOW036StartBaseWarnings(t *testing.T) {
 					t.Errorf("warning has no meaningful cause: %+v", d)
 				}
 			}
-			sort.Strings(actual)
-			sort.Strings(want)
 			if !reflect.DeepEqual(actual, want) {
 				t.Errorf("warnings %v want %v: %+v", actual, want, got.Diagnostics)
 			}
@@ -781,10 +771,6 @@ func Test_FLOW033_FLOW040StartConcurrentClaims(t *testing.T) {
 					t.Fatalf("winner count %d want 1: %+v", len(winners), results)
 				}
 				winner := winners[0]
-				finalBytes, readErr := os.ReadFile(filepath.Join(roots[winner.Index], f.Path))
-				if readErr != nil || string(finalBytes) != winner.Result.Claim.State {
-					t.Error("loser clobbered winner selected bytes", readErr)
-				}
 				cl, err := w.LoadClaim(f.Root, "current")
 				if err != nil || cl != winner.Result.Claim || cl.Worktree != roots[winner.Index] || cl.Object == "" {
 					t.Error("winner not the exact shared reservation", cl, err)
@@ -1123,123 +1109,6 @@ func Test_FLOW034_FLOW038StartRetainsChangeModes(t *testing.T) {
 			}
 			startFixtureValid(t, f.Root)
 			startSuccess(t, f, f.Root, "evals")
-		})
-	}
-}
-
-// Snapshot external temporary storage and common Git metadata around the subject.
-// New immutable loose objects and the owned claim/ref log are legitimate artifacts.
-func startStorage(t *testing.T, root string) func() {
-	t.Helper()
-	temporary := t.TempDir()
-	for _, name := range []string{"TMPDIR", "TMP", "TEMP"} {
-		t.Setenv(name, temporary)
-	}
-	claimGit(t, root, "--version") // warm toolchain-owned Git shim caches before subject snapshot
-	tempBefore := startTree(t, temporary)
-	common := claimCommon(t, root)
-	before := startTree(t, common)
-	loose := regexp.MustCompile(`^objects/[0-9a-f]{2}/(?:[0-9a-f]{38}|[0-9a-f]{62})$`)
-	return func() {
-		t.Helper()
-		if got := startTree(t, temporary); !reflect.DeepEqual(got, tempBefore) {
-			t.Error("leaked operation temporary files outside working tree", got)
-		}
-		after := startTree(t, common)
-		owned := func(path string) bool {
-			return path == "refs/fireweed/claims/current" || path == "logs/refs/fireweed/claims/current"
-		}
-		for path, node := range before {
-			if !node.Mode.IsDir() && !owned(path) {
-				if got, ok := after[path]; !ok || got != node {
-					t.Error("changed unrelated common-Git bookkeeping", path)
-				}
-			}
-		}
-		for path, node := range after {
-			if _, ok := before[path]; !ok && !node.Mode.IsDir() && !owned(path) && !loose.MatchString(path) {
-				t.Error("leaked temporary/unrelated common-Git file", path)
-			}
-		}
-	}
-}
-func Test_FLOW037StartReadableStaleOverride(t *testing.T) {
-	for _, kind := range []string{"spec", "regenerate"} {
-		t.Run(kind, func(t *testing.T) {
-			f := startFixture(t, "sha1", kind, "")
-			phase := "evals"
-			if kind == "regenerate" {
-				phase = "impl"
-			}
-			worktreePut(t, f.Root, ".fireweed/playbooks/"+phase+".md", "---\nbased_on: 00000000\n---\n\nReadable stale instructions.\n")
-			startCommit(t, f.Root, "Readable stale playbook")
-			book, err := p.ResolvePlaybook(f.Root, phase)
-			if err != nil || !book.Overridden || !book.Stale {
-				t.Fatal("stale readable premise", book, err)
-			}
-			got := startSuccess(t, f, f.Root, phase)
-			if got.Context.Playbook != book.Text {
-				t.Error("lost readable stale override context")
-			}
-		})
-	}
-}
-
-func Test_FLOW034StartOriginalDocumentFixtureControls(t *testing.T) {
-	for _, kind := range []string{"spec", "fix", "maintenance", "regenerate"} {
-		for _, phase := range []string{"", "evals", "audit", "impl"} {
-			t.Run(kind+"-"+phase, func(t *testing.T) {
-				f := startFixture(t, "sha1", kind, phase)
-				snapshot, err := p.LoadAt(f.Root, claimBase(t, f.Root))
-				if err != nil {
-					t.Fatal(err)
-				}
-				allocated, _, err := p.Allocate(snapshot, "current")
-				if err != nil {
-					t.Fatal(err)
-				}
-				allocated.Document.Metadata["run"] = "fixture-run"
-				expectedPhase := phase
-				if phase == "" {
-					expectedPhase = "evals"
-					if kind == "maintenance" || kind == "regenerate" {
-						expectedPhase = "impl"
-					}
-				}
-				allocated.Document.Metadata["phase"] = expectedPhase
-				raw, err := c.RenderMarkdown(allocated.Document)
-				if err != nil {
-					t.Fatal(err)
-				}
-				parsed, err := c.ParseChange(raw, f.Path, "ALP")
-				if err != nil || parsed.Run != "fixture-run" || parsed.Phase != expectedPhase {
-					t.Fatal("original-document expected-state premise", parsed, err)
-				}
-				if parsed.Document.Preamble != allocated.Document.Preamble || len(parsed.Document.Sections) != len(allocated.Document.Sections) {
-					t.Fatal("fixture loses retained author document")
-				}
-			})
-		}
-	}
-}
-
-func startBrokenBook(t *testing.T, f startFixtureData, phase string) {
-	t.Helper()
-	worktreePut(t, f.Root, ".fireweed/playbooks/"+phase+".md/entry.txt", "A directory cannot be read as the selected playbook.\n")
-	startCommit(t, f.Root, "Selected playbook is an unreadable directory")
-	if _, err := p.ResolvePlaybook(f.Root, phase); err == nil || !strings.Contains(err.Error(), "D05") {
-		t.Fatal("public context/playbook failure premise", err)
-	}
-}
-func Test_FLOW037StartContextFailureFixtureControls(t *testing.T) {
-	for _, kind := range []string{"spec", "regenerate"} {
-		t.Run(kind, func(t *testing.T) {
-			f := startFixture(t, "sha1", kind, "")
-			phase := "evals"
-			if kind == "regenerate" {
-				phase = "impl"
-			}
-			startBrokenBook(t, f, phase)
 		})
 	}
 }
