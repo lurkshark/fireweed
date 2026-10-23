@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: audit
+phase: evals
 run: d61fa60bbbecd202f1616c09
 ---
 
@@ -43,3 +43,10 @@ Treating the first blocked entry as a global stop prevents independent work. Loo
 ## Provenance
 
 - evals | 2026-10-23T03:57:05Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1287 | failing: 42 | passing: 1245
+- audit | 2026-10-23T04:06:31Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+- FLOW-024: "Eligible MUST select exactly one queued change by an exact valid claim slug, rejecting invalid, missing or ambiguous selectors with corrective C05 and false." — missing assertions that reject an invalid selector which actually matches a queued typed Slug, and accept valid boundary slugs such as a one-character digit and a trailing-hyphen slug. The invalid spellings currently all miss the queue, so lookup-only validation or an overly restrictive alphabetic slug grammar can satisfy the existing assertions.
+- FLOW-026: "For each candidate whose dependency relation is evaluated, Eligible MUST obtain its inclusive projected graph through public Project before that candidate and ApplyChange for the candidate exactly once." — missing assertion where selected intent changes whether an earlier unblocked candidate was held in that earlier candidate's own prefix. For example, a blocked alpha followed by a held bravo and then a selected bravo change clearing depends_on must skip the earlier held bravo and allow the selected head; evaluating every candidate against only the selected final graph would incorrectly find an earlier runnable head but is not distinguished by the current fixtures.
+- FLOW-027: "Inputs and every nested map/slice/document MUST remain unchanged, including queue/module order and empty append backing storage, after successful and rejected repeated calls." — missing full-capacity sentinel assertion after a graph/projection rejection. The live empty backing storage is checked after successful calls and invalid-selector rejection only; the graph/projection rejection fixtures and their JSON comparisons cannot detect mutation of spare backing storage during projection before failure.
