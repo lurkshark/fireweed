@@ -4,7 +4,7 @@ already_satisfied:
 bases:
     APP-021: "16461911"
 module: app
-phase: impl
+phase: applied
 run: dc1b2eb21e4aa3eb71be25d0
 ---
 
@@ -47,3 +47,4 @@ The specialized selected-source and exact-claim observers, private/disposable/tr
 
 - evals | 2026-10-23T17:43:07Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 476 | failing: 0 | passing: 476
 - audit | 2026-10-23T17:44:34Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- impl | 2026-10-23T17:52:40Z | agent: manual | fireweed: 0.4.0 | playbook: 653912b194316c62181f62d0a69dc213f7668481ea8b1b9926ef889dd48a9e08 | tests: 476 | failing: 0 | passing: 476
