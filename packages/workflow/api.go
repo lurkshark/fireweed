@@ -6,6 +6,7 @@ import (
 	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/gitstore"
 	"github.com/lurkshark/fireweed/packages/project"
+	"github.com/lurkshark/fireweed/packages/workflow/internal/approval"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/claims"
 	workercontext "github.com/lurkshark/fireweed/packages/workflow/internal/context"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/policy"
@@ -47,4 +48,8 @@ type WorkerContext = model.WorkerContext
 
 func BuildContext(snapshot project.Snapshot, slug string) (WorkerContext, error) {
 	return workercontext.Build(snapshot, slug)
+}
+
+func LoadApproval(start, slug string) (project.Snapshot, Claim, error) {
+	return approval.Load(start, slug)
 }

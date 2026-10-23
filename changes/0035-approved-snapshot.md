@@ -1,5 +1,7 @@
 ---
 module: workflow
+phase: audit
+run: 4f474a62c65de2db4e4cc261
 ---
 
 ## Motivation
@@ -12,16 +14,16 @@ Add public LoadApproval(start, slug string) (project.Snapshot, Claim, error). It
 
 ## Added
 
-### new:approval-source
+### FLOW-020
 LoadApproval MUST accept only an exact valid claim slug and discover the canonical repository from start, including nested and linked checkouts. Invalid selectors MUST fail C05 before repository or content access. It MUST inspect only the exact selected shared claim ref, independently of other claims, and distinguish an absent ref from a malformed payload, symbolic alias or inspection failure. With no selected ref it MUST load the current project through public Load and return its metadata with a zero Claim. With a valid selected claim held by this canonical checkout it MUST load metadata from exactly Claim.Base through public LoadAt and return that exact Claim, including Object. Current config, module SPEC, queued/archive document bytes or moving/replacement refs MUST NOT replace this committed metadata. Both SHA-1 and SHA-256 repositories supported by installed Git MUST work.
 
-### new:approved-change
+### FLOW-021
 In either source LoadApproval MUST select exactly one queued change by exact Slug and exactly one matching target module, and require its canonical immediate changes/ path to match the public filename grammar and slug. A selected archived change MUST NOT substitute for a missing queued change. For a claimed source it MUST parse Claim.State using that baseline path and target prefix, require a valid unchanged started document through public CheckState, and require its Module and Run to match the baseline target and Claim.Run, with phase evals/audit/impl. It MUST replace only that queued Change with the complete parsed approved record, retaining its assigned IDs, metadata, sections, path and order; all other baseline config, modules, changes, archive, diagnostics and BaseRef MUST remain as loaded. Initial late-ID/run/phase assignment and later committed phase states MUST both work. A missing or invalid current change MUST NOT prevent metadata restoration. It MUST NOT project preceding or selected changes itself; public Project/ApplyChange/BuildContext remain responsible for projection exactly once.
 
-### new:approval-errors
+### FLOW-022
 Missing/ambiguous queued selectors, missing/ambiguous target modules and invalid selected paths MUST fail with corrective C05; claim lookup/decoding, ownership, baseline loading or approved State/identity failures MUST fail with corrective P02 and preserve useful underlying public error details. Other discovery failures MUST retain corrective C01 details. A foreign-worktree, empty reservation, invalid started state, run/target mismatch, unavailable baseline, malformed selected ref or failed selected-ref inspection MUST NOT fall back to current metadata. HEAD differing from Claim.Base MUST NOT prevent read-only restoration: CheckWorktree separately rejects that mismatch before advancement. Every failed call MUST return a zero Snapshot and zero Claim, never partial metadata.
 
-### new:approval-isolation
+### FLOW-023
 LoadApproval MUST remain local and noninteractive and preserve HEAD, branches, claim/other refs, index bytes, tracked/untracked/ignored/user/outside files, common Git and temporary storage, and parent cwd/environment on success and rejection. It MUST NOT commit, stage, reset, fetch, push, create branches, execute hooks/agents/bootstrap/network commands, or write files/refs. For a claimed source it MUST NOT open current config/SPEC/queue/archive contents, SYSTEM.md, playbooks, retained contracts/evals, disposable code or unrelated private contents; only necessary local Git metadata and committed source objects selected by LoadAt may be read. For an unclaimed source only the normal public Load discovery reads are permitted. Unsafe paths MUST reject before outside content opens, including ignored-error attempts. Returned snapshots and their nested maps/slices MUST be independent across repeated calls and after mutation, including empty append backing storage. Returning metadata alone MUST NOT execute coverage, boundaries or other project hooks, and MUST NOT validate current worker edits or change ownership.
 
 ## Modified
@@ -37,3 +39,7 @@ Claim.State is the controller's approved step document. It may legitimately diff
 ## Rejected alternatives
 
 Reloading current config/SPEC before examining ownership lets worker edits select their own permission metadata. Treating every claim read error as absence hides corrupted ownership. Looking up all claims makes an unrelated malformed ref block explicit inspection. Projecting during restoration would apply queued effects twice when BuildContext performs its existing projection. Requiring clean files or matching HEAD for this read would hide the context needed to repair invalid work.
+
+## Provenance
+
+- evals | 2026-10-23T01:19:08Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1220 | failing: 86 | passing: 1134
