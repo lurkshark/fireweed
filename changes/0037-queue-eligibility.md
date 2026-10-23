@@ -1,5 +1,7 @@
 ---
 module: workflow
+phase: audit
+run: d61fa60bbbecd202f1616c09
 ---
 
 ## Motivation
@@ -12,16 +14,16 @@ Add public Eligible(snapshot project.Snapshot, slug string) (bool, error), forwa
 
 ## Added
 
-### new:eligible-selection
+### FLOW-024
 Eligible MUST select exactly one queued change by an exact valid claim slug, rejecting invalid, missing or ambiguous selectors with corrective C05 and false. An archived-only selector MUST NOT substitute for a queued change. Queue precedence MUST be numeric Number ascending, then Slug and Path ascending, independently of supplied slice order and without sorting that slice in place. The selected change and preceding entries participate; later entries MUST NOT affect the result, except that a duplicate selected Slug remains an ambiguity. A selected blocked change MUST be ineligible. Ineligibility in an otherwise valid prefix MUST return false with nil error rather than inventing a failure diagnostic.
 
-### new:eligible-blocking
+### FLOW-025
 An unblocked selected change MUST be eligible only when no earlier runnable unblocked change exists and no earlier blocked change holds it. A blocked change holds a later change when they target the same module, when the later target depends directly or transitively on the blocked target, or when the later change has a nonempty Interface section and the blocked target depends directly or transitively on the later target. Earlier unblocked changes held by earlier blockers MUST be skipped rather than stop independent work; every earlier blocker MUST remain relevant, not only the nearest one. Later blockers MUST NOT hold earlier work. Multiple independently runnable changes MUST still have only the earliest eligible queue head. Empty or whitespace-only Interface bodies MUST NOT activate reverse dependency blocking, and other/fenced heading text MUST NOT substitute for the exact parsed Interface section.
 
-### new:eligible-projection
+### FLOW-026
 For each candidate whose dependency relation is evaluated, Eligible MUST obtain its inclusive projected graph through public Project before that candidate and ApplyChange for the candidate exactly once. The selected inclusive graph MUST be validated even when the selected change is blocked or behind an earlier runnable head. This MUST include preceding set/depends_on changes, including blocked intent, and the candidate's own set values, while excluding later intent. It MUST use that graph for direct/transitive forward and Interface-dependent reverse relationships. Unknown or ambiguous target modules, missing dependency modules, self-dependencies, dependency cycles and failed prefix projection/application MUST fail atomically with corrective C05 and false, preserving useful public projection error details. It MUST NOT silently use an unprojected graph, ignore a failed projection, expand a cycle forever or treat a missing module as independent. This is essential graph/selection validation, not certification of all static project/queue requirements; unrelated hook/coverage/zone validation remains separate.
 
-### new:eligible-purity
+### FLOW-027
 Eligible MUST operate only on supplied values outside any repository, remain local and noninteractive, and MUST NOT inspect files, Git, claims, hooks, agents, bootstrap, network, cwd or environment, or mutate files/refs/temporary storage or parent process state on success or rejection. Inputs and every nested map/slice/document MUST remain unchanged, including queue/module order and empty append backing storage, after successful and rejected repeated calls. The same supplied values MUST produce the same bool/error regardless of Root, current working directory or ambient files/environment. It MUST NOT allocate IDs, rewrite changes, apply specs to disk or run clean-tree, approval, coverage, boundary or worker-edit checks.
 
 ## Modified
@@ -37,3 +39,7 @@ Only essential selection/graph failures are errors; normal blocked/held/behind-h
 ## Rejected alternatives
 
 Treating the first blocked entry as a global stop prevents independent work. Looking only at direct dependencies misses transitive blocking; blocking all reverse dependents prevents a non-interface dependency implementation from proceeding. Ignoring projected dependency changes lets queued intent evade its own ordering rule. Reading claims here would couple a pure ordering decision to worktree ownership and make it unusable for deterministic planning.
+
+## Provenance
+
+- evals | 2026-10-23T03:57:05Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1287 | failing: 42 | passing: 1245

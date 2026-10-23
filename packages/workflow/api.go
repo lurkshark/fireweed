@@ -9,6 +9,7 @@ import (
 	"github.com/lurkshark/fireweed/packages/workflow/internal/approval"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/claims"
 	workercontext "github.com/lurkshark/fireweed/packages/workflow/internal/context"
+	"github.com/lurkshark/fireweed/packages/workflow/internal/eligibility"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/policy"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/state"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/worktree"
@@ -52,4 +53,8 @@ func BuildContext(snapshot project.Snapshot, slug string) (WorkerContext, error)
 
 func LoadApproval(start, slug string) (project.Snapshot, Claim, error) {
 	return approval.Load(start, slug)
+}
+
+func Eligible(snapshot project.Snapshot, slug string) (bool, error) {
+	return eligibility.Check(snapshot, slug)
 }
