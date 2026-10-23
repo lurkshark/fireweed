@@ -1,6 +1,11 @@
 ---
+fixes:
+    - FLOW-008
+    - FLOW-009
+    - FLOW-010
 module: workflow
-fixes: [FLOW-008, FLOW-009, FLOW-010]
+phase: audit
+run: 288cf71ec47c45aee437c6c6
 ---
 
 ## Motivation
@@ -26,3 +31,7 @@ Claim Object identifies the actual content-addressed blob named by the shared re
 ## Rejected alternatives
 
 Parsing or stripping warning-looking lines from merged stdout loses byte-exact protocol data and can discard legitimate State content. Returning replacement-view JSON with an original blob token breaks content identity. Requiring users to remove harmless warnings or their replacement refs makes stored claim interpretation depend on unrelated local settings.
+
+## Provenance
+
+- evals | 2026-10-23T00:31:10Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 1098 | failing: 20 | passing: 1078
