@@ -26,6 +26,7 @@ type config struct{Real,Mode,Marker,WinnerObject,Change,WinnerText,BaseRef,BaseO
 func main(){
  raw,e:=os.ReadFile(os.Getenv("START_PROXY_CONFIG"));if e!=nil{os.Exit(80)};var in config;if json.Unmarshal(raw,&in)!=nil{os.Exit(81)}
  if strings.HasPrefix(filepath.Base(os.Args[0]),"git-remote-"){os.WriteFile(in.Marker+"-transport",[]byte("attempted lazy transport\n"),0600);os.Exit(93)}
+ if in.Mode=="hang"&&os.Getenv("START_PROXY_ARM_HANG")=="1"{os.WriteFile(in.Marker,[]byte("fired\n"),0600);pid,_:=json.Marshal(os.Getpid());os.WriteFile(in.Marker+"-pid",pid,0600);time.Sleep(5*time.Minute);os.Exit(94)}
  input,e:=io.ReadAll(os.Stdin);if e!=nil{os.Exit(82)};args:=os.Args[1:]
  run:=func(a []string,b []byte)([]byte,[]byte,int){ctx,cancel:=context.WithTimeout(context.Background(),8*time.Second);defer cancel();cmd:=exec.CommandContext(ctx,in.Real,a...);cmd.Stdin=bytes.NewReader(b);cmd.Env=os.Environ();var out,err bytes.Buffer;cmd.Stdout=&out;cmd.Stderr=&err;e:=cmd.Run();code:=0;if e!=nil{if x,ok:=e.(*exec.ExitError);ok{code=x.ExitCode()}else{code=83}};return out.Bytes(),err.Bytes(),code}
  seen:=func()bool{_,e:=os.Stat(in.Marker);return e==nil}
@@ -35,7 +36,7 @@ func main(){
  if forbidden{os.WriteFile(in.Marker+"-forbidden",[]byte(strings.Join(args,"\n")),0600);os.Stderr.WriteString("injected forbidden Git operation\n");os.Exit(91)}
  if in.Mode=="move-base"&&!seen()&&(contains("show")||contains("cat-file")&&!contains("-e")&&!contains("-t")&&!contains("--batch-check")||contains("ls-tree")){
   query:=strings.Join(args," ")+" "+string(input)
-  if strings.Contains(query,in.BaseOld)||strings.Contains(query,in.BaseRef)||in.Blob!=""&&strings.Contains(query,in.Blob){
+  if strings.Contains(query,in.BaseOld)||strings.Contains(query,in.BaseRef){
    _,detail,code:=run([]string{"update-ref",in.BaseRef,in.BaseNew},nil);if code!=0{os.Stderr.Write(detail);os.Exit(85)};mark()
   }
  }
@@ -137,8 +138,9 @@ func Test_FLOW038_FLOW040StartGitProxyControls(t *testing.T) {
 				cfg.WinnerText = raw
 			}
 			if mode == "move-base" {
+				claimGit(t, f.Root, "-c", "user.name=Start Fixture", "-c", "user.email=start@example.invalid", "commit", "--allow-empty", "-m", "Distinct current commit")
 				cfg.BaseOld = base
-				cfg.BaseNew = claimGit(t, f.Root, "rev-parse", "HEAD^")
+				cfg.BaseNew = claimGit(t, f.Root, "rev-parse", base+"^")
 				cfg.BaseRef = "refs/heads/approval-base"
 			}
 			cfg = startProxyInstall(t, binary, cfg)
@@ -196,12 +198,17 @@ func Test_FLOW038StartConcurrentReplacementAndLostResponse(t *testing.T) {
 				cfg.WinnerObject = ""
 			}
 			cfg = startProxyInstall(t, binary, cfg)
+			checkStorage := startStorage(t, f.Root)
+			defer checkStorage()
 			tree := startTree(t, f.Root)
 			git := startGitSnapshot(t, f.Root)
 			got, err := w.Start(f.Root, "current")
 			startProxyFired(t, cfg)
 			if err == nil || !policyCorrective(err.Error()) || !reflect.DeepEqual(got, w.StartResult{}) {
 				t.Errorf("ownership/failure did not reject with zero result: %+v %v", got, err)
+			}
+			if mode != "lost-response" && (err == nil || !startRecoveryDetail(err.Error())) {
+				t.Error("lost ownership lacks recovery details", err)
 			}
 			if mode == "lost-response" && (err == nil || !strings.Contains(err.Error(), "injected reservation response lost")) {
 				t.Error("lost original failed-command details", err)
@@ -256,6 +263,9 @@ func Test_FLOW036_FLOW040StartPinnedBaseAndWarnedGit(t *testing.T) {
 				cfg.BaseNew = alternate
 				cfg.BaseRef = "refs/heads/approval-base"
 				cfg.Blob = claimGit(t, f.Root, "rev-parse", old+":"+f.Path)
+				if mode == "move-base" {
+					claimGit(t, f.Root, "-c", "user.name=Start Fixture", "-c", "user.email=start@example.invalid", "commit", "--allow-empty", "-m", "Current source distinct from approval commit")
+				}
 				if mode == "replacement-base" {
 					replacement := claimGit(t, f.Root, "-c", "user.name=Start Fixture", "-c", "user.email=start@example.invalid", "commit-tree", claimGit(t, f.Root, "rev-parse", alternate+"^{tree}"), "-p", old+"^", "-m", "Replacement view with an acyclic parent")
 					claimGit(t, f.Root, "-c", "user.name=Start Fixture", "-c", "user.email=start@example.invalid", "commit", "--allow-empty", "-m", "Current HEAD with unchanged authored tree")
@@ -389,5 +399,156 @@ func Test_FLOW036_FLOW040StartDoesNotLazyFetchBase(t *testing.T) {
 		t.Error("start triggered proven promisor lazy fetch", string(b))
 	} else if !os.IsNotExist(err) {
 		t.Error(err)
+	}
+}
+
+func startRecoveryDetail(detail string) bool {
+	text := strings.ToLower(detail)
+	for _, term := range []string{"recover", "restore", "ownership", "preserv", "replacement", "replaced", "concurrent"} {
+		if strings.Contains(text, term) {
+			return true
+		}
+	}
+	return false
+}
+
+func startReferenceHook(t *testing.T, root string) string {
+	t.Helper()
+	marker := filepath.Join(t.TempDir(), "reference-transaction-called")
+	hook := filepath.Join(claimCommon(t, root), "hooks", "reference-transaction")
+	worktreePut(t, filepath.Dir(hook), filepath.Base(hook), "#!/bin/sh\nprintf '%s\\n' \"$1\" >> "+claimQuote(marker)+"\ncat >/dev/null\n")
+	if err := os.Chmod(hook, 0755); err != nil {
+		t.Fatal(err)
+	}
+	claimGit(t, root, "update-ref", "refs/start-hook-control", "HEAD")
+	raw, err := os.ReadFile(marker)
+	if err != nil || !strings.Contains(string(raw), "prepared") || !strings.Contains(string(raw), "committed") {
+		t.Fatal("reference-transaction hook not live", string(raw), err)
+	}
+	claimGit(t, root, "update-ref", "-d", "refs/start-hook-control")
+	if err := os.Remove(marker); err != nil {
+		t.Fatal(err)
+	}
+	disabled := t.TempDir()
+	claimGit(t, root, "-c", "core.hooksPath="+disabled, "update-ref", "refs/start-hook-control", "HEAD")
+	claimGit(t, root, "-c", "core.hooksPath="+disabled, "update-ref", "-d", "refs/start-hook-control")
+	if _, err := os.Stat(marker); !os.IsNotExist(err) {
+		t.Fatal("reference hook suppressed control failed", err)
+	}
+	return marker
+}
+func Test_FLOW040StartReferenceTransactionHookControl(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("POSIX executable hook fixture; portable ref protocol controls run separately")
+	}
+	f := startFixture(t, "sha1", "spec", "")
+	startReferenceHook(t, f.Root)
+}
+func Test_FLOW037_FLOW038_FLOW040StartSuppressesReferenceTransactionHook(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("POSIX executable hook fixture; portable ref protocol controls run separately")
+	}
+	for _, failed := range []bool{false, true} {
+		t.Run(map[bool]string{false: "success", true: "rollback"}[failed], func(t *testing.T) {
+			f := startFixture(t, "sha1", "spec", "")
+			if failed {
+				startBrokenBook(t, f, "evals")
+			}
+			marker := startReferenceHook(t, f.Root)
+			if failed {
+				startFailure(t, f.Root, "current", "D05")
+			} else {
+				startSuccess(t, f, f.Root, "evals")
+			}
+			if raw, err := os.ReadFile(marker); err == nil {
+				t.Error("Start invoked proven reference-transaction hook", string(raw))
+			} else if !os.IsNotExist(err) {
+				t.Error(err)
+			}
+		})
+	}
+}
+
+// The Git proxy deliberately outlives the outer ceiling. Only the subject can
+// return an ordinary error before that ceiling; the test kills any leaked proxy.
+func Test_FLOW040StartBoundsStalledGit(t *testing.T) {
+	binary := startProxyBuild(t)
+	build := t.TempDir()
+	probe := filepath.Join(build, "start-probe")
+	if runtime.GOOS == "windows" {
+		probe += ".exe"
+	}
+	worktreePut(t, build, "main.go", `package main
+import("encoding/json";"os";w "github.com/lurkshark/fireweed/packages/workflow")
+func main(){result,err:=w.Start(os.Args[1],"current");detail:="";if err!=nil{detail=err.Error()};json.NewEncoder(os.Stdout).Encode(struct{Result w.StartResult;Error string}{result,detail})}`)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "go", "build", "-o", probe, filepath.Join(build, "main.go"))
+	cmd.Env = append(os.Environ(), "GOPROXY=off", "GOTOOLCHAIN=local")
+	if out, err := cmd.CombinedOutput(); err != nil {
+		t.Fatal("public stalled-Git probe build", err, string(out))
+	}
+	for _, control := range []bool{true, false} {
+		t.Run(map[bool]string{true: "live-control", false: "subject"}[control], func(t *testing.T) {
+			f := startFixture(t, "sha1", "spec", "")
+			cfg := startProxyInstall(t, binary, startProxyConfig{Mode: "hang"})
+			checkStorage := startStorage(t, f.Root)
+			defer checkStorage()
+			// Snapshot helpers use real Git: the stall is armed only in the child env.
+			before := startTree(t, f.Root)
+			git := startGitSnapshot(t, f.Root)
+			ceiling := 90 * time.Second
+			if control {
+				ceiling = 350 * time.Millisecond
+			}
+			ctx, cancel := context.WithTimeout(context.Background(), ceiling)
+			defer cancel()
+			subject := exec.CommandContext(ctx, probe, f.Root)
+			if control {
+				subject = exec.CommandContext(ctx, binary, "--version")
+			}
+			subject.Dir = f.Root
+			subject.Env = append(os.Environ(), "START_PROXY_ARM_HANG=1")
+			defer func() {
+				raw, e := os.ReadFile(cfg.Marker + "-pid")
+				if e == nil {
+					var pid int
+					if json.Unmarshal(raw, &pid) == nil {
+						process, e := os.FindProcess(pid)
+						if e == nil {
+							_ = process.Kill()
+						}
+					}
+				}
+			}()
+			out, err := subject.CombinedOutput()
+			startProxyFired(t, cfg)
+			if control {
+				if ctx.Err() != context.DeadlineExceeded || err == nil {
+					t.Error("proxy did not actually stall until external cancellation", err)
+				}
+				return
+			}
+			if ctx.Err() != nil || err != nil {
+				t.Fatalf("Start failed to return before generous external completion ceiling: %v %s", err, out)
+			}
+			var got struct {
+				Result w.StartResult
+				Error  string
+			}
+			if err := json.Unmarshal(out, &got); err != nil {
+				t.Fatal("stalled subject JSON", err, string(out))
+			}
+			if !reflect.DeepEqual(got.Result, w.StartResult{}) || got.Error == "" || !policyCorrective(got.Error) {
+				t.Error("stalled Git did not produce useful zero-result error", got)
+			}
+			detail := strings.ToLower(got.Error)
+			if !strings.Contains(detail, "deadline") && !strings.Contains(detail, "timeout") && !strings.Contains(detail, "timed out") && !strings.Contains(detail, "cancel") && !strings.Contains(detail, "killed") && !strings.Contains(detail, "signal") {
+				t.Error("missing stalled-command failure detail", got.Error)
+			}
+			if !reflect.DeepEqual(before, startTree(t, f.Root)) || !reflect.DeepEqual(git, startGitSnapshot(t, f.Root)) {
+				t.Error("stalled subprocess changed repository state")
+			}
+		})
 	}
 }

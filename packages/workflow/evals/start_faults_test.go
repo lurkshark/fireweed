@@ -32,6 +32,7 @@ const startFaultGuard = `#include <sys/types.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <dirent.h>
 static int armed=0,fired=0,deletions=0;
 static pid_t owner=0;
 static void stopped(int signal_number){_exit(42);}
@@ -44,9 +45,11 @@ const char*fw_start_recreated(void){return recreated;}
 static int exact(const char*a,const char*b){return a&&b&&strcmp(a,b)==0;}
 static int within(const char*p,const char*d){return p&&d&&strncmp(p,d,strlen(d))==0&&(p[strlen(d)]==0||p[strlen(d)]=='/');}
 static const char*fullpath(int fd,const char*p,char*b){if(!p||p[0]=='/'||fd==AT_FDCWD)return p;char d[4096];if(fcntl(fd,F_GETPATH,d)==0){snprintf(b,4096,"%s/%s",d,p);return b;}return p;}
-static void mutation(const char*p){if(armed&&within(p,private_file))_exit(42);}
+static void inspection(const char*p){if(armed==6&&within(p,root))violation();}
+static void mutation(const char*p){inspection(p);if(armed&&within(p,private_file))_exit(42);}
 static int opening(const char*p,int flags){
  if(!armed)return 0;
+ inspection(p);
  if(flags&(O_WRONLY|O_RDWR)){mutation(p);if(armed==2&&exact(p,change)){fired=1;errno=EACCES;return -1;}}
  if(armed==5&&exact(p,context_file)){fired=1;errno=EACCES;return -1;}
  return 0;
@@ -57,7 +60,7 @@ static ssize_t fw_read(int d,void*b,size_t n){if(armed&&d==0)_exit(42);return re
 static ssize_t fw_write(int d,const void*b,size_t n){if(armed&&(d==1||d==2))_exit(42);return write(d,b,n);}
 static int fw_socket(int d,int t,int p){if(armed)_exit(42);return socket(d,t,p);}
 static int fw_connect(int s,const struct sockaddr*a,socklen_t n){if(armed)_exit(42);return connect(s,a,n);}
-static void execution(const char*p){if(armed){const char*b=strrchr(p,'/');b=b?b+1:p;if(strcmp(b,"git")!=0)violation();}}
+static void execution(const char*p){if(armed){if(armed==6)violation();const char*b=strrchr(p,'/');b=b?b+1:p;if(strcmp(b,"git")!=0)violation();}}
 static int fw_execve(const char*p,char*const a[],char*const e[]){execution(p);return execve(p,a,e);}
 static int fw_posix_spawn(pid_t*p,const char*s,const posix_spawn_file_actions_t*f,const posix_spawnattr_t*t,char*const a[],char*const e[]){execution(s);return posix_spawn(p,s,f,t,a,e);}
 static int fw_posix_spawnp(pid_t*p,const char*s,const posix_spawn_file_actions_t*f,const posix_spawnattr_t*t,char*const a[],char*const e[]){execution(s);return posix_spawnp(p,s,f,t,a,e);}
@@ -79,10 +82,16 @@ static void deleted(const char*p,int result){
 }
 static int fw_unlink(const char*p){if(deletion(p)<0)return -1;int r=unlink(p);deleted(p,r);return r;}
 static int fw_unlinkat(int d,const char*p,int f){char b[4096];const char*q=fullpath(d,p,b);if(deletion(q)<0)return -1;int r=unlinkat(d,p,f);deleted(q,r);return r;}
+static int fw_stat(const char*p,struct stat*b){inspection(p);return stat(p,b);}
+static int fw_lstat(const char*p,struct stat*b){inspection(p);return lstat(p,b);}
+static DIR*fw_opendir(const char*p){inspection(p);return opendir(p);}
+static ssize_t fw_readlink(const char*p,char*b,size_t n){inspection(p);return readlink(p,b,n);}
+static int fw_access(const char*p,int f){inspection(p);return access(p,f);}
 static int fw_rmdir(const char*p){mutation(p);return rmdir(p);}
 static int fw_mkdir(const char*p,mode_t m){mutation(p);return mkdir(p,m);}
 static int fw_chmod(const char*p,mode_t m){mutation(p);return chmod(p,m);}
 #define I(r,o) __attribute__((used)) static struct{const void*replacement;const void*original;} fw_interpose_##o __attribute__((section("__DATA,__interpose")))={(const void*)(uintptr_t)&r,(const void*)(uintptr_t)&o};
+I(fw_stat,stat) I(fw_lstat,lstat) I(fw_opendir,opendir) I(fw_readlink,readlink) I(fw_access,access)
 I(fw_open,open) I(fw_openat,openat) I(fw_read,read) I(fw_write,write) I(fw_socket,socket) I(fw_connect,connect)
 I(fw_execve,execve) I(fw_posix_spawn,posix_spawn) I(fw_posix_spawnp,posix_spawnp) I(fw_rename,rename)
 I(fw_unlink,unlink) I(fw_unlinkat,unlinkat) I(fw_rmdir,rmdir) I(fw_mkdir,mkdir) I(fw_chmod,chmod)
@@ -134,6 +143,10 @@ func main(){
  C.fw_start_arm(C.int(in.Fault),C.CString(in.Root),C.CString(in.Change),C.CString(in.Context),C.CString(in.Private))
  out:=output{}
  switch in.Mode{
+ case "invalid-read-control":os.ReadFile(in.Change)
+ case "invalid-stat-control":os.Stat(in.Change)
+ case "invalid-git-control":exec.Command("git","--version").Run()
+ case "invalid-subject":out.Result,e=w.Start(in.Root,"INVALID/slug");if e!=nil{out.Error=e.Error()}
  case "stdin-control":os.Stdin.Read(make([]byte,1))
  case "prompt-control":fmt.Fprint(os.Stdout,"prompt")
  case "stderr-control":fmt.Fprint(os.Stderr,"prompt")
@@ -154,7 +167,7 @@ func main(){
  }
  out.Fired=C.fw_start_fired()!=0;out.Recreated=C.GoString(C.fw_start_recreated());C.fw_start_arm(0,nil,nil,nil,nil)
  afterCwd,e:=os.Getwd();out.StateSame=e==nil&&cwd==afterCwd&&reflect.DeepEqual(environment,os.Environ())
- switch in.Mode{case "stdin-control","prompt-control","stderr-control","network-control","process-control","hook-control","agent-control","private-write-control","private-chmod-control","private-unlink-control":os.Exit(70)}
+ switch in.Mode{case "invalid-read-control","invalid-stat-control","invalid-git-control","stdin-control","prompt-control","stderr-control","network-control","process-control","hook-control","agent-control","private-write-control","private-chmod-control","private-unlink-control":os.Exit(70)}
  json.NewEncoder(os.Stdout).Encode(out)
 }`, build)
 	worktreePut(t, build, "probe.go", program)
@@ -264,13 +277,59 @@ func main(){
 			}
 		})
 	}
+	for _, mode := range []string{"invalid-read-control", "invalid-stat-control", "invalid-git-control", "invalid-subject"} {
+		t.Run(mode, func(t *testing.T) {
+			f, in := fixture(t, "spec")
+			in.Mode = mode
+			in.Fault = 6
+			checkStorage := startStorage(t, f.Root)
+			defer checkStorage()
+			before := startTree(t, f.Root)
+			git := startGitSnapshot(t, f.Root)
+			got, code := run(t, in)
+			if mode != "invalid-subject" {
+				if code != 42 {
+					t.Error("invalid-selector access guard not live", mode, code)
+				}
+				return
+			}
+			if code != 0 || !strings.Contains(got.Error, "C05") || !policyCorrective(got.Error) || !reflect.DeepEqual(got.Result, w.StartResult{}) || !got.StateSame {
+				t.Error("invalid selector performed repository I/O or returned invalid error", code, got)
+			}
+			if !reflect.DeepEqual(before, startTree(t, f.Root)) || !reflect.DeepEqual(git, startGitSnapshot(t, f.Root)) {
+				t.Error("invalid selector changed repository")
+			}
+		})
+	}
 	for _, test := range []struct {
 		Name, Kind string
 		Fault      int
-	}{{"success", "spec", 1}, {"source-read", "spec", 5}, {"interface-read", "spec", 5}, {"drill-read", "regenerate", 5}, {"selected-write", "spec", 2}, {"context-read", "spec", 5}, {"regenerate-context", "regenerate", 5}, {"second-delete", "regenerate", 3}, {"recreated-delete", "regenerate", 4}} {
+	}{{"success", "spec", 1}, {"source-read", "spec", 5}, {"interface-read", "spec", 5}, {"drill-read", "regenerate", 5}, {"selected-write", "spec", 2}, {"context-read", "spec", 5}, {"regenerate-context", "regenerate", 5}, {"second-delete", "regenerate", 3}, {"symlink-delete", "regenerate", 3}, {"recreated-delete", "regenerate", 4}} {
 		t.Run(test.Name, func(t *testing.T) {
 			f, in := fixture(t, test.Kind)
 			in.Mode = "subject"
+			if test.Name == "symlink-delete" {
+				outside := filepath.Join(t.TempDir(), "target")
+				if err := os.WriteFile(outside, []byte("Untouched external symlink target.\n"), 0640); err != nil {
+					t.Fatal(err)
+				}
+				for _, leaf := range []string{"code.txt", "second.txt"} {
+					path := filepath.Join(f.Root, "units/a/impl", leaf)
+					if err := os.Remove(path); err != nil {
+						t.Fatal(err)
+					}
+					if err := os.Symlink(outside, path); err != nil {
+						t.Fatal(err)
+					}
+				}
+				startCommit(t, f.Root, "Tracked disposable leaf symlinks for rollback")
+				external := startTree(t, filepath.Dir(outside))
+				defer func() {
+					if !reflect.DeepEqual(external, startTree(t, filepath.Dir(outside))) {
+						t.Error("rollback touched external symlink target")
+					}
+				}()
+			}
 			if test.Name == "context-read" {
 				if err := os.Chmod(filepath.Join(f.Root, f.Path), 0751); err != nil {
 					t.Fatal(err)
@@ -288,6 +347,8 @@ func main(){
 				in.Context = filepath.Join(f.Root, ".fireweed/drills/alpha.md")
 			}
 			in.Fault = test.Fault
+			checkStorage := startStorage(t, f.Root)
+			defer checkStorage()
 			before := startTree(t, f.Root)
 			git := startGitSnapshot(t, f.Root)
 			got, code := run(t, in)
