@@ -22,6 +22,7 @@ type committedTree struct {
 	root    string
 	entries map[string]committedNode
 	bodies  map[string]string
+	objects map[string]bool
 }
 
 // LoadAt restores metadata from one immutable source without exporting its files.
@@ -36,15 +37,15 @@ func LoadAt(start, revision string) (Data, error) {
 	if err != nil {
 		return fail("open the calling Git checkout", err)
 	}
-	raw, err := baselineGit(repo.Root, "rev-parse", "--verify", "--end-of-options", revision+"^{commit}")
+	objects, err := baselineLocalObjects(repo.Root)
+	if err != nil {
+		return fail("inspect locally available metadata objects", err)
+	}
+	oid, err := baselineCommit(repo.Root, revision, objects)
 	if err != nil {
 		return fail("resolve the explicit local commit", err)
 	}
-	oid := strings.TrimSpace(raw)
-	if !fullObjectID(oid) {
-		return fail("resolve the explicit local commit", fmt.Errorf("Git did not return a full commit ID"))
-	}
-	raw, err = baselineGit(repo.Root, "ls-tree", "-r", "-t", "-z", "--full-tree", oid)
+	raw, err := baselineTreeMetadata(repo.Root, oid, objects)
 	if err != nil {
 		return fail("enumerate the selected commit tree", err)
 	}
@@ -52,6 +53,7 @@ func LoadAt(start, revision string) (Data, error) {
 	if err != nil {
 		return fail("read the selected commit tree", err)
 	}
+	tree.objects = objects
 	text, err := tree.file("fireweed.yaml")
 	if err != nil {
 		return fail("read selected fireweed.yaml", err)
@@ -193,6 +195,9 @@ func hiddenTreePath(relative string) bool {
 func (t *committedTree) blob(oid string) (string, error) {
 	if body, ok := t.bodies[oid]; ok {
 		return body, nil
+	}
+	if !t.objects[oid] {
+		return "", fmt.Errorf("selected metadata blob %s is unavailable locally; restore local metadata objects", oid)
 	}
 	body, err := baselineGit(t.root, "cat-file", "blob", oid)
 	if err == nil {
