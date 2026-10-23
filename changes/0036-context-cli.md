@@ -1,5 +1,7 @@
 ---
 module: app
+phase: audit
+run: 8baf00c555aa2a3caf96dc64
 ---
 
 ## Motivation
@@ -12,13 +14,13 @@ Keep app.Run(args []string, out, errOut io.Writer) int and all retained public m
 
 ## Added
 
-### new:context-source
+### APP-019
 context <change> MUST discover from the current working directory, including nested and linked checkouts, and compose public LoadApproval with BuildContext for the exact selected slug. With no selected claim it MUST use current discovered source; with a valid owned claim it MUST restore Claim.Base metadata and the complete approved State before assembling current feedback. It MUST return the complete public WorkerContext without dropping or adding fields, including the approved Change, inclusive projected target and preceding projected direct dependencies, exact current ChangeText and SpecText, optional System, phase-selected Files, exact selected Playbook and PlaybookHash, and canonical GitCommonDir. Empty existing change text MUST remain empty, while a missing current change MUST use the builder's matching owned-claim recovery. Claimed context MUST remain available with malformed/deleted current config or queue metadata and worker-edited SPEC metadata when its required feedback files remain readable. It MUST NOT reload current project metadata first, project the selected change twice, allocate IDs, certify static validity, require clean files or HEAD equality, or validate worker edits as an advancement precondition. Successful calls MUST return exit 0 with empty diagnostics even when source metadata contains unrelated static/discovery problems; check and verify remain separate operations.
 
-### new:context-errors
+### APP-020
 context MUST preserve useful full public LoadApproval/BuildContext error messages and their leading C01, C05, P02 or D05 code as a single severity error diagnostic, with null data and no invented path field. C05 selection/projection failures and P02 claim/ownership/state failures MUST return exit 1; C01 discovery/required-input failures and D05 override failures MUST return exit 2. Missing or ambiguous exact queued selectors, archived-only selectors, missing targets, malformed/foreign/reserved claims, unavailable baselines and invalid approved state MUST NOT fall back to different metadata or expose partial WorkerContext. Unsafe or unreadable required inputs MUST fail atomically; a missing optional SYSTEM.md remains empty. Invalid slug selectors MUST retain C05 before repository/content access. JSON MUST use exactly one schema_version 1 canonical context/data/non-null diagnostics envelope on stdout and empty stderr. Plain success MUST be pretty JSON of the same complete WorkerContext on stdout; plain failure MUST have empty stdout and the coded corrective diagnostic on stderr. Output write failures MUST return exit 2 on success, operational-error and usage output.
 
-### new:context-command-safety
+### APP-021
 context MUST accept --json before or after the command/operand and valid --help/-h without loading a project. Missing/excess operands, unknown or valued boolean flags, show-only modes and coverage-only --with-change MUST be corrective U01 exit 2 before repository/content access. -- MUST stop option parsing, so later flag-looking text is an operand and cannot enable JSON. All calls MUST remain local and noninteractive and preserve files, ignored/outside contents, index, HEAD, branches, claim/other refs, common Git, temporary storage and parent cwd/environment on success and rejection. The command MUST NOT independently run eval/setup/boundaries hooks, agents, bootstrap or network commands, commit, stage, reset, write files/refs or create claims. It MUST inspect only the exact selected claim rather than require every claim to decode, and MUST NOT open disposable code, unrelated private content, transitive dependency contracts or inputs excluded by the public source/context selection contracts. Escaping paths MUST reject before outside content opens, including ignored-error attempts.
 
 ## Modified
@@ -34,3 +36,7 @@ Both plain and JSON success expose the public WorkerContext shape; JSON wraps it
 ## Rejected alternatives
 
 Loading current project metadata before claim ownership would let worker config choose its own authority. Running check or verify before this read would hide the repair context needed to resolve their failures. Flattening WorkerContext into a new CLI-specific model would drop retained contract data. Treating all operational failures as U01 would lose stable protocol meaning and useful public guidance.
+
+## Provenance
+
+- evals | 2026-10-23T02:31:59Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 216 | failing: 47 | passing: 169
