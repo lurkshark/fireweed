@@ -19,7 +19,7 @@ type Suite struct { XMLName xml.Name `xml:"testsuite"`; Cases []Case `xml:"testc
 func main() {
  if len(os.Args)<2 { os.Exit(2) }
  if os.Args[1]=="eval" {
-  cmd:=exec.Command("go","test","-json","./"+os.Args[2]+"/..."); var output bytes.Buffer; cmd.Stdout=&output; cmd.Stderr=os.Stderr; err:=cmd.Run()
+  cmd:=exec.Command("go","test","-timeout=20m","-json","./"+os.Args[2]+"/..."); var output bytes.Buffer; cmd.Stdout=&output; cmd.Stderr=os.Stderr; err:=cmd.Run()
   dec:=json.NewDecoder(&output); suite:=Suite{}; indexes:=map[string]int{}; logs:=map[string]string{}
   for { var ev struct { Action,Package,Test,Output string }; if dec.Decode(&ev)!=nil { break }; if ev.Test=="" { if ev.Output!="" { fmt.Print(ev.Output) }; continue }; key:=ev.Package+"/"+ev.Test
    if ev.Action=="run" { indexes[key]=len(suite.Cases);suite.Cases=append(suite.Cases,Case{Name:ev.Test,Class:ev.Package}) }

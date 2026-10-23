@@ -237,3 +237,12 @@ Preserve the three project files again, release its own claim, and restore only 
 
 
 D034 application checkpoint: app clarification0001 is applied at8402e1e,476 records/0 failures/skips, independent audit, no product code edits. Three pre-freeze reviews corrected nested-operation and option-operand holes before accepted proof; incomplete runs remain excluded. Project remains suspended until workflow's owning-module correction and genuine no-fetch regression are applied. Existing user authorization permits these local author-ordered changes, not policy bypass or a full completion claim.
+
+
+## D035 — allocate a sufficient whole-package eval budget
+
+The corrected claim-locality EVALS candidate has genuine transport failures and independently calibrated CAS/token/storage/source observers, but its full controller hook reaches Go's default10m package timeout at600.279s. The report contains1893 of expected1909 records,61 failure records/60 genuine transport leaves, and mechanically returns acceptable EVALS diagnostics. The rebuild's complete-legacy/exact-count proof rejects this incomplete run; no eval freeze/audit/implementation/archive is accepted. Earlier applied workflow own run465.136s, preserved-project dependent run538.552s, and the added152-case matrix117.518s explain the larger workload.
+
+Preserved nine own EVALS/change files, modes/hashes/HEAD originals in /private/tmp/fireweed-claim-locality-prefreeze-w_yw9qps/manifest.json. Verified unchanged, released only own claim with diagnostics[], confirmed no claims and restored only those own files to authored697e30a. No phase commits existed, so the next start legitimately creates a fresh run; restore only the eight eval files and allowed Decisions into that fresh started change. Project0041's separate three-file frozen implementation recovery remains intact.
+
+As a separate protected author change, set the project-owned Go hook's overall package budget to20m. Keep every testcase, assertion, product subprocess deadline, native timeout, retry/audit/coverage/boundary policy and90m attempt timeout unchanged. This resource adjustment does not certify incomplete evidence or alter the product's timeout semantics. Run fresh doctor canaries at a clean committed boundary before restarting workflow EVALS. Final direct Go/race runs must state the sufficient package timeout explicitly. The shorter failed report remains evidence, not an accepted verification result.
