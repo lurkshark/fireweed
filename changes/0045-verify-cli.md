@@ -1,6 +1,6 @@
 ---
 module: app
-phase: audit
+phase: evals
 run: 4b80bb9e3717387331cca96a
 ---
 
@@ -75,7 +75,8 @@ Reloading the dirty current project can replace committed approval or fail befor
 - evals | 2026-10-24T22:14:43Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 644 | failing: 100 | passing: 544
 - audit | 2026-10-24T22:23:37Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-24T23:00:27Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 648 | failing: 100 | passing: 548
+- audit | 2026-10-24T23:03:51Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- APP-028: "successful and rejected verify calls MUST remain local, bounded and noninteractive" — cliVerifyReadonly leaves PATH and recorder environment installed until test cleanup. Repeated calls can create a proxy/recorder cycle that reaches the CLI deadline independently of product behavior; no repeated public-Verify calibration detects it. Restore helper-owned environment on return and add repeated public-oracle controls under the same observer.
+- APP-025: "Any structured checking error MUST return exit1 with all available data/diagnostics intact." — No Verify eval activates boundary.fail or boundary.output. Existing cases verify boundary invocation but only passing results, allowing dropped C15 diagnostics or exit0 for a boundary-only failure. Add public-oracle-confirmed boundary failure assertions retaining complete data, diagnostics and exit1 in JSON and plain modes.
