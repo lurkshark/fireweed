@@ -3,7 +3,7 @@ fixes:
     - FLOW-015
     - FLOW-023
 module: workflow
-phase: audit
+phase: impl
 run: f9347464cbe4af07a1cd7b49
 ---
 
@@ -66,8 +66,10 @@ Loading the dirty current project before approval can redirect hooks or permissi
 - evals | 2026-10-24T15:35:06Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2130 | failing: 189 | passing: 1941
 - audit | 2026-10-24T15:55:24Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-24T16:35:20Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2146 | failing: 189 | passing: 1957
+- audit | 2026-10-24T16:37:53Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- FLOW-043: "all coverage diagnostics MUST remain visible" — The new Verify evals delegate useful-guidance checks to a legacy vocabulary whitelist that rejects valid corrective verbs including implement, repair, configure, declare and add. Use a Verify-specific predicate with positive controls and empty/generic-message negative controls while retaining exact public diagnostic comparisons and leaving legacy evals unchanged.
-- FLOW-043: "Coverage, hook status/output, testcase data and all coverage diagnostics MUST remain visible" — The missing-executable fixture never records its unique owned report path, so repeated public Evaluate evidence compares distinct unobserved temporary identities. Record the exact report identity through a controlled prefix before attempting the missing executable and normalize only that observed path; retain actual output/exit, full coverage/diagnostics and empty Tests/BySpec assertions.
+No findings. Checked FLOW-041, FLOW-042, FLOW-043, FLOW-044, FLOW-045, FLOW-046, FLOW-047, FLOW-015, FLOW-023.
+
+Fresh independent auditor /root/audit_checked_verify_refreeze reviewed frozen EVALS8991786 against the allowed public contracts and design, including positive/negative paths, evidence retention and observer liveness. Source-only; no implementation/history/bootstrap/evidence inspection, tests, product/Git/controller execution or edits.
