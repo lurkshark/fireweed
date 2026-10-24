@@ -3,6 +3,8 @@ fixes:
     - FLOW-015
     - FLOW-023
 module: workflow
+phase: audit
+run: f9347464cbe4af07a1cd7b49
 ---
 
 ## Motivation
@@ -15,26 +17,26 @@ Add workflow.Verify(ctx context.Context, start, slug string) (Verification, erro
 
 ## Added
 
-### new:verify-selection
+### FLOW-041
 Verify MUST validate a nonempty explicit slug before repository access, rejecting invalid selectors with corrective C05. It MUST discover the canonical checkout from start, select the exact named held claim or the unique claim owned by this checkout when slug is empty, and reject missing, ambiguous, malformed or foreign selected ownership with corrective P02. Explicit selection MUST remain independent of malformed unrelated claim payloads. It MUST restore the selected approved snapshot and exact started State from the claim's committed Base through LoadApproval, never use current worker configuration/SPEC/queue metadata as authority or silently fall back to unclaimed source. Fatal selection/source failures MUST return a zero Verification and useful non-nil error. Valid ordinary and linked SHA-1/SHA-256 worktrees MUST work from nested start paths.
 
-### new:verify-projection
-For a valid selection Verify MUST use Project before the selected change and ApplyChange for that change exactly once, including preceding queued effects and the selected set while excluding later effects. It MUST validate the resulting effective project and dependency graph before executing hooks. It MUST compose CheckWorktree with that inclusive approved target and preserve its actual Edits and independent diagnostics. Invalid graph, approved worker state, ownership, HEAD, edit zones or path containment MUST prevent all verification hooks; current blocked MUST add corrective P05 and also prevent hooks. Invalid current change text or unsafe/unreadable current paths MUST fail closed through the existing guards. Structured checking failures MUST return initialized Verification data with nil error, preserving Change/Phase from approval, non-null Diagnostics/Coverage/Edits and useful diagnostics; source failure remains governed by new:verify-selection.
+### FLOW-042
+For a valid selection Verify MUST use Project before the selected change and ApplyChange for that change exactly once, including preceding queued effects and the selected set while excluding later effects. It MUST validate the resulting effective project and dependency graph before executing hooks. It MUST compose CheckWorktree with that inclusive approved target and preserve its actual Edits and independent diagnostics. Invalid graph, approved worker state, ownership, HEAD, edit zones or path containment MUST prevent all verification hooks; current blocked MUST add corrective P05 and also prevent hooks. Invalid current change text or unsafe/unreadable current paths MUST fail closed through the existing guards. Structured checking failures MUST return initialized Verification data with nil error, preserving Change/Phase from approval, non-null Diagnostics/Coverage/Edits and useful diagnostics; source failure remains governed by FLOW-041.
 
-### new:verify-evals
+### FLOW-043
 In evals Verify MUST evaluate exactly the selected inclusive target module with the approved effective hooks/configuration through public Evaluate. Fail-first targets MUST include every Added, Modified and fixes ID, with approved already_satisfied passed under public coverage policy. Coverage, hook status/output, testcase data and all coverage diagnostics MUST remain visible even for expected fail-first failures, unrelated failures, missing/malformed reports or hook errors. It MUST NOT evaluate dependent modules or run boundaries during evals, and MUST NOT treat worker-modified hooks or metadata as approved. Removed IDs MUST remain absent from the projected coverage contract. Legitimately passing fail-first checks MUST yield no verification errors.
 
-### new:verify-audit
+### FLOW-044
 In audit Verify MUST run no hooks or agents and inspect only the current parsed Audit section. Each retained finding MUST follow the documented one-line format with an optional [untestable] marker, a real eligible target spec ID and a nonempty quote that is an exact substring of that inclusive spec's body. It MUST retain the original line in Text and expose the marker in Untestable, preserve finding order, and discard unknown/review/quarantine IDs, empty/inexact clauses and malformed lines. If no eligible findings remain, a passing audit MUST say No findings case-insensitively and list every Added, Modified and fixes ID using precise public ID matching; an absent/empty/incomplete audit MUST produce corrective P1-03. Valid findings MUST be returned for later Done handling without advancing phase, rewriting Questions or blocking the change. A complete passing audit MUST return empty non-null Findings and no verification error.
 
-### new:verify-impl
+### FLOW-045
 In impl Verify MUST evaluate the selected inclusive target first, then each effective graph dependent exactly once in ascending module-name order according to approved verify_dependents all/direct/none, default all. Transitive diamond dependents MUST NOT be duplicated; unrelated modules MUST NOT be evaluated. Dependent coverage MUST use approved effective module metadata and MUST NOT impose the selected change's fail-first or already_satisfied policy. It MUST run public Boundaries once against the complete inclusive graph after coverage, even when a coverage hook fails. All available own/dependent coverage and boundary diagnostics MUST remain visible, and failing hooks or coverage MUST NOT be reported as a successful verification. Direct and none MUST retain own coverage and boundaries.
 
-### new:verify-hook-guards
+### FLOW-046
 After verification hooks Verify MUST recheck the exact stored claim, original HEAD and approved worker state/edit policy, returning the resulting updated Edits and retaining independent pre-hook and coverage diagnostics. Forbidden files or metadata written by hooks and ownership/HEAD changes MUST therefore be rejected. It MUST NOT repair or erase hook changes, create commits, move/reset/stage HEAD/index or advance/update/release claims. Caller cancellation MUST stop the owned active hook and prevent later hooks; errors.Is(err, context.Canceled/DeadlineExceeded) MUST remain usable, with already collected Verification evidence retained when available. A context cancelled before selection MUST return zero Verification and its cancellation error without executing hooks.
 
-### new:verify-locality
-Apart from explicitly configured verification hooks, Verify MUST be local, bounded and noninteractive: no lazy fetch, push, branch/worktree creation, agents, bootstrap or network commands. Successes and rejected calls MUST preserve original files, ignored data, index bytes, refs, common Git metadata, parent cwd/environment and remove owned temporary storage. Hook-created changes are retained under new:verify-hook-guards. LoadApproval and CheckWorktree MUST also reject unavailable selected required claim/HEAD objects without transport, while unrelated missing bodies/ancestors MUST NOT obstruct otherwise locally available results. Repeated results MUST have independent writable slices/maps and deterministic diagnostic ordering by Path, Code, Severity, Message with exact duplicate diagnostics removed; all nonzero Verification collection fields MUST be non-null, including Findings before JSON omitempty encoding.
+### FLOW-047
+Apart from explicitly configured verification hooks, Verify MUST be local, bounded and noninteractive: no lazy fetch, push, branch/worktree creation, agents, bootstrap or network commands. Successes and rejected calls MUST preserve original files, ignored data, index bytes, refs, common Git metadata, parent cwd/environment and remove owned temporary storage. Hook-created changes are retained under FLOW-046. LoadApproval and CheckWorktree MUST also reject unavailable selected required claim/HEAD objects without transport, while unrelated missing bodies/ancestors MUST NOT obstruct otherwise locally available results. Repeated results MUST have independent writable slices/maps and deterministic diagnostic ordering by Path, Code, Severity, Message with exact duplicate diagnostics removed; all nonzero Verification collection fields MUST be non-null, including Findings before JSON omitempty encoding.
 
 ## Decisions
 
@@ -43,6 +45,15 @@ Use the existing public guards and hook/evidence engine, retaining their exact d
 
 The bootstrap reference uses substring containment for passing audit IDs; precise ID matching follows the design's spec token identity and prevents ALP-0010 from certifying ALP-001. Public APIs do not require reconstructing a whole unrelated claim inventory for an explicit selector. Ordinary reference comparison is permitted here; no regeneration drill is active.
 
+EVALS start assigns FLOW-041–047/runf9347464cbe4af07a1cd7b49 and reports the normal P04 unmerged warning, using the user's local goal authority without claiming a human merge. Only the declared public facade/new retained types, new eval files and a new compiling disposable stub are added; every existing non-API workflow source file remains byte-identical. Initial compilation found a new helper type mismatch and was corrected before behavioral execution; compile failure is not fail-first evidence. The first calibration independently reproduces16 genuine selected-claim/moved-HEAD transport leaves with unrelated controls passing, but finds a missing required Motivation in the new earlier-queue fixture. Correct that fixture before running complete fail-first and formal audit; no runtime product behavior or existing eval is edited.
+
+
+Pre-freeze calibration corrected only new evals: public coverage accepts a nonzero hook with genuine executed failures; effective graph diagnostics may retain their native corrective location; cancellation and post-hook checks compare full available evidence. Added native controls prove invalid-selector no-I/O, selected-object transport, configured callback, and Git operation observer liveness. Git Trace2 is paired with a same-PID exec recorder for cwd/canonical metadata, permitting owned bare-view setup while detecting caller branch/push/commit/worktree operations, including nested cwd, symlink aliases, literal option operands and send-pack. Restricted separate auditor /root/audit_start_cli reports No findings for FLOW-041–047 and fixes FLOW-015/FLOW-023 after these corrections. This is pre-freeze source review only; formal Audit follows accepted EVALS. Two interrupted earlier full verification runs used obsolete observer source and are excluded. No existing non-API implementation/eval was changed.
+
 ## Rejected alternatives
 
 Loading the dirty current project before approval can redirect hooks or permissions. Running hooks after failed guards can execute unauthorized configuration. Treating a failing-before report as a Go compile failure provides no ID-linked evidence. Repairing hook edits or committing during Verify would violate the manual iteration contract.
+
+## Provenance
+
+- evals | 2026-10-24T06:09:07Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2115 | failing: 181 | passing: 1934

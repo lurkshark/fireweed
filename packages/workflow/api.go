@@ -2,6 +2,7 @@
 package workflow
 
 import (
+	"context"
 	"github.com/lurkshark/fireweed/packages/checks"
 	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/gitstore"
@@ -14,6 +15,7 @@ import (
 	"github.com/lurkshark/fireweed/packages/workflow/internal/policy"
 	manualstart "github.com/lurkshark/fireweed/packages/workflow/internal/start"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/state"
+	"github.com/lurkshark/fireweed/packages/workflow/internal/verification"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/worktree"
 	"github.com/lurkshark/fireweed/packages/workflow/model"
 )
@@ -68,3 +70,10 @@ func ApprovalMatches(module contracts.Module, baseText, currentText, path string
 type StartResult = model.StartResult
 
 func Start(start, slug string) (StartResult, error) { return manualstart.Start(start, slug) }
+
+type Verification = model.Verification
+type Finding = model.Finding
+
+func Verify(ctx context.Context, start, slug string) (Verification, error) {
+	return verification.Verify(ctx, start, slug)
+}
