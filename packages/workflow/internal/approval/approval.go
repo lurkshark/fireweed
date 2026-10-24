@@ -18,6 +18,15 @@ func problem(code, format string, args ...any) error {
 }
 
 func Load(start, slug string) (project.Snapshot, model.Claim, error) {
+	return load(start, slug, false)
+}
+
+// LoadHeld restores only committed claim authority, without an unclaimed fallback.
+func LoadHeld(start, slug string) (project.Snapshot, model.Claim, error) {
+	return load(start, slug, true)
+}
+
+func load(start, slug string, required bool) (project.Snapshot, model.Claim, error) {
 	zero, noClaim := project.Snapshot{}, model.Claim{}
 	if !claims.ValidSlug(slug) {
 		return zero, noClaim, problem("C05", "invalid exact change selector %q", slug)
@@ -29,6 +38,9 @@ func Load(start, slug string) (project.Snapshot, model.Claim, error) {
 	claim, present, err := claims.Lookup(repo.Root, slug)
 	if err != nil {
 		return zero, noClaim, problem("P02", "cannot inspect the selected approval: %v", err)
+	}
+	if required && !present {
+		return zero, noClaim, problem("P02", "change %s has no held claim", slug)
 	}
 	var source project.Snapshot
 	if present {

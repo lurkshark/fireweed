@@ -260,13 +260,13 @@ func Lookup(start, slug string) (model.Claim, bool, error) {
 	if err := s.direct(slug); err != nil {
 		return zero, true, err
 	}
-	r := s.capture("show-ref", "--verify", "--quiet", prefix+slug)
+	r := s.capture("rev-parse", "--verify", "--quiet", "--end-of-options", prefix+slug)
 	if r.Exit == 1 && s.ctx.Err() == nil {
 		return zero, false, nil
 	}
 	if r.Exit != 0 || r.Err != nil {
 		// Preserve the ordinary loader's specific payload/object error when an
-		// existing broken ref also makes show-ref fail. Never turn that failure
+		// existing broken ref also makes raw name resolution fail. Never turn that failure
 		// into permission to inspect current worker metadata.
 		if _, loadErr := s.load(slug); loadErr != nil {
 			return zero, true, loadErr

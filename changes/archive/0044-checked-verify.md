@@ -3,7 +3,7 @@ fixes:
     - FLOW-015
     - FLOW-023
 module: workflow
-phase: impl
+phase: applied
 run: f9347464cbe4af07a1cd7b49
 ---
 
@@ -55,6 +55,8 @@ Formal independent Audit after EVALS6aea37e found six assertion gaps; controller
 
 After implementation exposed two oracle defects independently confirmed by /root/audit_checked_verify_final, four private candidate files were hash-preserved outside the checkout, the owned claim released, and only the latest Audit phase commit reverted at an author boundary. The resumed Audit records both actual findings and controller Done returns to EVALS. Correct only new Verify eval helpers: recognize valid corrective actions with positive/negative controls and have a controlled observer record the exact fresh report identity before the missing executable fails. Preserve full public coverage/diagnostic/output/exit equality and all semantic checks; leave legacy evals, public interfaces and product implementation unchanged. Protected reporter completeness and bounded45m collection budget were separately calibrated/committed1085f2c while unclaimed. No shared evidence API change is needed.
 
+Implementation retains the existing unclaimed public LoadApproval view while using a private required-held mode through the same loader for Verify. Resolve the exact selected ref and HEAD as raw local object names before the existing availability/approval checks; do not peel unavailable objects just to compare identity. Compose one inclusive approved projection with full static validation and both pre/post worktree guards. Coverage remains exact public Evaluate evidence; only top-level verification diagnostics are sorted/deduplicated. Audit filtering uses eligible target bodies, preserves original finding lines/order, and rejects empty clauses or reasons. Standard context errors retain collected evidence, and no verification path advances workflow state or repairs hook edits.
+
 ## Rejected alternatives
 
 Loading the dirty current project before approval can redirect hooks or permissions. Running hooks after failed guards can execute unauthorized configuration. Treating a failing-before report as a Go compile failure provides no ID-linked evidence. Repairing hook edits or committing during Verify would violate the manual iteration contract.
@@ -67,6 +69,7 @@ Loading the dirty current project before approval can redirect hooks or permissi
 - audit | 2026-10-24T15:55:24Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-24T16:35:20Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2146 | failing: 189 | passing: 1957
 - audit | 2026-10-24T16:37:53Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- impl | 2026-10-24T17:20:02Z | agent: manual | fireweed: 0.4.0 | playbook: 653912b194316c62181f62d0a69dc213f7668481ea8b1b9926ef889dd48a9e08 | tests: 2622 | failing: 0 | passing: 2622
 
 ## Audit
 

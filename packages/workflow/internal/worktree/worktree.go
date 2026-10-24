@@ -45,8 +45,8 @@ func Check(snapshot project.Snapshot, module contracts.Module, path string, clai
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	head := gitstore.Run(ctx, repo.Root, []string{"git", "rev-parse", "--verify", "HEAD^{commit}"}, []string{"GIT_TERMINAL_PROMPT=0", "GIT_OPTIONAL_LOCKS=0"})
-	if head.Err != nil || head.Exit != 0 || strings.TrimSpace(head.Output) != claim.Base {
+	head := gitstore.Capture(ctx, repo.Root, []string{"git", "rev-parse", "--verify", "--end-of-options", "HEAD"}, []string{"GIT_TERMINAL_PROMPT=0", "GIT_OPTIONAL_LOCKS=0", "GIT_NO_LAZY_FETCH=1", "GIT_NO_REPLACE_OBJECTS=1"})
+	if head.Err != nil || head.Exit != 0 || strings.TrimSpace(head.Stdout) != claim.Base {
 		return precondition("HEAD no longer equals the approved step baseline")
 	}
 	// Current text is useful even if collecting edits subsequently fails. Containment
