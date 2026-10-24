@@ -1,6 +1,6 @@
 ---
 module: app
-phase: audit
+phase: evals
 run: 4b80bb9e3717387331cca96a
 ---
 
@@ -43,3 +43,10 @@ Reloading the dirty current project can replace committed approval or fail befor
 ## Provenance
 
 - evals | 2026-10-24T18:43:53Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 571 | failing: 63 | passing: 508
+- audit | 2026-10-24T18:49:02Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+- APP-026: "leading C01/D05 MUST retain their code and exit2, other messages MUST use C01/exit2" — Fatal verify cases exercise only C05/P02 exit1. Add a public-oracle-confirmed C01 discovery failure in plain and JSON modes with complete diagnostic, null data and streams.
+- APP-025: "Approved hooks and dependent policy MUST remain authoritative despite invalid or worker-edited current metadata" — Malformed current YAML is covered but valid current hook commands and verify_dependents overrides are absent. Add conflicting valid current configuration/module overrides and assert approved execution and full evidence.
+- APP-028: "add no file/ignored/outside-content/index/HEAD/branch/ref/claim/common-Git/temp/cwd/environment changes beyond public Verify and output" — The unsafe-current symlink target is outside existing checkout/common-Git/temp snapshots. Snapshot and compare its exact bytes and metadata around rejected calls.
