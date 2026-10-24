@@ -1,6 +1,6 @@
 ---
 module: app
-phase: evals
+phase: audit
 run: 4b80bb9e3717387331cca96a
 ---
 
@@ -40,6 +40,8 @@ The fresh formal Audit after EVALS9ded9528 found three remaining gaps; controlle
 
 A final pre-freeze APP-027 source review found valid help with excess operands missing from precedence assertions. Add plain/JSON long/short help and native before-access cases while retaining invalid-flag precedence. The in-progress corrected Verify was stopped as obsolete and is excluded; rerun the complete final source before phase advance.
 
+Fresh formal Audit after EVALSc1d32187 found one remaining APP-025 gap: ignored caller-side current metadata reads. Controller Audit9193a842 returns through EVALS. The new selective native observer permits legitimate owned verification writes and Git children, denies current config/module content reads in the caller, and retains native stdin/prompt/network controls. Public Verify must first reproduce exact success/rejection evidence under this observer. All six ignored-error controls and five public calibrations pass; actual CLI calls still genuinely fail because the command is absent. The discovery-fault helper also now names its proxy with .exe on Windows; this does not claim Windows runtime execution.
+
 ## Rejected alternatives
 
 Reloading the dirty current project can replace committed approval or fail before returning useful guard evidence. Converting every failed testcase into a command failure would reject legitimate fail-first verification. Dropping structured data on failed checks would hide the evidence needed to fix them. Default Go edit field names would silently change the established CLI wire contract.
@@ -50,6 +52,7 @@ Reloading the dirty current project can replace committed approval or fail befor
 - audit | 2026-10-24T18:49:02Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-24T19:30:05Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 576 | failing: 68 | passing: 508
 - audit | 2026-10-24T19:34:18Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-24T20:09:28Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 603 | failing: 84 | passing: 519
 
 ## Audit
 

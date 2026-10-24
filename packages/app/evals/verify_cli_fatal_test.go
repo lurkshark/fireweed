@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -26,12 +27,16 @@ func cliVerifyDiscoveryFault(t *testing.T, f cliVerifyCase) func() {
 	cfg, _ := json.Marshal(struct{ Real, Counter string }{real, counter})
 	projectPut(t, dir, "fault.json", string(cfg))
 	source := `package main
-import("encoding/json";"fmt";"os";"os/exec";"path/filepath";"strconv";"strings")
+import("encoding/json";"fmt";"os";"os/exec";"path/filepath"
+ "runtime";"strconv";"strings")
 func main(){self,e:=os.Executable();if e!=nil{os.Exit(80)};raw,e:=os.ReadFile(filepath.Join(filepath.Dir(self),"fault.json"));var p struct{Real,Counter string};if e!=nil||json.Unmarshal(raw,&p)!=nil{os.Exit(81)}
  for _,a:=range os.Args[1:]{if a=="--show-toplevel"{raw,_:=os.ReadFile(p.Counter);n,_:=strconv.Atoi(strings.TrimSpace(string(raw)));n++;if os.WriteFile(p.Counter,[]byte(strconv.Itoa(n)),0600)!=nil{os.Exit(82)};if n==2{fmt.Fprintln(os.Stderr,"controlled local approval discovery failure");os.Exit(93)};break}}
  cmd:=exec.Command(p.Real,os.Args[1:]...);cmd.Stdin=os.Stdin;cmd.Stdout=os.Stdout;cmd.Stderr=os.Stderr;if e:=cmd.Run();e!=nil{if x,ok:=e.(*exec.ExitError);ok{os.Exit(x.ExitCode())};os.Exit(83)}}`
 	projectPut(t, dir, "fault.go", source)
 	bin := filepath.Join(dir, "git")
+	if runtime.GOOS == "windows" {
+		bin += ".exe"
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, "go", "build", "-o", bin, filepath.Join(dir, "fault.go"))
