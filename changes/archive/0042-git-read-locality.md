@@ -2,7 +2,7 @@
 fixes:
     - GIT-002
 module: gitstore
-phase: impl
+phase: applied
 run: 43bb6e51f2e637a7c66afc35
 ---
 
@@ -45,6 +45,12 @@ Final complete fresh-cycle verification runs238 records in86.538s with51 failure
 
 Independent native split-index controls show core.fsmonitor=false is interpreted as an external false command on installed Git2.30.1, while an empty value suppresses callbacks and retains the exact native shared-index path. Any implementation choice must actually prevent callbacks rather than rely on modern boolean interpretation. This native experiment changes no eval/product source. EVALS done must repeat full enforcement before fresh formal audit.
 
+After fresh formal audit, restore only the two SHA-256-verified disposable candidate files and suppress the original shared-index metadata callback plus owned-view monitor via the independently verified empty configuration value. The238-case frozen evals/interface remain unchanged. The new17-case configured-monitor matrix passes in10.452s, including nonempty available edits and all rejection paths; vet/whitespace pass. Effective built-in config, original object storage, existing ref identities, contained metadata, selected index/shared-index, attributes/excludes and shallow/graft context supply native comparisons without promisor fetch settings. Original configuration/index/refs/files remain unmodified; owned view storage is removed on every path. Full own/dependent verification and a fresh scoped race run on this corrected source are still pending.
+
+An ordinary public compatibility probe during full verification confirms a candidate bug on the host's case-insensitive filesystem: valid packed tags topic and TOPIC select distinct commits natively, but mirroring them as loose ref files merges their names and returns the older diff for TOPIC. Stop and exclude that incomplete verify; keep the fresh238-case frozen eval/audit unchanged. Preserve existing ref identities in a sorted owned packed-refs representation instead of loose filenames, without creating a new branch identity or modifying original refs. Rerun the independent native/public selection probe and complete exact-source verification before application. This is an implementation correction within the existing valid-single-commit/tag contract, not an eval/contract weakening.
+
+The same public/native compatibility probe confirms reflog selectors HEAD@{1}, main@{1}, symbolic upstream/HEAD@{1}, and ORIG_HEAD require their existing local metadata. Preserve symbolic aliases, selected-worktree pseudorefs and requested reflog context in the owned view. All six native/public comparisons now agree, including case-distinct packed tags. These are private implementation corrections; frozen238-case evals/API and formal Audit remain unchanged. Prior interrupted full verifications are excluded. Fresh exact-source race and complete controller verification are required.
+
 ## Rejected alternatives
 
 An environment hint or failed network request after the fact does not prevent fetch. Requiring all repository objects would reject the demonstrated valid comparisons. Returning a local branch after a broken preferred tracking target changes the configured base. Weakening frozen dependent/native evals, losing built-in comparison behavior, editing another module or calling the bootstrap to implement the product would hide rather than repair the problem.
@@ -53,6 +59,7 @@ An environment hint or failed network request after the fact does not prevent fe
 
 - evals | 2026-10-23T23:12:36Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 238 | failing: 51 | passing: 187
 - audit | 2026-10-23T23:14:02Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- impl | 2026-10-24T00:15:08Z | agent: manual | fireweed: 0.4.0 | playbook: 653912b194316c62181f62d0a69dc213f7668481ea8b1b9926ef889dd48a9e08 | tests: 3317 | failing: 0 | passing: 3317
 
 ## Audit
 

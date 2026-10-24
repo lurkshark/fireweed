@@ -99,7 +99,7 @@ func Base(root, base, remote string) (string, error) {
 		return "", err
 	}
 	tracking := "refs/remotes/" + remote + "/" + base
-	if _, err := git(root, "show-ref", "--verify", "--quiet", tracking); err == nil {
+	if _, err := git(root, "rev-parse", "--verify", "--quiet", "--end-of-options", tracking); err == nil {
 		return tracking, nil
 	}
 	return local, nil
@@ -115,11 +115,16 @@ func Edits(root, base string) ([]Edit, error) {
 	if base == "" {
 		return nil, fmt.Errorf("explicit base commit required")
 	}
-	oid, err := git(root, "rev-parse", "--verify", "--end-of-options", base+"^{commit}")
+	view, err := newReadView(root, base)
 	if err != nil {
 		return nil, err
 	}
-	data, err := git(root, "diff", "--name-status", "-z", "--find-renames", "--no-ext-diff", "--no-textconv", strings.TrimSpace(string(oid)), "--")
+	defer view.close()
+	oid, err := view.git("rev-parse", "--verify", "--end-of-options", base+"^{commit}")
+	if err != nil {
+		return nil, err
+	}
+	data, err := view.git("diff", "--name-status", "-z", "--find-renames", "--no-ext-diff", "--no-textconv", strings.TrimSpace(string(oid)), "--")
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +148,7 @@ func Edits(root, base string) ([]Edit, error) {
 		}
 		result = append(result, entry)
 	}
-	untracked, err := git(root, "ls-files", "--others", "--exclude-standard", "-z")
+	untracked, err := view.git("ls-files", "--others", "--exclude-standard", "-z")
 	if err != nil {
 		return nil, err
 	}
