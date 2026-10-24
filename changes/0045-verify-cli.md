@@ -1,6 +1,6 @@
 ---
 module: app
-phase: audit
+phase: evals
 run: 4b80bb9e3717387331cca96a
 ---
 
@@ -57,7 +57,8 @@ Reloading the dirty current project can replace committed approval or fail befor
 - evals | 2026-10-24T20:09:28Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 603 | failing: 84 | passing: 519
 - audit | 2026-10-24T20:11:34Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-24T20:39:51Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 604 | failing: 84 | passing: 520
+- audit | 2026-10-24T20:42:09Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- APP-026: "leading C01/D05 MUST retain their code and exit2" — The generated C01 fault.go imports runtime without using it, so its helper build fails before public calibration and JSON/plain fatal-C01 assertions. Remove the embedded unused import and rerun real C01 calibration and CLI assertions.
+- APP-026: "Hook stdout/stderr MUST remain solely in Coverage.Output." — Plain structured-failure and post-hook mutation assertions check diagnostic code/path presence but do not reject additional copied Coverage.Output on stderr. Add live stdout/stderr hook marker assertions for plain rejected calls, retaining complete data and diagnostics.
