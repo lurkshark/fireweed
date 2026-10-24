@@ -394,6 +394,7 @@ func cliVerifyOutside(t *testing.T, f cliVerifyCase) map[string]map[string]strin
 
 func cliVerifyReadonly(t *testing.T, f cliVerifyCase, run func()) {
 	t.Helper()
+	defer cliVerifyRestoreObserverEnv()()
 	scratch, e := filepath.EvalSymlinks(t.TempDir())
 	if e != nil {
 		t.Fatal(e)

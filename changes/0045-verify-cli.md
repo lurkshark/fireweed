@@ -1,6 +1,6 @@
 ---
 module: app
-phase: evals
+phase: audit
 run: 4b80bb9e3717387331cca96a
 ---
 
@@ -56,6 +56,8 @@ The same pre-freeze review found failed-writer recovery paths lacked live stdin/
 
 Final pre-freeze writer review found supplied buffers and complete error-path effects still unchecked. Preserve supplied writer buffers, require silent JSON stderr and exact pretty public data when plain stdout is emitted (empty stdout is allowed after an earlier diagnostic writer error), and compare every writer path against twice-executed public effects with six named public controls. Complete root/ignored/common-Git/temp/outside snapshots and existing exact hook-call observer apply after output failure, retaining configured mutations. No implementation has been added.
 
+Implementation validation exposed a real observer defect: repeated cliVerifyReadonly calls retained environment-based Git recorders and could recurse through a proxy cycle. Fresh independent reviewer confirmed APP-028 overconstraint and missing repeated-public calibration. Preserve the two private implementation files with hashes, stop only the affected focused tree (exit143), restore them, release our claim, and make the safe author Audit-only revertd6706e1. Resume Audit; actual finding controller commit7f407e1 returns EVALS. Restore exactly helper-owned environment keys on every readonly-helper return and add repeated successful, pre-hook rejected and C01-fatal public Verify controls under that same observer and existing five-second bound. The earlier644 fail-first counts remain genuine absent-command evidence but are superseded for successful helper calibration; the stopped impl report proves no product failure. No frozen eval was edited in impl.
+
 ## Rejected alternatives
 
 Reloading the dirty current project can replace committed approval or fail before returning useful guard evidence. Converting every failed testcase into a command failure would reject legitimate fail-first verification. Dropping structured data on failed checks would hide the evidence needed to fix them. Default Go edit field names would silently change the established CLI wire contract.
@@ -72,6 +74,7 @@ Reloading the dirty current project can replace committed approval or fail befor
 - audit | 2026-10-24T20:42:09Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-24T22:14:43Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 644 | failing: 100 | passing: 544
 - audit | 2026-10-24T22:23:37Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-24T23:00:27Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 648 | failing: 100 | passing: 548
 
 ## Audit
 

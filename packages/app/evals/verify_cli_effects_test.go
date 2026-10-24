@@ -198,3 +198,26 @@ func cliVerifyFatalPlain(t *testing.T, got result, code, message string, exit in
 		t.Error("fatal discovery plain classification/streams", e, got)
 	}
 }
+
+// Scope observer settings to one observation, rather than the enclosing test.
+// A previous environment-based recorder must never become the next proxy's target.
+func cliVerifyRestoreObserverEnv() func() {
+	type value struct {
+		key, value string
+		exists     bool
+	}
+	old := []value{}
+	for _, key := range []string{"TMPDIR", "TMP", "TEMP", "PATH", "FIREWEED_BIN", "GIT_TRACE2_EVENT", "GIT_TRACE2_ENV_VARS", "FW_VERIFY_REAL_GIT", "FW_VERIFY_GIT_LOCATIONS"} {
+		v, ok := os.LookupEnv(key)
+		old = append(old, value{key, v, ok})
+	}
+	return func() {
+		for _, v := range old {
+			if v.exists {
+				os.Setenv(v.key, v.value)
+			} else {
+				os.Unsetenv(v.key)
+			}
+		}
+	}
+}
