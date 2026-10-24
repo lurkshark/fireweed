@@ -3,7 +3,7 @@ fixes:
     - FLOW-015
     - FLOW-023
 module: workflow
-phase: audit
+phase: impl
 run: f9347464cbe4af07a1cd7b49
 ---
 
@@ -62,12 +62,10 @@ Loading the dirty current project before approval can redirect hooks or permissi
 - evals | 2026-10-24T06:09:07Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2115 | failing: 181 | passing: 1934
 - audit | 2026-10-24T06:14:58Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-24T15:35:06Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2130 | failing: 189 | passing: 1941
+- audit | 2026-10-24T15:41:13Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- FLOW-041: "the unique claim owned by this checkout when slug is empty" — No assertion selects with an empty slug while one local claim and an unrelated valid foreign-owned claim coexist. Counting all shared claims instead of filtering by canonical ownership could pass.
-- FLOW-042: "It MUST validate the resulting effective project and dependency graph before executing hooks." — The invalid approved-project case only introduces a missing dependency. No assertion introduces an effective static violation such as overlapping eval/disposable zones and requires its public diagnostic with zero hook calls.
-- FLOW-046: "retaining independent pre-hook and coverage diagnostics" — Hook-running fixtures do not supply an independent pre-hook warning and assert that it survives alongside coverage and post-hook diagnostics. An approved public D04 warning would distinguish preservation from replacing pre-hook diagnostics after execution.
-- FLOW-046: "move/reset/stage HEAD/index" — The native operation classifier does not recognize add, reset or index-writing commands. Final byte comparisons cannot detect staging followed by restoration of the original index. Add live caller-index controls while permitting legitimate owned temporary metadata.
-- FLOW-047: "Repeated results MUST have independent writable slices/maps" — Ownership assertions mutate testcase Failures but never Errors. Appending only to the first result’s empty collections cannot expose shared zero-length backing storage; add nonempty Errors and two-sided append/mutation assertions.
-- FLOW-047: "Verify MUST be local, bounded and noninteractive" — Successful and structured-rejection Verify calls have no live stdin/prompt observer; native Verify no-I/O currently covers only invalid selectors. Add post-startup stdin/prompt controls around successful and rejected selections.
+No findings. Checked FLOW-041, FLOW-042, FLOW-043, FLOW-044, FLOW-045, FLOW-046, FLOW-047, FLOW-015, FLOW-023.
+
+Fresh restricted source-only auditor /root/audit_checked_verify_final checked the strengthened frozen evals against the permitted public contracts and all seven Added clauses plus both fixes. The six earlier assertion gaps are covered, including live caller-index operation controls and post-startup stdin/prompt observation. No implementation/history/bootstrap/evidence inspection, edits, tests, product execution or Git/controller commands by the auditor.
