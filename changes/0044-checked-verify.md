@@ -3,7 +3,7 @@ fixes:
     - FLOW-015
     - FLOW-023
 module: workflow
-phase: evals
+phase: audit
 run: f9347464cbe4af07a1cd7b49
 ---
 
@@ -53,6 +53,8 @@ Pre-freeze calibration corrected only new evals: public coverage accepts a nonze
 
 Formal independent Audit after EVALS6aea37e found six assertion gaps; controller commitc110851 records them and returns to EVALS. New permanent regressions assert implicit ownership filtering with a valid foreign claim, native static projection rejection before hooks, approved D04 warning retention beside coverage/post-hook failures, nonempty Errors storage, two-sided empty-collection writes and post-startup stdin/prompt behavior on success/rejection. Native Git controls now observe real transient caller-index staging and resets while permitting owned index and metadata setup. Actual cmd_mode distinguishes path-only resets from full HEAD resets, including empty/nonempty pathspec files; both caller/owned storage combinations are live. After correcting one additional reset-scope oracle issue, restricted pre-freeze re-review reports No findings for all seven Added and both fixes IDs. This still requires a fresh complete EVALS freeze and subsequent formal Audit; product implementation remains untouched.
 
+After implementation exposed two oracle defects independently confirmed by /root/audit_checked_verify_final, four private candidate files were hash-preserved outside the checkout, the owned claim released, and only the latest Audit phase commit reverted at an author boundary. The resumed Audit records both actual findings and controller Done returns to EVALS. Correct only new Verify eval helpers: recognize valid corrective actions with positive/negative controls and have a controlled observer record the exact fresh report identity before the missing executable fails. Preserve full public coverage/diagnostic/output/exit equality and all semantic checks; leave legacy evals, public interfaces and product implementation unchanged. Protected reporter completeness and bounded45m collection budget were separately calibrated/committed1085f2c while unclaimed. No shared evidence API change is needed.
+
 ## Rejected alternatives
 
 Loading the dirty current project before approval can redirect hooks or permissions. Running hooks after failed guards can execute unauthorized configuration. Treating a failing-before report as a Go compile failure provides no ID-linked evidence. Repairing hook edits or committing during Verify would violate the manual iteration contract.
@@ -63,6 +65,7 @@ Loading the dirty current project before approval can redirect hooks or permissi
 - audit | 2026-10-24T06:14:58Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-24T15:35:06Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2130 | failing: 189 | passing: 1941
 - audit | 2026-10-24T15:55:24Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-24T16:35:20Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2146 | failing: 189 | passing: 1957
 
 ## Audit
 

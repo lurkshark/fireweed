@@ -25,7 +25,7 @@ import (
 // The external tool is a deterministic project hook, not an agent or controller.
 const verifyToolSource = `package main
 import("encoding/json";"fmt";"os";"path/filepath";"strconv";"os/exec";"strings";"time")
-func main(){if marker:=os.Getenv("FW_VERIFY_FORBIDDEN_MARKER");marker!=""&&strings.TrimSuffix(filepath.Base(os.Args[0]),".exe")!="hook"{os.WriteFile(marker,[]byte("forbidden command"),0600);os.Exit(95)};if len(os.Args)!=5{os.Exit(95)};kind,module,report,plan:=os.Args[1],os.Args[2],os.Args[3],os.Args[4];root,_:=os.Getwd();rec,_:=json.Marshal(map[string]string{"kind":kind,"module":module,"root":root,"report":report,"envmodule":os.Getenv("FIREWEED_MODULE"),"bin":os.Getenv("FIREWEED_BIN")});f,e:=os.OpenFile(filepath.Join(plan,"calls"),os.O_CREATE|os.O_APPEND|os.O_WRONLY,0600);if e!=nil{os.Exit(96)};f.Write(append(rec,'\n'));f.Close();key:=module;if kind=="boundary"{key="boundary"};if delay,e:=os.ReadFile(filepath.Join(plan,key+".hold"));e==nil{fmt.Println("hook-ready:"+module);d,_:=time.ParseDuration(strings.TrimSpace(string(delay)));os.WriteFile(filepath.Join(plan,key+".ready"),[]byte("ready"),0600);time.Sleep(d);os.WriteFile(filepath.Join(plan,key+".late"),[]byte("late"),0600)};if data,e:=os.ReadFile(filepath.Join(plan,key+".mutation"));e==nil{var m map[string]string;if json.Unmarshal(data,&m)!=nil{os.Exit(97)};for name,text:=range m{os.MkdirAll(filepath.Dir(name),0755);if os.WriteFile(name,[]byte(text),0644)!=nil{os.Exit(98)}}};if data,e:=os.ReadFile(filepath.Join(plan,key+".gitargs"));e==nil{var args []string;if json.Unmarshal(data,&args)!=nil{os.Exit(94)};cmd:=exec.Command("git",args...);if out,e:=cmd.CombinedOutput();e!=nil{fmt.Print(string(out));os.Exit(93)}};if kind=="eval"{data,e:=os.ReadFile(filepath.Join(plan,module+".xml"));if e==nil{if os.WriteFile(report,data,0600)!=nil{os.Exit(99)}};fmt.Println("eval-output:"+module)}else{if data,e:=os.ReadFile(filepath.Join(plan,"boundary.output"));e==nil{fmt.Print(string(data))}};code:=0;if data,e:=os.ReadFile(filepath.Join(plan,key+".exit"));e==nil{code,_=strconv.Atoi(strings.TrimSpace(string(data)))};os.Exit(code)}
+func main(){if marker:=os.Getenv("FW_VERIFY_FORBIDDEN_MARKER");marker!=""&&strings.TrimSuffix(filepath.Base(os.Args[0]),".exe")!="hook"{os.WriteFile(marker,[]byte("forbidden command"),0600);os.Exit(95)};if len(os.Args)!=5{os.Exit(95)};kind,module,report,plan:=os.Args[1],os.Args[2],os.Args[3],os.Args[4];root,_:=os.Getwd();rec,_:=json.Marshal(map[string]string{"kind":kind,"module":module,"root":root,"report":report,"envmodule":os.Getenv("FIREWEED_MODULE"),"bin":os.Getenv("FIREWEED_BIN")});f,e:=os.OpenFile(filepath.Join(plan,"calls"),os.O_CREATE|os.O_APPEND|os.O_WRONLY,0600);if e!=nil{os.Exit(96)};f.Write(append(rec,'\n'));f.Close();if kind=="observe"{return};key:=module;if kind=="boundary"{key="boundary"};if delay,e:=os.ReadFile(filepath.Join(plan,key+".hold"));e==nil{fmt.Println("hook-ready:"+module);d,_:=time.ParseDuration(strings.TrimSpace(string(delay)));os.WriteFile(filepath.Join(plan,key+".ready"),[]byte("ready"),0600);time.Sleep(d);os.WriteFile(filepath.Join(plan,key+".late"),[]byte("late"),0600)};if data,e:=os.ReadFile(filepath.Join(plan,key+".mutation"));e==nil{var m map[string]string;if json.Unmarshal(data,&m)!=nil{os.Exit(97)};for name,text:=range m{os.MkdirAll(filepath.Dir(name),0755);if os.WriteFile(name,[]byte(text),0644)!=nil{os.Exit(98)}}};if data,e:=os.ReadFile(filepath.Join(plan,key+".gitargs"));e==nil{var args []string;if json.Unmarshal(data,&args)!=nil{os.Exit(94)};cmd:=exec.Command("git",args...);if out,e:=cmd.CombinedOutput();e!=nil{fmt.Print(string(out));os.Exit(93)}};if kind=="eval"{data,e:=os.ReadFile(filepath.Join(plan,module+".xml"));if e==nil{if os.WriteFile(report,data,0600)!=nil{os.Exit(99)}};fmt.Println("eval-output:"+module)}else{if data,e:=os.ReadFile(filepath.Join(plan,"boundary.output"));e==nil{fmt.Print(string(data))}};code:=0;if data,e:=os.ReadFile(filepath.Join(plan,key+".exit"));e==nil{code,_=strconv.Atoi(strings.TrimSpace(string(data)))};os.Exit(code)}
 `
 
 func verifyTool(t *testing.T) string {
@@ -240,7 +240,7 @@ func verifyNoErrors(t *testing.T, ds []k.Diagnostic) {
 func verifyCode(t *testing.T, v w.Verification, code, path string) {
 	t.Helper()
 	for _, d := range v.Diagnostics {
-		if d.Code == code && (path == "" || d.Path == path) && d.Severity == "error" && policyCorrective(d.Message) {
+		if d.Code == code && (path == "" || d.Path == path) && d.Severity == "error" && verifyCorrective(d.Message) {
 			return
 		}
 	}
@@ -327,7 +327,7 @@ func Test_FLOW041VerifySelection(t *testing.T) {
 	}
 	for _, slug := range []string{"UPPER", "a/b", "-a", "a b", "a\n"} {
 		v, e := w.Verify(context.Background(), "/nonexistent/verification-repo", slug)
-		if !reflect.DeepEqual(v, w.Verification{}) || e == nil || !strings.Contains(e.Error(), "C05") || !policyCorrective(e.Error()) {
+		if !reflect.DeepEqual(v, w.Verification{}) || e == nil || !strings.Contains(e.Error(), "C05") || !verifyCorrective(e.Error()) {
 			t.Errorf("invalid selector %q %+v %v", slug, v, e)
 		}
 	}
@@ -364,7 +364,7 @@ func Test_FLOW041VerifyClaimRejections(t *testing.T) {
 			files := startTree(t, f.Root)
 			meta := claimTree(t, claimCommon(t, f.Root), func(string) bool { return false })
 			v, e := w.Verify(context.Background(), f.Root, slug)
-			if !reflect.DeepEqual(v, w.Verification{}) || e == nil || !strings.Contains(e.Error(), "P02") || !policyCorrective(e.Error()) {
+			if !reflect.DeepEqual(v, w.Verification{}) || e == nil || !strings.Contains(e.Error(), "P02") || !verifyCorrective(e.Error()) {
 				t.Errorf("claim rejection %+v %v", v, e)
 			}
 			if len(verifyCalls(t, f.Plan)) != 0 || !reflect.DeepEqual(files, startTree(t, f.Root)) || !reflect.DeepEqual(meta, claimTree(t, claimCommon(t, f.Root), func(string) bool { return false })) {
@@ -447,7 +447,7 @@ func Test_FLOW042VerifyGuardsBeforeHooks(t *testing.T) {
 				if mode == "invalid-graph" {
 					found := false
 					for _, d := range v.Diagnostics {
-						if (d.Code == "C05" || d.Code == "C06") && d.Severity == "error" && policyCorrective(d.Message) && strings.Contains(d.Message, "missing") {
+						if (d.Code == "C05" || d.Code == "C06") && d.Severity == "error" && verifyCorrective(d.Message) && strings.Contains(d.Message, "missing") {
 							found = true
 						}
 					}

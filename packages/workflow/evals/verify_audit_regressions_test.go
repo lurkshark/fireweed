@@ -338,3 +338,88 @@ func Test_FLOW047VerifyNoninteractiveStdio(t *testing.T) {
 		})
 	}
 }
+
+// A corrective action is semantic guidance, not a prescribed verb vocabulary.
+// Keep the older policy fixtures unchanged while calibrating Verify's oracle.
+func verifyCorrective(message string) bool {
+	if policyCorrective(message) {
+		return true
+	}
+	lower := strings.ToLower(message)
+	for _, action := range []string{"add ", "configure ", "declare ", "implement ", "repair "} {
+		if strings.Contains(lower, action) {
+			return true
+		}
+	}
+	return false
+}
+
+func Test_FLOW043VerifyCorrectiveGuidanceControls(t *testing.T) {
+	for _, message := range []string{
+		"ALP-001 has failing evals; implement its required behavior without weakening the tests.",
+		"Cannot complete eval hook: context deadline exceeded. Repair hook configuration or cancellation before trusting its report.",
+		"Cannot read the fresh JUnit report. Configure the eval hook to write the supplied report path.",
+		"Dependency missing is missing; declare an existing module.",
+		"ALP-007 must have an executed failing eval before implementation; add a regression that fails against existing behavior.",
+		"Restore the approved state.", "Use the queued slug.", "Remove the unsupported field.", "Resolve Questions before retrying.",
+	} {
+		t.Run(message, func(t *testing.T) {
+			if !verifyCorrective(message) {
+				t.Error("valid corrective guidance rejected")
+			}
+		})
+	}
+	for _, message := range []string{"", " ", "error", "C11 failed", "ALP-001 missing evidence"} {
+		t.Run("reject-"+message, func(t *testing.T) {
+			if verifyCorrective(message) {
+				t.Error("missing corrective guidance accepted")
+			}
+		})
+	}
+}
+
+func Test_FLOW043VerifyLaunchReportObserverControl(t *testing.T) {
+	tool := verifyTool(t)
+	f := verifyFixture(t, tool, "evals", "all", "sha1", false)
+	doc := f.Change.Document
+	doc.Metadata["set"].(map[string]any)["hooks"] = map[string]any{"eval": verifyCommand(tool, "observe", f.Plan) + " && " + claimQuote(filepath.Join(f.Plan, "missing-hook-executable"))}
+	raw, err := c.RenderMarkdown(doc)
+	if err != nil {
+		t.Fatal(err)
+	}
+	verifyReseed(t, &f, raw)
+	snapshot := verifyInclusive(t, f)
+	a := k.Evaluate(context.Background(), snapshot, f.Module, []string{f.Change.Added[0].ID}, nil)
+	b := k.Evaluate(context.Background(), snapshot, f.Module, []string{f.Change.Added[0].ID}, nil)
+	calls := verifyCalls(t, f.Plan)
+	if len(calls) != 2 {
+		t.Fatalf("missing exact report observations: %+v", calls)
+	}
+	if calls[0].Report == calls[1].Report {
+		t.Fatal("public fresh report identities were reused")
+	}
+	for _, call := range calls {
+		if call.Kind != "observe" || !filepath.IsAbs(call.Report) {
+			t.Fatal("invalid observation", call)
+		}
+		if _, err := os.Stat(filepath.Dir(call.Report)); !os.IsNotExist(err) {
+			t.Fatal("owned report storage survived", call.Report, err)
+		}
+	}
+	for _, cov := range []k.Coverage{a, b} {
+		if cov.HookExit != 127 || len(cov.Tests) != 0 || len(cov.BySpec) != 0 || !strings.Contains(cov.Output, "missing-hook-executable") || len(cov.Diagnostics) != 1 || cov.Diagnostics[0].Code != "C11" {
+			t.Fatal("missing-executable public failure control", cov)
+		}
+	}
+	normalizedA, normalizedB := verifyNormalizeCoverage(t, f, a), verifyNormalizeCoverage(t, f, b)
+	if !reflect.DeepEqual(normalizedA, normalizedB) {
+		t.Fatal("exact observed-report normalization changed semantic evidence", normalizedA, normalizedB)
+	}
+	// Evidence outside the observed report identity must remain significant.
+	changed := b
+	changed.Diagnostics = append([]k.Diagnostic{}, b.Diagnostics...)
+	changed.Diagnostics[0].Message += " distinct diagnostic"
+	if reflect.DeepEqual(normalizedA, verifyNormalizeCoverage(t, f, changed)) {
+		t.Fatal("normalization erased meaningful diagnostic text")
+	}
+}

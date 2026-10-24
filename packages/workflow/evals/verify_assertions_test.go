@@ -338,7 +338,7 @@ func Test_FLOW041_FLOW047VerifyFatalSelectionPreservesAllState(t *testing.T) {
 			}
 			verifyReadOnly(t, f, func() {
 				v, e := w.Verify(context.Background(), f.Root, slug)
-				if !reflect.DeepEqual(v, w.Verification{}) || e == nil || !strings.Contains(e.Error(), code) || !policyCorrective(e.Error()) {
+				if !reflect.DeepEqual(v, w.Verification{}) || e == nil || !strings.Contains(e.Error(), code) || !verifyCorrective(e.Error()) {
 					t.Error("fatal selection result", v, e)
 				}
 			})
@@ -455,7 +455,7 @@ func Test_FLOW047VerifyMissingObjectLocality(t *testing.T) {
 							v, e := w.Verify(context.Background(), f.Root, "current")
 							claimLocalNoFetch(t, marker, trace)
 							if kind == "selected-claim" {
-								if !reflect.DeepEqual(v, w.Verification{}) || e == nil || !strings.Contains(e.Error(), "P02") || !policyCorrective(e.Error()) {
+								if !reflect.DeepEqual(v, w.Verification{}) || e == nil || !strings.Contains(e.Error(), "P02") || !verifyCorrective(e.Error()) {
 									t.Error("required selected claim did not reject atomically", v, e)
 								}
 							} else {
@@ -626,7 +626,7 @@ func Test_FLOW043VerifyApprovedTimeoutAndFatalHook(t *testing.T) {
 			} else {
 				doc := f.Change.Document
 				set := doc.Metadata["set"].(map[string]any)
-				set["hooks"] = map[string]any{"eval": claimQuote(filepath.Join(f.Plan, "missing-hook-executable"))}
+				set["hooks"] = map[string]any{"eval": verifyCommand(tool, "observe", f.Plan) + " && " + claimQuote(filepath.Join(f.Plan, "missing-hook-executable"))}
 				raw, e := c.RenderMarkdown(doc)
 				if e != nil {
 					t.Fatal(e)
