@@ -1,6 +1,6 @@
 ---
 module: gitstore
-phase: audit
+phase: impl
 run: 0e11477d477d697832d05857
 ---
 
@@ -48,3 +48,18 @@ A successful boolean after an unexpected configured callback, or an error after 
 ## Provenance
 
 - evals | 2026-10-24T00:41:20Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 445 | failing: 75 | passing: 370
+- audit | 2026-10-24T00:44:12Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+No findings. Checked projected GIT-012, retained GIT-003 clean/dirty meaning and GIT-011 revision-metadata compatibility.
+
+Independent native/manual premises cover staged, unstaged, deleted, untracked and ignored files; normalization, attribute precedence, includes, excludes, split indexes, timestamps and modes; ordinary/linked SHA-1/SHA-256 repositories; unborn clean/untracked/staged states; nested paths and invalid roots. Normalization and attribute controls force content comparisons on calibrated index/workfile state.
+
+Live transport, monitor and clean/process-conversion controls precede reset and public calls. Required unavailable HEAD commits and invalid roots require false/useful-error results. Missing-tree and already-dirty cases permit valid local alternatives without allowing incorrect booleans, callbacks or transport. Irrelevant missing objects must retain available results.
+
+Success and rejection assertions preserve HEAD, refs, original index/configuration, working/ignored and external configuration files, metadata and parent state. Invalid-root sentinels and temporary-storage controls cover rejected-call preservation and cleanup.
+
+Revision controls independently distinguish case-sensitive packed tags, selected/common reflogs, symbolic reflog resolution and selected-worktree pseudorefs, with exact native/manual edit results and preservation checks.
+
+This separate audit read only the permitted change, public SPEC/API and eval source. No private implementation/history/bootstrap/evidence was inspected, no tests or Git/controller commands were executed, and no files were edited by the auditor.
