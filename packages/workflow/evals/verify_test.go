@@ -1036,7 +1036,7 @@ func Test_FLOW047VerifyNoHiddenCommands(t *testing.T) {
 			marker := verifyForbiddenCommands(t, tool)
 			trace := filepath.Join(t.TempDir(), "trace")
 			t.Setenv("GIT_TRACE2_EVENT", trace)
-			t.Setenv("GIT_TRACE2_ENV_VARS", "GIT_DIR")
+			t.Setenv("GIT_TRACE2_ENV_VARS", "GIT_DIR,GIT_INDEX_FILE")
 			verifyGitRecorder(t, trace)
 			owned := stateCanonicalDirectory(t, t.TempDir())
 			t.Setenv("TMPDIR", owned)

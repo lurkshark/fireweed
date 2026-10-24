@@ -80,9 +80,40 @@ func verifyForbiddenOperation(argv []string) bool {
 			}
 		}
 	}
+	if verb == "add" || verb == "rm" || verb == "mv" {
+		for _, a := range tokens {
+			if a == "--" {
+				break
+			}
+			if a == "--dry-run" || a == "-n" {
+				return false
+			}
+		}
+	}
+	if verb == "update-index" && len(tokens) == 1 && tokens[0] == "--test-untracked-cache" {
+		return false
+	}
 	switch verb {
-	case "commit", "commit-tree", "fetch", "fetch-pack", "push", "send-pack":
+	case "commit", "commit-tree", "fetch", "fetch-pack", "push", "send-pack", "add", "reset", "update-index", "read-tree", "rm", "mv", "checkout", "switch", "restore", "update-ref":
 		return true
+	case "checkout-index":
+		for _, a := range tokens {
+			if a == "-u" || a == "--index" {
+				return true
+			}
+		}
+		return false
+	case "symbolic-ref":
+		operands := 0
+		for _, a := range tokens {
+			if a == "--delete" || a == "-d" {
+				return true
+			}
+			if !strings.HasPrefix(a, "-") {
+				operands++
+			}
+		}
+		return operands > 1
 	case "worktree":
 		return len(tokens) > 0 && tokens[0] == "add"
 	case "branch":
@@ -202,7 +233,7 @@ func verifyGitLocation(argv []string, root, inherited string) string {
 const verifyGitRecorderSource = `package main
 import("encoding/json";"os";"path/filepath";"strings";"syscall")
 func canonical(p string)string{if c,e:=filepath.EvalSymlinks(p);e==nil{return c};return filepath.Clean(p)}
-func main(){cwd,e:=os.Getwd();if e!=nil{os.Exit(121)};cwd=canonical(cwd);dir:=os.Getenv("GIT_DIR");args:=os.Args[1:];for len(args)>0&&strings.HasPrefix(args[0],"-"){a:=args[0];args=args[1:];if a=="--"{break};switch a{case "-C":if len(args)>0{if filepath.IsAbs(args[0]){cwd=args[0]}else{cwd=filepath.Join(cwd,args[0])};args=args[1:]};case "--git-dir":if len(args)>0{dir=args[0];args=args[1:]};case "-c","--work-tree","--namespace","--super-prefix","--config-env":if len(args)>0{args=args[1:]};default:if strings.HasPrefix(a,"--git-dir="){dir=strings.TrimPrefix(a,"--git-dir=")}}};if dir==""{for at:=cwd;;at=filepath.Dir(at){candidate:=filepath.Join(at,".git");if _,e:=os.Lstat(candidate);e==nil{dir=candidate;if raw,e:=os.ReadFile(dir);e==nil&&strings.HasPrefix(string(raw),"gitdir: "){dir=strings.TrimSpace(strings.TrimPrefix(string(raw),"gitdir: "));if !filepath.IsAbs(dir){dir=filepath.Join(at,dir)}};break};if _,e:=os.Stat(filepath.Join(at,"HEAD"));e==nil{if _,e:=os.Stat(filepath.Join(at,"objects"));e==nil{dir=at;break}};if filepath.Dir(at)==at{dir=filepath.Join(cwd,".git");break}}}else if !filepath.IsAbs(dir){dir=filepath.Join(cwd,dir)};dir=canonical(dir);if common:=os.Getenv("GIT_COMMON_DIR");common!=""{if !filepath.IsAbs(common){common=filepath.Join(cwd,common)};dir=canonical(common)}else if raw,e:=os.ReadFile(filepath.Join(dir,"commondir"));e==nil{common:=strings.TrimSpace(string(raw));if !filepath.IsAbs(common){common=filepath.Join(dir,common)};dir=canonical(common)};rec,_:=json.Marshal(map[string]any{"pid":os.Getpid(),"cwd":canonical(cwd),"dir":canonical(dir)});f,e:=os.OpenFile(os.Getenv("FW_VERIFY_GIT_LOCATIONS"),os.O_CREATE|os.O_APPEND|os.O_WRONLY,0600);if e!=nil{os.Exit(122)};if _,e=f.Write(append(rec,'\n'));e!=nil{os.Exit(123)};f.Close();real:=os.Getenv("FW_VERIFY_REAL_GIT");if syscall.Exec(real,append([]string{real},os.Args[1:]...),os.Environ())!=nil{os.Exit(124)}}
+func main(){cwd,e:=os.Getwd();if e!=nil{os.Exit(121)};cwd=canonical(cwd);dir:=os.Getenv("GIT_DIR");args:=os.Args[1:];for len(args)>0&&strings.HasPrefix(args[0],"-"){a:=args[0];args=args[1:];if a=="--"{break};switch a{case "-C":if len(args)>0{if filepath.IsAbs(args[0]){cwd=args[0]}else{cwd=filepath.Join(cwd,args[0])};args=args[1:]};case "--git-dir":if len(args)>0{dir=args[0];args=args[1:]};case "-c","--work-tree","--namespace","--super-prefix","--config-env":if len(args)>0{args=args[1:]};default:if strings.HasPrefix(a,"--git-dir="){dir=strings.TrimPrefix(a,"--git-dir=")}}};if dir==""{for at:=cwd;;at=filepath.Dir(at){candidate:=filepath.Join(at,".git");if _,e:=os.Lstat(candidate);e==nil{dir=candidate;if raw,e:=os.ReadFile(dir);e==nil&&strings.HasPrefix(string(raw),"gitdir: "){dir=strings.TrimSpace(strings.TrimPrefix(string(raw),"gitdir: "));if !filepath.IsAbs(dir){dir=filepath.Join(at,dir)}};break};if _,e:=os.Stat(filepath.Join(at,"HEAD"));e==nil{if _,e:=os.Stat(filepath.Join(at,"objects"));e==nil{dir=at;break}};if filepath.Dir(at)==at{dir=filepath.Join(cwd,".git");break}}}else if !filepath.IsAbs(dir){dir=filepath.Join(cwd,dir)};index:=os.Getenv("GIT_INDEX_FILE");if index==""{index=filepath.Join(dir,"index")}else if !filepath.IsAbs(index){index=filepath.Join(cwd,index)};if len(args)>0&&args[0]=="read-tree"{for i:=1;i<len(args);i++{if args[i]=="--"{break};if args[i]=="--index-output"&&i+1<len(args){index=args[i+1];i++}else if strings.HasPrefix(args[i],"--index-output="){index=strings.TrimPrefix(args[i],"--index-output=")}}};if !filepath.IsAbs(index){index=filepath.Join(cwd,index)};index=canonical(index);dir=canonical(dir);if common:=os.Getenv("GIT_COMMON_DIR");common!=""{if !filepath.IsAbs(common){common=filepath.Join(cwd,common)};dir=canonical(common)}else if raw,e:=os.ReadFile(filepath.Join(dir,"commondir"));e==nil{common:=strings.TrimSpace(string(raw));if !filepath.IsAbs(common){common=filepath.Join(dir,common)};dir=canonical(common)};rec,_:=json.Marshal(map[string]any{"pid":os.Getpid(),"cwd":canonical(cwd),"dir":canonical(dir),"index":index});f,e:=os.OpenFile(os.Getenv("FW_VERIFY_GIT_LOCATIONS"),os.O_CREATE|os.O_APPEND|os.O_WRONLY,0600);if e!=nil{os.Exit(122)};if _,e=f.Write(append(rec,'\n'));e!=nil{os.Exit(123)};f.Close();real:=os.Getenv("FW_VERIFY_REAL_GIT");if syscall.Exec(real,append([]string{real},os.Args[1:]...),os.Environ())!=nil{os.Exit(124)}}
 `
 
 func verifyGitRecorder(t *testing.T, trace string) {
@@ -254,29 +285,32 @@ func verifyForbiddenGitTrace(t *testing.T, path string, roots ...string) []strin
 		t.Fatal(e)
 	}
 	type event struct {
-		Event, Sid, Param, Value string
-		Argv                     []string
+		Event, Sid, Param, Value, Name string
+		Argv                           []string
 	}
-	locations := map[int]string{}
+	type location struct{ Dir, Index string }
+	locations := map[int]location{}
 	if data, e := os.ReadFile(path + ".locations"); e == nil {
 		for _, line := range strings.Split(strings.TrimSpace(string(data)), "\n") {
 			if line == "" {
 				continue
 			}
 			var loc struct {
-				Pid int
-				Dir string
+				Pid   int
+				Dir   string
+				Index string
 			}
 			if e := json.Unmarshal([]byte(line), &loc); e != nil {
 				t.Fatal("malformed Git location record", e)
 			}
-			locations[loc.Pid] = loc.Dir
+			locations[loc.Pid] = location{Dir: loc.Dir, Index: loc.Index}
 		}
 	} else if !os.IsNotExist(e) {
 		t.Fatal(e)
 	}
 	events := []event{}
 	dirs := map[string]string{}
+	modes := map[string]string{}
 	for _, line := range strings.Split(strings.TrimSpace(string(raw)), "\n") {
 		if line == "" {
 			continue
@@ -286,6 +320,9 @@ func verifyForbiddenGitTrace(t *testing.T, path string, roots ...string) []strin
 			t.Fatal("malformed actual Git trace", e)
 		}
 		events = append(events, x)
+		if x.Event == "cmd_mode" {
+			modes[x.Sid] = x.Name
+		}
 		if x.Event == "def_param" && x.Param == "GIT_DIR" {
 			dirs[x.Sid] = x.Value
 		}
@@ -304,47 +341,114 @@ func verifyForbiddenGitTrace(t *testing.T, path string, roots ...string) []strin
 		}
 		// Metadata views may materialize copies of existing branch refs in owned
 		// temporary storage. This never permits changes to the original Git dirs.
-		if verifyGitVerb(x.Argv) == "branch" {
+		verb := verifyGitVerb(x.Argv)
+		pathMode := modes[x.Sid] == "path"
+		if modes[x.Sid] == "" && verb == "reset" {
+			pathMode = verifyResetPaths(x.Argv)
+		}
+		softMode := modes[x.Sid] == "soft" || modes[x.Sid] == "" && verifyResetSoft(x.Argv)
+		indexOnly := verifyIndexOnlyOperation(verb) || (verb == "reset" || verb == "checkout") && pathMode
+		metadata := verb == "branch" || verb == "reset" || verb == "checkout" || verb == "switch" || verb == "update-ref" || verb == "symbolic-ref"
+		indexes := indexOnly || verb == "checkout" || verb == "switch" || verb == "reset" && !softMode
+		if metadata || indexes {
 			dir := verifyGitLocation(x.Argv, root, dirs[x.Sid])
-			sid := x.Sid
-			if i := strings.LastIndex(sid, "-P"); i >= 0 {
-				if pid, e := strconv.ParseUint(sid[i+2:], 16, 32); e == nil && locations[int(pid)] != "" {
-					dir = locations[int(pid)]
+			index := filepath.Join(dir, "index")
+			if i := strings.LastIndex(x.Sid, "-P"); i >= 0 {
+				if pid, e := strconv.ParseUint(x.Sid[i+2:], 16, 32); e == nil && locations[int(pid)].Dir != "" {
+					dir = locations[int(pid)].Dir
+					index = locations[int(pid)].Index
 				}
 			}
-			// Resolve aliases before deciding whether storage belongs to the observer.
-			if p, e := filepath.EvalSymlinks(dir); e == nil {
-				dir = p
-			}
-			if p, e := filepath.EvalSymlinks(owned); e == nil {
-				owned = p
-			}
-			if owned != "" {
-				rel, e := filepath.Rel(owned, dir)
-				if e == nil && rel != ".." && !strings.HasPrefix(rel, ".."+string(filepath.Separator)) && !filepath.IsAbs(rel) {
-					continue
-				}
-			}
-			// A cleaned temporary view can also live under common Git scratch
-			// storage rather than TMPDIR. Existing caller repositories remain
-			// observable; a view whose HEAD/storage was removed is not one.
 			original := verifyCanonicalGitDir(root)
-			canonical := dir
-			if p, e := filepath.EvalSymlinks(dir); e == nil {
-				canonical = p
+			safe := true
+			if metadata && !indexOnly {
+				safe = verifyOwnedGitStorage(dir, original, owned, false)
 			}
-			if p, e := filepath.EvalSymlinks(original); e == nil {
-				original = p
+			if indexes {
+				safe = safe && verifyOwnedGitStorage(index, filepath.Join(original, "index"), owned, true)
 			}
-			if filepath.Clean(canonical) != filepath.Clean(original) {
-				if _, e := os.Stat(filepath.Join(dir, "HEAD")); os.IsNotExist(e) {
-					continue
-				}
+			if safe {
+				continue
 			}
 		}
 		bad = append(bad, strings.Join(x.Argv, " "))
 	}
 	return bad
+}
+func verifyResetPaths(argv []string) bool {
+	args := verifyGitArgs(argv)
+	if len(args) == 0 {
+		return false
+	}
+	args = args[1:]
+	operands := 0
+	for i, a := range args {
+		if a == "--" {
+			return i+1 < len(args)
+		}
+		if a == "-p" || a == "--patch" {
+			return true
+		}
+		if strings.HasPrefix(a, "--pathspec-from-file") {
+			return false
+		}
+		if !strings.HasPrefix(a, "-") {
+			operands++
+		}
+	}
+	return operands > 1
+}
+func verifyResetSoft(argv []string) bool {
+	args := verifyGitArgs(argv)
+	if len(args) == 0 {
+		return false
+	}
+	soft := false
+	for _, a := range args[1:] {
+		if a == "--" {
+			break
+		}
+		switch a {
+		case "--soft", "--mixed", "--hard", "--merge", "--keep":
+			soft = a == "--soft"
+		}
+	}
+	return soft
+}
+func verifyOwnedGitStorage(storage, original, owned string, index bool) bool {
+	if p, e := filepath.EvalSymlinks(storage); e == nil {
+		storage = p
+	}
+	if p, e := filepath.EvalSymlinks(original); e == nil {
+		original = p
+	}
+	if p, e := filepath.EvalSymlinks(owned); e == nil {
+		owned = p
+	}
+	if owned != "" {
+		rel, e := filepath.Rel(owned, storage)
+		if e == nil && rel != ".." && !strings.HasPrefix(rel, ".."+string(filepath.Separator)) && !filepath.IsAbs(rel) {
+			return true
+		}
+	}
+	// Removed owned views can also live under common-Git scratch storage.
+	if filepath.Clean(storage) != filepath.Clean(original) {
+		target := storage
+		if !index {
+			target = filepath.Join(storage, "HEAD")
+		}
+		if _, e := os.Stat(target); os.IsNotExist(e) {
+			return true
+		}
+	}
+	return false
+}
+func verifyIndexOnlyOperation(verb string) bool {
+	switch verb {
+	case "add", "update-index", "read-tree", "checkout-index", "rm", "mv", "restore":
+		return true
+	}
+	return false
 }
 func verifyNoForbiddenGit(t *testing.T, path string, roots ...string) {
 	t.Helper()
@@ -357,7 +461,7 @@ func Test_FLOW047VerifyNativeOperationObserverControls(t *testing.T) {
 	base := claimBase(t, root)
 	trace := filepath.Join(t.TempDir(), "trace")
 	t.Setenv("GIT_TRACE2_EVENT", trace)
-	t.Setenv("GIT_TRACE2_ENV_VARS", "GIT_DIR")
+	t.Setenv("GIT_TRACE2_ENV_VARS", "GIT_DIR,GIT_INDEX_FILE")
 	verifyGitRecorder(t, trace)
 	clear := func() {
 		t.Helper()
@@ -375,7 +479,7 @@ func Test_FLOW047VerifyNativeOperationObserverControls(t *testing.T) {
 			t.Fatalf("native operation observer not live: forbidden=%v actual=%v", forbidden, bad)
 		}
 	}
-	for _, args := range [][]string{{"--version"}, {"-c", "core.fsmonitor=", "rev-parse", "--shared-index-path"}, {"branch", "--list"}, {"branch", "--show-current"}, {"branch", "--format", "-m", "--list"}, {"branch", "--list", "--", "-m"}, {"worktree", "list", "--porcelain"}, {"config", "--get", "core.repositoryformatversion"}} {
+	for _, args := range [][]string{{"--version"}, {"-c", "core.fsmonitor=", "rev-parse", "--shared-index-path"}, {"branch", "--list"}, {"branch", "--show-current"}, {"branch", "--format", "-m", "--list"}, {"branch", "--list", "--", "-m"}, {"worktree", "list", "--porcelain"}, {"config", "--get", "core.repositoryformatversion"}, {"add", "--dry-run", "--", "retained"}, {"rm", "--dry-run", "--", "retained"}, {"mv", "--dry-run", "retained", "dry-run-target"}} {
 		clear()
 		claimGit(t, root, args...)
 		expect(false)
@@ -398,6 +502,12 @@ func Test_FLOW047VerifyNativeOperationObserverControls(t *testing.T) {
 	claimGit(t, root, "--git-dir", owned, "branch", "copied", base)
 	expect(false)
 	clear()
+	claimGit(t, root, "checkout-index", "--prefix="+filepath.Join(filepath.Dir(owned), "files")+string(filepath.Separator), "--all")
+	expect(false)
+	if got, e := os.ReadFile(filepath.Join(filepath.Dir(owned), "files", "retained")); e != nil || string(got) != "tracked\n" {
+		t.Fatal("owned checkout-index read control absent", e)
+	}
+	clear()
 	claimGit(t, owned, "branch", "copied-via-cwd", base)
 	expect(false)
 	alias := filepath.Join(filepath.Dir(owned), "original-alias")
@@ -411,6 +521,7 @@ func Test_FLOW047VerifyNativeOperationObserverControls(t *testing.T) {
 	clear()
 	claimGit(t, root, "-c", "user.name=Observer Fixture", "-c", "user.email=observer@example.invalid", "commit", "--allow-empty", "-qm", "-h")
 	expect(true)
+	alternate := claimBase(t, root)
 	claimGit(t, root, "update-ref", "HEAD", base)
 	clear()
 	claimGit(t, root, "branch", "--create-reflog", "reflog-caller-control", base)
@@ -426,6 +537,144 @@ func Test_FLOW047VerifyNativeOperationObserverControls(t *testing.T) {
 		claimGit(t, root, "branch", "copied-via-env", base)
 		expect(false)
 	})
+	originalIndexPath := filepath.Join(verifyCanonicalGitDir(root), "index")
+	originalIndex, e := os.ReadFile(originalIndexPath)
+	if e != nil {
+		t.Fatal(e)
+	}
+	originalFile, e := os.ReadFile(filepath.Join(root, "retained"))
+	if e != nil {
+		t.Fatal(e)
+	}
+	worktreePut(t, root, "retained", "transient caller index content\n")
+	for _, args := range [][]string{{"add", "--", "retained"}, {"update-index", "--add", "--", "retained"}, {"reset", "--quiet", base, "--", "retained"}, {"read-tree", base}} {
+		clear()
+		claimGit(t, root, args...)
+		expect(true)
+		staged, e := os.ReadFile(originalIndexPath)
+		if e != nil {
+			t.Fatal(e)
+		}
+		if (args[0] == "add" || args[0] == "update-index") && string(staged) == string(originalIndex) {
+			t.Fatal("actual caller-index staging control absent", args)
+		}
+		if e := os.WriteFile(originalIndexPath, originalIndex, 0644); e != nil {
+			t.Fatal(e)
+		}
+		expect(true) // restoration cannot erase the native operation evidence
+	}
+	clear()
+	claimGit(t, root, "read-tree", "--index-output="+filepath.Join(filepath.Dir(owned), "index-output"), base)
+	expect(false)
+	if e := os.WriteFile(filepath.Join(root, "retained"), originalFile, 0644); e != nil {
+		t.Fatal(e)
+	}
+	t.Run("owned-index", func(t *testing.T) {
+		t.Setenv("GIT_INDEX_FILE", filepath.Join(filepath.Dir(owned), "owned-index"))
+		clear()
+		claimGit(t, root, "read-tree", base)
+		claimGit(t, root, "add", "--", "retained")
+		claimGit(t, root, "write-tree")
+		expect(false)
+		if got, e := os.ReadFile(originalIndexPath); e != nil || string(got) != string(originalIndex) {
+			t.Fatal("owned index control touched caller index", e)
+		}
+	})
+	t.Run("owned-metadata-caller-index-reset", func(t *testing.T) {
+		t.Setenv("GIT_INDEX_FILE", originalIndexPath)
+		worktreePut(t, root, "retained", "transient cross-scope reset content\n")
+		claimGit(t, root, "add", "--", "retained")
+		staged, e := os.ReadFile(originalIndexPath)
+		if e != nil || string(staged) == string(originalIndex) {
+			t.Fatal("cross-scope staged caller index premise", e)
+		}
+		clear()
+		claimGit(t, root, "--git-dir", owned, "--work-tree", root, "reset", base, "--", "retained")
+		expect(true)
+		after, e := os.ReadFile(originalIndexPath)
+		if e != nil || string(after) == string(staged) {
+			t.Fatal("owned metadata did not actually reset caller index", e)
+		}
+		if e := os.WriteFile(originalIndexPath, originalIndex, 0644); e != nil {
+			t.Fatal(e)
+		}
+		expect(true)
+		if e := os.WriteFile(filepath.Join(root, "retained"), originalFile, 0644); e != nil {
+			t.Fatal(e)
+		}
+	})
+	t.Run("caller-metadata-owned-index-reset", func(t *testing.T) {
+		index := filepath.Join(filepath.Dir(owned), "reset-owned-index")
+		t.Setenv("GIT_INDEX_FILE", index)
+		claimGit(t, root, "read-tree", base)
+		worktreePut(t, root, "retained", "transient cross-scope reset content\n")
+		claimGit(t, root, "add", "--", "retained")
+		staged, e := os.ReadFile(index)
+		if e != nil {
+			t.Fatal(e)
+		}
+		clear()
+		claimGit(t, root, "reset", base, "--", "retained")
+		expect(false)
+		after, e := os.ReadFile(index)
+		if e != nil || string(after) == string(staged) {
+			t.Fatal("caller metadata did not actually reset owned index", e)
+		}
+		if got, e := os.ReadFile(originalIndexPath); e != nil || string(got) != string(originalIndex) {
+			t.Fatal("owned reset changed caller index", e)
+		}
+		if claimBase(t, root) != base {
+			t.Fatal("path-limited reset changed caller HEAD")
+		}
+		if e := os.WriteFile(filepath.Join(root, "retained"), originalFile, 0644); e != nil {
+			t.Fatal(e)
+		}
+	})
+	t.Run("reset-pathspec-file-storage", func(t *testing.T) {
+		index := filepath.Join(filepath.Dir(owned), "pathspec-owned-index")
+		t.Setenv("GIT_INDEX_FILE", index)
+		claimGit(t, root, "read-tree", base)
+		empty := filepath.Join(filepath.Dir(owned), "empty-pathspec")
+		worktreePut(t, filepath.Dir(owned), "empty-pathspec", "")
+		clear()
+		claimGit(t, root, "reset", alternate, "--pathspec-from-file="+empty)
+		expect(true)
+		if claimBase(t, root) != alternate {
+			t.Fatal("empty pathspec file did not really reset caller HEAD")
+		}
+		claimGit(t, root, "update-ref", "HEAD", base)
+		expect(true)
+		paths := filepath.Join(filepath.Dir(owned), "nonempty-pathspec")
+		worktreePut(t, filepath.Dir(owned), "nonempty-pathspec", "retained\n")
+		worktreePut(t, root, "retained", "staged pathspec content\n")
+		claimGit(t, root, "add", "--", "retained")
+		staged, e := os.ReadFile(index)
+		if e != nil {
+			t.Fatal(e)
+		}
+		clear()
+		claimGit(t, root, "reset", alternate, "--pathspec-from-file="+paths)
+		expect(false)
+		after, e := os.ReadFile(index)
+		if e != nil || string(after) == string(staged) {
+			t.Fatal("nonempty pathspec reset did not affect owned index", e)
+		}
+		if claimBase(t, root) != base {
+			t.Fatal("nonempty pathspec reset changed caller HEAD")
+		}
+		if got, e := os.ReadFile(originalIndexPath); e != nil || string(got) != string(originalIndex) {
+			t.Fatal("pathspec reset touched caller index", e)
+		}
+		if e := os.WriteFile(filepath.Join(root, "retained"), originalFile, 0644); e != nil {
+			t.Fatal(e)
+		}
+	})
+	clear()
+	claimGit(t, root, "update-ref", "HEAD", base)
+	expect(true)
+	clear()
+	claimGit(t, root, "--git-dir", owned, "update-ref", "refs/heads/owned-ref", base)
+	expect(false)
 	clear()
 	claimGit(t, root, "branch", "transient-observer", base)
 	claimGit(t, root, "branch", "-D", "transient-observer")
@@ -451,7 +700,7 @@ func Test_FLOW047VerifyNativeOperationObserverControls(t *testing.T) {
 	clear()
 	_, _ = claimCommand(t, root, "", "-c", "protocol.file.allow=never", "fetch", ".")
 	expect(true)
-	for _, args := range [][]string{{"git", "-C", root, "-c", "note.value=push branch worktree add commit", "rev-parse", "HEAD"}, {"git", "branch", "--list", "push*"}, {"git", "worktree", "list"}, {"git", "--git-dir=" + owned, "update-ref", "refs/heads/copied", base}} {
+	for _, args := range [][]string{{"git", "-C", root, "-c", "note.value=push branch worktree add commit", "rev-parse", "HEAD"}, {"git", "branch", "--list", "push*"}, {"git", "worktree", "list"}} {
 		if verifyForbiddenOperation(args) {
 			t.Error("read/owned metadata operands falsely classified", args)
 		}

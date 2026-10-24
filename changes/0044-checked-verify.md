@@ -3,7 +3,7 @@ fixes:
     - FLOW-015
     - FLOW-023
 module: workflow
-phase: evals
+phase: audit
 run: f9347464cbe4af07a1cd7b49
 ---
 
@@ -50,6 +50,9 @@ EVALS start assigns FLOW-041–047/runf9347464cbe4af07a1cd7b49 and reports the n
 
 Pre-freeze calibration corrected only new evals: public coverage accepts a nonzero hook with genuine executed failures; effective graph diagnostics may retain their native corrective location; cancellation and post-hook checks compare full available evidence. Added native controls prove invalid-selector no-I/O, selected-object transport, configured callback, and Git operation observer liveness. Git Trace2 is paired with a same-PID exec recorder for cwd/canonical metadata, permitting owned bare-view setup while detecting caller branch/push/commit/worktree operations, including nested cwd, symlink aliases, literal option operands and send-pack. Restricted separate auditor /root/audit_start_cli reports No findings for FLOW-041–047 and fixes FLOW-015/FLOW-023 after these corrections. This is pre-freeze source review only; formal Audit follows accepted EVALS. Two interrupted earlier full verification runs used obsolete observer source and are excluded. No existing non-API implementation/eval was changed.
 
+
+Formal independent Audit after EVALS6aea37e found six assertion gaps; controller commitc110851 records them and returns to EVALS. New permanent regressions assert implicit ownership filtering with a valid foreign claim, native static projection rejection before hooks, approved D04 warning retention beside coverage/post-hook failures, nonempty Errors storage, two-sided empty-collection writes and post-startup stdin/prompt behavior on success/rejection. Native Git controls now observe real transient caller-index staging and resets while permitting owned index and metadata setup. Actual cmd_mode distinguishes path-only resets from full HEAD resets, including empty/nonempty pathspec files; both caller/owned storage combinations are live. After correcting one additional reset-scope oracle issue, restricted pre-freeze re-review reports No findings for all seven Added and both fixes IDs. This still requires a fresh complete EVALS freeze and subsequent formal Audit; product implementation remains untouched.
+
 ## Rejected alternatives
 
 Loading the dirty current project before approval can redirect hooks or permissions. Running hooks after failed guards can execute unauthorized configuration. Treating a failing-before report as a Go compile failure provides no ID-linked evidence. Repairing hook edits or committing during Verify would violate the manual iteration contract.
@@ -58,6 +61,7 @@ Loading the dirty current project before approval can redirect hooks or permissi
 
 - evals | 2026-10-24T06:09:07Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2115 | failing: 181 | passing: 1934
 - audit | 2026-10-24T06:14:58Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-24T15:35:06Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2130 | failing: 189 | passing: 1941
 
 ## Audit
 
