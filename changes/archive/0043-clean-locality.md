@@ -1,6 +1,6 @@
 ---
 module: gitstore
-phase: impl
+phase: applied
 run: 0e11477d477d697832d05857
 ---
 
@@ -41,6 +41,10 @@ Final source-only pre-freeze review reports No findings for projected GIT-012, r
 
 The first complete445-record controller check runs187.919s and confirms75 failures/370 passing, but correctly rejects C14 for GIT-003: the new configuration test name referenced both GIT-012 and GIT-003, so new index-byte preservation failures were attributed to the older ID whose boolean semantics pass. Rename only that new eval to GIT-012, which owns preservation; retain every original eval/API/private byte and all assertions. This rejected check is excluded from the accepted fail-first gate; repeat full verification. No fixes/already_satisfied or coverage-policy bypass is added.
 
+Accepted complete EVALS verify runs445 records in188.282s with75 failure records/72 genuine terminal leaves; all238 legacy and132 new passing records pass,0 skips/errors/diagnostics. EVALS done repeats188.202s and commits2a69bc5; separate restricted formal auditbcdfb58 reports No findings. Frozen evals/API remain unchanged. Implementation routes Clean through an owned Git metadata/index view using the native status operation, safe effective built-in configuration and local object storage. Original callbacks/promisor triggers are omitted only in the owned view; original index/configuration/refs/files are untouched and owned storage removed on success/error. Fresh207-record new-behavior/metadata focus and whole-repository vet/whitespace pass; full scoped race and own/dependent controller verification remain required.
+
+The first complete Done rerun rejected a dependent FLOW-013/FLOW-014 testcase after missing an equal-size append-only mutation. The successful preceding standalone verification remains historical evidence only; the rejected Done did not apply or archive. A calibrated independent public fixture proves the shared owned-view index copy changed native racy-timestamp semantics: native diff reports M while Clean returned true and Edits empty. Preserve copied metadata modification times so Git retains its original index stat comparison. Frozen evals and interfaces are unchanged; repeat focused/race/full enforcement on the corrected source. Evidence clean-locality-impl-done.json and clean-locality-racy-index-before.json.
+
 ## Rejected alternatives
 
 A successful boolean after an unexpected configured callback, or an error after a fetch attempt, still violates locality. GIT_NO_LAZY_FETCH alone is ineffective on installed Git2.30.1. Requiring every reachable object would reject proven valid comparisons. Rewriting original Git configuration/index, ignoring ignored-file rules or built-in normalization, weakening frozen evals, bypassing audits, or delegating product behavior to the bootstrap is not a fix.
@@ -49,6 +53,7 @@ A successful boolean after an unexpected configured callback, or an error after 
 
 - evals | 2026-10-24T00:41:20Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 445 | failing: 75 | passing: 370
 - audit | 2026-10-24T00:44:12Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- impl | 2026-10-24T04:38:02Z | agent: manual | fireweed: 0.4.0 | playbook: 653912b194316c62181f62d0a69dc213f7668481ea8b1b9926ef889dd48a9e08 | tests: 3524 | failing: 0 | passing: 3524
 
 ## Audit
 

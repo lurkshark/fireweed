@@ -105,7 +105,12 @@ func Base(root, base, remote string) (string, error) {
 	return local, nil
 }
 func Clean(root string) (bool, error) {
-	data, err := git(root, "status", "--porcelain=v1", "-z", "--untracked-files=all")
+	view, err := newReadView(root, "")
+	if err != nil {
+		return false, err
+	}
+	defer view.close()
+	data, err := view.git("status", "--porcelain=v1", "-z", "--untracked-files=all")
 	if err != nil {
 		return false, err
 	}

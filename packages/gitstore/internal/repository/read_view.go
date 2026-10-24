@@ -233,6 +233,10 @@ func quoteGitConfig(value string) string {
 	return "\"" + value + "\""
 }
 func copyReadFile(source, destination string) error {
+	info, err := os.Stat(source)
+	if err != nil {
+		return err
+	}
 	data, err := os.ReadFile(source)
 	if err != nil {
 		return err
@@ -240,7 +244,12 @@ func copyReadFile(source, destination string) error {
 	if err := os.MkdirAll(filepath.Dir(destination), 0700); err != nil {
 		return err
 	}
-	return os.WriteFile(destination, data, 0600)
+	if err := os.WriteFile(destination, data, 0600); err != nil {
+		return err
+	}
+	// Git compares cached file stats against the index timestamp to detect
+	// racy entries. A freshly timestamped copy can hide same-size rewrites.
+	return os.Chtimes(destination, info.ModTime(), info.ModTime())
 }
 func copyReadOptional(source, destination string) error {
 	err := copyReadFile(source, destination)
