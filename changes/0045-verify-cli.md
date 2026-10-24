@@ -1,6 +1,6 @@
 ---
 module: app
-phase: evals
+phase: audit
 run: 4b80bb9e3717387331cca96a
 ---
 
@@ -44,6 +44,18 @@ Fresh formal Audit after EVALSc1d32187 found one remaining APP-025 gap: ignored 
 
 Fresh formal Audit after EVALSc6d47169 found the Windows proxy suffix edit also introduced an unused runtime import inside generated fault.go. Controller Auditfa1c2762 returns through EVALS. Remove only that embedded import, keep the outer platform suffix, and expose the existing public C01 calibration as a separately recorded public-control subcase. Complete evidence must include that passing control plus actual JSON/plain C01 assertion execution; the prior603 reports are superseded incomplete assertion evidence. No implementation has been added.
 
+Fresh formal Audit after EVALS746f0c3 found plain structured-failure stderr did not reject leaked Coverage.Output. Controller Audit7c745101 returns through EVALS. Add a calibrated observer for each real eval hook stdout/stderr marker and copied output, use it on normal, structured-failure, retained-mutation and selective-read plain calls, and retain complete code/path/message diagnostics with only actual owned report paths normalized. No prior evals or implementation are edited.
+
+A fresh pre-freeze focused APP-028 follow-up found plain structured coverage and post-hook failures omitted the existing exact hook-call observer, so an extra silent boundary call could escape. Stop only the positively identified obsolete Done process tree (exit143, no phase commit); exclude that incomplete report. Reuse the JSON public-Coverage-derived order and identity/count observer on both plain paths. The full606 source gates must be repeated; no implementation has been added.
+
+The same restricted pre-freeze review identified missing plain state observers and plain native before-access variants. Ordinary plain calls now use read-only state guards, including fatal calls and outside-project help/usage. Retained-hook calls compare complete file/ignored/common-Git/index/ref/private-temp/outside-plan effects against a twice-executed public oracle; known native Git journal appends and the exact separately checked call log are the only replay adaptations. All eight named public-effect controls, including live ignored-file detection and restoration, pass. Native help/usage/invalid selectors now run both formats and preserve literal -- handling; all15 native/fatal controls pass. Reviewer reports No findings across all four IDs. Earlier unfinished Done remains excluded; restart full630 gates with current source.
+
+A subsequent pre-freeze review found stdin sentinels missing on plain calls and later coverage/fatal paths, and plain fatal checks permitted duplicate diagnostics. Stop the positively identified incomplete630 Verify (exit143, no phase commit), exclude its report, and add both-format live stdin/prompt checks for success, pre-hook rejection, nonempty coverage failure and public P02/C01 fatal paths. Calibrate complete plain diagnostic consumption against actual public checking errors, duplicated diagnostics and appended prompts. No implementation has been added.
+
+The same pre-freeze review found failed-writer recovery paths lacked live stdin/raw-stream observation. Move the six existing writer/state cases to a bounded public app.Run child probe with sentinels and raw-stream checks. Accept multiline usage guidance and either nonduplicated or separately prefixed fatal codes; the spec does not prescribe one physical diagnostic line or duplicated code text. Calibrations reject duplicate full diagnostics.
+
+Final pre-freeze writer review found supplied buffers and complete error-path effects still unchecked. Preserve supplied writer buffers, require silent JSON stderr and exact pretty public data when plain stdout is emitted (empty stdout is allowed after an earlier diagnostic writer error), and compare every writer path against twice-executed public effects with six named public controls. Complete root/ignored/common-Git/temp/outside snapshots and existing exact hook-call observer apply after output failure, retaining configured mutations. No implementation has been added.
+
 ## Rejected alternatives
 
 Reloading the dirty current project can replace committed approval or fail before returning useful guard evidence. Converting every failed testcase into a command failure would reject legitimate fail-first verification. Dropping structured data on failed checks would hide the evidence needed to fix them. Default Go edit field names would silently change the established CLI wire contract.
@@ -58,6 +70,7 @@ Reloading the dirty current project can replace committed approval or fail befor
 - audit | 2026-10-24T20:11:34Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-24T20:39:51Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 604 | failing: 84 | passing: 520
 - audit | 2026-10-24T20:42:09Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-24T22:14:43Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 644 | failing: 100 | passing: 544
 
 ## Audit
 

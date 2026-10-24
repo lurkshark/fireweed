@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	w "github.com/lurkshark/fireweed/packages/workflow"
 	"io"
 	"os"
 	"os/exec"
@@ -149,6 +150,7 @@ func main(){raw,e:=os.ReadFile(os.Args[1]);var in record;if e!=nil||json.Unmarsh
 	}{
 		{"invalid-slug", []string{"--json", "verify", "../unsafe"}, 1, "C05"},
 		{"exact-whitespace", []string{"verify", " leading", "--json"}, 1, "C05"},
+		{"literal-json", []string{"--json", "verify", "--", "--json"}, 1, "C05"},
 		{"bad-arity", []string{"--json", "verify", "a", "b"}, 2, "U01"},
 		{"bad-flag", []string{"--json", "verify", "--unknown"}, 2, "U01"},
 		{"valued-boolean", []string{"--json", "verify", "--json=true"}, 2, "U01"},
@@ -164,7 +166,7 @@ func main(){raw,e:=os.ReadFile(os.Args[1]);var in record;if e!=nil||json.Unmarsh
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			mode := 3
-			if tc.name == "invalid-slug" || tc.name == "exact-whitespace" {
+			if tc.name == "invalid-slug" || tc.name == "exact-whitespace" || tc.name == "literal-json" {
 				mode = 2
 			}
 			got := run(t, record{where, filepath.Join(where, "private"), "call", tc.args, mode}, 0)
@@ -189,6 +191,45 @@ func main(){raw,e:=os.ReadFile(os.Args[1]);var in record;if e!=nil||json.Unmarsh
 				t.Error("before-access diagnostic", got)
 			}
 		})
+		t.Run(tc.name+"-plain", func(t *testing.T) {
+			args := []string{}
+			literal := false
+			for _, arg := range tc.args {
+				if arg == "--" {
+					literal = true
+				}
+				if arg != "--json" || literal {
+					args = append(args, arg)
+				}
+			}
+			mode := 3
+			if tc.name == "invalid-slug" || tc.name == "exact-whitespace" || tc.name == "literal-json" {
+				mode = 2
+			}
+			got := run(t, record{where, filepath.Join(where, "private"), "call", args, mode}, 0)
+			if _, e := os.Stat(marker); !os.IsNotExist(e) {
+				t.Fatal("plain help/usage/selector accessed Git repository", e)
+			}
+			if got.code != tc.code {
+				t.Error("plain before-access result", got)
+			}
+			if tc.code == 0 {
+				if got.err != "" || !strings.Contains(got.out, "verify [<change>]") {
+					t.Error("plain before-access help streams", got)
+				}
+			} else {
+				if got.out != "" || !strings.Contains(got.err, tc.diagnostic) {
+					t.Error("plain before-access diagnostic", got)
+				}
+				if tc.diagnostic == "C05" {
+					_, e := w.Verify(context.Background(), where, args[len(args)-1])
+					if e == nil {
+						t.Fatal("public invalid selector premise")
+					}
+					cliVerifyFatalPlain(t, got, "C05", e.Error(), tc.code)
+				}
+			}
+		})
 	}
 }
 
@@ -198,7 +239,7 @@ func Test_APP028VerifyNoninteractiveStdio(t *testing.T) {
 import("bytes";"encoding/json";"fmt";"io";"os";"reflect";app "github.com/lurkshark/fireweed/packages/app")
 func main(){if os.Chdir(os.Args[1])!=nil{os.Exit(80)};mode:=os.Args[2];cwd,_:=os.Getwd();env:=os.Environ()
  switch mode{case "stdin-control":os.Stdin.Read(make([]byte,1));case "stdout-control":fmt.Print("prompt");case "stderr-control":fmt.Fprint(os.Stderr,"prompt")}
- var out,errOut bytes.Buffer;code:=app.Run([]string{"verify","current","--json"},&out,&errOut);rest,e:=io.ReadAll(os.Stdin);if e!=nil{os.Exit(81)};after,e:=os.Getwd();if e!=nil||after!=cwd||!reflect.DeepEqual(env,os.Environ()){os.Exit(82)}
+ args:=[]string{"verify","current"};if os.Args[3]=="json"{args=append(args,"--json")};var out,errOut bytes.Buffer;code:=app.Run(args,&out,&errOut);rest,e:=io.ReadAll(os.Stdin);if e!=nil{os.Exit(81)};after,e:=os.Getwd();if e!=nil||after!=cwd||!reflect.DeepEqual(env,os.Environ()){os.Exit(82)}
  json.NewEncoder(os.Stdout).Encode(struct{Code int;Out,Err,Input string}{code,out.String(),errOut.String(),string(rest)})
 }`
 	projectPut(t, temp, "probe.go", source)
@@ -223,11 +264,15 @@ func main(){if os.Chdir(os.Args[1])!=nil{os.Exit(80)};mode:=os.Args[2];cwd,_:=os
 		Code            int
 		Out, Err, Input string
 	}
-	run := func(t *testing.T, f cliVerifyCase, mode string) ([]byte, string) {
+	run := func(t *testing.T, f cliVerifyCase, mode string, formats ...string) ([]byte, string) {
 		t.Helper()
 		ctx, stop := context.WithTimeout(context.Background(), 5*time.Second)
 		defer stop()
-		cmd := exec.CommandContext(ctx, binary, f.Where, mode)
+		format := "json"
+		if len(formats) > 0 {
+			format = formats[0]
+		}
+		cmd := exec.CommandContext(ctx, binary, f.Where, mode, format)
 		cmd.Stdin = strings.NewReader(input)
 		var out, errOut strings.Builder
 		cmd.Stdout = &out
@@ -262,34 +307,180 @@ func main(){if os.Chdir(os.Args[1])!=nil{os.Exit(80)};mode:=os.Args[2];cwd,_:=os
 			}
 		})
 	}
-	for _, mode := range []string{"success", "structured-rejection"} {
-		t.Run(mode, func(t *testing.T) {
-			f := cliVerifyFixture(t, "impl", "sha1", "all", false, false)
-			if mode == "structured-rejection" {
-				projectPut(t, f.Root, "units/a/evals/case.txt", "forbidden")
+
+	for _, mode := range []string{"success", "structured-rejection", "coverage-failure", "fatal-source", "fatal-discovery"} {
+		for _, format := range []string{"json", "plain"} {
+			name := mode
+			if format == "plain" {
+				name += "-plain"
 			}
-			want, reports := cliVerifyExpected(t, f, "current")
-			raw, stderr := run(t, f, "call")
-			if stderr != "" {
-				t.Fatal("independent prompt/output", stderr)
-			}
-			var got message
-			decoder := json.NewDecoder(bytes.NewReader(raw))
-			if e := decoder.Decode(&got); e != nil {
-				t.Fatal("extra stdout/prompt", e, string(raw))
-			}
-			var extra any
-			if e := decoder.Decode(&extra); e != io.EOF {
-				t.Fatal("extra stdout value", e)
-			}
-			if got.Input != input {
-				t.Error("Verify consumed caller stdin", got.Input)
-			}
-			r := result{got.Code, got.Out, got.Err}
-			x := decode(t, r, "verify")
-			if r.code != cliVerifyExit(want) || !reflect.DeepEqual(cliVerifyNormalize(decodeData(t, x.Data), cliVerifyReports(t, f)), cliVerifyWire(t, want, reports)) {
-				t.Error("stdio call changed evidence", r)
-			}
-		})
+			t.Run(name, func(t *testing.T) {
+				f := cliVerifyFixture(t, "impl", "sha1", "all", false, false)
+				switch mode {
+				case "structured-rejection":
+					projectPut(t, f.Root, "units/a/evals/case.txt", "forbidden")
+				case "coverage-failure":
+					cliVerifyReport(t, f, "alpha", true)
+				case "fatal-source":
+					if e := w.ReleaseClaim(f.Root, "current", f.Claim.Object); e != nil {
+						t.Fatal(e)
+					}
+				}
+				var reset func()
+				if mode == "fatal-discovery" {
+					reset = cliVerifyDiscoveryFault(t, f)
+				}
+				want, publicErr := w.Verify(context.Background(), f.Where, "current")
+				reports := cliVerifyReports(t, f)
+				cliVerifyClear(t, f)
+				if reset != nil {
+					if publicErr == nil || !strings.HasPrefix(publicErr.Error(), "C01:") {
+						t.Fatal("stdio C01 public premise", want, publicErr)
+					}
+					reset()
+				}
+				if (mode == "fatal-source" || mode == "fatal-discovery") != (publicErr != nil) {
+					t.Fatal("stdio public fatal premise", mode, publicErr)
+				}
+				if mode == "coverage-failure" && (len(want.Coverage) == 0 || cliVerifyExit(want) != 1) {
+					t.Fatal("stdio coverage failure premise", want)
+				}
+				raw, stderr := run(t, f, "call", format)
+				if stderr != "" {
+					t.Fatal("independent prompt/output", stderr)
+				}
+				var got message
+				decoder := json.NewDecoder(bytes.NewReader(raw))
+				if e := decoder.Decode(&got); e != nil {
+					t.Fatal("extra stdout/prompt", e, string(raw))
+				}
+				var extra any
+				if e := decoder.Decode(&extra); e != io.EOF {
+					t.Fatal("extra stdout value", e)
+				}
+				if got.Input != input {
+					t.Error("Verify consumed caller stdin", got.Input)
+				}
+				r := result{got.Code, got.Out, got.Err}
+				actual := cliVerifyReports(t, f)
+				if publicErr != nil {
+					code := strings.SplitN(publicErr.Error(), ":", 2)[0]
+					exit := 1
+					if code == "C01" || code == "D05" {
+						exit = 2
+					}
+					if format == "plain" {
+						cliVerifyFatalPlain(t, r, code, publicErr.Error(), exit)
+					} else {
+						x := decode(t, r, "verify")
+						var envelope map[string]any
+						if e := json.Unmarshal([]byte(r.out), &envelope); e != nil {
+							t.Fatal(e)
+						}
+						ds, ok := envelope["diagnostics"].([]any)
+						if !ok || len(ds) != 1 {
+							t.Fatal("stdio fatal diagnostic count", r)
+						}
+						diag := ds[0].(map[string]any)
+						if r.code != exit || string(x.Data) != "null" || diag["code"] != code || diag["severity"] != "error" || diag["message"] != publicErr.Error() {
+							t.Error("stdio fatal classification", r, publicErr)
+						}
+						if _, ok := diag["path"]; ok {
+							t.Error("stdio fatal invented path", diag)
+						}
+					}
+					cliVerifyObserve(t, f, []string{}, binary)
+				} else {
+					if r.code != cliVerifyExit(want) {
+						t.Error("stdio exit", r)
+					}
+					if format == "json" {
+						x := decode(t, r, "verify")
+						if !reflect.DeepEqual(cliVerifyNormalize(decodeData(t, x.Data), actual), cliVerifyWire(t, want, reports)) {
+							t.Error("stdio call changed evidence", r)
+						}
+						var env map[string]any
+						json.Unmarshal([]byte(r.out), &env)
+						if !reflect.DeepEqual(cliVerifyNormalize(env["diagnostics"], actual), cliVerifyNormalize(canonical(t, want.Diagnostics), reports)) {
+							t.Error("stdio diagnostics", r)
+						}
+					} else {
+						var data any
+						if e := json.Unmarshal([]byte(r.out), &data); e != nil {
+							t.Fatal("stdio plain JSON", e, r)
+						}
+						if !strings.Contains(r.out, "\n  ") || !reflect.DeepEqual(cliVerifyNormalize(data, actual), cliVerifyWire(t, want, reports)) {
+							t.Error("stdio plain evidence", r)
+						}
+						cliVerifyPlainStreams(t, r.err, want, actual, reports)
+					}
+					cliVerifyObserveVerification(t, f, want, binary)
+				}
+			})
+		}
+	}
+}
+
+// Failed output writers run in a bounded child with live caller streams.
+func cliVerifyWriterProbe(t *testing.T) (string, func(*testing.T, cliVerifyCase, string) result) {
+	t.Helper()
+	temp := t.TempDir()
+	source := `package main
+import("bytes";"encoding/json";"fmt";"io";"os";"reflect";app "github.com/lurkshark/fireweed/packages/app")
+type failedWriter struct{}
+func(failedWriter)Write(p []byte)(int,error){return 0,fmt.Errorf("controlled output failure")}
+func main(){if os.Chdir(os.Args[1])!=nil{os.Exit(80)};mode:=os.Args[2];cwd,_:=os.Getwd();env:=os.Environ();var out,errOut bytes.Buffer;var code int
+switch mode{case "fatal-writer":code=app.Run([]string{"verify","missing"},&out,failedWriter{});case "usage-writer":code=app.Run([]string{"verify","a","b"},&out,failedWriter{});case "diagnostic-writer":code=app.Run([]string{"verify","current"},&out,failedWriter{});default:code=app.Run([]string{"verify","current","--json"},failedWriter{},&errOut)}
+rest,e:=io.ReadAll(os.Stdin);if e!=nil{os.Exit(81)};after,e:=os.Getwd();if e!=nil||after!=cwd||!reflect.DeepEqual(env,os.Environ()){os.Exit(82)}
+json.NewEncoder(os.Stdout).Encode(struct{Code int;Out,Err,Input string}{code,out.String(),errOut.String(),string(rest)})}`
+	projectPut(t, temp, "writer.go", source)
+	binary := filepath.Join(temp, "writer")
+	if runtime.GOOS == "windows" {
+		binary += ".exe"
+	}
+	root, e := filepath.Abs("../../..")
+	if e != nil {
+		t.Fatal(e)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "go", "build", "-o", binary, filepath.Join(temp, "writer.go"))
+	cmd.Dir = root
+	cmd.Env = append(os.Environ(), "GOPROXY=off", "GOTOOLCHAIN=local")
+	if out, e := cmd.CombinedOutput(); e != nil {
+		t.Fatal("writer probe build", e, string(out))
+	}
+	return binary, func(t *testing.T, f cliVerifyCase, mode string) result {
+		t.Helper()
+		ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+		defer cancel()
+		cmd := exec.CommandContext(ctx, binary, f.Where, mode)
+		input := "writer failure stdin sentinel\n"
+		cmd.Stdin = strings.NewReader(input)
+		var out, errOut bytes.Buffer
+		cmd.Stdout = &out
+		cmd.Stderr = &errOut
+		if e := cmd.Run(); e != nil {
+			t.Fatal("writer probe process", e, out.String(), errOut.String())
+		}
+		if errOut.Len() != 0 {
+			t.Error("writer failure emitted raw stderr prompt", errOut.String())
+		}
+		var record struct {
+			Code            int
+			Out, Err, Input string
+		}
+		decoder := json.NewDecoder(&out)
+		if e := decoder.Decode(&record); e != nil {
+			t.Fatal("writer failure raw stdout prompt", e, out.String())
+		}
+		var extra any
+		if e := decoder.Decode(&extra); e != io.EOF {
+			t.Error("writer failure added stdout", e)
+		}
+		if record.Input != input {
+			t.Error("writer failure consumed stdin", record.Input)
+		}
+		return result{record.Code, record.Out, record.Err}
 	}
 }

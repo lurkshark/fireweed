@@ -88,8 +88,7 @@ func Test_APP026_APP028VerifyFatalDiscovery(t *testing.T) {
 		}
 	})
 	reset()
-	got := invoke(t, f.Where, "verify", "current")
-	if got.code != 2 || got.out != "" || !strings.HasPrefix(got.err, "error C01:") || !strings.Contains(got.err, err.Error()) {
-		t.Error("fatal discovery plain classification/streams", got, err)
-	}
+	var got result
+	cliVerifyReadonly(t, f, func() { got = invoke(t, f.Where, "verify", "current") })
+	cliVerifyFatalPlain(t, got, "C01", err.Error(), 2)
 }

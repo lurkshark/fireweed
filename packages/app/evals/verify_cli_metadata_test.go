@@ -162,17 +162,10 @@ func main(){raw,e:=os.ReadFile(os.Args[1]);var in input;if e!=nil||json.Unmarsha
 								t.Error("selective-read CLI JSON", got)
 							}
 						} else {
-							if len(want.Diagnostics) == 0 && got.err != "" {
-								t.Error("selective-read plain extra stderr", got)
-							}
 							if got.code != cliVerifyExit(want) || !reflect.DeepEqual(cliVerifyNormalize(decodeData(t, json.RawMessage(got.out)), actual), cliVerifyWire(t, want, reports)) {
 								t.Error("selective-read CLI plain", got)
 							}
-							for _, d := range want.Diagnostics {
-								if !strings.Contains(got.err, d.Code) || d.Path != "" && !strings.Contains(got.err, d.Path) {
-									t.Error("selective-read plain diagnostic", got, d)
-								}
-							}
+							cliVerifyPlainStreams(t, got.err, want, actual, reports)
 						}
 						cliVerifyObserve(t, f, names, probe)
 					})

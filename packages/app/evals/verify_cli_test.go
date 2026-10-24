@@ -1,11 +1,10 @@
 package evals
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	app "github.com/lurkshark/fireweed/packages/app"
+	checks "github.com/lurkshark/fireweed/packages/checks"
 	p "github.com/lurkshark/fireweed/packages/project"
 	w "github.com/lurkshark/fireweed/packages/workflow"
 	"os"
@@ -218,6 +217,85 @@ func cliVerifyWire(t *testing.T, v w.Verification, reports []string) any {
 	data["edits"] = edits
 	return cliVerifyNormalize(data, reports)
 }
+func cliVerifyPlainLeaks(stderr string, want w.Verification) bool {
+	for _, cov := range want.Coverage {
+		for _, suffix := range []string{"-out", "-err"} {
+			if strings.Contains(stderr, cov.Module+suffix) {
+				return true
+			}
+		}
+	}
+	return false
+}
+func cliVerifyPlainStreams(t *testing.T, stderr string, want w.Verification, actualReports, reports []string) {
+	t.Helper()
+	for _, cov := range want.Coverage {
+		for _, suffix := range []string{"-out", "-err"} {
+			if !strings.Contains(cov.Output, cov.Module+suffix) {
+				t.Fatal("public hook output marker premise absent", cov)
+			}
+		}
+	}
+	if cliVerifyPlainLeaks(stderr, want) {
+		t.Error("plain stderr leaked captured hook stdout/stderr", stderr)
+	}
+	if len(want.Diagnostics) == 0 && stderr != "" {
+		t.Error("plain verification added stderr", stderr)
+	}
+	if e := cliVerifyPlainDiagnosticText(stderr, want.Diagnostics, actualReports, reports); e != nil {
+		t.Error(e)
+	}
+}
+func Test_APP026VerifyPlainStreams(t *testing.T) {
+	t.Run("control", func(t *testing.T) {
+		f := cliVerifyFixture(t, "impl", "sha1", "all", false, false)
+		want, _ := cliVerifyExpected(t, f, "current")
+		if len(want.Coverage) != 3 || cliVerifyPlainLeaks("diagnostics only\n", want) {
+			t.Fatal("plain stream control premise", want)
+		}
+		cliVerifyPlainStreams(t, "", want, nil, nil)
+		for _, cov := range want.Coverage {
+			for _, suffix := range []string{"-out", "-err"} {
+				if !cliVerifyPlainLeaks("diagnostics only\n"+cov.Module+suffix+"\n", want) {
+					t.Fatal("plain stream observer missed individual hook stream", cov.Module, suffix)
+				}
+			}
+			if !cliVerifyPlainLeaks("diagnostics only\n"+cov.Output, want) {
+				t.Fatal("plain stream observer missed copied Coverage.Output", cov)
+			}
+		}
+		cliVerifyReport(t, f, "alpha", true)
+		failed, reports := cliVerifyExpected(t, f, "current")
+		if len(failed.Coverage) == 0 || len(failed.Diagnostics) == 0 {
+			t.Fatal("plain diagnostic control premise", failed)
+		}
+		text := ""
+		for _, d := range failed.Diagnostics {
+			text += fmt.Sprintf("%s %s (%s): %s\n", d.Severity, d.Code, d.Path, d.Message)
+		}
+		if e := cliVerifyPlainDiagnosticText(text, failed.Diagnostics, reports, reports); e != nil {
+			t.Fatal("public plain diagnostic calibration", e)
+		}
+		for _, message := range []string{"C05: invalid exact selector", "P02: held ownership missing", "C01: controlled discovery failure"} {
+			code := strings.SplitN(message, ":", 2)[0]
+			ds := []checks.Diagnostic{{Code: code, Severity: "error", Message: message}}
+			for _, plain := range []string{"error " + message + "\n", "error " + code + ": " + message + "\n"} {
+				if e := cliVerifyPlainDiagnosticText(plain, ds, nil, nil); e != nil {
+					t.Fatal("fatal plain presentation calibration", e)
+				}
+				if cliVerifyPlainDiagnosticText(plain+plain, ds, nil, nil) == nil {
+					t.Fatal("duplicated fatal diagnostic escaped observer")
+				}
+			}
+		}
+		for _, extra := range []string{"prompt> ", text} {
+			if cliVerifyPlainDiagnosticText(text+extra, failed.Diagnostics, reports, reports) == nil {
+				t.Fatal("plain diagnostic observer missed appended text", extra)
+			}
+		}
+
+	})
+}
 func cliVerifyExpected(t *testing.T, f cliVerifyCase, slug string) (w.Verification, []string) {
 	t.Helper()
 	v, e := w.Verify(context.Background(), f.Where, slug)
@@ -261,11 +339,8 @@ func cliVerifyObserve(t *testing.T, f cliVerifyCase, expected []string, binary s
 		t.Errorf("hook order/count %+v want %+v", names, expected)
 	}
 }
-func cliVerifyJSON(t *testing.T, f cliVerifyCase, args []string, want w.Verification, reports []string) result {
+func cliVerifyObserveVerification(t *testing.T, f cliVerifyCase, want w.Verification, binary string) {
 	t.Helper()
-	got := invoke(t, f.Where, args...)
-	x := decode(t, got, "verify")
-	actualReports := cliVerifyReports(t, f)
 	names := []string{}
 	for _, cov := range want.Coverage {
 		names = append(names, cov.Module)
@@ -273,7 +348,14 @@ func cliVerifyJSON(t *testing.T, f cliVerifyCase, args []string, want w.Verifica
 	if want.Phase == "impl" && len(want.Coverage) > 0 {
 		names = append(names, "boundary")
 	}
-	cliVerifyObserve(t, f, names, subject)
+	cliVerifyObserve(t, f, names, binary)
+}
+func cliVerifyJSON(t *testing.T, f cliVerifyCase, args []string, want w.Verification, reports []string) result {
+	t.Helper()
+	got := invoke(t, f.Where, args...)
+	x := decode(t, got, "verify")
+	actualReports := cliVerifyReports(t, f)
+	cliVerifyObserveVerification(t, f, want, subject)
 	if got.code != cliVerifyExit(want) || !reflect.DeepEqual(cliVerifyNormalize(decodeData(t, x.Data), actualReports), cliVerifyWire(t, want, reports)) {
 		t.Errorf("verification data/exit %+v\nwant %+v", got, cliVerifyWire(t, want, reports))
 	}
@@ -387,12 +469,14 @@ func Test_APP025_APP026_APP028VerifyExecutablePhases(t *testing.T) {
 					if slug != "" {
 						plainArgs = append(plainArgs, slug)
 					}
-					got := invoke(t, f.Where, plainArgs...)
+					var got result
+					cliVerifyReadonly(t, f, func() { got = invoke(t, f.Where, plainArgs...) })
 					actualReports := cliVerifyReports(t, f)
 					if got.code != 0 || got.err != "" || !reflect.DeepEqual(cliVerifyNormalize(decodeData(t, json.RawMessage(got.out)), actualReports), cliVerifyWire(t, want, reports)) {
 						t.Error("plain complete evidence", got)
 					}
 					coveragePretty(t, got.out)
+					cliVerifyPlainStreams(t, got.err, want, actualReports, reports)
 					cliVerifyObserve(t, f, cliVerifyHookNames(phase, "all"), subject)
 				})
 			}
@@ -555,7 +639,9 @@ func Test_APP025_APP026VerifyEvidenceAndPolicies(t *testing.T) {
 			cliVerifyReadonly(t, f, func() { cliVerifyJSON(t, f, []string{"verify", "--json", "current"}, want, reports) })
 			cliVerifyClear(t, f)
 			outsideBeforePlain := cliVerifyOutside(t, f)
-			got := invoke(t, f.Where, "verify", "current")
+			var got result
+			cliVerifyReadonly(t, f, func() { got = invoke(t, f.Where, "verify", "current") })
+			cliVerifyObserveVerification(t, f, want, subject)
 			if !reflect.DeepEqual(outsideBeforePlain, cliVerifyOutside(t, f)) {
 				t.Error("plain rejected call changed outside content")
 			}
@@ -564,26 +650,22 @@ func Test_APP025_APP026VerifyEvidenceAndPolicies(t *testing.T) {
 				t.Error("plain structured failure evidence", got)
 			}
 			coveragePretty(t, got.out)
-			for _, d := range want.Diagnostics {
-				if !strings.Contains(got.err, d.Code) || d.Path != "" && !strings.Contains(got.err, d.Path) {
-					t.Error("plain diagnostic lost code/path", got.err, d)
-				}
-			}
+			cliVerifyPlainStreams(t, got.err, want, actualReports, reports)
 		})
 	}
 }
 func Test_APP026_APP027VerifyFatalAndArguments(t *testing.T) {
 	outside := t.TempDir()
 	for _, args := range [][]string{{"verify", "current", "extra"}, {"verify", "--unknown"}, {"verify", "--json=true"}, {"verify", "--help=true"}, {"verify", "--projected"}, {"verify", "--history"}, {"verify", "--with-change", "current"}, {"verify", "--", "--json", "extra"}, {"verify", "--unknown", "--help"}, {"verify", "--help", "--json=true"}, {"verify", "--help=true", "--help"}, {"verify", "--projected", "--help"}, {"verify", "--help", "--with-change", "other"}} {
-		assertUsage(t, invoke(t, outside, args...))
-		got := invoke(t, outside, append([]string{"--json"}, args...)...)
+		assertUsage(t, cliVerifyOutsideInvoke(t, outside, args...))
+		got := cliVerifyOutsideInvoke(t, outside, append([]string{"--json"}, args...)...)
 		x := decode(t, got, "verify")
 		if got.code != 2 || string(x.Data) != "null" || len(x.Diagnostics) != 1 || x.Diagnostics[0].Code != "U01" || !strings.Contains(x.Diagnostics[0].Message, "help") {
 			t.Error("JSON usage", got)
 		}
 	}
 	for _, args := range [][]string{{"verify", "--help"}, {"verify", "-h"}, {"--json", "verify", "--help"}, {"verify", "current", "extra", "--help"}, {"verify", "current", "extra", "-h"}, {"--json", "verify", "current", "extra", "--help"}, {"--json", "verify", "current", "extra", "-h"}} {
-		got := invoke(t, outside, args...)
+		got := cliVerifyOutsideInvoke(t, outside, args...)
 		if got.code != 0 {
 			t.Error("verify help", got)
 		}
@@ -653,18 +735,20 @@ func Test_APP026_APP027VerifyFatalAndArguments(t *testing.T) {
 			if slug != "" {
 				plainArgs = append(plainArgs, slug)
 			}
-			got := invoke(t, f.Where, plainArgs...)
-			if got.code != 1 || got.out != "" || !strings.Contains(got.err, code) || !strings.Contains(got.err, err.Error()) {
-				t.Error("plain fatal", got, err)
-			}
+			var got result
+			cliVerifyReadonly(t, f, func() { got = invoke(t, f.Where, plainArgs...) })
+			cliVerifyFatalPlain(t, got, code, err.Error(), 1)
 		})
 	}
-	got := invoke(t, outside, "verify", "--", "--json")
-	if got.code != 1 || got.out != "" || !strings.Contains(got.err, "C05") {
-		t.Error("literal JSON selector was parsed as option", got)
+	got := cliVerifyOutsideInvoke(t, outside, "verify", "--", "--json")
+	_, err := w.Verify(context.Background(), outside, "--json")
+	if err == nil {
+		t.Fatal("literal selector public error absent")
 	}
+	cliVerifyFatalPlain(t, got, "C05", err.Error(), 1)
 }
 func Test_APP026_APP028VerifyWritersAndHookChanges(t *testing.T) {
+	probeBinary, probe := cliVerifyWriterProbe(t)
 	for _, mode := range []string{"data-writer", "diagnostic-writer", "fatal-writer", "usage-writer", "hook-file", "hook-head"} {
 		t.Run(mode, func(t *testing.T) {
 			f := cliVerifyFixture(t, "impl", "sha1", "all", false, false)
@@ -677,34 +761,92 @@ func Test_APP026_APP028VerifyWritersAndHookChanges(t *testing.T) {
 			if mode == "diagnostic-writer" {
 				projectPut(t, f.Root, "units/a/evals/case.txt", "forbidden")
 			}
-			cwd, e := os.Getwd()
-			if e != nil {
-				t.Fatal(e)
+
+			watch := cliVerifyWatchEffects(t, f)
+			public := func() (w.Verification, error) {
+				if mode == "usage-writer" {
+					return w.Verification{}, nil
+				}
+				slug := "current"
+				if mode == "fatal-writer" {
+					slug = "missing"
+				}
+				return w.Verify(context.Background(), f.Where, slug)
 			}
-			if e = os.Chdir(f.Where); e != nil {
-				t.Fatal(e)
+			restore := func() {
+				if mode == "hook-file" {
+					if e := os.Remove(filepath.Join(f.Root, "private/from-hook")); e != nil {
+						t.Fatal(e)
+					}
+				}
+				if mode == "hook-head" {
+					gitFixtureCommand(t, f.Root, "update-ref", "HEAD", f.Head)
+				}
 			}
-			defer os.Chdir(cwd)
-			env := os.Environ()
-			args := []string{"verify", "current", "--json"}
-			var out, errOut bytes.Buffer
-			var code int
+			beforePublic := watch.capture(t)
+			want, publicErr := public()
+			if (mode == "fatal-writer") != (publicErr != nil) {
+				t.Fatal("writer public fatal premise", mode, publicErr)
+			}
+			reports := cliVerifyReports(t, f)
+			afterPublic := watch.capture(t)
+			cliVerifyClear(t, f)
+			restore()
+			if !t.Run("public-control", func(t *testing.T) {
+				before := watch.capture(t)
+				again, e := public()
+				if (e != nil) != (publicErr != nil) {
+					t.Fatal("writer repeat fatal premise", e, publicErr)
+				}
+				if e != nil && e.Error() != publicErr.Error() {
+					t.Fatal("writer repeat fatal message", e, publicErr)
+				}
+				actual := cliVerifyReports(t, f)
+				if !reflect.DeepEqual(cliVerifyWire(t, again, actual), cliVerifyWire(t, want, reports)) {
+					t.Fatal("writer repeat public evidence", again, want)
+				}
+				bin, e := os.Executable()
+				if e != nil {
+					t.Fatal(e)
+				}
+				cliVerifyObserveVerification(t, f, want, bin)
+				cliVerifyAssertEffects(t, cliVerifyReplayEffects(t, beforePublic, afterPublic, before), watch.capture(t))
+			}) {
+				return
+			}
+			cliVerifyClear(t, f)
+			restore()
+			beforeCLI := watch.capture(t)
+			got := probe(t, f, mode)
+			if got.code != 2 {
+				t.Error("output failure exit", got)
+			}
+			cliVerifyObserveVerification(t, f, want, probeBinary)
+			cliVerifyAssertEffects(t, cliVerifyReplayEffects(t, beforePublic, afterPublic, beforeCLI), watch.capture(t))
 			switch mode {
-			case "fatal-writer":
-				code = app.Run([]string{"verify", "missing"}, &out, failedWriter{})
-			case "usage-writer":
-				code = app.Run([]string{"verify", "a", "b"}, &out, failedWriter{})
+			case "fatal-writer", "usage-writer":
+				if got.out != "" {
+					t.Error("failed fatal/usage writer stdout", got)
+				}
 			case "diagnostic-writer":
-				code = app.Run([]string{"verify", "current"}, &out, failedWriter{})
+				if got.out == "" {
+					break
+				}
+				if !strings.Contains(got.out, "\n  ") {
+					t.Error("failed diagnostic writer output lost pretty formatting", got)
+				}
+				var data any
+				if e := json.Unmarshal([]byte(got.out), &data); e != nil {
+					t.Error("failed diagnostic writer lost data", e, got)
+				} else if !reflect.DeepEqual(cliVerifyNormalize(data, cliVerifyReports(t, f)), cliVerifyWire(t, want, reports)) {
+					t.Error("failed diagnostic writer changed data", got)
+				}
 			default:
-				code = app.Run(args, failedWriter{}, &errOut)
+				if got.err != "" {
+					t.Error("failed JSON data writer added stderr", got)
+				}
 			}
-			if code != 2 {
-				t.Error("output failure exit", code)
-			}
-			if !reflect.DeepEqual(env, os.Environ()) {
-				t.Error("writer call changed environment")
-			}
+
 			claim, e := w.LoadClaim(f.Root, "current")
 			if e != nil || claim != f.Claim {
 				t.Error("output failure lost held state", claim, e)
@@ -781,6 +923,7 @@ func Test_APP025_APP026_APP028VerifyRetainsHookMutations(t *testing.T) {
 		for _, jsonMode := range []bool{false, true} {
 			t.Run(fmt.Sprintf("%s/json-%v", kind, jsonMode), func(t *testing.T) {
 				f := cliVerifyFixture(t, "impl", "sha1", "all", false, false)
+				watch := cliVerifyWatchEffects(t, f)
 				replacement := ""
 				switch kind {
 				case "file":
@@ -794,9 +937,29 @@ func Test_APP025_APP026_APP028VerifyRetainsHookMutations(t *testing.T) {
 					replacement = strings.TrimSpace(gitFixtureCommand(t, f.Root, "hash-object", "-w", filepath.Join(f.Plan, "replacement")))
 					projectPut(t, f.Plan, "alpha.replace", replacement)
 				}
-				want, reports := cliVerifyExpected(t, f, "current")
+				beforePublic := watch.capture(t)
+				want, err := w.Verify(context.Background(), f.Where, "current")
+				if err != nil {
+					t.Fatal("post-hook public source", err)
+				}
+				reports := cliVerifyReports(t, f)
+				afterPublic := watch.capture(t)
+				cliVerifyClear(t, f)
 				if cliVerifyExit(want) != 1 || len(want.Diagnostics) == 0 || len(want.Coverage) != 3 {
 					t.Fatal("post-hook public guard premise", want)
+				}
+				restore := func() {
+					if kind == "file" {
+						if e := os.Remove(filepath.Join(f.Root, "private/from-hook")); e != nil {
+							t.Fatal(e)
+						}
+					}
+					if kind == "head" {
+						gitFixtureCommand(t, f.Root, "update-ref", "HEAD", f.Head)
+					}
+					if kind == "release" || kind == "replace" {
+						gitFixtureCommand(t, f.Root, "update-ref", "refs/fireweed/claims/current", f.Claim.Object)
+					}
 				}
 				if kind == "file" {
 					found := false
@@ -806,33 +969,60 @@ func Test_APP025_APP026_APP028VerifyRetainsHookMutations(t *testing.T) {
 					if !found {
 						t.Fatal("post-hook edit missing from public evidence", want.Edits)
 					}
-					if e := os.Remove(filepath.Join(f.Root, "private/from-hook")); e != nil {
-						t.Fatal(e)
-					}
 				}
 				if kind == "head" {
 					if strings.TrimSpace(gitFixtureCommand(t, f.Root, "rev-parse", "HEAD")) == f.Head {
 						t.Fatal("native HEAD mutation absent")
 					}
-					gitFixtureCommand(t, f.Root, "update-ref", "HEAD", f.Head)
 				}
-				if kind == "release" || kind == "replace" {
-					gitFixtureCommand(t, f.Root, "update-ref", "refs/fireweed/claims/current", f.Claim.Object)
+				restore()
+				if !t.Run("public-control", func(t *testing.T) {
+					before := watch.capture(t)
+					again, e := w.Verify(context.Background(), f.Where, "current")
+					if e != nil {
+						t.Fatal("repeated public mutation calibration", e)
+					}
+					actualReports := cliVerifyReports(t, f)
+					if !reflect.DeepEqual(cliVerifyWire(t, again, actualReports), cliVerifyWire(t, want, reports)) {
+						t.Fatal("public mutation evidence not repeatable", again, want)
+					}
+					bin, e := os.Executable()
+					if e != nil {
+						t.Fatal(e)
+					}
+					cliVerifyObserveVerification(t, f, want, bin)
+					cliVerifyAssertEffects(t, cliVerifyReplayEffects(t, beforePublic, afterPublic, before), watch.capture(t))
+					stable := watch.capture(t)
+					marker := "ignored/extra-effect-control"
+					if _, e := os.Lstat(filepath.Join(f.Root, marker)); !os.IsNotExist(e) {
+						t.Fatal("extra-effect control path already exists", e)
+					}
+					projectPut(t, f.Root, marker, "additional adapter effect")
+					if strings.TrimSpace(gitFixtureCommand(t, f.Root, "check-ignore", "--", marker)) != marker || reflect.DeepEqual(stable, watch.capture(t)) {
+						t.Fatal("effect observer missed an additional ignored file")
+					}
+					if e := os.Remove(filepath.Join(f.Root, marker)); e != nil {
+						t.Fatal(e)
+					}
+					cliVerifyAssertEffects(t, stable, watch.capture(t))
+				}) {
+					return
 				}
+				cliVerifyClear(t, f)
+				restore()
+				beforeCLI := watch.capture(t)
 				if jsonMode {
 					cliVerifyJSON(t, f, []string{"verify", "current", "--json"}, want, reports)
 				} else {
 					got := invoke(t, f.Where, "verify", "current")
+					cliVerifyObserveVerification(t, f, want, subject)
 					actualReports := cliVerifyReports(t, f)
 					if got.code != 1 || !reflect.DeepEqual(cliVerifyNormalize(decodeData(t, json.RawMessage(got.out)), actualReports), cliVerifyWire(t, want, reports)) {
 						t.Error("plain post-hook complete evidence", got)
 					}
-					for _, d := range want.Diagnostics {
-						if !strings.Contains(got.err, d.Code) || d.Path != "" && !strings.Contains(got.err, d.Path) {
-							t.Error("post-hook diagnostic dropped", d, got)
-						}
-					}
+					cliVerifyPlainStreams(t, got.err, want, actualReports, reports)
 				}
+				cliVerifyAssertEffects(t, cliVerifyReplayEffects(t, beforePublic, afterPublic, beforeCLI), watch.capture(t))
 				switch kind {
 				case "file":
 					raw, e := os.ReadFile(filepath.Join(f.Root, "private/from-hook"))
