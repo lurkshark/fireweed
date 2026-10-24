@@ -156,6 +156,8 @@ func main(){raw,e:=os.ReadFile(os.Args[1]);var in record;if e!=nil||json.Unmarsh
 		{"coverage-flag", []string{"--json", "verify", "--with-change", "other"}, 2, "U01"},
 		{"help", []string{"--json", "verify", "--help"}, 0, ""},
 		{"short-help", []string{"--json", "verify", "-h"}, 0, ""},
+		{"help-excess-long", []string{"--json", "verify", "current", "extra", "--help"}, 0, ""},
+		{"help-excess-short", []string{"--json", "verify", "current", "extra", "-h"}, 0, ""},
 		{"bad-with-help", []string{"--json", "verify", "--unknown", "--help"}, 2, "U01"},
 		{"valued-with-help", []string{"--json", "verify", "--help", "--json=true"}, 2, "U01"},
 		{"wrong-command-flag-with-help", []string{"--json", "verify", "--projected", "--help"}, 2, "U01"},
@@ -170,10 +172,16 @@ func main(){raw,e:=os.ReadFile(os.Args[1]);var in record;if e!=nil||json.Unmarsh
 				t.Fatal("help/usage/invalid selector accessed Git repository", e)
 			}
 			command := "verify"
-			if tc.name == "help" || tc.name == "short-help" {
+			if tc.code == 0 {
 				command = "help"
 			}
 			x := decode(t, got, command)
+			if tc.code == 0 {
+				var help string
+				if e := json.Unmarshal(x.Data, &help); e != nil || !strings.Contains(help, "verify [<change>]") {
+					t.Error("native help content", e, got)
+				}
+			}
 			if got.code != tc.code {
 				t.Error("before-access result", got)
 			}

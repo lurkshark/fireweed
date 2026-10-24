@@ -1,6 +1,6 @@
 ---
 module: app
-phase: evals
+phase: audit
 run: 4b80bb9e3717387331cca96a
 ---
 
@@ -36,6 +36,10 @@ An explicit empty operand retains the public empty-selector meaning and therefor
 
 This slice does not implement Done, automatic retries, signal/time-limit exit policy, or claim that real regeneration/self-hosting is complete. Those remain separately authored work. The goal's local author authority permits manual execution with the normal unmerged warning; no human merge is asserted.
 
+The fresh formal Audit after EVALS9ded9528 found three remaining gaps; controller Auditfb10e592 returns through EVALS. Add a public-oracle-confirmed controlled C01 discovery failure, valid current configuration/module hook/dependent overrides, and exact outside symlink-target preservation around JSON and plain rejected calls. Keep existing app sources/evals unchanged and correct only new Verify evals. No implementation has been added.
+
+A final pre-freeze APP-027 source review found valid help with excess operands missing from precedence assertions. Add plain/JSON long/short help and native before-access cases while retaining invalid-flag precedence. The in-progress corrected Verify was stopped as obsolete and is excluded; rerun the complete final source before phase advance.
+
 ## Rejected alternatives
 
 Reloading the dirty current project can replace committed approval or fail before returning useful guard evidence. Converting every failed testcase into a command failure would reject legitimate fail-first verification. Dropping structured data on failed checks would hide the evidence needed to fix them. Default Go edit field names would silently change the established CLI wire contract.
@@ -44,6 +48,7 @@ Reloading the dirty current project can replace committed approval or fail befor
 
 - evals | 2026-10-24T18:43:53Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 571 | failing: 63 | passing: 508
 - audit | 2026-10-24T18:49:02Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-24T19:30:05Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 576 | failing: 68 | passing: 508
 
 ## Audit
 

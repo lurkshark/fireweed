@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	app "github.com/lurkshark/fireweed/packages/app"
+	p "github.com/lurkshark/fireweed/packages/project"
 	w "github.com/lurkshark/fireweed/packages/workflow"
 	"os"
 	"os/exec"
@@ -20,6 +21,7 @@ type cliVerifyCase struct {
 	cliStartCase
 	Plan, Raw string
 	Claim     w.Claim
+	Outside   []string
 }
 type cliVerifyCall struct{ Kind, Report, Module, Dir, Bin, Root string }
 
@@ -92,7 +94,7 @@ exit 0
 	if e != nil {
 		t.Fatal(e)
 	}
-	out := cliVerifyCase{f, plan, string(raw), claim}
+	out := cliVerifyCase{cliStartCase: f, Plan: plan, Raw: string(raw), Claim: claim}
 	cliVerifyReport(t, out, "alpha", phase == "evals")
 	cliVerifyReport(t, out, "gamma", false)
 	cliVerifyReport(t, out, "delta", false)
@@ -299,6 +301,15 @@ func cliVerifyHookNames(phase, policy string) []string {
 	}
 	return []string{"alpha", "delta", "gamma", "boundary"}
 }
+func cliVerifyOutside(t *testing.T, f cliVerifyCase) map[string]map[string]string {
+	t.Helper()
+	out := map[string]map[string]string{}
+	for _, path := range f.Outside {
+		out[path] = queueFiles(t, filepath.Dir(path))
+	}
+	return out
+}
+
 func cliVerifyReadonly(t *testing.T, f cliVerifyCase, run func()) {
 	t.Helper()
 	scratch, e := filepath.EvalSymlinks(t.TempDir())
@@ -340,6 +351,7 @@ func cliVerifyReadonly(t *testing.T, f cliVerifyCase, run func()) {
 	t.Setenv("GIT_TRACE2_ENV_VARS", "GIT_DIR,GIT_INDEX_FILE")
 	cliVerifyGitRecorder(t, trace)
 	files, meta, temp := queueFiles(t, f.Root), queueFiles(t, common), queueFiles(t, scratch)
+	outside := cliVerifyOutside(t, f)
 	cwd, e := os.Getwd()
 	if e != nil {
 		t.Fatal(e)
@@ -348,7 +360,7 @@ func cliVerifyReadonly(t *testing.T, f cliVerifyCase, run func()) {
 	run()
 	cliVerifyNoForbiddenGit(t, trace, f.Root, scratch)
 	after, e := os.Getwd()
-	if e != nil || cwd != after || !reflect.DeepEqual(env, os.Environ()) || !reflect.DeepEqual(files, queueFiles(t, f.Root)) || !reflect.DeepEqual(meta, queueFiles(t, common)) || !reflect.DeepEqual(temp, queueFiles(t, scratch)) {
+	if e != nil || cwd != after || !reflect.DeepEqual(env, os.Environ()) || !reflect.DeepEqual(files, queueFiles(t, f.Root)) || !reflect.DeepEqual(meta, queueFiles(t, common)) || !reflect.DeepEqual(temp, queueFiles(t, scratch)) || !reflect.DeepEqual(outside, cliVerifyOutside(t, f)) {
 		t.Error("verify changed original files/ignored/index/HEAD/refs/common Git/temp or parent state")
 	}
 }
@@ -388,7 +400,7 @@ func Test_APP025_APP026_APP028VerifyExecutablePhases(t *testing.T) {
 	}
 }
 func Test_APP025_APP026VerifyEvidenceAndPolicies(t *testing.T) {
-	for _, mode := range []string{"passing-failfirst-rejected", "already-satisfied", "own-failure", "dependent-failure", "transitive-failure", "direct", "none", "warning", "missing-report", "malformed-report", "rich-report", "audit-multiple", "audit-finding", "audit-untestable", "audit-incomplete", "rename", "worker-config", "blocked", "forbidden-eval", "unsafe-current", "malformed-unrelated"} {
+	for _, mode := range []string{"passing-failfirst-rejected", "already-satisfied", "own-failure", "dependent-failure", "transitive-failure", "direct", "none", "warning", "missing-report", "malformed-report", "rich-report", "audit-multiple", "audit-finding", "audit-untestable", "audit-incomplete", "rename", "worker-config", "worker-valid-config", "worker-module-hooks", "blocked", "forbidden-eval", "unsafe-current", "malformed-unrelated"} {
 		t.Run(mode, func(t *testing.T) {
 			phase := "impl"
 			if mode == "passing-failfirst-rejected" || mode == "already-satisfied" {
@@ -441,6 +453,47 @@ func Test_APP025_APP026VerifyEvidenceAndPolicies(t *testing.T) {
 				gitFixtureCommand(t, f.Root, "mv", "units/a/internal/private.txt", "units/a/internal/renamed.txt")
 			case "worker-config":
 				projectPut(t, f.Root, "fireweed.yaml", "invalid: [current worker metadata")
+			case "worker-valid-config":
+				raw, e := os.ReadFile(filepath.Join(f.Root, "fireweed.yaml"))
+				if e != nil {
+					t.Fatal(e)
+				}
+				lines := strings.Split(string(raw), "\n")
+				for i, line := range lines {
+					if strings.HasPrefix(line, "  eval:") {
+						lines[i] = "  eval: 'agent-trap current-eval'"
+					}
+					if strings.HasPrefix(line, "  boundaries:") {
+						lines[i] = "  boundaries: 'agent-trap current-boundaries'"
+					}
+					if strings.HasPrefix(line, "verify_dependents:") {
+						lines[i] = "verify_dependents: none"
+					}
+				}
+				projectPut(t, f.Root, "fireweed.yaml", strings.Join(lines, "\n"))
+				current, e := p.Load(f.Where)
+				if e != nil || current.Config.Hooks.Eval != "agent-trap current-eval" || current.Config.VerifyDependents != "none" {
+					t.Fatal("valid conflicting config premise", e, current.Config)
+				}
+			case "worker-module-hooks":
+				raw, e := os.ReadFile(filepath.Join(f.Root, "units/a/SPEC.md"))
+				if e != nil {
+					t.Fatal(e)
+				}
+				projectPut(t, f.Root, "units/a/SPEC.md", strings.Replace(string(raw), "name: alpha\n", "name: alpha\nhooks: {eval: 'agent-trap current-module-eval', boundaries: 'agent-trap current-module-boundaries'}\n", 1))
+				current, e := p.Load(f.Where)
+				if e != nil {
+					t.Fatal("valid module override premise", e)
+				}
+				found := false
+				for _, m := range current.Modules {
+					if m.Name == "alpha" {
+						found = m.Hooks.Eval == "agent-trap current-module-eval" && m.Hooks.Boundaries == "agent-trap current-module-boundaries"
+					}
+				}
+				if !found {
+					t.Fatal("valid conflicting module hook premise", current.Modules)
+				}
 			case "blocked":
 				projectPut(t, f.Root, f.Path, strings.Replace(f.Raw, "module: alpha\n", "module: alpha\nblocked: resolve the question\n", 1))
 			case "forbidden-eval":
@@ -451,6 +504,13 @@ func Test_APP025_APP026VerifyEvidenceAndPolicies(t *testing.T) {
 				if e := os.Remove(filepath.Join(f.Root, f.Path)); e != nil {
 					t.Fatal(e)
 				}
+				f.Outside = []string{outside}
+				before := cliVerifyOutside(t, f)
+				projectPut(t, filepath.Dir(outside), "outside", "observer mutation")
+				if reflect.DeepEqual(before, cliVerifyOutside(t, f)) {
+					t.Fatal("outside content observer not live")
+				}
+				projectPut(t, filepath.Dir(outside), "outside", f.Raw)
 				if e := os.Symlink(outside, filepath.Join(f.Root, f.Path)); e != nil {
 					t.Fatal(e)
 				}
@@ -459,7 +519,16 @@ func Test_APP025_APP026VerifyEvidenceAndPolicies(t *testing.T) {
 				oid := strings.TrimSpace(gitFixtureCommand(t, f.Root, "hash-object", "-w", filepath.Join(f.Plan, "bad-claim")))
 				gitFixtureCommand(t, f.Root, "update-ref", "refs/fireweed/claims/unrelated", oid)
 			}
+			outsideBeforeOracle := cliVerifyOutside(t, f)
 			want, reports := cliVerifyExpected(t, f, "current")
+			if !reflect.DeepEqual(outsideBeforeOracle, cliVerifyOutside(t, f)) {
+				t.Fatal("public rejected call changed outside content")
+			}
+			if mode == "worker-valid-config" || mode == "worker-module-hooks" {
+				if cliVerifyExit(want) != 1 || len(want.Coverage) != 0 || len(cliVerifyCalls(t, f)) != 0 {
+					t.Fatal("approved current-metadata guard premise", want)
+				}
+			}
 			if mode == "rich-report" {
 				cov := want.Coverage[0]
 				if len(cov.Tests) != 3 || len(cov.Tests[1].Errors) != 1 || cov.Tests[0].Skipped == nil || len(cov.BySpec["ALP-002"]) != 2 || cov.Tests[1].Errors[0].Text != "retained error text" || cov.Tests[0].Skipped.Text != "retained skip text" {
@@ -485,7 +554,11 @@ func Test_APP025_APP026VerifyEvidenceAndPolicies(t *testing.T) {
 			}
 			cliVerifyReadonly(t, f, func() { cliVerifyJSON(t, f, []string{"verify", "--json", "current"}, want, reports) })
 			cliVerifyClear(t, f)
+			outsideBeforePlain := cliVerifyOutside(t, f)
 			got := invoke(t, f.Where, "verify", "current")
+			if !reflect.DeepEqual(outsideBeforePlain, cliVerifyOutside(t, f)) {
+				t.Error("plain rejected call changed outside content")
+			}
 			actualReports := cliVerifyReports(t, f)
 			if got.code != cliVerifyExit(want) || !reflect.DeepEqual(cliVerifyNormalize(decodeData(t, json.RawMessage(got.out)), actualReports), cliVerifyWire(t, want, reports)) {
 				t.Error("plain structured failure evidence", got)
@@ -509,10 +582,13 @@ func Test_APP026_APP027VerifyFatalAndArguments(t *testing.T) {
 			t.Error("JSON usage", got)
 		}
 	}
-	for _, args := range [][]string{{"verify", "--help"}, {"verify", "-h"}, {"--json", "verify", "--help"}} {
+	for _, args := range [][]string{{"verify", "--help"}, {"verify", "-h"}, {"--json", "verify", "--help"}, {"verify", "current", "extra", "--help"}, {"verify", "current", "extra", "-h"}, {"--json", "verify", "current", "extra", "--help"}, {"--json", "verify", "current", "extra", "-h"}} {
 		got := invoke(t, outside, args...)
 		if got.code != 0 {
 			t.Error("verify help", got)
+		}
+		if args[0] != "--json" && !strings.Contains(got.out, "verify [<change>]") {
+			t.Error("plain help content", got)
 		}
 		if args[0] == "--json" {
 			successJSON(t, got, "help")
