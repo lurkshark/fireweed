@@ -28,7 +28,7 @@ func cliVerifyDiscoveryFault(t *testing.T, f cliVerifyCase) func() {
 	projectPut(t, dir, "fault.json", string(cfg))
 	source := `package main
 import("encoding/json";"fmt";"os";"os/exec";"path/filepath"
- "runtime";"strconv";"strings")
+ "strconv";"strings")
 func main(){self,e:=os.Executable();if e!=nil{os.Exit(80)};raw,e:=os.ReadFile(filepath.Join(filepath.Dir(self),"fault.json"));var p struct{Real,Counter string};if e!=nil||json.Unmarshal(raw,&p)!=nil{os.Exit(81)}
  for _,a:=range os.Args[1:]{if a=="--show-toplevel"{raw,_:=os.ReadFile(p.Counter);n,_:=strconv.Atoi(strings.TrimSpace(string(raw)));n++;if os.WriteFile(p.Counter,[]byte(strconv.Itoa(n)),0600)!=nil{os.Exit(82)};if n==2{fmt.Fprintln(os.Stderr,"controlled local approval discovery failure");os.Exit(93)};break}}
  cmd:=exec.Command(p.Real,os.Args[1:]...);cmd.Stdin=os.Stdin;cmd.Stdout=os.Stdout;cmd.Stderr=os.Stderr;if e:=cmd.Run();e!=nil{if x,ok:=e.(*exec.ExitError);ok{os.Exit(x.ExitCode())};os.Exit(83)}}`
@@ -53,9 +53,15 @@ func main(){self,e:=os.Executable();if e!=nil{os.Exit(80)};raw,e:=os.ReadFile(fi
 func Test_APP026_APP028VerifyFatalDiscovery(t *testing.T) {
 	f := cliVerifyFixture(t, "impl", "sha1", "all", false, false)
 	reset := cliVerifyDiscoveryFault(t, f)
-	v, err := w.Verify(context.Background(), f.Where, "current")
-	if err == nil || !strings.HasPrefix(err.Error(), "C01:") || !strings.Contains(err.Error(), "controlled local approval discovery failure") || v.Change != "" || len(cliVerifyCalls(t, f)) != 0 {
-		t.Fatal("public C01 discovery control", v, err)
+	var err error
+	if !t.Run("public-control", func(t *testing.T) {
+		v, e := w.Verify(context.Background(), f.Where, "current")
+		err = e
+		if err == nil || !strings.HasPrefix(err.Error(), "C01:") || !strings.Contains(err.Error(), "controlled local approval discovery failure") || v.Change != "" || len(cliVerifyCalls(t, f)) != 0 {
+			t.Fatal("public C01 discovery control", v, err)
+		}
+	}) {
+		return
 	}
 	reset()
 	cliVerifyReadonly(t, f, func() {

@@ -1,6 +1,6 @@
 ---
 module: app
-phase: evals
+phase: audit
 run: 4b80bb9e3717387331cca96a
 ---
 
@@ -42,6 +42,8 @@ A final pre-freeze APP-027 source review found valid help with excess operands m
 
 Fresh formal Audit after EVALSc1d32187 found one remaining APP-025 gap: ignored caller-side current metadata reads. Controller Audit9193a842 returns through EVALS. The new selective native observer permits legitimate owned verification writes and Git children, denies current config/module content reads in the caller, and retains native stdin/prompt/network controls. Public Verify must first reproduce exact success/rejection evidence under this observer. All six ignored-error controls and five public calibrations pass; actual CLI calls still genuinely fail because the command is absent. The discovery-fault helper also now names its proxy with .exe on Windows; this does not claim Windows runtime execution.
 
+Fresh formal Audit after EVALSc6d47169 found the Windows proxy suffix edit also introduced an unused runtime import inside generated fault.go. Controller Auditfa1c2762 returns through EVALS. Remove only that embedded import, keep the outer platform suffix, and expose the existing public C01 calibration as a separately recorded public-control subcase. Complete evidence must include that passing control plus actual JSON/plain C01 assertion execution; the prior603 reports are superseded incomplete assertion evidence. No implementation has been added.
+
 ## Rejected alternatives
 
 Reloading the dirty current project can replace committed approval or fail before returning useful guard evidence. Converting every failed testcase into a command failure would reject legitimate fail-first verification. Dropping structured data on failed checks would hide the evidence needed to fix them. Default Go edit field names would silently change the established CLI wire contract.
@@ -54,6 +56,7 @@ Reloading the dirty current project can replace committed approval or fail befor
 - audit | 2026-10-24T19:34:18Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-24T20:09:28Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 603 | failing: 84 | passing: 519
 - audit | 2026-10-24T20:11:34Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-24T20:39:51Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 604 | failing: 84 | passing: 520
 
 ## Audit
 
