@@ -17,9 +17,23 @@ type bsdProcessInfo struct {
 	sec, usec uint64
 }
 
+type lifetimeInfo struct {
+	uuid                   [16]byte
+	unique, parent         uint64
+	version, parentVersion int32
+	reserved               [2]uint64
+}
+
 func nativeProcess(pid int) (processRef, error) {
-	var info bsdProcessInfo
-	n, _, errno := syscall.Syscall6(syscall.SYS_PROC_INFO, 2, uintptr(pid), 3, 0, uintptr(unsafe.Pointer(&info)), unsafe.Sizeof(info))
+	var combined struct {
+		bsd      bsdProcessInfo
+		lifetime lifetimeInfo
+	}
+	// Include zombies: started() runs before our Wait, so even an already
+	// exited child still supplies its exact lifetime identity safely.
+	n, _, errno := syscall.Syscall6(syscall.SYS_PROC_INFO, 2, uintptr(pid), 18, 1, uintptr(unsafe.Pointer(&combined)), unsafe.Sizeof(combined))
+	runtime.KeepAlive(&combined)
+	info := combined.bsd
 	runtime.KeepAlive(&info)
 	if errno != 0 {
 		return processRef{}, errno
@@ -27,18 +41,22 @@ func nativeProcess(pid int) (processRef, error) {
 	if n == 0 {
 		return processRef{}, os.ErrProcessDone
 	}
-	if n != unsafe.Sizeof(info) || int(info.fields[3]) != pid {
+	if n != unsafe.Sizeof(combined) || int(info.fields[3]) != pid {
 		return processRef{}, fmt.Errorf("incomplete process metadata for %d", pid)
 	}
-	return processRef{pid: pid, parent: int(info.fields[4]), birth: [2]uint64{info.sec, info.usec}, stopped: info.fields[1] == 4, dead: info.fields[1] == 5}, nil
+	return processRef{pid: pid, parent: int(info.fields[4]), birth: [2]uint64{info.sec, info.usec}, unique: combined.lifetime.unique, parentUnique: combined.lifetime.parent, stopped: info.fields[1] == 4, dead: info.fields[1] == 5}, nil
 }
 
 func nativeChildren(pid int) ([]int, error) {
+	return nativePIDs(6, pid)
+}
+
+func nativePIDs(kind, pid int) ([]int, error) {
 	// PROC_INFO_CALL_LISTPIDS / PROC_PPID_ONLY: no external command or
 	// repository input is consulted while inspecting the stopped parent.
 	for size := 32; size <= 1<<20; size *= 2 {
 		pids := make([]int32, size)
-		n, _, errno := syscall.Syscall6(syscall.SYS_PROC_INFO, 1, 6, uintptr(pid), 0, uintptr(unsafe.Pointer(&pids[0])), uintptr(len(pids)*4))
+		n, _, errno := syscall.Syscall6(syscall.SYS_PROC_INFO, 1, uintptr(kind), uintptr(pid), 0, uintptr(unsafe.Pointer(&pids[0])), uintptr(len(pids)*4))
 		runtime.KeepAlive(pids)
 		if errno != 0 {
 			return nil, errno
@@ -58,4 +76,41 @@ func nativeChildren(pid int) ([]int, error) {
 		return result, nil
 	}
 	return nil, fmt.Errorf("child process inventory exceeded capacity for %d", pid)
+}
+
+func nativeOwned(ancestors []processRef) ([]processRef, error) {
+	identities := map[uint64]bool{}
+	for _, ref := range ancestors {
+		if ref.unique != 0 {
+			identities[ref.unique] = true
+		}
+	}
+	if len(identities) == 0 {
+		return nil, nil
+	}
+	pids, err := nativePIDs(1, 0)
+	if err != nil {
+		return nil, err
+	}
+	refs := make([]processRef, 0, len(pids))
+	for _, pid := range pids {
+		ref, err := nativeProcess(pid)
+		if err == nil {
+			refs = append(refs, ref)
+		}
+	}
+	result, seen := []processRef{}, map[uint64]bool{}
+	for {
+		added := false
+		for _, ref := range refs {
+			if ref.unique == 0 || seen[ref.unique] || !identities[ref.parentUnique] {
+				continue
+			}
+			seen[ref.unique], identities[ref.unique], added = true, true, true
+			result = append(result, ref)
+		}
+		if !added {
+			return result, nil
+		}
+	}
 }

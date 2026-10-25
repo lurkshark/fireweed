@@ -14,7 +14,7 @@ import (
 )
 
 type treeControl interface {
-	started(*exec.Cmd) error
+	started(context.Context, *exec.Cmd) error
 	stop(*exec.Cmd) error
 	close()
 }
@@ -55,12 +55,13 @@ func execute(ctx context.Context, dir string, argv, overrides []string, stdout, 
 	defer control.close()
 	// Cancellation cannot race assignment/resumption of a suspended Windows child.
 	var startup sync.Mutex
-	command.Cancel = func() error { startup.Lock(); defer startup.Unlock(); return control.stop(command) }
+	stop := func() error { startup.Lock(); defer startup.Unlock(); return control.stop(command) }
+	command.Cancel = stop
 	startup.Lock()
 	startErr := command.Start()
 	var setupErr error
 	if startErr == nil {
-		setupErr = control.started(command)
+		setupErr = control.started(ctx, command)
 		if setupErr != nil {
 			_ = control.stop(command)
 			_ = command.Process.Kill()
@@ -73,12 +74,29 @@ func execute(ctx context.Context, dir string, argv, overrides []string, stdout, 
 		}
 		return 2, fmt.Errorf("start executable %q: %w", args[0], startErr)
 	}
+	// Cmd's context watcher can finish when its direct child exits even while
+	// inherited pipes are still open. Ownership lasts until this whole call ends.
+	finished, watcherDone := make(chan struct{}), make(chan struct{})
+	go func() {
+		defer close(watcherDone)
+		select {
+		case <-ctx.Done():
+			_ = stop()
+		case <-finished:
+		}
+	}()
 	waitErr := command.Wait()
+	close(finished)
+	<-watcherDone
 	if err := ctx.Err(); err != nil {
+		_ = stop()
 		return -1, err
 	}
 	if setupErr != nil {
 		return 2, fmt.Errorf("establish process tree: %w", setupErr)
+	}
+	if result, ok := control.(interface{ outcome(error) (int, error) }); ok {
+		return result.outcome(waitErr)
 	}
 	if waitErr == nil {
 		return 0, nil

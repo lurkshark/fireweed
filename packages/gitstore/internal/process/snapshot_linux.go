@@ -65,3 +65,7 @@ func nativeChildren(pid int) ([]int, error) {
 	}
 	return result, nil
 }
+
+// Linux needs an isolated subreaper for retained ownership after reparenting;
+// its procfs parent IDs alone do not retain the original parent lifetime.
+func nativeOwned(ancestors []processRef) ([]processRef, error) { return nil, nil }

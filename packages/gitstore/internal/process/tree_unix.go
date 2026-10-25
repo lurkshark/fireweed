@@ -3,6 +3,7 @@
 package process
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -12,9 +13,10 @@ import (
 )
 
 type processRef struct {
-	pid, parent   int
-	birth         [2]uint64
-	stopped, dead bool
+	pid, parent          int
+	birth                [2]uint64
+	unique, parentUnique uint64
+	stopped, dead        bool
 }
 
 func sameProcess(a, b processRef) bool { return a.pid == b.pid && a.birth == b.birth }
@@ -27,11 +29,11 @@ type groupControl struct {
 	known bool
 }
 
-func newTree(command *exec.Cmd) (treeControl, error) {
+func newGroupTree(command *exec.Cmd) (treeControl, error) {
 	command.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	return &groupControl{}, nil
 }
-func (control *groupControl) started(command *exec.Cmd) error {
+func (control *groupControl) started(_ context.Context, command *exec.Cmd) error {
 	// A short-lived child may already have exited. Optional metadata must
 	// not replace an otherwise ordinary successful launch with an error.
 	if ref, err := nativeProcess(command.Process.Pid); err == nil {
@@ -46,9 +48,7 @@ func (control *groupControl) stop(command *exec.Cmd) error {
 		return os.ErrProcessDone
 	}
 	root, err := nativeProcess(command.Process.Pid)
-	if err == nil && control.known && !sameProcess(root, control.root) {
-		return os.ErrProcessDone
-	}
+	replaced := err == nil && control.known && !sameProcess(root, control.root)
 	var held []processRef
 	seen := map[int]bool{}
 	var discover func(processRef, bool) error
@@ -117,10 +117,35 @@ func (control *groupControl) stop(command *exec.Cmd) error {
 		return stoppedErr
 	}
 	var stopErr error
-	if err == nil {
+	if err == nil && !replaced {
 		stopErr = discover(root, true)
 	} else if !processGone(err) {
 		stopErr = err
+	}
+	// Native lifetime identities retain an original parent edge after
+	// reparenting. Keep discovered identities even when that process exits.
+	ancestors := []processRef{control.root}
+	observed := map[[3]uint64]bool{}
+	for {
+		ancestors = append(ancestors, held...)
+		candidates, err := nativeOwned(ancestors)
+		if err != nil {
+			stopErr = errors.Join(stopErr, err)
+			break
+		}
+		added := false
+		for _, candidate := range candidates {
+			key := [3]uint64{uint64(candidate.pid), candidate.birth[0], candidate.birth[1]}
+			if observed[key] {
+				continue
+			}
+			observed[key], added = true, true
+			ancestors = append(ancestors, candidate)
+			stopErr = errors.Join(stopErr, discover(candidate, false))
+		}
+		if !added {
+			break
+		}
 	}
 	// Kill descendants before stopped parents, rechecking creation identity.
 	// Cleanup continues even if a stop or metadata operation failed.
@@ -143,8 +168,11 @@ func (control *groupControl) stop(command *exec.Cmd) error {
 	// The original group also covers inherited pipes and same-group children
 	// whose direct parent already exited. Kill the root separately in case
 	// the executable changed its own group after launch.
-	groupErr := syscall.Kill(-command.Process.Pid, syscall.SIGKILL)
-	rootErr := command.Process.Kill()
+	groupErr, rootErr := error(os.ErrProcessDone), error(os.ErrProcessDone)
+	if !replaced {
+		groupErr = syscall.Kill(-command.Process.Pid, syscall.SIGKILL)
+		rootErr = command.Process.Kill()
+	}
 	if groupErr != nil && !processGone(groupErr) {
 		stopErr = errors.Join(stopErr, groupErr)
 	}

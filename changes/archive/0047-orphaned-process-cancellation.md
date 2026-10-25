@@ -3,7 +3,7 @@ fixes:
     - GIT-006
     - GIT-010
 module: gitstore
-phase: impl
+phase: applied
 run: 358434da4d3867892641e21f
 ---
 
@@ -31,6 +31,8 @@ The ordinary discovery artifacts orphaned-group-cancellation-probe.{go,json} and
 
 The rebuild goal authorizes local authored execution and controller-owned phase/archive commits. Use only the pinned bootstrap as controller, with independently built NEW subjects; leave the reference checkout unchanged. Record ordinary local unmerged warnings without claiming a human merge. No push, publication or release tags.
 
+The implementation retains a cancellation watcher for the complete public call, including inherited streams after the direct command has exited. On macOS, native creation/lifetime identities and stable original-parent identities locate reparented owned descendants; cancellation freezes live parents before child discovery and checks identities before signals. On Linux, each call uses a separate statically linked helper with PR_SET_CHILD_SUBREAPER, so adopted descendants remain scoped to that call across parent exits, groups and sessions. Only this helper becomes a subreaper. It reaps its own children, forwards exact streams and reports the requested executable's outcome over private close-on-exec descriptors. The target retains its original argv, environment and working directory. Combined Run streams share one target pipe; Capture keeps two. The parent loads an architecture-specific, source-generated compressed helper through an anonymous memfd. No calling-program initializer, shell, Go compiler, bootstrap, external helper installation or network is involved at runtime. Helper source and reproducible generation instructions live in the same disposable implementation zone; tracked images support all Go Linux architectures. Ordinary uncancelled completion follows root-exit and stream-drain semantics. Windows retains its existing suspended-start job ownership.
+
 ## Rejected alternatives
 
 Current-parent enumeration loses children after reparenting. Killing only the original process group misses independently grouped or session-separated work. Broad same-image, caller-session, user or orphan sweeps can kill unrelated processes. Returning before an owned orphan stops permits delayed writes. Weakening the existing contract or editing frozen evals during implementation would conceal the remaining bug.
@@ -39,6 +41,7 @@ Current-parent enumeration loses children after reparenting. Killing only the or
 
 - evals | 2026-10-25T06:59:54Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 499 | failing: 14 | passing: 485
 - audit | 2026-10-25T07:02:58Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- impl | 2026-10-25T09:22:47Z | agent: manual | fireweed: 0.4.0 | playbook: 653912b194316c62181f62d0a69dc213f7668481ea8b1b9926ef889dd48a9e08 | tests: 3993 | failing: 0 | passing: 3993
 
 ## Audit
 

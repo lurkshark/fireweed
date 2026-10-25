@@ -1,6 +1,7 @@
 package process
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
@@ -60,7 +61,7 @@ func newTree(command *exec.Cmd) (treeControl, error) {
 	command.SysProcAttr = &syscall.SysProcAttr{CreationFlags: 0x4} // CREATE_SUSPENDED
 	return control, nil
 }
-func (control *jobControl) started(command *exec.Cmd) error {
+func (control *jobControl) started(_ context.Context, command *exec.Cmd) error {
 	process, err := syscall.OpenProcess(0x101, false, uint32(command.Process.Pid)) // SET_QUOTA | TERMINATE
 	if err != nil {
 		return err
