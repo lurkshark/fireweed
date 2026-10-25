@@ -1,8 +1,10 @@
 ---
-module: gitstore
 fixes:
-  - GIT-006
-  - GIT-010
+    - GIT-006
+    - GIT-010
+module: gitstore
+phase: audit
+run: d554bc098ada714fba6d6935
 ---
 
 ## Motivation
@@ -34,3 +36,7 @@ The rebuild goal authorizes local authoring and controller-owned worker/phase/ar
 ## Rejected alternatives
 
 Polling only current parents, or retaining only an original direct-parent edge, loses descendants once intermediary identities vanish. Killing only the initial process group misses independent groups and sessions. Same-image, caller-session, user or whole-application sweeps endanger unrelated work. Returning before an owned descendant stops permits delayed writes. Editing frozen evals during implementation or weakening the existing entire-tree contract would conceal the bug.
+
+## Provenance
+
+- evals | 2026-10-25T14:57:20Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 535 | failing: 14 | passing: 521
