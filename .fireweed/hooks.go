@@ -3,6 +3,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
@@ -13,9 +14,12 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 )
 
 type Case struct {
@@ -33,6 +37,10 @@ type Suite struct {
 func main() {
 	if len(os.Args) < 2 {
 		os.Exit(2)
+	}
+	if os.Args[1] == "eval-one" {
+		runOneEvals()
+		return
 	}
 	if os.Args[1] == "eval" {
 		runEvals()
@@ -112,13 +120,248 @@ func main() {
 	}
 }
 
-// Collection failures are never ID-linked fail-first evidence. In particular,
-// a testcase that started but never completed must not serialize as passing.
+type goListEvent struct{ Action, Package, Test, Output string }
+type rootInventory map[string]map[string]bool
+
+func enumerateRoots(scope string) (rootInventory, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "go", "test", "-json", "-list", ".", scope)
+	var out, stderr bytes.Buffer
+	cmd.Stdout, cmd.Stderr = &out, &stderr
+	runErr := cmd.Run()
+	inv := rootInventory{}
+	active, seen := map[string]bool{}, map[string]bool{}
+	dec := json.NewDecoder(&out)
+	for {
+		var e goListEvent
+		err := dec.Decode(&e)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, fmt.Errorf("invalid Go listing JSON: %w", err)
+		}
+		if e.Test != "" {
+			return nil, fmt.Errorf("listing unexpectedly executed testcase %s", e.Test)
+		}
+		switch e.Action {
+		case "start":
+			if seen[e.Package] {
+				return nil, fmt.Errorf("duplicate listed package %s", e.Package)
+			}
+			if e.Package == "" {
+				return nil, fmt.Errorf("listing has unnamed package")
+			}
+			seen[e.Package], active[e.Package] = true, true
+			inv[e.Package] = map[string]bool{}
+		case "pass", "skip":
+			if !active[e.Package] {
+				return nil, fmt.Errorf("listed package terminal without start: %s", e.Package)
+			}
+			delete(active, e.Package)
+		case "fail":
+			return nil, fmt.Errorf("Go package listing failed: %s\n%s", e.Package, stderr.String())
+		}
+		if e.Output != "" {
+			for _, line := range strings.Split(e.Output, "\n") {
+				name := strings.TrimSpace(line)
+				if !token.IsIdentifier(name) || !(strings.HasPrefix(name, "Test") || strings.HasPrefix(name, "Example") || strings.HasPrefix(name, "Fuzz")) {
+					continue
+				}
+				if !active[e.Package] {
+					return nil, fmt.Errorf("listed root outside active package: %s", name)
+				}
+				if inv[e.Package][name] {
+					return nil, fmt.Errorf("duplicate listed root %s/%s", e.Package, name)
+				}
+				inv[e.Package][name] = true
+			}
+		}
+	}
+	if runErr != nil {
+		return nil, fmt.Errorf("Go listing failed: %w\n%s", runErr, stderr.String())
+	}
+	if len(inv) == 0 || len(active) != 0 {
+		return nil, fmt.Errorf("incomplete Go package listing")
+	}
+	return inv, nil
+}
+
+func reportProblem(suite *Suite, problem string) {
+	suite.Cases = append(suite.Cases, Case{Name: "fireweed Go collection error", Class: "fireweed.reporter", Error: &problem})
+}
+
+func writeSuite(suite Suite, report string, failed bool) {
+	raw, err := xml.Marshal(suite)
+	if err == nil {
+		err = os.WriteFile(report, raw, 0644)
+	}
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(2)
+	}
+	if failed {
+		os.Exit(1)
+	}
+}
+
 func runEvals() {
 	if len(os.Args) != 4 {
 		os.Exit(2)
 	}
-	cmd := exec.Command("go", "test", "-timeout=45m", "-json", "./"+os.Args[2]+"/...")
+	inv, err := enumerateRoots("./" + os.Args[2] + "/...")
+	if err != nil {
+		suite := Suite{}
+		reportProblem(&suite, err.Error())
+		writeSuite(suite, os.Args[3], true)
+		return
+	}
+	unique := map[string]bool{}
+	for _, roots := range inv {
+		for root := range roots {
+			unique[root] = true
+		}
+	}
+	roots := []string{}
+	for root := range unique {
+		roots = append(roots, root)
+	}
+	sort.Strings(roots)
+	count := 2
+	if len(roots) < 2 {
+		count = 1
+	}
+	groups := make([][]string, count)
+	bucket := map[string]int{}
+	for i, root := range roots {
+		group := i % count
+		bucket[root] = group
+		groups[group] = append(groups[group], regexp.QuoteMeta(root))
+	}
+	temp, err := os.MkdirTemp("", "fireweed-eval-shards-")
+	if err != nil {
+		suite := Suite{}
+		reportProblem(&suite, err.Error())
+		writeSuite(suite, os.Args[3], true)
+		return
+	}
+	exe, err := os.Executable()
+	if err != nil {
+		os.RemoveAll(temp)
+		suite := Suite{}
+		reportProblem(&suite, err.Error())
+		writeSuite(suite, os.Args[3], true)
+		return
+	}
+	type shard struct {
+		suite          Suite
+		packages       map[string]bool
+		output, stderr string
+		err            error
+	}
+	results := make([]shard, count)
+	var wg sync.WaitGroup
+	for i := 0; i < count; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			pattern := "^$"
+			if len(groups[i]) > 0 {
+				pattern = "^(" + strings.Join(groups[i], "|") + ")$"
+			}
+			report := filepath.Join(temp, strconv.Itoa(i)+".xml")
+			ctx, cancel := context.WithTimeout(context.Background(), 85*time.Minute)
+			defer cancel()
+			cmd := exec.CommandContext(ctx, exe, "eval-one", os.Args[2], report, pattern)
+			var out, stderr bytes.Buffer
+			cmd.Stdout, cmd.Stderr = &out, &stderr
+			result := shard{err: cmd.Run(), output: out.String(), stderr: stderr.String()}
+			raw, readErr := os.ReadFile(report)
+			if readErr != nil {
+				result.err = fmt.Errorf("missing shard report: %w", readErr)
+			} else if parseErr := xml.Unmarshal(raw, &result.suite); parseErr != nil {
+				result.err = fmt.Errorf("invalid shard report: %w", parseErr)
+			}
+			raw, readErr = os.ReadFile(report + ".packages")
+			if readErr != nil {
+				result.err = fmt.Errorf("missing shard package collection: %w", readErr)
+			} else if parseErr := json.Unmarshal(raw, &result.packages); parseErr != nil {
+				result.err = fmt.Errorf("invalid shard package collection: %w", parseErr)
+			}
+			results[i] = result
+		}(i)
+	}
+	wg.Wait()
+	os.RemoveAll(temp)
+	suite := Suite{}
+	failed := false
+	allCases := map[string]bool{}
+	for i, result := range results {
+		fmt.Print(result.output)
+		fmt.Fprint(os.Stderr, result.stderr)
+		problems := []string{}
+		if len(result.packages) != len(inv) {
+			problems = append(problems, "shard package inventory differs")
+		}
+		for pkg := range inv {
+			if !result.packages[pkg] {
+				problems = append(problems, "shard omitted package "+pkg)
+			}
+		}
+		observed := rootInventory{}
+		legitimateFailure := false
+		for _, c := range result.suite.Cases {
+			key := c.Class + "/" + c.Name
+			if allCases[key] {
+				problems = append(problems, "duplicate testcase across shards: "+key)
+			}
+			allCases[key] = true
+			suite.Cases = append(suite.Cases, c)
+			if c.Failure != nil || c.Error != nil {
+				failed = true
+				legitimateFailure = true
+			}
+			if c.Class == "fireweed.reporter" {
+				continue
+			}
+			if !strings.Contains(c.Name, "/") {
+				if observed[c.Class] == nil {
+					observed[c.Class] = map[string]bool{}
+				}
+				observed[c.Class][c.Name] = true
+				if !inv[c.Class][c.Name] || bucket[c.Name] != i {
+					problems = append(problems, "unexpected shard root "+key)
+				}
+			}
+		}
+		for pkg, expected := range inv {
+			for root := range expected {
+				if bucket[root] == i && !observed[pkg][root] {
+					problems = append(problems, "shard omitted root "+pkg+"/"+root)
+				}
+			}
+		}
+		if result.err != nil {
+			failed = true
+			if !legitimateFailure {
+				problems = append(problems, "shard execution failed: "+result.err.Error())
+			}
+		}
+		if len(problems) > 0 {
+			sort.Strings(problems)
+			reportProblem(&suite, strings.Join(problems, "\n"))
+			failed = true
+		}
+	}
+	writeSuite(suite, os.Args[3], failed)
+}
+
+func runOneEvals() {
+	if len(os.Args) != 5 {
+		os.Exit(2)
+	}
+	cmd := exec.Command("go", "test", "-timeout=45m", "-json", "./"+os.Args[2]+"/...", "-run", os.Args[4])
 	var output bytes.Buffer
 	cmd.Stdout = &output
 	cmd.Stderr = os.Stderr
@@ -133,6 +376,7 @@ func runEvals() {
 	packageFailures := map[string]bool{}
 	collection := []string{}
 	seenPackage := false
+	seenStarts := map[string]bool{}
 	for {
 		var ev struct{ Action, Package, Test, Output string }
 		err := dec.Decode(&ev)
@@ -153,10 +397,20 @@ func runEvals() {
 			}
 			switch ev.Action {
 			case "start":
+				if seenStarts[ev.Package] {
+					collection = append(collection, "Duplicate package start: "+ev.Package)
+				}
+				seenStarts[ev.Package] = true
 				packages[ev.Package] = true
 			case "pass", "skip":
+				if !packages[ev.Package] {
+					collection = append(collection, "Package terminal without active start: "+ev.Package)
+				}
 				delete(packages, ev.Package)
 			case "fail":
+				if !packages[ev.Package] {
+					collection = append(collection, "Package terminal without active start: "+ev.Package)
+				}
 				delete(packages, ev.Package)
 				packageFailures[ev.Package] = true
 			}
@@ -210,10 +464,28 @@ func runEvals() {
 	if len(indexes) == 0 && len(packageFailures) == 0 && commandErr != nil {
 		collection = append(collection, "No testcase collection completed")
 	}
+	for pkg := range seenStarts {
+		for _, line := range strings.Split(logs[pkg], "\n") {
+			text := strings.TrimSpace(line)
+			if strings.HasPrefix(text, "exit status ") {
+				code, err := strconv.Atoi(strings.TrimPrefix(text, "exit status "))
+				if err == nil && code > 1 {
+					collection = append(collection, "Abnormal test process exit: "+pkg+": "+text)
+				}
+			}
+		}
+	}
 	if len(collection) > 0 {
 		sort.Strings(collection)
 		text := strings.Join(collection, "\n\n")
 		suite.Cases = append(suite.Cases, Case{Name: "fireweed Go collection error", Class: "fireweed.reporter", Error: &text})
+	}
+	meta, err := json.Marshal(seenStarts)
+	if err != nil {
+		panic(err)
+	}
+	if err = os.WriteFile(os.Args[3]+".packages", meta, 0600); err != nil {
+		panic(err)
 	}
 	b, err := xml.Marshal(suite)
 	if err != nil {
