@@ -1,6 +1,6 @@
 ---
 module: app
-phase: evals
+phase: audit
 run: 4b80bb9e3717387331cca96a
 ---
 
@@ -62,6 +62,8 @@ Fresh formal Audit after corrected648 EVALS3fc7dff found boundary-only C15 prese
 
 The next complete652 Verify rejected one public observer calibration: structured-rejection repeat returned nil error when its undocumented five-second test deadline expired under the complete suite. Exclude that report; do not run Done from it. The design requires bounded execution and imposes no five-second CLI limit. Keep all original app evals unchanged; give new Verify calls and live public/probe calibrations one explicit30-second fixture bound, using public Capture for separate streams and owned-process-tree cancellation. Preserve every source/state/wire/diagnostic/noninteractive assertion and strict control requirement. Recalibrate before complete gates.
 
+Fresh formal Audit after EVALS0dc445c found canonical envelope key spelling unasserted because Go struct decoding accepts case-insensitive names. Controller Audit returns EVALS. New Verify-only key inspection requires exactly the four canonical keys, rejects duplicate/unknown/case-variant keys and extra output, and calibrates valid null/help/structured data with whitespace/key-order tolerance. Every new Verify JSON path uses it, including usage/help, fatal, native before-access, selective metadata and live stdio. Original app evals and implementation remain unchanged.
+
 ## Rejected alternatives
 
 Reloading the dirty current project can replace committed approval or fail before returning useful guard evidence. Converting every failed testcase into a command failure would reject legitimate fail-first verification. Dropping structured data on failed checks would hide the evidence needed to fix them. Default Go edit field names would silently change the established CLI wire contract.
@@ -82,6 +84,7 @@ Reloading the dirty current project can replace committed approval or fail befor
 - audit | 2026-10-24T23:03:51Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-25T00:07:01Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 652 | failing: 102 | passing: 550
 - audit | 2026-10-25T01:31:33Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-25T02:08:39Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 653 | failing: 102 | passing: 551
 
 ## Audit
 

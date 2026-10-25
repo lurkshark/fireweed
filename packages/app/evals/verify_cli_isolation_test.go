@@ -177,8 +177,11 @@ func main(){raw,e:=os.ReadFile(os.Args[1]);var in record;if e!=nil||json.Unmarsh
 			if tc.code == 0 {
 				command = "help"
 			}
-			x := decode(t, got, command)
+			x := cliVerifyDecode(t, got, command)
 			if tc.code == 0 {
+				if len(x.Diagnostics) != 0 {
+					t.Error("native JSON help diagnostics", got)
+				}
 				var help string
 				if e := json.Unmarshal(x.Data, &help); e != nil || !strings.Contains(help, "verify [<change>]") {
 					t.Error("native help content", e, got)
@@ -372,7 +375,7 @@ func main(){if os.Chdir(os.Args[1])!=nil{os.Exit(80)};mode:=os.Args[2];cwd,_:=os
 					if format == "plain" {
 						cliVerifyFatalPlain(t, r, code, publicErr.Error(), exit)
 					} else {
-						x := decode(t, r, "verify")
+						x := cliVerifyDecode(t, r, "verify")
 						var envelope map[string]any
 						if e := json.Unmarshal([]byte(r.out), &envelope); e != nil {
 							t.Fatal(e)
@@ -395,7 +398,7 @@ func main(){if os.Chdir(os.Args[1])!=nil{os.Exit(80)};mode:=os.Args[2];cwd,_:=os
 						t.Error("stdio exit", r)
 					}
 					if format == "json" {
-						x := decode(t, r, "verify")
+						x := cliVerifyDecode(t, r, "verify")
 						if !reflect.DeepEqual(cliVerifyNormalize(decodeData(t, x.Data), actual), cliVerifyWire(t, want, reports)) {
 							t.Error("stdio call changed evidence", r)
 						}

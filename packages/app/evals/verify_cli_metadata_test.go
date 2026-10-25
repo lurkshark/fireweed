@@ -150,7 +150,7 @@ func main(){raw,e:=os.ReadFile(os.Args[1]);var in input;if e!=nil||json.Unmarsha
 						got := result{out.Code, out.Out, out.Err}
 						actual := cliVerifyReports(t, f)
 						if mode == "json" {
-							x := decode(t, got, "verify")
+							x := cliVerifyDecode(t, got, "verify")
 							var envelope map[string]any
 							if e := json.Unmarshal([]byte(got.out), &envelope); e != nil {
 								t.Fatal(e)

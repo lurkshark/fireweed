@@ -70,7 +70,7 @@ func Test_APP026_APP028VerifyFatalDiscovery(t *testing.T) {
 			t.Fatal("discovery fixture was consumed by harness setup", e, string(raw))
 		}
 		got := cliVerifyInvoke(t, f.Where, "verify", "current", "--json")
-		x := decode(t, got, "verify")
+		x := cliVerifyDecode(t, got, "verify")
 		var envelope map[string]any
 		if e := json.Unmarshal([]byte(got.out), &envelope); e != nil {
 			t.Fatal(e)

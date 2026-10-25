@@ -353,7 +353,7 @@ func cliVerifyObserveVerification(t *testing.T, f cliVerifyCase, want w.Verifica
 func cliVerifyJSON(t *testing.T, f cliVerifyCase, args []string, want w.Verification, reports []string) result {
 	t.Helper()
 	got := cliVerifyInvoke(t, f.Where, args...)
-	x := decode(t, got, "verify")
+	x := cliVerifyDecode(t, got, "verify")
 	actualReports := cliVerifyReports(t, f)
 	cliVerifyObserveVerification(t, f, want, subject)
 	if got.code != cliVerifyExit(want) || !reflect.DeepEqual(cliVerifyNormalize(decodeData(t, x.Data), actualReports), cliVerifyWire(t, want, reports)) {
@@ -721,7 +721,7 @@ func Test_APP026_APP027VerifyFatalAndArguments(t *testing.T) {
 	for _, args := range [][]string{{"verify", "current", "extra"}, {"verify", "--unknown"}, {"verify", "--json=true"}, {"verify", "--help=true"}, {"verify", "--projected"}, {"verify", "--history"}, {"verify", "--with-change", "current"}, {"verify", "--", "--json", "extra"}, {"verify", "--unknown", "--help"}, {"verify", "--help", "--json=true"}, {"verify", "--help=true", "--help"}, {"verify", "--projected", "--help"}, {"verify", "--help", "--with-change", "other"}} {
 		assertUsage(t, cliVerifyOutsideInvoke(t, outside, args...))
 		got := cliVerifyOutsideInvoke(t, outside, append([]string{"--json"}, args...)...)
-		x := decode(t, got, "verify")
+		x := cliVerifyDecode(t, got, "verify")
 		if got.code != 2 || string(x.Data) != "null" || len(x.Diagnostics) != 1 || x.Diagnostics[0].Code != "U01" || !strings.Contains(x.Diagnostics[0].Message, "help") {
 			t.Error("JSON usage", got)
 		}
@@ -735,7 +735,10 @@ func Test_APP026_APP027VerifyFatalAndArguments(t *testing.T) {
 			t.Error("plain help content", got)
 		}
 		if args[0] == "--json" {
-			successJSON(t, got, "help")
+			x := cliVerifyDecode(t, got, "help")
+			if len(x.Diagnostics) != 0 {
+				t.Error("JSON help diagnostics", got)
+			}
 		}
 	}
 	for _, mode := range []string{"invalid-slug", "missing-claim", "implicit-unowned", "malformed-claim", "foreign-claim"} {
@@ -778,7 +781,7 @@ func Test_APP026_APP027VerifyFatalAndArguments(t *testing.T) {
 			code := strings.SplitN(err.Error(), ":", 2)[0]
 			cliVerifyReadonly(t, f, func() {
 				got := cliVerifyInvoke(t, f.Where, args...)
-				x := decode(t, got, "verify")
+				x := cliVerifyDecode(t, got, "verify")
 				var raw map[string]any
 				json.Unmarshal([]byte(got.out), &raw)
 				ds := raw["diagnostics"].([]any)
