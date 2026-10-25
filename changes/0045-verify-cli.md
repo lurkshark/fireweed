@@ -1,6 +1,6 @@
 ---
 module: app
-phase: audit
+phase: evals
 run: 4b80bb9e3717387331cca96a
 ---
 
@@ -81,7 +81,8 @@ Reloading the dirty current project can replace committed approval or fail befor
 - evals | 2026-10-24T23:00:27Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 648 | failing: 100 | passing: 548
 - audit | 2026-10-24T23:03:51Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-25T00:07:01Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 652 | failing: 102 | passing: 550
+- audit | 2026-10-25T01:31:33Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- APP-025: "Any structured checking error MUST return exit1 with all available data/diagnostics intact." — No Verify eval activates boundary.fail or boundary.output. Existing cases verify boundary invocation but only passing results, allowing dropped C15 diagnostics or exit0 for a boundary-only failure. Add public-oracle-confirmed boundary failure assertions retaining complete data, diagnostics and exit1 in JSON and plain modes.
+- APP-026: "JSON verify MUST emit exactly one schema_version 1 canonical verify/data/non-null diagnostics envelope on stdout and empty stderr." — Verify JSON assertions decode a tagged Go struct that accepts case-insensitive keys and inspect only raw diagnostics. A Verify-only DATA key in place of data, or extra envelope keys, can pass. Assert the exact complete canonical envelope key set/spelling and calibrate uppercase/extra-key rejection.
