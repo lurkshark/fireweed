@@ -3,6 +3,8 @@ fixes:
     - GIT-006
     - GIT-010
 module: gitstore
+phase: audit
+run: d161d11676633e1642535175
 ---
 
 ## Motivation
@@ -30,3 +32,7 @@ The full rebuild goal authorizes local authored execution and commits under the 
 ## Rejected alternatives
 
 Killing only the original process group misses independently grouped descendants. Killing processes by executable name or broad caller membership can terminate unrelated or overlapping work. Returning before descendants stop violates the explicit no-delayed-write contract. Relaxing GIT-006/GIT-010 or treating these failures as maintenance would hide a required behavioral fix.
+
+## Provenance
+
+- evals | 2026-10-25T04:38:14Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 463 | failing: 14 | passing: 449
