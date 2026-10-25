@@ -3,7 +3,7 @@ fixes:
     - GIT-006
     - GIT-010
 module: gitstore
-phase: audit
+phase: impl
 run: 358434da4d3867892641e21f
 ---
 
@@ -38,3 +38,8 @@ Current-parent enumeration loses children after reparenting. Killing only the or
 ## Provenance
 
 - evals | 2026-10-25T06:59:54Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 499 | failing: 14 | passing: 485
+- audit | 2026-10-25T07:02:58Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+No findings. Checked GIT-006 and GIT-010.
