@@ -4,6 +4,8 @@ already_satisfied:
 bases:
     FLOW-040: 22cfe698
 module: workflow
+phase: audit
+run: a1bf3c78a69fb9a5c922704b
 ---
 
 ## Motivation
@@ -31,6 +33,13 @@ This is an eval-observer repair for already conformant workflow behavior, govern
 
 Author ordering at0001 places this prerequisite repair before the released0048 queue entry, using the existing numeric/slug ordering without changing eligibility rules. The goal authorizes local execution and controller-owned phase/archive commits, not a claimed human merge. Keep bootstrap and NEW subjects distinct, GOCACHE=/tmp/fireweed-rebuild-cache, and no pushes/publication/tags.
 
+
+Pre-freeze source review found that a main-package Go init trap runs after imported initializers and that several inherited violations killed only the helper. A second review found a fail-open depth limit and cleanup coupled to an expired probe context. Keep those rejected preflights as historical evidence. The refined guard wraps the owned probe's native runtime notification before imported/application package initialization, verified against primary Go toolchain ordering and a control whose imported initializer would otherwise exit successfully. Every inherited denial signals the original owner. A test-only logical-owner token is removed before helper logic, with an exact-environment positive control; parent buffers and non-self environments remain unchanged. Shared policy binds the original live PID/birth/source, without an ancestry limit or product argument convention. A33-level chain and inherited ignored-error stdin/network/private-mutation/process controls calibrate propagation. Cleanup uses its own bounded context. Formal phase Audit remains a separate fresh source-only review after the full EVALS freeze.
+
 ## Rejected alternatives
 
 Editing workflow evals during Gitstore implementation violates phase/module boundaries. Deleting execution enforcement, allowing arbitrary executables or Go initializer/main self reentry, or disabling dependent verification would weaken the actual contract. Renaming a product helper to git or bypassing native interposition would encode or hide the oracle bug. Marking the unfinished Gitstore fix already satisfied would be false; its original fail-first evidence and complete verification remain mandatory.
+
+## Provenance
+
+- evals | 2026-10-25T21:34:05Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2163 | failing: 0 | passing: 2163
