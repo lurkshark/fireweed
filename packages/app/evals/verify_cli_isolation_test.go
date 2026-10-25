@@ -266,7 +266,7 @@ func main(){if os.Chdir(os.Args[1])!=nil{os.Exit(80)};mode:=os.Args[2];cwd,_:=os
 	}
 	run := func(t *testing.T, f cliVerifyCase, mode string, formats ...string) ([]byte, string) {
 		t.Helper()
-		ctx, stop := context.WithTimeout(context.Background(), 5*time.Second)
+		ctx, stop := context.WithTimeout(context.Background(), cliVerifyCallTimeout)
 		defer stop()
 		format := "json"
 		if len(formats) > 0 {
@@ -452,7 +452,7 @@ json.NewEncoder(os.Stdout).Encode(struct{Code int;Out,Err,Input string}{code,out
 	}
 	return binary, func(t *testing.T, f cliVerifyCase, mode string) result {
 		t.Helper()
-		ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), cliVerifyCallTimeout)
 		defer cancel()
 		cmd := exec.CommandContext(ctx, binary, f.Where, mode)
 		input := "writer failure stdin sentinel\n"

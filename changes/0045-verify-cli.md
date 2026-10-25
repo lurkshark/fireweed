@@ -1,6 +1,6 @@
 ---
 module: app
-phase: evals
+phase: audit
 run: 4b80bb9e3717387331cca96a
 ---
 
@@ -58,6 +58,10 @@ Final pre-freeze writer review found supplied buffers and complete error-path ef
 
 Implementation validation exposed a real observer defect: repeated cliVerifyReadonly calls retained environment-based Git recorders and could recurse through a proxy cycle. Fresh independent reviewer confirmed APP-028 overconstraint and missing repeated-public calibration. Preserve the two private implementation files with hashes, stop only the affected focused tree (exit143), restore them, release our claim, and make the safe author Audit-only revertd6706e1. Resume Audit; actual finding controller commit7f407e1 returns EVALS. Restore exactly helper-owned environment keys on every readonly-helper return and add repeated successful, pre-hook rejected and C01-fatal public Verify controls under that same observer and existing five-second bound. The earlier644 fail-first counts remain genuine absent-command evidence but are superseded for successful helper calibration; the stopped impl report proves no product failure. No frozen eval was edited in impl.
 
+Fresh formal Audit after corrected648 EVALS3fc7dff found boundary-only C15 preservation unasserted. Controller Audit0f9645c returns EVALS. Add boundary nonzero/unattributed-output and exit0/module-attributed violation modes, each with separately recorded repeated public control, passing coverage premise and complete JSON/plain evidence/diagnostic/exit1 checks. Public boundary diagnostics intentionally retain violation or captured output under CHK-010/011; rendering that exact coded diagnostic is required public-message preservation, not independent raw hook-stream leakage. The plain observer accepts the public diagnostic once and rejects appended raw boundary output. No implementation or existing app source is changed.
+
+The next complete652 Verify rejected one public observer calibration: structured-rejection repeat returned nil error when its undocumented five-second test deadline expired under the complete suite. Exclude that report; do not run Done from it. The design requires bounded execution and imposes no five-second CLI limit. Keep all original app evals unchanged; give new Verify calls and live public/probe calibrations one explicit30-second fixture bound, using public Capture for separate streams and owned-process-tree cancellation. Preserve every source/state/wire/diagnostic/noninteractive assertion and strict control requirement. Recalibrate before complete gates.
+
 ## Rejected alternatives
 
 Reloading the dirty current project can replace committed approval or fail before returning useful guard evidence. Converting every failed testcase into a command failure would reject legitimate fail-first verification. Dropping structured data on failed checks would hide the evidence needed to fix them. Default Go edit field names would silently change the established CLI wire contract.
@@ -76,6 +80,7 @@ Reloading the dirty current project can replace committed approval or fail befor
 - audit | 2026-10-24T22:23:37Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-24T23:00:27Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 648 | failing: 100 | passing: 548
 - audit | 2026-10-24T23:03:51Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-25T00:07:01Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 652 | failing: 102 | passing: 550
 
 ## Audit
 

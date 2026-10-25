@@ -83,7 +83,7 @@ func main(){raw,e:=os.ReadFile(os.Args[1]);var in input;if e!=nil||json.Unmarsha
 			t.Fatal(e)
 		}
 		projectPut(t, temp, "input.json", string(raw))
-		call, stop := context.WithTimeout(context.Background(), 15*time.Second)
+		call, stop := context.WithTimeout(context.Background(), cliVerifyCallTimeout)
 		defer stop()
 		cmd := exec.CommandContext(call, probe, filepath.Join(temp, "input.json"))
 		cmd.Stdin = strings.NewReader("metadata stdin sentinel")

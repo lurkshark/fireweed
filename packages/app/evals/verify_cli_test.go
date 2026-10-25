@@ -352,7 +352,7 @@ func cliVerifyObserveVerification(t *testing.T, f cliVerifyCase, want w.Verifica
 }
 func cliVerifyJSON(t *testing.T, f cliVerifyCase, args []string, want w.Verification, reports []string) result {
 	t.Helper()
-	got := invoke(t, f.Where, args...)
+	got := cliVerifyInvoke(t, f.Where, args...)
 	x := decode(t, got, "verify")
 	actualReports := cliVerifyReports(t, f)
 	cliVerifyObserveVerification(t, f, want, subject)
@@ -471,7 +471,7 @@ func Test_APP025_APP026_APP028VerifyExecutablePhases(t *testing.T) {
 						plainArgs = append(plainArgs, slug)
 					}
 					var got result
-					cliVerifyReadonly(t, f, func() { got = invoke(t, f.Where, plainArgs...) })
+					cliVerifyReadonly(t, f, func() { got = cliVerifyInvoke(t, f.Where, plainArgs...) })
 					actualReports := cliVerifyReports(t, f)
 					if got.code != 0 || got.err != "" || !reflect.DeepEqual(cliVerifyNormalize(decodeData(t, json.RawMessage(got.out)), actualReports), cliVerifyWire(t, want, reports)) {
 						t.Error("plain complete evidence", got)
@@ -485,7 +485,7 @@ func Test_APP025_APP026_APP028VerifyExecutablePhases(t *testing.T) {
 	}
 }
 func Test_APP025_APP026VerifyEvidenceAndPolicies(t *testing.T) {
-	for _, mode := range []string{"passing-failfirst-rejected", "already-satisfied", "own-failure", "dependent-failure", "transitive-failure", "direct", "none", "warning", "missing-report", "malformed-report", "rich-report", "audit-multiple", "audit-finding", "audit-untestable", "audit-incomplete", "rename", "worker-config", "worker-valid-config", "worker-module-hooks", "blocked", "forbidden-eval", "unsafe-current", "malformed-unrelated"} {
+	for _, mode := range []string{"passing-failfirst-rejected", "already-satisfied", "own-failure", "dependent-failure", "transitive-failure", "boundary-exit", "boundary-attributed", "direct", "none", "warning", "missing-report", "malformed-report", "rich-report", "audit-multiple", "audit-finding", "audit-untestable", "audit-incomplete", "rename", "worker-config", "worker-valid-config", "worker-module-hooks", "blocked", "forbidden-eval", "unsafe-current", "malformed-unrelated"} {
 		t.Run(mode, func(t *testing.T) {
 			phase := "impl"
 			if mode == "passing-failfirst-rejected" || mode == "already-satisfied" {
@@ -511,6 +511,11 @@ func Test_APP025_APP026VerifyEvidenceAndPolicies(t *testing.T) {
 				}
 				f.Claim, f.Raw = approved, changed
 				cliVerifyReport(t, f, "alpha", false)
+			case "boundary-exit":
+				projectPut(t, f.Plan, "boundary.fail", "yes")
+				projectPut(t, f.Plan, "boundary.output", "boundary-only failed output\n")
+			case "boundary-attributed":
+				projectPut(t, f.Plan, "boundary.output", "gamma: boundary-only attributed violation\n")
 			case "transitive-failure":
 				cliVerifyReport(t, f, "delta", true)
 			case "own-failure":
@@ -609,6 +614,62 @@ func Test_APP025_APP026VerifyEvidenceAndPolicies(t *testing.T) {
 			if !reflect.DeepEqual(outsideBeforeOracle, cliVerifyOutside(t, f)) {
 				t.Fatal("public rejected call changed outside content")
 			}
+			if mode == "boundary-exit" || mode == "boundary-attributed" {
+				if !t.Run("public-control", func(t *testing.T) {
+					if cliVerifyExit(want) != 1 || len(want.Coverage) != 3 || len(want.Diagnostics) != 1 || want.Diagnostics[0].Code != "C15" || want.Diagnostics[0].Severity != "error" {
+						t.Fatal("boundary-only public failure premise", want)
+					}
+					marker := "boundary-only failed output"
+					if mode == "boundary-attributed" {
+						marker = "gamma: boundary-only attributed violation"
+						if want.Diagnostics[0].Path != "units/gamma" {
+							t.Fatal("attributed boundary path", want.Diagnostics)
+						}
+					}
+					if !strings.Contains(want.Diagnostics[0].Message, marker) {
+						t.Fatal("public boundary message lost output", want.Diagnostics)
+					}
+					for _, cov := range want.Coverage {
+						if cov.HookExit != 0 {
+							t.Fatal("coverage failed before boundary", cov)
+						}
+						for _, d := range cov.Diagnostics {
+							if d.Severity == "error" {
+								t.Fatal("coverage diagnostics obscure boundary-only premise", cov)
+							}
+						}
+					}
+					d := want.Diagnostics[0]
+					text := fmt.Sprintf("%s %s (%s): %s\n", d.Severity, d.Code, d.Path, d.Message)
+					if e := cliVerifyPlainDiagnosticText(text, want.Diagnostics, reports, reports); e != nil {
+						t.Fatal("boundary diagnostic presentation control", e)
+					}
+					if cliVerifyPlainDiagnosticText(text+marker+"\n", want.Diagnostics, reports, reports) == nil {
+						t.Fatal("plain boundary observer allowed appended raw output")
+					}
+					cliVerifyReadonly(t, f, func() {
+						ctx, cancel := context.WithTimeout(context.Background(), cliVerifyCallTimeout)
+						defer cancel()
+						again, e := w.Verify(ctx, f.Where, "current")
+						if e != nil || ctx.Err() != nil {
+							t.Fatal("bounded boundary public repeat", e, ctx.Err())
+						}
+						actual := cliVerifyReports(t, f)
+						if !reflect.DeepEqual(cliVerifyWire(t, again, actual), cliVerifyWire(t, want, reports)) {
+							t.Error("boundary public evidence changed under observer", again, want)
+						}
+						bin, e := os.Executable()
+						if e != nil {
+							t.Fatal(e)
+						}
+						cliVerifyObserveVerification(t, f, want, bin)
+					})
+				}) {
+					return
+				}
+				cliVerifyClear(t, f)
+			}
+
 			if mode == "worker-valid-config" || mode == "worker-module-hooks" {
 				if cliVerifyExit(want) != 1 || len(want.Coverage) != 0 || len(cliVerifyCalls(t, f)) != 0 {
 					t.Fatal("approved current-metadata guard premise", want)
@@ -641,7 +702,7 @@ func Test_APP025_APP026VerifyEvidenceAndPolicies(t *testing.T) {
 			cliVerifyClear(t, f)
 			outsideBeforePlain := cliVerifyOutside(t, f)
 			var got result
-			cliVerifyReadonly(t, f, func() { got = invoke(t, f.Where, "verify", "current") })
+			cliVerifyReadonly(t, f, func() { got = cliVerifyInvoke(t, f.Where, "verify", "current") })
 			cliVerifyObserveVerification(t, f, want, subject)
 			if !reflect.DeepEqual(outsideBeforePlain, cliVerifyOutside(t, f)) {
 				t.Error("plain rejected call changed outside content")
@@ -716,7 +777,7 @@ func Test_APP026_APP027VerifyFatalAndArguments(t *testing.T) {
 			}
 			code := strings.SplitN(err.Error(), ":", 2)[0]
 			cliVerifyReadonly(t, f, func() {
-				got := invoke(t, f.Where, args...)
+				got := cliVerifyInvoke(t, f.Where, args...)
 				x := decode(t, got, "verify")
 				var raw map[string]any
 				json.Unmarshal([]byte(got.out), &raw)
@@ -737,7 +798,7 @@ func Test_APP026_APP027VerifyFatalAndArguments(t *testing.T) {
 				plainArgs = append(plainArgs, slug)
 			}
 			var got result
-			cliVerifyReadonly(t, f, func() { got = invoke(t, f.Where, plainArgs...) })
+			cliVerifyReadonly(t, f, func() { got = cliVerifyInvoke(t, f.Where, plainArgs...) })
 			cliVerifyFatalPlain(t, got, code, err.Error(), 1)
 		})
 	}
@@ -1015,7 +1076,7 @@ func Test_APP025_APP026_APP028VerifyRetainsHookMutations(t *testing.T) {
 				if jsonMode {
 					cliVerifyJSON(t, f, []string{"verify", "current", "--json"}, want, reports)
 				} else {
-					got := invoke(t, f.Where, "verify", "current")
+					got := cliVerifyInvoke(t, f.Where, "verify", "current")
 					cliVerifyObserveVerification(t, f, want, subject)
 					actualReports := cliVerifyReports(t, f)
 					if got.code != 1 || !reflect.DeepEqual(cliVerifyNormalize(decodeData(t, json.RawMessage(got.out)), actualReports), cliVerifyWire(t, want, reports)) {

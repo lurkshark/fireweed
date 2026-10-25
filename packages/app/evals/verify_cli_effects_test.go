@@ -1,14 +1,17 @@
 package evals
 
 import (
+	"context"
 	"fmt"
 	checks "github.com/lurkshark/fireweed/packages/checks"
+	g "github.com/lurkshark/fireweed/packages/gitstore"
 	"os"
 	"path/filepath"
 	"reflect"
 	"sort"
 	"strings"
 	"testing"
+	"time"
 	"unicode"
 )
 
@@ -26,7 +29,7 @@ func cliVerifyOutsideInvoke(t *testing.T, dir string, args ...string) result {
 	if e != nil {
 		t.Fatal(e)
 	}
-	got := invoke(t, dir, args...)
+	got := cliVerifyInvoke(t, dir, args...)
 	after, e := os.Getwd()
 	if e != nil || after != cwd || !reflect.DeepEqual(env, os.Environ()) || !reflect.DeepEqual(files, queueFiles(t, dir)) || !reflect.DeepEqual(temp, queueFiles(t, scratch)) {
 		t.Error("outside-project verify changed files/temp/parent state")
@@ -220,4 +223,23 @@ func cliVerifyRestoreObserverEnv() func() {
 			}
 		}
 	}
+}
+
+// Verify restores and checks a complete approved project and runs its configured
+// hooks. Give this fixture operation its own finite budget, including observers.
+const cliVerifyCallTimeout = 30 * time.Second
+
+func cliVerifyInvoke(t *testing.T, dir string, args ...string) result {
+	t.Helper()
+	ctx, cancel := context.WithTimeout(context.Background(), cliVerifyCallTimeout)
+	defer cancel()
+	argv := append([]string{subject}, args...)
+	got := g.Capture(ctx, dir, argv, nil)
+	if ctx.Err() != nil {
+		t.Fatalf("Verify CLI exceeded bounded deadline: %v: %v", args, ctx.Err())
+	}
+	if got.Exit < 0 || got.Exit == 0 && got.Err != nil {
+		t.Fatalf("invalid NEW Verify process outcome: %+v", got)
+	}
+	return result{got.Exit, got.Stdout, got.Stderr}
 }

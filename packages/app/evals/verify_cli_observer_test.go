@@ -47,11 +47,11 @@ func Test_APP028VerifyReadonlyControls(t *testing.T) {
 				}
 				env := os.Environ()
 				cliVerifyReadonly(t, f, func() {
-					ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+					ctx, cancel := context.WithTimeout(context.Background(), cliVerifyCallTimeout)
 					defer cancel()
 					began := time.Now()
 					got, e := w.Verify(ctx, f.Where, "current")
-					if ctx.Err() != nil || time.Since(began) >= 5*time.Second {
+					if ctx.Err() != nil || time.Since(began) >= cliVerifyCallTimeout {
 						t.Fatal("observer prevents bounded public Verify", repeat, e, ctx.Err())
 					}
 					if (e != nil) != (publicErr != nil) {

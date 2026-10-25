@@ -69,7 +69,7 @@ func Test_APP026_APP028VerifyFatalDiscovery(t *testing.T) {
 		if e != nil || string(raw) != "0" {
 			t.Fatal("discovery fixture was consumed by harness setup", e, string(raw))
 		}
-		got := invoke(t, f.Where, "verify", "current", "--json")
+		got := cliVerifyInvoke(t, f.Where, "verify", "current", "--json")
 		x := decode(t, got, "verify")
 		var envelope map[string]any
 		if e := json.Unmarshal([]byte(got.out), &envelope); e != nil {
@@ -89,6 +89,6 @@ func Test_APP026_APP028VerifyFatalDiscovery(t *testing.T) {
 	})
 	reset()
 	var got result
-	cliVerifyReadonly(t, f, func() { got = invoke(t, f.Where, "verify", "current") })
+	cliVerifyReadonly(t, f, func() { got = cliVerifyInvoke(t, f.Where, "verify", "current") })
 	cliVerifyFatalPlain(t, got, "C01", err.Error(), 2)
 }
