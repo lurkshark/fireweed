@@ -332,3 +332,12 @@ A separate committed Go-recipe fixture a523729ee7429e19c02e798a0a00ee0432f65340 
 
 
 D045 postcommit validation: committed target56ef025 now passes fresh actual doctor all4 canaries and controller check with diagnostics[], leaving clean files and no claims. Scratch worktrees are removed. New worker claims may proceed; this does not satisfy unfinished product doctor/recipes/regeneration gates.
+
+
+D044 tested resolution:0047 applies e34f9d04d6d46226d7455b8148e8faf5ace5c54e after permanent36-record direct-orphan regressions, genuine499-case fail-first, restricted independent passing Audit and complete3993-record Verify/Done. Whole Gitstore499 race and Linux native87 process records pass; crossbuilds remain compilation evidence. Linux retains adopted descendants in an isolated per-call subreaper; macOS recovers stable original-parent lifetime edges. Frozen evals/interfaces and enforcement remain unchanged. This resolves the tested direct-orphan cases; D046 below prevents a universal entire-tree acceptance claim.
+
+## D046 — vanished intermediate ancestors still lose macOS ownership
+
+The bounded ordinary public orphaned-multi-parent-probe proves root and intermediary have both exited and been reaped before cancellation, a live independent-session leaf has native ppid1, and the outer operation is still pending. On the0047 candidate Run/Capture return matching context.Canceled/Exit-1 in990/995ms, then the leaf writes after an arm marker created only after return. Both helpers finish and are natively gone/zombie before temp cleanup. The refined two-adapter report SHA7933f068169e7fecc6c03d902a3f07c135c46b61a5c44fef79504cca205796af and source/proof remain ignored evidence. The first Capture-only probe also found the bug but its duration included observation time; use only the refined report for return timing.
+
+A stable original-parent UID cannot by itself connect through an already vanished, never-observed intermediary. Do not narrow GIT-006/GIT-010/R13, replace exact ownership with same-image/user/session sweeps, claim generic platform impossibility from this approach, or call0047 full-tree completion. Author a new permanent fail-first regression and independent assertion audit before another Mac ownership implementation. Research native retained ownership without assuming kqueue descendant tracking or permissions are available; primary-source observations alone are not a runtime fix. D042 and every other completion gate remain mandatory.
