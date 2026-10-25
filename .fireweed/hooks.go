@@ -228,8 +228,11 @@ func runEvals() {
 		roots = append(roots, root)
 	}
 	sort.Strings(roots)
-	count := 2
-	if len(roots) < 2 {
+	count := 4
+	if len(roots) < count {
+		count = len(roots)
+	}
+	if count < 1 {
 		count = 1
 	}
 	groups := make([][]string, count)
