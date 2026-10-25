@@ -1,6 +1,6 @@
 ---
 module: app
-phase: audit
+phase: evals
 run: 4b80bb9e3717387331cca96a
 ---
 
@@ -85,7 +85,8 @@ Reloading the dirty current project can replace committed approval or fail befor
 - evals | 2026-10-25T00:07:01Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 652 | failing: 102 | passing: 550
 - audit | 2026-10-25T01:31:33Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-25T02:08:39Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 653 | failing: 102 | passing: 551
+- audit | 2026-10-25T02:12:54Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 
 ## Audit
 
-- APP-026: "JSON verify MUST emit exactly one schema_version 1 canonical verify/data/non-null diagnostics envelope on stdout and empty stderr." — Verify JSON assertions decode a tagged Go struct that accepts case-insensitive keys and inspect only raw diagnostics. A Verify-only DATA key in place of data, or extra envelope keys, can pass. Assert the exact complete canonical envelope key set/spelling and calibrate uppercase/extra-key rejection.
+- APP-026: "Plain success or structured checking failure MUST render pretty JSON of that same complete wire data on stdout and coded/path-attributed diagnostics on stderr." — New Verify calls reuse coveragePretty, which requires exactly two-space indentation and one trailing newline, rejecting otherwise compliant four-space or tab pretty JSON. Use a Verify-specific presentation observer calibrated for permitted indentation/trailing whitespace and rejection of compact or extra output.
