@@ -165,6 +165,7 @@ func main(){raw,e:=os.ReadFile(os.Args[1]);var in input;if e!=nil||json.Unmarsha
 							if got.code != cliVerifyExit(want) || !reflect.DeepEqual(cliVerifyNormalize(decodeData(t, json.RawMessage(got.out)), actual), cliVerifyWire(t, want, reports)) {
 								t.Error("selective-read CLI plain", got)
 							}
+							cliVerifyPretty(t, got.out)
 							cliVerifyPlainStreams(t, got.err, want, actual, reports)
 						}
 						cliVerifyObserve(t, f, names, probe)

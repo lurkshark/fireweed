@@ -186,7 +186,7 @@ func cliVerifyPlainDiagnosticText(stderr string, ds []checks.Diagnostic, actualR
 		}
 	}
 	for _, r := range text {
-		if !unicode.IsSpace(r) && !strings.ContainsRune(":[]()", r) {
+		if !unicode.IsSpace(r) && !unicode.IsPunct(r) && !unicode.IsSymbol(r) {
 			return fmt.Errorf("plain diagnostic added text %q", text)
 		}
 	}

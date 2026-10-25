@@ -412,7 +412,8 @@ func main(){if os.Chdir(os.Args[1])!=nil{os.Exit(80)};mode:=os.Args[2];cwd,_:=os
 						if e := json.Unmarshal([]byte(r.out), &data); e != nil {
 							t.Fatal("stdio plain JSON", e, r)
 						}
-						if !strings.Contains(r.out, "\n  ") || !reflect.DeepEqual(cliVerifyNormalize(data, actual), cliVerifyWire(t, want, reports)) {
+						cliVerifyPretty(t, r.out)
+						if !reflect.DeepEqual(cliVerifyNormalize(data, actual), cliVerifyWire(t, want, reports)) {
 							t.Error("stdio plain evidence", r)
 						}
 						cliVerifyPlainStreams(t, r.err, want, actual, reports)
@@ -433,7 +434,7 @@ import("bytes";"encoding/json";"fmt";"io";"os";"reflect";app "github.com/lurksha
 type failedWriter struct{}
 func(failedWriter)Write(p []byte)(int,error){return 0,fmt.Errorf("controlled output failure")}
 func main(){if os.Chdir(os.Args[1])!=nil{os.Exit(80)};mode:=os.Args[2];cwd,_:=os.Getwd();env:=os.Environ();var out,errOut bytes.Buffer;var code int
-switch mode{case "fatal-writer":code=app.Run([]string{"verify","missing"},&out,failedWriter{});case "usage-writer":code=app.Run([]string{"verify","a","b"},&out,failedWriter{});case "diagnostic-writer":code=app.Run([]string{"verify","current"},&out,failedWriter{});default:code=app.Run([]string{"verify","current","--json"},failedWriter{},&errOut)}
+switch mode{case "plain-data-writer","plain-checking-data-writer":code=app.Run([]string{"verify","current"},failedWriter{},&errOut);case "json-fatal-writer":code=app.Run([]string{"verify","missing","--json"},failedWriter{},&errOut);case "fatal-writer":code=app.Run([]string{"verify","missing"},&out,failedWriter{});case "usage-writer":code=app.Run([]string{"verify","a","b"},&out,failedWriter{});case "diagnostic-writer":code=app.Run([]string{"verify","current"},&out,failedWriter{});default:code=app.Run([]string{"verify","current","--json"},failedWriter{},&errOut)}
 rest,e:=io.ReadAll(os.Stdin);if e!=nil{os.Exit(81)};after,e:=os.Getwd();if e!=nil||after!=cwd||!reflect.DeepEqual(env,os.Environ()){os.Exit(82)}
 json.NewEncoder(os.Stdout).Encode(struct{Code int;Out,Err,Input string}{code,out.String(),errOut.String(),string(rest)})}`
 	projectPut(t, temp, "writer.go", source)

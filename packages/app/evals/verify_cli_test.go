@@ -276,6 +276,20 @@ func Test_APP026VerifyPlainStreams(t *testing.T) {
 		if e := cliVerifyPlainDiagnosticText(text, failed.Diagnostics, reports, reports); e != nil {
 			t.Fatal("public plain diagnostic calibration", e)
 		}
+		for _, separator := range []string{" - ", " — ", " | ", "; ", " → ", " = "} {
+			alternative := ""
+			for _, d := range failed.Diagnostics {
+				alternative += d.Severity + " " + d.Code + separator + d.Path + ": " + d.Message + "\n"
+			}
+			if e := cliVerifyPlainDiagnosticText(alternative, failed.Diagnostics, reports, reports); e != nil {
+				t.Fatal("permitted diagnostic punctuation rejected", separator, e)
+			}
+			for _, extra := range []string{alternative, "prompt> ", "unrelated hook output"} {
+				if cliVerifyPlainDiagnosticText(alternative+extra, failed.Diagnostics, reports, reports) == nil {
+					t.Fatal("alternative punctuation hid duplicate/prompt/output", separator, extra)
+				}
+			}
+		}
 		for _, message := range []string{"C05: invalid exact selector", "P02: held ownership missing", "C01: controlled discovery failure"} {
 			code := strings.SplitN(message, ":", 2)[0]
 			ds := []checks.Diagnostic{{Code: code, Severity: "error", Message: message}}
@@ -476,7 +490,7 @@ func Test_APP025_APP026_APP028VerifyExecutablePhases(t *testing.T) {
 					if got.code != 0 || got.err != "" || !reflect.DeepEqual(cliVerifyNormalize(decodeData(t, json.RawMessage(got.out)), actualReports), cliVerifyWire(t, want, reports)) {
 						t.Error("plain complete evidence", got)
 					}
-					coveragePretty(t, got.out)
+					cliVerifyPretty(t, got.out)
 					cliVerifyPlainStreams(t, got.err, want, actualReports, reports)
 					cliVerifyObserve(t, f, cliVerifyHookNames(phase, "all"), subject)
 				})
@@ -711,7 +725,7 @@ func Test_APP025_APP026VerifyEvidenceAndPolicies(t *testing.T) {
 			if got.code != cliVerifyExit(want) || !reflect.DeepEqual(cliVerifyNormalize(decodeData(t, json.RawMessage(got.out)), actualReports), cliVerifyWire(t, want, reports)) {
 				t.Error("plain structured failure evidence", got)
 			}
-			coveragePretty(t, got.out)
+			cliVerifyPretty(t, got.out)
 			cliVerifyPlainStreams(t, got.err, want, actualReports, reports)
 		})
 	}
@@ -814,10 +828,10 @@ func Test_APP026_APP027VerifyFatalAndArguments(t *testing.T) {
 }
 func Test_APP026_APP028VerifyWritersAndHookChanges(t *testing.T) {
 	probeBinary, probe := cliVerifyWriterProbe(t)
-	for _, mode := range []string{"data-writer", "diagnostic-writer", "fatal-writer", "usage-writer", "hook-file", "hook-head"} {
+	for _, mode := range []string{"data-writer", "plain-data-writer", "plain-checking-data-writer", "diagnostic-writer", "fatal-writer", "json-fatal-writer", "usage-writer", "hook-file", "hook-head"} {
 		t.Run(mode, func(t *testing.T) {
 			f := cliVerifyFixture(t, "impl", "sha1", "all", false, false)
-			if mode == "hook-file" {
+			if mode == "hook-file" || mode == "plain-checking-data-writer" {
 				projectPut(t, f.Plan, "alpha.mutate", "retained configured hook bytes")
 			}
 			if mode == "hook-head" {
@@ -833,13 +847,13 @@ func Test_APP026_APP028VerifyWritersAndHookChanges(t *testing.T) {
 					return w.Verification{}, nil
 				}
 				slug := "current"
-				if mode == "fatal-writer" {
+				if mode == "fatal-writer" || mode == "json-fatal-writer" {
 					slug = "missing"
 				}
 				return w.Verify(context.Background(), f.Where, slug)
 			}
 			restore := func() {
-				if mode == "hook-file" {
+				if mode == "hook-file" || mode == "plain-checking-data-writer" {
 					if e := os.Remove(filepath.Join(f.Root, "private/from-hook")); e != nil {
 						t.Fatal(e)
 					}
@@ -850,8 +864,14 @@ func Test_APP026_APP028VerifyWritersAndHookChanges(t *testing.T) {
 			}
 			beforePublic := watch.capture(t)
 			want, publicErr := public()
-			if (mode == "fatal-writer") != (publicErr != nil) {
+			if (mode == "fatal-writer" || mode == "json-fatal-writer") != (publicErr != nil) {
 				t.Fatal("writer public fatal premise", mode, publicErr)
+			}
+			if mode == "plain-data-writer" && (cliVerifyExit(want) != 0 || len(want.Diagnostics) != 0) {
+				t.Fatal("plain data writer success premise", want)
+			}
+			if mode == "plain-checking-data-writer" && (cliVerifyExit(want) != 1 || len(want.Diagnostics) == 0) {
+				t.Fatal("plain data writer structured rejection premise", want)
 			}
 			reports := cliVerifyReports(t, f)
 			afterPublic := watch.capture(t)
@@ -889,17 +909,25 @@ func Test_APP026_APP028VerifyWritersAndHookChanges(t *testing.T) {
 			cliVerifyObserveVerification(t, f, want, probeBinary)
 			cliVerifyAssertEffects(t, cliVerifyReplayEffects(t, beforePublic, afterPublic, beforeCLI), watch.capture(t))
 			switch mode {
-			case "fatal-writer", "usage-writer":
+			case "fatal-writer", "json-fatal-writer", "usage-writer":
 				if got.out != "" {
 					t.Error("failed fatal/usage writer stdout", got)
+				}
+				if mode == "json-fatal-writer" && got.err != "" {
+					t.Error("failed JSON fatal writer stderr", got)
+				}
+			case "plain-data-writer", "plain-checking-data-writer":
+				if got.out != "" {
+					t.Error("failed plain data writer emitted supplied stdout", got)
+				}
+				if got.err != "" || mode == "plain-data-writer" {
+					cliVerifyPlainStreams(t, got.err, want, cliVerifyReports(t, f), reports)
 				}
 			case "diagnostic-writer":
 				if got.out == "" {
 					break
 				}
-				if !strings.Contains(got.out, "\n  ") {
-					t.Error("failed diagnostic writer output lost pretty formatting", got)
-				}
+				cliVerifyPretty(t, got.out)
 				var data any
 				if e := json.Unmarshal([]byte(got.out), &data); e != nil {
 					t.Error("failed diagnostic writer lost data", e, got)
@@ -916,12 +944,12 @@ func Test_APP026_APP028VerifyWritersAndHookChanges(t *testing.T) {
 			if e != nil || claim != f.Claim {
 				t.Error("output failure lost held state", claim, e)
 			}
-			if mode == "data-writer" || mode == "hook-file" || mode == "hook-head" {
+			if mode == "data-writer" || mode == "plain-data-writer" || mode == "plain-checking-data-writer" || mode == "hook-file" || mode == "hook-head" {
 				if len(cliVerifyCalls(t, f)) != 4 {
 					t.Error("writer failure skipped public verification")
 				}
 			}
-			if mode == "hook-file" {
+			if mode == "hook-file" || mode == "plain-checking-data-writer" {
 				raw, e := os.ReadFile(filepath.Join(f.Root, "private/from-hook"))
 				if e != nil || string(raw) != "retained configured hook bytes" {
 					t.Error("output failure erased hook mutation", e)
@@ -1085,6 +1113,7 @@ func Test_APP025_APP026_APP028VerifyRetainsHookMutations(t *testing.T) {
 					if got.code != 1 || !reflect.DeepEqual(cliVerifyNormalize(decodeData(t, json.RawMessage(got.out)), actualReports), cliVerifyWire(t, want, reports)) {
 						t.Error("plain post-hook complete evidence", got)
 					}
+					cliVerifyPretty(t, got.out)
 					cliVerifyPlainStreams(t, got.err, want, actualReports, reports)
 				}
 				cliVerifyAssertEffects(t, cliVerifyReplayEffects(t, beforePublic, afterPublic, beforeCLI), watch.capture(t))

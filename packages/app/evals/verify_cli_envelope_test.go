@@ -1,12 +1,36 @@
 package evals
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"strings"
 	"testing"
 )
+
+// Presentation is distinct from semantic wire equality. Pretty output may use
+// any horizontal indentation, CRLF, blank lines and trailing whitespace.
+func cliVerifyPrettyJSON(raw string) error {
+	if !json.Valid([]byte(raw)) {
+		return fmt.Errorf("not one complete JSON value")
+	}
+	lines := strings.Split(strings.TrimSpace(raw), "\n")
+	for _, line := range lines[1:] {
+		content := strings.TrimSpace(line)
+		if len(line) > 0 && (line[0] == ' ' || line[0] == '\t') && content != "" && content != "}" && content != "]" && content != "}," && content != "]," {
+			return nil
+		}
+	}
+	return fmt.Errorf("JSON lacks indented multiline presentation")
+}
+
+func cliVerifyPretty(t *testing.T, raw string) {
+	t.Helper()
+	if err := cliVerifyPrettyJSON(raw); err != nil {
+		t.Errorf("Verify plain presentation: %v: %q", err, raw)
+	}
+}
 
 // Inspect keys before decoding values: encoding/json's struct decoder accepts
 // case-insensitive field names and silently ignores unknown or duplicate keys.
@@ -90,6 +114,28 @@ func Test_APP026VerifyEnvelopeControls(t *testing.T) {
 			if cliVerifyEnvelopeKeys(raw) == nil {
 				t.Fatal("extra/missing envelope content escaped observer", raw)
 			}
+		}
+	}
+	plain := `{"change":"current","phase":"impl","diagnostics":[{"code":"C15","message":"complete diagnostic"}],"coverage":[{"module":"alpha","tests":[]}],"edits":[]}`
+	for _, indent := range []string{" ", "  ", "    ", "        ", "\t", " \t"} {
+		var formatted bytes.Buffer
+		if err := json.Indent(&formatted, []byte(plain), "", indent); err != nil {
+			t.Fatal(err)
+		}
+		for _, raw := range []string{formatted.String(), formatted.String() + "\n", " \n" + formatted.String() + "\n\n\t ", strings.ReplaceAll(formatted.String(), "\n", "\r\n"), strings.ReplaceAll(formatted.String(), "\n", "\n\n")} {
+			if err := cliVerifyPrettyJSON(raw); err != nil {
+				t.Fatal("permitted pretty presentation rejected", indent, err, raw)
+			}
+		}
+		for _, raw := range []string{formatted.String() + plain, formatted.String() + "\nprompt> "} {
+			if cliVerifyPrettyJSON(raw) == nil {
+				t.Fatal("extra pretty output escaped observer", raw)
+			}
+		}
+	}
+	for _, raw := range []string{plain, plain + "\n", "\n \t" + plain + "\n \t", "{\"change\":\"current\"\n }", "prompt> " + plain} {
+		if cliVerifyPrettyJSON(raw) == nil {
+			t.Fatal("compact or invalid presentation escaped observer", raw)
 		}
 	}
 }
