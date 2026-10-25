@@ -3,6 +3,8 @@ fixes:
     - GIT-006
     - GIT-010
 module: gitstore
+phase: audit
+run: 358434da4d3867892641e21f
 ---
 
 ## Motivation
@@ -32,3 +34,7 @@ The rebuild goal authorizes local authored execution and controller-owned phase/
 ## Rejected alternatives
 
 Current-parent enumeration loses children after reparenting. Killing only the original process group misses independently grouped or session-separated work. Broad same-image, caller-session, user or orphan sweeps can kill unrelated processes. Returning before an owned orphan stops permits delayed writes. Weakening the existing contract or editing frozen evals during implementation would conceal the remaining bug.
+
+## Provenance
+
+- evals | 2026-10-25T06:59:54Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 499 | failing: 14 | passing: 485
