@@ -344,3 +344,6 @@ A stable original-parent UID cannot by itself connect through an already vanishe
 
 
 D045 bounded-worker follow-up: the separate author installation raises the maximum from two to four, clamped to listed root count with an empty-module minimum of one. Candidate SHA 4f80b5124f0cbe765261e639ad8f27f41115cc08122f7ebd7318d3789afacb12 retains all 23 synthetic failure controls and 8 real Go controls. Exact actual-exit comparisons retain 108/659/2146 checks/app/workflow records with no failures, errors or skips and the same class/name inventories; wall seconds 16.676/557.890/522.951. Separate committed fixture 3cae227 passes all four doctor canaries and subsequent check/coverage/boundaries with clean recovery. Protected-hook installation occurs only after0047 archive and claim release, in a separate author commit; fresh postcommit target doctor remains required before a new claim. No enforcement or product contract is weakened.
+
+
+D045 four-worker postcommit validation is complete: actual target doctor/check at 1d3e2b4 pass all four canaries with no diagnostics, clean files, no claims and complete scratch cleanup. The source is the committed four-worker hook, not an uncommitted scratch candidate.
