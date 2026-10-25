@@ -1,6 +1,6 @@
 ---
 module: app
-phase: impl
+phase: applied
 run: 4b80bb9e3717387331cca96a
 ---
 
@@ -92,6 +92,7 @@ Reloading the dirty current project can replace committed approval or fail befor
 - audit | 2026-10-25T02:12:54Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-25T02:53:56Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 659 | failing: 104 | passing: 555
 - audit | 2026-10-25T02:55:44Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- impl | 2026-10-25T03:33:19Z | agent: manual | fireweed: 0.4.0 | playbook: 653912b194316c62181f62d0a69dc213f7668481ea8b1b9926ef889dd48a9e08 | tests: 659 | failing: 0 | passing: 659
 
 ## Audit
 

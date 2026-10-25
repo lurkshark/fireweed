@@ -174,14 +174,14 @@ func emit(out, errOut io.Writer, option options, data any, diagnostics []diagnos
 func Run(args []string, out, errOut io.Writer) int {
 	option := parse(args)
 	fail := func(problem string) int {
-		message := problem + ". Run fireweed help. Valid commands: help, version, explain, playbook, modules, check, show, coverage, context, start."
+		message := problem + ". Run fireweed help. Valid commands: help, version, explain, playbook, modules, check, show, coverage, context, start, verify."
 		return emit(out, errOut, option, nil, []diagnostic{{Code: "U01", Severity: "error", Message: message}}, 2)
 	}
 	if option.problem != "" {
 		return fail(option.problem)
 	}
 	switch option.command {
-	case "help", "version", "explain", "playbook", "modules", "check", "show", "coverage", "context", "start":
+	case "help", "version", "explain", "playbook", "modules", "check", "show", "coverage", "context", "start", "verify":
 	default:
 		return fail("unknown command " + option.command)
 	}
@@ -202,7 +202,11 @@ func Run(args []string, out, errOut io.Writer) int {
 	if option.command == "explain" || option.command == "playbook" || option.command == "coverage" || option.command == "context" || option.command == "start" {
 		required = 1
 	}
-	if option.command == "show" {
+	if option.command == "verify" {
+		if len(option.operands) > 1 {
+			return fail("verify accepts zero or one exact change slug")
+		}
+	} else if option.command == "show" {
 		if len(option.operands) < 1 || len(option.operands) > 2 {
 			return fail("show requires a module and optional exact spec ID")
 		}
@@ -210,6 +214,8 @@ func Run(args []string, out, errOut io.Writer) int {
 		return fail(fmt.Sprintf("%s requires %d positional arguments", option.command, required))
 	}
 	switch option.command {
+	case "verify":
+		return verify(out, errOut, option)
 	case "start":
 		return start(out, errOut, option)
 	case "context":
