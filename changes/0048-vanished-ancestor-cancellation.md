@@ -3,7 +3,7 @@ fixes:
     - GIT-006
     - GIT-010
 module: gitstore
-phase: audit
+phase: impl
 run: d554bc098ada714fba6d6935
 ---
 
@@ -40,3 +40,8 @@ Polling only current parents, or retaining only an original direct-parent edge, 
 ## Provenance
 
 - evals | 2026-10-25T14:57:20Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 535 | failing: 14 | passing: 521
+- audit | 2026-10-25T15:05:21Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+
+## Audit
+
+No findings. Checked GIT-006 and GIT-010.
