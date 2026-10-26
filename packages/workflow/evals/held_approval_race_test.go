@@ -39,7 +39,7 @@ const heldRaceGuard = `#include <sys/types.h>
 #include <errno.h>
 #include <spawn.h>
 #include <dlfcn.h>
-static _Atomic(uint64_t)*state;
+static _Atomic(uint64_t)*state;static size_t state_bytes;
 static char objects[32][4096],common[4096];static int count;
 static char original_git[4096],engine_git[4096],traced_git[4096];
 static char native_policy[4096],library_path[4096],git_exec_path[4096];static _Thread_local int resolving;
@@ -52,9 +52,18 @@ static void gate(void){
 static int ownership(const char*p){if(!state||!p)return 0;char refs[4096],packed[4096];snprintf(refs,sizeof(refs),"%s/refs/fireweed/claims",common);snprintf(packed,sizeof(packed),"%s/packed-refs",common);return within(p,refs)||!strcmp(p,packed);}
 static void inventory(const char*p){if(!state||!p||resolving)return;char canonical[4096];resolving=1;if(realpath(p,canonical))p=canonical;resolving=0;if(ownership(p))gate();}
 static void descriptor_inventory(int fd){if(!state)return;char path[4096];if(fcntl(fd,F_GETPATH,path)>=0)inventory(path);}
-static void descriptor(int fd){if(!state)return;char path[4096];if(fcntl(fd,F_GETPATH,path)<0)return;if(ownership(path)&&atomic_load(state+1))atomic_fetch_add(state+3,1);for(int i=0;i<count;i++)if(!strcmp(path,objects[i]))atomic_fetch_or(state,((uint64_t)1)<<i);}
+static void descriptor(int fd){if(!state)return;char path[4096];if(fcntl(fd,F_GETPATH,path)<0)return;if(ownership(path)&&atomic_load(state+1))atomic_fetch_add(state+3,1);}
+static int object_index(int fd){if(!state||fd<0)return -1;char path[4096];if(fcntl(fd,F_GETPATH,path)<0)return -1;for(int i=0;i<count;i++)if(!strcmp(path,objects[i]))return i;return -1;}
+// A shared per-byte bitmap supports chunks, overlapping reads, separate fds,
+// pread and mappings across native processes. Seeing a header is not delivery.
+static void delivery(int index,off_t offset,size_t length){
+ if(index<0||offset<0||!length)return;_Atomic(uint64_t)*meta=state+8+index*3;uint64_t size=atomic_load(meta),at=(uint64_t)offset;if(at>=size)return;if(length>size-at)length=(size_t)(size-at);uint64_t bitmap=atomic_load(meta+1);if(bitmap>state_bytes||((size+63)/64)*8>state_bytes-bitmap)_exit(83);_Atomic(uint64_t)*words=(_Atomic(uint64_t)*)((char*)state+bitmap);uint64_t added=0;
+ while(length){unsigned shift=(unsigned)(at&63),span=64-shift;if(span>length)span=(unsigned)length;uint64_t mask=span==64?UINT64_MAX:((((uint64_t)1<<span)-1)<<shift);uint64_t old=atomic_fetch_or(words+(at>>6),mask);added+=(uint64_t)__builtin_popcountll(mask&~old);at+=span;length-=span;}
+ if(added)atomic_fetch_add(meta+2,added);if(atomic_load(meta+2)==size)atomic_fetch_or(state,((uint64_t)1)<<index);
+}
+static void delivery_lock(void){uint64_t zero;struct timespec pause={0,1000000};int tries=0;do{zero=0;if(atomic_compare_exchange_strong(state+6,&zero,1))return;if(++tries>10000)_exit(95);nanosleep(&pause,0);}while(1);}
 void held_race_arm(const char*file,const char*git,const char*paths){
- int fd=open(file,O_RDWR);if(fd<0)_exit(80);state=mmap(0,48,PROT_READ|PROT_WRITE,MAP_SHARED,fd,0);close(fd);if(state==MAP_FAILED)_exit(81);count=0;strlcpy(common,git,sizeof(common));char*copy=strdup(paths),*save=0;for(char*p=strtok_r(copy,"\n",&save);p;p=strtok_r(0,"\n",&save)){if(count>=32)_exit(82);strlcpy(objects[count++],p,sizeof(objects[0]));}free(copy);
+ int fd=open(file,O_RDWR);struct stat info;if(fd<0||fstat(fd,&info)||info.st_size<64)_exit(80);state_bytes=(size_t)info.st_size;state=mmap(0,state_bytes,PROT_READ|PROT_WRITE,MAP_SHARED,fd,0);close(fd);if(state==MAP_FAILED)_exit(81);count=0;strlcpy(common,git,sizeof(common));char*copy=strdup(paths),*save=0;for(char*p=strtok_r(copy,"\n",&save);p;p=strtok_r(0,"\n",&save)){if(count>=32)_exit(82);strlcpy(objects[count++],p,sizeof(objects[0]));}free(copy);if(atomic_load(state+5)!=(uint64_t)count||state_bytes<64+(size_t)count*24)_exit(83);
 }
 // Native Git runs from an unsigned test-owned copy so macOS does not strip
 // instrumentation from a protected system image. Its argv and Git exec path
@@ -64,15 +73,15 @@ __attribute__((constructor)) static void race_initialize(void){const char*policy
 static const char*image(const char*p){char canonical[4096];if(original_git[0]&&p&&realpath(p,canonical)&&(!strcmp(canonical,original_git)||!strcmp(canonical,engine_git)))return traced_git;return p;}
 static char**transport(char*const env[]){size_t n=0;if(env)while(env[n])n++;char**next=calloc(n+4,sizeof(char*));size_t j=0;int has_exec=0;for(size_t i=0;i<n;i++){if(!strncmp(env[i],"DYLD_INSERT_LIBRARIES=",22)||!strncmp(env[i],"HELD_RACE_NATIVE_POLICY=",24))continue;if(!strncmp(env[i],"GIT_EXEC_PATH=",14))has_exec=1;next[j++]=strdup(env[i]);}asprintf(next+j++,"DYLD_INSERT_LIBRARIES=%s",library_path);asprintf(next+j++,"HELD_RACE_NATIVE_POLICY=%s",native_policy);if(!has_exec&&git_exec_path[0])asprintf(next+j++,"GIT_EXEC_PATH=%s",git_exec_path);return next;}
 static void free_transport(char**env){for(size_t i=0;env[i];i++)free(env[i]);free(env);}
-static int race_execve(const char*p,char*const argv[],char*const env[]){const char*target=image(p);if(target==p)return execve(p,argv,env);char**next=transport(env);int result=execve(target,argv,next);int code=errno;free_transport(next);errno=code;return result;}
-static int race_spawn(pid_t*pid,const char*p,const posix_spawn_file_actions_t*actions,const posix_spawnattr_t*attr,char*const argv[],char*const env[]){const char*target=image(p);if(target==p)return posix_spawn(pid,p,actions,attr,argv,env);char**next=transport(env);int result=posix_spawn(pid,target,actions,attr,argv,next);free_transport(next);return result;}
-static int race_spawnp(pid_t*pid,const char*p,const posix_spawn_file_actions_t*actions,const posix_spawnattr_t*attr,char*const argv[],char*const env[]){const char*target=image(p);if(target==p)return posix_spawnp(pid,p,actions,attr,argv,env);char**next=transport(env);int result=posix_spawn(pid,target,actions,attr,argv,next);free_transport(next);return result;}
-void held_race_disarm(void){if(state){munmap((void*)state,48);state=0;}}
+static int race_execve(const char*p,char*const argv[],char*const env[]){const char*target=image(p);if(!native_policy[0])return execve(target,argv,env);char**next=transport(env);int result=execve(target,argv,next);int code=errno;free_transport(next);errno=code;return result;}
+static int race_spawn(pid_t*pid,const char*p,const posix_spawn_file_actions_t*actions,const posix_spawnattr_t*attr,char*const argv[],char*const env[]){const char*target=image(p);if(!native_policy[0])return posix_spawn(pid,target,actions,attr,argv,env);char**next=transport(env);int result=posix_spawn(pid,target,actions,attr,argv,next);free_transport(next);return result;}
+static int race_spawnp(pid_t*pid,const char*p,const posix_spawn_file_actions_t*actions,const posix_spawnattr_t*attr,char*const argv[],char*const env[]){const char*target=image(p);if(!native_policy[0])return posix_spawnp(pid,p,actions,attr,argv,env);char**next=transport(env);int result=target==p?posix_spawnp(pid,p,actions,attr,argv,next):posix_spawn(pid,target,actions,attr,argv,next);free_transport(next);return result;}
+void held_race_disarm(void){if(state){munmap((void*)state,state_bytes);state=0;}}
 static int race_open(const char*p,int flags,...){inventory(p);mode_t mode=0;if(flags&O_CREAT){va_list a;va_start(a,flags);mode=va_arg(a,int);va_end(a);}return open(p,flags,mode);}
 static int race_openat(int fd,const char*p,int flags,...){char path[4096],dir[4096];const char*q=p;if(p&&p[0]!='/'){if(fd==AT_FDCWD){if(getcwd(dir,sizeof(dir)))snprintf(path,sizeof(path),"%s/%s",dir,p);else path[0]=0;}else if(fcntl(fd,F_GETPATH,dir)>=0)snprintf(path,sizeof(path),"%s/%s",dir,p);else path[0]=0;q=path;}inventory(q);mode_t mode=0;if(flags&O_CREAT){va_list a;va_start(a,flags);mode=va_arg(a,int);va_end(a);}return openat(fd,p,flags,mode);}
-static ssize_t race_read(int fd,void*b,size_t n){descriptor_inventory(fd);ssize_t got=read(fd,b,n);if(got>0)descriptor(fd);return got;}
-static ssize_t race_pread(int fd,void*b,size_t n,off_t offset){descriptor_inventory(fd);ssize_t got=pread(fd,b,n,offset);if(got>0)descriptor(fd);return got;}
-static void*race_mmap(void*a,size_t n,int protection,int flags,int fd,off_t offset){descriptor_inventory(fd);void*p=mmap(a,n,protection,flags,fd,offset);if(p!=MAP_FAILED&&n&&fd>=0)descriptor(fd);return p;}
+static ssize_t race_read(int fd,void*b,size_t n){descriptor_inventory(fd);int index=object_index(fd);off_t offset=-1;if(index>=0){delivery_lock();offset=lseek(fd,0,SEEK_CUR);}ssize_t got=read(fd,b,n);int code=errno;if(got>0){descriptor(fd);delivery(index,offset,(size_t)got);}if(index>=0)atomic_store(state+6,0);errno=code;return got;}
+static ssize_t race_pread(int fd,void*b,size_t n,off_t offset){descriptor_inventory(fd);ssize_t got=pread(fd,b,n,offset);int code=errno;if(got>0){descriptor(fd);delivery(object_index(fd),offset,(size_t)got);}errno=code;return got;}
+static void*race_mmap(void*a,size_t n,int protection,int flags,int fd,off_t offset){descriptor_inventory(fd);void*p=mmap(a,n,protection,flags,fd,offset);int code=errno;if(p!=MAP_FAILED&&n&&fd>=0&&(protection&PROT_READ)){descriptor(fd);delivery(object_index(fd),offset,n);}errno=code;return p;}
 static DIR*race_opendir(const char*p){inventory(p);return opendir(p);}
 static struct dirent*race_readdir(DIR*d){char path[4096];if(fcntl(dirfd(d),F_GETPATH,path)>=0)inventory(path);struct dirent*entry=readdir(d);if(entry)descriptor(dirfd(d));return entry;}
 #define I(r,o) __attribute__((used)) static struct{const void*replacement;const void*original;} link_##o __attribute__((section("__DATA,__interpose")))={(const void*)(uintptr_t)&r,(const void*)(uintptr_t)&o};
@@ -81,7 +90,7 @@ I(race_open,open) I(race_openat,openat) I(race_read,read) I(race_pread,pread) I(
 
 const heldRaceGitProgram = `package main
 import("encoding/json";"io";"os";"os/exec";"path/filepath";"strings";"sync";"sync/atomic";"syscall";"time";"unsafe")
-type policy struct{Real,State,Token string;Markers []string}
+type policy struct{Real,State,Token string}
 var state []byte;var p policy;var stream sync.Mutex
 func word(i int)*uint64{return (*uint64)(unsafe.Pointer(&state[i*8]))}
 func gate(){if atomic.LoadUint64(word(0))!=atomic.LoadUint64(word(4)){return};atomic.CompareAndSwapUint64(word(1),0,1);until:=time.Now().Add(10*time.Second);for atomic.LoadUint64(word(2))==0{if time.Now().After(until){os.Exit(94)};time.Sleep(time.Millisecond)}}
@@ -89,11 +98,11 @@ type input struct{destination io.Writer}
 func (v input)Write(b []byte)(int,error){stream.Lock();defer stream.Unlock();gate();return v.destination.Write(b)}
 type output struct{tail string}
 func (v *output)Write(b []byte)(int,error){
- stream.Lock();defer stream.Unlock();n,e:=os.Stdout.Write(b);text:=v.tail+string(b[:n]);for i,marker:=range p.Markers{if strings.Contains(text,marker){for{old:=atomic.LoadUint64(word(0));if atomic.CompareAndSwapUint64(word(0),old,old|uint64(1)<<i){break}}}}
+ stream.Lock();defer stream.Unlock();n,e:=os.Stdout.Write(b);text:=v.tail+string(b[:n]);
  if atomic.LoadUint64(word(1))!=0&&(strings.Contains(text,"refs/fireweed/claims/")||strings.Contains(text,p.Token)){atomic.AddUint64(word(3),1)}
  if len(text)>8192{text=text[len(text)-8192:]};v.tail=text;return n,e
 }
-func main(){self,e:=os.Executable();if e!=nil{os.Exit(80)};raw,e:=os.ReadFile(filepath.Join(filepath.Dir(self),"race-policy.json"));if e!=nil||json.Unmarshal(raw,&p)!=nil{os.Exit(81)};f,e:=os.OpenFile(p.State,os.O_RDWR,0);if e!=nil{os.Exit(82)};state,e=syscall.Mmap(int(f.Fd()),0,48,syscall.PROT_READ|syscall.PROT_WRITE,syscall.MAP_SHARED);f.Close();if e!=nil{os.Exit(83)};defer syscall.Munmap(state)
+func main(){self,e:=os.Executable();if e!=nil{os.Exit(80)};raw,e:=os.ReadFile(filepath.Join(filepath.Dir(self),"race-policy.json"));if e!=nil||json.Unmarshal(raw,&p)!=nil{os.Exit(81)};f,e:=os.OpenFile(p.State,os.O_RDWR,0);if e!=nil{os.Exit(82)};info,e:=f.Stat();if e!=nil||info.Size()<64{os.Exit(83)};state,e=syscall.Mmap(int(f.Fd()),0,int(info.Size()),syscall.PROT_READ|syscall.PROT_WRITE,syscall.MAP_SHARED);f.Close();if e!=nil{os.Exit(83)};defer syscall.Munmap(state)
  gate();command:=exec.Command(p.Real,os.Args[1:]...);stdin,e:=command.StdinPipe();if e!=nil{os.Exit(84)};command.Stdout=&output{};command.Stderr=os.Stderr;if e=command.Start();e!=nil{os.Exit(85)};go func(){io.Copy(input{stdin},os.Stdin);stdin.Close()}();if e=command.Wait();e!=nil{if x,ok:=e.(*exec.ExitError);ok{os.Exit(x.ExitCode())};os.Exit(86)}
 }
 `
@@ -123,6 +132,11 @@ void held_race_disarm(void);
 #include <spawn.h>
 #include <sys/wait.h>
 #include <fcntl.h>
+#include <sys/stat.h>
+// Source observation must not become complete for a one-byte mapping.
+#include <sys/mman.h>
+static int partial_mapping(int fd){void*p=mmap(0,1,PROT_READ,MAP_PRIVATE,fd,0);if(p==MAP_FAILED)return 1;volatile unsigned char seen=*(volatile unsigned char*)p;(void)seen;return munmap(p,1);}
+static int unreadable_mapping(int fd){struct stat info;if(fstat(fd,&info))return 1;void*p=mmap(0,(size_t)info.st_size,PROT_NONE,MAP_PRIVATE,fd,0);if(p==MAP_FAILED)return 1;return munmap(p,(size_t)info.st_size);}
 static int control_spawnp(const char*git,const char*base,const char*object){
  char*empty[]={0};char*source[]={(char*)git,"cat-file","blob",(char*)object,0};char*archive[]={(char*)git,"archive","--format=tar.gz",(char*)base,0};char*refs[]={(char*)git,"for-each-ref","--format=%%(refname:strip=3)","refs/fireweed/claims/",0};char**commands[]={source,archive,refs};
  for(int i=0;i<3;i++){posix_spawn_file_actions_t actions;posix_spawn_file_actions_init(&actions);posix_spawn_file_actions_addopen(&actions,1,"/dev/null",O_WRONLY,0);pid_t pid;int e=posix_spawnp(&pid,git,&actions,0,commands[i],empty);posix_spawn_file_actions_destroy(&actions);if(e)return e;int status;if(waitpid(pid,&status,0)<0)return 200;if(!WIFEXITED(status)||WEXITSTATUS(status))return 201;}
@@ -138,6 +152,7 @@ func runGitEnv(git string,environment []string,args...string)error{command:=exec
 func main(){raw,e:=os.ReadFile(os.Args[1]);var in input;if e!=nil||json.Unmarshal(raw,&in)!=nil{os.Exit(80)};var result output
  C.held_race_arm(C.CString(in.State),C.CString(in.Common),C.CString(in.Objects))
  switch in.Mode{
+ case "partial-read-control","partial-pread-control","partial-mmap-control","unreadable-mmap-control","overlap-pread-control","chunked-read-control":for _,path:=range in.Paths{file,err:=os.Open(path);if err!=nil{os.Exit(81)};info,err:=file.Stat();if err!=nil{os.Exit(81)};var one [1]byte;if in.Mode=="partial-mmap-control"{if C.partial_mapping(C.int(file.Fd()))!=0{os.Exit(82)}}else if in.Mode=="unreadable-mmap-control"{if C.unreadable_mapping(C.int(file.Fd()))!=0{os.Exit(82)}}else if in.Mode=="chunked-read-control"{for offset:=info.Size()-1;offset>=0;offset--{if n,err:=file.ReadAt(one[:],offset);n!=1||err!=nil{os.Exit(82)}}}else if in.Mode=="overlap-pread-control"{for index:=int64(0);index<info.Size();index++{if n,err:=file.ReadAt(one[:],0);n!=1||err!=nil{os.Exit(82)}}}else if in.Mode=="partial-pread-control"{if n,err:=file.ReadAt(one[:],0);n!=1||err!=nil{os.Exit(82)}}else{if n,err:=file.Read(one[:]);n!=1||err!=nil{os.Exit(82)}};file.Close()};if _,e=os.ReadFile(in.Common+"/refs/fireweed/claims/current");e!=nil{os.Exit(82)}
  case "direct-control":for _,path:=range in.Paths{if _,e=os.ReadFile(path);e!=nil{os.Exit(81)}};if _,e=os.ReadFile(in.Common+"/refs/fireweed/claims/current");e!=nil{os.Exit(82)}
  case "relative-control","relative-dot-parent-control":for _,path:=range in.Paths{relative,err:=filepath.Rel(in.Root,path);if err!=nil{os.Exit(81)};if _,e=os.ReadFile(relative);e!=nil{os.Exit(81)}};path:=".git/refs/fireweed/claims/current";if in.Mode=="relative-dot-parent-control"{path="./units/../.git/refs/fireweed/claims/../claims/current"};if _,e=os.ReadFile(path);e!=nil{os.Exit(82)}
  case "minimal-env-control","empty-env-control":environment:=[]string{};if in.Mode=="minimal-env-control"{environment=[]string{"PATH=/usr/bin:/bin","LANG=C","GIT_OPTIONAL_LOCKS=0"}};if e=runGitEnv(in.RealGit,environment,"cat-file","blob",in.ObjectIDs[0]);e!=nil{os.Exit(83)};if e=runGitEnv(in.RealGit,environment,"archive","--format=tar.gz",in.Base);e!=nil{os.Exit(84)};if e=runGitEnv(in.RealGit,environment,"for-each-ref","--format=%%(refname:strip=3)","refs/fireweed/claims/");e!=nil{os.Exit(85)}
@@ -149,7 +164,7 @@ func main(){raw,e:=os.ReadFile(os.Args[1]);var in input;if e!=nil||json.Unmarsha
  case "batch-control":command:=exec.Command("git","cat-file","--batch");stdin,_:=command.StdinPipe();stdout,_:=command.StdoutPipe();command.Stderr=os.Stderr;if e=command.Start();e!=nil{os.Exit(85)};reader:=bufio.NewReader(stdout);for _,object:=range append(append([]string{},in.ObjectIDs...),in.ObjectIDs[0]){fmt.Fprintln(stdin,object);line,err:=reader.ReadString('\n');if err!=nil{os.Exit(86)};var oid,kind string;var size int;if _,err=fmt.Sscan(line,&oid,&kind,&size);err!=nil{os.Exit(87)};if _,err=io.CopyN(io.Discard,reader,int64(size)+1);err!=nil{os.Exit(88)}};stdin.Close();if e=command.Wait();e!=nil{os.Exit(89)}
  default:result.Snapshot,result.Claim,result.Present,e=w.LoadHeldApproval(in.Root);if e!=nil{result.Error=e.Error()}
  }
- if in.Mode!=""&&!strings.HasSuffix(in.Mode,"wire"){var token []byte;if in.Mode=="direct-control"||strings.HasPrefix(in.Mode,"relative-"){token,e=os.ReadFile(in.Common+"/refs/fireweed/claims/current")}else{git:="git";if in.Mode=="absolute-compressed-control"||strings.HasSuffix(in.Mode,"env-control"){git=in.RealGit};token,e=exec.Command(git,"rev-parse","refs/fireweed/claims/current").Output()};if e!=nil||strings.TrimSpace(string(token))!=in.ExpectedToken{result.Error=fmt.Sprint("live ownership control mismatch: ",string(token)," ",e)}}
+ if in.Mode!=""&&!strings.HasSuffix(in.Mode,"wire"){var token []byte;if in.Mode=="direct-control"||strings.HasPrefix(in.Mode,"relative-")||strings.HasPrefix(in.Mode,"partial-"){token,e=os.ReadFile(in.Common+"/refs/fireweed/claims/current")}else{git:="git";if in.Mode=="absolute-compressed-control"||strings.HasSuffix(in.Mode,"env-control"){git=in.RealGit};token,e=exec.Command(git,"rev-parse","refs/fireweed/claims/current").Output()};if e!=nil||strings.TrimSpace(string(token))!=in.ExpectedToken{result.Error=fmt.Sprint("live ownership control mismatch: ",string(token)," ",e)}}
  C.held_race_disarm();result.ClaimObject=result.Claim.Object;if json.NewEncoder(os.Stdout).Encode(result)!=nil{os.Exit(90)}
 }
 `, directory)
@@ -257,23 +272,40 @@ func heldRaceFixture(t *testing.T, directory, real, format string) (approvalFixt
 		objects = append(objects, claimGit(t, f.Root, "rev-parse", f.Claim.Base+":"+path))
 	}
 	loose := []string{}
+	sizes := []uint64{}
 	for _, object := range objects {
 		path := filepath.Join(common, "objects", object[:2], object[2:])
-		if _, err := os.Stat(path); err != nil {
+		info, err := os.Stat(path)
+		if err != nil {
 			t.Fatal("fresh loose source object premise", err)
 		}
+		if info.Size() <= 1 || info.Size() > 1<<20 {
+			t.Fatal("bounded nonempty loose source object premise", info.Size())
+		}
 		loose = append(loose, path)
+		sizes = append(sizes, uint64(info.Size()))
 	}
 	statePath := filepath.Join(t.TempDir(), "state")
-	state := make([]byte, 48)
+	stateBytes := 64 + len(objects)*24
+	for _, size := range sizes {
+		stateBytes += int((size+63)/64) * 8
+	}
+	state := make([]byte, stateBytes)
 	binary.LittleEndian.PutUint64(state[32:], uint64(1)<<len(markers)-1)
+	binary.LittleEndian.PutUint64(state[40:], uint64(len(objects)))
+	bitmap := uint64(64 + len(objects)*24)
+	for index, size := range sizes {
+		metadata := 64 + index*24
+		binary.LittleEndian.PutUint64(state[metadata:], size)
+		binary.LittleEndian.PutUint64(state[metadata+8:], bitmap)
+		bitmap += ((size + 63) / 64) * 8
+	}
 	if err := os.WriteFile(statePath, state, 0600); err != nil {
 		t.Fatal(err)
 	}
 	policy, err := json.Marshal(struct {
 		Real, State, Token string
-		Markers            []string
-	}{real, statePath, f.Claim.Object, markers})
+	}{real, statePath, f.Claim.Object})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -295,7 +327,7 @@ func heldRaceFixture(t *testing.T, directory, real, format string) (approvalFixt
 func heldRaceState(t *testing.T, path string) []uint64 {
 	t.Helper()
 	bytes, err := os.ReadFile(path)
-	if err != nil || len(bytes) != 48 {
+	if err != nil || len(bytes) < 64 {
 		t.Fatal("race observer state", err, len(bytes))
 	}
 	values := []uint64{}
@@ -303,6 +335,24 @@ func heldRaceState(t *testing.T, path string) []uint64 {
 		values = append(values, binary.LittleEndian.Uint64(bytes[index*8:]))
 	}
 	return values
+}
+
+func heldRaceDelivery(t *testing.T, path string) [][2]uint64 {
+	t.Helper()
+	raw, err := os.ReadFile(path)
+	if err != nil || len(raw) < 64 {
+		t.Fatal("race delivery observer state", err, len(raw))
+	}
+	count := int(binary.LittleEndian.Uint64(raw[40:]))
+	if count < 1 || count > 32 || len(raw) < 64+count*24 {
+		t.Fatal("race delivery descriptor layout", count, len(raw))
+	}
+	result := [][2]uint64{}
+	for index := 0; index < count; index++ {
+		metadata := 64 + index*24
+		result = append(result, [2]uint64{binary.LittleEndian.Uint64(raw[metadata:]), binary.LittleEndian.Uint64(raw[metadata+16:])})
+	}
+	return result
 }
 
 func heldRaceRun(t *testing.T, directory, executable string, in heldRaceInput, update func()) (heldNativeOutput, bool) {
@@ -373,10 +423,28 @@ func Test_FLOW049_FLOW050HeldOwnershipRevalidation(t *testing.T) {
 	}
 	directory, executable := heldBuildRaceProbe(t)
 	real := protocolRealGit(t)
-	for _, mode := range []string{"approval-wire", "object-only-wire", "direct-control", "relative-control", "relative-dot-parent-control", "git-control", "batch-control", "absolute-compressed-control", "minimal-env-control", "empty-env-control", "spawnp-empty-env-control"} {
+	for _, mode := range []string{"approval-wire", "object-only-wire", "partial-read-control", "partial-pread-control", "partial-mmap-control", "unreadable-mmap-control", "overlap-pread-control", "chunked-read-control", "direct-control", "relative-control", "relative-dot-parent-control", "git-control", "batch-control", "absolute-compressed-control", "minimal-env-control", "empty-env-control", "spawnp-empty-env-control"} {
 		t.Run(mode, func(t *testing.T) {
 			f, in := heldRaceFixture(t, directory, real, "sha1")
 			in.Mode = mode
+			if strings.HasPrefix(mode, "partial-") || mode == "unreadable-mmap-control" || mode == "overlap-pread-control" {
+				in.ExpectedToken = f.Claim.Object
+				result, fired := heldRaceRun(t, directory, executable, in, nil)
+				state := heldRaceState(t, in.State)
+				if result.Error != "" || fired || state[0] != 0 || state[1] != 0 {
+					t.Fatal("partial object reads incorrectly established complete-source ownership barrier", result.Error, fired, state)
+				}
+				wanted := uint64(1)
+				if mode == "unreadable-mmap-control" {
+					wanted = 0
+				}
+				for index, delivery := range heldRaceDelivery(t, in.State) {
+					if delivery[0] <= 1 || delivery[1] != wanted {
+						t.Fatal("actual one-byte source delivery observer control", index, delivery)
+					}
+				}
+				return
+			}
 			if strings.HasSuffix(mode, "wire") {
 				result, _ := heldRaceRun(t, directory, executable, in, nil)
 				if mode == "approval-wire" {
@@ -402,6 +470,11 @@ func Test_FLOW049_FLOW050HeldOwnershipRevalidation(t *testing.T) {
 			}
 			if !fired || heldRaceState(t, in.State)[0] != heldRaceState(t, in.State)[4] {
 				t.Fatal("actual source and subsequent ownership/request observer control absent", fired, heldRaceState(t, in.State))
+			}
+			for index, delivery := range heldRaceDelivery(t, in.State) {
+				if delivery[0] == 0 || delivery[0] != delivery[1] {
+					t.Fatal("complete object-byte delivery observer control", index, delivery)
+				}
 			}
 		})
 	}

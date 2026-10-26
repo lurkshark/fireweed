@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: evals
+phase: audit
 run: d6540bfc1bc15d3673735a4d
 ---
 
@@ -46,6 +46,8 @@ The probe wire explicitly preserves Claim.Object separately because the retained
 
 Fault-recovery operation assertions run on every return path, including successful native fallback. Required Git failure details may identify any actually observed failed command, rather than presuming the first optional probe was required; independent native controls exercise distinct probe/read failures and forbidden recovery operations. Canonical ownership identity also applies through nested symlink aliases of ordinary and linked checkouts. Valid Markdown syntax alone does not establish a valid started State: missing/invalid/applied phase, missing run, and missing/mismatched module remain corrective atomic rejections, calibrated with the existing public claimed loader and state checker.
 
+Native source-delivery evidence requires complete unique byte coverage of each tracked loose approval object, using shared range bitmaps for read/pread/readable mmap, including overlapping and out-of-order chunks. Header-only reads and unreadable mappings cannot arm the final-ownership barrier. Textual stdout markers do not establish completeness. Independent partial/readable/overlap/chunk controls validate this eval premise; it does not prescribe a product read size, body command or private entry point. Native observation transport follows exec/spawn/spawnp children independently of their application environment so Git body observation remains live.
+
 ## Rejected alternatives
 
 Separate Claims plus fallback-capable LoadApproval admits a disappearance race. Loading current project metadata before checking ownership lets worker edits obstruct approved graph queries. Running Verify to find ownership recursively executes boundary hooks. Returning an already inclusive projected snapshot would risk applying the selected change twice in existing public composition.
@@ -60,3 +62,4 @@ Separate Claims plus fallback-capable LoadApproval admits a disappearance race. 
 - audit | 2026-10-26T06:54:34Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-26T08:08:17Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2356 | failing: 90 | passing: 2266
 - audit | 2026-10-26T08:19:24Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-26T13:50:45Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2362 | failing: 90 | passing: 2272
