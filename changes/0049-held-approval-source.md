@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: audit
+phase: evals
 run: d6540bfc1bc15d3673735a4d
 ---
 
@@ -56,7 +56,8 @@ Separate Claims plus fallback-capable LoadApproval admits a disappearance race. 
 
 ## Audit
 
-- FLOW-051: "no lazy fetch, push, branch/worktree creation, hooks, agents, bootstrap or network commands" — An unnecessary read-only git status with optional locks disabled can invoke a repository-configured fsmonitor hook. Current held fixtures only trap direct hook execution. Install and independently calibrate a local Git hook/fsmonitor trap, then assert successful and rejected held-source calls never invoke it.
+- FLOW-049: "the exact stored Claim including its object token, and the same approved Base snapshot with the exact started State inserted that claimed LoadApproval provides" — No held fixture installs replacement refs for the selected claim blob or Base commit. A replacement-aware reader can substitute claim State or Base metadata and pass current held cases. Calibrate ordinary Git replacement views against replacement-immune public LoadApproval and assert identical held source/token plus unchanged replacement refs.
+- FLOW-048: "without loading current project configuration, SPEC or queue documents" — Caller-only file guards do not observe current-document reads inside actual native Git children. An unnecessary git hash-object --no-filters fireweed.yaml can consume current configuration before absence without changing results, files, refs or fsmonitor markers. Independently calibrate native Git current-document read observation and assert no current configuration/SPEC/queue bytes are consumed on no-owned paths.
 
 ## Provenance
 
@@ -67,3 +68,4 @@ Separate Claims plus fallback-capable LoadApproval admits a disappearance race. 
 - evals | 2026-10-26T13:50:45Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2362 | failing: 90 | passing: 2272
 - audit | 2026-10-26T13:59:14Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-26T14:35:04Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2362 | failing: 90 | passing: 2272
+- audit | 2026-10-26T14:44:27Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
