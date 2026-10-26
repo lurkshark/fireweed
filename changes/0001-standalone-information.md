@@ -2,7 +2,7 @@
 audit_rounds: 0
 bases: {}
 module: assets
-phase: audit
+phase: impl
 run: 20261026T201612-66519d7778785672f6878ec0
 ---
 
@@ -57,3 +57,8 @@ reject unknown codes.
 ## Provenance
 
 - evals 2026-10-26T20:19:35.671397Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=8 failing=8 passing=0
+- audit 2026-10-26T20:21:29.908957Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+
+## Audit
+
+No findings. Checked IDs: AST-001, AST-002, AST-003.
