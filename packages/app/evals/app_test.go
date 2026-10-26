@@ -121,13 +121,25 @@ func Test_APP_003_InvalidRequests(t *testing.T) {
 		{"unknown-playbook", []string{"playbook", "no-such-playbook"}, "no-such-playbook"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			status, stdout, stderr := run(tc.args...)
-			if status != 2 {
-				t.Errorf("status=%d; want 2", status)
-			}
-			diagnostic := stdout + stderr
-			if !strings.Contains(diagnostic, tc.bad) || !corrective(diagnostic) {
-				t.Errorf("diagnostic %q must identify %q and suggest a correction", diagnostic, tc.bad)
+			for _, format := range []struct {
+				name string
+				json bool
+			}{{"plain", false}, {"JSON", true}} {
+				args := append([]string(nil), tc.args...)
+				if format.json {
+					args = append(args, "--json")
+				}
+				status, stdout, stderr := run(args...)
+				if status != 2 {
+					t.Errorf("%s status=%d; want 2", format.name, status)
+				}
+				diagnostic := stdout + stderr
+				if format.json {
+					diagnostic = assertFailedJSON(t, stdout)
+				}
+				if !strings.Contains(diagnostic, tc.bad) || !corrective(diagnostic) {
+					t.Errorf("%s diagnostic %q must identify %q and suggest a correction", format.name, diagnostic, tc.bad)
+				}
 			}
 		})
 	}
@@ -148,36 +160,30 @@ func Test_APP_003_UnimplementedCommands(t *testing.T) {
 }
 
 func Test_APP_003_FailedJSON(t *testing.T) {
-	for _, tc := range []struct {
-		name string
-		args []string
-	}{
-		{"unknown-command", []string{"not-a-command", "--json"}},
-		{"missing-argument", []string{"explain", "--json"}},
-		{"unknown-name", []string{"playbook", "no-such-playbook", "--json"}},
-		{"unimplemented", []string{"init", "--json"}},
-	} {
-		t.Run(tc.name, func(t *testing.T) {
-			status, stdout, _ := run(tc.args...)
-			if status == 0 {
-				t.Error("failed request returned exit 0")
-			}
-			envelope := decodeEnvelope(t, stdout)
-			if string(envelope["data"]) != "null" {
-				t.Errorf("data=%s; want null", envelope["data"])
-			}
-			var diagnostics []struct {
-				Code    string `json:"code"`
-				Message string `json:"message"`
-			}
-			if err := json.Unmarshal(envelope["diagnostics"], &diagnostics); err != nil || len(diagnostics) == 0 {
-				t.Fatalf("diagnostics=%s; want nonempty array: %v", envelope["diagnostics"], err)
-			}
-			if strings.TrimSpace(diagnostics[0].Code) == "" || strings.TrimSpace(diagnostics[0].Message) == "" {
-				t.Errorf("diagnostic needs code and message: %+v", diagnostics[0])
-			}
-		})
+	status, stdout, _ := run("init", "--json")
+	if status == 0 {
+		t.Error("failed request returned exit 0")
 	}
+	assertFailedJSON(t, stdout)
+}
+
+func assertFailedJSON(t *testing.T, stdout string) string {
+	t.Helper()
+	envelope := decodeEnvelope(t, stdout)
+	if string(envelope["data"]) != "null" {
+		t.Errorf("data=%s; want null", envelope["data"])
+	}
+	var diagnostics []struct {
+		Code    string `json:"code"`
+		Message string `json:"message"`
+	}
+	if err := json.Unmarshal(envelope["diagnostics"], &diagnostics); err != nil || len(diagnostics) == 0 {
+		t.Fatalf("diagnostics=%s; want nonempty array: %v", envelope["diagnostics"], err)
+	}
+	if strings.TrimSpace(diagnostics[0].Code) == "" || strings.TrimSpace(diagnostics[0].Message) == "" {
+		t.Errorf("diagnostic needs code and message: %+v", diagnostics[0])
+	}
+	return diagnostics[0].Message
 }
 
 // The app-level convention probe uses one PATH recorder for external commands.
