@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: app
+phase: audit
+run: 20261026T202346-fcd8c0b82ee99647b8ddc47b
 ---
 
 
@@ -17,18 +20,18 @@ Wire assets through disposable app/internal code; root main.go stays unchanged.
 
 ## Added
 
-### new:standalone-information
+### APP-001
 The CLI MUST run help, version, explain <code> and playbook <name> successfully
 outside a project, returning the corresponding assets text on stdout with exit
 0 and empty stderr. These commands MUST also work in a directory containing an
 invalid fireweed.yaml.
 
-### new:information-json
+### APP-002
 Each information command MUST accept --json and emit one JSON object with schema
 1, string data equal to its plain text result, and an empty diagnostics array.
 It MUST return exit 0 and leave stderr empty.
 
-### new:explicit-usage-failures
+### APP-003
 Unknown commands/options, missing or extra arguments, and unknown lookup names
 MUST return exit 2 with a nonempty corrective diagnostic. Commands listed by help
 but still under construction MUST explicitly report that they are unimplemented
@@ -48,3 +51,9 @@ null data and a diagnostic containing code and message.
 
 
 ## Rejected alternatives
+
+
+
+## Provenance
+
+- evals 2026-10-26T20:27:01.636439Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=30 failing=30 passing=0
