@@ -5,7 +5,8 @@ Current state for restarting work. Keep this file short: update sections in plac
 ## Status (2026-10-26)
 
 - Restarted from the setup baseline (D001). No changes authored or applied. All R rows unverified.
-- History baseline for check-commits and ci ranges: the restart docs commit, recorded below. Always use an explicit range from it.
+- History baseline for check-commits and ci ranges: d991c26472ad990a5d050a07ce7dc873d1900433 (restart docs commit). Always use the explicit range `d991c26..HEAD`.
+- At the baseline: go build, vet and test pass (no tests yet); controller check is valid; doctor catches all four canaries; check-commits 14cec73..d991c26 has no diagnostics.
 
 ## Controller pin
 
