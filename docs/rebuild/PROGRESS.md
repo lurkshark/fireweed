@@ -31,15 +31,16 @@ Keep this file short: update sections in place and add one line per applied chan
 
 ## Next / resume
 
-Build the NEW binary's standalone command checkpoint, then the narrow manual
-lifecycle slice before expanding the surface.
+Repair APP-003 JSON assertion gaps with eval_fix, then add only the document/project
+contracts needed for the manual lifecycle slice. The standalone NEW CLI is built
+and its outside-project version --json smoke passed.
 
 If a change is already active on resume, read its context and preserve its work;
 protected edits belong between active changes in separate author commits.
 
 ## Applied
 
-- `standalone-information` (assets, AST-001–AST-003): evals `a4ceb17` (8/8 genuine failures), separate Sol/high audit `826b9e9` (no findings), impl `2248b8e` (8/8 pass, direct dependents and boundaries pass). Archive `changes/archive/0001-standalone-information.md`; 1 of 5 applied changes since review.
+- `standalone-information` (assets, AST-001–AST-003): evals `a4ceb17` (8/8 genuine failures), separate Sol/high audit `826b9e9` (no findings), impl `2248b8e` (8/8 pass, direct dependents and boundaries pass). Archive `changes/archive/0001-standalone-information.md`; 1st applied change since review.
 
 ## Startup compatibility
 
@@ -60,6 +61,8 @@ protected edits belong between active changes in separate author commits.
   Initial scaffold `go build -o bin/fireweed .` exited 0 (no usable commands yet).
 - First implementation change applied; next wire standalone CLI through app.
 
+- `standalone-cli` (app, APP-001–APP-003): evals `1298acf` (30 assertion failures), controller audit `7de7d30` (findings discarded due quote line-break mismatch; independent auditor did NOT pass), impl `db77de7` (30/30 pass, boundaries pass). Frozen evals restored after rejected correction; immediate eval_fix next. 2 of 5 applied changes since review.
+
 ## Execution evidence
 
 - Workers/auditor used the required real Codex Sol/high argv. Controller transitions
@@ -70,3 +73,12 @@ protected edits belong between active changes in separate author commits.
 - Full verify and done passed in both behavioral phases. Evals-only B03 (106/10
   lines against stubs) disappeared after implementation. No eval/interface edits
   occurred in impl. Claim released and tree clean after controller archive.
+
+- `standalone-cli` audit quotes folded spec line breaks; the controller discarded
+  both findings and wrote No findings, phase impl, audit_rounds=0. A real worker
+  attempted corrections, but verify rejected frozen-eval edits; restored evals
+  from the current phase commit before implementing. No forbidden changes committed.
+  Keep all future audit quotes exact, preferably contiguous within one source line,
+  and inspect actual phase/audit_rounds after every transition. The known JSON gaps
+  require an immediate independently audited eval_fix; do not claim independent
+  audit success for this change.

@@ -112,3 +112,10 @@ Bulky logs may remain ignored; commit concise findings/counts and durable commit
   `changes/archive/0001-standalone-information.md`; phase commits
   `a4ceb17` / `826b9e9` / `2248b8e`; 8 assertion failures before and 8 passes after.
   CLI wiring, full diagnostics/versioning/playbooks/AGENTS remain unverified.
+
+- R17: APP-001–APP-003 cover standalone NEW-binary invocation outside a project
+  and with invalid config, schema-1 information JSON, usage errors and explicit
+  unsupported-command failures; 30 assertion failures before, 30 passes after.
+  Archive `0002-standalone-cli.md`; evals `1298acf`, controller audit `7de7d30`.
+  Independent audit found APP-003 JSON gaps discarded by the controller because
+  quotes folded line breaks. Correction through eval_fix remains pending.
