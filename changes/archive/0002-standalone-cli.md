@@ -2,7 +2,7 @@
 audit_rounds: 0
 bases: {}
 module: app
-phase: impl
+phase: applied
 run: 20261026T202346-fcd8c0b82ee99647b8ddc47b
 ---
 
@@ -58,7 +58,16 @@ null data and a diagnostic containing code and message.
 
 - evals 2026-10-26T20:27:01.636439Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=30 failing=30 passing=0
 - audit 2026-10-26T20:28:24.291091Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-26T20:33:12.411141Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=30 failing=0 passing=30
 
 ## Audit
 
 No findings. Checked APP-001, APP-002, APP-003.
+
+## Notes
+
+The independent auditor found APP-003 JSON assertion gaps. Its quote text folded
+line breaks and the controller discarded the findings, recording No findings and
+advancing to impl with audit_rounds=0. An attempted eval correction was rejected
+by frozen-zone checks and restored exactly. Correct APP-003 in a separately
+authored eval_fix after application; do not claim the independent audit passed.
