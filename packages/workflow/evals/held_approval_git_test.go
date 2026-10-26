@@ -16,8 +16,8 @@ import (
 )
 
 type heldGitPolicy struct {
-	Real, Trace, Violation, Stderr string
-	Fail                           bool
+	Real, Trace, Violation, Stderr, Fsmonitor string
+	Fail                                      bool
 }
 
 // The proxy passes streams through without buffering stdin or prescribing a
@@ -25,9 +25,10 @@ type heldGitPolicy struct {
 // functions. A native implementation using no Git process remains permitted.
 const heldGitObserverProgram = `package main
 import("encoding/json";"fmt";"os";"os/exec";"path/filepath";"strings")
-type policy struct{Real,Trace,Violation,Stderr string;Fail bool}
+type policy struct{Real,Trace,Violation,Stderr,Fsmonitor string;Fail bool}
 func main(){
  self,e:=os.Executable();if e!=nil{os.Exit(80)};raw,e:=os.ReadFile(filepath.Join(filepath.Dir(self),"held-git-policy.json"));var p policy;if e!=nil||json.Unmarshal(raw,&p)!=nil{os.Exit(81)}
+ if strings.TrimSuffix(filepath.Base(self),".exe")=="fsmonitor-trap"{if p.Fsmonitor==""||os.WriteFile(p.Fsmonitor,[]byte("native Git fsmonitor hook entered\n"),0600)!=nil{os.Exit(84)};fmt.Fprint(os.Stdout,"held-fsmonitor-token\x00");return}
  args:=os.Args[1:];log,e:=os.OpenFile(p.Trace,os.O_CREATE|os.O_APPEND|os.O_WRONLY,0600);if e!=nil{os.Exit(82)};json.NewEncoder(log).Encode(args);log.Close()
  op:="";tail:=[]string{}
  for i:=0;i<len(args);i++{a:=args[i];if a=="-c"||a=="-C"||a=="--git-dir"||a=="--work-tree"||a=="--namespace"||a=="--config-env"{i++;continue};if strings.HasPrefix(a,"-"){continue};op=a;tail=args[i+1:];break}
@@ -60,7 +61,57 @@ func heldBuildGitObserver(t *testing.T) (string, string) {
 	if out, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("held Git observer build: %v %s", err, out)
 	}
+	bytes, err := os.ReadFile(binary)
+	if err != nil {
+		t.Fatal(err)
+	}
+	hook := filepath.Join(directory, "fsmonitor-trap")
+	if os.PathSeparator == '\\' {
+		hook += ".exe"
+	}
+	if err := os.WriteFile(hook, bytes, 0755); err != nil {
+		t.Fatal(err)
+	}
 	return directory, binary
+}
+
+func heldFsmonitorControls(t *testing.T, directory, root string, policy heldGitPolicy) {
+	t.Helper()
+	hook := filepath.Join(directory, "fsmonitor-trap")
+	if os.PathSeparator == '\\' {
+		hook += ".exe"
+	}
+	claimGit(t, root, "config", "core.fsmonitor", claimQuote(hook))
+	claimGit(t, root, "config", "core.fsmonitorHookVersion", "2")
+	// Replay the native invocation so cached fsmonitor/index state cannot make
+	// the later negative assertion depend on a one-shot hook installation.
+	for attempt := 0; attempt < 2; attempt++ {
+		_, diagnostic, code := heldRunGitControl(t, policy.Real, root, "", "--no-optional-locks", "status", "--porcelain")
+		if code != 0 {
+			t.Fatal("ordinary native Git fsmonitor control", code, diagnostic)
+		}
+		bytes, err := os.ReadFile(policy.Fsmonitor)
+		if err != nil || string(bytes) != "native Git fsmonitor hook entered\n" {
+			t.Fatal("native Git did not invoke configured fsmonitor hook", attempt, string(bytes), err, diagnostic)
+		}
+		if err := os.Remove(policy.Fsmonitor); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func heldObserveNoFsmonitor(t *testing.T, marker string) {
+	t.Helper()
+	// Fixture controls may use Git before the measured call. Only its effects
+	// count here; the absolute marker remains observable through every return.
+	if err := os.Remove(marker); err != nil && !os.IsNotExist(err) {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if bytes, err := os.ReadFile(marker); !os.IsNotExist(err) {
+			t.Error("LoadHeldApproval invoked native Git fsmonitor hook", string(bytes), err)
+		}
+	})
 }
 
 func heldWriteGitPolicy(t *testing.T, directory string, policy heldGitPolicy) {
@@ -106,8 +157,9 @@ func Test_FLOW048_FLOW049_FLOW051HeldGitStreamsAndOperations(t *testing.T) {
 			t.Run(format+"/"+mode, func(t *testing.T) {
 				f := heldSourceFixture(t, "impl", format, true)
 				policyDir := t.TempDir()
-				policy := heldGitPolicy{Real: real, Trace: filepath.Join(policyDir, "trace.jsonl"), Violation: filepath.Join(policyDir, "violation"), Stderr: "valid-looking stderr: refs/fireweed/claims/current\n"}
+				policy := heldGitPolicy{Real: real, Trace: filepath.Join(policyDir, "trace.jsonl"), Violation: filepath.Join(policyDir, "violation"), Stderr: "valid-looking stderr: refs/fireweed/claims/current\n", Fsmonitor: filepath.Join(policyDir, "fsmonitor")}
 				heldWriteGitPolicy(t, directory, policy)
+				heldFsmonitorControls(t, directory, f.Root, policy)
 				for _, args := range [][]string{{"rev-parse", "--show-toplevel"}, {"cat-file", "blob", f.Claim.Object}, {"for-each-ref", "--format=%(refname) %(objectname)", "refs/fireweed/claims/"}} {
 					want, _, code := heldRunGitControl(t, real, f.Root, "", args...)
 					got, diagnostics, actual := heldRunGitControl(t, binary, f.Root, "", args...)
@@ -142,6 +194,7 @@ func Test_FLOW048_FLOW049_FLOW051HeldGitStreamsAndOperations(t *testing.T) {
 				}
 				heldPoisonCurrent(t, f.Root)
 				t.Setenv("PATH", directory+string(os.PathListSeparator)+os.Getenv("PATH"))
+				heldObserveNoFsmonitor(t, policy.Fsmonitor)
 				switch mode {
 				case "held":
 					heldSourceResult(t, f.Root, f)
@@ -163,8 +216,9 @@ func Test_FLOW051HeldRequiredGitFailureDetails(t *testing.T) {
 	real := protocolRealGit(t)
 	f := heldSourceFixture(t, "impl", "sha1", true)
 	artifacts := t.TempDir()
-	policy := heldGitPolicy{Real: real, Trace: filepath.Join(artifacts, "trace.jsonl"), Violation: filepath.Join(artifacts, "violation"), Fail: true, Stderr: "held-selected-local-git-failure-9284"}
+	policy := heldGitPolicy{Real: real, Trace: filepath.Join(artifacts, "trace.jsonl"), Violation: filepath.Join(artifacts, "violation"), Fail: true, Stderr: "held-selected-local-git-failure-9284", Fsmonitor: filepath.Join(artifacts, "fsmonitor")}
 	heldWriteGitPolicy(t, directory, policy)
+	heldFsmonitorControls(t, directory, f.Root, policy)
 	defer func() {
 		if _, err := os.Stat(policy.Violation); !os.IsNotExist(err) {
 			t.Error("held source fault recovery attempted forbidden Git operation", err)
@@ -197,6 +251,7 @@ func Test_FLOW051HeldRequiredGitFailureDetails(t *testing.T) {
 	}
 	heldPoisonCurrent(t, f.Root)
 	t.Setenv("PATH", directory+string(os.PathListSeparator)+os.Getenv("PATH"))
+	heldObserveNoFsmonitor(t, policy.Fsmonitor)
 	source, claim, present, err := w.LoadHeldApproval(f.Root)
 	trace, traceErr := os.ReadFile(policy.Trace)
 	if os.IsNotExist(traceErr) {

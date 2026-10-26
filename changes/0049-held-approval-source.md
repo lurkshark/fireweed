@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: evals
+phase: audit
 run: d6540bfc1bc15d3673735a4d
 ---
 
@@ -48,6 +48,8 @@ Fault-recovery operation assertions run on every return path, including successf
 
 Native source-delivery evidence requires complete unique byte coverage of each tracked loose approval object, using shared range bitmaps for read/pread/readable mmap, including overlapping and out-of-order chunks. Header-only reads and unreadable mappings cannot arm the final-ownership barrier. Textual stdout markers do not establish completeness. Independent partial/readable/overlap/chunk controls validate this eval premise; it does not prescribe a product read size, body command or private entry point. Native observation transport follows exec/spawn/spawnp children independently of their application environment so Git body observation remains live.
 
+Read-only Git commands can still execute repository-configured helpers. A real local fsmonitor hook is therefore installed and invoked twice by native Git status with optional locks disabled before each measured fixture. Its marker is cleared after fixture setup and observed on every measured return, including rejected ownership and successful native fallback paths. Disabling an unnecessary hook for a particular read is permitted; invoking it is not. No hook or Git-command reading strategy is required by this observer.
+
 ## Rejected alternatives
 
 Separate Claims plus fallback-capable LoadApproval admits a disappearance race. Loading current project metadata before checking ownership lets worker edits obstruct approved graph queries. Running Verify to find ownership recursively executes boundary hooks. Returning an already inclusive projected snapshot would risk applying the selected change twice in existing public composition.
@@ -64,3 +66,4 @@ Separate Claims plus fallback-capable LoadApproval admits a disappearance race. 
 - audit | 2026-10-26T08:19:24Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-26T13:50:45Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2362 | failing: 90 | passing: 2272
 - audit | 2026-10-26T13:59:14Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-26T14:35:04Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2362 | failing: 90 | passing: 2272
