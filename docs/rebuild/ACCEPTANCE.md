@@ -124,3 +124,10 @@ Bulky logs may remain ignored; commit concise findings/counts and durable commit
   `eb4704d` / `e184bb6` / `8796d37`. Separate restricted Sol/high audit passed
   APP-003; all 26 app cases pass, with unchanged implementation. This is rebuild
   process evidence, not evidence that the NEW product implements eval_fix.
+
+- R02/R03/R04 partial: CON-001–CON-005 provide document/section/item parsing,
+  canonical hashes, ID matching and zone precedence/globs. Archive
+  `0004-lifecycle-primitives.md`; evals `11d0180` (27 genuine failures), audit
+  `6e341a4` (independent no findings), impl `8e37dd7` (27 passes, existing app/assets
+  and direct dependents/boundaries pass). Full grammar, project validation and
+  lifecycle remain unverified.
