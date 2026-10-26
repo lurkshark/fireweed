@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: audit
+phase: evals
 run: d6540bfc1bc15d3673735a4d
 ---
 
@@ -54,7 +54,7 @@ Separate Claims plus fallback-capable LoadApproval admits a disappearance race. 
 
 ## Audit
 
-- FLOW-050: "After loading and before returning success it MUST revalidate the unique locally owned selection and that exact token" — The native race observer marks each loose approval object delivered after any positive read/pread or nonempty mmap. A reader can pre-read one byte of every required object, validate ownership, then finish loading without another validation while all injected cases still pass. Require complete object-byte delivery before arming the ownership barrier and independently prove partial reads cannot arm it.
+- FLOW-051: "no lazy fetch, push, branch/worktree creation, hooks, agents, bootstrap or network commands" — An unnecessary read-only git status with optional locks disabled can invoke a repository-configured fsmonitor hook. Current held fixtures only trap direct hook execution. Install and independently calibrate a local Git hook/fsmonitor trap, then assert successful and rejected held-source calls never invoke it.
 
 ## Provenance
 
@@ -63,3 +63,4 @@ Separate Claims plus fallback-capable LoadApproval admits a disappearance race. 
 - evals | 2026-10-26T08:08:17Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2356 | failing: 90 | passing: 2266
 - audit | 2026-10-26T08:19:24Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-26T13:50:45Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2362 | failing: 90 | passing: 2272
+- audit | 2026-10-26T13:59:14Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
