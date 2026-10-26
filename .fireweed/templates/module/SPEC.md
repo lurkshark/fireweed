@@ -1,10 +1,10 @@
 ---
-name: {{module}}
+name: {{name}}
 id_prefix: {{prefix}}
 depends_on: []
 ---
 
-# {{module}}
+# {{name}}
 
 ## Specs
 

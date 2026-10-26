@@ -1,4 +1,4 @@
-fireweed: '>=0.4, <0.5'
+fireweed: '>=0.1, <0.2'
 version: 1
 remote: origin
 modules:
@@ -13,6 +13,7 @@ module_defaults:
 hooks:
     eval: go run .fireweed/hooks.go eval {module_dir} {report}
     boundaries: go run .fireweed/hooks.go boundaries
+    setup: sh .fireweed/setup.sh
 protected:
     - .github/**
     - docs/**
@@ -32,21 +33,31 @@ agent:
         - codex
         - exec
         - --ephemeral
-        - --model
+        - --ignore-user-config
+        - -m
         - gpt-6-sol
-        - --sandbox
+        - -c
+        - model_reasoning_effort="high"
+        - -s
         - workspace-write
         - '{prompt}'
 audit:
+    enabled: true
+    max_rounds: 2
     command:
         - codex
         - exec
         - --ephemeral
-        - --model
+        - --ignore-user-config
+        - -m
         - gpt-6-sol
-        - --sandbox
+        - -c
+        - model_reasoning_effort="high"
+        - -s
         - workspace-write
         - '{prompt}'
+authoring:
+    max_unapproved: 5
 attempts: 2
 timeout: 90m
 verify_dependents: direct
