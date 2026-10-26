@@ -1,6 +1,6 @@
 # fireweed design
 
-Draft · October 14, 2026 · Revised October 26, 2026 (bounded effort, usability)
+Draft · October 14, 2026 · Revised October 26, 2026 (bounded effort, usability, merge strategies)
 
 fireweed is a single Go binary that runs a spec-driven, regenerative workflow for one or a few developers. Specs are the source of truth, black-box evals linked to spec IDs are kept permanently, most implementation code can be thrown away and rebuilt, and coding agents do the work while fireweed checks every step.
 
@@ -246,7 +246,7 @@ stateDiagram-v2
 
 `fireweed next` and `fireweed run` are thin loops on top: they start an agent for each step, call `verify` and `done`, and retry on failure. `next` runs the head of the queue once; `run` keeps going until the queue is empty or a limit is reached. Agents never commit; if an agent creates commits, fireweed undoes them with a soft reset and logs a warning.
 
-**State fields.** `phase` names the next step to do: `evals`, `audit`, `impl`, or `applied` in the archived file. `start` writes the first value without committing it: `evals` for spec changes and fixes, `impl` for maintenance and regenerate changes. Each commit is identified by the value it sets: a commit that sets `applied` is an implementation commit, one that moves `phase` from `audit` to `impl` is an audit commit, and any other commit that sets `audit` or `impl` is an evals commit (with the audit turned off, the evals commit sets `impl` directly). A commit that adds `blocked` is a block commit. A commit that moves `phase` from `audit` back to `evals` is an audit-findings commit and increments `audit_rounds`. `blocked` is a separate field: `phase` says where to resume and `blocked` says why the change stopped, so unblocking is deleting one line.
+**State fields.** `phase` names the next step to do: `evals`, `audit`, `impl`, or `applied` in the archived file. `start` writes the first value without committing it: `evals` for spec changes and fixes, `impl` for maintenance and regenerate changes. Each commit is identified by the value it sets: a commit that sets `applied` is an implementation commit (unless its parent did not have the change at `impl`, which makes it a squashed change commit; see Merge strategies), one that moves `phase` from `audit` to `impl` is an audit commit, and any other commit that sets `audit` or `impl` is an evals commit (with the audit turned off, the evals commit sets `impl` directly). A commit that adds `blocked` is a block commit. A commit that moves `phase` from `audit` back to `evals` is an audit-findings commit and increments `audit_rounds`. `blocked` is a separate field: `phase` says where to resume and `blocked` says why the change stopped, so unblocking is deleting one line.
 
 **Starting a change.** `start` requires a clean working tree and an eligible change (the queue head, or the first one not held back by a blocked change). It warns if HEAD does not contain the base branch's tip, which means the queue may be stale. It creates the claim ref, replaces `new:` handles with real IDs, and writes `run` and `phase` into the change file.
 
@@ -336,11 +336,11 @@ Regeneration has two separate jobs: checking whether a module's spec and evals a
 
 The developer reviews the report, commits it like any other file, and turns the gaps they agree with into changes. Choosing which gaps become changes is the approval; fireweed never writes changes from a drill.
 
-Drills run only on demand, because scheduling would need an external trigger. `fireweed status` shows, per module, how many changes have been applied since its last drill (counted from the base commit in its drill report), so drift is visible without scheduling anything.
+Drills run only on demand, because scheduling would need an external trigger. `fireweed status` shows, per module, how many changes have been applied since its last drill, counting the module's archived changes whose implementation Provenance date is later than the drill report's date, so drift is visible without scheduling anything. The count uses dates rather than commit ancestry so it survives squash and rebase merges; the report's base commit is recorded for information only.
 
 **Regenerate changes replace code.** To actually rebuild a module, for a stack upgrade, a framework switch or accumulated cruft, the developer writes a change with `regenerate: true` and a Motivation. It runs through the normal lifecycle as a maintenance change, except that the implementation step starts with the module's disposable files deleted. Its evals and dependents' evals must pass as usual.
 
-`start` warns when a regenerate change targets a module with no passing drill since its last applied change. A stack upgrade becomes an ordinary pattern: update the project decisions in `SYSTEM.md`, then queue regenerate changes for the affected modules in dependency order.
+`start` warns when a regenerate change targets a module with no passing drill dated after its last applied change. A stack upgrade becomes an ordinary pattern: update the project decisions in `SYSTEM.md`, then queue regenerate changes for the affected modules in dependency order.
 
 ## Language support
 
@@ -412,7 +412,11 @@ These refs don't appear in `git branch`, and a normal `git push` never sends the
 | --- | --- | --- | --- |
 | Merge commit | Yes | Yes | Yes |
 | Rebase | Yes | Yes | Yes |
-| Squash | Yes | No | No |
+| Squash | Yes | Before merge only: run `ci` on the PR branch | Only when the PR holds one change |
+
+fireweed lets the user pick any of these. The per-step commits matter until review: they are what proves the implementation step left the evals alone, and `fireweed ci` on the PR branch checks them while they still exist. After a merge, fireweed reads only file contents (change files, the archive, Provenance and `bases` hashes), never a recorded commit SHA, so squash and rebase lose nothing it needs later.
+
+**Squashed changes.** `check-commits` recognizes a squashed change commit: one that sets `applied` for a change whose parent commit did not have it at phase `impl` (it was absent, queued, or at `evals` or `audit`). Such a commit necessarily contains the evals, the code and the state together, so H01 and H02 do not apply to it; `check-commits` lists it as squashed in its JSON output, not as a warning, and still applies H03 and H04. A squash of several changes is recognized once per change. Without this, `ci` on the base branch after a squash merge would report a false H02 violation.
 
 ## CLI
 
@@ -555,6 +559,8 @@ Adopting fireweed in an existing codebase is out of scope for now, and the desig
 | Approval only on `origin/<base>` | Replaced | A solo developer committing locally got a warning on every start until pushing, and warnings that always fire get ignored; the unapproved-work bound still counts against the remote |
 | Dropping a change by reverting its commits by hand | Replaced | `abandon` does the revert, file removal and claim release in one step |
 | `context` with the contents of every module file | Replaced | Token cost grew with the module; paths and sizes let the agent read what it needs |
+| Requiring merge commits or rebase to keep step history | Rejected | Teams choose their merge strategy; `ci` on the PR branch gives the same per-step proof before merge, and post-merge tools work from file contents |
+| Drill drift counted by commit ancestry | Replaced | Squash and rebase merges orphan the recorded base commit; Provenance dates survive any merge strategy |
 | Starting any independent change in parallel worktrees | Deferred | Would raise throughput, but changes queue eligibility and merge order; revisit after the core lifecycle is proven |
 | Fail-first as a warning | Rejected | Tests that pass before implementation prove nothing; `already_satisfied` covers legitimate cases |
 | Attempt limits only inside `next` and `run` | Replaced | An agent driving `start`, `verify` and `done` itself looped evals and audit indefinitely; `audit_rounds` lives in the change file so the limit holds however a change is driven |

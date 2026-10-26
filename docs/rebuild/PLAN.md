@@ -52,7 +52,7 @@ Build a thin slice through every module before deepening any one. The milestone 
 6. workflow: claims, start, verify, done (apply, archive, provenance, blocking).
 7. app: CLI for the commands above, then init and doctor.
 8. runner: next and run with attempts, limits and blocking; then ci, check-commits, pr-body and drill.
-9. R22 to R28, remaining commands, recipes, distribution, real drills and the NEW self-hosting rehearsal.
+9. R22 to R29, remaining commands, recipes, distribution, real drills and the NEW self-hosting rehearsal.
 
 Keep each change to at most five specs, and stop for human approval after every five applied changes. Record the new history baseline in PROGRESS.md; acceptance ranges start there, not at 14cec73.
 
@@ -113,7 +113,7 @@ Complete every gate in ACCEPTANCE.md. Commit reviewed reports and final evidence
 
 - Bootstrap clean source commit: `583b3c53740cf2341e0b0a79afee5b7f646ec1d4`.
 - Local design snapshot: `fireweed-design-v1.md` at the repository root, copied byte-for-byte from `/Users/joel/Workspace/fireweed-bootstrap/fireweed-design-v1.md` at that commit on 2026-10-21.
-- Design SHA-256: `1c17d0ab9496b1b15ad5ca18eed4f4ca623d01cff596bc557bf4c97400d00789`. Revised 2026-10-26: `a1fe8a2a2335c04443d4e7d3e6aa3a138e221cd5bd8302c6c66bfd947761d919`; usability revision 2026-10-26: `5d7cfcc9e3987fb594d16cce94f5ffa057c583f17f985114fe1de946aef5cf9d`.
+- Design SHA-256: `1c17d0ab9496b1b15ad5ca18eed4f4ca623d01cff596bc557bf4c97400d00789`. Revised 2026-10-26: `a1fe8a2a2335c04443d4e7d3e6aa3a138e221cd5bd8302c6c66bfd947761d919`; usability revision 2026-10-26: `5d7cfcc9e3987fb594d16cce94f5ffa057c583f17f985114fe1de946aef5cf9d`; merge-strategy revision 2026-10-26: `52623b89d8184680f535519e82ceda8a49490b3d4dec000347cbd2cde429b21a`.
 - Target initial commit: `d543462579d3fe182460c07476846476d38c6dc5` on main. Choose a later setup commit as the execution baseline.
 - No fireweed binary was on PATH or at the checked common install locations. A temporary build reported `0.4.0`, using `go1.27.2 darwin/arm64` and a temporary writable GOCACHE.
 - In a separate temporary repository, init with the Go recipe, agent none and audit-agent codex, followed by committed setup and doctor, passed boundaries/interface/failing-eval/missing-id with no diagnostics. This verifies plumbing, not the full bootstrap test suite or an actual agent/auditor execution.
