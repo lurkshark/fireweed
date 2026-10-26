@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: audit
+phase: evals
 run: d6540bfc1bc15d3673735a4d
 ---
 
@@ -58,8 +58,8 @@ Separate Claims plus fallback-capable LoadApproval admits a disappearance race. 
 
 ## Audit
 
-- FLOW-049: "the exact stored Claim including its object token, and the same approved Base snapshot with the exact started State inserted that claimed LoadApproval provides" — No held fixture installs replacement refs for the selected claim blob or Base commit. A replacement-aware reader can substitute claim State or Base metadata and pass current held cases. Calibrate ordinary Git replacement views against replacement-immune public LoadApproval and assert identical held source/token plus unchanged replacement refs.
-- FLOW-048: "without loading current project configuration, SPEC or queue documents" — Caller-only file guards do not observe current-document reads inside actual native Git children. An unnecessary git hash-object --no-filters fireweed.yaml can consume current configuration before absence without changing results, files, refs or fsmonitor markers. Independently calibrate native Git current-document read observation and assert no current configuration/SPEC/queue bytes are consumed on no-owned paths.
+- FLOW-051: "Successful and rejected LoadHeldApproval calls MUST remain local, bounded, noninteractive and read-only" — The Git proxy rejects the unambiguous read-only getter git config core.repositoryformatversion because no explicit --get flag appears. A conforming native format reader can create a violation marker. Admit and independently calibrate native getter forms without admitting setters.
+- FLOW-049: "Current worker configuration, SPEC and queue edits MUST NOT replace approved metadata" — The mode-9 guard rejects all checkout regular-file reads even for uniquely owned success. A loader can harmlessly read current .gitignore or configuration, discard it, and return exclusively approved values. Scope current-metadata read denial to no-owned absence; retain mutation/interaction guards and exact approved-value checks for owned calls.
 
 ## Provenance
 
@@ -72,3 +72,4 @@ Separate Claims plus fallback-capable LoadApproval admits a disappearance race. 
 - evals | 2026-10-26T14:35:04Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2362 | failing: 90 | passing: 2272
 - audit | 2026-10-26T14:44:27Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-26T15:24:59Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2381 | failing: 103 | passing: 2278
+- audit | 2026-10-26T15:32:24Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
