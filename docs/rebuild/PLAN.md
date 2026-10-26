@@ -8,7 +8,7 @@ Build a new implementation of the complete v1 design with permanent behavioral s
 
 Read the repository-local [fireweed-design-v1.md](../../fireweed-design-v1.md) as the product authority, then [ACCEPTANCE.md](ACCEPTANCE.md). Consult the bootstrap README, source, tests, embedded recipes and playbooks for operational examples. Where they disagree, record source locations, the discrepancy, the decision and a design-derived test. The explicit design wins; consistent reference behavior can fill unspecified details. Deferred/rejected ideas are not requirements. Ask only about consequential ambiguities the sources cannot resolve.
 
-Keep this design copy as an unchanged reference snapshot and protect it from workers during setup. Record clarifications and intentional departures separately in author decisions and change files so the original requirements remain auditable.
+Keep this design copy protected from workers. It was an unchanged reference snapshot until 2026-10-26, when the owner revised it for bounded effort (audit rounds, eval_fix, unapproved-change limit, spec-shape and budget warnings, verify_dependents direct); see D048. The pinned bootstrap still implements the original text, so the revision's bounds are enforced by hand through the SYSTEM.md scope guardrails until the NEW binary implements R22–R25. Record clarifications and intentional departures separately in author decisions and change files so the original requirements remain auditable.
 
 These documents contain planning labels and proposed architecture, not permanent spec IDs. Author specs through change files; only the controller applies module Specs and Decisions.
 
@@ -37,6 +37,17 @@ Before starting any worker change:
 8. Commit setup and pass controller `check` and `doctor`, including all four canaries and recovery after their removal. Record the full setup commit SHA as the history baseline. Always use its explicit range for final verification; the default range on main can be empty.
 
 Later protected/tooling/documentation edits are separate author commits, with justification and fresh canary checks if enforcement changed. Make them between applied changes, with no active worker claim. Do not smuggle author edits into worker commits or broaden permissions to pass checks.
+
+## Priority after the 2026-10-26 review
+
+The first five days produced strong process evidence but only 11 of 30 commands, while three gitstore changes and much of the workflow eval suite went to hardening beyond the design. Work now follows this order, and the SYSTEM.md scope guardrails override any broader reading of this plan:
+
+1. Apply the queued descoping changes 0050–0056 (app, workflow, checks, project, assets, gitstore, contracts, in that order so no dependent's frozen observer blocks a dependency). They narrow specs with already_satisfied, remove observer evals, and replace native process ownership with process-group cancellation.
+2. Remove the four-worker eval sharding from `.fireweed/hooks.go` once Verify is back under the guardrail limits (separate author commit, fresh doctor).
+3. Vertical slice: done (apply/archive/provenance, blocking, attempt refs), then init and doctor, next and run, ci/check-commits/pr-body, drill.
+4. D042 (held-change graph for `modules`): compose the existing LoadApproval for the held slug with Project/ApplyChange in app. Claim disappearance during the read is an accepted limitation; no new workflow API.
+5. R22–R25, then the remaining commands, recipes and distribution.
+6. Real drills and the NEW self-hosting rehearsal.
 
 ## Proposed module graph
 
@@ -95,7 +106,7 @@ Complete every gate in ACCEPTANCE.md. Commit reviewed reports and final evidence
 
 - Bootstrap clean source commit: `583b3c53740cf2341e0b0a79afee5b7f646ec1d4`.
 - Local design snapshot: `fireweed-design-v1.md` at the repository root, copied byte-for-byte from `/Users/joel/Workspace/fireweed-bootstrap/fireweed-design-v1.md` at that commit on 2026-10-21.
-- Design SHA-256: `1c17d0ab9496b1b15ad5ca18eed4f4ca623d01cff596bc557bf4c97400d00789`.
+- Design SHA-256: `1c17d0ab9496b1b15ad5ca18eed4f4ca623d01cff596bc557bf4c97400d00789`. Revised 2026-10-26 (D048): `a1fe8a2a2335c04443d4e7d3e6aa3a138e221cd5bd8302c6c66bfd947761d919`.
 - Target initial commit: `d543462579d3fe182460c07476846476d38c6dc5` on main. Choose a later setup commit as the execution baseline.
 - No fireweed binary was on PATH or at the checked common install locations. A temporary build reported `0.4.0`, using `go1.27.2 darwin/arm64` and a temporary writable GOCACHE.
 - In a separate temporary repository, init with the Go recipe, agent none and audit-agent codex, followed by committed setup and doctor, passed boundaries/interface/failing-eval/missing-id with no diagnostics. This verifies plumbing, not the full bootstrap test suite or an actual agent/auditor execution.

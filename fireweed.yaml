@@ -49,7 +49,7 @@ audit:
         - '{prompt}'
 attempts: 2
 timeout: 90m
-verify_dependents: all
+verify_dependents: direct
 limit_patterns:
     - usage limit
     - rate limit
