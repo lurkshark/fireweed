@@ -122,15 +122,16 @@ func Test_PRJ_002_Graph(t *testing.T) {
 		name    string
 		modules []project.Module
 		valid   bool
+		explain []string
 	}{
-		{"acyclic", []project.Module{module("alpha", "ALP"), module("beta", "BET", "alpha"), module("gamma", "GAM", "beta")}, true},
-		{"empty_name", []project.Module{module("", "ALP")}, false},
-		{"empty_prefix", []project.Module{module("alpha", "")}, false},
-		{"duplicate_name", []project.Module{module("alpha", "ALP"), module("alpha", "BET")}, false},
-		{"duplicate_prefix", []project.Module{module("alpha", "ALP"), module("beta", "ALP")}, false},
-		{"missing_dependency", []project.Module{module("alpha", "ALP", "missing")}, false},
-		{"self_dependency", []project.Module{module("alpha", "ALP", "alpha")}, false},
-		{"cycle", []project.Module{module("alpha", "ALP", "beta"), module("beta", "BET", "alpha")}, false},
+		{"acyclic", []project.Module{module("alpha", "ALP"), module("beta", "BET", "alpha"), module("gamma", "GAM", "beta")}, true, nil},
+		{"empty_name", []project.Module{module("", "ALP")}, false, []string{"empty", "name"}},
+		{"empty_prefix", []project.Module{module("alpha", "")}, false, []string{"empty", "prefix"}},
+		{"duplicate_name", []project.Module{module("alpha", "ALP"), module("alpha", "BET")}, false, []string{"duplicate", "alpha"}},
+		{"duplicate_prefix", []project.Module{module("alpha", "ALP"), module("beta", "ALP")}, false, []string{"duplicate", "alp"}},
+		{"missing_dependency", []project.Module{module("alpha", "ALP", "missing")}, false, []string{"depend", "missing"}},
+		{"self_dependency", []project.Module{module("alpha", "ALP", "alpha")}, false, []string{"self", "alpha"}},
+		{"cycle", []project.Module{module("alpha", "ALP", "beta"), module("beta", "BET", "alpha")}, false, []string{"cycl"}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			err := project.ValidateGraph(tc.modules)
@@ -139,6 +140,12 @@ func Test_PRJ_002_Graph(t *testing.T) {
 			}
 			if !tc.valid && (err == nil || strings.TrimSpace(err.Error()) == "") {
 				t.Errorf("invalid graph needs an explanatory error; got %v", err)
+			} else if !tc.valid {
+				for _, part := range tc.explain {
+					if !strings.Contains(strings.ToLower(err.Error()), part) {
+						t.Errorf("error %q does not explain %s rejection (missing %q)", err, tc.name, part)
+					}
+				}
 			}
 		})
 	}
@@ -165,6 +172,11 @@ func Test_PRJ_003_NewChangeSkeletonAndNumbering(t *testing.T) {
 	}
 	if doc.Frontmatter["module"] != "alpha" {
 		t.Errorf("new change module = %#v", doc.Frontmatter["module"])
+	}
+	for _, field := range []string{"phase", "run", "blocked"} {
+		if value, present := doc.Frontmatter[field]; present {
+			t.Errorf("queued change has %s = %#v", field, value)
+		}
 	}
 	for _, heading := range []string{"Motivation", "Interface", "Added", "Modified", "Removed", "Decisions"} {
 		if _, ok := contracts.Section(doc.Body, heading); !ok {
