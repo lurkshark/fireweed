@@ -1,6 +1,6 @@
 # fireweed design
 
-Draft · October 14, 2026
+Draft · October 14, 2026 · Revised October 26, 2026 (bounded effort)
 
 fireweed is a single Go binary that runs a spec-driven, regenerative workflow for one or a few developers. Specs are the source of truth, black-box evals linked to spec IDs are kept permanently, most implementation code can be thrown away and rebuilt, and coding agents do the work while fireweed checks every step.
 
@@ -26,6 +26,7 @@ fireweed makes "delete the code and regrow it from the spec" a safe, routine ope
 - **Local and dependency-light.** The binary never touches the network. It needs git, the project's own hooks, and an agent CLI. It never pushes, opens pull requests or schedules anything.
 - **State lives in git and files.** Every piece of workflow state is either in a committed file or in a local git ref, so any session, human or agent, can pick up where another stopped.
 - **Easy for agents to drive.** Every command is non-interactive, has machine-readable output, and has stable diagnostic codes.
+- **Bounded, visible effort.** Every loop fireweed drives has a limit that holds however the workflow is driven, by `run`, by an agent calling `start`, `verify` and `done`, or by a person. Costs that grow quietly, such as eval time, eval volume and unapproved changes, are measured and shown. An agent asked to be rigorous will keep finding more to check; fireweed stops the loop and hands the decision to a human instead of trusting the agent to stop itself.
 
 ## Repository layout
 
@@ -122,11 +123,13 @@ A session MUST expire 24 hours after its last use.
 
 **IDs.** IDs are assigned by fireweed when a change starts, never chosen by authors (see Change files). A removed ID is never reused; fireweed tracks removed IDs through the archive.
 
+**Spec shape.** Each item states one observable behavior at the module's interface. `check` warns (C17) when an item has more than `spec_limits.max_clauses` normative keywords (MUST, MUST NOT, SHOULD; default 3) or more than `spec_limits.max_words` words (default 80), because every extra clause is something an eval must assert and an audit can dispute. Properties of how code is written, such as purity, avoiding aliased slices, or which system calls run, are not observable behavior and are not specs.
+
 **Matching IDs in test names.** A test covers a spec when the spec's ID appears in the JUnit testcase name or classname. Matching ignores case, treats `-` and `_` as equal, and allows the separator to be missing, so `AUTH-014`, `AUTH_014`, `AUTH014` and Python's `test_auth_014` all match. The ID must not be preceded by a letter or digit or followed by a digit, so `AUTH0145` and `OAUTH014` do not match. This lets languages such as Go, whose function names cannot contain a hyphen, follow the convention.
 
 **System-wide behavior lives in composition-root modules.** There is no system pseudo-module. A root module such as `app` wires other modules together; its interface is the product's external surface (an HTTP API, a CLI), its `depends_on` lists the modules it composes, and its evals are end-to-end tests. It is ordinary disposable code that follows every rule. A product with several entry points has several root modules.
 
-**SYSTEM.md is a plain document.** It holds the product description, project decisions (language, frameworks, deployment) and conventions. It has no spec IDs, workers cannot edit it, and humans edit it directly. Cross-cutting rules such as "never log personal data" go here as conventions, checked by the audit and by review rather than by evals.
+**SYSTEM.md is a plain document.** It holds the product description, project decisions (language, frameworks, deployment) and conventions. It has no spec IDs, workers cannot edit it, and humans edit it directly. Cross-cutting rules such as "never log personal data" go here as conventions, checked by review rather than by evals. A convention is not repeated in specs: `check` warns (C18) when the same normalized sentence appears in three or more spec items across the project, because that usually means a convention has been copied into specs, where every copy gains evals and audit findings. The audit does not report findings against conventions.
 
 **Decisions.** A worker records any behavioral choice the spec did not cover in the change file's `## Decisions` section. When the change is applied, fireweed appends those decisions to a `## Decisions` section of the module's `SPEC.md`, which only fireweed edits, tagging each with the change's slug. Regeneration reads them, so a rebuilt module makes the same choices. A later change can drop decisions that a spec now covers or that no longer hold by quoting them in a `## Removed decisions` section, and drill reports flag decisions the rebuilt code contradicts.
 
@@ -183,10 +186,12 @@ IP-based throttling: shared IPs would lock out whole offices.
 | `set` | Author | New values for module frontmatter: `depends_on`, `interface`, `evals`, `disposable`, `preserve`, `append_only`, `boundaries_opt_out` and per-module hook overrides. `name` and `id_prefix` cannot be changed |
 | `bases` | fireweed, when the author runs `fireweed stamp` | Hashes of the spec versions this change was written against |
 | `fixes` | Author | Spec IDs whose behavior is already specified correctly but whose evals missed a bug. The evals phase must add a failing test reproducing it |
-| `already_satisfied` | Author | New or modified spec IDs whose evals may pass before implementation, such as clarifications of existing behavior |
+| `already_satisfied` | Author | New or modified spec IDs whose evals may pass before implementation, such as clarifications of existing behavior or narrowed specs |
+| `eval_fix` | Author | Spec IDs whose existing evals are wrong (for example a test helper rejects correct behavior) while the spec is right. The evals step corrects them and they must pass (see Kinds of change) |
 | `regenerate` | Author | `true` rebuilds the module from scratch (see Regeneration) |
 | `run` | fireweed (on start) | Unique ID of the run implementing this change, which also locates its logs |
 | `phase` | fireweed | The next step to do: evals, audit or impl, and applied once archived |
+| `audit_rounds` | fireweed | How many times the audit has sent this change back to evals |
 | `blocked` | fireweed or agent | Why the change is stuck. Removing it unblocks the change |
 
 **Body sections.** Motivation is required. Interface describes interface changes in prose; the evals phase turns them into code, which keeps change files independent of language. Added and Modified contain complete spec items; Removed contains headings only. Decisions is filled in by the worker. Questions is written by an agent that blocks the change because the spec is ambiguous. Removed decisions quotes module Decisions to drop. Provenance is written by fireweed at each step. Rejected alternatives and Notes are free prose.
@@ -195,7 +200,8 @@ IP-based throttling: shared IPs would lock out whole offices.
 
 - **Spec change:** has Added, Modified or Removed specs. Runs evals, audit and implementation.
 - **Fix:** has `fixes` and no spec edits. Runs the same phases; fail-first guarantees a test reproduces the bug.
-- **Maintenance:** no spec edits and no `fixes`, such as a refactor or dependency upgrade. Skips evals and audit.
+- **Eval fix:** has `eval_fix` and no spec edits or `fixes`. The evals step may edit only the module's evals zone; every listed ID must keep at least one referencing test, and all the module's evals must pass rather than fail first. The audit checks that the corrected tests still assert the listed specs. The implementation step may change only the change file, then applies and archives. This is the cheap way to repair a frozen eval without rewording a spec.
+- **Maintenance:** no spec edits, no `fixes` and no `eval_fix`, such as a refactor or dependency upgrade. Skips evals and audit.
 - **Regenerate:** `regenerate: true`. Implementation starts with the module's disposable files deleted.
 
 Applied changes move to `changes/archive/` with all their state fields intact and are never edited again.
@@ -217,7 +223,7 @@ stateDiagram-v2
     Implement --> Applied: done (applies and archives)
     Applied --> [*]
     Evals --> Blocked: questions or attempts run out
-    Audit --> Blocked
+    Audit --> Blocked: untestable or rounds run out
     Implement --> Blocked
     note right of Blocked
         Commits the reason and any Questions.
@@ -235,7 +241,7 @@ stateDiagram-v2
 
 `fireweed next` and `fireweed run` are thin loops on top: they start an agent for each step, call `verify` and `done`, and retry on failure. `next` runs the head of the queue once; `run` keeps going until the queue is empty or a limit is reached. Agents never commit; if an agent creates commits, fireweed undoes them with a soft reset and logs a warning.
 
-**State fields.** `phase` names the next step to do: `evals`, `audit`, `impl`, or `applied` in the archived file. `start` writes the first value without committing it: `evals` for spec changes and fixes, `impl` for maintenance and regenerate changes. Each commit is identified by the value it sets: a commit that sets `applied` is an implementation commit, one that moves `phase` from `audit` to `impl` is an audit commit, and any other commit that sets `audit` or `impl` is an evals commit (with the audit turned off, the evals commit sets `impl` directly). A commit that adds `blocked` is a block commit. `blocked` is a separate field: `phase` says where to resume and `blocked` says why the change stopped, so unblocking is deleting one line.
+**State fields.** `phase` names the next step to do: `evals`, `audit`, `impl`, or `applied` in the archived file. `start` writes the first value without committing it: `evals` for spec changes and fixes, `impl` for maintenance and regenerate changes. Each commit is identified by the value it sets: a commit that sets `applied` is an implementation commit, one that moves `phase` from `audit` to `impl` is an audit commit, and any other commit that sets `audit` or `impl` is an evals commit (with the audit turned off, the evals commit sets `impl` directly). A commit that adds `blocked` is a block commit. A commit that moves `phase` from `audit` back to `evals` is an audit-findings commit and increments `audit_rounds`. `blocked` is a separate field: `phase` says where to resume and `blocked` says why the change stopped, so unblocking is deleting one line.
 
 **Starting a change.** `start` requires a clean working tree and an eligible change (the queue head, or the first one not held back by a blocked change). It warns if HEAD does not contain the base branch's tip, which means the queue may be stale. It creates the claim ref, replaces `new:` handles with real IDs, and writes `run` and `phase` into the change file.
 
@@ -247,6 +253,8 @@ stateDiagram-v2
 
 **Approval.** Merging a change file into the base branch is its approval, so `start` warns when the change file is not on the base branch. `run`, which works unattended, skips such changes unless given `--allow-unmerged`.
 
+**Unapproved work is bounded.** An unapproved change is an archived change on HEAD whose change file is not on the base branch. When HEAD already has `authoring.max_unapproved` of them (default 5), `start`, `next` and `run` refuse another unmerged change, even with `--allow-unmerged`, with diagnostic P07; merging the work into the base branch, which is a human review, resets the count. This holds whoever authored the changes, so an agent that both writes and runs changes still stops for a person at regular intervals. `status` shows the count, and warns (P08) when three or more consecutive applied changes target the same module, which is the usual shape of a regression chain where each change fixes the edge case the last one exposed.
+
 **Evals step.** The agent writes tests only, plus interface changes the change describes.
 
 - Changed files must be in the module's evals or interface zones, or be the change file itself (for Decisions and Questions). The step may add new disposable files for stubs so that evals compile, but may not modify or delete existing ones, so fail-first runs against the existing code plus the new stubs. A stub that belongs in an existing package goes in a new file there. The step may also edit the module's other files, such as its manifest to add test dependencies, and `worker_writable` paths. Those files are listed in the PR body, and fail-first catches any stub that fully implements the behavior, because its tests would then pass. Recipes show what a stub looks like in each language.
@@ -257,7 +265,10 @@ stateDiagram-v2
 **Audit step** (on by default; `audit.enabled: false` in `fireweed.yaml` turns it off). A separate agent, ideally a different model from the one that wrote the evals, reads only the change, the spec and the evals. It reports spec clauses that no test asserts: limits never tested, MUST NOTs checked only on the happy path.
 
 - The auditor writes its findings into an `## Audit` section of the change file. Each finding must name a spec ID and quote the clause it concerns; fireweed discards findings that don't cite a real clause, which keeps the auditor off style comments.
-- Any remaining finding sends the change back to the evals step with the findings in the prompt. That retry counts against the evals step's attempts.
+- Findings are limited to spec clauses that no test asserts. How tests are built (helpers, fixtures, observers), platforms or edge cases the spec does not name, and SYSTEM.md conventions are not findings. The audit playbook says so, and an auditor that cannot quote a clause has nothing to report.
+- Any remaining finding sends the change back to the evals step with the findings in the prompt, and increments `audit_rounds`. That retry counts against the evals step's attempts.
+- **Re-audits converge.** After a round with findings, the next audit may report findings only for the spec IDs that had findings in the previous round; fireweed discards the rest, as it discards findings without a real clause. A spec the audit has passed stays passed for that change.
+- **Rounds are bounded.** When an audit would send the change back for round `audit.max_rounds + 1` (default 2), fireweed instead blocks the change and copies the remaining findings into its Questions. A person decides whether the findings matter, the spec should be narrowed, or the change should be split. The count lives in the change file, so the limit holds for `run`, for an agent calling `done` directly, and for a person.
 - A finding that a clause cannot be tested at all is a spec problem, not an eval problem: it becomes a question and blocks the change.
 - `done` commits the findings with the state change, so the PR shows what was checked. A passing audit writes "No findings" and lists the IDs it checked.
 
@@ -275,7 +286,7 @@ fireweed keeps a finding only if the ID exists and the quote is an exact substri
 
 - Changed files may not be in the evals or interface zones, any `SPEC.md`, or a protected path. Only the current change file may change in `changes/`.
 - Append-only files may be added but not modified, deleted or renamed.
-- The module's evals and the evals of every module that depends on it, directly or indirectly, must pass. `verify_dependents: all | direct | none` controls how far this reaches (default `all`); `fireweed ci` always runs everything, so a lower setting still catches breakage before merge. The `boundaries` hook must pass.
+- The module's evals and the evals of the modules that depend on it directly must pass. `verify_dependents: all | direct | none` controls how far this reaches (default `direct`). With a composition-root module that depends on everything, `all` would run the whole product's evals for every change, so step cost would grow with the project instead of with the change. `fireweed ci` always runs everything, so transitive breakage is still caught before merge. The `boundaries` hook must pass.
 - `done` applies the change to `SPEC.md` (specs, Decisions, `set` values), archives the change file, runs `fireweed check`, and commits everything together. Preserved files that changed are listed in the PR body.
 
 **Retries.** Each step gets a fixed number of attempts (default 2) and a timeout per attempt. A retry keeps the earlier work and adds the last verification output to the prompt. When attempts run out, fireweed saves the work as a commit on `refs/fireweed/attempts/<change>/<n>`, restores the working tree, and blocks the change. That work can be inspected, or continued by hand with `start`.
@@ -298,6 +309,8 @@ The queue does not stop. Later changes wait if they target:
 Everything else runs. This is deterministic because only the Interface section can change an interface: the evals step edits the interface only as that section describes, and the implementation step cannot touch it.
 
 **Each change lives entirely in its own commits.** ID assignment, state, specs, archive move, evals and code are all in the change's commits, so `git revert` of those commits undoes the change completely and returns it to the queue.
+
+**Cost is measured.** Each `verify` and `done` records eval wall time per module from the JUnit `time` attributes, testcases per spec, and the number of lines in the module's evals and disposable zones. `status` shows these per module along with phase commits per applied change, and warns when a `budgets` limit is exceeded: `budgets.verify_time` (default 15m per step), `budgets.cases_per_spec` (default 15) and `budgets.eval_ratio` (eval lines per disposable line, default 4). These are warnings (B01 to B03), not failures, but they appear in `status`, `pr-body` and the `verify` output the agent reads, so growth is visible while it happens. `pr-body` also lists every binary file and every file larger than 256 KB added to a disposable zone (B04), because generated or vendored artifacts are code a reviewer cannot read.
 
 **Provenance.** Each `done` appends one line to the change file's `## Provenance` section: the step, the date, the configured agent command (including its model) or `manual` when a person did the work, the fireweed version, the hash of the playbook used, and result counts such as tests added, failing before and passing after. Logs stay local in `.fireweed/runs/`; this record is committed and kept in the archive with the change.
 
@@ -403,7 +416,7 @@ The CLI is built to be driven by agents as much as by people: every command is n
 | Authoring | `new-module <name> --prefix <P>` | Create a module from the templates |
 | Authoring | `new-change <module> <slug>` | Create a change file with the next number |
 | Authoring | `stamp <change>` | Record `bases` hashes for the specs a change modifies or removes |
-| Reading | `list`, `status` | Modules, the queue, blocked changes, quarantines, opt-outs, drift since last drill |
+| Reading | `list`, `status` | Modules, the queue, blocked changes, quarantines, opt-outs, drift since last drill, unapproved changes, audit rounds, cost metrics and budget warnings |
 | Reading | `show <module> [ID] [--projected \| --history]` | Specs as they are, with pending changes applied, or with the archived changes behind each one |
 | Reading | `modules` | The resolved module graph and zone map |
 | Reading | `context <change>` | Everything a worker needs for the current step, in one call |
@@ -412,7 +425,7 @@ The CLI is built to be driven by agents as much as by people: every command is n
 | Checks | `coverage <module> [--with-change <c>]` | Run evals and map results to spec IDs |
 | Checks | `check-commits <range>` | History checks H01 to H04 |
 | Checks | `ci [<range>]` | Every deterministic check in one command, for any CI system |
-| Checks | `pr-body <range>` | A pull request description for the range: changes with their evals, interface and stub edits, preserved-file edits, review-tagged specs, audit findings, Decisions, quarantines, boundary opt-outs and blocked changes |
+| Checks | `pr-body <range>` | A pull request description for the range: changes with their evals, interface and stub edits, preserved-file edits, review-tagged specs, audit findings and rounds, Decisions, quarantines, boundary opt-outs, blocked changes, budget warnings and binary or large files added to disposable zones |
 | Lifecycle | `start`, `verify`, `done` | Drive one change through its steps |
 | Lifecycle | `next`, `run [--max N] [--for 6h]` | Run the agent through the queue |
 | Lifecycle | `release <change>`, `commits <change>` | Drop a local claim; list a change's commits on the current branch |
@@ -465,9 +478,19 @@ agent:
 audit:
   enabled: true
   command: ["codex", "exec", "{prompt}"]   # unset: uses agent.command, doctor warns
+  max_rounds: 2          # audit-findings round trips before the change blocks
+authoring:
+  max_unapproved: 5      # applied changes not on base before start/run refuse more
+spec_limits:
+  max_clauses: 3         # normative keywords per spec item (C17 warning)
+  max_words: 80
+budgets:
+  verify_time: 15m       # B01 warning
+  cases_per_spec: 15     # B02 warning
+  eval_ratio: 4          # B03 warning: eval lines per disposable line
 attempts: 2
 timeout: 90m
-verify_dependents: all   # all | direct | none
+verify_dependents: direct   # all | direct | none
 limit_patterns: ["usage limit", "rate limit"]   # matched against the last 20 lines
 limit_wait: 30m
 limit_budget: 4h
@@ -482,7 +505,7 @@ The agent is any CLI that takes a prompt. Sandboxing is the user's choice: `wrap
 3. The agent runs `fireweed doctor`, which plants canaries in throwaway modules and confirms every hook catches them. Failures name the hook that misbehaved.
 4. With doctor passing, the developer fills in `SYSTEM.md` and authors the first change.
 
-**Playbooks** for authoring changes, writing evals, auditing, implementing and regenerating are embedded in the binary, because they describe the protocol the binary verifies and must match it. A project can override one in `.fireweed/playbooks/`; each override records the hash of the embedded playbook it was based on, and doctor warns when an upgrade changes that playbook underneath it.
+**Playbooks** for authoring changes, writing evals, auditing, implementing and regenerating are embedded in the binary, because they describe the protocol the binary verifies and must match it. Two rules in them exist to keep agents from escalating. The authoring playbook requires each change's Motivation to name a user-visible need or a clause of the design or `SYSTEM.md`; a probe showing that some failure is theoretically possible is not enough on its own. It also tells authors to narrow or remove specs, with `already_satisfied`, when a requirement turns out to cost more than it is worth. The audit playbook limits findings to spec clauses no test asserts, as described in Audit step. A project can override one in `.fireweed/playbooks/`; each override records the hash of the embedded playbook it was based on, and doctor warns when an upgrade changes that playbook underneath it.
 
 **AGENTS.md.** `init` writes a short block between markers telling any agent that the project uses fireweed and pointing it at `fireweed playbook author-change` and `fireweed context`. `fireweed agents-md --write` regenerates only that block, and doctor warns when it is out of date.
 
@@ -520,6 +543,13 @@ Adopting fireweed in an existing codebase is out of scope for now, and the desig
 | Recipes upgraded with the binary | Rejected | Agents adapt the copied glue to each repo; upgrades would break it |
 | An MCP server | Deferred | The CLI is built for agents first; MCP can come later |
 | Fail-first as a warning | Rejected | Tests that pass before implementation prove nothing; `already_satisfied` covers legitimate cases |
+| Attempt limits only inside `next` and `run` | Replaced | An agent driving `start`, `verify` and `done` itself looped evals and audit indefinitely; `audit_rounds` lives in the change file so the limit holds however a change is driven |
+| Re-audits that may raise new findings every round | Rejected | An auditor reviewing elaborate tests can always find something new, so the loop never converges |
+| Fixing a wrong eval only by modifying its spec | Replaced | It made a bad test helper cost a full spec change in every affected module; `eval_fix` repairs tests directly under audit |
+| Unlimited unapproved changes with `--allow-unmerged` | Rejected | An agent authoring and running its own changes never stopped for review; `authoring.max_unapproved` forces a merge checkpoint |
+| Budgets as hard failures | Rejected | Legitimate projects differ too much for one limit; warnings make growth visible without blocking work |
+| Non-functional properties (purity, read-only, no syscalls) as per-spec evals | Rejected | They were copied into many specs and enforced with process-level instrumentation that cost more than the product; they are SYSTEM.md conventions checked by review |
+| `verify_dependents: all` by default | Replaced | With a composition root, every step re-ran the whole product's evals; `direct` keeps steps proportional and `ci` still runs everything |
 | Describe changes that write specs for behavior existing code already has | Deferred | Keeps the first release focused on new codebases; the likely starting point if existing-codebase support is added later |
 
 ## Open questions
