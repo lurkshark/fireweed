@@ -1,19 +1,40 @@
 # Goal prompt
 
-Prepared 2026-10-21. This file describes future work; preparing it has not started the rebuild.
+Revised 2026-10-26 after the project review (D048). The original open-ended rebuild goal from 2026-10-21 is in git history at commit 1b27763. This prompt covers one bounded session; update its scope section before each new session.
 
 Paste the following into `/goal` in the `fireweed` repository:
 
 ```text
-/goal Recreate fireweed from scratch in /Users/joel/Workspace/fireweed as a complete, working, self-hostable Go CLI implementing /Users/joel/Workspace/fireweed/fireweed-design-v1.md. Use a compiled, pinned binary built from /Users/joel/Workspace/fireweed-bootstrap to govern the entire rebuild. Read docs/rebuild/PLAN.md and docs/rebuild/ACCEPTANCE.md first and follow their workflow and completion gates.
+/goal Apply the seven approved descoping changes in /Users/joel/Workspace/fireweed, then prepare the next vertical-slice change for human approval. Stop when that is done or when a stop condition below is hit.
 
-Treat the design as the product authority and the bootstrap source, tests, README, and executable as behavioral references. Write new implementation and evals; do not copy the bootstrap codebase, import it as a dependency, invoke it to implement the new tool's commands, or preserve its internal architecture by default. Resolve discrepancies with design-derived tests and a recorded decision; do not silently reproduce reference bugs or omit designed behavior.
+Before starting, read these, in this order: AGENTS.md; SYSTEM.md, especially "Scope guardrails"; docs/rebuild/PROGRESS.md; and the "Priority after the 2026-10-26 review" section of docs/rebuild/PLAN.md. Read the change files themselves before working on each one. Don't read docs/rebuild/PROGRESS-LEDGER.md or old DECISIONS entries unless a change file points you to one. For workflow commands, use the controller at /Users/joel/Workspace/fireweed/.fireweed/bin/fireweed-bootstrap with GOCACHE=/tmp/fireweed-rebuild-cache.
 
-Begin by inspecting current state, pinning/building the bootstrap, initializing the Go recipe, completing SYSTEM.md, establishing module boundaries and protected hooks, and committing the setup. Then author small single-module changes and execute each through the bootstrap's start, context, verify, and done commands, including real fail-first evals and audits. Keep the bootstrap executable separate from the new executable under test. Only fireweed applies module specs and archives changes. Do not weaken hooks, zones, coverage, audit, or history checks to make progress.
+Scope for this session:
+1. Run changes/0050-descope-app.md through 0056-descope-contracts.md, in numeric order, through the controller's full lifecycle: start, context, evals, verify, done, audit, done, impl, verify, done. The project owner wrote and committed these changes; that commit is their approval, so the controller's warning that they aren't on the base branch is expected. Each change's Notes section lists which tests to delete and what to simplify. Do exactly that. Don't add new tests beyond what the Notes ask for.
+2. After 0055 is applied, check how long a complete implementation Verify takes. If it's under 15 minutes, make a separate author commit that removes the four-worker eval sharding from .fireweed/hooks.go. Then run controller doctor and confirm all four canaries pass.
+3. Write the next vertical-slice change for the workflow `done` step (apply, archive, provenance), following `fireweed playbook author-change` and the SYSTEM.md spec-shape rules: at most 5 specs, each with at most 3 MUST/SHOULD clauses and about 80 words, and a Motivation that cites the design section it implements. Stamp it, run check, and commit it as an author commit. Do not start it; a human approves it first.
 
-This goal authorizes local setup, authoring, planning updates, and Git commits necessary for this rebuild. Make protected setup/infrastructure/documentation edits in separate author commits between active changes. Keep worker edits within the current phase and module. Prefer the manual lifecycle in this chat. Manual start may warn about changes absent from the configured base; record that local execution uses this goal's authorization and do not claim a human merge occurred. If using unattended run/next for this rebuild, --allow-unmerged is explicitly permitted for the locally authored planned changes only. Preserve the product's normal approval enforcement and test it. Do not modify fireweed-bootstrap, push, publish, tag a release, or change remote services.
+Rules for this session:
+- An audit's findings must be about spec clauses that no test asserts. If a finding is about how the tests are built, a platform, or a convention, the auditor discards it.
+- A change gets at most two rounds of audit findings. If a third audit still has findings, write them into the change's Questions, add `blocked`, run done (which commits the block), and stop.
+- In evals and implementation, do the minimum the spec requires. Don't use cgo, syscall interposers, git proxies, native code or embedded binaries, and don't add Windows-specific, SHA-256-specific or partial-clone handling.
+- Never commit during a worker step; the controller makes those commits. Author edits to protected files go in their own commits, made only between changes.
+- For evidence, add one line per applied change under "Applied since review" in PROGRESS.md, with the change, its assigned IDs, its phase commit SHAs, testcase pass/fail counts, and anything that didn't run. Don't write SHA-256 manifests or testcase inventory proofs.
 
-Continue through the full design, not just an MVP. Maintain the requirement-to-spec/eval evidence matrix and a restartable progress record at safe author boundaries. Completion requires all acceptance gates: permanent ID-linked black-box evals, archived bootstrap-managed changes with valid history, passing Go tests/race/vet, bootstrap CI over the explicit rebuild commit range, fresh-project lifecycle/doctor/recovery tests against the NEW binary, successful regeneration evidence, and a documented self-hosting rehearsal. Report commands, commits, artifacts, and any remaining uncertainty honestly. Do not mark the goal complete while required behavior or verification remains unfinished. If progress requires unavailable access or a product decision that cannot be inferred, preserve recoverable state, document the exact blocker and needed input, and continue any independent work that remains possible.
+Stop and report, without trying to work around the problem, if any of these happen:
+- A change needs a spec or Interface edit beyond what its file says, or a frozen eval turns out to be wrong.
+- Fixing something would mean weakening a hook, a zone, coverage, the audit, or the history checks.
+- The same verification failure happens twice in a row.
+- A single change takes more than about 2 hours, or needs more than 3 implementation iterations.
+- A complete Verify takes longer than 30 minutes.
+- Anything needs a product decision that the design and SYSTEM.md don't settle.
+
+Final report, 20 lines or fewer: which changes were applied, with their final commit SHAs; the controller check and check-commits result for 14cec73..HEAD; Verify duration before and after; anything blocked, skipped or not run; and the name of the vertical-slice change waiting for approval. No push, no tags, no publishing.
 ```
 
-The prompt names an outcome, evidence, boundaries, and continuation behavior, following [official OpenAI guidance for Goals](https://developers.openai.com/cookbook/examples/codex/using_goals_in_codex). No token budget is specified.
+Why it is shaped this way:
+
+- The scope names already-approved work, so the human checkpoint after five applied changes doesn't stop it partway.
+- New scope is authored but not started, so each new piece of work gets human approval first.
+- Stop conditions end the session instead of inviting deeper investigation.
+- It avoids open-ended phrases ("the full design", "do not weaken anything", "honestly") that the previous goal prompt's agent escalated on.
