@@ -1,5 +1,7 @@
 ---
 module: workflow
+phase: audit
+run: d6540bfc1bc15d3673735a4d
 ---
 
 ## Motivation
@@ -12,16 +14,16 @@ Add LoadHeldApproval(start string) (project.Snapshot, Claim, bool, error) to the
 
 ## Added
 
-### new:held-selection
+### FLOW-048
 LoadHeldApproval MUST discover the canonical checkout and common Git directory from start, including nested ordinary and linked SHA-1/SHA-256 worktrees, and select the unique claim owned by that checkout. No owned claim MUST return a zero Snapshot, zero Claim, false and nil error without loading current project configuration, SPEC or queue documents. Valid foreign claims MUST NOT count as owned. An unavailable or malformed claim payload that cannot be safely classified, or ambiguous local ownership, MUST return zero values, false and a useful corrective error.
 
-### new:held-source
+### FLOW-049
 For a unique valid owned claim LoadHeldApproval MUST return true, the exact stored Claim including its object token, and the same approved Base snapshot with the exact started State inserted that claimed LoadApproval provides. It MUST use only the selected committed approval and state as project authority, retaining the canonical active Root and approved project configuration, modules, changes and archive. Current worker configuration, SPEC and queue edits MUST NOT replace approved metadata. The returned snapshot MUST remain before inclusive projection, so public Project before the selected change followed by ApplyChange for that change applies preceding and selected effects exactly once and excludes later effects.
 
-### new:held-fail-closed
+### FLOW-050
 LoadHeldApproval MUST bind approved source loading to the exact selected claim token. After loading and before returning success it MUST revalidate the unique locally owned selection and that exact token; disappearance, replacement or newly ambiguous local ownership observed at that validation MUST return zero values, false and a useful corrective error. It MUST NOT silently return unclaimed absence or fall back to current project source after selection. Unavailable required claim payload, Base or project-document objects, malformed started State or other selected approved content, and unsafe selected source paths MUST return zero values, false and useful corrective errors. Unavailable unrelated non-claim document bodies or unneeded ancestors MUST NOT prevent a locally complete selected result.
 
-### new:held-observer
+### FLOW-051
 Successful and rejected LoadHeldApproval calls MUST remain local, bounded, noninteractive and read-only: no lazy fetch, push, branch/worktree creation, hooks, agents, bootstrap or network commands; no file, ignored-content, index, HEAD, ref, claim, attempts or drill-report mutations; no parent cwd or environment changes. Required local Git failures MUST retain useful command details rather than treating stderr as successful source data. Repeated successful results MUST have independent writable nested slices/maps and deterministic approved values.
 
 ## Modified
@@ -36,6 +38,16 @@ The rebuild goal authorizes local authored execution and controller-owned phase/
 
 Final ownership validation is the successful read operation's validation point; the API cannot prevent a later independent owner update. Immutable-object caching is allowed but cannot skip that validation. Evals must not require a particular Git command/body-read strategy. Race/fault observers need independent live controls and fresh-source premises; a stub that never selects anything does not establish an ownership-disappearance race. Positive locally complete sources with missing unrelated bodies/ancestors cover the fail-closed/locality contract without treating a fixture-premise failure as fail-first. The saved core/race drafts are planning inputs only and must be compiled, calibrated and corrected during EVALS.
 
+Object-availability measurements and their reference controls enter separate fresh public processes after object removal; fixture setup must not make a legitimate immutable cache look like a missing-data violation. Missing nonselected archive content retains the existing public loader's categorized nonfatal C05 source diagnostic. No universal error code or literal injected process exit number is added to FLOW-048–051: assertions require useful corrective errors and relevant command details. A failed optional Git probe may recover through an independently complete native reader.
+
+The read-only and ownership observers are eval instrumentation, never product protocols. Their controls distinguish native source-file/ref reads, Git stdout, interactive batch requests, absolute native Git, compressed archive output and stripped ref names. On macOS the observer uses a test-owned copy of the actual selected developer Git engine with an ad-hoc signature so system-image loader restrictions do not hide its actual object/ref I/O; the selected Git exec path and argv are retained. External exact-token CAS controls run outside the measured process. No bootstrap, private implementation entry point or particular Git body-read command supplies source authority. Inert stub failures are ordinary source-selection failures, not claimed exercised race evidence. Empty writable maps are tested by insertion and empty slices by interleaved appends, in addition to populated nested-container mutations.
+
+The probe wire explicitly preserves Claim.Object separately because the retained Claim JSON deliberately omits that field. Nonzero success tokens and Object-only partial-claim leaks have independent live wire controls. Native ownership controls include relative/dot/parent paths and exec/spawn/spawnp with minimal or empty environments. If an exact successful source uses an unobserved route, incomplete source observation is an eval-observer coverage failure to investigate, not evidence that the API violated ownership validation. Only complete observed source followed by missing validation establishes that assertion's premise. Restricted pre-freeze reviews corrected the draft's identified overconstraints before phase freeze; they do not replace the separate formal Audit.
+
 ## Rejected alternatives
 
 Separate Claims plus fallback-capable LoadApproval admits a disappearance race. Loading current project metadata before checking ownership lets worker edits obstruct approved graph queries. Running Verify to find ownership recursively executes boundary hooks. Returning an already inclusive projected snapshot would risk applying the selected change twice in existing public composition.
+
+## Provenance
+
+- evals | 2026-10-26T06:46:09Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2346 | failing: 86 | passing: 2260
