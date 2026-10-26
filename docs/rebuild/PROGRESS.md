@@ -31,8 +31,8 @@ Keep this file short: update sections in place and add one line per applied chan
 
 ## Next / resume
 
-Repair APP-003 JSON assertion gaps with eval_fix, then add only the document/project
-contracts needed for the manual lifecycle slice. The standalone NEW CLI is built
+APP-003 JSON gaps repaired through audited eval_fix. Add only the document/zone
+and project contracts needed for the manual lifecycle slice. The standalone NEW CLI is built
 and its outside-project version --json smoke passed.
 
 If a change is already active on resume, read its context and preserve its work;
@@ -61,7 +61,9 @@ protected edits belong between active changes in separate author commits.
   Initial scaffold `go build -o bin/fireweed .` exited 0 (no usable commands yet).
 - First implementation change applied; next wire standalone CLI through app.
 
-- `standalone-cli` (app, APP-001–APP-003): evals `1298acf` (30 assertion failures), controller audit `7de7d30` (findings discarded due quote line-break mismatch; independent auditor did NOT pass), impl `db77de7` (30/30 pass, boundaries pass). Frozen evals restored after rejected correction; immediate eval_fix next. 2 of 5 applied changes since review.
+- `standalone-cli` (app, APP-001–APP-003): evals `1298acf` (30 assertion failures), controller audit `7de7d30` (findings discarded due quote line-break mismatch; independent auditor did NOT pass), impl `db77de7` (30/30 pass, boundaries pass). Frozen evals restored after rejected correction; corrected by json-error-assertions. 2nd of 5 applied changes since review.
+
+- `json-error-assertions` (app eval_fix, APP-003): evals `eb4704d` (all 26 app cases pass), independent audit `e184bb6` (no findings, APP-003 checked), impl `8796d37` (no code edits, 26/26 pass). Archive `changes/archive/0003-json-error-assertions.md`. 3 of 5 applied changes since review.
 
 ## Execution evidence
 
@@ -82,3 +84,7 @@ protected edits belong between active changes in separate author commits.
   and inspect actual phase/audit_rounds after every transition. The known JSON gaps
   require an immediate independently audited eval_fix; do not claim independent
   audit success for this change.
+
+- `json-error-assertions` corrected the known gaps without changing app implementation;
+  its isolated independent auditor passed APP-003. All 26 app cases pass (including
+  parent testcase counts). Full evals/impl verify and done passed with no warnings.

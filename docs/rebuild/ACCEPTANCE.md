@@ -119,3 +119,8 @@ Bulky logs may remain ignored; commit concise findings/counts and durable commit
   Archive `0002-standalone-cli.md`; evals `1298acf`, controller audit `7de7d30`.
   Independent audit found APP-003 JSON gaps discarded by the controller because
   quotes folded line breaks. Correction through eval_fix remains pending.
+
+- R17: `json-error-assertions` eval_fix repairs the APP-003 JSON gaps; phase SHAs
+  `eb4704d` / `e184bb6` / `8796d37`. Separate restricted Sol/high audit passed
+  APP-003; all 26 app cases pass, with unchanged implementation. This is rebuild
+  process evidence, not evidence that the NEW product implements eval_fix.
