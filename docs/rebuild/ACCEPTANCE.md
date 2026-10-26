@@ -103,3 +103,12 @@ Status: unverified | in progress | verified | blocked
 
 Bulky logs may remain ignored; commit concise findings/counts and durable commit/test references. Independent audits, platform execution, real regeneration and self-hosting claims must match what actually ran.
 
+
+## Partial evidence (rows remain unverified)
+
+- R17/R20: AST-001–AST-003 cover embedded version/help, initial diagnostic lookups
+  and five playbooks through public assets evals `Test_AST_001_*`,
+  `Test_AST_002_*`, `Test_AST_003_Explanations`. Change
+  `changes/archive/0001-standalone-information.md`; phase commits
+  `a4ceb17` / `826b9e9` / `2248b8e`; 8 assertion failures before and 8 passes after.
+  CLI wiring, full diagnostics/versioning/playbooks/AGENTS remain unverified.

@@ -37,3 +37,12 @@ baseline belong to the goal's startup. No stage-2 worker, init, drill or rebuild
 run during this review. The unchanged design remains product authority; its vendor
 examples describe a language/agent-agnostic product and do not select this build's
 agent provider.
+
+## D005 — Initial product diagnostic allocation
+
+The design requires stable codes and explanations but does not assign a meaning
+to P2-01. Newly authored AST-003 assigns it to missing genuine fail-first evidence.
+The controller's operational `explain P2-01` instead describes a forbidden-zone
+edit. Keep the authored product meaning and record this intentional difference
+in the later controller/product smoke; controller code assignments are not
+product authority. Other code mappings remain to be authored with their behavior.

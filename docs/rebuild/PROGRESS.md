@@ -39,7 +39,7 @@ protected edits belong between active changes in separate author commits.
 
 ## Applied
 
-(none yet)
+- `standalone-information` (assets, AST-001–AST-003): evals `a4ceb17` (8/8 genuine failures), separate Sol/high audit `826b9e9` (no findings), impl `2248b8e` (8/8 pass, direct dependents and boundaries pass). Archive `changes/archive/0001-standalone-information.md`; 1 of 5 applied changes since review.
 
 ## Startup compatibility
 
@@ -58,4 +58,15 @@ protected edits belong between active changes in separate author commits.
 - `doctor --json` exited 0; evidence `.fireweed/evidence/startup-doctor.json`
   and `.stderr` (empty). The command included agent checks, not --no-agent.
   Initial scaffold `go build -o bin/fireweed .` exited 0 (no usable commands yet).
-- No implementation or worker change has started.
+- First implementation change applied; next wire standalone CLI through app.
+
+## Execution evidence
+
+- Workers/auditor used the required real Codex Sol/high argv. Controller transitions
+  are coordinated manually and Provenance therefore says `agent=manual`; actual
+  CLI worker/auditor transcripts are under `.fireweed/evidence/standalone-information-*`.
+  The restricted auditor ran in `/tmp/fireweed-audit-standalone-information` with
+  only copied change/projected spec/evals; it inspected no implementation or SYSTEM.
+- Full verify and done passed in both behavioral phases. Evals-only B03 (106/10
+  lines against stubs) disappeared after implementation. No eval/interface edits
+  occurred in impl. Claim released and tree clean after controller archive.
