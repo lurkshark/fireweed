@@ -1,23 +1,27 @@
-# Restartable rebuild progress
+# Rebuild progress
 
-Status: stage 0 setup; no behavioral changes started. Goal remains active.
+Current state for restarting work. Keep this file short: update sections in place and add one line per applied change under "Applied". The first run is on the `rebuild-v1` branch; see [LESSONS.md](LESSONS.md).
+
+## Status (2026-10-26)
+
+- Restarted from the setup baseline (D001). No changes authored or applied. All R rows unverified.
+- History baseline for check-commits and ci ranges: the restart docs commit, recorded below. Always use an explicit range from it.
 
 ## Controller pin
 
-- Source: /Users/joel/Workspace/fireweed-bootstrap at 583b3c53740cf2341e0b0a79afee5b7f646ec1d4 (clean before/after build).
-- Build: GOCACHE=/tmp/fireweed-rebuild-cache go build -o /Users/joel/Workspace/fireweed/.fireweed/bin/fireweed-bootstrap . (from bootstrap checkout).
-- Toolchain: go1.27.2 darwin/arm64. Bootstrap version JSON: 0.4.0, schema 1.
-- Binary SHA-256: f9c48ae6b14887ebc549110478c081bedc450847507c6967735ef8486c98a3ed. Ignored binary must be rebuilt and checksum checked if absent.
-- Design SHA-256: 1c17d0ab9496b1b15ad5ca18eed4f4ca623d01cff596bc557bf4c97400d00789.
-- Initial target: 1b27763, clean main. No remote changes, pushes or publication.
-- Bootstrap help/version/author-change read; Go recipe initialized with codex worker and codex auditor. Codex CLI present and login status reports ChatGPT authentication; a real invocation remains unverified.
-
-## Setup and next work
-
-Eight scaffold modules with proposed dependency DAG; protected design/planning/build/enforcement files; updated Go canary imports; compiling app facade/placeholder. Controller check and go test ./... pass (no behavioral tests yet). Setup baseline and doctor results will be recorded after the setup commit. Next: prove all canaries and recovery; author contracts grammar/ID/hash changes through fail-first, independent audit and impl.
-
-All R01–R21 remain unverified. No product acceptance, real regeneration or self-hosting is claimed.
+- Source: /Users/joel/Workspace/fireweed-bootstrap at 583b3c53740cf2341e0b0a79afee5b7f646ec1d4.
+- Build: `GOCACHE=/tmp/fireweed-rebuild-cache go build -o /Users/joel/Workspace/fireweed/.fireweed/bin/fireweed-bootstrap .` from the bootstrap checkout. Version 0.4.0.
+- The controller implements the original v1 design. The revised design's bounds are enforced by hand per SYSTEM.md.
+- Worker and auditor: `codex exec --ephemeral --model gpt-6-sol --sandbox workspace-write {prompt}`.
 
 ## Restart procedure
 
-Inspect git status, pinned controller checksum/version, controller status/list and refs/fireweed/claims before any edit. Read current change/context if claimed; resume its phase without resetting work. Only update protected evidence between active changes. Final history/CI uses explicit setup-SHA..HEAD, never main default range.
+Inspect `git status`, the controller version, controller `status` and `list`, and `refs/fireweed/claims` before any edit. If a change is claimed, read its context and resume its phase without resetting work. Edit protected files only between active changes, in separate author commits. Follow the SYSTEM.md scope guardrails.
+
+## Next
+
+Author and apply the first slice changes in PLAN.md "Restart" order, starting with contracts.
+
+## Applied
+
+(none yet)

@@ -8,7 +8,7 @@ Build a new implementation of the complete v1 design with permanent behavioral s
 
 Read the repository-local [fireweed-design-v1.md](../../fireweed-design-v1.md) as the product authority, then [ACCEPTANCE.md](ACCEPTANCE.md). Consult the bootstrap README, source, tests, embedded recipes and playbooks for operational examples. Where they disagree, record source locations, the discrepancy, the decision and a design-derived test. The explicit design wins; consistent reference behavior can fill unspecified details. Deferred/rejected ideas are not requirements. Ask only about consequential ambiguities the sources cannot resolve.
 
-Keep this design copy as an unchanged reference snapshot and protect it from workers during setup. Record clarifications and intentional departures separately in author decisions and change files so the original requirements remain auditable.
+Keep this design copy protected from workers. It was an unchanged reference snapshot until 2026-10-26, when the owner revised it for bounded effort (audit rounds, eval_fix, unapproved-change limit, spec-shape and budget warnings, verify_dependents direct); see LESSONS.md. The pinned bootstrap still implements the original text, so the revision's bounds are enforced by hand through the SYSTEM.md scope guardrails until the NEW binary implements R22–R25. Record clarifications and intentional departures separately in author decisions and change files so the original requirements remain auditable.
 
 These documents contain planning labels and proposed architecture, not permanent spec IDs. Author specs through change files; only the controller applies module Specs and Decisions.
 
@@ -37,6 +37,24 @@ Before starting any worker change:
 8. Commit setup and pass controller `check` and `doctor`, including all four canaries and recovery after their removal. Record the full setup commit SHA as the history baseline. Always use its explicit range for final verification; the default range on main can be empty.
 
 Later protected/tooling/documentation edits are separate author commits, with justification and fresh canary checks if enforcement changed. Make them between applied changes, with no active worker claim. Do not smuggle author edits into worker commits or broaden permissions to pass checks.
+
+## Restart (2026-10-26)
+
+The first run (now the `rebuild-v1` branch) archived 51 changes but reached only 11 of 30 commands while spending most of its effort on hardening beyond the design. Local `main` was reset to the setup baseline 14cec73, and the revised design, guardrails and these documents were reapplied on top. [LESSONS.md](LESSONS.md) records what to keep from the first run. The SYSTEM.md scope guardrails override any broader reading of this plan.
+
+Build a thin slice through every module before deepening any one. The milestone table below describes eventual coverage, not the order of work. Order:
+
+1. contracts: spec and change grammar, IDs and hashes, zones and globs, configuration.
+2. gitstore: discovery, base ref, diffs and clean tree, process execution with process groups and timeouts.
+3. assets: version, playbooks, diagnostic catalog.
+4. project: load and static check, queue projection and bases, ID allocation, finalize.
+5. checks: JUnit parsing and coverage, eval and boundaries hooks.
+6. workflow: claims, start, verify, done (apply, archive, provenance, blocking).
+7. app: CLI for the commands above, then init and doctor.
+8. runner: next and run with attempts, limits and blocking; then ci, check-commits, pr-body and drill.
+9. R22 to R25, remaining commands, recipes, distribution, real drills and the NEW self-hosting rehearsal.
+
+Keep each change to at most five specs, and stop for human approval after every five applied changes. Record the new history baseline in PROGRESS.md; acceptance ranges start there, not at 14cec73.
 
 ## Proposed module graph
 
@@ -95,7 +113,7 @@ Complete every gate in ACCEPTANCE.md. Commit reviewed reports and final evidence
 
 - Bootstrap clean source commit: `583b3c53740cf2341e0b0a79afee5b7f646ec1d4`.
 - Local design snapshot: `fireweed-design-v1.md` at the repository root, copied byte-for-byte from `/Users/joel/Workspace/fireweed-bootstrap/fireweed-design-v1.md` at that commit on 2026-10-21.
-- Design SHA-256: `1c17d0ab9496b1b15ad5ca18eed4f4ca623d01cff596bc557bf4c97400d00789`.
+- Design SHA-256: `1c17d0ab9496b1b15ad5ca18eed4f4ca623d01cff596bc557bf4c97400d00789`. Revised 2026-10-26: `a1fe8a2a2335c04443d4e7d3e6aa3a138e221cd5bd8302c6c66bfd947761d919`.
 - Target initial commit: `d543462579d3fe182460c07476846476d38c6dc5` on main. Choose a later setup commit as the execution baseline.
 - No fireweed binary was on PATH or at the checked common install locations. A temporary build reported `0.4.0`, using `go1.27.2 darwin/arm64` and a temporary writable GOCACHE.
 - In a separate temporary repository, init with the Go recipe, agent none and audit-agent codex, followed by committed setup and doctor, passed boundaries/interface/failing-eval/missing-id with no diagnostics. This verifies plumbing, not the full bootstrap test suite or an actual agent/auditor execution.
