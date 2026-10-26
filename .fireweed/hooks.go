@@ -11,6 +11,7 @@ import (
  "os"
  "os/exec"
  "path/filepath"
+ "sort"
  "strconv"
  "strings"
 )
@@ -20,13 +21,20 @@ func main() {
  if len(os.Args)<2 { os.Exit(2) }
  if os.Args[1]=="eval" {
   cmd:=exec.Command("go","test","-json","./"+os.Args[2]+"/..."); var output bytes.Buffer; cmd.Stdout=&output; cmd.Stderr=os.Stderr; err:=cmd.Run()
-  dec:=json.NewDecoder(&output); suite:=Suite{}; indexes:=map[string]int{}; logs:=map[string]string{}
-  for { var ev struct { Action,Package,Test,Output string }; if dec.Decode(&ev)!=nil { break }; if ev.Test=="" { if ev.Output!="" { fmt.Print(ev.Output) }; continue }; key:=ev.Package+"/"+ev.Test
+  dec:=json.NewDecoder(&output); suite:=Suite{}; indexes:=map[string]int{}; logs:=map[string]string{}; finished:=map[string]bool{}; failedPkgs:=map[string]bool{}; pkgHasFailure:=map[string]bool{}
+  for { var ev struct { Action,Package,Test,Output string }; if dec.Decode(&ev)!=nil { break }; if ev.Test=="" { if ev.Output!="" { fmt.Print(ev.Output) }; if ev.Action=="fail" { failedPkgs[ev.Package]=true }; continue }; key:=ev.Package+"/"+ev.Test
    if ev.Action=="run" { indexes[key]=len(suite.Cases);suite.Cases=append(suite.Cases,Case{Name:ev.Test,Class:ev.Package}) }
    logs[key]+=ev.Output
-   if ev.Action=="fail" { if i,ok:=indexes[key];ok { text:=logs[key];suite.Cases[i].Failure=&text } }
+   if ev.Action=="pass"||ev.Action=="fail"||ev.Action=="skip" { finished[key]=true }
+   if ev.Action=="fail" { if i,ok:=indexes[key];ok { text:=logs[key];suite.Cases[i].Failure=&text;pkgHasFailure[ev.Package]=true } }
    if ev.Action=="skip" { if i,ok:=indexes[key];ok { text:=logs[key];suite.Cases[i].Skipped=&text } }
-  }; b,e:=xml.Marshal(suite);if e!=nil {panic(e)};if e=os.WriteFile(os.Args[3],b,0644);e!=nil{panic(e)};if err!=nil {os.Exit(1)};return
+  }
+  // A test that started but never finished (package timeout, crash) is failed evidence, never a pass.
+  for key,i:=range indexes { if !finished[key] { text:=logs[key]+"\nfireweed: test did not finish (timeout, crash or interrupted run)\n";suite.Cases[i].Failure=&text;pkgHasFailure[suite.Cases[i].Class]=true } }
+  // A package that failed without any failing test (build or setup failure) gets an unmapped failing case.
+  pkgs:=[]string{};for pkg:=range failedPkgs { if !pkgHasFailure[pkg] { pkgs=append(pkgs,pkg) } };sort.Strings(pkgs)
+  for _,pkg:=range pkgs { text:="fireweed: package failed without a failing test (build, setup or collection failure)\n";suite.Cases=append(suite.Cases,Case{Name:"PackageFailure",Class:pkg,Failure:&text}) }
+  b,e:=xml.Marshal(suite);if e!=nil {panic(e)};if e=os.WriteFile(os.Args[3],b,0644);e!=nil{panic(e)};if err!=nil {os.Exit(1)};return
  }
  bin:=os.Getenv("FIREWEED_BIN");if bin==""{bin="fireweed"};cmd:=exec.Command(bin,"modules","--json");data,err:=cmd.Output();if err!=nil{panic(err)}
  var envelope struct { Data []struct { Name,Dir string; DependsOn []string `json:"depends_on"` } };if err=json.Unmarshal(data,&envelope);err!=nil{panic(err)}
