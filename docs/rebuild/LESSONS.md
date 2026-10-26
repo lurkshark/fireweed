@@ -36,5 +36,6 @@ The first run (2026-10-21 to 2026-10-26) is preserved on the `rebuild-v1` branch
 - **Edge-case chains.** Three gitstore changes chased processes escaping cancellation and added native objects and 12 MB of per-architecture binaries. Now: process groups plus a documented limitation; no native code.
 - **Non-converging audits.** Audits critiqued the test instrumentation, and one change looped through evals and audit five times. Now: audit scope limited to unasserted spec clauses, at most two rounds, then block for a human.
 - **Specs as essays.** Specs averaged about 110 words and 6 clauses, plus about 13,000 words of Decisions that workers re-read every step. Now: at most 3 clauses and about 80 words per spec.
+- **Decisions as a lab notebook.** Workers wrote test-instrumentation and recovery notes into Decisions, which fireweed appends to SPEC.md: about 13,000 words that every later worker re-read and regeneration would follow. Now: Decisions are one or two sentences of product behavior, stale ones are dropped through Removed decisions, and process notes go elsewhere.
 - **Evidence ceremony.** Hash manifests, inventory proofs and a 218 KB progress log. Now: one line per applied change.
 - **No human checkpoint.** The agent authored and applied its own changes for five days. Now: stop after every five applied changes and before starting any change it authored.
