@@ -1,6 +1,6 @@
 # fireweed design
 
-Draft · October 14, 2026 · Revised October 26, 2026 (bounded effort)
+Draft · October 14, 2026 · Revised October 26, 2026 (bounded effort, usability)
 
 fireweed is a single Go binary that runs a spec-driven, regenerative workflow for one or a few developers. Specs are the source of truth, black-box evals linked to spec IDs are kept permanently, most implementation code can be thrown away and rebuilt, and coding agents do the work while fireweed checks every step.
 
@@ -26,6 +26,7 @@ fireweed makes "delete the code and regrow it from the spec" a safe, routine ope
 - **Local and dependency-light.** The binary never touches the network. It needs git, the project's own hooks, and an agent CLI. It never pushes, opens pull requests or schedules anything.
 - **State lives in git and files.** Every piece of workflow state is either in a committed file or in a local git ref, so any session, human or agent, can pick up where another stopped.
 - **Easy for agents to drive.** Every command is non-interactive, has machine-readable output, and has stable diagnostic codes.
+- **Warnings mean something.** A warning that fires during the normal workflow teaches people and agents to ignore every warning, so fireweed warns only about states that need attention.
 - **Bounded, visible effort.** Every loop fireweed drives has a limit that holds however the workflow is driven, by `run`, by an agent calling `start`, `verify` and `done`, or by a person. Costs that grow quietly, such as eval time, eval volume and unapproved changes, are measured and shown. An agent asked to be rigorous will keep finding more to check; fireweed stops the loop and hands the decision to a human instead of trusting the agent to stop itself.
 
 ## Repository layout
@@ -133,6 +134,8 @@ A session MUST expire 24 hours after its last use.
 
 **Decisions.** A worker records any behavioral choice the spec did not cover in the change file's `## Decisions` section. When the change is applied, fireweed appends those decisions to a `## Decisions` section of the module's `SPEC.md`, which only fireweed edits, tagging each with the change's slug. Regeneration reads them, so a rebuilt module makes the same choices. A later change can drop decisions that a spec now covers or that no longer hold by quoting them in a `## Removed decisions` section, and drill reports flag decisions the rebuilt code contradicts.
 
+Because every later worker and every regeneration reads them, decisions stay short: each is one or two sentences about product behavior. Notes about tests, verification runs, recovery or process belong in the change's Notes, which are archived with the change but never copied into `SPEC.md`. `check` warns (C19) when a module's Decisions exceed `spec_limits.max_decision_words` (default 300), which is the signal to drop stale ones through Removed decisions or turn lasting ones into specs.
+
 **Spec history.** `fireweed show <module> <ID> --history` lists the archived changes that added, modified or retagged a spec, newest first, with each change's Motivation, Decisions and provenance. It answers why a spec exists without digging through git history.
 
 ## Change files
@@ -177,6 +180,8 @@ IP-based throttling: shared IPs would lock out whole offices.
 **New spec IDs are assigned late.** New specs use a placeholder handle such as `new:lockout`. When the change starts, fireweed replaces each handle with the next free ID for the module, for example `AUTH-014`. Implementation runs one change at a time in base-branch order, so two authors working in parallel can never claim the same ID. Handles are `new:<slug>`, with the slug limited to lowercase letters, digits and hyphens and unique within the change. Other specs and the Interface section refer to a handle by the same string, and `start` rewrites every occurrence in the change file. A change may not use another change's handle: `check` reports an error, and the authoring playbook combines such changes into one. Evals never see handles, because they are written after `start`.
 
 **Stale changes are caught.** `bases` records a short hash of each spec text the change modifies or removes, as it stood in the projected spec when the change was written. If another change has since altered that spec, `fireweed check` reports the change as stale and it must be rewritten. This prevents one change silently overwriting another's edit. Each hash is the first 8 hex characters of a SHA-256 over the spec item, tag included, with line endings and trailing whitespace normalized. Including the tag means that adding `[quarantine]` counts as an edit. A Modified or Removed spec with no `bases` entry is a `check` error, and the authoring playbook runs `stamp`.
+
+**Fixing a stale change.** `show --stale <change>` prints, for each stale spec, a diff from the text the change was written against to the current projected text, so the author sees what moved underneath it. fireweed finds the old text by projecting the spec at the commit that last changed the change file's `bases` and checking that its hash matches; when no such commit exists it shows the current text and the recorded hash. `check --fix` stamps missing `bases` entries but never overwrites a stale one, because that would silently discard the conflict.
 
 **Frontmatter fields:**
 
@@ -236,7 +241,7 @@ stateDiagram-v2
 **Driving the state machine.** Three commands move a change forward, and anyone can run them: an unattended agent, an agent in an interactive session, or a human.
 
 - `fireweed start <change>` checks preconditions, claims the change, assigns spec IDs, records `run` and `phase`, and prints the context for the first step.
-- `fireweed verify` runs the current step's checks without committing, so an agent can iterate.
+- `fireweed verify` runs the current step's checks without committing, so an agent can iterate. `verify --quick` runs only the target module's evals and the zone and state checks, skipping dependents and the boundaries hook, so each iteration takes seconds rather than minutes; `done` always runs the full checks.
 - `fireweed done` runs the same checks and, if they pass, commits and advances the state. After implementation it also applies and archives the change.
 
 `fireweed next` and `fireweed run` are thin loops on top: they start an agent for each step, call `verify` and `done`, and retry on failure. `next` runs the head of the queue once; `run` keeps going until the queue is empty or a limit is reached. Agents never commit; if an agent creates commits, fireweed undoes them with a soft reset and logs a warning.
@@ -251,9 +256,9 @@ stateDiagram-v2
 
 **The current change.** Each claim records the worktree that holds it. `verify` and `done` act on the change this worktree holds, or on a change named as an optional argument.
 
-**Approval.** Merging a change file into the base branch is its approval, so `start` warns when the change file is not on the base branch. `run`, which works unattended, skips such changes unless given `--allow-unmerged`.
+**Approval.** A change file is approved when it is on the base branch, either `origin/<base>` or the local `<base>`, so a developer who commits a change to local `main` can start it without a warning. `start` warns (P04) only when the change file is on neither. `run`, which works unattended, skips such changes unless given `--allow-unmerged`.
 
-**Unapproved work is bounded.** An unapproved change is an archived change on HEAD whose change file is not on the base branch. When HEAD already has `authoring.max_unapproved` of them (default 5), `start`, `next` and `run` refuse another unmerged change, even with `--allow-unmerged`, with diagnostic P07; merging the work into the base branch, which is a human review, resets the count. This holds whoever authored the changes, so an agent that both writes and runs changes still stops for a person at regular intervals. `status` shows the count, and warns (P08) when three or more consecutive applied changes target the same module, which is the usual shape of a regression chain where each change fixes the edge case the last one exposed.
+**Unapproved work is bounded.** An agent working directly on the local base branch could approve its own changes by committing them, so this bound counts against the shared base: an unapproved change is an archived change on HEAD whose change file is not on `origin/<base>` (or on the local `<base>` when no remote ref exists). Pushing or merging is the human review. When HEAD already has `authoring.max_unapproved` of them (default 5), `start`, `next` and `run` refuse another unmerged change, even with `--allow-unmerged`, with diagnostic P07; merging the work into the base branch, which is a human review, resets the count. This holds whoever authored the changes, so an agent that both writes and runs changes still stops for a person at regular intervals. `status` shows the count, and warns (P08) when three or more consecutive applied changes target the same module, which is the usual shape of a regression chain where each change fixes the edge case the last one exposed.
 
 **Evals step.** The agent writes tests only, plus interface changes the change describes.
 
@@ -306,9 +311,11 @@ The queue does not stop. Later changes wait if they target:
 - a module that depends on it, directly or indirectly;
 - a module it depends on, if the later change has a non-empty Interface section.
 
-Everything else runs. This is deterministic because only the Interface section can change an interface: the evals step edits the interface only as that section describes, and the implementation step cannot touch it.
+Everything else runs. `status` names, for each waiting change, the change holding it back and which of these rules applies. This is deterministic because only the Interface section can change an interface: the evals step edits the interface only as that section describes, and the implementation step cannot touch it.
 
 **Each change lives entirely in its own commits.** ID assignment, state, specs, archive move, evals and code are all in the change's commits, so `git revert` of those commits undoes the change completely and returns it to the queue.
+
+**Abandoning a change.** `fireweed abandon <change>` drops a change that has not been applied. It requires a clean working tree and a change that is unclaimed or claimed by this worktree, reverts the change's commits (as `commits` lists them) in one commit that also deletes the change file, and releases the claim. Spec IDs the change had been assigned were never applied, so they become free again. Saved attempt refs are kept until `gc`. An applied change is reverted first with `git revert`, which returns it to the queue, and can then be abandoned. The abandon commit changes no `phase` value, so it is not a worker commit.
 
 **Cost is measured.** Each `verify` and `done` records eval wall time per module from the JUnit `time` attributes, testcases per spec, and the number of lines in the module's evals and disposable zones. `status` shows these per module along with phase commits per applied change, and warns when a `budgets` limit is exceeded: `budgets.verify_time` (default 15m per step), `budgets.cases_per_spec` (default 15) and `budgets.eval_ratio` (eval lines per disposable line, default 4). These are warnings (B01 to B03), not failures, but they appear in `status`, `pr-body` and the `verify` output the agent reads, so growth is visible while it happens. `pr-body` also lists every binary file and every file larger than 256 KB added to a disposable zone (B04), because generated or vendored artifacts are code a reviewer cannot read.
 
@@ -354,6 +361,8 @@ fireweed delegates language-specific work to hooks, publishes the facts the hook
 **Glue lives in protected zones.** Boundary-checker configs and other glue go in `.fireweed/` or another protected glob. Otherwise a worker could make the boundary check pass by weakening it.
 
 **`fireweed doctor` proves each hook works.** In a scratch worktree, it creates two throwaway modules from the module templates and plants a canary for each rule: an import from an undeclared module, an eval that reaches past the interface, a failing eval, an eval with no spec ID. Each hook must catch its canary, and must pass once the canary is removed. Canary snippets come from the recipe or from whoever built the glue, in `.fireweed/canaries/`. A hook replaced by `exit 0` fails doctor immediately.
+
+**`doctor` also tests the agents.** It runs `agent.command` and `audit.command`, through `wrap`, once in the scratch worktree with a short prompt that asks for a fixed reply, and checks that each exits 0 within a few minutes and prints the reply. A failure names the command and shows its last output lines, so a rejected model or a missing login is caught before the first real step. Output that matches `limit_patterns` is reported as a usage limit, not a broken command. `doctor --no-agent` skips this check, and `ci` never runs it, because CI usually has no agent.
 
 **When boundary checks are required.** Boundaries matter most for modules that may be regenerated, so the rule follows disposability:
 
@@ -412,23 +421,23 @@ The CLI is built to be driven by agents as much as by people: every command is n
 | Area | Command | What it does |
 | --- | --- | --- |
 | Setup | `init --recipe <r> --agent <a> [--no-app]` | Create config, `SYSTEM.md`, the `AGENTS.md` block, the recipe copy and the `app` module |
-| Setup | `doctor` | Verify config, hooks, canaries, playbook overrides and the `AGENTS.md` block |
+| Setup | `doctor [--no-agent]` | Verify config, hooks, canaries, the agent and audit commands, playbook overrides and the `AGENTS.md` block |
 | Authoring | `new-module <name> --prefix <P>` | Create a module from the templates |
 | Authoring | `new-change <module> <slug>` | Create a change file with the next number |
 | Authoring | `stamp <change>` | Record `bases` hashes for the specs a change modifies or removes |
-| Reading | `list`, `status` | Modules, the queue, blocked changes, quarantines, opt-outs, drift since last drill, unapproved changes, audit rounds, cost metrics and budget warnings |
-| Reading | `show <module> [ID] [--projected \| --history]` | Specs as they are, with pending changes applied, or with the archived changes behind each one |
+| Reading | `list`, `status` | Modules, the queue and why each queued change is waiting, blocked changes, quarantines, opt-outs, drift since last drill, unapproved changes, audit rounds, cost metrics and budget warnings |
+| Reading | `show <module> [ID] [--projected \| --history]`, `show --stale <change>` | Specs as they are, with pending changes applied, or with the archived changes behind each one; for a stale change, what moved since it was written |
 | Reading | `modules` | The resolved module graph and zone map |
-| Reading | `context <change>` | Everything a worker needs for the current step, in one call |
+| Reading | `context <change> [--full]` | What a worker needs for the current step, in one call: full text of the change, the module's `SPEC.md`, its interface files, `SYSTEM.md` and the playbook, plus the paths and sizes of the step's other relevant files (`--full` adds their contents) |
 | Reading | `explain <code>`, `playbook <name>` | What a diagnostic means and how to fix it; a playbook's text |
-| Checks | `check` | Static validation of specs, changes and the queue |
+| Checks | `check [--fix]` | Static validation of specs, changes and the queue; `--fix` stamps missing `bases` |
 | Checks | `coverage <module> [--with-change <c>]` | Run evals and map results to spec IDs |
 | Checks | `check-commits <range>` | History checks H01 to H04 |
 | Checks | `ci [<range>]` | Every deterministic check in one command, for any CI system |
 | Checks | `pr-body <range>` | A pull request description for the range: changes with their evals, interface and stub edits, preserved-file edits, review-tagged specs, audit findings and rounds, Decisions, quarantines, boundary opt-outs, blocked changes, budget warnings and binary or large files added to disposable zones |
-| Lifecycle | `start`, `verify`, `done` | Drive one change through its steps |
+| Lifecycle | `start`, `verify [--quick]`, `done` | Drive one change through its steps |
 | Lifecycle | `next`, `run [--max N] [--for 6h]` | Run the agent through the queue |
-| Lifecycle | `release <change>`, `commits <change>` | Drop a local claim; list a change's commits on the current branch |
+| Lifecycle | `release <change>`, `commits <change>`, `abandon <change>` | Drop a local claim; list a change's commits on the current branch; revert and remove an unapplied change |
 | Regeneration | `drill <module>` | Rebuild a module in a scratch worktree and report gaps |
 | Maintenance | `gc`, `migrate`, `agents-md --write` | Prune refs, upgrade file formats, refresh the `AGENTS.md` block |
 
@@ -438,7 +447,7 @@ The CLI is built to be driven by agents as much as by people: every command is n
 - Stable diagnostic codes (for example C10, P2-01, H03), each with `fireweed explain <code>`.
 - No prompts, ever. Missing input is a usage error that lists the valid options.
 - Distinct exit codes: 0 for success or an empty queue, 1 for failed checks or any change blocked during the run, 2 for usage or configuration errors, 3 for a clean early stop on a time or usage limit.
-- `context` replaces a dozen file reads with one call.
+- `context` replaces a dozen file reads with one call, and stays small as modules grow: files other than the change, spec, interface, `SYSTEM.md` and playbook are listed by path and size, and the agent reads the ones it needs.
 - The same embedded playbook text drives unattended steps and interactive authoring, so every agent gets identical instructions.
 
 ## Distribution and init
@@ -484,6 +493,7 @@ authoring:
 spec_limits:
   max_clauses: 3         # normative keywords per spec item (C17 warning)
   max_words: 80
+  max_decision_words: 300   # per module Decisions section (C19 warning)
 budgets:
   verify_time: 15m       # B01 warning
   cases_per_spec: 15     # B02 warning
@@ -509,7 +519,7 @@ The agent is any CLI that takes a prompt. Sandboxing is the user's choice: `wrap
 
 **AGENTS.md.** `init` writes a short block between markers telling any agent that the project uses fireweed and pointing it at `fireweed playbook author-change` and `fireweed context`. `fireweed agents-md --write` regenerates only that block, and doctor warns when it is out of date.
 
-**CI.** `fireweed ci` runs every deterministic check: `check`, the history checks on the range, coverage for every module, the boundary hooks, and the doctor canaries (skip them with `--no-doctor`). Adding it to any CI system takes one line, so fireweed needs no GitHub Action or other CI integration.
+**CI.** `fireweed ci` runs every deterministic check: `check`, the history checks on the range, coverage for every module, the boundary hooks, and the doctor canaries (skip them with `--no-doctor`), but not doctor's agent check. Adding it to any CI system takes one line, so fireweed needs no GitHub Action or other CI integration.
 
 ## Room for existing codebases
 
@@ -542,6 +552,10 @@ Adopting fireweed in an existing codebase is out of scope for now, and the desig
 | A maintained Docker sandbox image | Rejected | Costly to version and ship; `wrap` lets users bring their own sandbox |
 | Recipes upgraded with the binary | Rejected | Agents adapt the copied glue to each repo; upgrades would break it |
 | An MCP server | Deferred | The CLI is built for agents first; MCP can come later |
+| Approval only on `origin/<base>` | Replaced | A solo developer committing locally got a warning on every start until pushing, and warnings that always fire get ignored; the unapproved-work bound still counts against the remote |
+| Dropping a change by reverting its commits by hand | Replaced | `abandon` does the revert, file removal and claim release in one step |
+| `context` with the contents of every module file | Replaced | Token cost grew with the module; paths and sizes let the agent read what it needs |
+| Starting any independent change in parallel worktrees | Deferred | Would raise throughput, but changes queue eligibility and merge order; revisit after the core lifecycle is proven |
 | Fail-first as a warning | Rejected | Tests that pass before implementation prove nothing; `already_satisfied` covers legitimate cases |
 | Attempt limits only inside `next` and `run` | Replaced | An agent driving `start`, `verify` and `done` itself looped evals and audit indefinitely; `audit_rounds` lives in the change file so the limit holds however a change is driven |
 | Re-audits that may raise new findings every round | Rejected | An auditor reviewing elaborate tests can always find something new, so the loop never converges |

@@ -6,7 +6,7 @@ The authoritative design snapshot is [fireweed-design-v1.md](../../fireweed-desi
 
 At safe author boundaries map each row to actual assigned spec IDs, permanent eval names, archived changes/phase commits and results. Record exceptions and design/reference discrepancies explicitly.
 
-**Scope (revised 2026-10-26, see LESSONS.md).** Rows describe design behavior, not hardening beyond it. The SYSTEM.md scope guardrails decide how far each row goes: supported environment, process-group cancellation, conventions checked by review and one app PATH-shim test rather than per-spec locality evals, eval cost limits and audit scope. Do not expand a row with edge cases the design does not name. R22–R25 cover the bounded-effort revision of the design and replace nothing above.
+**Scope (revised 2026-10-26, see LESSONS.md).** Rows describe design behavior, not hardening beyond it. The SYSTEM.md scope guardrails decide how far each row goes: supported environment, process-group cancellation, conventions checked by review and one app PATH-shim test rather than per-spec locality evals, eval cost limits and audit scope. Do not expand a row with edge cases the design does not name. R22–R25 cover the bounded-effort revision of the design and R26–R28 the usability revision; they replace nothing above.
 
 ## Requirement inventory
 
@@ -37,6 +37,9 @@ At safe author boundaries map each row to actual assigned spec IDs, permanent ev
 | R23 | Kinds of change (revised) / contracts, project, workflow | `eval_fix` kind: evals-zone-only edits, listed IDs stay covered, all module evals pass instead of fail-first, audit confirms assertions, impl changes nothing but the change file and archives. |
 | R24 | Approval (revised) / workflow, runner, app | Unapproved archived changes on HEAD counted against the base; start/next/run refuse more with P07 at `authoring.max_unapproved` (default 5) even with --allow-unmerged; status shows the count and P08 for three consecutive applied changes to one module. |
 | R25 | Specs; Cost is measured; config (revised) / project, checks, app | C17 spec-shape and C18 repeated-clause warnings with `spec_limits`; per-module eval time, cases per spec and eval/disposable line ratio recorded and shown by status/pr-body with B01–B03 budget warnings; pr-body lists binary or >256 KB files added to disposable zones (B04); `verify_dependents` defaults to direct; playbooks carry the Motivation and audit-scope rules. |
+| R26 | Approval; Abandoning a change (usability revision) / workflow, app | A change file on either `origin/<base>` or local `<base>` is approved and starts without P04; the unapproved-work bound counts against `origin/<base>` when it exists. `abandon` refuses applied, foreign-claimed or dirty-tree cases, reverts the change's commits and deletes the change file in one non-worker commit, releases the claim, and frees its never-applied IDs. |
+| R27 | Driving the state machine; CLI (usability revision) / workflow, app | `verify --quick` runs only the target module's evals plus zone/state checks; `done` always runs the full checks. `context` returns full change, SPEC, interface, SYSTEM and playbook text plus paths and sizes of other step files, and `--full` adds contents. `status` names, for each waiting change, the change holding it and the blocking rule. |
+| R28 | Doctor; stale changes; Decisions (usability revision) / checks, project, app | `doctor` runs the agent and audit commands with a fixed-reply prompt, reports failures with output and limit-pattern matches as usage limits, `--no-agent` skips it and `ci` never runs it. `show --stale` diffs each stale spec from its stamped text (or shows current text and hash when not found); `check --fix` stamps only missing bases. `check` warns C19 when module Decisions exceed `spec_limits.max_decision_words`. |
 
 ## Required command inventory
 
@@ -45,24 +48,24 @@ Exercise the new executable, beyond public function tests. Cover applicable docu
 ```text
 help, version
 init --recipe <go|typescript-pnpm|python-uv|none|local-path> --agent <agent> [--audit-agent <agent>] [--no-app]
-doctor
+doctor [--no-agent]
 new-module <name> --prefix <P>
 new-change <module> <slug>
 stamp <change>
 list, status, modules
-show <module> [ID] [--projected | --history]
-context <change>
+show <module> [ID] [--projected | --history], show --stale <change>
+context <change> [--full]
 explain <code>, playbook <name>
-check
+check [--fix]
 coverage <module> [--with-change <change>]
 check-commits <range>
 ci [<range>] [--no-doctor]
 pr-body <range>
 start <change> [--from-attempt <n>]
-verify [<change>], done [<change>]
+verify [<change>] [--quick], done [<change>]
 next [--allow-unmerged] [--for <duration>]
 run [--max N] [--for <duration>] [--allow-unmerged]
-release <change>, commits <change>
+release <change>, commits <change>, abandon <change>
 drill <module>
 gc, migrate, agents-md --write
 ```
