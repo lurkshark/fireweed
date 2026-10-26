@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: evals
+phase: audit
 run: d6540bfc1bc15d3673735a4d
 ---
 
@@ -44,6 +44,8 @@ The read-only and ownership observers are eval instrumentation, never product pr
 
 The probe wire explicitly preserves Claim.Object separately because the retained Claim JSON deliberately omits that field. Nonzero success tokens and Object-only partial-claim leaks have independent live wire controls. Native ownership controls include relative/dot/parent paths and exec/spawn/spawnp with minimal or empty environments. If an exact successful source uses an unobserved route, incomplete source observation is an eval-observer coverage failure to investigate, not evidence that the API violated ownership validation. Only complete observed source followed by missing validation establishes that assertion's premise. Restricted pre-freeze reviews corrected the draft's identified overconstraints before phase freeze; they do not replace the separate formal Audit.
 
+Fault-recovery operation assertions run on every return path, including successful native fallback. Required Git failure details may identify any actually observed failed command, rather than presuming the first optional probe was required; independent native controls exercise distinct probe/read failures and forbidden recovery operations. Canonical ownership identity also applies through nested symlink aliases of ordinary and linked checkouts. Valid Markdown syntax alone does not establish a valid started State: missing/invalid/applied phase, missing run, and missing/mismatched module remain corrective atomic rejections, calibrated with the existing public claimed loader and state checker.
+
 ## Rejected alternatives
 
 Separate Claims plus fallback-capable LoadApproval admits a disappearance race. Loading current project metadata before checking ownership lets worker edits obstruct approved graph queries. Running Verify to find ownership recursively executes boundary hooks. Returning an already inclusive projected snapshot would risk applying the selected change twice in existing public composition.
@@ -59,3 +61,4 @@ Separate Claims plus fallback-capable LoadApproval admits a disappearance race. 
 
 - evals | 2026-10-26T06:46:09Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2346 | failing: 86 | passing: 2260
 - audit | 2026-10-26T06:54:34Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-26T08:08:17Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2356 | failing: 90 | passing: 2266

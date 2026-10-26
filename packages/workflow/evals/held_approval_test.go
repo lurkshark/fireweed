@@ -62,7 +62,7 @@ func heldRejectedResult(t *testing.T, start string) error {
 }
 func Test_FLOW048_FLOW049HeldApprovedSources(t *testing.T) {
 	for _, format := range []string{"sha1", "sha256"} {
-		for _, mode := range []string{"ordinary", "nested", "linked", "linked-nested", "late", "evals", "audit", "impl", "moved-head"} {
+		for _, mode := range []string{"ordinary", "nested", "alias-nested", "linked", "linked-nested", "linked-alias-nested", "late", "evals", "audit", "impl", "moved-head"} {
 			t.Run(format+"/"+mode, func(t *testing.T) {
 				phase := "impl"
 				if mode == "evals" || mode == "audit" {
@@ -95,6 +95,20 @@ func Test_FLOW048_FLOW049HeldApprovedSources(t *testing.T) {
 				}
 				if strings.Contains(mode, "nested") {
 					start = filepath.Join(start, "units/a/e")
+				}
+				if strings.Contains(mode, "alias") {
+					alias := filepath.Join(t.TempDir(), "checkout alias ' λ")
+					if err := os.Symlink(f.Want.Root, alias); err != nil {
+						if os.PathSeparator == '\\' {
+							t.Skipf("symlink privilege unavailable: %v", err)
+						}
+						t.Fatal(err)
+					}
+					start = filepath.Join(alias, "units/a/e")
+					resolved, err := filepath.EvalSymlinks(start)
+					if err != nil || resolved != filepath.Join(f.Want.Root, "units/a/e") {
+						t.Fatal("canonical alias discovery premise", resolved, err)
+					}
 				}
 				// Keep a fully valid foreign ownership record: implicit selection must
 				// ignore it, while retaining the exact locally owned claim and token.
@@ -231,7 +245,7 @@ func Test_FLOW050HeldMalformedCommittedContent(t *testing.T) {
 	}
 }
 func Test_FLOW048_FLOW050HeldMalformedSelection(t *testing.T) {
-	for _, mode := range []string{"malformed-selected", "malformed-unclassified", "unreadable-unclassified", "invalid-owner-type", "nonblob-unclassified", "empty-unclassified-owner", "ambiguous-local", "symbolic-selected", "missing-payload", "invalid-state", "wrong-run", "reservation"} {
+	for _, mode := range []string{"malformed-selected", "malformed-unclassified", "unreadable-unclassified", "invalid-owner-type", "nonblob-unclassified", "empty-unclassified-owner", "ambiguous-local", "symbolic-selected", "missing-payload", "invalid-state", "wrong-run", "reservation", "state-missing-phase", "state-invalid-phase", "state-applied-phase", "state-missing-run", "state-mismatched-module", "state-missing-module"} {
 		t.Run(mode, func(t *testing.T) {
 			f := heldSourceFixture(t, "impl", "sha1", false)
 			switch mode {
@@ -293,6 +307,31 @@ func Test_FLOW048_FLOW050HeldMalformedSelection(t *testing.T) {
 			case "reservation":
 				f.Claim.State = ""
 				claimRaw(t, f.Root, "current", claimPayload(t, f.Claim))
+			case "state-missing-phase", "state-invalid-phase", "state-applied-phase", "state-missing-run", "state-mismatched-module", "state-missing-module":
+				switch mode {
+				case "state-missing-phase":
+					f.Claim.State = strings.Replace(f.Claim.State, "phase: impl\n", "", 1)
+				case "state-invalid-phase":
+					f.Claim.State = strings.Replace(f.Claim.State, "phase: impl", "phase: unsupported", 1)
+				case "state-applied-phase":
+					f.Claim.State = strings.Replace(f.Claim.State, "phase: impl", "phase: applied", 1)
+				case "state-missing-run":
+					f.Claim.State = strings.Replace(f.Claim.State, "run: context-run\n", "", 1)
+				case "state-mismatched-module":
+					f.Claim.State = strings.Replace(f.Claim.State, "module: alpha", "module: beta", 1)
+				case "state-missing-module":
+					f.Claim.State = strings.Replace(f.Claim.State, "module: alpha\n", "", 1)
+				}
+				if _, err := c.ParseMarkdown(f.Claim.State); err != nil {
+					t.Fatal("syntactically valid started-state semantic rejection premise", err)
+				}
+				if diagnostics := w.CheckState(f.Want.Modules[0], f.Claim.State, f.Claim.State, f.Path); len(diagnostics) == 0 {
+					t.Fatal("public CheckState accepted invalid approved started semantics", mode)
+				}
+				claimRaw(t, f.Root, "current", claimPayload(t, f.Claim))
+				if source, claim, err := w.LoadApproval(f.Root, "current"); err == nil || claim != (w.Claim{}) || !reflect.DeepEqual(source, p.Snapshot{}) {
+					t.Fatal("public claimed-source semantic rejection control", mode, err, claim)
+				}
 			}
 			heldRejectedResult(t, f.Root)
 		})

@@ -165,8 +165,32 @@ func Test_FLOW051HeldRequiredGitFailureDetails(t *testing.T) {
 	artifacts := t.TempDir()
 	policy := heldGitPolicy{Real: real, Trace: filepath.Join(artifacts, "trace.jsonl"), Violation: filepath.Join(artifacts, "violation"), Fail: true, Stderr: "held-selected-local-git-failure-9284"}
 	heldWriteGitPolicy(t, directory, policy)
-	if out, diagnostic, code := heldRunGitControl(t, binary, f.Root, "", "rev-parse", "--show-toplevel"); out != "" || diagnostic != policy.Stderr || code != 92 {
-		t.Fatal("live native failure control", out, diagnostic, code)
+	defer func() {
+		if _, err := os.Stat(policy.Violation); !os.IsNotExist(err) {
+			t.Error("held source fault recovery attempted forbidden Git operation", err)
+		}
+	}()
+	for _, args := range [][]string{{"rev-parse", "--show-toplevel"}, {"cat-file", "blob", f.Claim.Object}} {
+		if out, diagnostic, code := heldRunGitControl(t, binary, f.Root, "", args...); out != "" || diagnostic != policy.Stderr || code != 92 {
+			t.Fatal("live native failure control", args, out, diagnostic, code)
+		}
+	}
+	controlTrace, err := os.ReadFile(policy.Trace)
+	if err != nil {
+		t.Fatal(err)
+	}
+	operations := heldGitTraceOperations(t, controlTrace)
+	if !heldGitCommandDetail("git cat-file failed; restore objects", operations) || !heldGitCommandDetail("git rev-parse failed; use a valid checkout", operations) || heldGitCommandDetail("git imaginary-command failed; restore objects", operations) {
+		t.Fatal("later required-command diagnostic observer control", operations)
+	}
+	if _, _, code := heldRunGitControl(t, binary, f.Root, "", "fetch", "--all"); code != 93 {
+		t.Fatal("fault-policy forbidden operation observer control", code)
+	}
+	if marker, err := os.ReadFile(policy.Violation); err != nil || !strings.Contains(string(marker), "fetch") {
+		t.Fatal("fault-policy forbidden operation marker control", string(marker), err)
+	}
+	if err := os.Remove(policy.Violation); err != nil {
+		t.Fatal(err)
 	}
 	if err := os.Remove(policy.Trace); err != nil {
 		t.Fatal(err)
@@ -191,25 +215,50 @@ func Test_FLOW051HeldRequiredGitFailureDetails(t *testing.T) {
 		// native reader. Observing a command does not make it required.
 		return
 	}
-	var args []string
-	if json.Unmarshal([]byte(strings.SplitN(string(trace), "\n", 2)[0]), &args) != nil || len(args) == 0 {
-		t.Fatal("native command trace shape", string(trace))
-	}
+	operations = heldGitTraceOperations(t, trace)
 	if err == nil || present || claim != (w.Claim{}) || !reflect.DeepEqual(source, p.Snapshot{}) || !strings.Contains(err.Error(), policy.Stderr) || !policyCorrective(err.Error()) {
-		t.Error("required Git failure lost useful command/stderr/exit or leaked authority", err, present, claim)
+		t.Error("required Git failure lost useful command/stderr or leaked authority", err, present, claim)
 	}
-	commandDetail := false
-	if err != nil {
-		for _, argument := range args {
-			if len(argument) > 2 && !strings.HasPrefix(argument, "-") && strings.Contains(err.Error(), argument) {
-				commandDetail = true
+	if err != nil && !heldGitCommandDetail(err.Error(), operations) {
+		t.Error("required Git failure omitted actual observed command details", operations, err)
+	}
+
+}
+
+func heldGitTraceOperations(t *testing.T, trace []byte) []string {
+	t.Helper()
+	operations := []string{}
+	for _, line := range strings.Split(strings.TrimSpace(string(trace)), "\n") {
+		var args []string
+		if err := json.Unmarshal([]byte(line), &args); err != nil || len(args) == 0 {
+			t.Fatal("native command trace shape", string(trace), err)
+		}
+		operation := ""
+		for index := 0; index < len(args); index++ {
+			argument := args[index]
+			if argument == "-c" || argument == "-C" || argument == "--git-dir" || argument == "--work-tree" || argument == "--namespace" || argument == "--config-env" {
+				index++
+				continue
 			}
+			if strings.HasPrefix(argument, "-") {
+				continue
+			}
+			operation = argument
+			break
+		}
+		if operation == "" {
+			t.Fatal("native command trace has no operation", args)
+		}
+		operations = append(operations, operation)
+	}
+	return operations
+}
+
+func heldGitCommandDetail(message string, operations []string) bool {
+	for _, operation := range operations {
+		if strings.Contains(message, operation) {
+			return true
 		}
 	}
-	if !commandDetail {
-		t.Error("required Git failure omitted actual command details", args, err)
-	}
-	if _, err := os.Stat(policy.Violation); !os.IsNotExist(err) {
-		t.Fatal("failure path attempted forbidden Git operation", err)
-	}
+	return false
 }
