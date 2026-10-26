@@ -15,3 +15,25 @@ On 2026-10-26 the owner accepted eight usability changes to the design: approval
 ## D003 — Any merge strategy
 
 On 2026-10-26 the owner chose to keep per-step commits for review while letting users merge however they like. The design now checks steps before merge (`ci` on the PR branch), recognizes squashed change commits in `check-commits` instead of reporting false H02 violations, and counts drill drift by Provenance dates instead of commit ancestry. ACCEPTANCE R29 tracks it; PLAN.md records the new design SHA-256.
+
+## D004 — Fresh bootstrap and vertical-slice stage 2
+
+On 2026-10-26 the fresh bootstrap completed independently at runtime source
+`7f925190878e38fc38f30d16bb1cf47aca098cf7`, version 0.1.0; HANDOFF.md records its
+verification. The owner requested a new stage-2 goal that proves a runnable
+manual lifecycle through the NEW CLI before completing the remaining surface.
+This supersedes the old author-only first session and old controller/reference
+instructions. D001–D003 and PLAN's old inspection record remain historical.
+
+Use the tested executable as the pinned controller, without consulting bootstrap
+source/tests or rebuild-v1 as an implementation oracle. Keep all design-derived
+acceptance gates and human checkpoints. Use Codex `gpt-6-sol` with high reasoning
+effort for workers, separate restricted auditor invocations and regeneration.
+A read-only Sol/low-effort probe passed; high-effort doctor checks are still required.
+
+Preparation changes only the instructions. Controller installation, reconciling
+fireweed.yaml's old version pin and canary/hook setup, doctor and the new history
+baseline belong to the goal's startup. No stage-2 worker, init, drill or rebuild was
+run during this review. The unchanged design remains product authority; its vendor
+examples describe a language/agent-agnostic product and do not select this build's
+agent provider.

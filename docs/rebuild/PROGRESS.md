@@ -1,27 +1,42 @@
 # Rebuild progress
 
-Current state for restarting work. Keep this file short: update sections in place and add one line per applied change under "Applied". The first run is on the `rebuild-v1` branch; see [LESSONS.md](LESSONS.md).
+Keep this file short: update sections in place and add one line per applied change.
 
-## Status (2026-10-26)
+## Status — 2026-10-26
 
-- Restarted from the setup baseline (D001). No changes authored or applied. All R rows unverified.
-- History baseline for check-commits and ci ranges: d991c26472ad990a5d050a07ce7dc873d1900433 (restart docs commit). Always use the explicit range `d991c26..HEAD`.
-- At the baseline: go build, vet and test pass (no tests yet); controller check is valid; doctor catches all four canaries; check-commits 14cec73..d991c26 has no diagnostics.
+- Stage-2 preparation reviewed (D004); the rebuild has NOT started. No changes
+  authored/applied and no claims found during review. All R rows remain unverified.
+- The executable pin, live config/hook adaptation and controller doctor checks are
+  startup work. `fireweed.yaml` still pins `>=0.4, <0.5`; do not run the new
+  controller against that setup before reconciling compatibility.
+- A NEW full setup commit SHA must be recorded after successful startup checks;
+  use its explicit nonempty `baseline..HEAD` for history/CI acceptance.
+- Historical restart baseline: `d991c26472ad990a5d050a07ce7dc873d1900433` (D001).
+  Old build/check/doctor results belong to the retired setup, not the new pin.
 
-## Controller pin
+## Controller candidate and agents
 
-- Source: /Users/joel/Workspace/fireweed-bootstrap at 583b3c53740cf2341e0b0a79afee5b7f646ec1d4.
-- Build: `GOCACHE=/tmp/fireweed-rebuild-cache go build -o /Users/joel/Workspace/fireweed/.fireweed/bin/fireweed-bootstrap .` from the bootstrap checkout. Version 0.4.0.
-- The controller implements the original v1 design. The revised design's bounds are enforced by hand per SYSTEM.md.
-- Worker and auditor: `codex exec --ephemeral --model gpt-6-sol --sandbox workspace-write {prompt}`.
+- Tested source executable: `/Users/joel/Workspace/fireweed-bootstrap/bin/fireweed`.
+- Candidate: version `0.1.0`, embedded source revision
+  `7f925190878e38fc38f30d16bb1cf47aca098cf7`, `vcs.modified=false`; metadata checked
+  against HANDOFF.md during preparation. It has NOT been installed for stage 2.
+- Destination: `/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed-bootstrap`.
+  Copy the tested executable; do not rebuild or consult bootstrap source.
+- Codex-only workers/auditors/regeneration: `gpt-6-sol`, high reasoning effort,
+  exact argv in GOAL.md. A read-only Sol/low-effort probe exited 0 with the expected
+  reply. High effort and both full doctor probes remain unrun startup checks.
+- The new controller covers the revised design's bounds, eval_fix and usability;
+  retain SYSTEM.md's human checkpoints and scope limits as well.
 
-## Restart procedure
+## Next / resume
 
-Inspect `git status`, the controller version, controller `status` and `list`, and `refs/fireweed/claims` before any edit. If a change is claimed, read its context and resume its phase without resetting work. Edit protected files only between active changes, in separate author commits. Follow the SYSTEM.md scope guardrails.
+Follow GOAL.md preflight: inspect status/claims, verify and install the controller,
+adapt protected setup using a disposable recipe fixture, configure Sol/high,
+pass controller check/doctor, and commit the new setup baseline. Then build the
+NEW binary's narrow manual lifecycle slice before expanding the surface.
 
-## Next
-
-Author and apply the first slice changes in PLAN.md "Restart" order, starting with contracts.
+If a change is already active on resume, read its context and preserve its work;
+protected edits belong between active changes in separate author commits.
 
 ## Applied
 

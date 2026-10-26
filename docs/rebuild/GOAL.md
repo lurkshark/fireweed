@@ -1,27 +1,70 @@
-# Goal prompt
+# Stage-2 goal prompt
 
-Revised 2026-10-26 for the restarted rebuild (D001). Earlier versions are in git history and on the `rebuild-v1` branch. This prompt covers one bounded session; update its scope section before each new session.
+Revised 2026-10-26 after the fresh bootstrap completed. Paste the block below into
+`/goal` in `/Users/joel/Workspace/fireweed`. This document prepares the goal; editing
+it does not install a controller or begin the rebuild.
 
-Paste the following into `/goal` in the `fireweed` repository:
+The first milestone is a working lifecycle through the NEW executable. Use the module
+list to define ownership. Build only the pieces that the next observable step
+needs, prove the slice, then expand to the complete design.
 
 ```text
-/goal Author the first slice of the restarted fireweed rebuild in /Users/joel/Workspace/fireweed, then stop for human approval. Stop when that is done or when a stop condition below is hit.
+/goal Build a fresh, independent implementation of the complete fireweed design in /Users/joel/Workspace/fireweed, governed throughout by the executable produced by /Users/joel/Workspace/fireweed-bootstrap. Deliver a working vertical slice early, then build out the remaining design and acceptance gates. Do not implement complete subsystems before connecting the slice through the CLI.
 
-Before starting, read these, in this order: AGENTS.md; SYSTEM.md, especially "Scope guardrails"; docs/rebuild/PROGRESS.md; docs/rebuild/LESSONS.md; the "Restart" section of docs/rebuild/PLAN.md; and the design sections each change implements in fireweed-design-v1.md. For workflow commands, use the controller at /Users/joel/Workspace/fireweed/.fireweed/bin/fireweed-bootstrap with GOCACHE=/tmp/fireweed-rebuild-cache. The rebuild-v1 branch is a reference for the edge cases LESSONS.md names; never copy its specs, Decisions or evals.
+Read before implementation:
+- AGENTS.md and SYSTEM.md, including all scope guardrails.
+- docs/rebuild/PROGRESS.md, LESSONS.md, PLAN.md, ACCEPTANCE.md and DECISIONS.md.
+- The complete local fireweed-design-v1.md.
+- /Users/joel/Workspace/fireweed-bootstrap/HANDOFF.md.
 
-Scope for this session:
-1. Author up to five changes covering PLAN.md "Restart" items 1 and 2 (contracts, then gitstore), following `fireweed playbook author-change`. Each change targets one module and has at most five specs. Each spec states one observable behavior in at most three MUST/SHOULD clauses and about 80 words. Each Motivation cites the design section it implements. Stamp each change, run controller check, and commit each as an author commit.
-2. Do not start them. Stop and report so a human can review and approve the specs before any evals are written.
+The design is product authority; leave it unchanged. It includes the October 26 bounded-effort, usability and merge-strategy revisions. Supporting documents guide execution, not extra product scope. The supporting documents are aligned to this stage-2 plan by D004. Retain their scope limits and all design-derived completion gates. During preflight, reconcile any remaining differences between documented setup and actual files as protected author work before implementation. Distinguish design requirements from obsolete controller-specific behavior or extra syntax in the old plan/inventory; retain the former without requiring bug-for-bug compatibility.
 
-Rules for this session:
-- Specs describe design behavior only. Locality, read-only and no-network properties are SYSTEM.md conventions, not specs. Platforms are macOS and Linux with ordinary full SHA-1 clones.
-- Interfaces stay small: public functions in api.go and shared types in a retained model/ subpackage (LESSONS.md).
-- No cgo, native code, embedded binaries or process-level instrumentation, in specs or plans.
-- Don't author changes beyond items 1 and 2.
+Preflight and controller setup:
+1. Inspect Git status, the source inventory, pending/archived changes and local claims before editing. Preserve unrelated work. If a live change exists, read its context and resolve/resume it before protected setup changes; do not reset work or release another worktree's claim. Do not restore old implementation from history.
+2. Review the handoff, then pin /Users/joel/Workspace/fireweed-bootstrap/bin/fireweed at /Users/joel/Workspace/fireweed/.fireweed/bin/fireweed-bootstrap. Use the existing tested executable, not a rebuild from bootstrap source. Verify version 0.1.0 and its embedded source revision 7f925190878e38fc38f30d16bb1cf47aca098cf7; record the pin in PROGRESS.md. Keep this controller protected and unchanged throughout stage 2. If the candidate differs from the handoff, stop and report the discrepancy.
+3. Every governing workflow command must invoke /Users/joel/Workspace/fireweed/.fireweed/bin/fireweed-bootstrap. The independently built /Users/joel/Workspace/fireweed/bin/fireweed is always the product under test. Use GOCACHE=/tmp/fireweed-rebuild-cache. Make the controller available to workers and scratch worktrees; hook FIREWEED_BIN must identify whichever executable invoked that hook. Product fixture hooks must query the NEW binary, not the governing controller.
+4. Reconcile the old setup with the new controller before workers run. In particular, fireweed.yaml currently pins >=0.4,<0.5, while the new controller is 0.1.0; old canary/hook conventions may also differ. Inspect the new controller's help/playbooks and a disposable `init --recipe go` fixture. Adapt protected configuration, templates, canaries, setup hooks and managed AGENTS without weakening their contracts or overwriting the real repository with init. Record the actual pin, compatibility edits and probe results in PROGRESS.md; update supporting instructions only where the setup facts change. These are separate author commits between active changes, not worker edits.
+5. Use Codex CLI with gpt-6-sol for all real workers, auditors and regeneration agents: codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}. Here -m selects the model for those child Codex processes; it does not select the model of the coordinating goal chat. Keep audit enabled and use a separate restricted Codex invocation with the same model for the auditor. Check access once with bounded doctor probes before workers run; a separate read-only Sol access probe passed at low effort, while the requested high-effort configuration and full doctor probes remain to be verified during startup. If gpt-6-sol is unavailable, record the blocked prerequisite and ask the user rather than switching models/providers, retrying indefinitely or substituting fake agents for real-drill evidence.
+6. Pass controller check and doctor, including four hook canaries, clean recovery and agent/auditor probes. Commit coherent protected setup separately and record its full SHA as the NEW stage-2 history baseline. Use that explicit nonempty baseline..HEAD range later; do not reuse the old d991c26 baseline automatically. A passing bootstrap handoff is not evidence that this repository's hooks work.
 
-Stop and report if anything needs a product decision that the design, SYSTEM.md and LESSONS.md don't settle.
+Milestone 1 — runnable manual lifecycle slice:
+- Keep the existing module ownership/graph unless a small, documented acyclic adjustment is needed. Add minimal behavior across contracts, gitstore, assets, project, checks, workflow and app as the fixture needs it. Do not exhaust grammar, glob, Git or process edge cases first. Add app wiring as soon as each operation works. Keep root main.go small and behavior disposable; do not hide implementation in retained interfaces or protected tooling.
+- Build the NEW executable early. Make help/version/explain/playbook usable outside a project as an initial executable checkpoint.
+- The milestone's finish line is one disposable Go fixture driven entirely by the NEW executable: load a minimal project and module; author a single Added spec with a new: handle; stamp/check; start and assign its ID; write a genuinely failing black-box eval plus allowed interface/stub files; verify without a commit; done to the audit phase; submit a valid passing audit; implement without editing frozen evals/interface; verify/done; inspect the applied SPEC, archive, coverage, run ID, phase commits and provenance. Use a tiny hand-authored fixture setup if product init is not built yet; complete init next rather than expanding fixture infrastructure.
+- Include one forbidden-zone rejection and one false fail-first rejection. A compile failure, skipped case, unrelated failure or empty report is not fail-first evidence.
+- Implement only the contracts/parsing/Git/hooks/state needed to make that scenario real. Temporary unsupported commands must fail explicitly while under construction; no success stubs or bootstrap delegation. Mark incomplete commands unverified. Do not polish already-working slice behavior while this end-to-end fixture remains unbuilt.
 
-Final report, 20 lines or fewer: the changes authored, with spec counts and commit SHAs; the controller check result; and any open questions.
+Milestone 2 — usable setup and bounded unattended execution:
+- Complete init and doctor, embedded Go setup and actual canary recovery, then next/run using deterministic bounded fixture agents.
+- Add all change kinds (including eval_fix), projected blocking with independent continuation, claims/resume, attempts and saved refs, state-only block commits, agent-commit undo, usage/time stops and recovery. Enforce audit convergence/round bounds and approval/unapproved-work bounds in the product, including when driven manually.
+- Make each addition reachable through the NEW CLI promptly. Keep one compiling, runnable end-to-end fixture throughout.
+
+Milestone 3 — complete the product from the working slice:
+- Finish grammar/projection/set/stale views, all read commands and JSON/diagnostics, compact/full context, quick/full verification, dependent-depth options, measured budgets, spec/Decision warnings and approval visibility.
+- Complete check-commits, CI, PR reporting, history, merge/rebase/squash and revert behavior, abandon/release/gc, regenerate/drill/report/drift, overrides, migration/version pins, AGENTS refresh, all embedded/local/none recipes and local distribution artifacts.
+- Cover every command and option in the design and every ACCEPTANCE row. Milestones are sequencing, not permission to omit behavior. Use one focused review against the full design and inventory; fix demonstrated gaps without creating recursive audits or new requirements.
+
+Controller-governed development loop:
+- This goal authorizes local authoring, protected setup/evidence commits between changes, and execution of those authored changes. Do not stop after merely writing the first batch of change files. It does not claim a human merge occurred. Normal product approval rules remain intact; use --allow-unmerged only where locally authorized and never to evade P07 or a human checkpoint.
+- Before authoring, run the controller's playbook author-change. Target one module per change, at most five focused specs per change. Motivation names a user-visible need or a design/SYSTEM clause. Assign no IDs yourself. Stamp/check and commit the author change separately.
+- Before each worker phase, read controller context <change>. Let the controller own claims, phase commits, spec/Decision application and archives. Workers never commit. Use verify --quick for iteration; full verify/done provide the phase evidence. Keep evals and interfaces frozen in impl. Correct frozen evals through eval_fix, not ad hoc edits or a maintenance loophole.
+- Audits report only exact spec clauses that no eval asserts. No helper/style/convention findings, unnamed edge cases or new IDs on re-audit. Supply the auditor only the change, projected specs and evals; do not expose implementation or ask it to audit SYSTEM conventions. A passing audit lists checked IDs. At most two findings round trips, enforced by persistent state; remaining findings or untestable clauses become Questions for a human.
+- Use small public contracts and thin facades; shared data must not create a parent/internal import cycle. Permanent evals import only public interfaces and use temporary repositories, explicit Git identities, local hooks and bounded fake agents. Fake agents are appropriate for repeatable protocol failures, not real regeneration claims.
+
+Effort and human checkpoints:
+- Keep one spec to at most three normative clauses and about 80 words, Decisions to short behavioral choices and about 300 words per module. Put process/recovery/test notes in Notes or PROGRESS, not Decisions. Use Removed decisions to drop stale choices.
+- Keep own-module verification under five minutes and full implementation verification under fifteen; aim for at most fifteen cases per spec. Narrow redundant tests instead of increasing timeouts or adding instrumentation. After two unsuccessful corrections of one issue, simplify; request a human decision only if a consequential ambiguity remains.
+- Apply the SYSTEM guardrails: ordinary full SHA-1 repositories on macOS/Linux amd64/arm64; process groups plus timeout/cancellation; escaped groups are a documented limitation. No native objects, assembly, cgo, embedded executables, generated platform binaries, interposers, sandbox-profile proofs, fsmonitor traps, Git proxies or elaborate observers. Locality/read-only/no-network conventions get one app-level PATH recorder, not repeated specs.
+- Pause for human review after five applied changes since the last review, whenever a change blocks, or before a third consecutive change to the same module about the same behavior. Record the checkpoint and leave the goal incomplete. Do not move base refs, raise bounds, weaken specs/evals or silently restart the review count to continue. After human review, resume the slice where it stopped rather than broadening scope.
+
+Independence and regeneration:
+- Derive behavior from the unchanged design, newly authored specs and retained contracts. Do not read/copy bootstrap source/tests, old deleted implementation, old binaries or rebuild-v1 code/specs/evals/Decisions as an implementation oracle. LESSONS.md is a bounded list of prior findings, not extra product requirements. Controller playbooks and a small CLI smoke comparison are operational references; bootstrap quirks do not override the design.
+- The NEW product must never import, invoke, embed or delegate to the controller/bootstrap. Permanent tests require neither bootstrap access nor agent authentication. No pushes, publication, release tags or history rewrites in this goal.
+- After the complete surface works, run the required real-agent module drills dependency-first. Reconstruction gets retained specs, Decisions, interfaces, evals and permitted dependency interfaces only; no deleted implementation/history, attempt snapshots or bootstrap oracle. Run own and transitive dependent evals, retain reports/refs and remove scratch worktrees. A gap report does not authorize automatic follow-up changes.
+- Keep the original checkout governed by the pinned bootstrap. Rehearse NEW-binary control only in an isolated fixture/clone: a real spec change through fail-first/audit/impl/archive, then a real drill and CI. Do not replace the controller midway through acceptance.
+
+Completion and handoff:
+- Update PROGRESS.md at safe author/milestone boundaries with current/next work, one concise line per applied change, assigned IDs, phase commits, actual results and blockers. Update ACCEPTANCE mappings when evidence exists; no hash-manifest/testcase-inventory ceremony or predicted successes.
+- Complete every ACCEPTANCE gate: traceability/process; fresh-checkout build/test/race/vet; controller check/doctor/history/CI on the explicit baseline..HEAD; NEW-binary command fixtures; one design-resolved controller/product smoke comparison; real module regeneration; isolated NEW self-hosting; local packaging and delivery. Do not use an empty range or label cross-compilation as runtime evidence. Repeat checks only when affected by changes or unresolved failures.
+- Finish with a clean committed tree, no pending/blocked rebuild changes or active claims, an independent executable at /Users/joel/Workspace/fireweed/bin/fireweed, exact source/controller revisions and SHA range, test/smoke/drill/self-hosting results, report/ref locations and honest limitations. Record anything unrun or blocked. Never mark the goal complete at an intermediate milestone or human checkpoint, or before every required gate has actually passed.
 ```
-
-Later sessions run approved changes through the full lifecycle under the SYSTEM.md rules (two audit rounds at most, stop after five applied changes) and author the next slice items.

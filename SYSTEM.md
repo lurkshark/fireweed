@@ -1,6 +1,6 @@
 # Fireweed
 
-Fireweed is a local, language-agnostic Go CLI for checked spec-driven development and regeneration. The unchanged fireweed-design-v1.md is product authority. docs/rebuild/GOAL.md, PLAN.md and ACCEPTANCE.md define rebuild process and completion gates. The bootstrap is a behavioral reference, never a product dependency or command implementation. Record discrepancies in docs/rebuild/DECISIONS.md and design-derived evals.
+Fireweed is a local, language-agnostic Go CLI for checked spec-driven development and regeneration. The unchanged fireweed-design-v1.md is product authority. docs/rebuild/GOAL.md, PLAN.md and ACCEPTANCE.md define rebuild process and completion gates. The pinned bootstrap binary supplies workflow control and a small operational CLI comparison; its source/tests and rebuild-v1 are not implementation inputs. The new product has no bootstrap dependency or command delegation. Record discrepancies in docs/rebuild/DECISIONS.md and design-derived evals.
 
 ## Modules
 
@@ -12,7 +12,11 @@ Module path: github.com/lurkshark/fireweed. Thin api.go facades and public contr
 
 ## Controller and product
 
-The pinned controller is /Users/joel/Workspace/fireweed/.fireweed/bin/fireweed-bootstrap. The independently built subject is /Users/joel/Workspace/fireweed/bin/fireweed. Invoke explicit paths. FIREWEED_BIN during hooks always names the governing controller. Doctor and drill worktrees use protected Go hooks and graph metadata, including randomly named modules.
+The stage-2 controller destination is /Users/joel/Workspace/fireweed/.fireweed/bin/fireweed-bootstrap. At startup, pin the tested 0.1.0 executable identified in the bootstrap HANDOFF.md and record verification in PROGRESS.md; the previous ignored pin is not evidence of that installation. The independently built subject is /Users/joel/Workspace/fireweed/bin/fireweed. Invoke explicit paths. FIREWEED_BIN names the executable invoking each hook: the controller for rebuild checks, and the NEW binary in product fixtures. Doctor and drill worktrees use protected Go hooks and graph metadata, including randomly named modules.
+
+## Agent configuration
+
+Use Codex CLI only, with `gpt-6-sol` and `model_reasoning_effort="high"`, for workers, separate restricted auditor invocations and regeneration. The exact argv is in GOAL.md. Recheck access through bounded doctor probes during setup; do not silently change the requested model or effort.
 
 ## Author and worker policy
 
@@ -20,10 +24,10 @@ This local goal authorizes authored changes and local commits. Manual execution 
 
 ## Scope guardrails
 
-Added 2026-10-26 after a project review found the first rebuild run spending its effort on hardening beyond the design while core commands stayed unbuilt; the rebuild restarted from the setup baseline the same day. These rules override broader readings of the goal prompt, PLAN.md and ACCEPTANCE.md. The pinned bootstrap implements the original v1 design and does not enforce the revised design's bounds, so authors and workers enforce them here by hand. docs/rebuild/LESSONS.md records what the first run learned.
+Added 2026-10-26 after a project review found the first rebuild run spending its effort on hardening beyond the design while core commands stayed unbuilt; the rebuild restarted from the setup baseline the same day. These rules override broader readings of the goal prompt, PLAN.md and ACCEPTANCE.md. The fresh bootstrap 0.1.0 covers the October 26 design revisions, including audit rounds, eval_fix and unapproved-work bounds. Verify its installation and setup before relying on it. Human review checkpoints and the conventions below still apply. docs/rebuild/LESSONS.md records what the first run learned.
 
-- **Priority.** Build a thin slice through every module before deepening any one: contracts, gitstore, project, checks, workflow (start, verify, done), app CLI for those, then init and doctor, next and run with retries and blocking, ci, check-commits and pr-body, drill, and a NEW-binary self-hosting rehearsal. Do not author hardening changes for already-working behavior until that slice runs end to end.
-- **Reference branch.** The `rebuild-v1` branch holds the first run. Read it only for the Git, process and grammar edge cases LESSONS.md names, as you would the bootstrap. Never copy its specs, Decisions or evals; its spec IDs mean nothing here. Never read it, the bootstrap or deleted code during a regeneration drill.
+- **Priority.** First prove one manual lifecycle through the NEW CLI, building only the needed portions of contracts, gitstore, assets, project, checks and workflow and wiring app promptly. Then complete init/doctor, bounded next/run, and the remaining checks/reporting/regeneration surface. GOAL.md and PLAN.md define the milestone exits; module order is not a mandate to finish whole libraries first. Do not author hardening changes for already-working behavior until that slice runs end to end.
+- **Reference branch.** The `rebuild-v1` branch preserves the first run for the owner. Use LESSONS.md as the bounded historical summary; do not consult that branch, bootstrap source/tests or deleted code as an implementation oracle. Its spec IDs mean nothing here. Regeneration also excludes old binaries and saved implementation attempts.
 - **Conventions are not specs.** Locality and safety properties are project conventions checked by review: the product never contacts the network or runs fetch or push; read commands never run hooks or agents and never change files, the index or refs; output is deterministic. Do not restate them in module specs. Their only eval is one app-level test that runs read commands with a PATH shim recording git, hook and agent invocations.
 - **No process-level instrumentation in evals.** Evals are plain Go tests over temporary repositories, fixture hooks and fake agents. No cgo, I/O or syscall interposers, dynamic-loader tricks, sandbox profiles, re-signed tools, Git proxies that classify argv, fsmonitor traps or byte-coverage observers. Faults are injected through public inputs and fixture repositories.
 - **Spec shape.** Each spec item states one observable behavior at the module interface in at most three normative clauses and about 80 words. No requirements about aliasing, slice backing storage, purity or which system calls run.
@@ -32,7 +36,7 @@ Added 2026-10-26 after a project review found the first rebuild run spending its
 - **Eval cost.** Keep a module's own Verify under 5 minutes and a complete implementation Verify under 15 minutes. Aim for no more than 15 testcases per spec. If a change would exceed this, narrow it.
 - **Audit scope.** Findings are spec clauses no test asserts. Test helper design, observer calibration, platforms, unnamed edge cases and these conventions are not findings. A re-audit may raise findings only for spec IDs that had findings in the previous round.
 - **Audit rounds.** At most two audit-findings round trips per change. If a third audit still has findings, stop: record the remaining findings as Questions, release the claim and leave the change for a human.
-- **Wrong evals.** Correct a frozen eval with a change that lists the spec in Modified (wording unchanged or clarified) and already_satisfied, scoped to the faulty tests, until the product supports eval_fix.
+- **Wrong evals.** Use the controller's eval_fix kind to correct frozen evals under audit, preserving listed coverage and passing all own evals. Controller capabilities govern the build even before the NEW product implements that kind.
 - **Authoring.** A Motivation names a design or SYSTEM.md clause, or a user-visible need. A probe proving that some failure is theoretically possible is not enough. Prefer narrowing a spec with already_satisfied over adding hardening. Do not author a third consecutive change to the same module about the same behavior; record a decision and stop for human review.
 - **Human checkpoints.** Stop for human review after five applied changes since the last review, and whenever a change is blocked.
 - **Decisions.** A change's Decisions section records only behavioral choices the spec did not cover, each in one or two sentences, because fireweed appends it to the module's SPEC.md, which every later worker and every regeneration reads. Notes on test fixtures, observers, verification runs, recovery or process belong in the change's Notes or in PROGRESS.md, never in Decisions. When a Decision stops holding or a spec now covers it, drop it through the change's Removed decisions section. Keep each module's Decisions under about 300 words.

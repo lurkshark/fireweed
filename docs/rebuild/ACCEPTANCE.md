@@ -1,8 +1,10 @@
 # Acceptance and traceability
 
-Prepared 2026-10-21, reset 2026-10-26 when the rebuild restarted. All rows are **unverified**. R01–R21 are planning labels, not fireweed spec IDs. Expand them into atomic observable specs through changes; this inventory does not replace reading the full design.
+Prepared 2026-10-21, reset 2026-10-26 when the rebuild restarted. All rows are **unverified**. R01–R29 are planning labels, not fireweed spec IDs. Expand them into atomic observable specs through changes; this inventory does not replace reading the full design.
 
 The authoritative design snapshot is [fireweed-design-v1.md](../../fireweed-design-v1.md) in this repository; its origin and checksum are recorded in [PLAN.md](PLAN.md).
+
+The first evidence milestone is the NEW binary's manual lifecycle slice in GOAL.md/PLAN.md; the rows below are eventual coverage, not a layer-by-layer implementation order. The current controller candidate is 0.1.0 from HANDOFF.md; old controller assertions do not establish readiness.
 
 At safe author boundaries map each row to actual assigned spec IDs, permanent eval names, archived changes/phase commits and results. Record exceptions and design/reference discrepancies explicitly.
 
@@ -20,18 +22,18 @@ At safe author boundaries map each row to actual assigned spec IDs, permanent ev
 | R06 | Lifecycle / workflow, gitstore | Clean tree including untracked files; queue eligibility; atomic owner/worktree claim; late IDs/run/phase, start does not commit; stale-base/unapproved warnings; resume without new IDs; verify never commits; done advances/applies/archives with recovery on failure. |
 | R07 | Evals step / checks, workflow | Only allowed eval/interface/new-stub/manifest/shared edits; no existing impl mutation. Every Added/Modified/fixes ID needs a failing testcase unless legitimately already_satisfied. No compile/collection/skipped/unrelated-failure loophole. Remove references to removed IDs. Test acceptance and rejection. |
 | R08 | Audit step / workflow, runner | On by default/configurable; real ID and exact clause validation; findings return to evals/count attempts; untestable findings block with Questions; passing audit lists checked IDs; audit-only edits; command fallback and doctor warning. |
-| R09 | Implementation step / workflow, checks | Immutable eval/interface/SPEC/protected/other-module files; only current change editable; append-only additions only. Own/transitive dependents and boundaries pass; all/direct/none setting and CI always-all. Apply metadata/specs/Decisions and archive intact. Negative tests for forbidden zones. |
+| R09 | Implementation step / workflow, checks | Immutable eval/interface/SPEC/protected/other-module files; only current change editable; append-only additions only. Own evals, configured dependents (direct by default) and boundaries pass; exercise all/direct/none and CI always-all. Apply metadata/specs/Decisions and archive intact. Negative tests for forbidden zones. |
 | R10 | Language support / checks | JUnit testsuite/testsuites; every testcase mapped to current IDs; unknown/missing IDs and coverage rejected; skips do not cover; malformed/missing reports and hook errors fail; only actual failed/errored cases prove fail-first; reviews/quarantines respected. |
 | R11 | Hooks/recipes/doctor / checks, assets | Shell placeholder quoting versus argv expansion; hook environment/module overrides; module-attributed boundary output; exact baseline handling; disposable modules require boundaries or visible reasoned opt-out; graph derived from module metadata. All four canaries detected and recovery verified, including each hook override. |
 | R12 | Retries/blocking / runner | Attempts and timeouts; retries retain work/verification feedback; exhausted attempts saved as refs; block commit includes only state/Questions; checkout restored/claim released; projected dependency blocking with independent continuation; from-attempt resume; agent commits soft-reset before checking. |
-| R13 | Limits / runner, gitstore | Usage patterns inspect final 20 lines; usage waits differ from failed attempts; wait budget/--for/--max; exit 3 preserves claim/edits; resume works; cancellation kills the hook or agent process group on macOS and Linux (processes that leave the group are a documented limitation). Tests use bounded durations, not real 30-minute waits. |
+| R13 | Limits / runner, gitstore | Usage patterns inspect final 20 lines; usage waits differ from failed attempts; wait budget/--for/--max; exit 3 keeps state/work recoverable; resume works; cancellation kills the hook or agent process group on macOS and Linux (processes that leave the group are a documented limitation). Tests use bounded durations, not real 30-minute waits. |
 | R14 | Git behavior / gitstore, workflow | Locally known remote/base defaults/fallback; no product fetch/push/branch creation; linked-worktree claims; retained attempts/drill refs; release/gc; common-Git-dir scratch paths/setup/cleanup; duplicate-run conflict and commits/recovery guidance. |
 | R15 | History / checks | H01 protected worker edits; H02 impl eval/interface edits; H03 append-only edits by everyone including combined merge resolutions; H04 archive mutation with deletion/revert allowed. Before/after zones, merge/rebase/squash limits and full revert to queued state. Parse state, not commit subjects. |
 | R16 | Regeneration / runner, workflow | Maintenance regenerate deletes only disposable code and passes normal checks. Real-agent drill uses spec/Decisions/interfaces/evals in scratch, runs own/transitive dependents, reports contradicted Decisions/targeted gaps, retains ref, cleans up and reports drift. No automatic change authoring from gaps. |
 | R17 | CLI / app, contracts, assets | Full inventory below, noninteractive argument/usage behavior, stable diagnostic codes/explain, versioned JSON envelope/diagnostics, documented exits 0/1/2/3 including empty queue; no hidden bootstrap delegation/network behavior. |
 | R18 | CI/PR body / checks, app | CI runs static/history/all coverage/boundaries/doctor with documented skip; explicit ranges work. PR body uses range endpoint, covers changes, interface/stub/manifest/shared/preserved edits, review specs, audits, Decisions, quarantines, opt-outs and blocked changes. |
 | R19 | Recipes / assets, app | Go/TypeScript-pnpm/Python-uv, none, local recipes/defaults/templates/canaries; accurate ready-made versus user-built glue instructions; substitutions work for real/random modules; copied recipe becomes project-owned and never auto-upgrades. |
-| R20 | Versioning/playbooks/AGENTS / contracts, assets, app | Binary version-range enforcement; distinct format version with current/previous support/migration; embedded playbook hash, override based_on/stale detection; managed AGENTS refresh preserves surrounding content; explain/playbooks match checks. |
+| R20 | Versioning/playbooks/AGENTS / contracts, assets, app | Binary version-range enforcement; distinct format version with current/previous support/migration; embedded playbook hash, override embedded-base hash/stale detection; managed AGENTS refresh preserves surrounding content; explain/playbooks match checks. |
 | R21 | Packaging/principles / app and author infrastructure | Single dependency-light Go binary; no runtime networking/update/telemetry; build/install docs; Linux/macOS amd64/arm64 packaging/checksums, explicit-version installer, Go install/Homebrew/release configuration. Validate without publishing or requiring a tap token. |
 | R22 | Audit step; Change lifecycle (revised) / workflow, runner | `audit_rounds` state field incremented by audit-findings commits; re-audits keep only findings for IDs that had findings last round; after `audit.max_rounds` (default 2) the change blocks with remaining findings in Questions, whether driven by run, an agent calling done, or a person. |
 | R23 | Kinds of change (revised) / contracts, project, workflow | `eval_fix` kind: evals-zone-only edits, listed IDs stay covered, all module evals pass instead of fail-first, audit confirms assertions, impl changes nothing but the change file and archives. |
@@ -44,7 +46,7 @@ At safe author boundaries map each row to actual assigned spec IDs, permanent ev
 
 ## Required command inventory
 
-Exercise the new executable, beyond public function tests. Cover applicable documented options, JSON output, invalid input and exit semantics. State-changing JSON commands are also part of the bootstrap reference surface; preserve them where consistent with the design.
+Exercise the new executable, beyond public function tests. Cover applicable documented options, JSON output, invalid input and exit semantics. JSON is required for design read commands. Additional old-controller syntax is not a product requirement.
 
 ```text
 help, version
@@ -64,7 +66,7 @@ ci [<range>] [--no-doctor]
 pr-body <range>
 start <change> [--from-attempt <n>]
 verify [<change>] [--quick], done [<change>]
-next [--allow-unmerged] [--for <duration>]
+next [--allow-unmerged]
 run [--max N] [--for <duration>] [--allow-unmerged]
 release <change>, commits <change>, abandon <change>
 drill <module>
@@ -75,9 +77,9 @@ gc, migrate, agents-md --write
 
 1. **Traceability:** all design requirements mapped to assigned specs, black-box evals referencing them (or honest review requirements), and archived changes. All R rows verified. Do not evade acceptance through review/quarantine/already_satisfied/maintenance.
 2. **Process:** bootstrap-managed fail-first/audit/impl/archive commits for behavioral work; immutable evals/interfaces during impl; separate protected setup/author commits; no pending/blocked rebuild changes or active claims.
-3. **Go:** fresh checkout builds the new binary and passes `go test ./...`, `go test -race ./...`, `go vet ./...`. Permanent tests run with local fixtures/fake agents and without bootstrap/agent authentication. Cross-compilation is not platform runtime testing; report limits accurately.
+3. **Go:** with `GOCACHE=/tmp/fireweed-rebuild-cache`, a fresh checkout builds the new binary and passes `go test ./...`, `go test -race ./...`, `go vet ./...`. Permanent tests run with local fixtures/fake agents and without bootstrap/agent authentication. Cross-compilation is not platform runtime testing; report limits accurately.
 4. **Bootstrap checks:** controller `check`, `doctor`, `check-commits <setup-sha>..HEAD`, and `ci <setup-sha>..HEAD` with doctor enabled. Record the exact nonempty SHA range and per-module coverage. Resolve errors and account for warnings. An empty default range on main proves no history.
-5. **Product checks:** NEW binary in fresh repositories performs init/doctor, author/stamp/check, documented base approval, start/failing-evals/audit/impl/done, coverage/history/PR/CI. Exercise fix, maintenance, blocked recovery and regenerate. Normal unattended approval rejection is tested without --allow-unmerged. Pin subject paths so bootstrap cannot be used accidentally.
+5. **Product checks:** NEW binary in fresh repositories performs init/doctor, author/stamp/check, documented base approval, start/failing-evals/audit/impl/done, coverage/history/PR/CI. Exercise fixes, eval_fix, maintenance, blocked recovery and regenerate. Normal unattended approval rejection is tested without --allow-unmerged. Pin subject paths so bootstrap cannot be used accidentally.
 6. **Reference comparison (smoke):** one equivalent fixture lifecycle run with both binaries, comparing exit codes, JSON envelope shape and resulting commits/refs. Record intentional differences briefly. Reference bugs do not define acceptance, and per-edge-case equivalence is not required.
 7. **Real regeneration:** successful bootstrap-driven drills for every rebuilt module declaring disposable code, using a working agent reconstructing from specs/Decisions/interfaces/evals without consulting old implementation/history/bootstrap source as an oracle. Run dependency-first; repeat only when relevant changes stale evidence. Own and transitive dependent evals pass without preserved-contract edits. Commit reviewed reports/retain refs. Fix agreed gaps through changes; never automatically approve all agent suggestions. Missing agent access blocks this gate; a fake agent cannot satisfy it.
 8. **Self-hosting:** in an isolated clone/fixture, the NEW binary governs a small real spec change and a real drill, with checked fail-first/audit/impl commits, archive/provenance, CI and scratch cleanup. Keep the original repository governed by the pinned bootstrap throughout acceptance.

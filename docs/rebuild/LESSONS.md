@@ -1,6 +1,6 @@
 # Lessons from the first rebuild run
 
-The first run (2026-10-21 to 2026-10-26) is preserved on the `rebuild-v1` branch. Its DECISIONS.md entries are cited as v1-Dnnn. These are the findings worth keeping. Treat them as input for authoring specs, not as specs.
+The first run (2026-10-21 to 2026-10-26) is preserved on the `rebuild-v1` branch. Its DECISIONS.md entries are cited as v1-Dnnn. These are the findings worth keeping. Treat them as bounded historical input for design-derived authoring, not as extra specs. References to "the bootstrap" below describe the retired 0.4.0 controller used by that run; they are not findings against the fresh 0.1.0 candidate. Do not consult the old branch or implementation as an oracle.
 
 ## Design findings
 
@@ -27,7 +27,7 @@ The first run (2026-10-21 to 2026-10-26) is preserved on the `rebuild-v1` branch
 - Packed refs that differ only in case collide on case-insensitive filesystems (v1-D038).
 - `go test` has a default 10-minute timeout per package. Keep suites well under it rather than raising it (v1-D035).
 - `FIREWEED_BIN` in a hook must name the binary that ran the hook, never the controller.
-- The codex CLI's default model is rejected for this account; pin `--model gpt-6-sol` (v1-D003).
+- The first run rejected its default Codex model (v1-D003). Current stage-2 selection is Codex `gpt-6-sol` with high reasoning effort per GOAL.md. A later read-only Sol probe passed at low effort; full high-effort doctor probes remain startup work. Do not infer current availability from old observations.
 - Public facades that share types with their own `internal/` code need a retained `model/` subpackage to avoid import cycles (v1-D004).
 
 ## What went wrong
@@ -38,4 +38,4 @@ The first run (2026-10-21 to 2026-10-26) is preserved on the `rebuild-v1` branch
 - **Specs as essays.** Specs averaged about 110 words and 6 clauses, plus about 13,000 words of Decisions that workers re-read every step. Now: at most 3 clauses and about 80 words per spec.
 - **Decisions as a lab notebook.** Workers wrote test-instrumentation and recovery notes into Decisions, which fireweed appends to SPEC.md: about 13,000 words that every later worker re-read and regeneration would follow. Now: Decisions are one or two sentences of product behavior, stale ones are dropped through Removed decisions, and process notes go elsewhere.
 - **Evidence ceremony.** Hash manifests, inventory proofs and a 218 KB progress log. Now: one line per applied change.
-- **No human checkpoint.** The agent authored and applied its own changes for five days. Now: stop after every five applied changes and before starting any change it authored.
+- **No human checkpoint.** The agent authored and applied its own changes for five days. Now: the goal explicitly authorizes local authoring and execution, with human checkpoints after five applied changes, on a blocked change, and before a third consecutive change to the same module/behavior. Do not invent an extra per-change approval pause.
