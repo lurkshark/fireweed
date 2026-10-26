@@ -2,7 +2,7 @@
 audit_rounds: 0
 bases: {}
 module: contracts
-phase: impl
+phase: applied
 run: 20261026T203821-10f7bcd023c7b0ff09a196c4
 set:
     interface:
@@ -61,6 +61,7 @@ MatchGlob MUST support slash-separated paths with * within one component and ** 
 
 - evals 2026-10-26T20:46:13.979686Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=61 failing=18 passing=43
 - audit 2026-10-26T20:47:35.761624Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-26T23:49:35.198373Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=61 failing=0 passing=61
 
 ## Audit
 
