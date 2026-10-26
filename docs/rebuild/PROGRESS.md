@@ -4,11 +4,12 @@ Keep this file short: update sections in place and add one line per applied chan
 
 ## Status — 2026-10-26
 
-- Stage-2 startup in progress. Clean main at `0fee737d7bc2c21c6bf5e28faf299301e2542cb1`;
+- Stage-2 startup passed. Clean main at `0fee737d7bc2c21c6bf5e28faf299301e2542cb1`;
   no pending/archive changes or local claims. All R rows remain unverified.
 - Pinned the tested controller and adapted protected setup; `check --json` passed
-  with no diagnostics. Doctor canaries and high-effort agent probes are next.
-- A NEW full setup commit SHA must be recorded after successful startup checks;
+  with no diagnostics. Doctor passed all four canaries/removal recovery and both Sol/high probes
+  with no diagnostics; scratch worktree removed.
+- Stage-2 setup baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`;
   use its explicit nonempty `baseline..HEAD` for history/CI acceptance.
 - Historical restart baseline: `d991c26472ad990a5d050a07ce7dc873d1900433` (D001).
   Old build/check/doctor results belong to the retired setup, not the new pin.
@@ -30,9 +31,8 @@ Keep this file short: update sections in place and add one line per applied chan
 
 ## Next / resume
 
-Finish startup: run controller doctor, including canaries/recovery and both
-Sol/high probes, then record the successful setup baseline. Then build the
-NEW binary's narrow manual lifecycle slice before expanding the surface.
+Build the NEW binary's standalone command checkpoint, then the narrow manual
+lifecycle slice before expanding the surface.
 
 If a change is already active on resume, read its context and preserve its work;
 protected edits belong between active changes in separate author commits.
@@ -55,4 +55,7 @@ protected edits belong between active changes in separate author commits.
   Retained existing stdlib Go eval/boundary enforcement, including package failures
   and unfinished tests; no generated Python hook adopted. Setup copies the invoking
   FIREWEED_BIN to scratch trees and provides a controller PATH alias.
+- `doctor --json` exited 0; evidence `.fireweed/evidence/startup-doctor.json`
+  and `.stderr` (empty). The command included agent checks, not --no-agent.
+  Initial scaffold `go build -o bin/fireweed .` exited 0 (no usable commands yet).
 - No implementation or worker change has started.
