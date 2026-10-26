@@ -109,6 +109,7 @@ func main(){self,e:=os.Executable();if e!=nil{os.Exit(80)};raw,e:=os.ReadFile(fi
 
 type heldRaceInput struct {
 	Root, Common, State, Objects, Mode, ExpectedToken, RealGit, Base, NativePolicy string
+	Current                                                                        string
 	Paths                                                                          []string
 	ObjectIDs                                                                      []string
 }
@@ -145,13 +146,15 @@ static int control_spawnp(const char*git,const char*base,const char*object){
 */
 import "C"
 import("bufio";"encoding/json";"fmt";"io";"os";"os/exec";"path/filepath";"strings";p "github.com/lurkshark/fireweed/packages/project";w "github.com/lurkshark/fireweed/packages/workflow")
-type input struct{Root,Common,State,Objects,Mode,ExpectedToken,RealGit,Base,NativePolicy string;Paths,ObjectIDs []string}
+type input struct{Root,Common,State,Objects,Mode,ExpectedToken,RealGit,Base,NativePolicy,Current string;Paths,ObjectIDs []string}
 type output struct{Snapshot p.Snapshot;Claim w.Claim;ClaimObject string;Present bool;Error string;StateSame bool}
 func runGit(git string,args...string)error{command:=exec.Command(git,args...);command.Stderr=os.Stderr;e:=command.Run();if e!=nil{fmt.Fprintln(os.Stderr,"native control",git,args,e)};return e}
 func runGitEnv(git string,environment []string,args...string)error{command:=exec.Command(git,args...);command.Env=environment;command.Stderr=os.Stderr;e:=command.Run();if e!=nil{fmt.Fprintln(os.Stderr,"native minimal-env control",git,args,e)};return e}
 func main(){raw,e:=os.ReadFile(os.Args[1]);var in input;if e!=nil||json.Unmarshal(raw,&in)!=nil{os.Exit(80)};var result output
  C.held_race_arm(C.CString(in.State),C.CString(in.Common),C.CString(in.Objects))
  switch in.Mode{
+ case "git-current-document-wire":if e=runGitEnv(in.RealGit,[]string{},"hash-object","--no-filters",in.Current);e!=nil{result.Error=e.Error()}
+ case "git-committed-document-wire":if e=runGitEnv(in.RealGit,[]string{},"show",in.Current);e!=nil{result.Error=e.Error()}
  case "partial-read-control","partial-pread-control","partial-mmap-control","unreadable-mmap-control","overlap-pread-control","chunked-read-control":for _,path:=range in.Paths{file,err:=os.Open(path);if err!=nil{os.Exit(81)};info,err:=file.Stat();if err!=nil{os.Exit(81)};var one [1]byte;if in.Mode=="partial-mmap-control"{if C.partial_mapping(C.int(file.Fd()))!=0{os.Exit(82)}}else if in.Mode=="unreadable-mmap-control"{if C.unreadable_mapping(C.int(file.Fd()))!=0{os.Exit(82)}}else if in.Mode=="chunked-read-control"{for offset:=info.Size()-1;offset>=0;offset--{if n,err:=file.ReadAt(one[:],offset);n!=1||err!=nil{os.Exit(82)}}}else if in.Mode=="overlap-pread-control"{for index:=int64(0);index<info.Size();index++{if n,err:=file.ReadAt(one[:],0);n!=1||err!=nil{os.Exit(82)}}}else if in.Mode=="partial-pread-control"{if n,err:=file.ReadAt(one[:],0);n!=1||err!=nil{os.Exit(82)}}else{if n,err:=file.Read(one[:]);n!=1||err!=nil{os.Exit(82)}};file.Close()};if _,e=os.ReadFile(in.Common+"/refs/fireweed/claims/current");e!=nil{os.Exit(82)}
  case "direct-control":for _,path:=range in.Paths{if _,e=os.ReadFile(path);e!=nil{os.Exit(81)}};if _,e=os.ReadFile(in.Common+"/refs/fireweed/claims/current");e!=nil{os.Exit(82)}
  case "relative-control","relative-dot-parent-control":for _,path:=range in.Paths{relative,err:=filepath.Rel(in.Root,path);if err!=nil{os.Exit(81)};if _,e=os.ReadFile(relative);e!=nil{os.Exit(81)}};path:=".git/refs/fireweed/claims/current";if in.Mode=="relative-dot-parent-control"{path="./units/../.git/refs/fireweed/claims/../claims/current"};if _,e=os.ReadFile(path);e!=nil{os.Exit(82)}
@@ -322,6 +325,156 @@ func heldRaceFixture(t *testing.T, directory, real, format string) (approvalFixt
 	}
 	heldPoisonCurrent(t, f.Root)
 	return f, heldRaceInput{Root: f.Root, Common: common, State: statePath, Objects: strings.Join(loose, "\n"), Paths: loose, ObjectIDs: objects, RealGit: real, Base: f.Claim.Base, NativePolicy: nativePolicy}
+}
+
+// Reuse the calibrated actual-native-Git file observer for working documents.
+// No command arguments or output patterns establish whether their bytes were
+// consumed; descriptor reads and mappings in the caller and Git children do.
+func heldTrackCurrentDocuments(t *testing.T, in *heldRaceInput, source approvalFixtureData) []string {
+	t.Helper()
+	names := []string{"fireweed.yaml"}
+	for _, module := range source.Want.Modules {
+		names = append(names, filepath.Join(module.Dir, "SPEC.md"))
+	}
+	for _, change := range source.Want.Changes {
+		names = append(names, change.Path)
+	}
+	paths := []string{}
+	sizes := []uint64{}
+	working := append([]string(nil), names...)
+	for _, name := range names {
+		path := filepath.Join(in.Root, name)
+		info, err := os.Stat(path)
+		if err != nil || info.Size() <= 1 || info.Size() > 1<<20 {
+			t.Fatal("bounded current-document observer fixture", name, err)
+		}
+		paths = append(paths, path)
+		sizes = append(sizes, uint64(info.Size()))
+	}
+	// An unclaimed HEAD view is also current project source. Metadata-only
+	// ref/tree discovery remains permitted; consuming these document blobs is
+	// observed independently of a show/cat-file/archive reading strategy.
+	for _, name := range working {
+		object := claimGit(t, in.Root, "rev-parse", "HEAD:"+name)
+		path := filepath.Join(in.Common, "objects", object[:2], object[2:])
+		info, err := os.Stat(path)
+		if err != nil || info.Size() <= 1 || info.Size() > 1<<20 {
+			t.Fatal("bounded committed current-document observer fixture", name, err)
+		}
+		names = append(names, "HEAD:"+name)
+		paths = append(paths, path)
+		sizes = append(sizes, uint64(info.Size()))
+	}
+	if len(paths) > 32 {
+		t.Fatal("bounded current-document observer count", len(paths))
+	}
+	bytes := 64 + len(paths)*24
+	for _, size := range sizes {
+		bytes += int((size+63)/64) * 8
+	}
+	state := make([]byte, bytes)
+	binary.LittleEndian.PutUint64(state[32:], uint64(1)<<len(paths)-1)
+	binary.LittleEndian.PutUint64(state[40:], uint64(len(paths)))
+	bitmap := uint64(64 + len(paths)*24)
+	for index, size := range sizes {
+		metadata := 64 + index*24
+		binary.LittleEndian.PutUint64(state[metadata:], size)
+		binary.LittleEndian.PutUint64(state[metadata+8:], bitmap)
+		bitmap += ((size + 63) / 64) * 8
+	}
+	if err := os.WriteFile(in.State, state, 0600); err != nil {
+		t.Fatal(err)
+	}
+	raw, err := os.ReadFile(in.NativePolicy)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rows := strings.Split(strings.TrimSuffix(string(raw), "\n"), "\n")
+	if len(rows) < 5 {
+		t.Fatal("native observer policy fixture", string(raw))
+	}
+	if err := os.WriteFile(in.NativePolicy, []byte(strings.Join(append(rows[:5], paths...), "\n")+"\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	in.Paths, in.Objects = paths, strings.Join(paths, "\n")
+	return names
+}
+
+func Test_FLOW048_FLOW051HeldGitCurrentDocuments(t *testing.T) {
+	if runtime.GOOS != "darwin" {
+		t.Skip("macOS actual native-Git file observer; portable authority/absence cases run separately")
+	}
+	directory, executable := heldBuildRaceProbe(t)
+	real := protocolRealGit(t)
+	for _, control := range []struct{ kind, path string }{{"config", "fireweed.yaml"}, {"spec", "units/a/SPEC.md"}, {"queue", "changes/0002-current.md"}} {
+		for _, view := range []string{"working", "committed"} {
+			t.Run("control/"+view+"-"+control.kind, func(t *testing.T) {
+				f, in := heldRaceFixture(t, directory, real, "sha1")
+				claimGit(t, f.Root, "update-ref", "-d", "refs/fireweed/claims/current", f.Claim.Object)
+				names := heldTrackCurrentDocuments(t, &in, f)
+				in.Mode = "git-current-document-wire"
+				in.Current = filepath.Join(in.Root, control.path)
+				observed := control.path
+				if view == "committed" {
+					in.Mode = "git-committed-document-wire"
+					in.Current = "HEAD:" + control.path
+					observed = in.Current
+				}
+				result, _ := heldRaceRun(t, directory, executable, in, nil)
+				if result.Error != "" {
+					t.Fatal("actual native Git current-document read control", result.Error)
+				}
+				found := false
+				for index, delivery := range heldRaceDelivery(t, in.State) {
+					if names[index] == observed {
+						found = delivery[1] > 0 && delivery[0] == delivery[1]
+					}
+				}
+				if !found {
+					t.Fatal("actual native Git body read did not reach working-document observer", control.path, heldRaceDelivery(t, in.State))
+				}
+			})
+		}
+	}
+	for _, format := range []string{"sha1", "sha256"} {
+		for _, linked := range []bool{false, true} {
+			for _, mode := range []string{"none", "foreign"} {
+				t.Run(fmt.Sprintf("%s/linked-%t/%s", format, linked, mode), func(t *testing.T) {
+					f, in := heldRaceFixture(t, directory, real, format)
+					if linked {
+						in.Root = heldPeer(t, f.Root)
+					}
+					if mode == "none" {
+						claimGit(t, f.Root, "update-ref", "-d", "refs/fireweed/claims/current", f.Claim.Object)
+					} else if !linked {
+						other := f.Claim
+						other.Worktree = heldPeer(t, f.Root)
+						claimRaw(t, f.Root, "current", claimPayload(t, other))
+					}
+					heldPoisonCurrent(t, in.Root)
+					names := heldTrackCurrentDocuments(t, &in, f)
+					claims, err := w.Claims(in.Root)
+					if err != nil {
+						t.Fatal("public no-owned selection control", err)
+					}
+					for _, claim := range claims {
+						if claim.Worktree == in.Root {
+							t.Fatal("absence fixture still owns a claim", claim)
+						}
+					}
+					result, _ := heldRaceRun(t, directory, executable, in, nil)
+					if result.Error != "" || result.Present || result.Claim != (w.Claim{}) || !reflect.DeepEqual(result.Snapshot, p.Snapshot{}) {
+						t.Error("unowned result through actual native Git observer", result.Error, result.Present, result.Claim)
+					}
+					for index, delivery := range heldRaceDelivery(t, in.State) {
+						if delivery[1] != 0 {
+							t.Error("no-owned lookup consumed current project document in caller or native Git child", names[index], delivery)
+						}
+					}
+				})
+			}
+		}
+	}
 }
 
 func heldRaceState(t *testing.T, path string) []uint64 {

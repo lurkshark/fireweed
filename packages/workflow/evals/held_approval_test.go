@@ -62,13 +62,46 @@ func heldRejectedResult(t *testing.T, start string) error {
 }
 func Test_FLOW048_FLOW049HeldApprovedSources(t *testing.T) {
 	for _, format := range []string{"sha1", "sha256"} {
-		for _, mode := range []string{"ordinary", "nested", "alias-nested", "linked", "linked-nested", "linked-alias-nested", "late", "evals", "audit", "impl", "moved-head"} {
+		for _, mode := range []string{"ordinary", "nested", "alias-nested", "linked", "linked-nested", "linked-alias-nested", "late", "evals", "audit", "impl", "moved-head", "replacement-base", "replacement-claim"} {
 			t.Run(format+"/"+mode, func(t *testing.T) {
 				phase := "impl"
 				if mode == "evals" || mode == "audit" {
 					phase = mode
 				}
 				f := heldSourceFixture(t, phase, format, mode == "late")
+				if strings.HasPrefix(mode, "replacement-") {
+					protocolEnableReplacements(t)
+					real := protocolRealGit(t)
+					original, replacement := f.Claim.Base, ""
+					if mode == "replacement-base" {
+						worktreePut(t, f.Root, "fireweed.yaml", "invalid replacement metadata\n")
+						replacement = approvalCommit(t, f.Root)
+					} else {
+						original = f.Claim.Object
+						other := f.Claim
+						other.State = strings.Replace(other.State, "The current behavior MUST be projected.", "Replacement State MUST never become approval authority.", 1)
+						if other.State == f.Claim.State {
+							t.Fatal("distinct replacement claim State premise")
+						}
+						replacement = strings.TrimSpace(protocolGit(t, real, f.Root, claimPayload(t, other), "hash-object", "-w", "--stdin"))
+					}
+					protocolGit(t, real, f.Root, "", "replace", "-f", original, replacement)
+					if mode == "replacement-base" {
+						if raw := protocolGit(t, real, f.Root, "", "show", original+":fireweed.yaml"); raw != "invalid replacement metadata\n" {
+							t.Fatal("ordinary native Git substituted Base control", raw)
+						}
+					} else {
+						if raw := protocolGit(t, real, f.Root, "", "cat-file", "blob", original); !strings.Contains(raw, "Replacement State MUST never") {
+							t.Fatal("ordinary native Git substituted claim control", raw)
+						}
+					}
+					t.Cleanup(func() {
+						stored := strings.TrimSpace(protocolGit(t, real, f.Root, "", "rev-parse", "refs/replace/"+original))
+						if stored != replacement {
+							t.Error("held source changed preexisting replacement ref", stored, replacement)
+						}
+					})
+				}
 				if mode == "moved-head" {
 					configuration, err := os.ReadFile(filepath.Join(f.Root, "fireweed.yaml"))
 					if err != nil {

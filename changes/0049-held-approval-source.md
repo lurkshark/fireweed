@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: evals
+phase: audit
 run: d6540bfc1bc15d3673735a4d
 ---
 
@@ -50,6 +50,8 @@ Native source-delivery evidence requires complete unique byte coverage of each t
 
 Read-only Git commands can still execute repository-configured helpers. A real local fsmonitor hook is therefore installed and invoked twice by native Git status with optional locks disabled before each measured fixture. Its marker is cleared after fixture setup and observed on every measured return, including rejected ownership and successful native fallback paths. Disabling an unnecessary hook for a particular read is permitted; invoking it is not. No hook or Git-command reading strategy is required by this observer.
 
+Git replacement views are not stored approval authority. Separate native replacement controls substitute the selected claim blob and Base commit while the public claimed loader and held results retain the original token, State and snapshot; preexisting replacement refs remain unchanged. No-owned current-document observation includes the caller and actual Git children, for both working files and committed HEAD document blobs. Native hash-object/show controls establish those read paths for config, SPEC and queue bodies, and public Claims independently establishes absence of a local owner before cold measurements.
+
 ## Rejected alternatives
 
 Separate Claims plus fallback-capable LoadApproval admits a disappearance race. Loading current project metadata before checking ownership lets worker edits obstruct approved graph queries. Running Verify to find ownership recursively executes boundary hooks. Returning an already inclusive projected snapshot would risk applying the selected change twice in existing public composition.
@@ -69,3 +71,4 @@ Separate Claims plus fallback-capable LoadApproval admits a disappearance race. 
 - audit | 2026-10-26T13:59:14Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
 - evals | 2026-10-26T14:35:04Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2362 | failing: 90 | passing: 2272
 - audit | 2026-10-26T14:44:27Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- evals | 2026-10-26T15:24:59Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2381 | failing: 103 | passing: 2278
