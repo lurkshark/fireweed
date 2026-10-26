@@ -1,6 +1,6 @@
 ---
 module: workflow
-phase: audit
+phase: evals
 run: d6540bfc1bc15d3673735a4d
 ---
 
@@ -48,6 +48,14 @@ The probe wire explicitly preserves Claim.Object separately because the retained
 
 Separate Claims plus fallback-capable LoadApproval admits a disappearance race. Loading current project metadata before checking ownership lets worker edits obstruct approved graph queries. Running Verify to find ownership recursively executes boundary hooks. Returning an already inclusive projected snapshot would risk applying the selected change twice in existing public composition.
 
+## Audit
+
+- FLOW-051: "no lazy fetch, push, branch/worktree creation, hooks, agents, bootstrap or network commands" — RequiredGitFailureDetails returns on successful native fallback before checking the proxy violation marker, permitting a forbidden operation attempted only during fault recovery to escape this case's assertion. Check the marker on every return path.
+- FLOW-051: "Required local Git failures MUST retain useful command details" — RequiredGitFailureDetails demands details from the first traced invocation even if it was an optional failed probe followed by a different required failure. Match the actual observed failed command without fixing its invocation position.
+- FLOW-050: "malformed started State or other selected approved content" — Missing or invalid started phase and mismatched target module in syntactically valid State are unasserted. Add independent public LoadApproval/CheckState rejection controls and exact corrective zero-result held assertions.
+- FLOW-048: "discover the canonical checkout and common Git directory from start" — All starts are already canonical. Add nested symlink-alias starts for ordinary and linked worktrees, retaining the same canonical Root, exact Claim/token and approved snapshot.
+
 ## Provenance
 
 - evals | 2026-10-26T06:46:09Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 2346 | failing: 86 | passing: 2260
+- audit | 2026-10-26T06:54:34Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
