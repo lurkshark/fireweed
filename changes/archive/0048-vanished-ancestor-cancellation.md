@@ -3,7 +3,7 @@ fixes:
     - GIT-006
     - GIT-010
 module: gitstore
-phase: impl
+phase: applied
 run: d554bc098ada714fba6d6935
 ---
 
@@ -33,6 +33,17 @@ The ordinary refined discovery report orphaned-multi-parent-probe.json and its p
 
 The rebuild goal authorizes local authoring and controller-owned worker/phase/archive commits. Use only the pinned .fireweed/bin/fireweed-bootstrap as controller, GOCACHE=/tmp/fireweed-rebuild-cache, and separately built NEW subjects. The four-worker protected hook is already committed and validated through real suites and fresh postcommit doctor. No push, publication, release tags or claimed human merge.
 
+
+The macOS implementation uses a distinct live native responsibility anchor for each public call. It stays alive after the requested root has exited and been reaped, until streams drain or cancellation stops the owned tree. Native responsibility survives ordinary intermediary exits, independent groups and sessions; native creation/original-parent identities supplement it for nested anchors. Freeze owned live processes, re-enumerate after stop acknowledgement, recheck identities before signals, terminate descendants, and retain buffered stream bytes before reporting cancellation. Ordinary completion retains the requested executable's actual status and stream-drain behavior.
+
+A small fresh native entry is linked into the single Go binary through source-generated Darwin arm64/amd64 Mach-O objects in the disposable implementation zone. The non-cgo internal-linker path uses Go's early native startup slot; cgo links retain the native constructor and early callback. The helper runs before Go initializers/main. A separate typed cgo bridge avoids unsafe integer-to-pointer round trips under race/checkptr. A nonce-authenticated, immediately unlinked POSIX shared-memory request carries the original executable/argv/environment; close-on-exec descriptors carry only cancellation and outcomes. The target inherits its original cwd and exact streams. Runtime helper installation, executable temporary files, compilation, shells and network calls are unnecessary. Keep source and generation instructions together and verify both generated objects/import tables reproduce exactly.
+
+Native responsibility disclaiming changes the ownership attribution relative to an inherited GUI application owner. It does not grant permissions or modify privacy settings. Preserve evidence for exact process behavior, native read-only isolation, cgo-disabled operation and race operation separately; these do not certify inherited GUI privacy-permission compatibility or unexecuted platform runtimes. Earlier constant-store constructor probes were compiler-folded static data and are excluded as evidence of runtime constructor execution.
+
+Prerequisite native-supervision-guard is separately applied atc0e6526 with2163-case EVALS, independent FLOW040 Audit and2822-case implementation Verify/Done, no production edits. This change resumes the same impl run after author evidence5b6505f; only hash-verified private files and saved Decisions are restored. Its535 frozen Gitstore evals remain unchanged. The new183-file frozen baseline changes only the workflow SPEC/eval inputs legitimately applied by that prerequisite; old manifests remain historical. Ordinary nonzero native helper exits now preserve exec.ExitError classification required by existing hook consumers. Repeat final native/race/CGO0/Linux and complete owning/dependent gates before Done; no prior rejected integration is acceptance.
+
+Implementation source review adds a native responsibility check before seeding a numeric root PID during cancellation, because an already reaped root could otherwise be reused by an unrelated process. Later lifetime checks remain. This is defensive source reasoning, not a claimed runtime PID-reuse reproduction. Preserve the in-flight pre-hardening verification as superseded and repeat affected component and full exact-source gates before Done. Only Darwin C source and its two generated objects change; frozen evals/interfaces remain untouched.
+
 ## Rejected alternatives
 
 Polling only current parents, or retaining only an original direct-parent edge, loses descendants once intermediary identities vanish. Killing only the initial process group misses independent groups and sessions. Same-image, caller-session, user or whole-application sweeps endanger unrelated work. Returning before an owned descendant stops permits delayed writes. Editing frozen evals during implementation or weakening the existing entire-tree contract would conceal the bug.
@@ -41,6 +52,7 @@ Polling only current parents, or retaining only an original direct-parent edge, 
 
 - evals | 2026-10-25T14:57:20Z | agent: manual | fireweed: 0.4.0 | playbook: 5867363302d4c874074520977b1627d26991d95ee2fbacb9ff63e827661edd0b | tests: 535 | failing: 14 | passing: 521
 - audit | 2026-10-25T15:05:21Z | agent: manual | fireweed: 0.4.0 | playbook: a9c982d24b476621316049b527e6c7bbc319f06b12268af150fa7d8c6df92230 | tests: 0 | failing: 0 | passing: 0
+- impl | 2026-10-26T02:01:50Z | agent: manual | fireweed: 0.4.0 | playbook: 653912b194316c62181f62d0a69dc213f7668481ea8b1b9926ef889dd48a9e08 | tests: 4046 | failing: 0 | passing: 4046
 
 ## Audit
 

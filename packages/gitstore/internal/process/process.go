@@ -53,6 +53,11 @@ func execute(ctx context.Context, dir string, argv, overrides []string, stdout, 
 		return 2, fmt.Errorf("prepare process tree: %w", err)
 	}
 	defer control.close()
+	if native, ok := control.(interface {
+		run(context.Context, *exec.Cmd) (int, error)
+	}); ok {
+		return native.run(ctx, command)
+	}
 	// Cancellation cannot race assignment/resumption of a suspended Windows child.
 	var startup sync.Mutex
 	stop := func() error { startup.Lock(); defer startup.Unlock(); return control.stop(command) }

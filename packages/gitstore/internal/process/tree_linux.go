@@ -181,6 +181,12 @@ func (c *reaperControl) outcome(waitErr error) (int, error) {
 		return 2, errors.New("process supervisor did not report an outcome")
 	}
 	err := c.replyError()
+	// The helper exits with the target's ordinary nonzero code. Preserve the
+	// standard error classification used by hook/evidence consumers.
+	var ordinary *exec.ExitError
+	if !c.reply.LaunchError && c.reply.Exit > 0 && c.reply.Errno == 0 && errors.As(waitErr, &ordinary) && ordinary.ExitCode() == c.reply.Exit {
+		return c.reply.Exit, waitErr
+	}
 	if c.reply.Exit != 0 && err == nil {
 		err = fmt.Errorf("executable exited with status %d", c.reply.Exit)
 	}
