@@ -12,7 +12,6 @@ import (
 	"github.com/lurkshark/fireweed/packages/workflow/internal/contentapproval"
 	workercontext "github.com/lurkshark/fireweed/packages/workflow/internal/context"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/eligibility"
-	"github.com/lurkshark/fireweed/packages/workflow/internal/heldapproval"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/policy"
 	manualstart "github.com/lurkshark/fireweed/packages/workflow/internal/start"
 	"github.com/lurkshark/fireweed/packages/workflow/internal/state"
@@ -58,10 +57,6 @@ func BuildContext(snapshot project.Snapshot, slug string) (WorkerContext, error)
 
 func LoadApproval(start, slug string) (project.Snapshot, Claim, error) {
 	return approval.Load(start, slug)
-}
-
-func LoadHeldApproval(start string) (project.Snapshot, Claim, bool, error) {
-	return heldapproval.Load(start)
 }
 
 func Eligible(snapshot project.Snapshot, slug string) (bool, error) {
