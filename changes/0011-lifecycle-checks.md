@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: checks
+phase: audit
+run: 20261027T062042-cf45c8a72e4c0031e0c14be7
 set:
     interface:
         - api.go
@@ -34,19 +37,19 @@ Zones(request ZoneRequest) []project.Diagnostic. Behavior belongs under internal
 
 ## Added
 
-### new:junit
+### CHK-001
 ParseJUnit MUST accept testsuite/testsuites documents, including nested suites, and read testcase name, classname, failure/error, skipped and time, mapping IDs with contracts.MatchesID. It MUST reject malformed XML and testcases with missing/unknown IDs. It MUST classify failure/error as fail and skipped as skip, with skipped cases contributing no coverage.
 
-### new:report-requirements
+### CHK-002
 RequireCoverage MUST cover each current spec except review/quarantine with a non-skipped referencing case. RequireFailFirst MUST find a failed/errored case for every requested enforced ID except already_satisfied; passing, skipped, empty or unrelated failures do not qualify. RequirePass MUST reject failed/errored cases referencing any non-quarantined spec.
 
-### new:eval-hooks
+### CHK-003
 Evaluate MUST run the module eval override or global eval hook, accepting shell strings or argv with one-pass module/module_dir/report placeholders (shell values quoted) and FIREWEED_BIN set to request Bin. It MUST parse the written JUnit and retain process output/exit. Launch/timeout, missing report and exit/report disagreement MUST fail; a nonzero exited hook with mapped failures is valid report evidence.
 
-### new:phase-zones
+### CHK-004
 Zones MUST restrict audit to the current change, reject protected/SPEC/foreign-module/foreign-change edits in every phase, and honor outside-module worker_writable only in evals/impl. Evals MUST allow target evals, declared interfaces, new disposable stubs, other module files and the current change. Impl MUST freeze evals/interfaces, allow disposable/preserved/other module files/current change, and permit append_only paths only when new.
 
-### new:boundaries
+### CHK-005
 Boundaries MUST run applicable global/module hooks, returning errors for unsuppressed module-attributed violations and visible warnings for reasoned opt-outs. It MUST suppress only exact baseline lines or opted-out module lines from normally exited hooks; launch/cancel/timeout failures remain errors. A missing hook MUST fail for unopted disposable modules and warn when no boundary enforcement is required.
 
 ## Modified
@@ -58,3 +61,16 @@ Boundaries MUST run applicable global/module hooks, returning errors for unsuppr
 
 
 ## Decisions
+
+
+
+## Notes
+
+Evals-phase quick verify: 28 compiling cases; 26 fail first and 2 pass.
+CHK-001 4/4 fail, CHK-002 3/5 fail, CHK-003 6/6 fail,
+CHK-004 7/7 fail, CHK-005 6/6 fail. The only diagnostic is B03
+(589 eval lines / 19 disposable stub lines), a warning.
+
+## Provenance
+
+- evals 2026-10-27T06:29:48.598308Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=106 failing=25 passing=81
