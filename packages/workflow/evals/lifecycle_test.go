@@ -150,7 +150,7 @@ func containsCode(ds []project.Diagnostic, code string) bool {
 	return false
 }
 
-func Test_FLOW_001_FLOW_006_FLOW_007_FLOW_008_FLOW_012_FLOW_013_FLOW_014_FLOW_017_StartAssignsLateIDsAndRetainsSnapshotWithoutCommit(t *testing.T) {
+func Test_FLOW_001_FLOW_006_FLOW_007_FLOW_008_FLOW_012_FLOW_013_FLOW_014_FLOW_017_FLOW_018_FLOW_019_StartAssignsLateIDsAndRetainsSnapshotWithoutCommit(t *testing.T) {
 	root := fixture(t, "", "", "### new:first\nFirst MUST work.\n\n### new:second\nSecond MUST use new:first.\n", "", "")
 	before := head(t, root)
 	s := start(t, root+"/.")
@@ -164,9 +164,32 @@ func Test_FLOW_001_FLOW_006_FLOW_007_FLOW_008_FLOW_012_FLOW_013_FLOW_014_FLOW_01
 	if len(s.Change.Added) != 2 || s.Change.Added[0].ID != "ALP-003" || s.Change.Added[1].ID != "ALP-004" {
 		t.Errorf("returned Added IDs = %#v", s.Change.Added)
 	}
+	alphaProjected := ""
+	for _, module := range s.Snapshot.Modules {
+		if module.Name == "alpha" {
+			alphaProjected = module.Document.Body
+		}
+	}
+	if !strings.Contains(alphaProjected, newClause) || !strings.Contains(alphaProjected, "First MUST work.") || !strings.Contains(alphaProjected, "### ALP-003") || !strings.Contains(alphaProjected, "### ALP-004") {
+		t.Errorf("returned snapshot does not project the approved change: %q", alphaProjected)
+	}
+	edited := strings.Replace(string(b), "First MUST work.", "First MUST change after approval.", 1)
+	if edited == string(b) {
+		t.Fatal("fixture change has no approved Added body to edit")
+	}
+	write(t, root, "changes/0001-manual.md", edited)
 	current, err := workflow.Current(root, "")
 	if err != nil || current.Run != s.Run || current.Change.Slug != "manual" || current.Snapshot.Root != root {
 		t.Errorf("Current = %#v, %v", current, err)
+	}
+	currentAlpha := ""
+	for _, module := range current.Snapshot.Modules {
+		if module.Name == "alpha" {
+			currentAlpha = module.Document.Body
+		}
+	}
+	if currentAlpha != alphaProjected {
+		t.Errorf("Current snapshot changed after editing the held change: got %q, approved %q", currentAlpha, alphaProjected)
 	}
 	if s.Snapshot.Root != root || len(s.Snapshot.Modules) != 3 {
 		t.Errorf("returned projected snapshot = %#v", s.Snapshot)
@@ -175,18 +198,9 @@ func Test_FLOW_001_FLOW_006_FLOW_007_FLOW_008_FLOW_012_FLOW_013_FLOW_014_FLOW_01
 	if another := start(t, second); another.Run == "" || another.Run == s.Run {
 		t.Errorf("separate starts returned runs %q and %q", s.Run, another.Run)
 	}
-	alphaProjected := ""
-	for _, module := range s.Snapshot.Modules {
-		if module.Name == "alpha" {
-			alphaProjected = module.Document.Body
-		}
-	}
-	if !strings.Contains(alphaProjected, newClause) || !strings.Contains(alphaProjected, "### ALP-003") || !strings.Contains(alphaProjected, "### ALP-004") {
-		t.Errorf("returned snapshot does not project the approved change: %q", alphaProjected)
-	}
 }
 
-func Test_FLOW_001_FLOW_010_FLOW_011_RequiresCleanEligibleQueueHead(t *testing.T) {
+func Test_FLOW_010_FLOW_011_RequiresCleanEligibleQueueHead(t *testing.T) {
 	clean := fixture(t, "", "", "", "", "")
 	if _, err := workflow.Start(clean, "manual"); err != nil {
 		t.Errorf("clean eligible queue head rejected: %v", err)
@@ -257,7 +271,7 @@ func Test_FLOW_001_FLOW_016_FLOW_017_LinkedWorktreeExcludesCompetingOwner(t *tes
 	}
 }
 
-func Test_FLOW_001_FLOW_009_FLOW_015_ApprovalWarningAndSharedUnapprovedLimit(t *testing.T) {
+func Test_FLOW_009_FLOW_015_ApprovalWarningAndSharedUnapprovedLimit(t *testing.T) {
 	approved := fixture(t, "", "", "", "", "")
 	if s := start(t, approved); containsCode(s.Diagnostics, "P04") {
 		t.Error("local-base approval warned")

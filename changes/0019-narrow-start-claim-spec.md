@@ -1,11 +1,14 @@
 ---
 already_satisfied:
     - FLOW-001
-    - new:initial-phase-base
-    - new:retained-snapshot
+    - FLOW-018
+    - FLOW-019
+audit_rounds: 0
 bases:
     FLOW-001: 9eea47d3
 module: workflow
+phase: audit
+run: 20261027T193554-6de57db51b466fbd3ba1a666
 ---
 
 
@@ -23,10 +26,10 @@ already works; retarget existing evals without implementation changes.
 
 ## Added
 
-### new:initial-phase-base
+### FLOW-018
 Start MUST use the current HEAD as the initial phase base of its claim.
 
-### new:retained-snapshot
+### FLOW-019
 While a claim is held, Current MUST return the project snapshot approved at Start.
 
 ## Modified
@@ -55,3 +58,7 @@ snapshot with the approved body. Do not add a second fixture or test case.
 Keep FLOW-001 only on existing assertions that prove claim creation/atomicity;
 other assertions now carry their dedicated IDs. Preserve all prior checks.
 No implementation or interface edits; impl may edit only this change file.
+
+## Provenance
+
+- evals 2026-10-27T19:38:26.905521Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=118 failing=0 passing=118
