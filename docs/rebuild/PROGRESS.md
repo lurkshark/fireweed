@@ -2,7 +2,7 @@
 
 ## Current status — 2026-10-27
 
-Human review 5 approved changes 0020–0024 and the checkpoint report. The reviewed main was pushed at the owner’s explicit request. **Applied since review: 3.** Milestone 1 passed through the NEW binary;
+Human review 5 approved changes 0020–0024 and the checkpoint report. The reviewed main was pushed at the owner’s explicit request. **Applied since review: 4.** Milestone 1 passed through the NEW binary;
 Milestone 2 waits for the spec splits, diagnostic migration and one contracts
 drill. Consecutive workflow/checks changes are authorized for the spec split.
 Stop after five applied changes, on any block, or on a drill failure that calls
@@ -60,6 +60,8 @@ Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -
 - 0026 zone-prohibition-specs — CHK-006–010; evals 36fffae/69c2898, audits a643dcb/7bfbe66, impl 7b5634c; one findings round, 28 own cases and dependents pass; implementation unchanged.
 
 - 0027 evals-zone-permission-specs — CHK-011–015; 82bf116/09b7274/d384192; 28 own cases and dependents pass; existing eval retargeted, implementation unchanged.
+
+- 0028 impl-zone-permission-specs — CHK-016–020; e4bb1be/1a73eb6/5c54ca1; 28 own cases and dependents pass; existing eval retargeted, implementation unchanged.
 
 ## Next
 
