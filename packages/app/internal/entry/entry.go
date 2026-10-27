@@ -7,12 +7,15 @@ import (
 	"strings"
 
 	"github.com/lurkshark/fireweed/packages/assets"
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project"
 )
 
 type diagnostic struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
+	Path    string `json:"path,omitempty"`
+	Warning bool   `json:"warning,omitempty"`
 }
 
 type envelope struct {
@@ -23,9 +26,9 @@ type envelope struct {
 
 var pending = map[string]bool{
 	"init": true, "doctor": true,
-	"new-module": true, "stamp": true,
-	"list": true, "status": true, "show": true, "context": true,
-	"check": true, "coverage": true, "check-commits": true, "ci": true, "pr-body": true,
+	"new-module": true,
+	"list":       true, "status": true, "context": true,
+	"coverage": true, "check-commits": true, "ci": true, "pr-body": true,
 	"start": true, "verify": true, "done": true, "next": true, "run": true,
 	"release": true, "commits": true, "abandon": true,
 	"drill": true, "gc": true, "migrate": true, "agents-md": true,
@@ -33,21 +36,27 @@ var pending = map[string]bool{
 
 func Run(args []string, out, errOut io.Writer) int {
 	jsonMode := false
+	projected := false
 	positional := make([]string, 0, len(args))
 	for _, arg := range args {
 		if arg == "--json" {
 			jsonMode = true
+		} else if arg == "--projected" {
+			projected = true
 		} else {
 			positional = append(positional, arg)
 		}
 	}
-	fail := func(code, message string) int {
+	failStatus := func(status int, code, message string) int {
 		if jsonMode {
 			_ = json.NewEncoder(out).Encode(envelope{Schema: 1, Diagnostics: []diagnostic{{Code: code, Message: message}}})
 		} else {
 			fmt.Fprintf(errOut, "%s: %s\n", code, message)
 		}
-		return 2
+		return status
+	}
+	fail := func(code, message string) int {
+		return failStatus(2, code, message)
 	}
 	for _, arg := range positional {
 		if strings.HasPrefix(arg, "-") {
@@ -58,6 +67,9 @@ func Run(args []string, out, errOut io.Writer) int {
 		return fail("CLI_USAGE", "A command is required. Use help to see available commands.")
 	}
 	command := positional[0]
+	if projected && command != "show" {
+		return fail("CLI_OPTION", "--projected is only available with show.")
+	}
 	count := len(positional) - 1
 	var body string
 	var err error
@@ -117,6 +129,100 @@ func Run(args []string, out, errOut io.Writer) int {
 			fmt.Fprintln(out, path)
 		}
 		return 0
+	case "stamp":
+		if count != 1 {
+			return fail("CLI_USAGE", "stamp requires exactly one change. Use stamp <change>.")
+		}
+		snapshot, err := loadValidatedProject()
+		if err != nil {
+			return fail("C01", fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
+		}
+		if err := project.Stamp(snapshot.Root, positional[1]); err != nil {
+			return failStatus(1, "CLI_STAMP", err.Error())
+		}
+		body = fmt.Sprintf("Stamped %s\n", positional[1])
+	case "check":
+		if count != 0 {
+			return fail("CLI_USAGE", "check takes no arguments. Use check alone.")
+		}
+		snapshot, err := loadValidatedProject()
+		if err != nil {
+			return fail("C01", fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
+		}
+		results := project.Check(snapshot.Root)
+		diagnostics := make([]diagnostic, 0, len(results))
+		hasErrors := false
+		for _, result := range results {
+			diagnostics = append(diagnostics, diagnostic{Code: result.Code, Message: result.Message, Path: result.Path, Warning: result.Warning})
+			if !result.Warning {
+				hasErrors = true
+			}
+		}
+		if jsonMode {
+			var data any
+			if !hasErrors {
+				data = "Check passed\n"
+			}
+			_ = json.NewEncoder(out).Encode(envelope{Schema: 1, Data: data, Diagnostics: diagnostics})
+		} else {
+			for _, result := range diagnostics {
+				fmt.Fprintf(errOut, "%s: %s\n", result.Code, result.Message)
+			}
+			if !hasErrors {
+				fmt.Fprintln(out, "Check passed")
+			}
+		}
+		if hasErrors {
+			return 1
+		}
+		return 0
+	case "show":
+		if count < 1 || count > 2 {
+			return fail("CLI_USAGE", "show requires a module and optional item ID. Use show <module> [ID] [--projected].")
+		}
+		snapshot, err := loadValidatedProject()
+		if err != nil {
+			return fail("C01", fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
+		}
+		if projected {
+			snapshot, err = project.Project(snapshot.Root, "")
+			if err != nil {
+				return fail("CLI_SHOW", err.Error())
+			}
+		}
+		var found *project.Module
+		for i := range snapshot.Modules {
+			if snapshot.Modules[i].Name == positional[1] {
+				if found != nil {
+					return fail("CLI_SHOW", fmt.Sprintf("ambiguous module %q", positional[1]))
+				}
+				found = &snapshot.Modules[i]
+			}
+		}
+		if found == nil {
+			return fail("CLI_SHOW", fmt.Sprintf("unknown module %q", positional[1]))
+		}
+		if count == 1 {
+			body, err = contracts.RenderDocument(found.Document)
+			if err != nil {
+				return fail("CLI_SHOW", err.Error())
+			}
+		} else {
+			section, _ := contracts.Section(found.Document.Body, "Specs")
+			items, err := contracts.ParseItems(section)
+			if err != nil {
+				return fail("CLI_SHOW", err.Error())
+			}
+			for _, item := range items {
+				if item.ID == positional[2] {
+					body = contracts.RenderItem(item)
+					break
+				}
+			}
+			if body == "" {
+				return fail("CLI_SHOW", fmt.Sprintf("unknown item %q in module %q", positional[2], positional[1]))
+			}
+		}
 	default:
 		if pending[command] {
 			return fail("CLI_UNIMPLEMENTED", fmt.Sprintf("%s is under construction and is not implemented yet. Use help for available information commands.", command))
