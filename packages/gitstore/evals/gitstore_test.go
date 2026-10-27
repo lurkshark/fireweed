@@ -182,6 +182,9 @@ func Test_GIT_003_ChangesReadAtAndSelectedCommit(t *testing.T) {
 	if err != nil || gotHead == "" || gotHead != head(t, root) {
 		t.Fatalf("Commit = %q, %v", gotHead, err)
 	}
+	if got := git(t, root, "diff-tree", "--no-commit-id", "--name-only", "-r", gotHead); got != "selected.txt" {
+		t.Errorf("committed paths = %q, want selected.txt", got)
+	}
 	if got := git(t, root, "log", "-1", "--format=%s"); got != "selected only" {
 		t.Errorf("subject = %q", got)
 	}
