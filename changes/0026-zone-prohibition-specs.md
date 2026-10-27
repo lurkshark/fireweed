@@ -10,7 +10,7 @@ audit_pending:
 audit_rounds: 1
 bases: {}
 module: checks
-phase: evals
+phase: audit
 run: 20261027T213810-39ce0814030218a923f53a6f
 ---
 
@@ -68,6 +68,7 @@ Impl may edit only this change file.
 
 - evals 2026-10-27T21:38:52.231631Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=146 failing=0 passing=146
 - audit 2026-10-27T21:39:24.910082Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- evals 2026-10-27T21:39:58.207467Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=146 failing=0 passing=146
 
 ## Audit
 

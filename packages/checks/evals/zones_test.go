@@ -134,7 +134,7 @@ func Test_CHK_004_CHK_010_WorkerWritableOnlyEvalsAndImpl(t *testing.T) {
 	snap, base := zoneFixture(t)
 	for _, phase := range []string{"evals", "impl"} {
 		zoneAllowed(t, zoneRequest(snap, base, phase, gitstore.Change{Path: "go.sum", Status: "M"}))
+		zoneRejected(t, zoneRequest(snap, base, phase, gitstore.Change{Path: "outside.txt", Status: "M"}))
 	}
 	zoneRejected(t, zoneRequest(snap, base, "audit", gitstore.Change{Path: "go.sum", Status: "M"}))
-	zoneRejected(t, zoneRequest(snap, base, "impl", gitstore.Change{Path: "outside.txt", Status: "M"}))
 }
