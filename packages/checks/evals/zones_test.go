@@ -77,7 +77,7 @@ func Test_CHK_004_AuditOnlyCurrentChange(t *testing.T) {
 	}
 }
 
-func Test_CHK_004_CHK_006_CHK_007_CHK_008_CHK_009_RejectProtectedSpecForeignModuleAndChangeEveryPhase(t *testing.T) {
+func Test_CHK_006_CHK_007_CHK_008_CHK_009_RejectProtectedSpecForeignModuleAndChangeEveryPhase(t *testing.T) {
 	snap, base := zoneFixture(t)
 	for _, phase := range []string{"evals", "impl", "audit"} {
 		for _, path := range []string{"locked/config", ".fireweed/hooks.go", "packages/alpha/SPEC.md", "packages/beta/internal/code.go", "changes/0012-other.md"} {
@@ -86,7 +86,7 @@ func Test_CHK_004_CHK_006_CHK_007_CHK_008_CHK_009_RejectProtectedSpecForeignModu
 	}
 }
 
-func Test_CHK_004_CHK_011_CHK_012_CHK_013_CHK_014_CHK_015_EvalsAllowedZonesAndNewStubs(t *testing.T) {
+func Test_CHK_011_CHK_012_CHK_013_CHK_014_CHK_015_CHK_021_EvalsAllowedZonesAndNewStubs(t *testing.T) {
 	snap, base := zoneFixture(t)
 	for _, change := range []gitstore.Change{
 		{Path: "packages/alpha/evals/new_test.go", Status: "A"},
@@ -104,7 +104,7 @@ func Test_CHK_004_CHK_011_CHK_012_CHK_013_CHK_014_CHK_015_EvalsAllowedZonesAndNe
 	zoneRejected(t, request)
 }
 
-func Test_CHK_004_CHK_016_CHK_017_CHK_018_CHK_019_CHK_020_ImplFreezesEvalsAndInterfaces(t *testing.T) {
+func Test_CHK_016_CHK_017_CHK_018_CHK_019_CHK_020_CHK_021_ImplFreezesEvalsAndInterfaces(t *testing.T) {
 	snap, base := zoneFixture(t)
 	for _, path := range []string{"packages/alpha/evals/old_test.go", "packages/alpha/api.go"} {
 		zoneRejected(t, zoneRequest(snap, base, "impl", gitstore.Change{Path: path, Status: "M"}))
@@ -114,7 +114,7 @@ func Test_CHK_004_CHK_016_CHK_017_CHK_018_CHK_019_CHK_020_ImplFreezesEvalsAndInt
 	}
 }
 
-func Test_CHK_004_ImplAppendOnlyNewVersusExisting(t *testing.T) {
+func Test_CHK_022_CHK_023_ImplAppendOnlyNewVersusExisting(t *testing.T) {
 	snap, base := zoneFixture(t)
 	zoneAllowed(t, zoneRequest(snap, base, "impl", gitstore.Change{Path: "packages/alpha/gen/new.sql", Status: "A"}))
 	zoneRejected(t, zoneRequest(snap, base, "impl", gitstore.Change{Path: "packages/alpha/gen/old.sql", Status: "M"}))
@@ -122,7 +122,7 @@ func Test_CHK_004_ImplAppendOnlyNewVersusExisting(t *testing.T) {
 	zoneRejected(t, zoneRequest(snap, base, "evals", gitstore.Change{Path: "packages/alpha/gen/new.sql", Status: "A"}))
 }
 
-func Test_CHK_004_RenamesCheckBothPaths(t *testing.T) {
+func Test_CHK_024_RenamesCheckBothPaths(t *testing.T) {
 	snap, base := zoneFixture(t)
 	zoneRejected(t, zoneRequest(snap, base, "impl", gitstore.Change{OldPath: "packages/beta/internal/old.go", Path: "packages/alpha/internal/new.go", Status: "R100"}))
 	zoneRejected(t, zoneRequest(snap, base, "impl", gitstore.Change{OldPath: "packages/alpha/internal/existing.go", Path: "packages/beta/internal/new.go", Status: "R100"}))
@@ -130,7 +130,7 @@ func Test_CHK_004_RenamesCheckBothPaths(t *testing.T) {
 	zoneRejected(t, zoneRequest(snap, base, "impl", gitstore.Change{OldPath: "packages/alpha/internal/existing.go", Path: "packages/alpha/gen/new.sql", Status: "R100"}))
 }
 
-func Test_CHK_004_CHK_010_WorkerWritableOnlyEvalsAndImpl(t *testing.T) {
+func Test_CHK_010_WorkerWritableOnlyEvalsAndImpl(t *testing.T) {
 	snap, base := zoneFixture(t)
 	for _, phase := range []string{"evals", "impl"} {
 		zoneAllowed(t, zoneRequest(snap, base, phase, gitstore.Change{Path: "go.sum", Status: "M"}))

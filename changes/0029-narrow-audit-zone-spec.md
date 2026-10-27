@@ -1,13 +1,16 @@
 ---
 already_satisfied:
     - CHK-004
-    - new:current-change
-    - new:impl-append-only
-    - new:evals-append-only
-    - new:rename-paths
+    - CHK-021
+    - CHK-022
+    - CHK-023
+    - CHK-024
+audit_rounds: 0
 bases:
     CHK-004: 5783c034
 module: checks
+phase: audit
+run: 20261027T214522-7082d82fbdbfff2790673ab4
 ---
 
 
@@ -25,16 +28,16 @@ already works and all assertions already exist; implementation stays unchanged.
 
 ## Added
 
-### new:current-change
+### CHK-021
 During evals and impl, Zones MUST allow edits to the current change file.
 
-### new:impl-append-only
+### CHK-022
 During impl, Zones MUST allow only newly added files in the target module's append_only zone.
 
-### new:evals-append-only
+### CHK-023
 During evals, Zones MUST reject edits in the target module's append_only zone.
 
-### new:rename-paths
+### CHK-024
 Zones MUST check both the source and destination of a rename against phase permissions.
 
 ## Modified
@@ -60,3 +63,7 @@ ImplAppendOnlyNewVersusExisting, and RenamesCheckBothPaths to the Added IDs.
 Keep the checks for both directions of foreign-module and append-only renames.
 No code, fixture, helper or interface edits are needed.
 Impl may edit only this change file.
+
+## Provenance
+
+- evals 2026-10-27T21:46:00.054279Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=146 failing=0 passing=146
