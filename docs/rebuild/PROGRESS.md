@@ -2,7 +2,7 @@
 
 ## Current status — 2026-10-27
 
-Human review 4 approved changes 0015–0019 and the committed checkpoint report. The shared base is synchronized. **Applied since review: 2.** Milestone 1 passed through the NEW binary;
+Human review 4 approved changes 0015–0019 and the committed checkpoint report. The shared base is synchronized. **Applied since review: 3.** Milestone 1 passed through the NEW binary;
 Milestone 2 waits for the spec splits, diagnostic migration and one contracts
 drill. Consecutive workflow/checks changes are authorized for the spec split.
 Stop after five applied changes, on any block, or on a drill failure that calls
@@ -47,9 +47,11 @@ Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -
 
 - 0021 verify-pass-specs — FLOW-024–027; 3067213/0521c85/8d786c6; 32 own cases and dependents pass, implementation unchanged; resumed saved attempt 1 after human-confirmed Sol access recovery.
 
+- 0022 narrow-verify-zone-spec — FLOW-002/028–031; 534fef4/ea82977/17441fd; 32 own cases and dependents pass; FLOW-002 narrowed, implementation unchanged.
+
 ## Next
 
-1. Split permanent bundled behaviors through authored changes. Use already_satisfied and retarget existing evals; never hand-edit Specs/Decisions. FLOW-001 is split; finish FLOW-002/FLOW-003/CHK-004 and inspect the other existing items for the same problem. Add atomic specs before narrowing an old item when one change cannot hold the full split.
+1. Split permanent bundled behaviors through authored changes. Use already_satisfied and retarget existing evals; never hand-edit Specs/Decisions. FLOW-001/FLOW-002 are split; finish FLOW-003/CHK-004 and inspect the other existing items for the same problem. Add atomic specs before narrowing an old item when one change cannot hold the full split.
 2. Apply D006: remove wrong label assertions through eval_fix, migrate implementation in normal changes, and keep explain accurate. Preserve all behavior assertions and coverage.
 3. Before Milestone 2 touches workflow implementation, split lifecycle/stub.go by responsibility as maintenance only. No other cleanup/hardening.
 4. After items 1 and 2, run exactly one real controller drill on contracts. Commit its report and list gaps here; author no gap changes and drill no other module.
