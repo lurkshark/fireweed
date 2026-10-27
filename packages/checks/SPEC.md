@@ -25,7 +25,7 @@ RequireCoverage MUST cover each current spec except review/quarantine with a non
 Evaluate MUST run the module eval override or global eval hook, accepting shell strings or argv with one-pass module/module_dir/report placeholders (shell values quoted) and FIREWEED_BIN set to request Bin. It MUST parse the written JUnit and retain process output/exit. Launch/timeout, missing report and exit/report disagreement MUST fail; a nonzero exited hook with mapped failures is valid report evidence.
 
 ### CHK-004
-Zones MUST restrict audit to the current change, reject protected/SPEC/foreign-module/foreign-change edits in every phase, and honor outside-module worker_writable only in evals/impl. Evals MUST allow target evals, declared interfaces, new disposable stubs, other module files and the current change. Impl MUST freeze evals/interfaces, allow disposable/preserved/other module files/current change, and permit append_only paths only when new.
+During audit, Zones MUST allow edits only to the current change file.
 
 ### CHK-005
 Boundaries MUST run applicable global/module hooks, returning errors for unsuppressed module-attributed violations and visible warnings for reasoned opt-outs. It MUST suppress only exact baseline lines or opted-out module lines from normally exited hooks; launch/cancel/timeout failures remain errors. A missing hook MUST fail for unopted disposable modules and warn when no boundary enforcement is required.
@@ -74,5 +74,17 @@ During impl, Zones MUST allow edits in the target module's preserve zone.
 
 ### CHK-020
 During impl, Zones MUST allow edits in the target module's other zone.
+
+### CHK-021
+During evals and impl, Zones MUST allow edits to the current change file.
+
+### CHK-022
+During impl, Zones MUST allow only newly added files in the target module's append_only zone.
+
+### CHK-023
+During evals, Zones MUST reject edits in the target module's append_only zone.
+
+### CHK-024
+Zones MUST check both the source and destination of a rename against phase permissions.
 
 ## Decisions
