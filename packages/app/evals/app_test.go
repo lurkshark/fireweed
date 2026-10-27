@@ -41,18 +41,7 @@ func informationCases(t *testing.T) []informationCase {
 }
 
 func Test_APP_001_StandaloneBinary(t *testing.T) {
-	_, thisFile, _, ok := runtime.Caller(0)
-	if !ok {
-		t.Fatal("locate eval source")
-	}
-	root := filepath.Clean(filepath.Join(filepath.Dir(thisFile), "..", "..", ".."))
-	bin := filepath.Join(t.TempDir(), "fireweed-new")
-	build := exec.Command("go", "build", "-o", bin, ".")
-	build.Dir = root
-	build.Env = append(os.Environ(), "GOCACHE=/tmp/fireweed-rebuild-cache")
-	if output, err := build.CombinedOutput(); err != nil {
-		t.Fatalf("build NEW binary: %v\n%s", err, output)
-	}
+	bin := buildAppBinary(t)
 
 	outside := t.TempDir()
 	malformed := t.TempDir()
@@ -76,6 +65,23 @@ func Test_APP_001_StandaloneBinary(t *testing.T) {
 			})
 		}
 	}
+}
+
+func buildAppBinary(t *testing.T) string {
+	t.Helper()
+	_, thisFile, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatal("locate eval source")
+	}
+	root := filepath.Clean(filepath.Join(filepath.Dir(thisFile), "..", "..", ".."))
+	bin := filepath.Join(t.TempDir(), "fireweed-new")
+	build := exec.Command("go", "build", "-o", bin, ".")
+	build.Dir = root
+	build.Env = append(os.Environ(), "GOCACHE=/tmp/fireweed-rebuild-cache")
+	if output, err := build.CombinedOutput(); err != nil {
+		t.Fatalf("build NEW binary: %v\n%s", err, output)
+	}
+	return bin
 }
 
 func Test_APP_002_InformationJSON(t *testing.T) {
@@ -188,6 +194,12 @@ func assertFailedJSON(t *testing.T, stdout string) string {
 
 // The app-level convention probe uses one PATH recorder for external commands.
 func Test_APP_001_ReadCommandsDoNotInvokeGitHooksOrAgents(t *testing.T) {
+	bin := buildAppBinary(t)
+	root := appProjectFixture(t)
+	nested := filepath.Join(root, "packages", "alpha", "nested")
+	if err := os.MkdirAll(nested, 0755); err != nil {
+		t.Fatal(err)
+	}
 	binDir := t.TempDir()
 	logPath := filepath.Join(t.TempDir(), "invocations")
 	recorder := []byte("#!/bin/sh\nprintf '%s\\n' \"$0 $*\" >> \"$FIREWEED_RECORDER\"\nexit 77\n")
@@ -199,12 +211,13 @@ func Test_APP_001_ReadCommandsDoNotInvokeGitHooksOrAgents(t *testing.T) {
 	t.Setenv("FIREWEED_RECORDER", logPath)
 	t.Setenv("PATH", binDir+string(os.PathListSeparator)+os.Getenv("PATH"))
 	for _, tc := range informationCases(t) {
-		status, stdout, stderr := run(tc.args...)
+		status, stdout, stderr := runAppBinary(t, bin, nested, tc.args...)
 		if status != 0 {
 			t.Errorf("%s status=%d stderr=%q", tc.name, status, stderr)
 		}
 		assertInformationOutput(t, stdout, stderr, tc.want)
 	}
+	runAppBinary(t, bin, nested, "modules", "--json")
 	if calls, err := os.ReadFile(logPath); err == nil {
 		t.Errorf("read commands invoked external tools: %s", calls)
 	} else if !os.IsNotExist(err) {
