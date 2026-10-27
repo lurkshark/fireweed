@@ -150,7 +150,7 @@ func containsCode(ds []project.Diagnostic, code string) bool {
 	return false
 }
 
-func Test_FLOW_001_FLOW_006_FLOW_007_FLOW_008_FLOW_012_FLOW_013_StartAssignsLateIDsAndRetainsSnapshotWithoutCommit(t *testing.T) {
+func Test_FLOW_001_FLOW_006_FLOW_007_FLOW_008_FLOW_012_FLOW_013_FLOW_014_FLOW_017_StartAssignsLateIDsAndRetainsSnapshotWithoutCommit(t *testing.T) {
 	root := fixture(t, "", "", "### new:first\nFirst MUST work.\n\n### new:second\nSecond MUST use new:first.\n", "", "")
 	before := head(t, root)
 	s := start(t, root+"/.")
@@ -212,7 +212,7 @@ func Test_FLOW_001_FLOW_010_FLOW_011_RequiresCleanEligibleQueueHead(t *testing.T
 	}
 }
 
-func Test_FLOW_001_LinkedWorktreeExcludesCompetingOwner(t *testing.T) {
+func Test_FLOW_001_FLOW_016_FLOW_017_LinkedWorktreeExcludesCompetingOwner(t *testing.T) {
 	root := fixture(t, "", "", "", "", "")
 	other := filepath.Join(t.TempDir(), "linked")
 	git(t, root, "worktree", "add", "-b", "linked", other, "HEAD")
@@ -257,7 +257,7 @@ func Test_FLOW_001_LinkedWorktreeExcludesCompetingOwner(t *testing.T) {
 	}
 }
 
-func Test_FLOW_001_FLOW_009_ApprovalWarningAndSharedUnapprovedLimit(t *testing.T) {
+func Test_FLOW_001_FLOW_009_FLOW_015_ApprovalWarningAndSharedUnapprovedLimit(t *testing.T) {
 	approved := fixture(t, "", "", "", "", "")
 	if s := start(t, approved); containsCode(s.Diagnostics, "P04") {
 		t.Error("local-base approval warned")
