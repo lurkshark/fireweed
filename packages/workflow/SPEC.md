@@ -121,6 +121,21 @@ Audit Done MUST discard a finding whose spec ID is absent or whose quoted clause
 ### FLOW-035
 On re-audit, Audit Done MUST discard findings for spec IDs that had no retained finding in the preceding audit round.
 
+### FLOW-036
+Audit Done MUST require every enforced ID in the change's Added, Modified or fixes entries to appear in a No findings submission's checked-ID list.
+
+### FLOW-037
+Retained testable audit findings within the round limit MUST return the change to evals.
+
+### FLOW-038
+An audit return to evals MUST increment and persist audit_rounds.
+
+### FLOW-039
+Audit Done MUST block the change when retained findings would exceed audit.max_rounds, whose default is 2.
+
+### FLOW-040
+Audit Done MUST block the change when a retained finding marks its quoted clause untestable.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
