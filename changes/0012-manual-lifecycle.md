@@ -1,8 +1,14 @@
 ---
-audit_rounds: 0
+audit_pending:
+    - FLOW-001
+    - FLOW-002
+    - FLOW-003
+    - FLOW-004
+    - FLOW-005
+audit_rounds: 1
 bases: {}
 module: workflow
-phase: audit
+phase: evals
 run: 20261027T064001-843425dd0d42609ccb1f39a7
 set:
     interface:
@@ -64,3 +70,15 @@ Each successful Done MUST append provenance with phase, date, manual/configured 
 ## Provenance
 
 - evals 2026-10-27T06:51:15.53473Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=108 failing=28 passing=80
+- audit 2026-10-27T13:47:58.117575Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+
+## Audit
+
+- FLOW-001: "Start MUST atomically claim a clean eligible queued change for its canonical worktree" — missing assertion that simultaneous claim attempts have only one winner.
+- FLOW-002: "configured dependent passes (direct default, all/none supported)" — missing assertion that `none` allows a full Verify when a dependent fails.
+- FLOW-003: "exceeding max_rounds (default 2)" — missing assertion for a configured `max_rounds` value other than the default.
+- FLOW-004: "commit together after static validation" — missing assertion that failed static validation prevents application and commit.
+- FLOW-004: "freezing prior eval/interface edits" — missing assertion that an interface edit in impl is rejected.
+- FLOW-004: "releasing the exact held claim upon application" — missing assertion that applying one claim preserves another held claim.
+- FLOW-005: "Context MUST include the change, projected spec, interface contents, SYSTEM and matching playbook" — missing distinct assertions for change content and projected spec content; the checked clause occurs in both.
+- FLOW-005: "Each successful Done MUST append provenance with phase, date, manual/configured agent, version, playbook hash and result counts" — missing assertion that the impl Done records its matching playbook hash and result counts.
