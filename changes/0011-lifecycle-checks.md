@@ -1,0 +1,60 @@
+---
+bases: {}
+module: checks
+set:
+    interface:
+        - api.go
+        - model/**
+---
+
+
+
+## Motivation
+
+The design's Evals/Implementation steps and Language support require JUnit
+coverage, genuine fail-first evidence, approved hook execution and phase zones.
+Connect these minimum checks to the manual slice next; doctor, history, budgets
+and reporting beyond these results remain later work.
+
+## Interface
+
+Expose retained data-only Case (Name, Classname, IDs, Result, Seconds), Report
+(Cases, Seconds, HookExit, Stdout, Stderr), HookRequest (Snapshot, Module, Bin,
+Timeout), BoundaryRequest (Snapshot, Bin, Timeout) and ZoneRequest (Snapshot,
+Module, Phase, ChangePath, Base, InterfaceDeclared, Changes). Use project.Snapshot,
+project.Diagnostic, gitstore.Change and contracts.Item through public imports;
+strings/slices/time.Duration are ordinary Go data. Case Result is pass/fail/skip.
+Thin API: ParseJUnit(data []byte,specs []contracts.Item) (Report,error),
+RequireCoverage(report Report,specs []contracts.Item) error,
+RequireFailFirst(report Report,ids,already []string) error,
+RequirePass(report Report,specs []contracts.Item) error,
+Evaluate(ctx context.Context,request HookRequest) (Report,error),
+Boundaries(ctx context.Context,request BoundaryRequest) ([]project.Diagnostic,error),
+Zones(request ZoneRequest) []project.Diagnostic. Behavior belongs under internal/.
+
+## Added
+
+### new:junit
+ParseJUnit MUST accept testsuite/testsuites documents, including nested suites, and read testcase name, classname, failure/error, skipped and time, mapping IDs with contracts.MatchesID. It MUST reject malformed XML and testcases with missing/unknown IDs. It MUST classify failure/error as fail and skipped as skip, with skipped cases contributing no coverage.
+
+### new:report-requirements
+RequireCoverage MUST cover each current spec except review/quarantine with a non-skipped referencing case. RequireFailFirst MUST find a failed/errored case for every requested enforced ID except already_satisfied; passing, skipped, empty or unrelated failures do not qualify. RequirePass MUST reject failed/errored cases referencing any non-quarantined spec.
+
+### new:eval-hooks
+Evaluate MUST run the module eval override or global eval hook, accepting shell strings or argv with one-pass module/module_dir/report placeholders (shell values quoted) and FIREWEED_BIN set to request Bin. It MUST parse the written JUnit and retain process output/exit. Launch/timeout, missing report and exit/report disagreement MUST fail; a nonzero exited hook with mapped failures is valid report evidence.
+
+### new:phase-zones
+Zones MUST restrict audit to the current change, reject protected/SPEC/foreign-module/foreign-change edits in every phase, and honor outside-module worker_writable only in evals/impl. Evals MUST allow target evals, declared interfaces, new disposable stubs, other module files and the current change. Impl MUST freeze evals/interfaces, allow disposable/preserved/other module files/current change, and permit append_only paths only when new.
+
+### new:boundaries
+Boundaries MUST run applicable global/module hooks, returning errors for unsuppressed module-attributed violations and visible warnings for reasoned opt-outs. It MUST suppress only exact baseline lines or opted-out module lines from normally exited hooks; launch/cancel/timeout failures remain errors. A missing hook MUST fail for unopted disposable modules and warn when no boundary enforcement is required.
+
+## Modified
+
+
+
+## Removed
+
+
+
+## Decisions
