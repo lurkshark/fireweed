@@ -4,42 +4,60 @@ Keep this file short: update sections in place and add one line per applied chan
 
 ## Status — 2026-10-26
 
-Stage-2 startup and standalone NEW CLI checkpoint passed. Human review 1 approved
-continuation at `3311f676854420e509412e4ca6bc113aeefd9864` (user: "I reviewed it;
-continue"). Three applied changes since that review. No pending changes or claims. The manual
-lifecycle fixture is not built and every acceptance row remains unverified.
+Four changes applied after the user's first checkpoint approval. The NEW CLI can
+load modules, author a change, stamp/check it and display projected specs. The
+manual start/fail-first/audit/impl/archive lifecycle is still incomplete; every
+acceptance row remains unverified.
 
-## Controller and baseline
+STOP before another change: shared-base unapproved count is 5, the configured
+P07 maximum. No pending changes, active claims or scratch worktrees remain.
+The next step requires human shared-base review/synchronization, not a bounds
+change or a local review-counter reset.
 
-- Pinned controller: `.fireweed/bin/fireweed-bootstrap`, copied from the tested
-  sibling executable; version `0.1.0`, embedded source
-  `7f925190878e38fc38f30d16bb1cf47aca098cf7`, vcs.modified=false.
-  Candidate/destination SHA-256:
-  `f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f`.
-- NEW stage-2 setup baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`.
-  Use this explicit nonempty baseline..HEAD for history/CI acceptance. Historical
-  restart `d991c26472ad990a5d050a07ce7dc873d1900433` is not the new baseline.
-- Product: `bin/fireweed`, clean source
-  `5f09706c3cbbc3aca57f8f880f81d309dda5729e` (vcs.modified=false); outside-project
-  information commands pass. modules/new-change work, including nested-root
-  discovery and JSON; remaining commands explicitly fail as unimplemented. No controller delegation.
+## Controller, source and reviews
 
-## Startup evidence
+- Controller: `.fireweed/bin/fireweed-bootstrap`, copied tested executable 0.1.0,
+  source `7f925190878e38fc38f30d16bb1cf47aca098cf7`, vcs.modified=false;
+  pin SHA-256 `f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f`.
+  It remains unchanged. Never rebuild it from or consult bootstrap source/tests.
+- Stage-2 setup baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`.
+  Use explicit nonempty baseline..HEAD ranges; never the historical d991c26 range.
+- Product: `bin/fireweed`, built at clean source
+  `de65319d646fd0e39e9810415a181dd28911762c` (vcs.modified=false).
+  help/version/explain/playbook/modules/new-change/stamp/check/show work;
+  other commands and unsupported options explicitly fail. No bootstrap delegation.
+- Human review 1: user explicitly answered "I reviewed it; continue" for checkpoint
+  `3311f676854420e509412e4ca6bc113aeefd9864`. Review count restarted at zero;
+  it is now four. That approval did not move shared refs or override P07.
+- Shared base still `origin/main` at `6e341a4e1c85c254968836644586b1120bee705e`.
+  Its tree has archives 0001–0003 and queued 0004. Controller reports 5 unapproved
+  archives: 0005 fixture-authoring, 0006 project-commands, 0007 change-handles,
+  0008 queue-authoring, 0009 authoring-commands. `explain P07` confirms human review
+  and merge into shared base before more work. No further start was attempted.
+  This agent did not push, fetch, move base refs or raise bounds.
 
-- Initial tree at `0fee737d7bc2c21c6bf5e28faf299301e2542cb1` was clean, with no
-  changes/archives/claims. Read all required design/supporting docs and HANDOFF.
-  Design SHA-256 matches handoff:
+## Startup and process evidence
+
+- Initial tree `0fee737d7bc2c21c6bf5e28faf299301e2542cb1` was clean/no claims.
+  Required design/supporting docs and HANDOFF read. Design SHA-256 unchanged:
   `52623b89d8184680f535519e82ceda8a49490b3d4dec000347cbd2cde429b21a`.
-- Disposable Go init probe: `/tmp/fireweed-stage2-setup.pyaO9N`. Adapted protected
-  version range to >=0.1,<0.2, canaries.yaml maps for evals/ layout, {{name}}
-  templates and api.go.tmpl. Retained Go JUnit/boundary hook including unfinished
-  tests and package failures; setup copies invoking FIREWEED_BIN into scratch.
-  Managed AGENTS already matched. Protected paths and bounds not weakened.
-- Worker/auditor argv: Codex ephemeral, ignore-user-config, gpt-6-sol, high effort,
-  workspace-write. Audit enabled, max_rounds=2; max_unapproved=5. Startup check and
-  full doctor passed, including four canaries/removal recovery and BOTH real
-  Sol/high probes, no diagnostics. Scratch worktree removed. Evidence is ignored
-  under `.fireweed/evidence/startup-doctor.*`.
+- Disposable init probe `/tmp/fireweed-stage2-setup.pyaO9N`; protected setup adapted
+  version >=0.1,<0.2, version-1 YAML canaries for evals/, {{name}} templates and
+  api.go.tmpl, scratch controller setup. Existing stdlib Go hooks retained,
+  including unfinished tests/package failures. Managed AGENTS matched.
+- Startup check/doctor passed four canaries/removal recovery and BOTH real agent
+  probes. All real workers/auditors use Codex ephemeral, ignore-user-config,
+  gpt-6-sol/high, workspace-write. Audit enabled/2 rounds; max_unapproved=5.
+  Manual controller transitions record agent=manual; actual CLI transcripts are
+  ignored in `.fireweed/evidence/<slug>-*`. Auditors received only copied change,
+  projected specs and evals in isolated `/tmp/fireweed-audit-*` repositories.
+- The first standalone-cli auditor's folded quotes were discarded by controller;
+  an attempted frozen eval edit was rejected/restored, then repaired through an
+  independently audited eval_fix. Quote exact one-line substrings and inspect the
+  actual phase after every transition. No forbidden impl eval/interface edits
+  were committed. Current batch's audits passed without findings rounds.
+- Earlier contracts worker hit usage limit after writing code; full verification
+  passed on resume, then controller applied it. No fake agents/model substitution.
 
 ## Applied
 
@@ -55,68 +73,43 @@ lifecycle fixture is not built and every acceptance row remains unverified.
 - `change-handles` / CON-006: evals `a22fcd4` (1 failure, 33 passes; CON-006 fails), independent audit `a194629` (no findings), impl `7580897` (34 own, 51 app, 8 assets and 25 project cases pass; boundaries pass); archive `0007-change-handles.md`. 2 applied since review 1; shared-base unapproved count 3.
 
 - `queue-authoring` / PRJ-004–PRJ-007: evals `6e3ca5f` (24 failures, 25 passes), independent audit `776b4d0` (no findings), impl `2ef37df` (53 project and 51 app cases pass, dependents/boundaries pass); archive `0008-queue-authoring.md`. Two contradictory eval fixtures corrected before freezing. 3 applied since review 1; shared-base unapproved count 4.
+- `authoring-commands` / APP-006–APP-008: evals `5720dce` (27 failures, 51 passes), independent audit `b2aaa14` (no findings), impl `de65319` (78/78 app cases and boundaries pass); archive `0009-authoring-commands.md`. Ambiguous-module fixture corrected before freezing. 4 applied since review 1.
 
-## Process findings and limits
+## Latest verification and manual fixture
 
-- Real workers/auditors used required Sol/high. Manually coordinated controller
-  transitions record agent=manual in Provenance; actual worker transcripts are
-  `.fireweed/evidence/<slug>-*`. Auditors ran separately in `/tmp/fireweed-audit-*`
-  with only copied change/projected spec/evals, never implementation or SYSTEM.
-- Standalone-cli audit quotes folded spec line breaks. Controller discarded them
-  and advanced to impl; an attempted eval edit was rejected and restored exactly
-  before implementation. A separately audited eval_fix repaired the known gaps.
-  Future quotes must be literal contiguous substrings; inspect phase/audit_rounds
-  after every transition. No forbidden eval/interface edits committed in impl.
-- Evals-only B03 warnings disappeared after implementation. No claim remains.
-- Contracts worker hit account usage limit after writing its implementation. On
-  resumption, full controller verification passed the actual code; controller
-  applied it without another worker. Usage API now permits ordinary use (1% of
-  5-hour window used). No model/provider substitution or fake-agent evidence.
-- On resumption origin/main was observed at `6e341a4`; this process did not push
-  or move the base. Review count remains four; do not silently reset it.
+- Exact checked range:
+  `be35552b706aa3000ff8f11306d129ff1d701b85..de65319d646fd0e39e9810415a181dd28911762c`.
+  Build, Go test/race/vet, controller check and CI exited 0. CI includes history,
+  boundaries and doctor canary recovery; no diagnostics. Coverage: app 78,
+  assets 8, contracts 34, project 53 (173 total reported cases including parents).
+  Other modules have no specs yet. Logs `.fireweed/evidence/review1-*` and
+  `authoring-slice-build.log`; nonfatal module-stat-cache write warning in build.
+- Earlier checkpoint at source `91f036c` passed the same current-source checks
+  with 86 cases; logs `.fireweed/evidence/checkpoint-*`. Neither checkpoint is
+  fresh-checkout evidence or completion of the full design/acceptance gates.
+- Hand-authored Go fixture: `/tmp/fireweed-stage2-manual-slice/project` with explicit
+  Git identity. NEW modules/new-change ran from packages/toy and created
+  changes/0001-answer.md; author commit `95c6a35`. It declares new:answer and
+  Answer MUST return 42. NEW stamp answer --json, check --json, show toy --projected
+  --json and selected new:answer show all exited 0. Handle remains unassigned;
+  author stamping commit `7a34def27b37d5f69aec1eb3abea4ba02ef8fe57`; fixture clean.
+- Still unrun: manual lifecycle finish, forbidden-zone/false-fail-first product
+  rejections, init/doctor/run and remaining NEW commands, fresh-checkout gates,
+  controller/product lifecycle comparison, real drills, isolated NEW self-hosting
+  and distribution/delivery. Goal remains incomplete.
 
-## Checkpoint verification
+## Next / resume — shared-base P07 gate
 
-- Checked source: `91f036cbb33981a5fb72798da3edec9bdc90b077`. Exact nonempty
-  controller history/CI range:
-  `be35552b706aa3000ff8f11306d129ff1d701b85..91f036cbb33981a5fb72798da3edec9bdc90b077`.
-- Build, `go test ./...`, `go test -race ./...`, `go vet ./...`, controller check,
-  check-commits and CI all exited 0. CI ran doctor canaries/recovery, boundaries,
-  history and all module coverage: app 26, assets 8, contracts 27, project 25
-  cases (86 total including parents), all pass; other modules have no specs yet.
-  CI reports doctor=true and no diagnostics. Logs/JSON:
-  `.fireweed/evidence/checkpoint-*`. Go printed a nonfatal module-stat-cache
-  sandbox write warning during build; build exited 0.
-- NEW executable smoke outside a project: help, version --json, explain P2-01 and
-  playbook audit all exit 0 with empty stderr. Permanent app eval also exercises
-  malformed config, JSON and usage errors. Primary worktree only, no claims.
-- These are intermediate checks, not complete acceptance. Fresh-checkout gates,
-  full NEW lifecycle/init/doctor/run/CI, full surface, packaging, controller/product
-  lifecycle comparison, real drills and isolated NEW self-hosting are unrun.
+Wait for human review/synchronization of approved changes into the shared base.
+Recheck local Git/controller state and unapproved count before authoring or
+starting another change. Do not treat a message alone as a ref update, push on
+this goal, move base refs, raise bounds or silently reset counts.
 
-## Next / resume — review 1 approved
+Once the gate clears, continue the existing manual fixture: add only needed Git
+and process primitives, hook/JUnit coverage checks, claims/start/verify/done/audit
+and apply/archive, wiring each operation through app promptly. Include the two
+required product rejections. Do not deepen already-working project/grammar code
+before this slice runs end to end. Full project validation/views remain incomplete.
 
-The user explicitly approved continuation from the first five-change checkpoint.
-The review count restarts at zero; stop again after five applied changes or a
-blocked change. This approval does not move base refs or bypass P07: the current
-shared-base unapproved count is one, so P07 may stop this batch before five.
-The full goal remains incomplete.
-
-Project queue/projection/stamp/check now work at the public API. Wire stamp/check
-and projected views through app next, then add only needed Git, hook/coverage and lifecycle
-behavior to finish the NEW manual fail-first/audit/impl/archive fixture. Retain
-explicit failures for unimplemented commands; do not polish working primitives
-before that slice. Full project grammar/zone validation is still incomplete.
-
-If a change is active on resume, inspect its context, tree and claims first.
-Protected author edits belong only between changes, in separate commits.
-
-- Manual slice fixture created at `/tmp/fireweed-stage2-manual-slice/project`
-  with hand-authored Go/config/SPEC files. NEW modules --json and new-change toy
-  answer --json both exited 0 from packages/toy; queued path changes/0001-answer.md.
-  No controller used as the fixture subject. Next add new: handle parsing before
-  author/stamp/check and lifecycle; no fixture init or lifecycle success claimed.
-
-- Manual fixture author commit: `95c6a35` with explicit local Git identity.
-  changes/0001-answer.md declares new:answer and Answer MUST return 42; no IDs
-  assigned. The product still has no stamp/check/lifecycle commands at this point.
+If a change is active on resume, read its context and preserve its work. Protected
+author edits belong only between active changes in separate commits.

@@ -167,3 +167,20 @@ delivery gates remain incomplete. Human review is required before change six.
   initial static diagnostics. Archive `0008-queue-authoring.md`; phases `6e3ca5f` /
   `776b4d0` / `2ef37df`; 24 failures/25 passes before, all 53 project cases pass after
   plus 51 app cases and boundaries. Full validation/views/lifecycle remain open.
+
+- R04/R05/R17 partial: APP-006–APP-008 expose stamp/check and current/projected
+  show through the NEW binary. Archive `0009-authoring-commands.md`; phases
+  `5720dce` / `b2aaa14` / `de65319`; 27 failures/51 passes before, all 78 app cases
+  pass after. Manual fixture stamp/check/projected and selected new:answer show
+  exited 0 with no assigned IDs. Product lifecycle remains unbuilt/unverified.
+
+## Shared-base approval gate after review 1
+
+At clean product source `de65319d646fd0e39e9810415a181dd28911762c`, build/test/race/
+vet, controller check and CI on explicit setup baseline `be35552...` passed. CI
+includes doctor canaries/recovery, boundaries, history and all 173 reported cases,
+with no diagnostics. This is current-source intermediate evidence, not final
+acceptance or a fresh-checkout/drill/self-hosting claim. Controller unapproved
+count is 5 against origin/main `6e341a4`; P07 requires human shared-base approval
+before another change. Four changes were applied since the explicit review at
+`3311f67`; no bound/ref was altered.
