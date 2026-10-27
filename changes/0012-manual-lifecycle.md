@@ -4,7 +4,7 @@ audit_pending:
 audit_rounds: 2
 bases: {}
 module: workflow
-phase: audit
+phase: impl
 run: 20261027T064001-843425dd0d42609ccb1f39a7
 set:
     interface:
@@ -70,7 +70,8 @@ Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests
 - evals 2026-10-27T13:53:38.862633Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=108 failing=28 passing=80
 - audit 2026-10-27T13:55:48.99758Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 - evals 2026-10-27T13:56:45.520373Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=108 failing=28 passing=80
+- audit 2026-10-27T13:58:51.538243Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 
 ## Audit
 
-- FLOW-005: "Context MUST include the change, projected spec, interface contents, SYSTEM and matching playbook" — missing assertion that Context includes the revised ALP-001 clause from the projected spec.
+No findings; checked FLOW-005
