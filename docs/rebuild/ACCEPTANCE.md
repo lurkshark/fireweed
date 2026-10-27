@@ -155,3 +155,9 @@ delivery gates remain incomplete. Human review is required before change six.
   `98e5852` / `5f09706`; 12 failures/39 passes before, all 51 app cases pass after.
   NEW smoke created changes/0001-answer.md in the manual slice fixture; stamping
   and lifecycle remain unverified.
+
+- R04 partial: CON-006 extends ParseItems to the design-required new: handles
+  without a parallel parser. Archive `0007-change-handles.md`; phases `a22fcd4` /
+  `a194629` / `7580897`; one genuine failing case, then all 34 contracts cases pass
+  with dependents/boundaries. Allocation, cross-change scope and rewriting remain
+  for project/workflow evidence.

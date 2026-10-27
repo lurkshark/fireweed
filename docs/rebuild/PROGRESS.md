@@ -6,7 +6,7 @@ Keep this file short: update sections in place and add one line per applied chan
 
 Stage-2 startup and standalone NEW CLI checkpoint passed. Human review 1 approved
 continuation at `3311f676854420e509412e4ca6bc113aeefd9864` (user: "I reviewed it;
-continue"). One applied change since that review. No pending changes or claims. The manual
+continue"). Two applied changes since that review. No pending changes or claims. The manual
 lifecycle fixture is not built and every acceptance row remains unverified.
 
 ## Controller and baseline
@@ -51,6 +51,8 @@ lifecycle fixture is not built and every acceptance row remains unverified.
 - `fixture-authoring` / PRJ-001–PRJ-003: initial evals `1bcba65`, findings `5c647a2`, corrected evals `bfee6b8` (24 failures, 1 pass; all changed IDs fail), independent passing re-audit `06f17c6`, impl `91f036c` (25/25 own and 26 app cases pass, direct dependents/boundaries pass); archive `0005-fixture-authoring.md`. One persistent audit round.
 
 - `project-commands` / APP-004–APP-005: evals `da5dba8` (12 failures, 39 passes; both new IDs fail), independent audit `98e5852` (no findings), impl `5f09706` (51/51 app cases and boundaries pass); archive `0006-project-commands.md`. 1 applied since review 1.
+
+- `change-handles` / CON-006: evals `a22fcd4` (1 failure, 33 passes; CON-006 fails), independent audit `a194629` (no findings), impl `7580897` (34 own, 51 app, 8 assets and 25 project cases pass; boundaries pass); archive `0007-change-handles.md`. 2 applied since review 1; shared-base unapproved count 3.
 
 ## Process findings and limits
 
@@ -99,7 +101,7 @@ shared-base unapproved count is one, so P07 may stop this batch before five.
 The full goal remains incomplete.
 
 Project Load/module graph/NewChange are now wired through app. Add only needed
-handle grammar, projection/stamping, Git, hook/coverage and lifecycle
+projection/stamping, Git, hook/coverage and lifecycle
 behavior to finish the NEW manual fail-first/audit/impl/archive fixture. Retain
 explicit failures for unimplemented commands; do not polish working primitives
 before that slice. Full project grammar/zone validation is still incomplete.
@@ -112,3 +114,7 @@ Protected author edits belong only between changes, in separate commits.
   answer --json both exited 0 from packages/toy; queued path changes/0001-answer.md.
   No controller used as the fixture subject. Next add new: handle parsing before
   author/stamp/check and lifecycle; no fixture init or lifecycle success claimed.
+
+- Manual fixture author commit: `95c6a35` with explicit local Git identity.
+  changes/0001-answer.md declares new:answer and Answer MUST return 42; no IDs
+  assigned. The product still has no stamp/check/lifecycle commands at this point.
