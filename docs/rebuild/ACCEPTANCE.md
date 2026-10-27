@@ -192,3 +192,5 @@ before another change. Four changes were applied since the explicit review at
   impl `92f999a`; 7 fail-first cases, then 8 permanent passes plus 2 temporary
   public smoke probes and dependent/boundary passes. Escaped process groups remain
   unsupported. Claims/lifecycle and full Git surface remain unverified.
+
+- R07/R09/R10/R11 partial: CHK-001–CHK-005 cover public JUnit/results, hooks, zones and boundaries; archive `0011-lifecycle-checks.md`, phases `69933f7` / `eff6823` / `3c5b40b`. 25 failures before, 28 permanent cases and 4 public smoke probes pass after. Full dependents/boundaries pass. Product lifecycle and doctor integration remain unverified.

@@ -4,13 +4,13 @@ Keep this file short: update sections in place and add one line per applied chan
 
 ## Status — 2026-10-26
 
-Human review 2 cleared the shared-base gate at `969ab2f`; one change applied
+Human review 2 cleared the shared-base gate at `969ab2f`; two changes applied
 since that review. The NEW CLI can
 load modules, author a change, stamp/check it and display projected specs. The
 manual start/fail-first/audit/impl/archive lifecycle is still incomplete; every
 acceptance row remains unverified.
 
-Shared-base unapproved count is now 1; max_unapproved remains 5. No pending
+Shared-base unapproved count is now 2; max_unapproved remains 5. No pending
 changes, active claims or scratch worktrees remain. Continue the existing manual
 slice and stop again after five applied changes or an actual block.
 
@@ -84,6 +84,8 @@ slice and stop again after five applied changes or an actual block.
 
 - `manual-lifecycle-git` / GIT-001–GIT-005: evals `3e82adc` / `93ba9a6` / `5d00cac` (7 genuine failures), findings `98a799f` / `f2ddd0f`, independent passing final audit `5911fab`, impl `92f999a` (8 permanent cases, 2 public smoke probes, 78 app and 53 project cases pass; boundaries pass). Two bounded audit rounds. Archive `0010-manual-lifecycle-git.md`. 1 applied since review 2.
 
+- `lifecycle-checks` / CHK-001–CHK-005: evals `69933f7` (25 failures, 3 passes), independent audit `eff6823` (no findings), impl `3c5b40b` (28 own, 78 app and 4 public smoke probes pass; dependents/boundaries pass). Two contradictory fixtures corrected before freezing; unknown-ID/protected-path gaps corrected within impl. Archive `0011-lifecycle-checks.md`. 2 applied since review 2.
+
 ## Latest verification and manual fixture
 
 - Exact checked range:
@@ -110,7 +112,7 @@ slice and stop again after five applied changes or an actual block.
 ## Next / resume — review 2 approved
 
 The gate is cleared by verified shared-base state and explicit human approval.
-Review count is one. Keep all bounds and the original stage-2 history baseline.
+Review count is two. Keep all bounds and the original stage-2 history baseline.
 Continue the existing manual fixture: add only needed Git
 and process primitives, hook/JUnit coverage checks, claims/start/verify/done/audit
 and apply/archive, wiring each operation through app promptly. Include the two
@@ -127,3 +129,5 @@ author edits belong only between active changes in separate commits.
   .fireweed/hooks.go, eval/boundaries configured, audit enabled, timeout 30s;
   author commit `5357850929ce87725fc492b1f45b5d1e76b327c9`. No lifecycle success yet.
   Next: checks public JUnit/hook/zone/boundary operations, then workflow and app.
+
+- Checks minimum complete; no workflow or CLI lifecycle success yet. Next active authoring target is workflow manual-lifecycle.
