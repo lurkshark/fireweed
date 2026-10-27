@@ -150,10 +150,10 @@ func containsCode(ds []project.Diagnostic, code string) bool {
 	return false
 }
 
-func Test_FLOW_001_FLOW_006_FLOW_007_FLOW_008_StartAssignsLateIDsAndRetainsSnapshotWithoutCommit(t *testing.T) {
+func Test_FLOW_001_FLOW_006_FLOW_007_FLOW_008_FLOW_012_FLOW_013_StartAssignsLateIDsAndRetainsSnapshotWithoutCommit(t *testing.T) {
 	root := fixture(t, "", "", "### new:first\nFirst MUST work.\n\n### new:second\nSecond MUST use new:first.\n", "", "")
 	before := head(t, root)
-	s := start(t, root)
+	s := start(t, root+"/.")
 	if s.Phase != "evals" || s.Run == "" || s.ClaimOID == "" || s.PhaseBase != before || head(t, root) != before {
 		t.Errorf("start state = %#v; head before %s after %s", s, before, head(t, root))
 	}
@@ -186,7 +186,7 @@ func Test_FLOW_001_FLOW_006_FLOW_007_FLOW_008_StartAssignsLateIDsAndRetainsSnaps
 	}
 }
 
-func Test_FLOW_001_RequiresCleanEligibleQueueHead(t *testing.T) {
+func Test_FLOW_001_FLOW_010_FLOW_011_RequiresCleanEligibleQueueHead(t *testing.T) {
 	clean := fixture(t, "", "", "", "", "")
 	if _, err := workflow.Start(clean, "manual"); err != nil {
 		t.Errorf("clean eligible queue head rejected: %v", err)

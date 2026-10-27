@@ -1,11 +1,14 @@
 ---
 already_satisfied:
-    - new:clean-start
-    - new:queue-head
-    - new:canonical-root
-    - new:initial-evals-phase
+    - FLOW-010
+    - FLOW-011
+    - FLOW-012
+    - FLOW-013
+audit_rounds: 0
 bases: {}
 module: workflow
+phase: audit
+run: 20261027T192528-b8ecea655905b915695c36dc
 ---
 
 
@@ -22,16 +25,16 @@ remaining guarantee has a dedicated ID. This is spec/eval retargeting only.
 
 ## Added
 
-### new:clean-start
+### FLOW-010
 Start MUST reject a worktree containing uncommitted changes.
 
-### new:queue-head
+### FLOW-011
 Start MUST reject a requested change when an earlier unblocked queued change exists.
 
-### new:canonical-root
+### FLOW-012
 Start MUST return the canonical absolute worktree root in State.Snapshot.Root.
 
-### new:initial-evals-phase
+### FLOW-013
 Start MUST set phase to evals when starting an unstarted spec change.
 
 ## Modified
@@ -55,3 +58,7 @@ For its existing start call, root+"/." exercises a noncanonical input spelling
 without a new fixture; keep the existing canonical-root and phase assertions.
 Do not change implementation, interfaces or test scenario count (32 own cases).
 The implementation phase may edit only this change file.
+
+## Provenance
+
+- evals 2026-10-27T19:27:06.115126Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=118 failing=0 passing=118
