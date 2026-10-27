@@ -1,8 +1,12 @@
 ---
-audit_rounds: 0
+audit_pending:
+    - AST-004
+    - AST-005
+    - AST-006
+audit_rounds: 1
 bases: {}
 module: assets
-phase: audit
+phase: evals
 run: 20261027T145815-f26a804e7d062856d3d8e07b
 set:
     interface:
@@ -59,3 +63,10 @@ a Go module; the recipe instructions explain that prerequisite.
 ## Provenance
 
 - evals 2026-10-27T18:58:30.86087Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=213 failing=6 passing=207
+- audit 2026-10-27T19:00:02.64701Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+
+## Audit
+
+- AST-004: "Its instructions MUST explain Go module/workspace setup and deriving the graph from FIREWEED_BIN modules --json." — missing assertion that the instructions explain either procedure; the eval checks only for keywords.
+- AST-005: "The Go eval hook MUST run the requested module's Go tests" — missing assertion that requesting one module excludes another module's tests.
+- AST-006: "use its module dirs, depends_on and zone map with the workspace module path." — missing assertion for module dirs or a workspace module path that differs from the fixture's fixed layout.
