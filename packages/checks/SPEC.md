@@ -60,4 +60,19 @@ During evals, Zones MUST allow edits in the target module's other zone.
 ### CHK-015
 During evals, Zones MUST reject edits in the target module's preserve zone.
 
+### CHK-016
+During impl, Zones MUST reject edits in the target module's evals zone.
+
+### CHK-017
+During impl, Zones MUST reject edits in the target module's interface zone.
+
+### CHK-018
+During impl, Zones MUST allow edits in the target module's disposable zone.
+
+### CHK-019
+During impl, Zones MUST allow edits in the target module's preserve zone.
+
+### CHK-020
+During impl, Zones MUST allow edits in the target module's other zone.
+
 ## Decisions
