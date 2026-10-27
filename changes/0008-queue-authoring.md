@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: project
+phase: audit
+run: 20261027T011358-d724b4b7a8213be798cd2f15
 ---
 
 
@@ -24,16 +27,16 @@ Keep all parsing/projection/validation behavior under internal/.
 
 ## Added
 
-### new:queue-documents
+### PRJ-004
 Queue MUST read pending NNNN-slug.md documents in numeric-then-slug order, allowing tied numbers and excluding archives. It MUST return each change's module, frontmatter and parsed Added/Modified/Removed items, rejecting malformed documents, unknown modules and ambiguous slugs. A change argument MUST resolve its unique slug, queued basename or repository-relative queued path, rejecting missing or ambiguous targets.
 
-### new:projection
+### PRJ-005
 Project MUST apply pending changes through the named change inclusively, or the whole queue when through is empty, preserving Added/Modified full text and removing Removed items. It MUST apply set values for depends_on, interface, evals, disposable, preserve, append_only, boundaries_opt_out and hooks, rejecting identity/unknown fields and an invalid projected graph. Added handles MUST remain local to their declaring change; different changes may reuse handle text.
 
-### new:stamp-bases
+### PRJ-006
 Stamp MUST write the canonical SpecHash of each Modified/Removed item from the projection preceding the target change into its bases. It MUST reject IDs absent from that projection and preserve other frontmatter and human sections. Stamping an Added-only change MUST succeed without assigning IDs.
 
-### new:author-checks
+### PRJ-007
 Check MUST reject missing Motivation, non-normative spec bodies, invalid review/quarantine tags, duplicate or foreign module IDs, duplicate edit identities within a change and references to undeclared handles. It MUST reject missing/stale bases and Modified/Removed IDs absent from the preceding projection. Check results MUST have no error diagnostics for valid module specs/changes, and nonempty C01 code/message diagnostics for failures.
 
 ## Modified
@@ -45,3 +48,9 @@ Check MUST reject missing Motivation, non-normative spec bodies, invalid review/
 
 
 ## Decisions
+
+
+
+## Provenance
+
+- evals 2026-10-27T01:20:43.362625Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=100 failing=24 passing=76
