@@ -43,6 +43,18 @@ Start MUST assign a unique run identifier when starting an unstarted change.
 ### FLOW-009
 Start MUST report P04 when neither the local base nor the shared base contains the change file.
 
+### FLOW-010
+Start MUST reject a worktree containing uncommitted changes.
+
+### FLOW-011
+Start MUST reject a requested change when an earlier unblocked queued change exists.
+
+### FLOW-012
+Start MUST return the canonical absolute worktree root in State.Snapshot.Root.
+
+### FLOW-013
+Start MUST set phase to evals when starting an unstarted spec change.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
