@@ -30,4 +30,19 @@ Zones MUST restrict audit to the current change, reject protected/SPEC/foreign-m
 ### CHK-005
 Boundaries MUST run applicable global/module hooks, returning errors for unsuppressed module-attributed violations and visible warnings for reasoned opt-outs. It MUST suppress only exact baseline lines or opted-out module lines from normally exited hooks; launch/cancel/timeout failures remain errors. A missing hook MUST fail for unopted disposable modules and warn when no boundary enforcement is required.
 
+### CHK-006
+Zones MUST reject edits to protected paths in every phase.
+
+### CHK-007
+Zones MUST reject edits to module SPEC.md files in every phase.
+
+### CHK-008
+Zones MUST reject edits within another module in every phase.
+
+### CHK-009
+Zones MUST reject edits to change files other than the current change in every phase.
+
+### CHK-010
+During evals and impl, Zones MUST allow edits outside modules only when the path matches worker_writable, except for the current change file.
+
 ## Decisions
