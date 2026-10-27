@@ -15,6 +15,7 @@ import (
 
 	"github.com/lurkshark/fireweed/packages/assets"
 	"github.com/lurkshark/fireweed/packages/contracts"
+	"github.com/lurkshark/fireweed/packages/gitstore"
 	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
@@ -212,15 +213,44 @@ func Test_FLOW_001_LinkedWorktreeExcludesCompetingOwner(t *testing.T) {
 	root := fixture(t, "", "", "", "", "")
 	other := filepath.Join(t.TempDir(), "linked")
 	git(t, root, "worktree", "add", "-b", "linked", other, "HEAD")
-	s := start(t, root)
-	if _, err := workflow.Start(other, "manual"); err == nil {
-		t.Error("competing worktree claimed held change")
+	type attempt struct {
+		root  string
+		state workflow.State
+		err   error
 	}
-	if _, err := workflow.Current(other, "manual"); err == nil {
-		t.Error("other worktree resolved foreign claim")
+	gate := make(chan struct{})
+	results := make(chan attempt, 2)
+	for _, dir := range []string{root, other} {
+		go func(dir string) {
+			<-gate
+			s, err := workflow.Start(dir, "manual")
+			results <- attempt{dir, s, err}
+		}(dir)
 	}
-	if got, err := workflow.Current(root, "manual"); err != nil || got.ClaimOID != s.ClaimOID {
-		t.Errorf("owner lost claim: %#v, %v", got, err)
+	close(gate)
+	timer := time.NewTimer(10 * time.Second)
+	defer timer.Stop()
+	var attempts [2]attempt
+	for i := range attempts {
+		select {
+		case attempts[i] = <-results:
+		case <-timer.C:
+			t.Fatal("simultaneous claim attempts did not finish")
+		}
+	}
+	winners := 0
+	for _, result := range attempts {
+		if result.err == nil {
+			winners++
+			if got, err := workflow.Current(result.root, "manual"); err != nil || got.ClaimOID != result.state.ClaimOID {
+				t.Errorf("winner lost claim: %#v, %v", got, err)
+			}
+		} else if _, err := workflow.Current(result.root, "manual"); err == nil {
+			t.Errorf("losing worktree %s resolved foreign claim", result.root)
+		}
+	}
+	if winners != 1 {
+		t.Errorf("simultaneous claims had %d winners: %#v", winners, attempts)
 	}
 }
 
@@ -405,12 +435,14 @@ func Test_FLOW_002_ImplFreezesEvalsAndRunsDependentsAndBoundaries(t *testing.T) 
 			switch scenario {
 			case "direct":
 				write(t, root, ".fireweed/beta-fail", "yes\n")
+			case "none":
+				write(t, root, ".fireweed/beta-fail", "yes\n")
 			case "all":
 				write(t, root, ".fireweed/gamma-fail", "yes\n")
 			case "quick-boundary":
 				write(t, root, ".fireweed/boundary-fail", "yes\n")
 			}
-			if scenario != "frozen-eval" && scenario != "none" {
+			if scenario != "frozen-eval" {
 				commit(t, root, "configured failing hook")
 			}
 			start(t, root)
@@ -430,7 +462,7 @@ func Test_FLOW_002_ImplFreezesEvalsAndRunsDependentsAndBoundaries(t *testing.T) 
 			full, fullErr := verify(root, false)
 			if scenario == "frozen-eval" {
 				if quickErr == nil || fullErr == nil {
-					t.Errorf("frozen eval accepted: %#v %v; %#v %v", quick, quickErr, full, fullErr)
+					t.Errorf("frozen eval edit accepted: %#v %v; %#v %v", quick, quickErr, full, fullErr)
 				}
 				if err := os.Remove(filepath.Join(root, "packages/alpha/evals/new_test.go")); err != nil {
 					t.Fatal(err)
@@ -568,6 +600,29 @@ func Test_FLOW_003_AuditFindingsConvergeAndPersistTwoRoundBound(t *testing.T) {
 	if _, err := workflow.Current(root, "manual"); err == nil {
 		t.Error("blocked claim remained held")
 	}
+	configured := fixture(t, "audit:\n  max_rounds: 1\n", "", "", "", "")
+	toAudit(t, configured)
+	audit(t, configured, finding)
+	first, err := done(configured)
+	if err != nil || first.State.Phase != "evals" {
+		t.Fatalf("configured first finding = %#v, %v", first, err)
+	}
+	firstCurrent, err := workflow.Current(configured, "manual")
+	if err != nil || firstCurrent.Change.Document.Frontmatter["audit_rounds"] != 1 {
+		t.Errorf("configured round count = %#v, %v", firstCurrent, err)
+	}
+	if _, err := done(configured); err != nil {
+		t.Fatalf("configured revised evals Done: %v", err)
+	}
+	audit(t, configured, finding)
+	_, _ = done(configured)
+	change, err := os.ReadFile(filepath.Join(configured, "changes/0001-manual.md"))
+	if err != nil || !strings.Contains(string(change), "blocked:") || !strings.Contains(string(change), "audit_rounds: 1") || !strings.Contains(string(change), "## Questions") {
+		t.Errorf("configured max_rounds did not block after one return: %s, %v", change, err)
+	}
+	if _, err := workflow.Current(configured, "manual"); err == nil {
+		t.Error("configured bound retained claim")
+	}
 }
 
 func Test_FLOW_003_UntestableFindingBlocksWithQuestion(t *testing.T) {
@@ -599,6 +654,15 @@ func Test_FLOW_004_ImplDoneAppliesSpecsSetAndDecisionsAndArchives(t *testing.T) 
 		t.Fatalf("evals transition = %#v, %v", r, err)
 	}
 	implBase := head(t, root)
+	otherClaim := []byte(`{"worktree":"independent","change":"other"}`)
+	otherOID, err := gitstore.WriteBlob(root, otherClaim)
+	if err != nil {
+		t.Fatal(err)
+	}
+	otherRef := "refs/fireweed/claims/other"
+	if err := gitstore.CASRef(root, otherRef, "", otherOID); err != nil {
+		t.Fatal(err)
+	}
 	write(t, root, "packages/alpha/internal/ready", "ready\n")
 	r, err = done(root)
 	if err != nil || r.State.Phase != "applied" || head(t, root) == implBase {
@@ -634,10 +698,29 @@ func Test_FLOW_004_ImplDoneAppliesSpecsSetAndDecisionsAndArchives(t *testing.T) 
 	if _, err := workflow.Current(root, "manual"); err == nil {
 		t.Error("applied claim remained held")
 	}
+	if got, exists, err := gitstore.Ref(root, otherRef); err != nil || !exists || got != otherOID {
+		t.Errorf("application changed independent claim ref: %q, %v, %v", got, exists, err)
+	}
+	if got, err := gitstore.ReadBlob(root, otherOID); err != nil || string(got) != string(otherClaim) {
+		t.Errorf("application changed independent claim blob: %q, %v", got, err)
+	}
 }
 
 func Test_FLOW_004_FailedDoneKeepsPhaseAndHead(t *testing.T) {
 	root := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
+	hookPath := filepath.Join(root, ".fireweed/eval.sh")
+	hook, err := os.ReadFile(hookPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	inject := `  if [ -f packages/alpha/internal/ready ]; then printf 'invalid spec fixture\n' > packages/alpha/SPEC.md; fi
+  exit "$exitcode"`
+	patched := strings.Replace(string(hook), `  exit "$exitcode"`, inject, 1)
+	if patched == string(hook) {
+		t.Fatal("fixture hook injection was not installed")
+	}
+	write(t, root, ".fireweed/eval.sh", patched)
+	commit(t, root, "tracked invalid-spec hook fixture")
 	start(t, root)
 	if _, err := done(root); err != nil {
 		t.Fatalf("evals Done: %v", err)
@@ -650,6 +733,35 @@ func Test_FLOW_004_FailedDoneKeepsPhaseAndHead(t *testing.T) {
 	current, currentErr := workflow.Current(root, "manual")
 	if currentErr != nil || current.Phase != "impl" || current.PhaseBase != base {
 		t.Errorf("failed Done advanced phase: %#v, %v", current, currentErr)
+	}
+	write(t, root, "packages/alpha/internal/ready", "ready\n")
+	write(t, root, "packages/alpha/api.go", "package alpha // edited during impl\n")
+	r, err = done(root)
+	if err == nil || head(t, root) != base {
+		t.Errorf("frozen interface edit accepted or committed: %#v, %v", r, err)
+	}
+	write(t, root, "packages/alpha/api.go", "package alpha\n")
+	r, err = done(root)
+	if err == nil || head(t, root) != base {
+		t.Errorf("failed static validation applied or committed: %#v, %v", r, err)
+	}
+	invalidSpec, readErr := os.ReadFile(filepath.Join(root, "packages/alpha/SPEC.md"))
+	if readErr != nil || string(invalidSpec) != "invalid spec fixture\n" {
+		t.Errorf("successful eval hook did not inject invalid spec: %q, %v", invalidSpec, readErr)
+	}
+	invalid := false
+	for _, d := range project.Check(root) {
+		invalid = invalid || !d.Warning
+	}
+	if !invalid {
+		t.Error("injected spec passed static validation")
+	}
+	if _, err := os.Stat(filepath.Join(root, "changes/archive/0001-manual.md")); !os.IsNotExist(err) {
+		t.Errorf("failed static validation created archive: %v", err)
+	}
+	pending, readErr := os.ReadFile(filepath.Join(root, "changes/0001-manual.md"))
+	if readErr != nil || !strings.Contains(string(pending), "phase: impl") || strings.Contains(string(pending), "phase: applied") {
+		t.Errorf("failed static validation advanced pending phase: %q, %v", pending, readErr)
 	}
 }
 
@@ -669,7 +781,7 @@ func Test_FLOW_005_ContextAndProvenanceAndRetainedReports(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, want := range []string{newClause, "# Fixture system", "# Write evals", "package alpha"} {
+	for _, want := range []string{"Users need a revised alpha value.", "Alpha MUST retain the second behavior.", "# Fixture system", "# Write evals", "package alpha"} {
 		if !strings.Contains(compact, want) {
 			t.Errorf("compact context misses %q", want)
 		}
@@ -684,7 +796,8 @@ func Test_FLOW_005_ContextAndProvenanceAndRetainedReports(t *testing.T) {
 		t.Fatalf("evals Done: %v", err)
 	}
 	write(t, root, "packages/alpha/internal/ready", "ready\n")
-	if _, err := done(root); err != nil {
+	implResult, err := done(root)
+	if err != nil {
 		t.Fatalf("impl Done: %v", err)
 	}
 	b, err := os.ReadFile(filepath.Join(root, "changes/archive/0001-manual.md"))
@@ -695,16 +808,39 @@ func Test_FLOW_005_ContextAndProvenanceAndRetainedReports(t *testing.T) {
 	if !ok || !strings.Contains(provenance, "evals") || !strings.Contains(provenance, "impl") || !strings.Contains(provenance, "manual") || !strings.Contains(provenance, "0.1.0") || !strings.Contains(provenance, "202") {
 		t.Errorf("provenance incomplete: %q", provenance)
 	}
-	if !regexp.MustCompile(`[a-f0-9]{8,}`).MatchString(provenance) || !regexp.MustCompile(`(?i)(test|pass|fail)[^\n]*[0-9]`).MatchString(provenance) {
-		t.Errorf("playbook hash or result counts absent: %q", provenance)
-	}
-	playbook, err := assets.Playbook("evals")
-	if err != nil {
-		t.Fatal(err)
-	}
-	hash := sha256.Sum256([]byte(playbook))
-	if !strings.Contains(provenance, hex.EncodeToString(hash[:])[:8]) {
-		t.Errorf("evals playbook hash omitted from provenance: %q", provenance)
+	for _, phase := range []string{"evals", "impl"} {
+		line := ""
+		for _, candidate := range strings.Split(provenance, "\n") {
+			if strings.HasPrefix(strings.TrimSpace(candidate), "- "+phase+" ") {
+				line = strings.TrimSpace(candidate)
+				break
+			}
+		}
+		playbook, err := assets.Playbook(phase)
+		if err != nil {
+			t.Fatal(err)
+		}
+		hash := sha256.Sum256([]byte(playbook))
+		if line == "" || !strings.Contains(line, "playbook="+hex.EncodeToString(hash[:])) {
+			t.Errorf("%s provenance line misses matching playbook hash: %q", phase, line)
+		}
+		if phase == "impl" {
+			total, passing, failing := 0, 0, 0
+			for _, report := range implResult.Reports {
+				for _, c := range report.Cases {
+					total++
+					switch c.Result {
+					case "pass":
+						passing++
+					case "fail", "error":
+						failing++
+					}
+				}
+			}
+			if total == 0 || passing == 0 || !strings.Contains(line, fmt.Sprintf("tests=%d failing=%d passing=%d", total, failing, passing)) {
+				t.Errorf("impl provenance line has wrong result counts for reports %#v: %q", implResult.Reports, line)
+			}
+		}
 	}
 	runRoot := filepath.Join(root, ".fireweed/runs", state.Run)
 	count := 0

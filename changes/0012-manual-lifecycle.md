@@ -8,7 +8,7 @@ audit_pending:
 audit_rounds: 1
 bases: {}
 module: workflow
-phase: evals
+phase: audit
 run: 20261027T064001-843425dd0d42609ccb1f39a7
 set:
     interface:
@@ -65,12 +65,13 @@ Each successful Done MUST append provenance with phase, date, manual/configured 
 
 ## Decisions
 
-
+Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
 
 ## Provenance
 
 - evals 2026-10-27T06:51:15.53473Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=108 failing=28 passing=80
 - audit 2026-10-27T13:47:58.117575Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- evals 2026-10-27T13:53:38.862633Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=108 failing=28 passing=80
 
 ## Audit
 
