@@ -4,7 +4,7 @@ audit_pending:
 audit_rounds: 2
 bases: {}
 module: workflow
-phase: impl
+phase: applied
 run: 20261027T064001-843425dd0d42609ccb1f39a7
 set:
     interface:
@@ -71,7 +71,12 @@ Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests
 - audit 2026-10-27T13:55:48.99758Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 - evals 2026-10-27T13:56:45.520373Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=108 failing=28 passing=80
 - audit 2026-10-27T13:58:51.538243Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-27T14:10:17.327396Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=110 failing=0 passing=110
 
 ## Audit
 
 No findings; checked FLOW-005
+
+## Notes
+
+Implementation coverage: FLOW-001..FLOW-005. Workflow public evals and controller quick verify passed 32/32 cases (0 failing); quick mode skipped dependent evals and boundaries. Evidence: `.fireweed/evidence/manual-lifecycle-impl-verify.json`. Product app wiring remains a later change.
