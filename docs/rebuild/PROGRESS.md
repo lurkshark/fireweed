@@ -2,15 +2,11 @@
 
 ## Current status — 2026-10-27
 
-Human review 4 approved changes 0015–0019 and the committed checkpoint report. The shared base is synchronized. **Applied since review: 1.** Milestone 1 passed through the NEW binary;
+Human review 4 approved changes 0015–0019 and the committed checkpoint report. The shared base is synchronized. **Applied since review: 2.** Milestone 1 passed through the NEW binary;
 Milestone 2 waits for the spec splits, diagnostic migration and one contracts
 drill. Consecutive workflow/checks changes are authorized for the spec split.
 Stop after five applied changes, on any block, or on a drill failure that calls
 the spec approach into question.
-
-0021 resumes at `impl` from saved attempt 1 after human confirmation that access
-was restored and a successful configured Sol probe. Evals and audit passed before
-the usage stop; no implementation edits were lost. The applied count remains 1.
 
 Controller: `.fireweed/bin/fireweed-bootstrap` 0.1.0, source `7f925190878e38fc38f30d16bb1cf47aca098cf7`, pin SHA-256 `f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f`; unchanged.
 Stage-2 history baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`; always check an explicit nonempty baseline..HEAD range. Use `GOCACHE=/tmp/fireweed-rebuild-cache`.
@@ -48,6 +44,8 @@ Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -
 [Checkpoint verification and remaining work](reports/review3-checkpoint.md): race/vet/controller CI passed; 261 reported cases, doctor recovery and history passed. No pending change or claim. Human review 4 cleared this checkpoint.
 
 - 0020 verify-evidence-specs — FLOW-020–023; evals 2d7912c/15139aa, audits b43448f/7bbf4eb, impl 42dae8e; one findings round, 32 own cases and dependents pass; implementation unchanged.
+
+- 0021 verify-pass-specs — FLOW-024–027; 3067213/0521c85/8d786c6; 32 own cases and dependents pass, implementation unchanged; resumed saved attempt 1 after human-confirmed Sol access recovery.
 
 ## Next
 
