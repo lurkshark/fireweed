@@ -150,24 +150,30 @@ func containsCode(ds []project.Diagnostic, code string) bool {
 	return false
 }
 
-func Test_FLOW_001_StartClaimsWithoutCommit(t *testing.T) {
+func Test_FLOW_001_FLOW_006_FLOW_007_FLOW_008_StartAssignsLateIDsAndRetainsSnapshotWithoutCommit(t *testing.T) {
 	root := fixture(t, "", "", "### new:first\nFirst MUST work.\n\n### new:second\nSecond MUST use new:first.\n", "", "")
 	before := head(t, root)
 	s := start(t, root)
-	if s.Phase != "evals" || s.ClaimOID == "" || s.PhaseBase != before || head(t, root) != before {
+	if s.Phase != "evals" || s.Run == "" || s.ClaimOID == "" || s.PhaseBase != before || head(t, root) != before {
 		t.Errorf("start state = %#v; head before %s after %s", s, before, head(t, root))
+	}
+	b, _ := os.ReadFile(filepath.Join(root, "changes/0001-manual.md"))
+	if strings.Contains(string(b), "new:first") || strings.Contains(string(b), "new:second") || !strings.Contains(string(b), "### ALP-003") || !strings.Contains(string(b), "### ALP-004") || !strings.Contains(string(b), "use ALP-003") {
+		t.Errorf("late IDs not assigned throughout change: %s", b)
+	}
+	if len(s.Change.Added) != 2 || s.Change.Added[0].ID != "ALP-003" || s.Change.Added[1].ID != "ALP-004" {
+		t.Errorf("returned Added IDs = %#v", s.Change.Added)
 	}
 	current, err := workflow.Current(root, "")
 	if err != nil || current.Run != s.Run || current.Change.Slug != "manual" || current.Snapshot.Root != root {
 		t.Errorf("Current = %#v, %v", current, err)
 	}
-}
-
-func Test_FLOW_006_StartReturnsApprovedProjectedSnapshot(t *testing.T) {
-	root := fixture(t, "", "", "### new:first\nFirst MUST work.\n\n### new:second\nSecond MUST use new:first.\n", "", "")
-	s := start(t, root)
 	if s.Snapshot.Root != root || len(s.Snapshot.Modules) != 3 {
-		t.Fatalf("returned projected snapshot = %#v", s.Snapshot)
+		t.Errorf("returned projected snapshot = %#v", s.Snapshot)
+	}
+	second := fixture(t, "", "", "", "", "")
+	if another := start(t, second); another.Run == "" || another.Run == s.Run {
+		t.Errorf("separate starts returned runs %q and %q", s.Run, another.Run)
 	}
 	alphaProjected := ""
 	for _, module := range s.Snapshot.Modules {
@@ -177,27 +183,6 @@ func Test_FLOW_006_StartReturnsApprovedProjectedSnapshot(t *testing.T) {
 	}
 	if !strings.Contains(alphaProjected, newClause) || !strings.Contains(alphaProjected, "### ALP-003") || !strings.Contains(alphaProjected, "### ALP-004") {
 		t.Errorf("returned snapshot does not project the approved change: %q", alphaProjected)
-	}
-}
-
-func Test_FLOW_007_StartAssignsLateIDsThroughoutChange(t *testing.T) {
-	root := fixture(t, "", "", "### new:first\nFirst MUST work.\n\n### new:second\nSecond MUST use new:first.\n", "", "")
-	s := start(t, root)
-	b, _ := os.ReadFile(filepath.Join(root, "changes/0001-manual.md"))
-	if strings.Contains(string(b), "new:first") || strings.Contains(string(b), "new:second") || !strings.Contains(string(b), "### ALP-003") || !strings.Contains(string(b), "### ALP-004") || !strings.Contains(string(b), "use ALP-003") {
-		t.Errorf("late IDs not assigned throughout change: %s", b)
-	}
-	if len(s.Change.Added) != 2 || s.Change.Added[0].ID != "ALP-003" || s.Change.Added[1].ID != "ALP-004" {
-		t.Errorf("returned Added IDs = %#v", s.Change.Added)
-	}
-}
-
-func Test_FLOW_008_StartAssignsUniqueRun(t *testing.T) {
-	root := fixture(t, "", "", "", "", "")
-	s := start(t, root)
-	second := fixture(t, "", "", "", "", "")
-	if another := start(t, second); s.Run == "" || another.Run == "" || another.Run == s.Run {
-		t.Errorf("separate starts returned runs %q and %q", s.Run, another.Run)
 	}
 }
 
@@ -272,7 +257,7 @@ func Test_FLOW_001_LinkedWorktreeExcludesCompetingOwner(t *testing.T) {
 	}
 }
 
-func Test_FLOW_009_StartReportsP04WithoutLocalOrSharedApproval(t *testing.T) {
+func Test_FLOW_001_FLOW_009_ApprovalWarningAndSharedUnapprovedLimit(t *testing.T) {
 	approved := fixture(t, "", "", "", "", "")
 	if s := start(t, approved); containsCode(s.Diagnostics, "P04") {
 		t.Error("local-base approval warned")
@@ -288,18 +273,6 @@ func Test_FLOW_009_StartReportsP04WithoutLocalOrSharedApproval(t *testing.T) {
 	if s := start(t, shared); containsCode(s.Diagnostics, "P04") {
 		t.Error("shared-base approval warned")
 	}
-	unapproved := fixture(t, "", "", "", "", "")
-	git(t, unapproved, "checkout", "-b", "feature")
-	git(t, unapproved, "checkout", "main")
-	git(t, unapproved, "rm", "changes/0001-manual.md")
-	commit(t, unapproved, "base without pending change")
-	git(t, unapproved, "checkout", "feature")
-	if s := start(t, unapproved); !containsCode(s.Diagnostics, "P04") {
-		t.Errorf("unapproved change missing P04: %#v", s.Diagnostics)
-	}
-}
-
-func Test_FLOW_001_SharedUnapprovedLimit(t *testing.T) {
 	for _, limit := range []int{4, 5} {
 		t.Run(fmt.Sprint(limit), func(t *testing.T) {
 			root := fixture(t, "", "", "", "", "")

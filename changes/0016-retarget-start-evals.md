@@ -1,4 +1,5 @@
 ---
+audit_rounds: 0
 bases: {}
 eval_fix:
     - FLOW-001
@@ -7,6 +8,8 @@ eval_fix:
     - FLOW-008
     - FLOW-009
 module: workflow
+phase: audit
+run: 20261027T192020-c8e969479fe05f41a6d19a48
 ---
 
 
@@ -53,3 +56,7 @@ extra unapproved fixture; its P04 outcome is already asserted in the original
 below-bound scenario. Restore 32 reported workflow cases with no lost assertions.
 No new Test functions, t.Run cases, fixture instances, public interfaces or
 implementation changes. The impl phase may edit only this change file.
+
+## Provenance
+
+- evals 2026-10-27T19:21:59.567362Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=118 failing=0 passing=118
