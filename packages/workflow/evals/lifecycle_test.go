@@ -382,6 +382,17 @@ func Test_FLOW_002_FLOW_022_FLOW_023_EvalsRequireCoverageAndPerIDFailFirst(t *te
 				write(t, root, ".fireweed/eval.sh", strings.ReplaceAll(string(b), `name="ALP-001"`, `name="ALP-002"`))
 				commit(t, root, "hook omits target")
 			}
+			if scenario == "already-satisfied" {
+				p := filepath.Join(root, ".fireweed/eval.sh")
+				b, _ := os.ReadFile(p)
+				script := strings.Replace(string(b), `  exit "$exitcode"`, `  if [ -f packages/alpha/evals/no-coverage ]; then sed 's/name="ALP-002"/name="ALP-001"/g' "$report" > "$report.tmp"; mv "$report.tmp" "$report"; fi
+  exit "$exitcode"`, 1)
+				if script == string(b) {
+					t.Fatal("fixture coverage switch was not installed")
+				}
+				write(t, root, ".fireweed/eval.sh", script)
+				commit(t, root, "hook can omit unrelated current spec")
+			}
 			if scenario == "passing-target-unrelated-failure" || scenario == "already-satisfied" {
 				write(t, root, ".fireweed/unrelated", "yes\n")
 				commit(t, root, "known unrelated failing case")
@@ -401,6 +412,16 @@ func Test_FLOW_002_FLOW_022_FLOW_023_EvalsRequireCoverageAndPerIDFailFirst(t *te
 			}
 			if wantPass && (len(r.Reports["alpha"].Cases) == 0 || r.State.Snapshot.Root != root) {
 				t.Errorf("reports or held snapshot absent: %#v", r)
+			}
+			if scenario == "already-satisfied" {
+				write(t, root, "packages/alpha/evals/no-coverage", "omit ALP-002\n")
+				missing, err := verify(root, true)
+				if len(missing.Reports["alpha"].Cases) == 0 {
+					t.Errorf("target module evals did not run: %#v, %v", missing, err)
+				}
+				if err == nil {
+					t.Errorf("evals accepted report without unrelated current spec ALP-002: %#v", missing)
+				}
 			}
 		})
 	}
