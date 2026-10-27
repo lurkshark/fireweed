@@ -184,3 +184,11 @@ acceptance or a fresh-checkout/drill/self-hosting claim. Controller unapproved
 count is 5 against origin/main `6e341a4`; P07 requires human shared-base approval
 before another change. Four changes were applied since the explicit review at
 `3311f67`; no bound/ref was altered.
+
+- R06/R13/R14 partial: GIT-001–GIT-005 supply canonical primary/linked repository
+  metadata, local base selection, working/index/committed diffs, selected commits,
+  blobs/CAS and bounded process groups. Archive `0010-manual-lifecycle-git.md`;
+  evals `3e82adc` / `93ba9a6` / `5d00cac`, audits `98a799f` / `f2ddd0f` / `5911fab`,
+  impl `92f999a`; 7 fail-first cases, then 8 permanent passes plus 2 temporary
+  public smoke probes and dependent/boundary passes. Escaped process groups remain
+  unsupported. Claims/lifecycle and full Git surface remain unverified.

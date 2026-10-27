@@ -4,13 +4,13 @@ Keep this file short: update sections in place and add one line per applied chan
 
 ## Status — 2026-10-26
 
-Human review 2 cleared the shared-base gate at `969ab2f`; zero changes applied
+Human review 2 cleared the shared-base gate at `969ab2f`; one change applied
 since that review. The NEW CLI can
 load modules, author a change, stamp/check it and display projected specs. The
 manual start/fail-first/audit/impl/archive lifecycle is still incomplete; every
 acceptance row remains unverified.
 
-Shared-base unapproved count is now 0; max_unapproved remains 5. No pending
+Shared-base unapproved count is now 1; max_unapproved remains 5. No pending
 changes, active claims or scratch worktrees remain. Continue the existing manual
 slice and stop again after five applied changes or an actual block.
 
@@ -82,6 +82,8 @@ slice and stop again after five applied changes or an actual block.
 - `queue-authoring` / PRJ-004–PRJ-007: evals `6e3ca5f` (24 failures, 25 passes), independent audit `776b4d0` (no findings), impl `2ef37df` (53 project and 51 app cases pass, dependents/boundaries pass); archive `0008-queue-authoring.md`. Two contradictory eval fixtures corrected before freezing. 3 applied since review 1; shared-base unapproved count 4.
 - `authoring-commands` / APP-006–APP-008: evals `5720dce` (27 failures, 51 passes), independent audit `b2aaa14` (no findings), impl `de65319` (78/78 app cases and boundaries pass); archive `0009-authoring-commands.md`. Ambiguous-module fixture corrected before freezing. 4 applied since review 1.
 
+- `manual-lifecycle-git` / GIT-001–GIT-005: evals `3e82adc` / `93ba9a6` / `5d00cac` (7 genuine failures), findings `98a799f` / `f2ddd0f`, independent passing final audit `5911fab`, impl `92f999a` (8 permanent cases, 2 public smoke probes, 78 app and 53 project cases pass; boundaries pass). Two bounded audit rounds. Archive `0010-manual-lifecycle-git.md`. 1 applied since review 2.
+
 ## Latest verification and manual fixture
 
 - Exact checked range:
@@ -108,7 +110,7 @@ slice and stop again after five applied changes or an actual block.
 ## Next / resume — review 2 approved
 
 The gate is cleared by verified shared-base state and explicit human approval.
-Review count is zero. Keep all bounds and the original stage-2 history baseline.
+Review count is one. Keep all bounds and the original stage-2 history baseline.
 Continue the existing manual fixture: add only needed Git
 and process primitives, hook/JUnit coverage checks, claims/start/verify/done/audit
 and apply/archive, wiring each operation through app promptly. Include the two
@@ -117,3 +119,11 @@ before this slice runs end to end. Full project validation/views remain incomple
 
 If a change is active on resume, read its context and preserve its work. Protected
 author edits belong only between active changes in separate commits.
+
+- Gitstore implementation review exposed selected-new-file staging and index-only
+  diff gaps needed by the slice. Both corrected within impl without frozen edits;
+  temporary public smoke client `/tmp/fireweed-gitstore-slice-smoke.go` now passes.
+  Fixture hooks prepared before start: project-owned Go adapter copied to fixture
+  .fireweed/hooks.go, eval/boundaries configured, audit enabled, timeout 30s;
+  author commit `5357850929ce87725fc492b1f45b5d1e76b327c9`. No lifecycle success yet.
+  Next: checks public JUnit/hook/zone/boundary operations, then workflow and app.
