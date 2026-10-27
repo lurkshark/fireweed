@@ -1,12 +1,15 @@
 ---
 already_satisfied:
     - FLOW-003
-    - new:passing-audit
-    - new:audit-questions
-    - new:audit-release
+    - FLOW-041
+    - FLOW-042
+    - FLOW-043
+audit_rounds: 0
 bases:
     FLOW-003: 15bd8a0e
 module: workflow
+phase: audit
+run: 20261027T213255-c54a80dd67be868a918b1001
 ---
 
 
@@ -24,13 +27,13 @@ Existing behavior and fixtures suffice; no implementation change belongs here.
 
 ## Added
 
-### new:passing-audit
+### FLOW-041
 Audit Done MUST require No findings with a complete checked-ID list before advancing to impl.
 
-### new:audit-questions
+### FLOW-042
 When audit blocks a change, Done MUST include the blocking findings in its Questions section.
 
-### new:audit-release
+### FLOW-043
 Audit blocking MUST release the calling worktree's held change claim.
 
 ## Modified
@@ -59,3 +62,7 @@ Done on that same held fixture and require rejection with HEAD/phase unchanged.
 Do not add scenarios. Its existing quick Verify already succeeds. The existing
 FailedDoneKeepsPhaseAndHead fixture also asserts full-verification rejection.
 No interface or implementation edits; impl may edit only this change file.
+
+## Provenance
+
+- evals 2026-10-27T21:35:46.286599Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=118 failing=0 passing=118

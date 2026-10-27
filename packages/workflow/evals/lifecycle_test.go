@@ -451,7 +451,7 @@ func Test_FLOW_023_AddedIDRequiresMappedFailingCase(t *testing.T) {
 	}
 }
 
-func Test_FLOW_002_FLOW_022_FLOW_025_FLOW_026_FLOW_027_FLOW_029_FLOW_030_FLOW_031_ImplFreezesEvalsAndRunsDependentsAndBoundaries(t *testing.T) {
+func Test_FLOW_002_FLOW_003_FLOW_022_FLOW_025_FLOW_026_FLOW_027_FLOW_029_FLOW_030_FLOW_031_ImplFreezesEvalsAndRunsDependentsAndBoundaries(t *testing.T) {
 	for _, scenario := range []string{"frozen-eval", "direct", "all", "none", "quick-boundary"} {
 		t.Run(scenario, func(t *testing.T) {
 			config := "audit:\n  enabled: false\n"
@@ -498,6 +498,9 @@ func Test_FLOW_002_FLOW_022_FLOW_025_FLOW_026_FLOW_027_FLOW_029_FLOW_030_FLOW_03
 			before := head(t, root)
 			quick, quickErr := verify(root, true)
 			full, fullErr := verify(root, false)
+			if head(t, root) != before {
+				t.Error("Verify committed")
+			}
 			if scenario == "frozen-eval" {
 				if quickErr == nil || fullErr == nil {
 					t.Errorf("frozen eval edit accepted: %#v %v; %#v %v", quick, quickErr, full, fullErr)
@@ -535,9 +538,16 @@ func Test_FLOW_002_FLOW_022_FLOW_025_FLOW_026_FLOW_027_FLOW_029_FLOW_030_FLOW_03
 				if scenario == "all" && len(full.Reports["gamma"].Cases) > 0 && full.Reports["gamma"].Cases[0].Result != "fail" {
 					t.Errorf("selected transitive dependent did not report its failing testcase: %#v", full.Reports["gamma"])
 				}
-			}
-			if head(t, root) != before {
-				t.Error("Verify committed")
+				if scenario == "direct" || scenario == "all" || scenario == "quick-boundary" {
+					r, err := done(root)
+					if err == nil || head(t, root) != before {
+						t.Errorf("Done accepted failed full verification or committed: %#v, %v", r, err)
+					}
+					current, currentErr := workflow.Current(root, "manual")
+					if currentErr != nil || current.Phase != "impl" || current.PhaseBase != before {
+						t.Errorf("failed full verification advanced phase: %#v, %v", current, currentErr)
+					}
+				}
 			}
 		})
 	}
@@ -564,7 +574,7 @@ func toAudit(t *testing.T, root string) workflow.State {
 	return r.State
 }
 
-func Test_FLOW_003_FLOW_032_FLOW_033_EvalsDoneUsesDefaultAuditOrDisabledImpl(t *testing.T) {
+func Test_FLOW_032_FLOW_033_EvalsDoneUsesDefaultAuditOrDisabledImpl(t *testing.T) {
 	for _, disabled := range []bool{false, true} {
 		t.Run(fmt.Sprint(disabled), func(t *testing.T) {
 			config := ""
@@ -588,7 +598,7 @@ func Test_FLOW_003_FLOW_032_FLOW_033_EvalsDoneUsesDefaultAuditOrDisabledImpl(t *
 	}
 }
 
-func Test_FLOW_003_FLOW_034_FLOW_036_AuditAcceptsOnlyExactClauseFindingsAndCheckedNoFindings(t *testing.T) {
+func Test_FLOW_034_FLOW_036_FLOW_041_AuditAcceptsOnlyExactClauseFindingsAndCheckedNoFindings(t *testing.T) {
 	root := fixture(t, "", "", "", "", "")
 	toAudit(t, root)
 	audit(t, root, "- ALP-999: \"Missing MUST clause.\" — invalid ID\n- ALP-001: \"Alpha MUST do something else.\" — invalid quote\nChecked IDs: ALP-001\nNo findings\n")
@@ -609,7 +619,7 @@ func Test_FLOW_003_FLOW_034_FLOW_036_AuditAcceptsOnlyExactClauseFindingsAndCheck
 	}
 }
 
-func Test_FLOW_003_FLOW_035_FLOW_037_FLOW_038_FLOW_039_AuditFindingsConvergeAndPersistTwoRoundBound(t *testing.T) {
+func Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_AuditFindingsConvergeAndPersistTwoRoundBound(t *testing.T) {
 	root := fixture(t, "", "", "### new:extra [review]\nExtra MUST be visible.\n", "", "")
 	toAudit(t, root)
 	finding := "- ALP-001: \"" + newClause + "\" — missing assertion\n"
@@ -641,7 +651,8 @@ func Test_FLOW_003_FLOW_035_FLOW_037_FLOW_038_FLOW_039_AuditFindingsConvergeAndP
 	beforeBlock := head(t, root)
 	_, _ = done(root)
 	b, _ := os.ReadFile(filepath.Join(root, "changes/0001-manual.md"))
-	if !strings.Contains(string(b), "blocked:") || !strings.Contains(string(b), "## Questions") || !strings.Contains(string(b), newClause) {
+	questions, hasQuestions := contracts.Section(string(b), "Questions")
+	if !strings.Contains(string(b), "blocked:") || !hasQuestions || !strings.Contains(questions, newClause) {
 		t.Errorf("third finding did not block with question: %s", b)
 	}
 	if head(t, root) == beforeBlock || !strings.Contains(string(b), "audit_rounds: 2") {
@@ -667,7 +678,8 @@ func Test_FLOW_003_FLOW_035_FLOW_037_FLOW_038_FLOW_039_AuditFindingsConvergeAndP
 	audit(t, configured, finding)
 	_, _ = done(configured)
 	change, err := os.ReadFile(filepath.Join(configured, "changes/0001-manual.md"))
-	if err != nil || !strings.Contains(string(change), "blocked:") || !strings.Contains(string(change), "audit_rounds: 1") || !strings.Contains(string(change), "## Questions") {
+	configuredQuestions, configuredHasQuestions := contracts.Section(string(change), "Questions")
+	if err != nil || !strings.Contains(string(change), "blocked:") || !strings.Contains(string(change), "audit_rounds: 1") || !configuredHasQuestions || !strings.Contains(configuredQuestions, newClause) {
 		t.Errorf("configured max_rounds did not block after one return: %s, %v", change, err)
 	}
 	if _, err := workflow.Current(configured, "manual"); err == nil {
@@ -675,13 +687,14 @@ func Test_FLOW_003_FLOW_035_FLOW_037_FLOW_038_FLOW_039_AuditFindingsConvergeAndP
 	}
 }
 
-func Test_FLOW_003_FLOW_040_UntestableFindingBlocksWithQuestion(t *testing.T) {
+func Test_FLOW_040_FLOW_042_FLOW_043_UntestableFindingBlocksWithQuestion(t *testing.T) {
 	root := fixture(t, "", "", "", "", "")
 	toAudit(t, root)
 	audit(t, root, "- [untestable] ALP-001: \""+newClause+"\" — cannot observe the value\n")
 	_, _ = done(root)
 	b, _ := os.ReadFile(filepath.Join(root, "changes/0001-manual.md"))
-	if !strings.Contains(string(b), "blocked:") || !strings.Contains(string(b), "## Questions") || !strings.Contains(string(b), newClause) {
+	questions, hasQuestions := contracts.Section(string(b), "Questions")
+	if !strings.Contains(string(b), "blocked:") || !hasQuestions || !strings.Contains(questions, newClause) {
 		t.Errorf("untestable finding did not block: %s", b)
 	}
 	if _, err := workflow.Current(root, "manual"); err == nil {
@@ -763,7 +776,7 @@ func Test_FLOW_004_FLOW_028_ImplDoneAppliesSpecsSetAndDecisionsAndArchives(t *te
 	}
 }
 
-func Test_FLOW_004_FLOW_024_FailedDoneKeepsPhaseAndHead(t *testing.T) {
+func Test_FLOW_003_FLOW_004_FLOW_024_FailedDoneKeepsPhaseAndHead(t *testing.T) {
 	root := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
 	hookPath := filepath.Join(root, ".fireweed/eval.sh")
 	hook, err := os.ReadFile(hookPath)
