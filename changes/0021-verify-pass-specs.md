@@ -6,6 +6,7 @@ already_satisfied:
     - FLOW-027
 audit_rounds: 0
 bases: {}
+blocked: interrupted; resume with --from-attempt after removing blocked
 module: workflow
 phase: impl
 run: 20261027T200041-dc963ea0490486b7882b0c07
