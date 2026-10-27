@@ -3,7 +3,7 @@
 ## Current status — 2026-10-27
 
 Human review 3 is recorded after finishing 0014, as requested. **Applied since
-review: 2.** The owner pushed main. Milestone 1 passed through the NEW binary;
+review: 3.** The owner pushed main. Milestone 1 passed through the NEW binary;
 Milestone 2 waits for the spec splits, diagnostic migration and one contracts
 drill. Consecutive workflow/checks changes are authorized for the spec split.
 Stop after five applied changes, on any block, or on a drill failure that calls
@@ -35,6 +35,8 @@ Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -
 - 0015 start-state-specs — FLOW-006–009; ec03162/5223bcb/891d152; already_satisfied, 36 own cases and dependents pass; eval retargeting correction follows in 0016.
 
 - 0016 retarget-start-evals — eval_fix FLOW-001/006–009; 129178c/0b7ea8b/5337b77; restored 32 own cases with every assertion/ID retained, dependents pass.
+
+- 0017 start-precondition-specs — FLOW-010–013; 438072c/b35410d/6b2af96; already_satisfied, 32 own cases and dependents pass; implementation unchanged.
 
 ## Next
 
