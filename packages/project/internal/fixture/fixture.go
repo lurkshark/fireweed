@@ -1,9 +1,274 @@
 package fixture
 
-import "github.com/lurkshark/fireweed/packages/project/model"
+import (
+	"fmt"
+	"io/fs"
+	"os"
+	"path/filepath"
+	"regexp"
+	"strconv"
 
-func Load(root string) (model.Snapshot, error) { return model.Snapshot{}, nil }
+	"github.com/lurkshark/fireweed/packages/contracts"
+	"github.com/lurkshark/fireweed/packages/project/model"
+	"gopkg.in/yaml.v3"
+)
 
-func ValidateGraph(modules []model.Module) error { return nil }
+func Load(root string) (model.Snapshot, error) {
+	data, err := os.ReadFile(filepath.Join(root, "fireweed.yaml"))
+	if err != nil {
+		return model.Snapshot{}, fmt.Errorf("read fireweed.yaml: %w", err)
+	}
+	var config map[string]any
+	if err := yaml.Unmarshal(data, &config); err != nil {
+		return model.Snapshot{}, fmt.Errorf("parse fireweed.yaml: %w", err)
+	}
+	if config == nil {
+		return model.Snapshot{}, fmt.Errorf("fireweed.yaml must be a mapping")
+	}
+	patterns, err := stringList(config["modules"], "fireweed.yaml modules")
+	if err != nil {
+		return model.Snapshot{}, err
+	}
+	defaults := map[string]any{}
+	if value, ok := config["module_defaults"]; ok {
+		defaults, ok = value.(map[string]any)
+		if !ok {
+			return model.Snapshot{}, fmt.Errorf("fireweed.yaml module_defaults must be a mapping")
+		}
+	}
 
-func NewChange(root, module, slug string) (string, error) { return "", nil }
+	snapshot := model.Snapshot{Root: root, Config: config}
+	err = filepath.WalkDir(root, func(path string, entry fs.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
+		}
+		if !entry.IsDir() {
+			return nil
+		}
+		if entry.Name() == ".git" {
+			return filepath.SkipDir
+		}
+		rel, err := filepath.Rel(root, path)
+		if err != nil {
+			return err
+		}
+		rel = filepath.ToSlash(rel)
+		if rel == "." || !matchesModule(patterns, rel) {
+			return nil
+		}
+		data, err := os.ReadFile(filepath.Join(path, "SPEC.md"))
+		if err != nil {
+			return fmt.Errorf("read %s/SPEC.md: %w", rel, err)
+		}
+		doc, err := contracts.ParseDocument(string(data))
+		if err != nil {
+			return fmt.Errorf("parse %s/SPEC.md: %w", rel, err)
+		}
+		name, ok := doc.Frontmatter["name"].(string)
+		if !ok {
+			return fmt.Errorf("%s/SPEC.md name must be a string", rel)
+		}
+		prefix, ok := doc.Frontmatter["id_prefix"].(string)
+		if !ok {
+			return fmt.Errorf("%s/SPEC.md id_prefix must be a string", rel)
+		}
+		var dependencies []string
+		if value, ok := doc.Frontmatter["depends_on"]; ok {
+			dependencies, err = stringList(value, rel+"/SPEC.md depends_on")
+			if err != nil {
+				return err
+			}
+		}
+		zones, err := moduleZones(doc.Frontmatter, defaults, rel)
+		if err != nil {
+			return err
+		}
+		snapshot.Modules = append(snapshot.Modules, model.Module{
+			Name: name, IDPrefix: prefix, Dir: rel, DependsOn: dependencies,
+			Zones: zones, Document: doc,
+		})
+		return nil
+	})
+	if err != nil {
+		return model.Snapshot{}, err
+	}
+	return snapshot, nil
+}
+
+func matchesModule(patterns []string, dir string) bool {
+	for _, pattern := range patterns {
+		if contracts.MatchGlob(pattern, dir) {
+			return true
+		}
+	}
+	return false
+}
+
+func stringList(value any, label string) ([]string, error) {
+	items, ok := value.([]any)
+	if !ok {
+		return nil, fmt.Errorf("%s must be a list of strings", label)
+	}
+	result := make([]string, 0, len(items))
+	for _, item := range items {
+		text, ok := item.(string)
+		if !ok {
+			return nil, fmt.Errorf("%s must be a list of strings", label)
+		}
+		result = append(result, text)
+	}
+	return result, nil
+}
+
+func moduleZones(frontmatter, defaults map[string]any, dir string) (contracts.Zones, error) {
+	var zones contracts.Zones
+	fields := []struct {
+		name string
+		into *[]string
+	}{
+		{"protected", &zones.Protected},
+		{"evals", &zones.Evals},
+		{"interface", &zones.Interface},
+		{"append_only", &zones.AppendOnly},
+		{"preserve", &zones.Preserve},
+		{"disposable", &zones.Disposable},
+	}
+	for _, field := range fields {
+		value, exists := frontmatter[field.name]
+		label := dir + "/SPEC.md " + field.name
+		if !exists {
+			value, exists = defaults[field.name]
+			label = "fireweed.yaml module_defaults " + field.name
+		}
+		if exists {
+			list, err := stringList(value, label)
+			if err != nil {
+				return contracts.Zones{}, err
+			}
+			*field.into = list
+		}
+	}
+	return zones, nil
+}
+
+func ValidateGraph(modules []model.Module) error {
+	byName := make(map[string]model.Module, len(modules))
+	prefixes := make(map[string]string, len(modules))
+	for _, module := range modules {
+		if module.Name == "" {
+			return fmt.Errorf("empty module name")
+		}
+		if module.IDPrefix == "" {
+			return fmt.Errorf("empty ID prefix for module %s", module.Name)
+		}
+		if _, exists := byName[module.Name]; exists {
+			return fmt.Errorf("duplicate module name %q", module.Name)
+		}
+		if other, exists := prefixes[module.IDPrefix]; exists {
+			return fmt.Errorf("duplicate ID prefix %q for %s and %s", module.IDPrefix, other, module.Name)
+		}
+		byName[module.Name] = module
+		prefixes[module.IDPrefix] = module.Name
+	}
+	state := make(map[string]uint8, len(modules))
+	var visit func(string) error
+	visit = func(name string) error {
+		state[name] = 1
+		for _, dependency := range byName[name].DependsOn {
+			if dependency == name {
+				return fmt.Errorf("module %s has a self-dependency", name)
+			}
+			if _, exists := byName[dependency]; !exists {
+				return fmt.Errorf("module %s depends on missing module %s", name, dependency)
+			}
+			if state[dependency] == 1 {
+				return fmt.Errorf("dependency cycle between %s and %s", name, dependency)
+			}
+			if state[dependency] == 0 {
+				if err := visit(dependency); err != nil {
+					return err
+				}
+			}
+		}
+		state[name] = 2
+		return nil
+	}
+	for _, module := range modules {
+		if state[module.Name] == 0 {
+			if err := visit(module.Name); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+var slugPattern = regexp.MustCompile(`^[a-z0-9-]+$`)
+var changeNamePattern = regexp.MustCompile(`^([0-9]+)-(.+)\.md$`)
+
+func NewChange(root, module, slug string) (string, error) {
+	if !slugPattern.MatchString(slug) {
+		return "", fmt.Errorf("invalid change slug %q", slug)
+	}
+	snapshot, err := Load(root)
+	if err != nil {
+		return "", err
+	}
+	found := false
+	for _, item := range snapshot.Modules {
+		if item.Name == module {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return "", fmt.Errorf("unknown module %q", module)
+	}
+	maxNumber := 0
+	for _, directory := range []string{"changes", "changes/archive"} {
+		entries, err := os.ReadDir(filepath.Join(root, directory))
+		if os.IsNotExist(err) {
+			continue
+		}
+		if err != nil {
+			return "", fmt.Errorf("read %s: %w", directory, err)
+		}
+		for _, entry := range entries {
+			if entry.IsDir() {
+				continue
+			}
+			parts := changeNamePattern.FindStringSubmatch(entry.Name())
+			if parts == nil {
+				continue
+			}
+			if parts[2] == slug {
+				return "", fmt.Errorf("change slug %q already exists in %s", slug, directory)
+			}
+			number, err := strconv.Atoi(parts[1])
+			if err != nil {
+				return "", fmt.Errorf("invalid change number in %s/%s: %w", directory, entry.Name(), err)
+			}
+			if number > maxNumber {
+				maxNumber = number
+			}
+		}
+	}
+	path := fmt.Sprintf("changes/%04d-%s.md", maxNumber+1, slug)
+	body := "\n## Motivation\n\n## Interface\n\n## Added\n\n## Modified\n\n## Removed\n\n## Decisions\n\n"
+	content, err := contracts.RenderDocument(contracts.Document{Frontmatter: map[string]any{"module": module}, Body: body})
+	if err != nil {
+		return "", err
+	}
+	if err := os.MkdirAll(filepath.Join(root, "changes"), 0755); err != nil {
+		return "", fmt.Errorf("create changes directory: %w", err)
+	}
+	file, err := os.OpenFile(filepath.Join(root, filepath.FromSlash(path)), os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
+	if err != nil {
+		return "", fmt.Errorf("create %s: %w", path, err)
+	}
+	defer file.Close()
+	if _, err := file.WriteString(content); err != nil {
+		return "", fmt.Errorf("write %s: %w", path, err)
+	}
+	return path, nil
+}
