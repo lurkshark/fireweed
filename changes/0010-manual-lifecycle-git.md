@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: gitstore
+phase: audit
+run: 20261027T051014-bb3072879b91b81e7176489d
 set:
     interface:
         - api.go
@@ -34,19 +37,19 @@ create-only; empty new means delete. Behavior stays under internal/.
 
 ## Added
 
-### new:repository
+### GIT-001
 Inspect MUST return canonical absolute worktree/common-Git directories plus HEAD and branch, from a directory inside a primary or linked worktree. The branch MUST be empty for detached HEAD, and non-repositories MUST return an error.
 
-### new:local-base
+### GIT-002
 BaseRef MUST prefer a locally known remote/base ref, falling back to the local base branch and rejecting a missing base. An omitted remote MUST mean origin. An omitted base MUST use the local remote HEAD's branch when known, otherwise main.
 
-### new:phase-files
+### GIT-003
 Changes MUST report repository-relative staged/unstaged tracked edits and untracked paths against the given base, retaining both names for staged renames. ReadAt MUST return a revision's file bytes or an error for absent paths. Commit MUST commit only explicitly selected paths with the given subject, return the new HEAD, and leave unrelated working/index changes uncommitted.
 
-### new:claim-objects
+### GIT-004
 WriteBlob and ReadBlob MUST round-trip byte payloads through local Git objects. Ref MUST return the named local ref's object ID and existence. CASRef MUST create, update or delete a ref only when its exact current object matches the expected old value, returning an error without overwriting a newer value on mismatch.
 
-### new:bounded-process
+### GIT-005
 Run MUST launch argv in the requested directory with the supplied environment/stdin and return captured stdout, stderr and exit code. A nonzero exit MUST return an error while preserving output. Timeout or context cancellation MUST terminate the launched process group and return an error; processes escaping that group are outside the supported contract.
 
 ## Modified
@@ -58,3 +61,9 @@ Run MUST launch argv in the requested directory with the supplied environment/st
 
 
 ## Decisions
+
+
+
+## Provenance
+
+- evals 2026-10-27T05:17:38.756278Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=138 failing=7 passing=131
