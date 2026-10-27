@@ -1,13 +1,16 @@
 ---
 already_satisfied:
     - FLOW-002
-    - new:approved-hooks
-    - new:quick-dependents
-    - new:quick-boundaries
-    - new:verify-no-commit
+    - FLOW-028
+    - FLOW-029
+    - FLOW-030
+    - FLOW-031
+audit_rounds: 0
 bases:
     FLOW-002: a6ff549a
 module: workflow
+phase: audit
+run: 20261027T202735-fe8faf8d8c6010599509c9b3
 ---
 
 
@@ -25,16 +28,16 @@ already works; reuse and retarget existing evals without implementation changes.
 
 ## Added
 
-### new:approved-hooks
+### FLOW-028
 Verify MUST select hooks from the held approved projected project snapshot.
 
-### new:quick-dependents
+### FLOW-029
 Quick Verify MUST skip dependent-module evals.
 
-### new:quick-boundaries
+### FLOW-030
 Quick Verify MUST skip boundary verification.
 
-### new:verify-no-commit
+### FLOW-031
 Verify MUST leave HEAD unchanged.
 
 ## Modified
@@ -64,3 +67,7 @@ metadata: author a set.hooks.eval override pointing to the existing eval script,
 and point the global eval hook to a simple failing script before Start. Keep
 its other set/application assertions. No new fixture or separate test case.
 No interface or implementation edits; impl may edit only this change file.
+
+## Provenance
+
+- evals 2026-10-27T20:29:39.570882Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=118 failing=0 passing=118

@@ -365,7 +365,7 @@ func Test_FLOW_002_FLOW_020_FLOW_021_RejectsAuthorMetadataAndZonesBeforeHooks(t 
 	}
 }
 
-func Test_FLOW_002_FLOW_022_FLOW_023_EvalsRequireCoverageAndPerIDFailFirst(t *testing.T) {
+func Test_FLOW_022_FLOW_023_FLOW_031_EvalsRequireCoverageAndPerIDFailFirst(t *testing.T) {
 	for _, scenario := range []string{"missing-coverage", "passing-target-unrelated-failure", "already-satisfied", "fixes"} {
 		t.Run(scenario, func(t *testing.T) {
 			front := ""
@@ -427,7 +427,7 @@ func Test_FLOW_002_FLOW_022_FLOW_023_EvalsRequireCoverageAndPerIDFailFirst(t *te
 	}
 }
 
-func Test_FLOW_002_FLOW_023_AddedIDRequiresMappedFailingCase(t *testing.T) {
+func Test_FLOW_023_AddedIDRequiresMappedFailingCase(t *testing.T) {
 	root := fixture(t, "", "set:\n  interface: [api.go, extra.go]\n", "### new:third\nThird MUST return a value.\n", "", "")
 	p := filepath.Join(root, ".fireweed/eval.sh")
 	b, _ := os.ReadFile(p)
@@ -451,7 +451,7 @@ func Test_FLOW_002_FLOW_023_AddedIDRequiresMappedFailingCase(t *testing.T) {
 	}
 }
 
-func Test_FLOW_002_FLOW_022_FLOW_025_FLOW_026_FLOW_027_ImplFreezesEvalsAndRunsDependentsAndBoundaries(t *testing.T) {
+func Test_FLOW_002_FLOW_022_FLOW_025_FLOW_026_FLOW_027_FLOW_029_FLOW_030_FLOW_031_ImplFreezesEvalsAndRunsDependentsAndBoundaries(t *testing.T) {
 	for _, scenario := range []string{"frozen-eval", "direct", "all", "none", "quick-boundary"} {
 		t.Run(scenario, func(t *testing.T) {
 			config := "audit:\n  enabled: false\n"
@@ -689,13 +689,20 @@ func Test_FLOW_003_UntestableFindingBlocksWithQuestion(t *testing.T) {
 	}
 }
 
-func Test_FLOW_004_ImplDoneAppliesSpecsSetAndDecisionsAndArchives(t *testing.T) {
-	root := fixture(t, "audit:\n  enabled: false\n", "set:\n  interface: [api.go, extra.go]\n", "### new:extra [review]\nExtra MUST be visible.\n", "", "### ALP-002\n")
+func Test_FLOW_004_FLOW_028_ImplDoneAppliesSpecsSetAndDecisionsAndArchives(t *testing.T) {
+	root := fixture(t, "audit:\n  enabled: false\nverify_dependents: none\n", "set:\n  interface: [api.go, extra.go]\n  hooks:\n    eval: [sh, .fireweed/eval.sh, \"{module}\", \"{report}\"]\n", "### new:extra [review]\nExtra MUST be visible.\n", "", "### ALP-002\n")
 	p := filepath.Join(root, ".fireweed/eval.sh")
 	b, _ := os.ReadFile(p)
 	script := strings.Replace(string(b), `<testcase name="ALP-002" classname="fixture">%s</testcase>`, "", 1)
 	script = strings.Replace(script, `"$result" "$other" > "$report"`, `"$result" > "$report"`, 1)
 	write(t, root, ".fireweed/eval.sh", script)
+	write(t, root, ".fireweed/global-eval.sh", "#!/bin/sh\nexit 1\n")
+	configPath := filepath.Join(root, "fireweed.yaml")
+	config, err := os.ReadFile(configPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	write(t, root, "fireweed.yaml", strings.Replace(string(config), "eval: [sh, .fireweed/eval.sh,", "eval: [sh, .fireweed/global-eval.sh,", 1))
 	commit(t, root, "report only projected spec IDs")
 	start(t, root)
 	evalsHead := head(t, root)
