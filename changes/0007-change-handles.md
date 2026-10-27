@@ -2,7 +2,7 @@
 audit_rounds: 0
 bases: {}
 module: contracts
-phase: audit
+phase: impl
 run: 20261027T010515-ddcff5bdc56f165ee47ed469
 ---
 
@@ -39,3 +39,8 @@ ParseItems MUST accept new:<slug> item headings and preserve the complete handle
 ## Provenance
 
 - evals 2026-10-27T01:06:53.314916Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=118 failing=1 passing=117
+- audit 2026-10-27T01:09:49.808283Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+
+## Audit
+
+No findings. Checked CON-006.
