@@ -1,0 +1,57 @@
+---
+bases: {}
+module: workflow
+set:
+    interface:
+        - api.go
+        - model/**
+---
+
+
+
+## Motivation
+
+The design's manual lifecycle finish line needs real claims, phase checks,
+audit convergence, apply/archive and inspectable evidence. Connect the existing
+project/Git/checks primitives now; unattended retries, all change kinds and
+attempt recovery remain later work.
+
+## Interface
+
+Retain data-only State with Change project.Change, Snapshot project.Snapshot,
+Run/Phase/Head/PhaseBase/ClaimOID strings and Diagnostics []project.Diagnostic.
+Request holds Root/Change/Bin/Agent strings, Quick bool and Timeout time.Duration.
+Result holds State, Reports map[string]checks.Report and Diagnostics.
+Thin functions: Start(root,change string) (State,error),
+Current(root,change string) (State,error),
+Verify(ctx context.Context,request Request) (Result,error),
+Done(ctx context.Context,request Request) (Result,error), and
+Context(root,change string,full bool) (string,error).
+Behavior lives under internal; dependency types use public imports.
+
+## Added
+
+### new:start-claim
+Start MUST atomically claim a clean eligible queued change for its canonical worktree, retain the approved projected snapshot/base, assign next free module IDs throughout the change, and write unique run plus evals without committing. It MUST warn when approval exists on neither local nor shared base and refuse when shared-base unapproved archives reach max_unapproved (default 5). Claims and Current MUST reject competing owners and resolve only this worktree's held change.
+
+### new:phase-verification
+Verify MUST reject altered approved author metadata/state and forbidden phase zones before hooks, using the held snapshot and diff since phase base. Evals MUST require coverage and fail-first for enforced Added/Modified/fixes IDs except already_satisfied. Impl MUST require current coverage/pass and configured dependent passes (direct default, all/none supported), plus boundaries; quick skips dependents/boundaries, and Verify never commits.
+
+### new:audit-transition
+Done MUST fully verify and commit evals into audit by default, or impl when audit is disabled. Audit MUST validate exact ID/clause findings, discard invalid findings and new IDs on re-audit, and require checked IDs with No findings to pass. Valid findings MUST increment persistent audit_rounds and return to evals; exceeding max_rounds (default 2), or untestable findings, blocks with Questions and releases the claim.
+
+### new:apply-archive
+Successful impl Done MUST apply Added/Modified/Removed, set values and Decisions (attributed to the slug), including Removed decisions, then archive with phase applied and commit together after static validation. Every phase commit MUST advance the claim's phase base, freezing prior eval/interface edits and releasing the exact held claim upon application. Failed verification MUST leave the phase unadvanced and create no commit.
+
+### new:evidence-context
+Each successful Done MUST append provenance with phase, date, manual/configured agent, version, playbook hash and result counts, retaining reports/output under the run directory. Context MUST include the change, projected spec, interface contents, SYSTEM and matching playbook, listing other relevant files by path/size or including contents with full. State MUST expose the held projected snapshot so composing commands use the approved graph during hooks.
+
+## Modified
+
+
+
+## Removed
+
+
+
+## Decisions
