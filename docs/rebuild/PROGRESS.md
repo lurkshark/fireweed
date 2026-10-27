@@ -4,8 +4,9 @@ Keep this file short: update sections in place and add one line per applied chan
 
 ## Status — 2026-10-26
 
-Stage-2 startup and standalone NEW CLI checkpoint passed. Four changes applied
-since the last human review; stop after the next applied change. The manual
+Stage-2 startup and standalone NEW CLI checkpoint passed. Five changes applied
+since the last human review; HUMAN REVIEW REQUIRED before further authoring or
+implementation. No pending changes or active claims remain. The manual
 lifecycle fixture is not built and every acceptance row remains unverified.
 
 ## Controller and baseline
@@ -18,7 +19,8 @@ lifecycle fixture is not built and every acceptance row remains unverified.
 - NEW stage-2 setup baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`.
   Use this explicit nonempty baseline..HEAD for history/CI acceptance. Historical
   restart `d991c26472ad990a5d050a07ce7dc873d1900433` is not the new baseline.
-- Product: `bin/fireweed`, built from this checkout; outside-project version
+- Product: `bin/fireweed`, clean source
+  `91f036cbb33981a5fb72798da3edec9bdc90b077` (vcs.modified=false); outside-project version
   --json passed. help/version/explain/playbook work; other commands explicitly
   fail as unimplemented. No controller delegation.
 
@@ -44,7 +46,9 @@ lifecycle fixture is not built and every acceptance row remains unverified.
 - `standalone-information` / AST-001–AST-003: evals `a4ceb17` (8 genuine failures), independent audit `826b9e9` (no findings), impl `2248b8e` (8/8 pass, direct dependents/boundaries pass); archive `0001-standalone-information.md`.
 - `standalone-cli` / APP-001–APP-003: evals `1298acf` (30 genuine failures), controller audit `7de7d30` (independent findings discarded due folded quote line breaks), impl `db77de7` (30/30 pass); archive `0002-standalone-cli.md`. Independent audit did NOT pass; corrected in next eval_fix.
 - `json-error-assertions` / APP-003 eval_fix: evals `eb4704d`, independent audit `e184bb6` (no findings), impl `8796d37` (no code edits; all 26 app cases pass); archive `0003-json-error-assertions.md`.
-- `lifecycle-primitives` / CON-001–CON-005: evals `11d0180` (27 genuine failures), independent audit `6e341a4` (no findings), impl `8e37dd7` (27/27 own, 26 app and 8 assets cases pass; all direct dependents/boundaries pass); archive `0004-lifecycle-primitives.md`.
+- `lifecycle-primitives` / CON-001–CON-005: evals `11d0180` (18 failures, 9 passes; every changed ID fails), independent audit `6e341a4` (no findings), impl `8e37dd7` (27/27 own, 26 app and 8 assets cases pass; all direct dependents/boundaries pass); archive `0004-lifecycle-primitives.md`.
+
+- `fixture-authoring` / PRJ-001–PRJ-003: initial evals `1bcba65`, findings `5c647a2`, corrected evals `bfee6b8` (24 failures, 1 pass; all changed IDs fail), independent passing re-audit `06f17c6`, impl `91f036c` (25/25 own and 26 app cases pass, direct dependents/boundaries pass); archive `0005-fixture-authoring.md`. One persistent audit round.
 
 ## Process findings and limits
 
@@ -65,13 +69,36 @@ lifecycle fixture is not built and every acceptance row remains unverified.
 - On resumption origin/main was observed at `6e341a4`; this process did not push
   or move the base. Review count remains four; do not silently reset it.
 
-## Next / resume
+## Checkpoint verification
 
-Author one focused project change for loading the minimal fixture and authoring,
-queue projection and stamping. Then stop at five applied changes for human review.
-After review, wire those operations through app promptly and continue the NEW
-manual fail-first/audit/impl/archive fixture, adding only needed Git/checks/workflow
-behavior. Do not polish working primitives before that end-to-end slice.
+- Checked source: `91f036cbb33981a5fb72798da3edec9bdc90b077`. Exact nonempty
+  controller history/CI range:
+  `be35552b706aa3000ff8f11306d129ff1d701b85..91f036cbb33981a5fb72798da3edec9bdc90b077`.
+- Build, `go test ./...`, `go test -race ./...`, `go vet ./...`, controller check,
+  check-commits and CI all exited 0. CI ran doctor canaries/recovery, boundaries,
+  history and all module coverage: app 26, assets 8, contracts 27, project 25
+  cases (86 total including parents), all pass; other modules have no specs yet.
+  CI reports doctor=true and no diagnostics. Logs/JSON:
+  `.fireweed/evidence/checkpoint-*`. Go printed a nonfatal module-stat-cache
+  sandbox write warning during build; build exited 0.
+- NEW executable smoke outside a project: help, version --json, explain P2-01 and
+  playbook audit all exit 0 with empty stderr. Permanent app eval also exercises
+  malformed config, JSON and usage errors. Primary worktree only, no claims.
+- These are intermediate checks, not complete acceptance. Fresh-checkout gates,
+  full NEW lifecycle/init/doctor/run/CI, full surface, packaging, controller/product
+  lifecycle comparison, real drills and isolated NEW self-hosting are unrun.
+
+## Next / resume — human checkpoint
+
+Wait for human review of these five applied changes. Do not author or execute a
+sixth change, move base refs, raise bounds or silently reset this review count.
+The goal remains incomplete. The shared-base P07 bound also remains in force.
+
+After review, wire project Load/module graph/NewChange through app promptly. Add
+only needed handle grammar, projection/stamping, Git, hook/coverage and lifecycle
+behavior to finish the NEW manual fail-first/audit/impl/archive fixture. Retain
+explicit failures for unimplemented commands; do not polish working primitives
+before that slice. Full project grammar/zone validation is still incomplete.
 
 If a change is active on resume, inspect its context, tree and claims first.
 Protected author edits belong only between changes, in separate commits.

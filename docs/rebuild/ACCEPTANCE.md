@@ -127,7 +127,24 @@ Bulky logs may remain ignored; commit concise findings/counts and durable commit
 
 - R02/R03/R04 partial: CON-001–CON-005 provide document/section/item parsing,
   canonical hashes, ID matching and zone precedence/globs. Archive
-  `0004-lifecycle-primitives.md`; evals `11d0180` (27 genuine failures), audit
+  `0004-lifecycle-primitives.md`; evals `11d0180` (18 failures, 9 passes; all changed IDs fail), audit
   `6e341a4` (independent no findings), impl `8e37dd7` (27 passes, existing app/assets
   and direct dependents/boundaries pass). Full grammar, project validation and
   lifecycle remain unverified.
+
+- R02/R04 partial: PRJ-001–PRJ-003 load the minimal fixture, validate module graph
+  identities/dependencies and author queued skeletons without assigned IDs. Archive
+  `0005-fixture-authoring.md`; initial evals `1bcba65`, audit findings `5c647a2`,
+  corrected evals `bfee6b8` (24 failures, 1 pass), passing independent re-audit
+  `06f17c6`, impl `91f036c` (25 own and 26 app cases pass). One audit round;
+  projection, stamping, other checks and CLI wiring remain unverified.
+
+## First human checkpoint — five applied changes
+
+Current-source Go build/test/race/vet and controller check/history/CI passed at
+`91f036cbb33981a5fb72798da3edec9bdc90b077`; exact range starts at
+`be35552b706aa3000ff8f11306d129ff1d701b85`. CI included doctor and all 86 reported
+cases (including parent cases), with no diagnostics. See PROGRESS for logs and
+limits. This is not fresh-checkout evidence or completion of any full acceptance
+row. The manual NEW lifecycle, remaining surface, real drills/self-hosting and
+delivery gates remain incomplete. Human review is required before change six.
