@@ -68,6 +68,24 @@ func Test_AST_004_GoRecipe(t *testing.T) {
 			t.Errorf("Go instructions omit %q", term)
 		}
 	}
+	for _, command := range []string{"go mod init", "go work init", "go work use"} {
+		if !strings.Contains(text, command) {
+			t.Errorf("Go instructions do not explain module/workspace setup with %q", command)
+		}
+	}
+	graphProcedure := false
+	for _, paragraph := range strings.Split(text, "\n\n") {
+		if strings.Contains(paragraph, "fireweed_bin modules --json") &&
+			strings.Contains(paragraph, "graph") &&
+			strings.Contains(paragraph, "depends_on") &&
+			strings.Contains(paragraph, "zones") &&
+			(strings.Contains(paragraph, "derive") || strings.Contains(paragraph, "build") || strings.Contains(paragraph, "generate")) {
+			graphProcedure = true
+		}
+	}
+	if !graphProcedure {
+		t.Error("Go instructions must explain deriving the graph's dependencies and zones from FIREWEED_BIN modules --json")
+	}
 }
 
 func Test_AST_005_EvalHookResults(t *testing.T) {
@@ -136,6 +154,28 @@ func Test_ALC001Unfinished(t *testing.T) { os.Exit(3) }
 	}
 }
 
+func Test_AST_005_EvalOnlyRequestedModule(t *testing.T) {
+	w := newGoRecipeWorkspace(t, goRecipe(t))
+	w.write("packages/alpha/evals/alpha_test.go", `package evals
+import "testing"
+func Test_ALC001Selected(t *testing.T) {}
+`)
+	w.write("packages/beta/evals/beta_test.go", `package evals
+import "testing"
+func Test_BET001OtherModuleFails(t *testing.T) { t.Fatal("beta must be excluded from alpha eval") }
+`)
+	report, output, err := w.eval("alpha")
+	if err != nil || report.caseNamed("Test_ALC001Selected") == nil {
+		t.Fatalf("alpha eval did not run alpha tests: err=%v output=%q cases=%+v", err, output, report.Cases)
+	}
+	if c := report.caseNamed("Test_BET001OtherModuleFails"); c != nil {
+		t.Errorf("alpha eval included beta testcase: %+v", *c)
+	}
+	if report, output, err := w.eval("beta"); err == nil || report.caseNamed("Test_BET001OtherModuleFails") == nil {
+		t.Errorf("beta fixture did not fail when requested: err=%v output=%q cases=%+v", err, output, report.Cases)
+	}
+}
+
 func Test_AST_006_BoundaryGraph(t *testing.T) {
 	r := goRecipe(t)
 	w := newGoRecipeWorkspace(t, r)
@@ -194,6 +234,57 @@ import _ "example.com/recipefixture/packages/beta/public"
 	}
 }
 
+func Test_AST_006_UsesModuleDirsAndWorkspacePath(t *testing.T) {
+	w := newGoRecipeWorkspace(t, goRecipe(t))
+	w.write("go.mod", "module example.net/customworkspace\n\ngo 1.23\n")
+	w.remove("packages/alpha/api.go")
+	w.remove("packages/beta/api.go")
+	const alphaDir = "src/engine"
+	const betaDir = "libraries/ledger"
+	const betaImport = "example.net/customworkspace/libraries/ledger/public"
+	w.write(alphaDir+"/api.go", "package engine\n")
+	w.write(betaDir+"/public/api.go", "package public\n")
+	w.write(betaDir+"/details/details.go", "package details\n")
+	graph := func(deps []string) {
+		modules := []map[string]any{
+			{"name": "alpha", "dir": alphaDir, "depends_on": deps,
+				"zones": map[string]any{"interface": []string{"api.go"}, "evals": []string{"checks/**"}, "disposable": []string{"internal/**"}}},
+			{"name": "beta", "dir": betaDir, "depends_on": []string{},
+				"zones": map[string]any{"interface": []string{"public/**"}, "evals": []string{"checks/**"}, "disposable": []string{"internal/**"}}},
+		}
+		b, err := json.Marshal(map[string]any{"data": modules})
+		if err != nil {
+			t.Fatal(err)
+		}
+		w.write("modules.json", string(b))
+	}
+	graph(nil)
+	if output, err := w.boundaries(); err != nil {
+		t.Fatalf("clean relocated modules rejected: %v: %s", err, output)
+	}
+	w.write(alphaDir+"/foreign.go", "package engine\nimport _ \""+betaImport+"\"\n")
+	if output, err := w.boundaries(); err == nil || !strings.Contains(output, "alpha:") || !strings.Contains(output, "beta") {
+		t.Errorf("undeclared relocated module import not reported: %v: %s", err, output)
+	}
+	graph([]string{"beta"})
+	if output, err := w.boundaries(); err != nil {
+		t.Errorf("declared relocated module import rejected: %v: %s", err, output)
+	}
+	w.write(alphaDir+"/checks/canary_test.go", "package checks\nimport _ \""+betaImport+"\"\n")
+	if output, err := w.boundaries(); err != nil {
+		t.Errorf("eval import of relocated retained interface rejected: %v: %s", err, output)
+	}
+	const detailsImport = "example.net/customworkspace/libraries/ledger/details"
+	w.write(alphaDir+"/checks/canary_test.go", "package checks\nimport _ \""+detailsImport+"\"\n")
+	if output, err := w.boundaries(); err == nil || !strings.Contains(output, "alpha:") || !strings.Contains(output, detailsImport) {
+		t.Errorf("eval import outside relocated interface not reported: %v: %s", err, output)
+	}
+	w.remove(alphaDir + "/checks/canary_test.go")
+	if output, err := w.boundaries(); err != nil {
+		t.Errorf("relocated graph did not recover: %v: %s", err, output)
+	}
+}
+
 func Test_AST_007_TemplatesAndCanaries(t *testing.T) {
 	r := goRecipe(t)
 	w := newGoRecipeWorkspace(t, r)
@@ -248,7 +339,7 @@ func Test_AST_007_TemplatesAndCanaries(t *testing.T) {
 	}
 	for path, content := range map[string]string{
 		"packages/beta/SPEC.md": r.Files[".fireweed/templates/module/SPEC.md"],
-		"packages/beta/api.go": r.Files[".fireweed/templates/module/api.go.tmpl"],
+		"packages/beta/api.go":  r.Files[".fireweed/templates/module/api.go.tmpl"],
 	} {
 		w.write(path, renderCanaryFields(content, "beta"))
 	}
