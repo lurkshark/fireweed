@@ -4,7 +4,7 @@ audit_pending:
 audit_rounds: 2
 bases: {}
 module: gitstore
-phase: impl
+phase: applied
 run: 20261027T051014-bb3072879b91b81e7176489d
 set:
     interface:
@@ -64,7 +64,7 @@ Run MUST launch argv in the requested directory with the supplied environment/st
 
 ## Decisions
 
-
+Change.Status uses the leading letter of Git's name-status code for tracked changes; untracked paths use `?`.
 
 ## Provenance
 
@@ -74,6 +74,7 @@ Run MUST launch argv in the requested directory with the supplied environment/st
 - audit 2026-10-27T05:30:15.420149Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 - evals 2026-10-27T05:32:57.623355Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=138 failing=7 passing=131
 - audit 2026-10-27T05:37:33.111254Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-27T05:54:42.479998Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=139 failing=0 passing=139
 
 ## Audit
 
