@@ -2,7 +2,7 @@
 
 ## Current status — 2026-10-27
 
-Human review 4 approved changes 0015–0019 and the committed checkpoint report. The shared base is synchronized. **Applied since review: 0.** Milestone 1 passed through the NEW binary;
+Human review 4 approved changes 0015–0019 and the committed checkpoint report. The shared base is synchronized. **Applied since review: 1.** Milestone 1 passed through the NEW binary;
 Milestone 2 waits for the spec splits, diagnostic migration and one contracts
 drill. Consecutive workflow/checks changes are authorized for the spec split.
 Stop after five applied changes, on any block, or on a drill failure that calls
@@ -42,6 +42,8 @@ Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -
 - 0019 narrow-start-claim-spec — FLOW-001/018–019; 0bc1106/dc436e7/bde237f; already_satisfied, 32 own cases and dependents pass; FLOW-001 narrowed, implementation unchanged.
 
 [Checkpoint verification and remaining work](reports/review3-checkpoint.md): race/vet/controller CI passed; 261 reported cases, doctor recovery and history passed. No pending change or claim. Human review 4 cleared this checkpoint.
+
+- 0020 verify-evidence-specs — FLOW-020–023; evals 2d7912c/15139aa, audits b43448f/7bbf4eb, impl 42dae8e; one findings round, 32 own cases and dependents pass; implementation unchanged.
 
 ## Next
 
