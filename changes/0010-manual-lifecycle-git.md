@@ -5,7 +5,7 @@ audit_pending:
 audit_rounds: 1
 bases: {}
 module: gitstore
-phase: evals
+phase: audit
 run: 20261027T051014-bb3072879b91b81e7176489d
 set:
     interface:
@@ -71,6 +71,7 @@ Run MUST launch argv in the requested directory with the supplied environment/st
 
 - evals 2026-10-27T05:17:38.756278Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=138 failing=7 passing=131
 - audit 2026-10-27T05:20:39.059751Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- evals 2026-10-27T05:23:03.480159Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=138 failing=7 passing=131
 
 ## Audit
 

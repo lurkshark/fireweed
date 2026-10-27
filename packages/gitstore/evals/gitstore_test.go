@@ -129,6 +129,10 @@ func Test_GIT_002_BaseRefPreferenceDefaultsAndMissing(t *testing.T) {
 	if got, err := gitstore.BaseRef(root, "", ""); err != nil || got != "refs/remotes/origin/develop" {
 		t.Errorf("remote HEAD default = %q, %v", got, err)
 	}
+	git(t, root, "symbolic-ref", "refs/remotes/upstream/HEAD", "refs/remotes/upstream/release")
+	if got, err := gitstore.BaseRef(root, "upstream", ""); err != nil || got != "refs/remotes/upstream/release" {
+		t.Errorf("named remote HEAD default = %q, %v", got, err)
+	}
 }
 
 func Test_GIT_003_ChangesReadAtAndSelectedCommit(t *testing.T) {
@@ -139,6 +143,9 @@ func Test_GIT_003_ChangesReadAtAndSelectedCommit(t *testing.T) {
 	git(t, root, "add", ".")
 	git(t, root, "commit", "-qm", "files")
 	base := head(t, root)
+	put(t, root, "committed.txt", []byte("committed after base\n"))
+	git(t, root, "add", "committed.txt")
+	git(t, root, "commit", "-qm", "after base")
 	put(t, root, "selected.txt", []byte("selected\n"))
 	put(t, root, "staged.txt", []byte("staged\n"))
 	git(t, root, "add", "selected.txt", "staged.txt")
@@ -156,7 +163,7 @@ func Test_GIT_003_ChangesReadAtAndSelectedCommit(t *testing.T) {
 		}
 		byPath[change.Path] = change
 	}
-	for _, path := range []string{"selected.txt", "staged.txt", "unstaged.txt", "untracked.txt", "new-name.txt"} {
+	for _, path := range []string{"committed.txt", "selected.txt", "staged.txt", "unstaged.txt", "untracked.txt", "new-name.txt"} {
 		if _, ok := byPath[path]; !ok {
 			t.Errorf("missing change %q: %#v", path, changes)
 		}
