@@ -17,7 +17,7 @@ name: workflow
 ## Specs
 
 ### FLOW-001
-Start MUST atomically claim a clean eligible queued change for its canonical worktree, retain the approved projected snapshot/base, assign next free module IDs throughout the change, and write unique run plus evals without committing. It MUST warn when approval exists on neither local nor shared base and refuse when shared-base unapproved archives reach max_unapproved (default 5). Claims and Current MUST reject competing owners and resolve only this worktree's held change.
+Start MUST atomically create the local claim for the selected queued change.
 
 ### FLOW-002
 Verify MUST reject altered approved author metadata/state and forbidden phase zones before hooks, using the held snapshot and diff since phase base. Evals MUST require coverage and fail-first for enforced Added/Modified/fixes IDs except already_satisfied. Impl MUST require current coverage/pass and configured dependent passes (direct default, all/none supported), plus boundaries; quick skips dependents/boundaries, and Verify never commits.
@@ -66,6 +66,12 @@ Start MUST reject a competing worktree that attempts to claim the same change.
 
 ### FLOW-017
 Current MUST resolve only a claim owned by the calling worktree.
+
+### FLOW-018
+Start MUST use the current HEAD as the initial phase base of its claim.
+
+### FLOW-019
+While a claim is held, Current MUST return the project snapshot approved at Start.
 
 ## Decisions
 
