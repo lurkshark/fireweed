@@ -55,6 +55,18 @@ Start MUST return the canonical absolute worktree root in State.Snapshot.Root.
 ### FLOW-013
 Start MUST set phase to evals when starting an unstarted spec change.
 
+### FLOW-014
+Start MUST leave HEAD unchanged.
+
+### FLOW-015
+Start MUST reject when the shared-base unapproved archive count reaches authoring.max_unapproved, whose default is 5.
+
+### FLOW-016
+Start MUST reject a competing worktree that attempts to claim the same change.
+
+### FLOW-017
+Current MUST resolve only a claim owned by the calling worktree.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
