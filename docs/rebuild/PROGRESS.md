@@ -4,9 +4,9 @@ Keep this file short: update sections in place and add one line per applied chan
 
 ## Status — 2026-10-26
 
-Stage-2 startup and standalone NEW CLI checkpoint passed. Five changes applied
-since the last human review; HUMAN REVIEW REQUIRED before further authoring or
-implementation. No pending changes or active claims remain. The manual
+Stage-2 startup and standalone NEW CLI checkpoint passed. Human review 1 approved
+continuation at `3311f676854420e509412e4ca6bc113aeefd9864` (user: "I reviewed it;
+continue"). Zero applied changes since that review. No pending changes or claims. The manual
 lifecycle fixture is not built and every acceptance row remains unverified.
 
 ## Controller and baseline
@@ -88,13 +88,15 @@ lifecycle fixture is not built and every acceptance row remains unverified.
   full NEW lifecycle/init/doctor/run/CI, full surface, packaging, controller/product
   lifecycle comparison, real drills and isolated NEW self-hosting are unrun.
 
-## Next / resume — human checkpoint
+## Next / resume — review 1 approved
 
-Wait for human review of these five applied changes. Do not author or execute a
-sixth change, move base refs, raise bounds or silently reset this review count.
-The goal remains incomplete. The shared-base P07 bound also remains in force.
+The user explicitly approved continuation from the first five-change checkpoint.
+The review count restarts at zero; stop again after five applied changes or a
+blocked change. This approval does not move base refs or bypass P07: the current
+shared-base unapproved count is one, so P07 may stop this batch before five.
+The full goal remains incomplete.
 
-After review, wire project Load/module graph/NewChange through app promptly. Add
+Wire project Load/module graph/NewChange through app promptly. Add
 only needed handle grammar, projection/stamping, Git, hook/coverage and lifecycle
 behavior to finish the NEW manual fail-first/audit/impl/archive fixture. Retain
 explicit failures for unimplemented commands; do not polish working primitives
