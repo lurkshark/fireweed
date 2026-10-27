@@ -2,8 +2,7 @@
 
 ## Current status — 2026-10-27
 
-Human review 3 is recorded after finishing 0014, as requested. Work is stopped at the next five-change checkpoint. **Applied since
-review: 5.** The owner pushed main. Milestone 1 passed through the NEW binary;
+Human review 4 approved changes 0015–0019 and the committed checkpoint report. The shared base is synchronized. **Applied since review: 0.** Milestone 1 passed through the NEW binary;
 Milestone 2 waits for the spec splits, diagnostic migration and one contracts
 drill. Consecutive workflow/checks changes are authorized for the spec split.
 Stop after five applied changes, on any block, or on a drill failure that calls
@@ -42,7 +41,7 @@ Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -
 
 - 0019 narrow-start-claim-spec — FLOW-001/018–019; 0bc1106/dc436e7/bde237f; already_satisfied, 32 own cases and dependents pass; FLOW-001 narrowed, implementation unchanged.
 
-[Checkpoint verification and remaining work](reports/review3-checkpoint.md): race/vet/controller CI passed; 261 reported cases, doctor recovery and history passed. No pending change or claim. Human review and shared-base synchronization are required before another change.
+[Checkpoint verification and remaining work](reports/review3-checkpoint.md): race/vet/controller CI passed; 261 reported cases, doctor recovery and history passed. No pending change or claim. Human review 4 cleared this checkpoint.
 
 ## Next
 
