@@ -2,8 +2,8 @@
 
 ## Current status — 2026-10-27
 
-Human review 3 is recorded after finishing 0014, as requested. **Applied since
-review: 4.** The owner pushed main. Milestone 1 passed through the NEW binary;
+Human review 3 is recorded after finishing 0014, as requested. Work is stopped at the next five-change checkpoint. **Applied since
+review: 5.** The owner pushed main. Milestone 1 passed through the NEW binary;
 Milestone 2 waits for the spec splits, diagnostic migration and one contracts
 drill. Consecutive workflow/checks changes are authorized for the spec split.
 Stop after five applied changes, on any block, or on a drill failure that calls
@@ -11,7 +11,7 @@ the spec approach into question.
 
 Controller: `.fireweed/bin/fireweed-bootstrap` 0.1.0, source `7f925190878e38fc38f30d16bb1cf47aca098cf7`, pin SHA-256 `f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f`; unchanged.
 Stage-2 history baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`; always check an explicit nonempty baseline..HEAD range. Use `GOCACHE=/tmp/fireweed-rebuild-cache`.
-NEW binary: `bin/fireweed`, clean source `89b70289ee562d228e055f047d48470057beb607`; [committed manual-lifecycle report](reports/manual-lifecycle.md). Unbuilt commands remain explicit errors; the empty runner is expected.
+NEW binary: `bin/fireweed`, clean source `bde237f4f093056cd578ab47c1f677bdcecb9cd2` (CGO disabled); [committed manual-lifecycle report](reports/manual-lifecycle.md). Unbuilt commands remain explicit errors; the empty runner is expected.
 
 Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`. Interactive work through 0014's initial evals was followed by coordinator `done`, hence legacy `agent=manual` lines. Configured controller execution began at 0014's audit; its provenance records the actual command/model. Continue configured execution. Ignored runtime logs are auxiliary, not reviewable evidence; archives, permanent evals and committed reports carry the evidence.
 
@@ -40,9 +40,13 @@ Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -
 
 - 0018 start-claim-specs — FLOW-014–017; 9cfb547/31df564/9669555; already_satisfied, 32 own cases and dependents pass; implementation unchanged.
 
+- 0019 narrow-start-claim-spec — FLOW-001/018–019; 0bc1106/dc436e7/bde237f; already_satisfied, 32 own cases and dependents pass; FLOW-001 narrowed, implementation unchanged.
+
+[Checkpoint verification and remaining work](reports/review3-checkpoint.md): race/vet/controller CI passed; 261 reported cases, doctor recovery and history passed. No pending change or claim. Human review and shared-base synchronization are required before another change.
+
 ## Next
 
-1. Split permanent bundled behaviors through authored changes. Use already_satisfied and retarget existing evals; never hand-edit Specs/Decisions. Finish the named FLOW/CHK examples and inspect the other existing items for the same problem. Add atomic specs before narrowing an old item when one change cannot hold the full split.
+1. Split permanent bundled behaviors through authored changes. Use already_satisfied and retarget existing evals; never hand-edit Specs/Decisions. FLOW-001 is split; finish FLOW-002/FLOW-003/CHK-004 and inspect the other existing items for the same problem. Add atomic specs before narrowing an old item when one change cannot hold the full split.
 2. Apply D006: remove wrong label assertions through eval_fix, migrate implementation in normal changes, and keep explain accurate. Preserve all behavior assertions and coverage.
 3. Before Milestone 2 touches workflow implementation, split lifecycle/stub.go by responsibility as maintenance only. No other cleanup/hardening.
 4. After items 1 and 2, run exactly one real controller drill on contracts. Commit its report and list gaps here; author no gap changes and drill no other module.
