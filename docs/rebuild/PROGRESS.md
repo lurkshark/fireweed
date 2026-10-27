@@ -8,12 +8,9 @@ drill. Consecutive workflow/checks changes are authorized for the spec split.
 Stop after five applied changes, on any block, or on a drill failure that calls
 the spec approach into question.
 
-Stopped at 0021 `impl`: configured Sol returned a usage limit with reset
-November 1, 2026 at 10:32 PM (timezone unspecified by CLI). Evals 3067213 and
-audit 0521c85 passed; implementation did not run. The controller saved attempt 1,
-committed the interruption block (21691ad), and released the claim. Restore Sol
-access, remove the block through author review, then resume with `--from-attempt 1`.
-No model substitution or retry loop is running; the applied count remains 1.
+0021 resumes at `impl` from saved attempt 1 after human confirmation that access
+was restored and a successful configured Sol probe. Evals and audit passed before
+the usage stop; no implementation edits were lost. The applied count remains 1.
 
 Controller: `.fireweed/bin/fireweed-bootstrap` 0.1.0, source `7f925190878e38fc38f30d16bb1cf47aca098cf7`, pin SHA-256 `f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f`; unchanged.
 Stage-2 history baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`; always check an explicit nonempty baseline..HEAD range. Use `GOCACHE=/tmp/fireweed-rebuild-cache`.
