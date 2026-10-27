@@ -2,7 +2,7 @@
 
 ## Current status — 2026-10-27
 
-Human review 5 approved changes 0020–0024 and the checkpoint report. The reviewed main was pushed at the owner’s explicit request. **Applied since review: 0.** Milestone 1 passed through the NEW binary;
+Human review 5 approved changes 0020–0024 and the checkpoint report. The reviewed main was pushed at the owner’s explicit request. **Applied since review: 1.** Milestone 1 passed through the NEW binary;
 Milestone 2 waits for the spec splits, diagnostic migration and one contracts
 drill. Consecutive workflow/checks changes are authorized for the spec split.
 Stop after five applied changes, on any block, or on a drill failure that calls
@@ -55,9 +55,11 @@ Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -
 
 [Review 4 checkpoint](reports/review4-checkpoint.md): race/vet/controller CI passed, including 261 cases, doctor recovery and history; no pending change or claim. Human review 5 cleared this checkpoint; P07 is clear.
 
+- 0025 narrow-done-verification-spec — FLOW-003/041–043; fe63ecf/44f5aa4/9042469; 32 own cases and dependents pass; FLOW-003 narrowed, implementation unchanged.
+
 ## Next
 
-1. Split permanent bundled behaviors through authored changes. Use already_satisfied and retarget existing evals; never hand-edit Specs/Decisions. FLOW-001/FLOW-002 are split; finish FLOW-003 by retaining passing-audit, Questions and claim-release rules before narrowing it. Then split CHK-004 and the other bundled items identified in the checkpoint report. Add atomic specs before narrowing an old item when one change cannot hold the full split.
+1. Split permanent bundled behaviors through authored changes. Use already_satisfied and retarget existing evals; never hand-edit Specs/Decisions. FLOW-001/FLOW-002/FLOW-003 are split; split CHK-004 and the other bundled items identified in the checkpoint report. Add atomic specs before narrowing an old item when one change cannot hold the full split.
 2. Apply D006: remove wrong label assertions through eval_fix, migrate implementation in normal changes, and keep explain accurate. Preserve all behavior assertions and coverage.
 3. Before Milestone 2 touches workflow implementation, split lifecycle/stub.go by responsibility as maintenance only. No other cleanup/hardening.
 4. After items 1 and 2, run exactly one real controller drill on contracts. Commit its report and list gaps here; author no gap changes and drill no other module.
