@@ -1,12 +1,15 @@
 ---
 already_satisfied:
-    - new:checked-ids
-    - new:findings-to-evals
-    - new:audit-round-count
-    - new:audit-round-limit
-    - new:untestable-block
+    - FLOW-036
+    - FLOW-037
+    - FLOW-038
+    - FLOW-039
+    - FLOW-040
+audit_rounds: 0
 bases: {}
 module: workflow
+phase: audit
+run: 20261027T203601-f3e409a5f0eac8feccb7c61b
 ---
 
 
@@ -24,19 +27,19 @@ No new feature or implementation change belongs here.
 
 ## Added
 
-### new:checked-ids
+### FLOW-036
 Audit Done MUST require every enforced ID in the change's Added, Modified or fixes entries to appear in a No findings submission's checked-ID list.
 
-### new:findings-to-evals
+### FLOW-037
 Retained testable audit findings within the round limit MUST return the change to evals.
 
-### new:audit-round-count
+### FLOW-038
 An audit return to evals MUST increment and persist audit_rounds.
 
-### new:audit-round-limit
+### FLOW-039
 Audit Done MUST block the change when retained findings would exceed audit.max_rounds, whose default is 2.
 
-### new:untestable-block
+### FLOW-040
 Audit Done MUST block the change when a retained finding marks its quoted clause untestable.
 
 ## Modified
@@ -60,3 +63,7 @@ untestable-finding case. Preserve FLOW-003 labels until final narrowing. These
 cases already check phase, persistent count, block commits, Questions and claim
 release; do not add scenarios or alter fixtures for asserted behavior.
 No interface or implementation edits; impl may edit only this change file.
+
+## Provenance
+
+- evals 2026-10-27T20:37:35.667931Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=118 failing=0 passing=118
