@@ -2,15 +2,15 @@
 
 Keep this file short: update sections in place and add one line per applied change.
 
-## Status — 2026-10-26
+## Status — 2026-10-27
 
-Human review 2 cleared the shared-base gate at `969ab2f`; two changes applied
+Human review 2 cleared the shared-base gate at `969ab2f`; three changes applied
 since that review. The NEW CLI can
 load modules, author a change, stamp/check it and display projected specs. The
 manual start/fail-first/audit/impl/archive lifecycle is still incomplete; every
 acceptance row remains unverified.
 
-Shared-base unapproved count is now 2; max_unapproved remains 5. No pending
+Shared-base unapproved count is now 3; max_unapproved remains 5. No pending
 changes, active claims or scratch worktrees remain. Continue the existing manual
 slice and stop again after five applied changes or an actual block.
 
@@ -86,6 +86,8 @@ slice and stop again after five applied changes or an actual block.
 
 - `lifecycle-checks` / CHK-001–CHK-005: evals `69933f7` (25 failures, 3 passes), independent audit `eff6823` (no findings), impl `3c5b40b` (28 own, 78 app and 4 public smoke probes pass; dependents/boundaries pass). Two contradictory fixtures corrected before freezing; unknown-ID/protected-path gaps corrected within impl. Archive `0011-lifecycle-checks.md`. 2 applied since review 2.
 
+- `manual-lifecycle` / FLOW-001–FLOW-005: evals `c5c02de` / `ca11056` / `aec7154` (28 failures, 2 passes), findings `0b5aeef` / `25e4775`, independent passing final audit `8627014`, impl `563d2ee` (32 own, 78 app and 3 public probes pass; dependents/boundaries pass). Two bounded audit rounds. Sol usage limit interrupted the first auditor; retry after its reported reset completed independently. Approved-archive counting, mutable Decisions and frozen audit-state gaps corrected within impl. Archive `0012-manual-lifecycle.md`. 3 applied since review 2.
+
 ## Latest verification and manual fixture
 
 - Exact checked range:
@@ -112,7 +114,7 @@ slice and stop again after five applied changes or an actual block.
 ## Next / resume — review 2 approved
 
 The gate is cleared by verified shared-base state and explicit human approval.
-Review count is two. Keep all bounds and the original stage-2 history baseline.
+Review count is three. Keep all bounds and the original stage-2 history baseline.
 Continue the existing manual fixture: add only needed Git
 and process primitives, hook/JUnit coverage checks, claims/start/verify/done/audit
 and apply/archive, wiring each operation through app promptly. Include the two
@@ -130,4 +132,4 @@ author edits belong only between active changes in separate commits.
   author commit `5357850929ce87725fc492b1f45b5d1e76b327c9`. No lifecycle success yet.
   Next: checks public JUnit/hook/zone/boundary operations, then workflow and app.
 
-- Checks minimum complete; no workflow or CLI lifecycle success yet. Next active authoring target is workflow manual-lifecycle.
+- Checks minimum complete; no workflow or CLI lifecycle success yet. Workflow minimum now complete; next authoring target is app lifecycle-cli. The external Go fixture remains clean at 5357850 and awaits NEW start/verify/done wiring.

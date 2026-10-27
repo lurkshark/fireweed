@@ -194,3 +194,5 @@ before another change. Four changes were applied since the explicit review at
   unsupported. Claims/lifecycle and full Git surface remain unverified.
 
 - R07/R09/R10/R11 partial: CHK-001–CHK-005 cover public JUnit/results, hooks, zones and boundaries; archive `0011-lifecycle-checks.md`, phases `69933f7` / `eff6823` / `3c5b40b`. 25 failures before, 28 permanent cases and 4 public smoke probes pass after. Full dependents/boundaries pass. Product lifecycle and doctor integration remain unverified.
+
+- R05–R09/R14/R17 partial: FLOW-001–FLOW-005 provide manual claims/start/verify/done/audit/apply/archive/provenance/context through public APIs. Archive `0012-manual-lifecycle.md`, evals `c5c02de` / `ca11056` / `aec7154`, findings `0b5aeef` / `25e4775`, final audit `8627014`, impl `563d2ee`: 28 initial failures, 32 final permanent cases and 3 public smoke probes pass; full dependents/boundaries pass. Sol reset/retry recorded in ignored evidence. NEW CLI lifecycle, remaining kinds/recovery/history and full acceptance remain unverified.
