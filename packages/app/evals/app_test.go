@@ -196,6 +196,8 @@ func assertFailedJSON(t *testing.T, stdout string) string {
 func Test_APP_001_ReadCommandsDoNotInvokeGitHooksOrAgents(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := appProjectFixture(t)
+	appPut(t, root, "packages/alpha/SPEC.md", authoringSpec)
+	authoringChange(t, root, "0001-first.md", "Users need a queued item.\n", "### new:queued\nQueued MUST work.\n", "")
 	nested := filepath.Join(root, "packages", "alpha", "nested")
 	if err := os.MkdirAll(nested, 0755); err != nil {
 		t.Fatal(err)
@@ -218,6 +220,12 @@ func Test_APP_001_ReadCommandsDoNotInvokeGitHooksOrAgents(t *testing.T) {
 		assertInformationOutput(t, stdout, stderr, tc.want)
 	}
 	runAppBinary(t, bin, nested, "modules", "--json")
+	for _, args := range [][]string{
+		{"show", "alpha"}, {"show", "alpha", "ALP-001"},
+		{"show", "alpha", "--projected"}, {"show", "alpha", "new:queued", "--projected"},
+	} {
+		runAppBinary(t, bin, nested, args...)
+	}
 	if calls, err := os.ReadFile(logPath); err == nil {
 		t.Errorf("read commands invoked external tools: %s", calls)
 	} else if !os.IsNotExist(err) {
