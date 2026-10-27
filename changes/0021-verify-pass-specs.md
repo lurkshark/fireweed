@@ -1,11 +1,14 @@
 ---
 already_satisfied:
-    - new:current-module-pass
-    - new:dependent-selection
-    - new:dependent-pass
-    - new:boundary-pass
+    - FLOW-024
+    - FLOW-025
+    - FLOW-026
+    - FLOW-027
+audit_rounds: 0
 bases: {}
 module: workflow
+phase: audit
+run: 20261027T200041-dc963ea0490486b7882b0c07
 ---
 
 
@@ -22,16 +25,16 @@ the last narrowing step. No new feature or implementation change belongs here.
 
 ## Added
 
-### new:current-module-pass
+### FLOW-024
 During impl Verify MUST reject a failing current-module testcase that references a non-quarantined spec.
 
-### new:dependent-selection
+### FLOW-025
 Full impl Verify MUST use verify_dependents with a default of direct to select dependent modules.
 
-### new:dependent-pass
+### FLOW-026
 Full impl Verify MUST reject a failed enforced testcase from a selected dependent module.
 
-### new:boundary-pass
+### FLOW-027
 Full impl Verify MUST require boundary verification to succeed.
 
 ## Modified
@@ -55,3 +58,7 @@ assertion, adding a direct Verify call there only if needed to prove the gate.
 Keep every existing assertion and all FLOW-002 labels until final narrowing.
 Keep 32 reported workflow cases. No interface or implementation edits; impl may
 edit only this change file.
+
+## Provenance
+
+- evals 2026-10-27T20:02:43.215759Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=118 failing=0 passing=118

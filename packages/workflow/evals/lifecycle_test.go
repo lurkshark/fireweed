@@ -451,7 +451,7 @@ func Test_FLOW_002_FLOW_023_AddedIDRequiresMappedFailingCase(t *testing.T) {
 	}
 }
 
-func Test_FLOW_002_FLOW_022_ImplFreezesEvalsAndRunsDependentsAndBoundaries(t *testing.T) {
+func Test_FLOW_002_FLOW_022_FLOW_025_FLOW_026_FLOW_027_ImplFreezesEvalsAndRunsDependentsAndBoundaries(t *testing.T) {
 	for _, scenario := range []string{"frozen-eval", "direct", "all", "none", "quick-boundary"} {
 		t.Run(scenario, func(t *testing.T) {
 			config := "audit:\n  enabled: false\n"
@@ -520,8 +520,20 @@ func Test_FLOW_002_FLOW_022_ImplFreezesEvalsAndRunsDependentsAndBoundaries(t *te
 				if scenario == "direct" && len(full.Reports["beta"].Cases) == 0 {
 					t.Error("direct dependent report absent")
 				}
+				if scenario == "direct" && len(full.Reports["gamma"].Cases) != 0 {
+					t.Error("default direct verification ran a transitive dependent")
+				}
 				if scenario == "all" && len(full.Reports["gamma"].Cases) == 0 {
 					t.Error("transitive dependent report absent")
+				}
+				if scenario == "none" && (len(full.Reports["beta"].Cases) != 0 || len(full.Reports["gamma"].Cases) != 0) {
+					t.Error("dependent verification ran with verify_dependents: none")
+				}
+				if scenario == "direct" && len(full.Reports["beta"].Cases) > 0 && full.Reports["beta"].Cases[0].Result != "fail" {
+					t.Errorf("selected direct dependent did not report its failing testcase: %#v", full.Reports["beta"])
+				}
+				if scenario == "all" && len(full.Reports["gamma"].Cases) > 0 && full.Reports["gamma"].Cases[0].Result != "fail" {
+					t.Errorf("selected transitive dependent did not report its failing testcase: %#v", full.Reports["gamma"])
 				}
 			}
 			if head(t, root) != before {
@@ -744,7 +756,7 @@ func Test_FLOW_004_ImplDoneAppliesSpecsSetAndDecisionsAndArchives(t *testing.T) 
 	}
 }
 
-func Test_FLOW_004_FailedDoneKeepsPhaseAndHead(t *testing.T) {
+func Test_FLOW_004_FLOW_024_FailedDoneKeepsPhaseAndHead(t *testing.T) {
 	root := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
 	hookPath := filepath.Join(root, ".fireweed/eval.sh")
 	hook, err := os.ReadFile(hookPath)
@@ -764,6 +776,13 @@ func Test_FLOW_004_FailedDoneKeepsPhaseAndHead(t *testing.T) {
 		t.Fatalf("evals Done: %v", err)
 	}
 	base := head(t, root)
+	own, ownErr := verify(root, false)
+	if ownErr == nil {
+		t.Errorf("impl Verify accepted failing current-module testcase: %#v", own)
+	}
+	if cases := own.Reports["alpha"].Cases; len(cases) == 0 || cases[0].Result != "fail" || len(cases[0].IDs) == 0 || cases[0].IDs[0] != "ALP-001" {
+		t.Errorf("failing current-module testcase absent from Verify report: %#v", own.Reports["alpha"])
+	}
 	r, err := done(root)
 	if err == nil || head(t, root) != base {
 		t.Errorf("passing current evals required: %#v, %v", r, err)
