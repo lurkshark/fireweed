@@ -6,7 +6,7 @@ audit_pending:
 audit_rounds: 1
 bases: {}
 module: assets
-phase: impl
+phase: applied
 run: 20261027T145815-f26a804e7d062856d3d8e07b
 set:
     interface:
@@ -66,6 +66,7 @@ a Go module; the recipe instructions explain that prerequisite.
 - audit 2026-10-27T19:00:02.64701Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 - evals 2026-10-27T19:02:27.313221Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=215 failing=8 passing=207
 - audit 2026-10-27T19:02:52.177804Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-27T19:05:55.186364Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=219 failing=0 passing=219
 
 ## Audit
 
