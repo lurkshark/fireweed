@@ -1,11 +1,14 @@
 ---
 already_satisfied:
-    - new:held-snapshot
-    - new:assigned-ids
-    - new:run-id
-    - new:approval-warning
+    - FLOW-006
+    - FLOW-007
+    - FLOW-008
+    - FLOW-009
+audit_rounds: 0
 bases: {}
 module: workflow
+phase: audit
+run: 20261027T191418-bdf562561a2be996d1440ce8
 ---
 
 
@@ -24,16 +27,16 @@ or new feature belongs in this change.
 
 ## Added
 
-### new:held-snapshot
+### FLOW-006
 Start MUST include the approved projected project snapshot in its returned State.
 
-### new:assigned-ids
+### FLOW-007
 Start MUST replace each local Added handle throughout the change with the next available spec ID for its module.
 
-### new:run-id
+### FLOW-008
 Start MUST assign a unique run identifier when starting an unstarted change.
 
-### new:approval-warning
+### FLOW-009
 Start MUST report P04 when neither the local base nor the shared base contains the change file.
 
 ## Modified
@@ -54,3 +57,7 @@ This is the additive stage of the FLOW-001 split. A later normal change will
 narrow FLOW-001 once every remaining behavior has a dedicated spec. Keep the
 existing test scenarios; rename or retarget assertions to the assigned IDs.
 Implementation is already satisfied and must remain unchanged.
+
+## Provenance
+
+- evals 2026-10-27T19:16:49.307196Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=122 failing=0 passing=122
