@@ -2,7 +2,7 @@
 
 ## Current status — 2026-10-27
 
-Human review 4 approved changes 0015–0019 and the committed checkpoint report. The shared base is synchronized. **Applied since review: 3.** Milestone 1 passed through the NEW binary;
+Human review 4 approved changes 0015–0019 and the committed checkpoint report. The shared base is synchronized. **Applied since review: 4.** Milestone 1 passed through the NEW binary;
 Milestone 2 waits for the spec splits, diagnostic migration and one contracts
 drill. Consecutive workflow/checks changes are authorized for the spec split.
 Stop after five applied changes, on any block, or on a drill failure that calls
@@ -48,6 +48,8 @@ Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -
 - 0021 verify-pass-specs — FLOW-024–027; 3067213/0521c85/8d786c6; 32 own cases and dependents pass, implementation unchanged; resumed saved attempt 1 after human-confirmed Sol access recovery.
 
 - 0022 narrow-verify-zone-spec — FLOW-002/028–031; 534fef4/ea82977/17441fd; 32 own cases and dependents pass; FLOW-002 narrowed, implementation unchanged.
+
+- 0023 evals-transition-specs — FLOW-032–035; 5ebcac7/2481621/5fbaf95; 32 own cases and dependents pass; existing tests retargeted, implementation unchanged.
 
 ## Next
 
