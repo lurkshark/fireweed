@@ -9,7 +9,7 @@ audit_rounds: 1
 bases:
     APP-004: 053f5e17
 module: app
-phase: evals
+phase: audit
 run: 20261027T141303-ad015bbc17ea93d3cee80f10
 ---
 
@@ -64,6 +64,7 @@ and 8 failing app cases; every changed ID fails against the current CLI.
 
 - evals 2026-10-27T14:24:35.348641Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=86 failing=8 passing=78
 - audit 2026-10-27T14:28:12.174514Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- evals 2026-10-27T14:32:11.342017Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=86 failing=8 passing=78
 
 ## Audit
 

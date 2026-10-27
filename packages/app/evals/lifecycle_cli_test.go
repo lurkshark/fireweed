@@ -170,6 +170,14 @@ func cliResultPhase(t *testing.T, output, phase string) {
 	}
 }
 
+func lifecycleCommandFailure(t *testing.T, status, want int, stdout, stderr string, jsonMode bool) {
+	t.Helper()
+	message := commandFailure(t, status, want, stdout, stderr, jsonMode)
+	if !corrective(message) {
+		t.Errorf("diagnostic %q must suggest a correction", message)
+	}
+}
+
 func Test_APP_009_StartContextAssignmentAndRejection(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := lifecycleCLIProject(t, bin, true)
@@ -204,36 +212,46 @@ func Test_APP_009_StartContextAssignmentAndRejection(t *testing.T) {
 	} {
 		args := append(append([]string{}, tc.args...), "--json")
 		status, out, errOut := runLifecycleBinary(t, bin, root, args...)
-		commandFailure(t, status, tc.want, out, errOut, true)
+		lifecycleCommandFailure(t, status, tc.want, out, errOut, true)
 	}
 	bad := lifecycleCLIProject(t, bin, false)
 	appPut(t, bad, "fireweed.yaml", "modules: [broken\n")
 	status, out, errOut := runLifecycleBinary(t, bin, bad, "start", "manual", "--json")
-	commandFailure(t, status, 2, out, errOut, true)
+	lifecycleCommandFailure(t, status, 2, out, errOut, true)
 }
 
 func Test_APP_009_StartPreservesApprovalWarning(t *testing.T) {
 	bin := buildAppBinary(t)
-	root := lifecycleCLIProject(t, bin, false)
-	cliGit(t, root, "checkout", "-b", "feature")
-	cliGit(t, root, "checkout", "main")
-	cliGit(t, root, "rm", "changes/0001-manual.md")
-	cliCommit(t, root, "base without queued change")
-	cliGit(t, root, "update-ref", "refs/remotes/origin/main", cliGit(t, root, "rev-parse", "HEAD"))
-	cliGit(t, root, "checkout", "feature")
-	status, output, stderr := runLifecycleBinary(t, bin, root, "start", "manual", "--json")
-	if status != 0 || stderr != "" {
-		t.Fatalf("start with approval warning: %d %q %q", status, output, stderr)
-	}
-	if !strings.Contains(cliString(t, output), "# Write evals") {
-		t.Errorf("start omitted context: %s", output)
-	}
-	var diagnostics []struct {
-		Code    string `json:"code"`
-		Message string `json:"message"`
-	}
-	if err := json.Unmarshal(decodeEnvelope(t, output)["diagnostics"], &diagnostics); err != nil || len(diagnostics) == 0 || diagnostics[0].Code != "P04" || diagnostics[0].Message == "" {
-		t.Errorf("approval warning missing: %s, %v", output, err)
+	for _, jsonMode := range []bool{false, true} {
+		root := lifecycleCLIProject(t, bin, false)
+		cliGit(t, root, "checkout", "-b", "feature")
+		cliGit(t, root, "checkout", "main")
+		cliGit(t, root, "rm", "changes/0001-manual.md")
+		cliCommit(t, root, "base without queued change")
+		cliGit(t, root, "update-ref", "refs/remotes/origin/main", cliGit(t, root, "rev-parse", "HEAD"))
+		cliGit(t, root, "checkout", "feature")
+		args := []string{"start", "manual"}
+		if jsonMode {
+			args = append(args, "--json")
+		}
+		status, output, stderr := runLifecycleBinary(t, bin, root, args...)
+		if status != 0 {
+			t.Fatalf("start with approval warning (JSON=%v): %d %q %q", jsonMode, status, output, stderr)
+		}
+		if jsonMode {
+			if stderr != "" || !strings.Contains(cliString(t, output), "# Write evals") {
+				t.Errorf("JSON start omitted context or wrote stderr: %q %q", output, stderr)
+			}
+			var diagnostics []struct {
+				Code    string `json:"code"`
+				Message string `json:"message"`
+			}
+			if err := json.Unmarshal(decodeEnvelope(t, output)["diagnostics"], &diagnostics); err != nil || len(diagnostics) == 0 || diagnostics[0].Code != "P04" || diagnostics[0].Message == "" {
+				t.Errorf("approval warning missing: %s, %v", output, err)
+			}
+		} else if !strings.Contains(output, "# Write evals") || !strings.Contains(output+stderr, "P04") {
+			t.Errorf("plain start omitted context or P04 warning: %q %q", output, stderr)
+		}
 	}
 }
 
@@ -243,10 +261,16 @@ func Test_APP_004_HeldModulesUseApprovedProjection(t *testing.T) {
 	appPut(t, root, ".fireweed/emit-new", "yes\n")
 	cliCommit(t, root, "projected report")
 	cliHold(t, root)
+	changePath := filepath.Join(root, "changes/0001-manual.md")
+	change, err := os.ReadFile(changePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	appPut(t, root, "changes/0001-manual.md", strings.Replace(string(change), "interface: [api.go, extra.go]", "interface: [api.go, unapproved.go]", 1))
 	var status int
 	var stderr string
 	status, plain, stderr := runLifecycleBinary(t, bin, appNestedDir(t, root), "modules")
-	if status != 0 || stderr != "" || !strings.Contains(plain, "extra.go") {
+	if status != 0 || stderr != "" || !strings.Contains(plain, "extra.go") || strings.Contains(plain, "unapproved.go") {
 		t.Errorf("held plain graph: exit=%d stdout=%q stderr=%q", status, plain, stderr)
 	}
 	status, output, stderr := runLifecycleBinary(t, bin, root, "modules", "--json")
@@ -260,7 +284,7 @@ func Test_APP_004_HeldModulesUseApprovedProjection(t *testing.T) {
 			Interface []string `json:"interface"`
 		} `json:"zones"`
 	}
-	if err := json.Unmarshal(envelope["data"], &modules); err != nil || len(modules) != 2 || modules[0].Name != "alpha" || !strings.Contains(strings.Join(modules[0].Zones.Interface, ","), "extra.go") {
+	if err := json.Unmarshal(envelope["data"], &modules); err != nil || len(modules) != 2 || modules[0].Name != "alpha" || !strings.Contains(strings.Join(modules[0].Zones.Interface, ","), "extra.go") || strings.Contains(strings.Join(modules[0].Zones.Interface, ","), "unapproved.go") {
 		t.Errorf("held JSON graph=%s, %v", envelope["data"], err)
 	}
 	var diagnostics []json.RawMessage
@@ -293,9 +317,9 @@ func Test_APP_011_ContextCompactFullAndErrors(t *testing.T) {
 			t.Errorf("context JSON %v: %d %q %q", full, status, output, stderr)
 		}
 		var diagnostics []json.RawMessage
-		_ = json.Unmarshal(decodeEnvelope(t, output)["diagnostics"], &diagnostics)
-		if len(diagnostics) != 0 {
-			t.Errorf("context diagnostics=%v", diagnostics)
+		diagnosticJSON := decodeEnvelope(t, output)["diagnostics"]
+		if err := json.Unmarshal(diagnosticJSON, &diagnostics); err != nil || diagnostics == nil || len(diagnostics) != 0 {
+			t.Errorf("context diagnostics=%s; want empty array: %v", diagnosticJSON, err)
 		}
 		if full && !strings.Contains(plain, "Full context marker.") || !full && strings.Contains(plain, "Full context marker.") {
 			t.Errorf("context full selection: %v", full)
@@ -308,12 +332,12 @@ func Test_APP_011_ContextCompactFullAndErrors(t *testing.T) {
 		{[]string{"context"}, 2}, {[]string{"context", "manual", "extra"}, 2}, {[]string{"context", "missing"}, 1},
 	} {
 		status, out, errOut := runLifecycleBinary(t, bin, root, append(tc.args, "--json")...)
-		commandFailure(t, status, tc.want, out, errOut, true)
+		lifecycleCommandFailure(t, status, tc.want, out, errOut, true)
 	}
 	bad := lifecycleCLIProject(t, bin, false)
 	appPut(t, bad, "fireweed.yaml", "modules: [broken\n")
 	status, out, errOut := runLifecycleBinary(t, bin, bad, "context", "manual", "--json")
-	commandFailure(t, status, 2, out, errOut, true)
+	lifecycleCommandFailure(t, status, 2, out, errOut, true)
 }
 
 func Test_APP_012_CoverageCurrentProjectionAndErrors(t *testing.T) {
@@ -329,12 +353,12 @@ func Test_APP_012_CoverageCurrentProjectionAndErrors(t *testing.T) {
 	}
 	cliJSONResult(t, output)
 	status, out, errOut := runLifecycleBinary(t, bin, root, "coverage", "alpha", "--with-change", "manual", "--json")
-	commandFailure(t, status, 1, out, errOut, true) // projected ALP-002 is uncovered
+	lifecycleCommandFailure(t, status, 1, out, errOut, true) // projected ALP-002 is uncovered
 	appPut(t, root, ".fireweed/emit-new", "yes\n")
 	cliCommit(t, root, "projected JUnit case")
 	cliHold(t, root)
 	status, out, errOut = runLifecycleBinary(t, bin, root, "coverage", "alpha", "--with-change", "manual", "--json")
-	commandFailure(t, status, 1, out, errOut, true) // mapped ALP-002 fails before implementation
+	lifecycleCommandFailure(t, status, 1, out, errOut, true) // mapped ALP-002 fails before implementation
 	appPut(t, root, "packages/alpha/internal/ready", "ready\n")
 	status, output, stderr = runLifecycleBinary(t, bin, root, "coverage", "alpha", "--with-change", "manual", "--json")
 	if status != 0 || stderr != "" || !strings.Contains(output, "ALP-002") {
@@ -343,6 +367,7 @@ func Test_APP_012_CoverageCurrentProjectionAndErrors(t *testing.T) {
 	cliJSONResult(t, output)
 	held := lifecycleCLIProject(t, bin, false)
 	appPut(t, held, ".fireweed/emit-new", "yes\n")
+	appPut(t, held, ".fireweed/no-report.sh", "#!/bin/sh\nexit 7\n")
 	cliCommit(t, held, "projected JUnit case")
 	cliHold(t, held)
 	appPut(t, held, "packages/alpha/internal/ready", "ready\n")
@@ -351,19 +376,23 @@ func Test_APP_012_CoverageCurrentProjectionAndErrors(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	appPut(t, held, "changes/0001-manual.md", strings.Replace(string(change), "Alpha MUST return the additional value.", "Alpha MUST return an unapproved replacement.", 1))
+	appPut(t, held, "changes/0001-manual.md", strings.Replace(string(change), "  interface: [api.go, extra.go]\n", "  interface: [api.go, extra.go]\n  hooks:\n    eval: [sh, .fireweed/no-report.sh]\n", 1))
+	if _, err := project.Project(held, "manual"); err != nil {
+		t.Fatalf("live hook override must be a valid projection: %v", err)
+	}
 	status, output, stderr = runLifecycleBinary(t, bin, held, "coverage", "alpha", "--with-change", "manual", "--json")
 	if status != 0 || stderr != "" || !strings.Contains(output, "ALP-002") {
 		t.Errorf("held approved coverage: %d %q %q", status, output, stderr)
 	}
+	cliJSONResult(t, output)
 	for _, args := range [][]string{{"coverage"}, {"coverage", "missing"}, {"coverage", "alpha", "--with-change", "missing"}, {"coverage", "alpha", "extra"}} {
 		status, out, errOut := runLifecycleBinary(t, bin, root, append(args, "--json")...)
-		commandFailure(t, status, 2, out, errOut, true)
+		lifecycleCommandFailure(t, status, 2, out, errOut, true)
 	}
 	bad := lifecycleCLIProject(t, bin, false)
 	appPut(t, bad, "fireweed.yaml", "modules: [broken\n")
 	status, out, errOut = runLifecycleBinary(t, bin, bad, "coverage", "alpha", "--json")
-	commandFailure(t, status, 2, out, errOut, true)
+	lifecycleCommandFailure(t, status, 2, out, errOut, true)
 }
 
 func Test_APP_010_VerifyDoneAuditAndFullChecks(t *testing.T) {
@@ -381,10 +410,14 @@ func Test_APP_010_VerifyDoneAuditAndFullChecks(t *testing.T) {
 		t.Fatalf("evals quick verify: %d %q %q", status, output, stderr)
 	}
 	cliResultPhase(t, output, "evals")
+	status, plain, stderr := runLifecycleBinary(t, bin, root, "verify", "manual", "--quick")
+	if status != 0 || stderr != "" || !strings.Contains(strings.ToLower(plain), "evals") {
+		t.Errorf("plain evals verify: %d %q %q", status, plain, stderr)
+	}
 	if cliGit(t, root, "rev-parse", "HEAD") != before {
 		t.Error("verify committed")
 	}
-	status, plain, stderr := runLifecycleBinary(t, bin, root, "done", "manual")
+	status, plain, stderr = runLifecycleBinary(t, bin, root, "done", "manual")
 	if status != 0 || stderr != "" || !strings.Contains(strings.ToLower(plain), "audit") {
 		t.Fatalf("evals done: %d %q %q", status, plain, stderr)
 	}
@@ -409,6 +442,10 @@ func Test_APP_010_VerifyDoneAuditAndFullChecks(t *testing.T) {
 		t.Fatalf("impl quick verify: %d %q %q", status, output, stderr)
 	}
 	cliResultPhase(t, output, "impl")
+	status, plain, stderr = runLifecycleBinary(t, bin, root, "verify", "--quick")
+	if status != 0 || stderr != "" || !strings.Contains(strings.ToLower(plain), "impl") {
+		t.Errorf("plain impl verify: %d %q %q", status, plain, stderr)
+	}
 	status, out, errOut := runLifecycleBinary(t, bin, root, "done", "manual", "--json")
 	commandFailure(t, status, 1, out, errOut, true) // done must include dependent beta
 	if cliGit(t, root, "rev-parse", "HEAD") != before {
