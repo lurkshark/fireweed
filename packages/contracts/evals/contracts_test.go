@@ -109,6 +109,38 @@ func Test_CON_002_RejectInvalidItems(t *testing.T) {
 	}
 }
 
+func Test_CON_006_ParseHandlesInSourceOrder(t *testing.T) {
+	source := "### new:alpha-2 [draft]\nFirst line\n\nSecond line\n### CON-007\nAssigned body\n### new:7-beta\nHandle body\n"
+	want := []contracts.Item{
+		{ID: "new:alpha-2", Tag: "draft", Body: "First line\n\nSecond line\n"},
+		{ID: "CON-007", Body: "Assigned body\n"},
+		{ID: "new:7-beta", Body: "Handle body\n"},
+	}
+	got, err := contracts.ParseItems(source)
+	if err != nil {
+		t.Fatalf("ParseItems: %v", err)
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("items = %#v; want %#v", got, want)
+	}
+}
+
+func Test_CON_006_RejectInvalidOrDuplicateHandles(t *testing.T) {
+	for _, tc := range []struct{ name, source string }{
+		{"empty", "### new:\nBody\n"},
+		{"uppercase", "### new:Alpha\nBody\n"},
+		{"underscore", "### new:alpha_beta\nBody\n"},
+		{"punctuation", "### new:alpha.beta\nBody\n"},
+		{"duplicate", "### new:alpha-2\nFirst\n### new:alpha-2\nSecond\n"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if _, err := contracts.ParseItems(tc.source); err == nil {
+				t.Errorf("ParseItems(%q) accepted invalid handles", tc.source)
+			}
+		})
+	}
+}
+
 func Test_CON_002_RenderItem(t *testing.T) {
 	for _, tc := range []struct {
 		item contracts.Item

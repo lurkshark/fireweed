@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: contracts
+phase: audit
+run: 20261027T010515-ddcff5bdc56f165ee47ed469
 ---
 
 
@@ -18,7 +21,7 @@ Extend the disposable item-heading grammar; do not add a parallel change parser.
 
 ## Added
 
-### new:handle-headings
+### CON-006
 ParseItems MUST accept new:<slug> item headings and preserve the complete handle in Item.ID, where slug contains lowercase letters, digits and hyphens. It MUST reject empty handles and handles containing other characters. Assigned-ID and handle items MUST retain their source order in mixed input, with the existing tag/body preservation and duplicate-ID checks applying to handles too.
 
 ## Modified
@@ -30,3 +33,9 @@ ParseItems MUST accept new:<slug> item headings and preserve the complete handle
 
 
 ## Decisions
+
+
+
+## Provenance
+
+- evals 2026-10-27T01:06:53.314916Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=118 failing=1 passing=117
