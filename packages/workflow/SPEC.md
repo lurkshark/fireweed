@@ -20,7 +20,7 @@ name: workflow
 Start MUST atomically create the local claim for the selected queued change.
 
 ### FLOW-002
-Verify MUST reject altered approved author metadata/state and forbidden phase zones before hooks, using the held snapshot and diff since phase base. Evals MUST require coverage and fail-first for enforced Added/Modified/fixes IDs except already_satisfied. Impl MUST require current coverage/pass and configured dependent passes (direct default, all/none supported), plus boundaries; quick skips dependents/boundaries, and Verify never commits.
+Verify MUST reject edits forbidden by the approved projected phase zones before running hooks, checking differences since the held phase base.
 
 ### FLOW-003
 Done MUST fully verify and commit evals into audit by default, or impl when audit is disabled. Audit MUST validate exact ID/clause findings, discard invalid findings and new IDs on re-audit, and require checked IDs with No findings to pass. Valid findings MUST increment persistent audit_rounds and return to evals; exceeding max_rounds (default 2), or untestable findings, blocks with Questions and releases the claim.
@@ -96,6 +96,18 @@ Full impl Verify MUST reject a failed enforced testcase from a selected dependen
 
 ### FLOW-027
 Full impl Verify MUST require boundary verification to succeed.
+
+### FLOW-028
+Verify MUST select hooks from the held approved projected project snapshot.
+
+### FLOW-029
+Quick Verify MUST skip dependent-module evals.
+
+### FLOW-030
+Quick Verify MUST skip boundary verification.
+
+### FLOW-031
+Verify MUST leave HEAD unchanged.
 
 ## Decisions
 
