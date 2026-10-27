@@ -73,6 +73,18 @@ Start MUST use the current HEAD as the initial phase base of its claim.
 ### FLOW-019
 While a claim is held, Current MUST return the project snapshot approved at Start.
 
+### FLOW-020
+Verify MUST reject an unapproved alteration of the active change's author fields before running a hook.
+
+### FLOW-021
+Verify MUST reject an unapproved alteration of the active change's recorded runtime state before running a hook.
+
+### FLOW-022
+Whenever Verify runs the target module's evals it MUST require coverage of every enforced current spec.
+
+### FLOW-023
+During evals Verify MUST require genuine fail-first evidence for every enforced change ID that is not already_satisfied.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
