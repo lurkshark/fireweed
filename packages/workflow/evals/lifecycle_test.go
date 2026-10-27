@@ -329,7 +329,7 @@ func hookMarker(t *testing.T, root string) string {
 	return marker
 }
 
-func Test_FLOW_002_RejectsAuthorMetadataAndZonesBeforeHooks(t *testing.T) {
+func Test_FLOW_002_FLOW_020_FLOW_021_RejectsAuthorMetadataAndZonesBeforeHooks(t *testing.T) {
 	for _, edit := range []string{"author", "eval-zone"} {
 		t.Run(edit, func(t *testing.T) {
 			root := fixture(t, "", "", "", "", "")
@@ -365,7 +365,7 @@ func Test_FLOW_002_RejectsAuthorMetadataAndZonesBeforeHooks(t *testing.T) {
 	}
 }
 
-func Test_FLOW_002_EvalsRequireCoverageAndPerIDFailFirst(t *testing.T) {
+func Test_FLOW_002_FLOW_022_FLOW_023_EvalsRequireCoverageAndPerIDFailFirst(t *testing.T) {
 	for _, scenario := range []string{"missing-coverage", "passing-target-unrelated-failure", "already-satisfied", "fixes"} {
 		t.Run(scenario, func(t *testing.T) {
 			front := ""
@@ -406,7 +406,7 @@ func Test_FLOW_002_EvalsRequireCoverageAndPerIDFailFirst(t *testing.T) {
 	}
 }
 
-func Test_FLOW_002_AddedIDRequiresMappedFailingCase(t *testing.T) {
+func Test_FLOW_002_FLOW_023_AddedIDRequiresMappedFailingCase(t *testing.T) {
 	root := fixture(t, "", "set:\n  interface: [api.go, extra.go]\n", "### new:third\nThird MUST return a value.\n", "", "")
 	p := filepath.Join(root, ".fireweed/eval.sh")
 	b, _ := os.ReadFile(p)
@@ -430,7 +430,7 @@ func Test_FLOW_002_AddedIDRequiresMappedFailingCase(t *testing.T) {
 	}
 }
 
-func Test_FLOW_002_ImplFreezesEvalsAndRunsDependentsAndBoundaries(t *testing.T) {
+func Test_FLOW_002_FLOW_022_ImplFreezesEvalsAndRunsDependentsAndBoundaries(t *testing.T) {
 	for _, scenario := range []string{"frozen-eval", "direct", "all", "none", "quick-boundary"} {
 		t.Run(scenario, func(t *testing.T) {
 			config := "audit:\n  enabled: false\n"

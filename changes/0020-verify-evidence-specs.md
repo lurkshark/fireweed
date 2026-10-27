@@ -1,11 +1,14 @@
 ---
 already_satisfied:
-    - new:approved-author-fields
-    - new:approved-runtime-state
-    - new:target-coverage
-    - new:fail-first-evidence
+    - FLOW-020
+    - FLOW-021
+    - FLOW-022
+    - FLOW-023
+audit_rounds: 0
 bases: {}
 module: workflow
+phase: audit
+run: 20261027T195208-ee4bc74d8bf371d523e12f77
 ---
 
 
@@ -23,16 +26,16 @@ existing evals; do not add behavior or implementation.
 
 ## Added
 
-### new:approved-author-fields
+### FLOW-020
 Verify MUST reject an unapproved alteration of the active change's author fields before running a hook.
 
-### new:approved-runtime-state
+### FLOW-021
 Verify MUST reject an unapproved alteration of the active change's recorded runtime state before running a hook.
 
-### new:target-coverage
+### FLOW-022
 Whenever Verify runs the target module's evals it MUST require coverage of every enforced current spec.
 
-### new:fail-first-evidence
+### FLOW-023
 During evals Verify MUST require genuine fail-first evidence for every enforced change ID that is not already_satisfied.
 
 ## Modified
@@ -55,3 +58,7 @@ coverage and per-ID fail-first cases to the last two IDs. Keep every assertion
 and all existing FLOW-002 labels until the final narrowing step; one testcase
 may carry multiple spec IDs. Keep 32 reported workflow cases. No interface or
 implementation edits; impl may edit only this change file.
+
+## Provenance
+
+- evals 2026-10-27T19:53:55.61447Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=118 failing=0 passing=118
