@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/lurkshark/fireweed/packages/assets"
+	"github.com/lurkshark/fireweed/packages/project"
 )
 
 type diagnostic struct {
@@ -16,14 +17,14 @@ type diagnostic struct {
 
 type envelope struct {
 	Schema      int          `json:"schema"`
-	Data        *string      `json:"data"`
+	Data        any          `json:"data"`
 	Diagnostics []diagnostic `json:"diagnostics"`
 }
 
 var pending = map[string]bool{
 	"init": true, "doctor": true,
-	"new-module": true, "new-change": true, "stamp": true,
-	"list": true, "status": true, "show": true, "modules": true, "context": true,
+	"new-module": true, "stamp": true,
+	"list": true, "status": true, "show": true, "context": true,
 	"check": true, "coverage": true, "check-commits": true, "ci": true, "pr-body": true,
 	"start": true, "verify": true, "done": true, "next": true, "run": true,
 	"release": true, "commits": true, "abandon": true,
@@ -83,6 +84,39 @@ func Run(args []string, out, errOut io.Writer) int {
 		if err != nil {
 			return fail("CLI_LOOKUP", fmt.Sprintf("%v. Use a valid %s name.", err, lookupKind(command)))
 		}
+	case "modules":
+		if count != 0 {
+			return fail("CLI_USAGE", "modules takes no arguments. Use modules alone.")
+		}
+		snapshot, err := loadValidatedProject()
+		if err != nil {
+			return fail("C01", fmt.Sprintf("%v. Provide a valid fireweed.yaml and correct module declarations in SPEC.md, then run modules again.", err))
+		}
+		modules := moduleResults(snapshot.Modules)
+		if jsonMode {
+			_ = json.NewEncoder(out).Encode(envelope{Schema: 1, Data: modules, Diagnostics: []diagnostic{}})
+		} else {
+			printModules(out, modules)
+		}
+		return 0
+	case "new-change":
+		if count != 2 {
+			return fail("CLI_USAGE", "new-change requires a module and slug. Use new-change <module> <slug>.")
+		}
+		snapshot, err := loadValidatedProject()
+		if err != nil {
+			return fail("C01", fmt.Sprintf("%v. Provide a valid fireweed.yaml and correct module declarations in SPEC.md, then retry.", err))
+		}
+		path, err := project.NewChange(snapshot.Root, positional[1], positional[2])
+		if err != nil {
+			return fail("CLI_AUTHOR", fmt.Sprintf("%v. Use a valid module and an unused lowercase slug.", err))
+		}
+		if jsonMode {
+			_ = json.NewEncoder(out).Encode(envelope{Schema: 1, Data: path, Diagnostics: []diagnostic{}})
+		} else {
+			fmt.Fprintln(out, path)
+		}
+		return 0
 	default:
 		if pending[command] {
 			return fail("CLI_UNIMPLEMENTED", fmt.Sprintf("%s is under construction and is not implemented yet. Use help for available information commands.", command))

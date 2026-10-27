@@ -2,7 +2,7 @@
 audit_rounds: 0
 bases: {}
 module: app
-phase: impl
+phase: applied
 run: 20261027T005400-980c8460d09504c82dc3fc70
 ---
 
@@ -47,6 +47,7 @@ App evals exercise the built NEW executable from nested temporary projects. APP-
 
 - evals 2026-10-27T00:57:53.605156Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=51 failing=12 passing=39
 - audit 2026-10-27T00:59:19.484511Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-27T01:03:41.017465Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=51 failing=0 passing=51
 
 ## Audit
 
