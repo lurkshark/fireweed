@@ -85,6 +85,18 @@ Whenever Verify runs the target module's evals it MUST require coverage of every
 ### FLOW-023
 During evals Verify MUST require genuine fail-first evidence for every enforced change ID that is not already_satisfied.
 
+### FLOW-024
+During impl Verify MUST reject a failing current-module testcase that references a non-quarantined spec.
+
+### FLOW-025
+Full impl Verify MUST use verify_dependents with a default of direct to select dependent modules.
+
+### FLOW-026
+Full impl Verify MUST reject a failed enforced testcase from a selected dependent module.
+
+### FLOW-027
+Full impl Verify MUST require boundary verification to succeed.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
