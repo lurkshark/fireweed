@@ -4,15 +4,15 @@ Keep this file short: update sections in place and add one line per applied chan
 
 ## Status — 2026-10-26
 
-Four changes applied after the user's first checkpoint approval. The NEW CLI can
+Human review 2 cleared the shared-base gate at `969ab2f`; zero changes applied
+since that review. The NEW CLI can
 load modules, author a change, stamp/check it and display projected specs. The
 manual start/fail-first/audit/impl/archive lifecycle is still incomplete; every
 acceptance row remains unverified.
 
-STOP before another change: shared-base unapproved count is 5, the configured
-P07 maximum. No pending changes, active claims or scratch worktrees remain.
-The next step requires human shared-base review/synchronization, not a bounds
-change or a local review-counter reset.
+Shared-base unapproved count is now 0; max_unapproved remains 5. No pending
+changes, active claims or scratch worktrees remain. Continue the existing manual
+slice and stop again after five applied changes or an actual block.
 
 ## Controller, source and reviews
 
@@ -29,12 +29,19 @@ change or a local review-counter reset.
 - Human review 1: user explicitly answered "I reviewed it; continue" for checkpoint
   `3311f676854420e509412e4ca6bc113aeefd9864`. Review count restarted at zero;
   it is now four. That approval did not move shared refs or override P07.
-- Shared base still `origin/main` at `6e341a4e1c85c254968836644586b1120bee705e`.
+- At the previous gate, the shared base was `origin/main` at `6e341a4e1c85c254968836644586b1120bee705e`.
   Its tree has archives 0001–0003 and queued 0004. Controller reports 5 unapproved
   archives: 0005 fixture-authoring, 0006 project-commands, 0007 change-handles,
   0008 queue-authoring, 0009 authoring-commands. `explain P07` confirms human review
   and merge into shared base before more work. No further start was attempted.
-  This agent did not push, fetch, move base refs or raise bounds.
+  No bound or base ref was manually changed to evade the gate.
+- Human review 2: the user explicitly authorized pushing reviewed main to
+  origin/main as an exception to the no-push instruction. The normal push of
+  exactly `969ab2f142d66f0aa84e65536a62ad7df322c1c2` exited 0, reporting Everything
+  up-to-date. Direct ls-remote and local tracking both confirm that revision;
+  controller status now reports unapproved=0, no diagnostics. Evidence
+  `.fireweed/evidence/review2-*`. This checkpoint-specific authorization does
+  not add product push behavior or authorize automatic pushes of new work.
 
 ## Startup and process evidence
 
@@ -98,14 +105,11 @@ change or a local review-counter reset.
   controller/product lifecycle comparison, real drills, isolated NEW self-hosting
   and distribution/delivery. Goal remains incomplete.
 
-## Next / resume — shared-base P07 gate
+## Next / resume — review 2 approved
 
-Wait for human review/synchronization of approved changes into the shared base.
-Recheck local Git/controller state and unapproved count before authoring or
-starting another change. Do not treat a message alone as a ref update, push on
-this goal, move base refs, raise bounds or silently reset counts.
-
-Once the gate clears, continue the existing manual fixture: add only needed Git
+The gate is cleared by verified shared-base state and explicit human approval.
+Review count is zero. Keep all bounds and the original stage-2 history baseline.
+Continue the existing manual fixture: add only needed Git
 and process primitives, hook/JUnit coverage checks, claims/start/verify/done/audit
 and apply/archive, wiring each operation through app promptly. Include the two
 required product rejections. Do not deepen already-working project/grammar code
