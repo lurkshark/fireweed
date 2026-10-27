@@ -34,7 +34,7 @@ and return nonzero. Failed --json requests MUST use the schema-1 envelope with
 null data and a diagnostic containing code and message.
 
 ### APP-004
-The modules command MUST find the nearest ancestor fireweed.yaml from the working directory and report the loaded, validated module graph. With --json it MUST return schema 1, an array data containing each module's name, id_prefix, dir, depends_on and resolved zones, and an empty diagnostics array. Success and missing/invalid project configuration MUST return exits 0 and 2 respectively, with a corrective C01 diagnostic on failure.
+modules MUST discover the nearest ancestor fireweed.yaml and report the validated graph, using the held approved projected snapshot while this worktree owns a change. With --json it MUST return schema 1 with array data containing name, id_prefix, dir, depends_on and resolved zone arrays, plus empty diagnostics. Success and missing/invalid configuration MUST return exits 0 and 2 respectively, with a corrective C01 failure diagnostic.
 
 ### APP-005
 The new-change <module> <slug> command MUST use the discovered project root to create the project API's queued skeleton and print its repository-relative path with exit 0. Missing/extra arguments, invalid module/slug and duplicate slugs MUST return exit 2 with a corrective diagnostic, preserving existing files. --json MUST use schema 1 with string path data on success, or null data and code/message diagnostics on failure.
@@ -47,5 +47,17 @@ check MUST invoke project.Check and exit 0 when no error diagnostics remain, or 
 
 ### APP-008
 show <module> [ID] MUST return the current module document or selected item, using the whole-queue project projection with --projected. With --json it MUST return the same text as string data in schema 1 with empty diagnostics and exit 0. Unknown/ambiguous module or item, invalid arguments and configuration errors MUST return exit 2 with code/message diagnostics.
+
+### APP-009
+start <change> MUST discover the root, invoke workflow.Start and print first-step workflow.Context with exit 0, assigning IDs/run/phase without committing. It MUST preserve reported warnings and return exit 1 for lifecycle rejection or 2 for usage/configuration errors, with corrective code/message diagnostics. --json MUST use schema 1 with context string data on success or null data on failure.
+
+### APP-010
+verify [change] [--quick] and done [change] MUST invoke workflow with the actual invoking executable as Bin, returning 0 for success, 1 for failed checks/blocked state and 2 for usage/configuration errors. Done MUST always use full checks; verify --quick uses quick checks without commits. --json MUST return schema 1 with result data on success or null on failure and reported code/message diagnostics; plain success names the resulting phase.
+
+### APP-011
+context <change> [--full] MUST return the held workflow.Context text, using compact or full behavior as requested, with exit 0 and empty diagnostics. --json MUST return identical text as schema-1 string data. Usage/configuration errors MUST return 2 and held-state lookup failures 1, with corrective code/message diagnostics and null JSON data.
+
+### APP-012
+coverage <module> MUST evaluate current specs, or the selected projection with --with-change <change>, using approved metadata while held and setting FIREWEED_BIN to the actual executable. It MUST map results to IDs, require coverage/pass and return exit 0 on success or 1 on failed checks. Usage/configuration/unknown module/change errors MUST return 2 with corrective diagnostics; --json uses schema 1 with report data on success, null on failure and code/message diagnostics.
 
 ## Decisions

@@ -27,9 +27,9 @@ type envelope struct {
 var pending = map[string]bool{
 	"init": true, "doctor": true,
 	"new-module": true,
-	"list":       true, "status": true, "context": true,
-	"coverage": true, "check-commits": true, "ci": true, "pr-body": true,
-	"start": true, "verify": true, "done": true, "next": true, "run": true,
+	"list":       true, "status": true,
+	"check-commits": true, "ci": true, "pr-body": true,
+	"next": true, "run": true,
 	"release": true, "commits": true, "abandon": true,
 	"drill": true, "gc": true, "migrate": true, "agents-md": true,
 }
@@ -37,12 +37,26 @@ var pending = map[string]bool{
 func Run(args []string, out, errOut io.Writer) int {
 	jsonMode := false
 	projected := false
+	quick := false
+	full := false
+	withChange := ""
 	positional := make([]string, 0, len(args))
-	for _, arg := range args {
+	for i := 0; i < len(args); i++ {
+		arg := args[i]
 		if arg == "--json" {
 			jsonMode = true
 		} else if arg == "--projected" {
 			projected = true
+		} else if arg == "--quick" {
+			quick = true
+		} else if arg == "--full" {
+			full = true
+		} else if arg == "--with-change" {
+			if i+1 >= len(args) || strings.HasPrefix(args[i+1], "-") {
+				return cliFailure(2, jsonMode || contains(args, "--json"), out, errOut, "CLI_USAGE", "--with-change requires a change value. Use coverage <module> --with-change <change>.")
+			}
+			i++
+			withChange = args[i]
 		} else {
 			positional = append(positional, arg)
 		}
@@ -69,6 +83,9 @@ func Run(args []string, out, errOut io.Writer) int {
 	command := positional[0]
 	if projected && command != "show" {
 		return fail("CLI_OPTION", "--projected is only available with show.")
+	}
+	if quick && command != "verify" || full && command != "context" || withChange != "" && command != "coverage" {
+		return fail("CLI_OPTION", "Use --quick only with verify, --full only with context, and --with-change only with coverage.")
 	}
 	count := len(positional) - 1
 	var body string
@@ -100,7 +117,7 @@ func Run(args []string, out, errOut io.Writer) int {
 		if count != 0 {
 			return fail("CLI_USAGE", "modules takes no arguments. Use modules alone.")
 		}
-		snapshot, err := loadValidatedProject()
+		snapshot, err := loadModuleProject()
 		if err != nil {
 			return fail("C01", fmt.Sprintf("%v. Provide a valid fireweed.yaml and correct module declarations in SPEC.md, then run modules again.", err))
 		}
@@ -111,6 +128,8 @@ func Run(args []string, out, errOut io.Writer) int {
 			printModules(out, modules)
 		}
 		return 0
+	case "start", "verify", "done", "context", "coverage":
+		return runLifecycle(command, positional[1:], jsonMode, quick, full, withChange, out, errOut)
 	case "new-change":
 		if count != 2 {
 			return fail("CLI_USAGE", "new-change requires a module and slug. Use new-change <module> <slug>.")
