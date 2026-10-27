@@ -31,6 +31,18 @@ Successful impl Done MUST apply Added/Modified/Removed, set values and Decisions
 ### FLOW-005
 Each successful Done MUST append provenance with phase, date, manual/configured agent, version, playbook hash and result counts, retaining reports/output under the run directory. Context MUST include the change, projected spec, interface contents, SYSTEM and matching playbook, listing other relevant files by path/size or including contents with full. State MUST expose the held projected snapshot so composing commands use the approved graph during hooks.
 
+### FLOW-006
+Start MUST include the approved projected project snapshot in its returned State.
+
+### FLOW-007
+Start MUST replace each local Added handle throughout the change with the next available spec ID for its module.
+
+### FLOW-008
+Start MUST assign a unique run identifier when starting an unstarted change.
+
+### FLOW-009
+Start MUST report P04 when neither the local base nor the shared base contains the change file.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
