@@ -564,7 +564,7 @@ func toAudit(t *testing.T, root string) workflow.State {
 	return r.State
 }
 
-func Test_FLOW_003_EvalsDoneUsesDefaultAuditOrDisabledImpl(t *testing.T) {
+func Test_FLOW_003_FLOW_032_FLOW_033_EvalsDoneUsesDefaultAuditOrDisabledImpl(t *testing.T) {
 	for _, disabled := range []bool{false, true} {
 		t.Run(fmt.Sprint(disabled), func(t *testing.T) {
 			config := ""
@@ -588,7 +588,7 @@ func Test_FLOW_003_EvalsDoneUsesDefaultAuditOrDisabledImpl(t *testing.T) {
 	}
 }
 
-func Test_FLOW_003_AuditAcceptsOnlyExactClauseFindingsAndCheckedNoFindings(t *testing.T) {
+func Test_FLOW_003_FLOW_034_AuditAcceptsOnlyExactClauseFindingsAndCheckedNoFindings(t *testing.T) {
 	root := fixture(t, "", "", "", "", "")
 	toAudit(t, root)
 	audit(t, root, "- ALP-999: \"Missing MUST clause.\" — invalid ID\n- ALP-001: \"Alpha MUST do something else.\" — invalid quote\nChecked IDs: ALP-001\nNo findings\n")
@@ -609,7 +609,7 @@ func Test_FLOW_003_AuditAcceptsOnlyExactClauseFindingsAndCheckedNoFindings(t *te
 	}
 }
 
-func Test_FLOW_003_AuditFindingsConvergeAndPersistTwoRoundBound(t *testing.T) {
+func Test_FLOW_003_FLOW_035_AuditFindingsConvergeAndPersistTwoRoundBound(t *testing.T) {
 	root := fixture(t, "", "", "### new:extra [review]\nExtra MUST be visible.\n", "", "")
 	toAudit(t, root)
 	finding := "- ALP-001: \"" + newClause + "\" — missing assertion\n"
