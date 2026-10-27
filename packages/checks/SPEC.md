@@ -45,4 +45,19 @@ Zones MUST reject edits to change files other than the current change in every p
 ### CHK-010
 During evals and impl, Zones MUST allow edits outside modules only when the path matches worker_writable, except for the current change file.
 
+### CHK-011
+During evals, Zones MUST allow edits in the target module's evals zone.
+
+### CHK-012
+During evals, Zones MUST allow edits in the target module's interface zone only when InterfaceDeclared is true.
+
+### CHK-013
+During evals, Zones MUST allow edits in the target module's disposable zone only for files absent from the phase base.
+
+### CHK-014
+During evals, Zones MUST allow edits in the target module's other zone.
+
+### CHK-015
+During evals, Zones MUST reject edits in the target module's preserve zone.
+
 ## Decisions
