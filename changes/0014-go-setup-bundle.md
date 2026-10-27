@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: assets
+phase: audit
+run: 20261027T145815-f26a804e7d062856d3d8e07b
 set:
     interface:
         - api.go
@@ -26,16 +29,16 @@ internal; shared data lives under retained model/.
 
 ## Added
 
-### new:go-bundle
+### AST-004
 BuiltinRecipe MUST return the embedded Go recipe for go and reject unknown names. The bundle MUST contain instructions, api.go/evals/**/internal/** defaults, eval/boundaries/setup commands, go.sum worker_writable and project-relative recipe/hook/template/canary files. Its instructions MUST explain Go module/workspace setup and deriving the graph from FIREWEED_BIN modules --json.
 
-### new:go-eval-hook
+### AST-005
 The Go eval hook MUST run the requested module's Go tests and write JUnit testcase names/classnames, pass/fail/skip and elapsed seconds while preserving test failure exit status. It MUST retain started-but-unfinished tests and package/compile failures as visible failures rather than passing or empty evidence.
 
-### new:go-boundary-hook
+### AST-006
 The Go boundaries hook MUST query FIREWEED_BIN modules --json and use its module dirs, depends_on and zone map with the workspace module path. It MUST report module-prefixed violations for imports of undeclared modules and eval imports reaching beyond retained interface packages, including own internal implementation. Clean module fixtures MUST pass.
 
-### new:go-templates-canaries
+### AST-007
 The bundle MUST provide module SPEC/api.go templates and version-1 baseline, undeclared, internal_eval, failing_eval and missing_id canary maps, substitutable with name, prefix, package, go_module, module_dir and other_dir. Rendered baseline modules MUST compile/pass. Each supplied canary MUST expose its named violation through the corresponding Go hook, with clean recovery after removal.
 
 ## Modified
@@ -52,3 +55,7 @@ Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,
 .fireweed/templates/module/SPEC.md and api.go.tmpl, and
 .fireweed/canaries/canaries.yaml. Setup runs go mod download after the project has
 a Go module; the recipe instructions explain that prerequisite.
+
+## Provenance
+
+- evals 2026-10-27T18:58:30.86087Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=213 failing=6 passing=207
