@@ -23,7 +23,7 @@ Start MUST atomically create the local claim for the selected queued change.
 Verify MUST reject edits forbidden by the approved projected phase zones before running hooks, checking differences since the held phase base.
 
 ### FLOW-003
-Done MUST fully verify and commit evals into audit by default, or impl when audit is disabled. Audit MUST validate exact ID/clause findings, discard invalid findings and new IDs on re-audit, and require checked IDs with No findings to pass. Valid findings MUST increment persistent audit_rounds and return to evals; exceeding max_rounds (default 2), or untestable findings, blocks with Questions and releases the claim.
+Done MUST require full verification to succeed before committing a phase transition.
 
 ### FLOW-004
 Successful impl Done MUST apply Added/Modified/Removed, set values and Decisions (attributed to the slug), including Removed decisions, then archive with phase applied and commit together after static validation. Every phase commit MUST advance the claim's phase base, freezing prior eval/interface edits and releasing the exact held claim upon application. Failed verification MUST leave the phase unadvanced and create no commit.
@@ -135,6 +135,15 @@ Audit Done MUST block the change when retained findings would exceed audit.max_r
 
 ### FLOW-040
 Audit Done MUST block the change when a retained finding marks its quoted clause untestable.
+
+### FLOW-041
+Audit Done MUST require No findings with a complete checked-ID list before advancing to impl.
+
+### FLOW-042
+When audit blocks a change, Done MUST include the blocking findings in its Questions section.
+
+### FLOW-043
+Audit blocking MUST release the calling worktree's held change claim.
 
 ## Decisions
 
