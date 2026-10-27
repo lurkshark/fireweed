@@ -26,4 +26,7 @@ MatchesID MUST find a spec ID in either testcase name or classname, ignoring cas
 ### CON-005
 MatchGlob MUST support slash-separated paths with * within one component and ** spanning zero or more components. ResolveZone MUST choose the first matching zone in order protected, SPEC.md, evals, interface, append_only, preserve, disposable, other, treating SPEC.md as the module's root spec path.
 
+### CON-006
+ParseItems MUST accept new:<slug> item headings and preserve the complete handle in Item.ID, where slug contains lowercase letters, digits and hyphens. It MUST reject empty handles and handles containing other characters. Assigned-ID and handle items MUST retain their source order in mixed input, with the existing tag/body preservation and duplicate-ID checks applying to handles too.
+
 ## Decisions

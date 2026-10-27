@@ -95,7 +95,7 @@ func ReplaceSection(markdown, name, body string) string {
 	return markdown + "## " + name + "\n" + body
 }
 
-var itemHeading = regexp.MustCompile("^### ([A-Za-z][A-Za-z0-9]*-[0-9]+)(?: \\[([^\\[\\]]+)\\])?$")
+var itemHeading = regexp.MustCompile("^### ([A-Za-z][A-Za-z0-9]*-[0-9]+|new:[a-z0-9-]+)(?: \\[([^\\[\\]]+)\\])?$")
 
 func ParseItems(section string) ([]model.Item, error) {
 	var items []model.Item
