@@ -196,3 +196,13 @@ before another change. Four changes were applied since the explicit review at
 - R07/R09/R10/R11 partial: CHK-001–CHK-005 cover public JUnit/results, hooks, zones and boundaries; archive `0011-lifecycle-checks.md`, phases `69933f7` / `eff6823` / `3c5b40b`. 25 failures before, 28 permanent cases and 4 public smoke probes pass after. Full dependents/boundaries pass. Product lifecycle and doctor integration remain unverified.
 
 - R05–R09/R14/R17 partial: FLOW-001–FLOW-005 provide manual claims/start/verify/done/audit/apply/archive/provenance/context through public APIs. Archive `0012-manual-lifecycle.md`, evals `c5c02de` / `ca11056` / `aec7154`, findings `0b5aeef` / `25e4775`, final audit `8627014`, impl `563d2ee`: 28 initial failures, 32 final permanent cases and 3 public smoke probes pass; full dependents/boundaries pass. Sol reset/retry recorded in ignored evidence. NEW CLI lifecycle, remaining kinds/recovery/history and full acceptance remain unverified.
+
+- Milestone 1 / R05–R11/R17 partial: APP-004, APP-009–APP-012 connect the manual
+  lifecycle through NEW source `89b7028`; original phases `678f7bb` / `7db8c47` /
+  `a9d195c` / `804cb84` / `89b7028`. Eight genuine initial failures, 86 final app
+  cases and 2 public coverage probes pass. Real Go fixture TOY-001 at
+  `/tmp/fireweed-stage2-manual-slice/project` completed native evals `f04e9f7`,
+  separate audit `bfb84d0`, apply `1323a31`, with Z01 and P2-01 rejections,
+  verify/no commit, frozen eval/facade, passing coverage, inspected provenance,
+  clean tree and released claim. All workers/auditor were real Sol/high CLI calls.
+  This verifies the manual milestone, not init/doctor/run or full acceptance.

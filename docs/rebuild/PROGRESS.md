@@ -4,15 +4,15 @@ Keep this file short: update sections in place and add one line per applied chan
 
 ## Status — 2026-10-27
 
-Human review 2 cleared the shared-base gate at `969ab2f`; three changes applied
-since that review. The NEW CLI can
-load modules, author a change, stamp/check it and display projected specs. The
-manual start/fail-first/audit/impl/archive lifecycle is still incomplete; every
-acceptance row remains unverified.
+The NEW binary completed the real manual Go lifecycle at clean source
+`89b70289ee562d228e055f047d48470057beb607`: fail-first, both required
+rejections, separate audit, frozen implementation, apply/archive and coverage.
+Four changes have applied since human review 2. The full goal remains incomplete.
 
-Shared-base unapproved count is now 3; max_unapproved remains 5. No pending
-changes, active claims or scratch worktrees remain. Continue the existing manual
-slice and stop again after five applied changes or an actual block.
+Current local `origin/main` is `c5c02de31bec8eb22569269f25d0ef0e5a69e63a`;
+controller status reports 1 unapproved archive. This ref observation does not
+restart the independent human-review count. No active rebuild claim remains.
+Next: Go setup assets for init, then the five-change human checkpoint.
 
 ## Controller, source and reviews
 
@@ -23,9 +23,9 @@ slice and stop again after five applied changes or an actual block.
 - Stage-2 setup baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`.
   Use explicit nonempty baseline..HEAD ranges; never the historical d991c26 range.
 - Product: `bin/fireweed`, built at clean source
-  `de65319d646fd0e39e9810415a181dd28911762c` (vcs.modified=false).
-  help/version/explain/playbook/modules/new-change/stamp/check/show work;
-  other commands and unsupported options explicitly fail. No bootstrap delegation.
+  `89b70289ee562d228e055f047d48470057beb607` (vcs.modified=false).
+  help/version/explain/playbook/modules/new-change/stamp/check/show, start/verify/done,
+  held context and coverage work. Remaining commands/options explicitly fail.
 - Human review 1: user explicitly answered "I reviewed it; continue" for checkpoint
   `3311f676854420e509412e4ca6bc113aeefd9864`. Review count restarted at zero;
   it is now four. That approval did not move shared refs or override P07.
@@ -88,6 +88,8 @@ slice and stop again after five applied changes or an actual block.
 
 - `manual-lifecycle` / FLOW-001–FLOW-005: evals `c5c02de` / `ca11056` / `aec7154` (28 failures, 2 passes), findings `0b5aeef` / `25e4775`, independent passing final audit `8627014`, impl `563d2ee` (32 own, 78 app and 3 public probes pass; dependents/boundaries pass). Two bounded audit rounds. Sol usage limit interrupted the first auditor; retry after its reported reset completed independently. Approved-archive counting, mutable Decisions and frozen audit-state gaps corrected within impl. Archive `0012-manual-lifecycle.md`. 3 applied since review 2.
 
+- `lifecycle-cli` / APP-004, APP-009–APP-012: evals `678f7bb` / `a9d195c` (8 failures, 78 passes), findings `7db8c47`, independent passing re-audit `804cb84`, impl `89b7028` (86 app cases, 2 held-coverage public probes and boundaries pass). One audit round; fixture ID setup corrected before freezing and current-coverage metadata corrected within impl. Archive `0013-lifecycle-cli.md`. 4 applied since review 2.
+
 ## Latest verification and manual fixture
 
 - Exact checked range:
@@ -106,30 +108,26 @@ slice and stop again after five applied changes or an actual block.
   Answer MUST return 42. NEW stamp answer --json, check --json, show toy --projected
   --json and selected new:answer show all exited 0. Handle remains unassigned;
   author stamping commit `7a34def27b37d5f69aec1eb3abea4ba02ef8fe57`; fixture clean.
-- Still unrun: manual lifecycle finish, forbidden-zone/false-fail-first product
-  rejections, init/doctor/run and remaining NEW commands, fresh-checkout gates,
-  controller/product lifecycle comparison, real drills, isolated NEW self-hosting
-  and distribution/delivery. Goal remains incomplete.
+- Manual slice verified through NEW only in `/tmp/fireweed-stage2-manual-slice/project`.
+  Start kept HEAD `5357850`, assigned TOY-001 and run
+  `20261027T144429-53d4980e0361844d890dea9e`. Real Go `Test_TOY_001_Answer`
+  failed at 0, passed at 42. SYSTEM edit rejected Z01; passing-before impl rejected
+  P2-01; verify never committed. Separate Sol audit passed. Native phase commits:
+  evals `f04e9f71a8d175d50f87c33f68b35cc61a059dbe`, audit
+  `bfb84d0cc80b313b589929c3a2215a0876111364`, apply
+  `1323a31dd1605bf86393b1fb8b4ef7c5c799dd8e`. Eval/facade Git diff against
+  evals commit is empty. SPEC/archive/provenance inspected, coverage TOY-001 pass,
+  fixture clean/no claim. Logs `.fireweed/evidence/manual-fixture-*`.
+- Still unrun: init/doctor/run and remaining NEW surface, fresh-checkout gates,
+  controller/product comparison, real drills, isolated NEW self-hosting and
+  distribution/delivery. All complete acceptance rows remain unverified.
 
-## Next / resume — review 2 approved
+## Next / resume — review 2 count four
 
-The gate is cleared by verified shared-base state and explicit human approval.
-Review count is three. Keep all bounds and the original stage-2 history baseline.
-Continue the existing manual fixture: add only needed Git
-and process primitives, hook/JUnit coverage checks, claims/start/verify/done/audit
-and apply/archive, wiring each operation through app promptly. Include the two
-required product rejections. Do not deepen already-working project/grammar code
-before this slice runs end to end. Full project validation/views remain incomplete.
+Milestone 1 is verified. Build the Go setup bundle needed by init next, preserving
+all bounds. Stop after that fifth applied change for human review even if the
+shared-base counter is lower. Init/doctor and bounded unattended execution are
+next; do not deepen already-working manual behavior.
 
 If a change is active on resume, read its context and preserve its work. Protected
 author edits belong only between active changes in separate commits.
-
-- Gitstore implementation review exposed selected-new-file staging and index-only
-  diff gaps needed by the slice. Both corrected within impl without frozen edits;
-  temporary public smoke client `/tmp/fireweed-gitstore-slice-smoke.go` now passes.
-  Fixture hooks prepared before start: project-owned Go adapter copied to fixture
-  .fireweed/hooks.go, eval/boundaries configured, audit enabled, timeout 30s;
-  author commit `5357850929ce87725fc492b1f45b5d1e76b327c9`. No lifecycle success yet.
-  Next: checks public JUnit/hook/zone/boundary operations, then workflow and app.
-
-- Checks minimum complete; no workflow or CLI lifecycle success yet. Workflow minimum now complete; next authoring target is app lifecycle-cli. The external Go fixture remains clean at 5357850 and awaits NEW start/verify/done wiring.
