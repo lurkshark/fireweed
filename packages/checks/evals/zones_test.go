@@ -104,7 +104,7 @@ func Test_CHK_004_CHK_011_CHK_012_CHK_013_CHK_014_CHK_015_EvalsAllowedZonesAndNe
 	zoneRejected(t, request)
 }
 
-func Test_CHK_004_ImplFreezesEvalsAndInterfaces(t *testing.T) {
+func Test_CHK_004_CHK_016_CHK_017_CHK_018_CHK_019_CHK_020_ImplFreezesEvalsAndInterfaces(t *testing.T) {
 	snap, base := zoneFixture(t)
 	for _, path := range []string{"packages/alpha/evals/old_test.go", "packages/alpha/api.go"} {
 		zoneRejected(t, zoneRequest(snap, base, "impl", gitstore.Change{Path: path, Status: "M"}))
