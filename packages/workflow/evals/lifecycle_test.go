@@ -786,6 +786,9 @@ func Test_FLOW_005_ContextAndProvenanceAndRetainedReports(t *testing.T) {
 			t.Errorf("compact context misses %q", want)
 		}
 	}
+	if strings.Count(compact, newClause) < 2 {
+		t.Errorf("compact context misses revised clause in change and projected spec")
+	}
 	if !strings.Contains(compact, "packages/alpha/internal/context-note.txt") || !regexp.MustCompile(`(?m)context-note\.txt[^\n]*\b29\b`).MatchString(compact) {
 		t.Errorf("compact context omitted file path/size: %q", compact)
 	}
