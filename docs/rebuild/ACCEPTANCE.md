@@ -148,3 +148,10 @@ cases (including parent cases), with no diagnostics. See PROGRESS for logs and
 limits. This is not fresh-checkout evidence or completion of any full acceptance
 row. The manual NEW lifecycle, remaining surface, real drills/self-hosting and
 delivery gates remain incomplete. Human review is required before change six.
+
+- R04/R17 partial: APP-004–APP-005 wire modules and new-change through the NEW
+  executable, including ancestor config discovery, graph/zone JSON and author
+  error semantics. Archive `0006-project-commands.md`; phases `da5dba8` /
+  `98e5852` / `5f09706`; 12 failures/39 passes before, all 51 app cases pass after.
+  NEW smoke created changes/0001-answer.md in the manual slice fixture; stamping
+  and lifecycle remain unverified.
