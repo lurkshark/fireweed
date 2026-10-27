@@ -86,7 +86,7 @@ func Test_CHK_004_CHK_006_CHK_007_CHK_008_CHK_009_RejectProtectedSpecForeignModu
 	}
 }
 
-func Test_CHK_004_EvalsAllowedZonesAndNewStubs(t *testing.T) {
+func Test_CHK_004_CHK_011_CHK_012_CHK_013_CHK_014_CHK_015_EvalsAllowedZonesAndNewStubs(t *testing.T) {
 	snap, base := zoneFixture(t)
 	for _, change := range []gitstore.Change{
 		{Path: "packages/alpha/evals/new_test.go", Status: "A"},
