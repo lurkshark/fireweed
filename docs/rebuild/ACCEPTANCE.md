@@ -161,3 +161,9 @@ delivery gates remain incomplete. Human review is required before change six.
   `a194629` / `7580897`; one genuine failing case, then all 34 contracts cases pass
   with dependents/boundaries. Allocation, cross-change scope and rewriting remain
   for project/workflow evidence.
+
+- R04/R05 partial: PRJ-004–PRJ-007 cover ordered queue parsing, projected edits/set
+  metadata, per-change handle ownership, preceding-projection stamp bases and
+  initial static diagnostics. Archive `0008-queue-authoring.md`; phases `6e3ca5f` /
+  `776b4d0` / `2ef37df`; 24 failures/25 passes before, all 53 project cases pass after
+  plus 51 app cases and boundaries. Full validation/views/lifecycle remain open.

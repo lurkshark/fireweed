@@ -6,7 +6,7 @@ Keep this file short: update sections in place and add one line per applied chan
 
 Stage-2 startup and standalone NEW CLI checkpoint passed. Human review 1 approved
 continuation at `3311f676854420e509412e4ca6bc113aeefd9864` (user: "I reviewed it;
-continue"). Two applied changes since that review. No pending changes or claims. The manual
+continue"). Three applied changes since that review. No pending changes or claims. The manual
 lifecycle fixture is not built and every acceptance row remains unverified.
 
 ## Controller and baseline
@@ -54,6 +54,8 @@ lifecycle fixture is not built and every acceptance row remains unverified.
 
 - `change-handles` / CON-006: evals `a22fcd4` (1 failure, 33 passes; CON-006 fails), independent audit `a194629` (no findings), impl `7580897` (34 own, 51 app, 8 assets and 25 project cases pass; boundaries pass); archive `0007-change-handles.md`. 2 applied since review 1; shared-base unapproved count 3.
 
+- `queue-authoring` / PRJ-004–PRJ-007: evals `6e3ca5f` (24 failures, 25 passes), independent audit `776b4d0` (no findings), impl `2ef37df` (53 project and 51 app cases pass, dependents/boundaries pass); archive `0008-queue-authoring.md`. Two contradictory eval fixtures corrected before freezing. 3 applied since review 1; shared-base unapproved count 4.
+
 ## Process findings and limits
 
 - Real workers/auditors used required Sol/high. Manually coordinated controller
@@ -100,8 +102,8 @@ blocked change. This approval does not move base refs or bypass P07: the current
 shared-base unapproved count is one, so P07 may stop this batch before five.
 The full goal remains incomplete.
 
-Project Load/module graph/NewChange are now wired through app. Add only needed
-projection/stamping, Git, hook/coverage and lifecycle
+Project queue/projection/stamp/check now work at the public API. Wire stamp/check
+and projected views through app next, then add only needed Git, hook/coverage and lifecycle
 behavior to finish the NEW manual fail-first/audit/impl/archive fixture. Retain
 explicit failures for unimplemented commands; do not polish working primitives
 before that slice. Full project grammar/zone validation is still incomplete.
