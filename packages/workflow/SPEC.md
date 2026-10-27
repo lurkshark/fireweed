@@ -109,6 +109,18 @@ Quick Verify MUST skip boundary verification.
 ### FLOW-031
 Verify MUST leave HEAD unchanged.
 
+### FLOW-032
+Done MUST commit a successfully verified evals phase and advance it to audit when audit is enabled.
+
+### FLOW-033
+Done MUST commit a successfully verified evals phase and advance it to impl when audit.enabled is false.
+
+### FLOW-034
+Audit Done MUST discard a finding whose spec ID is absent or whose quoted clause is not an exact substring of that spec.
+
+### FLOW-035
+On re-audit, Audit Done MUST discard findings for spec IDs that had no retained finding in the preceding audit round.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
