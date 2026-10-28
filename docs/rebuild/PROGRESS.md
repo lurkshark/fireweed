@@ -4,7 +4,7 @@
 
 The 0060–0064 checkpoint review passed with no issues; its explicit baseline
 history check passed over 369 commits. Build/race/vet and NEW U01/U02 JSON smoke
-checks passed for source 4066479. **Applied since review: 3.** Complete the
+checks passed for source 4066479. **Applied since review: 4.** Complete the
 remaining app classification and emitted-code explanations after the authorized
 push, then perform the single contracts drill before Milestone 2.
 
@@ -14,7 +14,7 @@ stop for human review with details when it reports an issue. Record each review.
 phase audits, blocked-change stops and P07 remain enforced; this policy does not
 alter bounds. The owner explicitly authorizes each push only after its
 passing five-change subagent review. Milestone 1 passed;
-Milestone 2 waits for the remaining diagnostic migration and contracts drill.
+Milestone 2 waits for the contracts drill; the existing-path diagnostic slice is complete.
 
 Owner approval on 2026-10-28 removes the numeric spec-count caps for all change
 kinds, superseding both the five-spec default and the 30-item exceptions. Batch
@@ -27,7 +27,7 @@ audits, audit bounds, timeouts and recurring checkpoint reviews remain in force.
 
 Controller: `.fireweed/bin/fireweed-bootstrap` 0.1.0, source `7f925190878e38fc38f30d16bb1cf47aca098cf7`, pin SHA-256 `f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f`; unchanged.
 Stage-2 history baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`; always check an explicit nonempty baseline..HEAD range. Use `GOCACHE=/tmp/fireweed-rebuild-cache`.
-NEW binary: `bin/fireweed`, clean source `72a2860feeebb7b60ad054f128821b98d477d6cb` (CGO disabled); [committed manual-lifecycle report](reports/manual-lifecycle.md). Unbuilt commands remain explicit errors; the empty runner is expected.
+NEW binary: `bin/fireweed`, clean source `79e57f4fe2ef43f56ac47418acdb19857ec78320` (CGO disabled); [committed manual-lifecycle report](reports/manual-lifecycle.md). Unbuilt commands remain explicit errors; the empty runner is expected.
 
 Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`. Interactive work through 0014's initial evals was followed by coordinator `done`, hence legacy `agent=manual` lines. Configured controller execution began at 0014's audit; its provenance records the actual command/model. Continue configured execution. Ignored runtime logs are auxiliary, not reviewable evidence; archives, permanent evals and committed reports carry the evidence.
 
@@ -182,10 +182,19 @@ review; the applied count restarts. No queue or claim remains; D006 is incomplet
 
 - 0067 emitted-cause-explanations — AST-003/024–026; 1360324/5d3e724/72a2860; 22 reported failures → 51 own/331 total phase cases pass, no findings; sixteen explanations added and C07/U02 clarified. All 30 emitted codes resolve through NEW; race/vet pass. Text review found C02 identity causes and P02 missing/unreadable-claim recovery underdescribed; correct those before the drill.
 
+- 0068 complete-graph-claim-explanations — fixes AST-024/026; d6fb6b1/54892c9/79e57f4; five reported failures → 51 own/331 total phase cases pass, no findings; C02 covers module identities and dependencies, P02 covers missing/invalid/foreign claims and appropriate recovery, P01 includes existing authoring preconditions. NEW C02/P02 JSON smoke passes.
+
+The planned D006 existing-path slice is complete through 0068: no legacy CLI
+labels remain, and all 30 emitted codes have NEW JSON explanations. Full phase
+checks passed; race/vet at 72a2860 remains valid for 0068's text-only correction.
+No new feature, public interface or speculative error was added. Full diagnostic
+surface for unimplemented commands is not claimed. The next authorized action is
+the single contracts drill; no gap changes or other module drills are authorized.
+
 ## Next
 
 1. The previously identified project/checks/workflow/contracts/gitstore/assets/app splits are complete through 0053. All obligations and existing assertions are retained under focused specs; do not launch another global rewrite. Continue the agreed diagnostic migration.
-2. Finish D006 with the remaining app error classifications and accurate explanations for newly emitted static/check/workflow causes. Apply it only to existing emitted error paths and behavior assertions, using eval_fix and normal implementation changes. Do not stub or implement unsupported features or speculative errors for codes. Keep explain accurate for implemented paths; unused allocations/tests/explanations wait for a justified feature change. Preserve assertions and coverage.
+2. D006's planned existing-error-path migration and explanations are complete through 0068. Preserve assigned causes and keep explain accurate as justified features add real paths. No unsupported-feature scaffolding, speculative errors or unused-code explanations.
 3. Workflow file organization is not a Milestone 2 prerequisite. Defer splitting lifecycle/stub.go unless it causes a demonstrated problem during feature work; a later drill/regenerate may organize the implementation afresh. Do not substitute another speculative cleanup task.
 4. After items 1 and 2, run exactly one real controller drill on contracts. Commit its report and list gaps here; author no gap changes and drill no other module.
 5. Milestone 2 then centers projected blocking and fake-agent next/run through NEW. No NEW unattended real-agent execution before that fake-agent run completes. Full acceptance remains unverified.

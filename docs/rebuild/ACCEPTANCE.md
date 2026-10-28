@@ -265,3 +265,10 @@ before another change. Four changes were applied since the explicit review at
   [checkpoint review](reports/checkpoint-0060-0064.md) and PROGRESS for evidence
   and owner-approved policy updates. Remaining CLI classification/explanations,
   contracts drill, Milestone 2 and full acceptance remain unverified.
+
+- R17 existing-path diagnostic slice: 0065–0068 finish current CLI classification
+  and emitted-code explanations, including the observed show C02/C05 correction.
+  All phase audits passed; NEW resolves all 30 emitted codes, targeted regressions
+  pass, and race/vet passed at 72a2860 (0068 only corrects explanation text).
+  PROGRESS and the archives hold phases/counts. This does not establish missing
+  commands, the full future diagnostic surface, regeneration or final acceptance.
