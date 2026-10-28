@@ -8,7 +8,7 @@ cleanup complete. It reports an error-prefix contract gap and its agent read
 dependent internals, so strict independence acceptance is not established; see
 [the reviewed report](reports/contracts-drill.md). No gap fix or repeat drill is
 authorized. 0069 now implements recipe-based initialization through NEW.
-**Applied since review: 7; CHK-055 isolated audit passed, runner eval_fix next.**
+**Applied since review: 8; approved corrections applied, final review pending.**
 0071–0075 applied the doctor backend, portable cleanup helper, emitted-code
 explanations, doctor/guidance CLI and bounded invocation primitive. The approved
 0071 recovery passed; [its report](reports/doctor-0071-block.md) preserves the
@@ -57,6 +57,7 @@ NEW binary: `bin/fireweed`, clean source `a3c044a7a0f20c02789210fa9be1d4ef0c4094
 Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`. Interactive work through 0014's initial evals was followed by coordinator `done`, hence legacy `agent=manual` lines. Configured controller execution began at 0014's audit; its provenance records the actual command/model. Continue configured execution. Ignored runtime logs are auxiliary, not reviewable evidence; archives, permanent evals and committed reports carry the evidence.
 
 ## Applied changes
+- 0078 stable-descendant-timeout-eval — eval_fix RUN-007/009; 88119c5/7b8a843/0f6f7b2. One existing case gets bounded startup/observation windows and output-before-readiness; 178 eval/impl phase passes, focused race pass and isolated audit no findings. No product/interface/spec change.
 - 0077 baseline-stop-assertion — eval_fix CHK-055; 064d9ab/0fd7393/435b176. Added stop-before-canary assertions in existing cases; 298 eval/impl phase passes, isolated audit no findings, no product/interface/spec change. Coordinator provenance is manual; real fixed-profile CLI logs retained. B02: 16 CHK-055 cases is informational; this change adds no cases.
 - 0076 doctor-boundary-cleanup-fixes — CHK-051/055/056/057; e2b5b3b/37fc2e9/995eebb; three runtime failures → 298 phase passes. Native audit input deviation and supplemental CHK-055 assertion gap remain open in the correction report; no correction push.
 - 0075 bounded-agent-invocation — RUN-001–009; evals 53d9279/2e40588, audits 6fdcb9f/6f898ea, impl 4b2fe8e. One scoped correction; 25 runtime failures → 25 own/178 phase passes. Retained API/model types and execution primitive are implemented; next/run queue wiring remains pending.
@@ -247,12 +248,15 @@ acceptance remains unverified. No gap fix/rerun is authorized or performed.
 
 ## Next
 
-CHK-055 eval_fix 0077 passed full checks and a valid isolated audit. Complete the
-approved runner eval_fix with the same isolated-auditor protocol, then full race
-verification and the same subagent's scoped checkpoint re-review. Push only on
-PASS. Preserve all assertions, interfaces/specs, history and controller bounds;
-stop on any new block or unresolved issue. The documentation-refocus proposal
-remains unapplied pending reconciliation at a safe author boundary.
+The approved checks fix and both eval fixes are applied. Complete fresh full race,
+build/vet, relevant NEW doctor smoke and explicit history extension; obtain the
+same subagent's scoped re-review before pushing. Push only on PASS. The updated
+goal then prioritizes one complete eligible change through NEW next, followed by
+bounded NEW run --max/continuation/empty-queue scenarios. Add recovery and other
+remaining behavior afterward as observable scenarios, not prerequisites for the
+first runnable path. Preserve assertions, interfaces/specs, history and bounds;
+stop on any new block or unresolved issue. Reconcile the documentation-refocus
+proposal with this newer evidence at a safe author boundary.
 
 0. The owner-approved 0070 explanation correction/re-review passed and pushed
    e083c5f. The following 0071–0075 slice now reaches the blocked checkpoint above;

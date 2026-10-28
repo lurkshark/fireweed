@@ -76,3 +76,18 @@ gap while retaining the earlier native audit deviation as historical fact.
 B02 reports 16 cases for CHK-055, one above the aim; all cases/assertions are
 retained and this correction adds no cases. Runner correction and final scoped
 checkpoint re-review remain pending; no push after ce165ab has occurred.
+
+## Runner eval_fix passed phase checks
+
+0078 committed evals 88119c5, isolated audit 7b8a843 and application 0f6f7b2.
+Both full phase checks passed 178 cases. The one existing test now uses a
+3-second fake timeout, 5-second descendant delay, 4-second bounded startup/return
+windows and a 5.2-second marker observation; stdout/stderr precede readiness.
+Both modes, all assertions and IDs remain. The edited parent passed with -race.
+The isolated Sol/high auditor returned No findings for RUN-007/RUN-009; complete
+log inspection shows only permitted snapshot reads and no writes/execution or
+implementation/history access. The snapshot was removed. No product source,
+interface/spec or controller limit changed. Coordinator provenance is manual,
+with actual fixed-profile CLI logs retained in run
+20261028T231208-cfb868c63baddc1bfdad0dda. Fresh full race and scoped checkpoint
+re-review remain pending; no push after ce165ab has occurred.
