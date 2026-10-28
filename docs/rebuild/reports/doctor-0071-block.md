@@ -139,3 +139,14 @@ outstanding approved IDs from a restricted input snapshot. Preserve counters,
 requirements and history. If the controller cannot restore an eval step without
 changing bounds, stop before editing frozen evals. No such further recovery is
 authorized by the approval already consumed above.
+
+## Further bounded correction approved — 2026-10-28
+
+The owner approved one correction for the eight outstanding IDs listed above.
+Preserve all prior passes and the completed CHK-065 default-timeout regression;
+re-review only CHK-049/050/051/054/055/063/066/068 from restricted inputs. Retain
+audit_rounds 2, IDs/run, requirements and both saved refs. No replacement change,
+bound change or push is authorized. Use the controller's saved eval attempt to
+restore the correct step; if it cannot restore evals without changing bounds,
+stop before editing frozen tests. Any further unresolved finding requires human
+review rather than another automatic correction round.
