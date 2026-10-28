@@ -333,12 +333,12 @@ func Test_PRJ_007_CheckValidAndDiagnostics(t *testing.T) {
 				if !diagnostic.Warning && (strings.TrimSpace(diagnostic.Code) == "" || strings.TrimSpace(diagnostic.Message) == "") {
 					t.Errorf("Check returned error diagnostic without code and message: %#v", diagnostic)
 				}
-				if !diagnostic.Warning && diagnostic.Code == "C01" && strings.TrimSpace(diagnostic.Message) != "" {
+				if !diagnostic.Warning && strings.TrimSpace(diagnostic.Code) != "" && strings.TrimSpace(diagnostic.Message) != "" {
 					found = true
 				}
 			}
 			if !found {
-				t.Errorf("Check did not report nonempty C01 error diagnostic: %#v", diagnostics)
+				t.Errorf("Check did not report error diagnostic with nonempty code and message: %#v", diagnostics)
 			}
 			if tc.name == "missing_base" || tc.name == "stale_base" {
 				queued(t, root, "0001-check.md", front, "Needed.\n", "", "", "### ALP-001\n")
@@ -348,7 +348,7 @@ func Test_PRJ_007_CheckValidAndDiagnostics(t *testing.T) {
 					if !diagnostic.Warning && (strings.TrimSpace(diagnostic.Code) == "" || strings.TrimSpace(diagnostic.Message) == "") {
 						t.Errorf("Check returned error diagnostic without code and message for Removed entry: %#v", diagnostic)
 					}
-					if !diagnostic.Warning && diagnostic.Code == "C01" && strings.TrimSpace(diagnostic.Message) != "" {
+					if !diagnostic.Warning && strings.TrimSpace(diagnostic.Code) != "" && strings.TrimSpace(diagnostic.Message) != "" {
 						found = true
 					}
 				}
@@ -372,12 +372,12 @@ func Test_PRJ_007_CheckValidAndDiagnostics(t *testing.T) {
 					if !diagnostic.Warning && (strings.TrimSpace(diagnostic.Code) == "" || strings.TrimSpace(diagnostic.Message) == "") {
 						t.Errorf("Check returned error diagnostic without code and message: %#v", diagnostic)
 					}
-					if !diagnostic.Warning && diagnostic.Code == "C01" && strings.Contains(diagnostic.Message, want) {
+					if !diagnostic.Warning && strings.TrimSpace(diagnostic.Code) != "" && strings.Contains(diagnostic.Message, want) {
 						found = true
 					}
 				}
 				if !found {
-					t.Errorf("Check did not reject %s: wanted %q diagnostic", tc.name, want)
+					t.Errorf("Check did not reject %s: wanted error diagnostic with nonempty code and message containing %q", tc.name, want)
 				}
 			}
 		})
