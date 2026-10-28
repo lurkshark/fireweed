@@ -4,7 +4,7 @@
 
 The 0060–0064 checkpoint review passed with no issues; its explicit baseline
 history check passed over 369 commits. Build/race/vet and NEW U01/U02 JSON smoke
-checks passed for source 4066479. **Applied since review: 0.** Complete the
+checks passed for source 4066479. **Applied since review: 1.** Complete the
 remaining app classification and emitted-code explanations after the authorized
 push, then perform the single contracts drill before Milestone 2.
 
@@ -27,7 +27,7 @@ audits, audit bounds, timeouts and recurring checkpoint reviews remain in force.
 
 Controller: `.fireweed/bin/fireweed-bootstrap` 0.1.0, source `7f925190878e38fc38f30d16bb1cf47aca098cf7`, pin SHA-256 `f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f`; unchanged.
 Stage-2 history baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`; always check an explicit nonempty baseline..HEAD range. Use `GOCACHE=/tmp/fireweed-rebuild-cache`.
-NEW binary: `bin/fireweed`, clean source `4066479070c05ae46b220be24fdacd9389da6351` (CGO disabled); [committed manual-lifecycle report](reports/manual-lifecycle.md). Unbuilt commands remain explicit errors; the empty runner is expected.
+NEW binary: `bin/fireweed`, clean source `7eb989884c4e1a4481342207fdc2f0cc221cfafb` (CGO disabled); [committed manual-lifecycle report](reports/manual-lifecycle.md). Unbuilt commands remain explicit errors; the empty runner is expected.
 
 Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`. Interactive work through 0014's initial evals was followed by coordinator `done`, hence legacy `agent=manual` lines. Configured controller execution began at 0014's audit; its provenance records the actual command/model. Continue configured execution. Ignored runtime logs are auxiliary, not reviewable evidence; archives, permanent evals and committed reports carry the evidence.
 
@@ -175,6 +175,8 @@ Subagent checkpoint_0060_0064 returned PASS with no issues. Baseline history
 passed over 369 commits; current-source build/race/vet and NEW U01/U02 JSON
 checks passed. The owner-authorized push and continuation follow this passing
 review; the applied count restarts. No queue or claim remains; D006 is incomplete.
+
+- 0065 remaining-diagnostic-causes — APP-018/019/037–040; 2157abf/7697050/7eb9898; 30 reported failures → 121 app cases pass, no findings; legacy CLI labels removed. Post-application NEW smoke exposed show returning U02 for duplicate graph names and duplicate module spec IDs; correct those static causes next while retaining legitimate projected-handle ambiguity.
 
 ## Next
 
