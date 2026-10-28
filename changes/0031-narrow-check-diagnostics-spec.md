@@ -1,13 +1,16 @@
 ---
 already_satisfied:
     - PRJ-007
-    - new:duplicate-edits
-    - new:undeclared-handles
-    - new:stamped-bases
-    - new:absent-edit-targets
+    - PRJ-013
+    - PRJ-014
+    - PRJ-015
+    - PRJ-016
+audit_rounds: 0
 bases:
     PRJ-007: f92e1669
 module: project
+phase: audit
+run: 20261028T034109-159648d6b99fd8c3dd90ba77
 ---
 
 
@@ -27,16 +30,16 @@ all current behavior already satisfies these specs.
 
 ## Added
 
-### new:duplicate-edits
+### PRJ-013
 Check MUST reject a change that uses the same edit identity more than once across Added, Modified and Removed.
 
-### new:undeclared-handles
+### PRJ-014
 Check MUST reject a pending change that references a handle absent from that change's Added entries.
 
-### new:stamped-bases
+### PRJ-015
 Check MUST reject Modified or Removed entries whose bases hash is missing or differs from the preceding projected spec's canonical hash.
 
-### new:absent-edit-targets
+### PRJ-016
 Check MUST reject Modified or Removed IDs absent from the projection preceding the change.
 
 ## Modified
@@ -63,3 +66,7 @@ Keep the existing C01 assertions for now: their correction belongs to a later
 eval_fix, and assigned D006 codes belong to later normal changes. Do not change
 product code, helpers, fixtures or interfaces.
 Implementation may edit only this change file.
+
+## Provenance
+
+- evals 2026-10-28T03:41:54.076842Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=199 failing=0 passing=199
