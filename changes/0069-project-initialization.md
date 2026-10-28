@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: app
+phase: audit
+run: 20261028T105010-9baefa33477dc571e9662b88
 ---
 
 
@@ -22,67 +25,67 @@ No other module interface or implementation change is required.
 
 ## Added
 
-### new:init-configuration
+### APP-041
 init MUST create fireweed.yaml in the current directory with format version 1, a binary range containing assets.Version, base main, remote origin and modules [packages/*].
 
-### new:init-recipe-config
+### APP-042
 init MUST write the selected recipe's module_defaults, hooks, protected and worker_writable values into the generated configuration.
 
-### new:init-system
+### APP-043
 init MUST create an editable SYSTEM.md project scaffold when absent and retain an existing SYSTEM.md unchanged.
 
-### new:init-agent-instructions
+### APP-044
 init MUST create or update the fireweed managed AGENTS.md block, pointing to author-change and context, while preserving text outside the markers.
 
-### new:init-go-payload
+### APP-045
 init --recipe go MUST copy assets.BuiltinRecipe(go)'s Files into their project-relative destinations without changing their contents.
 
-### new:init-instructions
+### APP-046
 Successful init MUST print the selected recipe's instructions on stdout and return exit 0 with empty stderr.
 
-### new:init-none
+### APP-047
 init --recipe none MUST write minimal setup without language hooks, templates or canaries and print the eval, boundaries and setup hook contract.
 
-### new:init-local-metadata
+### APP-048
 init --recipe ./directory MUST load recipe.yaml module_defaults, hooks, protected and worker_writable metadata and recipe.md instructions from that directory.
 
-### new:init-local-payload
+### APP-049
 init with a local recipe MUST copy the directory's files/ contents into matching project-relative destinations and copy its instructions to .fireweed/recipes/local.md.
 
-### new:init-app-module
+### APP-050
 By default init MUST create a normal packages/app module named app with prefix APP and no dependencies, rendering available module templates with name app, prefix APP and package app.
 
-### new:init-no-app
+### APP-051
 init --no-app MUST skip creation of the app module.
 
-### new:init-fallback-module
+### APP-052
 When the selected recipe supplies no module templates, init MUST create a minimal app SPEC.md with empty Specs and Decisions sections.
 
-### new:init-agent-config
+### APP-053
 init MUST configure codex or claude command presets, or preserve a custom agent command template containing {prompt}, in agent.command.
 
-### new:init-auditor-config
+### APP-054
 init MUST enable audit by default and write a separately selected --audit-agent command when supplied, otherwise leaving audit.command unset for agent fallback.
 
-### new:init-usage
+### APP-055
 init MUST reject missing --recipe or --agent values, malformed options or extra positional arguments with corrective U01 and exit 2 before creating files; missing-input messages MUST list valid recipe and agent choices.
 
-### new:init-recipe-rejections
+### APP-056
 init MUST return U02 and exit 2 for an unknown recipe name, C03 for unreadable or malformed local recipe documents, and C12 for invalid local recipe metadata types, without creating setup files.
 
-### new:init-existing-project
+### APP-057
 init MUST refuse an existing fireweed.yaml with P01 and exit 2, preserving existing project files.
 
-### new:init-conflicting-files
+### APP-058
 init MUST refuse conflicting generated recipe or module files with P01 and exit 2 rather than overwrite them.
 
-### new:init-ignore
+### APP-059
 init MUST retain existing .gitignore entries and ensure .fireweed/runs/ is ignored so lifecycle reports do not become forbidden worktree edits.
 
-### new:init-no-execution
+### APP-060
 init MUST copy setup and print instructions without executing configured agents or hooks.
 
-### new:init-json
+### APP-061
 init --json MUST return schema 1 with instruction text as string data and empty diagnostics on success, or null data and code/message diagnostics on failure, with empty stderr.
 
 ## Modified
@@ -137,3 +140,12 @@ init with real configuration against this checkout. Do not implement doctor,
 new-module, agents-md, runner behavior or new language bundles here. Do not
 address drill gaps, rerun a drill or consult bootstrap/deleted implementation.
 Controller owns spec application, phase commits and archive.
+
+Eval step: APP-041–061 have black-box coverage in app/evals/init_test.go.
+The new tests compile and fail at runtime against the current CLI's rejected
+init options; controller verify --quick passed its fail-first gate. APP-014 now
+uses status/gc, and APP-015 retains the missing-input JSON case.
+
+## Provenance
+
+- evals 2026-10-28T10:59:22.709356Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=144 failing=17 passing=127

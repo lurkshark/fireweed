@@ -163,7 +163,7 @@ func Test_APP_003_InvalidRequests(t *testing.T) {
 }
 
 func Test_APP_014_UnimplementedCommands(t *testing.T) {
-	for _, command := range []string{"init", "status"} {
+	for _, command := range []string{"status", "gc"} {
 		t.Run(command, func(t *testing.T) {
 			if !strings.Contains(assets.Help(), command) {
 				t.Fatalf("%q is not listed by help", command)
@@ -177,7 +177,7 @@ func Test_APP_014_UnimplementedCommands(t *testing.T) {
 			}
 		})
 	}
-	status, stdout, stderr := run("init", "--json")
+	status, stdout, stderr := run("status", "--json")
 	if status == 0 || stderr != "" {
 		t.Errorf("JSON status=%d stderr=%q; want nonzero and empty stderr", status, stderr)
 	}
