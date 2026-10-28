@@ -205,3 +205,10 @@ before another change. Four changes were applied since the explicit review at
   verify/no commit, frozen eval/facade, passing coverage, inspected provenance,
   clean tree and released claim. All workers/auditor were real Sol/high CLI calls.
   This verifies the manual milestone, not init/doctor/run or full acceptance.
+
+- R03/R04/R05/R17 refinement: PRJ-007's Check contract is now split into
+  PRJ-007–016 by archives 0030/0031. Existing validation assertions are retained
+  and linked to their atomic IDs; cause-specific diagnostic migration remains
+  pending. See [review 6 checkpoint](reports/review6-checkpoint.md) and PROGRESS
+  for phase commits, audit corrections and verification evidence. This does
+  not establish the remaining static-validation or CLI requirements.

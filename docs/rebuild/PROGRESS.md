@@ -5,15 +5,18 @@
 Human review 6 approved changes 0025–0029 and authorized the next spec-split
 slice, starting with PRJ-007, stopping at the next required checkpoint.
 HEAD and origin/main were already synchronized at c2da5e2 when work resumed.
-**Applied since review: 1.** Milestone 1 passed through the NEW binary;
+**Applied since review: 2.** Milestone 1 passed through the NEW binary;
 Milestone 2 waits for the spec splits, diagnostic migration and one contracts
 drill. Existing authorization for consecutive workflow/checks spec splits remains.
-Stop on any block, after five applications, or before an unauthorized third
-consecutive change to the same module/behavior.
+PRJ-007's split is complete in 0030–0031. Stopped at the required checkpoint
+before a third consecutive project split; project has no consecutive-change
+exception. Human review is required before further project splitting. Stop on
+any block or after five applications; do not change modules merely to evade a
+checkpoint.
 
 Controller: `.fireweed/bin/fireweed-bootstrap` 0.1.0, source `7f925190878e38fc38f30d16bb1cf47aca098cf7`, pin SHA-256 `f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f`; unchanged.
 Stage-2 history baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`; always check an explicit nonempty baseline..HEAD range. Use `GOCACHE=/tmp/fireweed-rebuild-cache`.
-NEW binary: `bin/fireweed`, clean source `db03f6210e9f80cd7a5546cca66411eee1695baf` (CGO disabled); [committed manual-lifecycle report](reports/manual-lifecycle.md). Unbuilt commands remain explicit errors; the empty runner is expected.
+NEW binary: `bin/fireweed`, clean source `ac3779b71bbdab0df016a99e74db38c4b190a659` (CGO disabled); [committed manual-lifecycle report](reports/manual-lifecycle.md). Unbuilt commands remain explicit errors; the empty runner is expected.
 
 Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`. Interactive work through 0014's initial evals was followed by coordinator `done`, hence legacy `agent=manual` lines. Configured controller execution began at 0014's audit; its provenance records the actual command/model. Continue configured execution. Ignored runtime logs are auxiliary, not reviewable evidence; archives, permanent evals and committed reports carry the evidence.
 
@@ -52,9 +55,15 @@ Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -
 
 - 0030 check-document-specs — PRJ-008–012; evals f8d1bc2/05825f0, audits 2909f64/4be3541, impl fcc385f; one findings round, 53 own cases and 199 total phase cases pass; implementation unchanged.
 
+- 0031 narrow-check-diagnostics-spec — PRJ-007/013–016; evals 6960718/4441d55, audits 04eb482/1e91828, impl ac3779b; one findings round, 53 own cases and 199 total phase cases pass; PRJ-007 narrowed and blanket C01 removed, implementation unchanged.
+
+[Review 6 checkpoint](reports/review6-checkpoint.md): race/vet/controller CI passed,
+including 261 cases, doctor and history; no pending change, claim or scratch
+worktree. Two changes applied since review. Stopped before a third project split.
+
 ## Next
 
-1. Split permanent bundled behaviors through authored changes. Use already_satisfied and retarget existing evals; never hand-edit Specs/Decisions. FLOW-001/FLOW-002/FLOW-003/CHK-004 are split. Continue the other bundled items identified in the checkpoint report, prioritizing PRJ-007 to remove its blanket C01 promise. Add atomic specs before narrowing an old item when one change cannot hold the full split.
+1. Split permanent bundled behaviors through authored changes. Use already_satisfied and retarget existing evals; never hand-edit Specs/Decisions. FLOW-001/FLOW-002/FLOW-003/CHK-004/PRJ-007 are split. After human review of 0030–0031, continue the other bundled items identified in the checkpoint reports; further consecutive project splits need explicit authorization. Add atomic specs before narrowing an old item when one change cannot hold the full split.
 2. Apply D006: remove wrong label assertions through eval_fix, migrate implementation in normal changes, and keep explain accurate. Preserve all behavior assertions and coverage.
 3. Before Milestone 2 touches workflow implementation, split lifecycle/stub.go by responsibility as maintenance only. No other cleanup/hardening.
 4. After items 1 and 2, run exactly one real controller drill on contracts. Commit its report and list gaps here; author no gap changes and drill no other module.
