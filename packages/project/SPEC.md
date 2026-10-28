@@ -30,7 +30,7 @@ Project and Stamp MUST resolve a change argument from its unique slug, queued ba
 Project MUST preserve complete Added and Modified item text and remove Removed items when applying pending spec edits.
 
 ### PRJ-006
-Stamp MUST write the canonical SpecHash of each Modified/Removed item from the projection preceding the target change into its bases. It MUST reject IDs absent from that projection and preserve other frontmatter and human sections. Stamping an Added-only change MUST succeed without assigning IDs.
+Stamp MUST write each Modified or Removed item's canonical SpecHash from the projection preceding the target change into its bases.
 
 ### PRJ-007
 Check MUST return no error diagnostics for valid module specs and changes. Each failure diagnostic MUST have a nonempty code and message.
@@ -121,5 +121,14 @@ Project MUST reject an invalid projected module graph.
 
 ### PRJ-036
 Project MUST keep Added handles local to their declaring change, allowing different changes to reuse handle text.
+
+### PRJ-037
+Stamp MUST reject Modified or Removed IDs absent from the projection preceding the target change.
+
+### PRJ-038
+Stamp MUST retain other frontmatter values and human section contents.
+
+### PRJ-039
+Stamp MUST succeed on an Added-only change without assigning spec IDs.
 
 ## Decisions

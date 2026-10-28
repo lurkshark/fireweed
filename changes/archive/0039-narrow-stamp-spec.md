@@ -8,7 +8,7 @@ audit_rounds: 0
 bases:
     PRJ-006: 51f3a69b
 module: project
-phase: impl
+phase: applied
 run: 20261028T052053-ca9c681bda62d2755ae6ec17
 ---
 
@@ -58,11 +58,14 @@ absent-target IDs instead of PRJ-006, retaining both Modified and Removed
 rejection assertions and its successful Added-only assertion. No new Test
 functions, t.Run cases, fixture instances, helpers, product code or interface
 changes. Keep every unrelated ID. Implementation may edit only this change file.
+Existing Stamp implementation satisfies PRJ-006 and PRJ-037–039. Quick verify
+passed all 53 project cases; no product code change was needed.
 
 ## Provenance
 
 - evals 2026-10-28T05:21:26.54955Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=199 failing=0 passing=199
 - audit 2026-10-28T05:22:02.263848Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-28T05:22:46.061699Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=199 failing=0 passing=199
 
 ## Audit
 
