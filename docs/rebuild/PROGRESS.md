@@ -3,7 +3,7 @@
 ## Current status — 2026-10-27
 
 Human review 8 approved 0032–0034; the authorized push synchronized main and
-origin/main at 16cc688 and cleared P07. **Applied since review: 1.** Resume
+origin/main at 16cc688 and cleared P07. **Applied since review: 2.** Resume
 the remaining previously identified bundled specs; PRJ-004–006 are complete.
 
 The owner's goal update authorizes a subagent review at every five applied
@@ -89,6 +89,8 @@ history check passed over 232 commits; the owner conditionally authorizes the
 push and continuation. The applied count restarts after this passing review.
 
 - 0040 narrow-coverage-spec — CHK-002/025–026; 9d54aea/ef8495d/40bfafb; 28 own cases and 146 total phase cases pass; no findings, implementation unchanged.
+
+- 0041 narrow-junit-spec — CHK-001/027–030; fb61726/73f0bc7/dd588b3; 28 own cases and 146 total phase cases pass; no findings, implementation unchanged.
 
 ## Next
 
