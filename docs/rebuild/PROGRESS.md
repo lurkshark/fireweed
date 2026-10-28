@@ -4,7 +4,7 @@
 
 The 0050–0054 checkpoint review passed with no issues and its explicit baseline
 history check passed over 316 commits. The owner approves pushing this slice.
-**Applied since review: 0.** The identified spec splits are complete; continue
+**Applied since review: 1.** The identified spec splits are complete; continue
 D006 on existing error paths after synchronizing origin/main.
 
 The owner's goal update authorizes a subagent review at every five applied
@@ -140,6 +140,8 @@ authorizes the push and continuation; the applied count restarts after review.
 Subagent checkpoint_0050_0054 returned PASS with no issues. The explicit baseline
 history check passed over 316 commits, authorizing push and continuation. The
 applied count restarts after this passing review.
+
+- 0055 validation-cause-codes — PRJ-008–012; 0b91a02/8f875e4/405db73; nine reported failures → 54 own/200 total phase cases pass, no findings; existing C04/C05/C06/C07 paths migrated. One existing table gained a separate reporting parent; no scenarios/fixtures added.
 
 ## Next
 
