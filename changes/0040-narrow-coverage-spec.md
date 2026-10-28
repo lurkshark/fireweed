@@ -1,11 +1,14 @@
 ---
 already_satisfied:
     - CHK-002
-    - new:required-fail-first
-    - new:required-passing-results
+    - CHK-025
+    - CHK-026
+audit_rounds: 0
 bases:
     CHK-002: a4cd59f6
 module: checks
+phase: audit
+run: 20261028T052926-160566b09f6c468fcfed55c6
 ---
 
 
@@ -23,10 +26,10 @@ preserving the design's Evals and Implementation step requirements.
 
 ## Added
 
-### new:required-fail-first
+### CHK-025
 RequireFailFirst MUST find a failed or errored referencing case for every requested enforced ID except already_satisfied; passing, skipped, empty or unrelated failures do not qualify.
 
-### new:required-passing-results
+### CHK-026
 RequirePass MUST reject failed or errored cases referencing any non-quarantined spec.
 
 ## Modified
@@ -52,3 +55,7 @@ JUnit failure and error elements both become Result fail in ParseJUnit under
 CHK-001; these APIs use that normalized report representation. Do not invent
 another result-string value or new behavior. No product code or interface
 changes. Implementation may edit only this change file.
+
+## Provenance
+
+- evals 2026-10-28T05:30:04.731563Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=146 failing=0 passing=146

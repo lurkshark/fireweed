@@ -91,7 +91,7 @@ func Test_CHK_002_CoverageExemptsReviewAndQuarantine(t *testing.T) {
 	}
 }
 
-func Test_CHK_002_FailFirstRequiresEachRequestedFailure(t *testing.T) {
+func Test_CHK_025_FailFirstRequiresEachRequestedFailure(t *testing.T) {
 	ids := []string{"CHK-001", "CHK-002"}
 	bad := []checks.Case{
 		{IDs: []string{"CHK-001"}, Result: "pass"},
@@ -110,14 +110,14 @@ func Test_CHK_002_FailFirstRequiresEachRequestedFailure(t *testing.T) {
 	}
 }
 
-func Test_CHK_002_FailFirstAlreadySatisfiedExemption(t *testing.T) {
+func Test_CHK_025_FailFirstAlreadySatisfiedExemption(t *testing.T) {
 	report := checks.Report{Cases: []checks.Case{{IDs: []string{"CHK-002"}, Result: "fail"}}}
 	if err := checks.RequireFailFirst(report, []string{"CHK-001", "CHK-002"}, []string{"CHK-001"}); err != nil {
 		t.Errorf("already_satisfied ID incorrectly required: %v", err)
 	}
 }
 
-func Test_CHK_002_PassRejectsNonQuarantinedFailures(t *testing.T) {
+func Test_CHK_026_PassRejectsNonQuarantinedFailures(t *testing.T) {
 	specs := []contracts.Item{{ID: "CHK-001"}, {ID: "CHK-002", Tag: "review"}, {ID: "CHK-003", Tag: "quarantine: flaky"}}
 	for _, id := range []string{"CHK-001", "CHK-002"} {
 		if err := checks.RequirePass(checks.Report{Cases: []checks.Case{{IDs: []string{id}, Result: "fail"}}}, specs); err == nil {
