@@ -19,8 +19,8 @@ in the existing fixture after one audit finding. The other four phase audits
 passed first time. Archives and PROGRESS record IDs, phase commits and counts.
 
 Required full phase checks passed for every application: 53 project cases and
-199 total phase cases, including direct dependents and boundaries. Controller
-history check and checkpoint subagent review are pending. Prior broad CI,
+199 total phase cases, including direct dependents and boundaries. Checkpoint subagent review passed; the explicit baseline history check
+passed over 232 commits with no diagnostics. Prior broad CI,
 race/vet and doctor evidence is reusable; source enforcement and fixture
 behavior did not change. No fresh-checkout acceptance, drill or self-hosting
 claim is made. No claims or pending changes remained after 0039 applied.
@@ -32,7 +32,14 @@ or ref will be changed to bypass these checks.
 
 ## Checkpoint review
 
-Pending.
+PASS — subagent `checkpoint_0035_0039` reviewed the exact range, all five
+archives, affected specs/public evals, phase commits and relevant design clauses.
+It found the split preserves PRJ-004–006 obligations, public interfaces and
+existing assertions while giving behaviors focused items. It confirmed 0038's
+single findings round and successful re-audit. No requirement-grounded issue
+was reported. The review reused phase evidence and ran no tests or drills;
+full acceptance is unverified. This passing review triggers the owner's
+explicit authorization to push to origin and continue, with the history check now passed.
 
 ## Next work
 

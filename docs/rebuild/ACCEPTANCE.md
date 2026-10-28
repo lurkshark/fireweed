@@ -218,3 +218,10 @@ before another change. Four changes were applied since the explicit review at
   separated rules. Existing assertions and cases are unchanged. See
   [review 7 checkpoint](reports/review7-checkpoint.md) and PROGRESS for evidence
   and the P07 shared-base gate; PRJ-004–006 and full validation remain open.
+
+- R04/R05 refinement: archives 0035–0039 complete the PRJ-004–006 split, with
+  PRJ-027–039 retaining queue, projection and Stamp rules. Existing public
+  assertions remain; 0038 strengthens complete-body checks after its audit.
+  See [the passing checkpoint review](reports/checkpoint-0035-0039.md) and
+  PROGRESS for phase evidence. Remaining module splits and D006 migration
+  still precede Milestone 2; full acceptance remains unverified.

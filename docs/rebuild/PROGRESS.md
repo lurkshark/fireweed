@@ -3,8 +3,8 @@
 ## Current status — 2026-10-27
 
 Human review 8 approved 0032–0034; the authorized push synchronized main and
-origin/main at 16cc688 and cleared P07. **Applied since review: 5.** Resume
-PRJ-004–006 with the existing consecutive-project split authorization.
+origin/main at 16cc688 and cleared P07. **Applied since review: 0.** Resume
+the remaining previously identified bundled specs; PRJ-004–006 are complete.
 
 The owner's goal update authorizes a subagent review at every five applied
 changes: push to origin and continue when the review finds the work on track, and
@@ -84,7 +84,9 @@ because this slice changed only spec wording and eval labels/table metadata.
 - 0039 narrow-stamp-spec — PRJ-006/037–039; f33d236/7166bc5/430e56c; 53 own cases and 199 total phase cases pass; no findings, implementation unchanged.
 
 [0035–0039 checkpoint](reports/checkpoint-0035-0039.md): five applied project
-splits. Awaiting the owner-authorized subagent review before pushing or continuing.
+splits. Subagent checkpoint_0035_0039 returned PASS with no issues. The baseline
+history check passed over 232 commits; the owner conditionally authorizes the
+push and continuation. The applied count restarts after this passing review.
 
 ## Next
 
