@@ -289,7 +289,7 @@ func Test_PRJ_007_CheckValidAndDiagnostics(t *testing.T) {
 	}
 }
 
-func Test_PRJ_013_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics(t *testing.T) {
+func Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics(t *testing.T) {
 	for _, tc := range []struct {
 		id, name, spec, front, motivation, added, modified, removed string
 		code, cause                                                 string

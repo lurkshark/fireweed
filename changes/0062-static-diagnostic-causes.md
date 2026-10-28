@@ -1,10 +1,13 @@
 ---
 already_satisfied:
-    - new:check-config-codes
+    - PRJ-040
+audit_rounds: 0
 bases: {}
 fixes:
     - PRJ-013
 module: project
+phase: audit
+run: 20261028T083708-d4e70feeb59862f196802fca
 ---
 
 
@@ -24,22 +27,22 @@ No public interface change.
 
 ## Added
 
-### new:check-config-codes
+### PRJ-040
 Check MUST report configuration discovery or decoding failures with diagnostic C01.
 
-### new:check-graph-codes
+### PRJ-041
 Check MUST report invalid current or projected module graphs with diagnostic C02.
 
-### new:check-syntax-codes
+### PRJ-042
 Check MUST report unreadable or malformed module/change documents and malformed item syntax with diagnostic C03, retaining C05 for duplicate identities.
 
-### new:check-metadata-codes
+### PRJ-043
 Check MUST report invalid module metadata or zone field types, and invalid set keys or value types, with diagnostic C12.
 
-### new:check-queue-codes
+### PRJ-044
 Check MUST report pending queue identity errors with diagnostic C13.
 
-### new:check-change-module-codes
+### PRJ-045
 Check MUST report invalid pending change module targets with diagnostic C07.
 
 ## Modified
@@ -76,3 +79,13 @@ error condition and message; adding private cause information at its existing
 source is allowed when needed for accurate propagation, without changing the
 public interfaces. Do not add a general error framework, speculative checks,
 unsupported features or irrelevant probes. Controller owns specs and archive.
+
+Eval quick verification accepted the fail-first set: existing cases and C01
+configuration cases pass; 14 changed-cause scenarios fail on their assigned
+codes. The PRJ-013 table retains its cross-section case, while a separate case
+covers duplicate identities within Added. Its parent test label no longer
+attributes every table row to PRJ-013, keeping the per-spec case count bounded.
+
+## Provenance
+
+- evals 2026-10-28T08:43:18.618304Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=228 failing=17 passing=211
