@@ -1,7 +1,10 @@
 ---
+audit_rounds: 0
 bases:
     AST-003: ecb7d3e9
 module: assets
+phase: audit
+run: 20261028T074132-8b1bb8fdf8bad38c40dc9fbd
 ---
 
 
@@ -43,3 +46,7 @@ fixtures, unsupported code explanations or feature implementations. The four
 new explanations must fail genuinely before implementation. Implementation adds
 only the corresponding explanation text; other recipe/playbook assets stay
 unchanged. Controller owns spec application, commits and archive.
+
+## Provenance
+
+- evals 2026-10-28T07:43:50.326974Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=224 failing=5 passing=219

@@ -83,6 +83,40 @@ func Test_AST_003_Explanations(t *testing.T) {
 		requirePattern(t, text, `(?i)invalid|malform|misconfig|missing|error`, "cause of invalid configuration")
 		requirePattern(t, text, `(?i)(fix|correct|edit|update|repair)[^.\n]*(field|config|file|setting|project)`, "specific corrective action for configuration")
 	})
+	t.Run("C04", func(t *testing.T) {
+		text, err := assets.Explain("C04")
+		if err != nil {
+			t.Fatalf("Explain(C04): %v", err)
+		}
+		requirePattern(t, text, `(?i)(spec|item)[^.\n]*(non.normative|lacks?[^.\n]*(MUST|SHOULD))`, "spec text without normative wording")
+		requirePattern(t, text, `(?i)(add|write|revise|rewrite|edit)[^.\n]*(MUST|SHOULD|normative)`, "corrective action to make the spec normative")
+	})
+	t.Run("C05", func(t *testing.T) {
+		text, err := assets.Explain("C05")
+		if err != nil {
+			t.Fatalf("Explain(C05): %v", err)
+		}
+		requirePattern(t, text, `(?i)(foreign|wrong module|wrong prefix)[^.\n]*(ID|identifier)|(ID|identifier)[^.\n]*(foreign|wrong module|wrong prefix)`, "foreign spec ID")
+		requirePattern(t, text, `(?i)duplicat[^.\n]*(ID|identifier)|(ID|identifier)[^.\n]*duplicat`, "duplicate spec ID")
+		requirePattern(t, text, `(?i)(use|change|replace|correct|assign|rename)[^.\n]*(module|prefix)`, "corrective action for foreign spec IDs")
+		requirePattern(t, text, `(?i)(use|change|replace|correct|assign|rename)[^.\n]*(unique|distinct|unused)`, "corrective action for duplicate spec IDs")
+	})
+	t.Run("C06", func(t *testing.T) {
+		text, err := assets.Explain("C06")
+		if err != nil {
+			t.Fatalf("Explain(C06): %v", err)
+		}
+		requirePattern(t, text, `(?i)(invalid|malformed|unsupported)[^.\n]*(tag|review|quarantine)`, "invalid spec tag")
+		requirePattern(t, text, `(?i)(use|replace|change|correct|remove|edit)[^.\n]*(review|quarantine|tag)`, "corrective action for spec tags")
+	})
+	t.Run("C07", func(t *testing.T) {
+		text, err := assets.Explain("C07")
+		if err != nil {
+			t.Fatalf("Explain(C07): %v", err)
+		}
+		requirePattern(t, text, `(?i)(missing|empty|absent)[^.\n]*Motivation`, "missing change Motivation")
+		requirePattern(t, text, `(?i)(add|write|fill|provide|complete)[^.\n]*Motivation`, "corrective action to provide Motivation")
+	})
 	t.Run("P2-01", func(t *testing.T) {
 		text, err := assets.Explain("P2-01")
 		if err != nil {
