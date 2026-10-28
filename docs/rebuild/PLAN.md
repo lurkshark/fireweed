@@ -1,27 +1,71 @@
-# Fireweed rebuild plan
+# Rebuild plan
 
-Prepared 2026-10-21; aligned with D004 on 2026-10-26 and tightened 2026-10-27. This is the execution plan, not a current status report. Resume from [PROGRESS.md](PROGRESS.md), honoring pending human checkpoints and reusing completed setup and milestone evidence.
+Revised 2026-10-28. Build the complete [v1 design](../../fireweed-design-v1.md)
+through runnable CLI slices. Resume from [PROGRESS.md](PROGRESS.md), which owns
+live state and authorizations. [SYSTEM.md](../../SYSTEM.md) owns guardrails;
+[ACCEPTANCE.md](ACCEPTANCE.md) owns the full inventory and final gates.
+[HISTORY.md](HISTORY.md) preserves completed work and historical evidence.
 
-## Authority and scope
+## Current route to a usable product
 
-Build a new implementation of the complete v1 design with permanent behavioral specs and black-box evals. Use the bootstrap executable as development controller. The final product must work independently of the bootstrap checkout and executable. Generate the implementation from the design and newly authored contracts; do not use bootstrap source/tests, deleted code or rebuild-v1 as an implementation oracle.
+The manual lifecycle passed. Init/doctor and bounded agent invocation now exist;
+queue orchestration through NEW does not. The approved checkpoint corrections and scoped re-review passed and pushed.
+Build the next CLI outcome,
+using the existing lifecycle and invocation primitive.
 
-Read the local [design](../../fireweed-design-v1.md) initially, then consult relevant clauses and [ACCEPTANCE.md](ACCEPTANCE.md) as each slice needs them. Bootstrap HANDOFF.md, binary help/playbooks and a generated recipe fixture support initial setup; one CLI smoke comparison supports acceptance. Record relevant discrepancies briefly; add evals only for uncovered design behavior. The design wins. Resolve unspecified details with a small contract. Deferred ideas and historical observations add no requirements.
-
-Keep the design protected from workers. Bootstrap 0.1.0 covers the owner's October 26 revisions; its bounds and SYSTEM's checkpoints apply before NEW implements them. Record clarifications and intentional departures in author decisions/change files. SYSTEM's effort, audit and evidence rules govern this plan.
-
-These documents contain planning labels and proposed architecture, not permanent spec IDs. Author specs through change files; only the controller applies module Specs and Decisions.
-
-## Two executables
-
-| Role | Suggested ignored location | Purpose |
+| Slice | User-visible outcome through NEW | Exit evidence |
 | --- | --- | --- |
-| Bootstrap controller | `.fireweed/bin/fireweed-bootstrap` | Pinned tool owning the rebuild's claims, phase checks, commits, spec application and archives |
-| New product | `bin/fireweed`, built with `go build -o bin/fireweed .` | Subject of product acceptance and isolated self-hosting rehearsals |
+| Manual lifecycle — passed | Author, check, start, fail evals, audit, implement, apply and archive one change. | Reuse the [manual lifecycle report](reports/manual-lifecycle.md); do not rebuild this milestone. |
+| Setup — passed | Create a Go fixture with init and verify hooks/guidance with doctor. | Existing [setup smoke](reports/doctor-setup-cli.md) plus approved doctor corrections and scoped checkpoint PASS. Setup is not a reason to delay next after that correction gate. |
+| One-change execution — next feature | In a disposable Go fixture, next drives one eligible spec change through evals, separate audit, impl and archive using bounded deterministic fake agents. | NEW invocation succeeds; tests genuinely fail before implementation and pass afterward; assigned IDs, phase commits, SPEC/archive/provenance and claim release are inspectable. Library invocation tests alone do not close this slice. |
+| Bounded queue | run processes eligible changes, honors --max, and a later invocation continues the remaining queue; an empty queue exits 0. | NEW runs a small fixture queue; inspect the exact applied/remaining changes, commits, exit codes and claims. Implement this before broad recovery or whole-module completion. |
+| Recoverable execution | A failed verification feeds a bounded retry; exhausted work is saved and blocked, independent work can continue, and a saved attempt can resume. Time/usage stops preserve recoverable state. | Focused NEW fixture scenarios for retries/refs/state-only block commits, projected blocking, resume, agent-commit undo and exit 3. Split by observable scenario as needed; do not build a failure matrix. |
+| Remaining lifecycle kinds and bounds | The same CLI path handles fixes, eval_fix, maintenance/regenerate and enforces audit/approval bounds for manual and unattended use. | Relevant NEW scenarios, including ordinary approval rejection without --allow-unmerged, plus linked-worktree claims and persisted bounds. Reuse existing assertions where valid. |
+| Remaining surface and delivery | Complete design commands/options and all final gates. | ACCEPTANCE inventory and completion gates; one focused design review, scoped fixes and valid evidence. |
 
-Use explicit executable paths. Child workers whose playbooks invoke `fireweed` must resolve the controller through their environment; scratch worktrees need the same access. Keep an explicit separate product path in eval helpers. The Go boundary hook reads `FIREWEED_BIN` to query the graph of its invoking executable. Rebuild checks use the controller; product fixtures must receive the NEW binary. Never redirect product acceptance to the controller.
+The first two execution slices are the immediate implementation focus after the
+completed corrections. Later rows retain Milestone 2 and final obligations;
+they are not prerequisites for wiring the first usable next/run path. No NEW
+unattended real-agent execution before the bounded fake-agent run passes.
 
-Keep the bootstrap in control through acceptance. Rehearse control by the new binary in an isolated fixture/clone; do not replace the controller midway through the evidence trail. The product must never delegate its commands to the bootstrap.
+## Choosing and closing a change
+
+Name the CLI scenario and missing behavior in the existing change Motivation.
+Target one module per change and implement only what advances that scenario.
+A dependency can land separately, but return to its caller as soon as the needed
+interface works. In particular, wire app next after the minimum runner/workflow
+path works; do not finish every runner recovery mechanism first.
+
+Every slice ends with an actual NEW command and inspectable result. Reuse
+fixtures and valid evidence; add no separate scenario registry, proof checklist
+or generic equivalence harness. Required phase checks and audits still run.
+A checkpoint may interrupt a slice; record the next observable step and resume
+it afterward. Passing a library change is not evidence of CLI completion.
+
+Batch related work within one module with no numeric cap on affected spec items.
+Keep changes coherent and reviewable, preserve atomic specs, and use normal
+changes/eval_fix for observed defects. Completed spec splitting and D006's
+existing-path migration are historical. Keep explain accurate as justified
+features emit codes; do not reopen global rewrites or prebuild unused diagnostics.
+Workflow file organization and deferred drill gaps remain deferred in PROGRESS.
+
+## Controller and product
+
+| Role | Path | Use |
+| --- | --- | --- |
+| Pinned bootstrap controller | .fireweed/bin/fireweed-bootstrap | Rebuild claims, checks, commits, application and archives |
+| NEW | bin/fireweed, built with go build -o bin/fireweed . | Product CLI fixtures and isolated self-hosting |
+
+Use explicit paths. Worker commands named fireweed must resolve to the
+controller; product fixture helpers must select NEW. FIREWEED_BIN identifies the
+invoking executable so boundary hooks query its graph. Never substitute the
+controller for product acceptance. Keep it in control of this checkout through
+acceptance; NEW self-hosting uses an isolated fixture/clone.
+
+Bootstrap help/playbooks, the initial generated recipe fixture and one CLI
+lifecycle comparison are operational references. They add no product scope.
+The design wins discrepancies, recorded briefly in DECISIONS. Never use bootstrap
+source/tests, deleted code or rebuild-v1 as implementation inputs.
 
 ## Stage 0: setup as author
 
@@ -37,14 +81,6 @@ Perform this setup once. On resume, inspect status/claims and reuse the setup, c
 8. Commit setup and pass controller `check` and `doctor`, including all four canaries and recovery after their removal. Record the full setup commit SHA as the history baseline. Always use its explicit range for final verification; the default range on main can be empty.
 
 Later protected/tooling/documentation edits are separate author commits between active changes, with no worker claim. Run affected canaries when enforcement changes; documentation alone does not invalidate canary evidence. Do not broaden permissions to pass checks.
-
-## Restart (2026-10-26)
-
-The first run (now the `rebuild-v1` branch) archived 51 changes but reached only 11 of 30 commands while spending most of its effort on hardening beyond the design. Local `main` was reset to the setup baseline 14cec73, and the revised design, guardrails and these documents were reapplied on top. [LESSONS.md](LESSONS.md) records what to keep from the first run. The SYSTEM.md scope guardrails override any broader reading of this plan.
-
-This historical reset is not an instruction. Follow the milestones below, drawing from the module responsibilities as each observable step needs them. Cross-cutting R22–R29 coverage lands with its features, not as a separate hardening pass.
-
-Batch related work within one module with no numeric cap on affected spec items for any change kind. Keep changes coherent and reviewable and resulting specs atomic. Spec-only splits and eval retargeting preserve every obligation and assertion and leave product behavior and public interfaces unchanged. D006 diagnostic migrations remain limited to existing error paths, eval corrections and explanations for emitted codes; preserve behavioral assertions and interfaces, and add no unsupported features or speculative errors. Normal verification, independent audits and checkpoint rules remain unchanged. Follow SYSTEM's checkpoints and the owner-authorized recurring subagent checkpoint review policy in PROGRESS.md. Acceptance ranges start at the recorded stage-2 baseline, not the historical reset commit; resuming does not create a new baseline.
 
 ## Proposed module graph
 
@@ -63,19 +99,6 @@ Use the Go recipe's api.go, evals/ and internal/ layout. SPEC.md frontmatter, qu
 
 Internal implementations cannot import their own public parent without cycles. Use shared public contracts or thin-facade conversions; evals and dependents import public packages only. Keep the existing graph unless a concrete feature needs a documented acyclic adjustment. Architectural preferences alone do not justify cleanup changes.
 
-## Implementation milestones
-
-Each milestone contains single-module changes ordered by the next observable step. Wire app as soon as dependencies work. Reuse completed exits; preserve the authorized next work in PROGRESS.md. No NEW unattended real-agent execution before the Milestone 2 fake-agent run passes.
-
-| Stage | Changes to author | Exit evidence |
-| --- | --- | --- |
-| 1. Manual lifecycle vertical slice | Only the grammar/config/IDs/zones/Git/assets/project/JUnit/hooks/claims needed by one scenario; wire each operation through app promptly. Build standalone help/version/explain/playbook early, then author/stamp/check/start/verify/done/apply/archive. Use a tiny hand-authored product fixture until init is implemented. | NEW binary completes a real failing-before/audit/passing-after lifecycle; coverage, specs, archive, phase commits and provenance are inspectable; forbidden-zone and false fail-first cases rejected. |
-| 2. Setup and bounded unattended execution | Complete init/doctor with Go canaries, next/run, all change kinds including eval_fix, projected blocking, claims/resume, attempts, limits, recovery and persistent audit/approval bounds. | Product-created fixture and canary recovery; bounded fake-agent success/failure/usage/time/recovery; linked-worktree contention and manual as well as unattended bounds. |
-| 3. Complete surface | Finish grammar and views/options, budgets/warnings, history/CI/PR, merge strategies/reverts, abandon/release/gc, regeneration/drill/drift, recipes, migration/pins/AGENTS and local packaging. | Every design command/option and all R rows have meaningful evidence; the original lifecycle fixture keeps passing. |
-| 4. Acceptance and delivery | Complete ACCEPTANCE gates, dependency-first real module drills and the isolated NEW self-hosting rehearsal. | Fresh-source Go checks, controller/product checks, reports/refs and cleanup, independent executable, clean tree and honest limitations. |
-
-Derive new evals from the design and public interfaces in isolated fixtures. Use LESSONS.md only as a bounded historical checklist; do not consult or transplant old/reference tests. Root packaging/CI changes are author operations; observable product behavior still needs owned specs/evals.
-
 ## Per-change loop
 
 1. As author, read SYSTEM, projected specs, relevant design clauses and the authoring playbook. Use `new-change`; target one module with focused observable specs under Added using new-handles, or Modified/Removed/fixes metadata. Describe interface edits. `stamp` Modified/Removed, `check`, then commit the authored change and prerequisites.
@@ -86,33 +109,35 @@ Derive new evals from the design and public interfaces in isolated fixtures. Use
 6. Implement only allowed files. Evals/interface/SPEC and protected/other-module files stay frozen; append-only permits additions only. Run full checks; only controller `done` applies, archives and commits. Correct frozen evals through eval_fix; correct behavior contracts through authored changes. Maintenance preserves behavior; behavioral fixes need regression evidence.
 7. After application and claim release, commit one concise PROGRESS entry as author with assigned IDs, phase commits, results and next work. Link acceptance mappings to durable evals/archives/reports instead of duplicating logs or testcase lists.
 
-## Verification and recovery
+## Verification, regeneration and delivery
 
-Workflow file organization is not a Milestone 2 gate. Defer splitting
-`packages/workflow/internal/lifecycle/stub.go` unless feature work demonstrates
-a problem with the current file. A later drill/regenerate may organize the
-implementation afresh; retained contracts/evals and normal verification/audits
-remain the safeguards. This removes no behavioral or acceptance obligation and
-authorizes no replacement cleanup task.
+Permanent evals use public APIs, temporary repositories, explicit Git identities,
+local hooks and bounded fake agents. They need neither bootstrap, authenticated
+agents nor network. Follow SYSTEM's cost, instrumentation and process limits.
+Fake-agent runs prove orchestration; they do not prove real regeneration.
 
-Permanent tests use temporary Git repositories, explicit fixture identities, local hooks/fake agents, bounded timeouts and deterministic failure injection. They must run without bootstrap access, authenticated agents or network access. Fake-agent protocol tests do not prove real regeneration.
+Run only the drill currently authorized in PROGRESS. Final acceptance retains
+real dependency-first drills for every disposable module and the isolated NEW
+self-hosting lifecycle, drill and CI. Reconstruction receives retained contracts,
+evals and permitted dependency interfaces, without old implementation/history,
+saved attempts, old binaries or bootstrap. Retain reports/refs, clean scratch
+worktrees, and seek human agreement before any gap-driven follow-up.
 
-Follow the currently authorized drill in PROGRESS.md. For final acceptance, run real-agent drills dependency-first for all disposable modules. Give reconstruction only retained specs/Decisions/interfaces/evals and permitted dependency interfaces, without old implementation/history, saved attempts, old binaries or bootstrap. Retain reports/refs and clean scratch worktrees. Gaps require human agreement before follow-up changes; a report alone authorizes none.
+The single controller/NEW lifecycle smoke compares exit codes, JSON envelope
+shape and resulting commits/refs; record design-resolved differences. Avoid
+per-edge-case comparisons. Controller CI proves rebuild process; NEW fixtures
+prove product behavior.
 
-Run one equivalent lifecycle fixture with controller and NEW; compare exit codes, JSON envelope shape and resulting commits/refs. Record design-resolved differences briefly. Do not build a general equivalence harness or compare edge cases. Controller CI checks the rebuild process; NEW fixtures establish product behavior.
+At safe author boundaries, update PROGRESS's current slice and next step. Put
+one concise entry per applied change in HISTORY with IDs, phase commits, actual
+counts and limitations; link detailed reports and acceptance evidence. Preserve
+controller identity, the original nonempty baseline and approval/checkpoint
+counts. Never treat a push alone as a passing review.
 
-Update docs/rebuild/PROGRESS.md during execution. At safe author boundaries record controller identity, baseline SHA, graph decisions, completed/next work, actual requirement mappings, results, discrepancies and blockers. On restart inspect Git status, controller status, changes and claims before editing. Resume the current phase; do not reset work or release another owner's claim to get a clean tree. Preserve useful attempts/drill refs.
-
-Follow SYSTEM's correction limit and checkpoints. Reuse valid checks/drills; required controller phase checks still run. Use one design/inventory review, inspect fixes for affected requirements, and account for warnings with scoped fixes or explanations.
-
-Pass every existing ACCEPTANCE gate, then stop verification unless later changes invalidate evidence. Commit reviewed reports/final evidence as author. Completion leaves no pending/blocked rebuild changes or claims. Report executable path, checked SHA range, evidence and limitations. Publishing is outside scope.
-
-## Historical reference inspection record — superseded by D004
-
-These entries describe the retired controller and original preparation. They supply historical provenance only, not startup instructions or current readiness. PROGRESS.md records the installed stage-2 controller, completed setup and baseline.
-
-- Bootstrap clean source commit: `583b3c53740cf2341e0b0a79afee5b7f646ec1d4`.
-- Local design snapshot: `fireweed-design-v1.md` at the repository root, copied byte-for-byte from `/Users/joel/Workspace/fireweed-bootstrap/fireweed-design-v1.md` at that commit on 2026-10-21.
-- Design SHA-256: `1c17d0ab9496b1b15ad5ca18eed4f4ca623d01cff596bc557bf4c97400d00789`. Revised 2026-10-26: `a1fe8a2a2335c04443d4e7d3e6aa3a138e221cd5bd8302c6c66bfd947761d919`; usability revision 2026-10-26: `5d7cfcc9e3987fb594d16cce94f5ffa057c583f17f985114fe1de946aef5cf9d`; merge-strategy revision 2026-10-26: `52623b89d8184680f535519e82ceda8a49490b3d4dec000347cbd2cde429b21a`.
-- Target initial commit: `d543462579d3fe182460c07476846476d38c6dc5` on main; superseded by the stage-2 baseline in PROGRESS.md.
-- The original temporary 0.4.0 build used `go1.27.2 darwin/arm64`. A disposable Go-recipe init/doctor probe passed four canaries without real agent/auditor execution. Neither workspace was initialized by it. The temporary binary is not a durable input or a reason to rebuild/repin on resume.
+Use one focused design/inventory review, then inspect fixes only for affected
+requirements. Reuse valid checks/drills; repeat only invalidated or unresolved
+evidence. Pass every ACCEPTANCE gate, account for warnings and stop verification
+unless later changes invalidate it. Deliver the independent executable and clean
+committed tree without pending/blocked rebuild changes or claims, with exact
+source/controller revisions, history range and honest limitations. Push only
+under explicit owner authorization; publication and tags remain outside scope.

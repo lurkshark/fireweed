@@ -27,7 +27,7 @@ The first run (2026-10-21 to 2026-10-26) is preserved on the `rebuild-v1` branch
 - Packed refs that differ only in case collide on case-insensitive filesystems (v1-D038).
 - `go test` has a default 10-minute timeout per package. Keep suites well under it rather than raising it (v1-D035).
 - `FIREWEED_BIN` in a hook must name the binary that ran the hook, never the controller.
-- The first run rejected its default Codex model (v1-D003). Current stage-2 selection is Codex `gpt-6-sol` with high reasoning effort per GOAL.md. A later read-only Sol probe passed at low effort; full high-effort doctor probes remain startup work. Do not infer current availability from old observations.
+- The first run rejected its default Codex model (v1-D003). Current stage-2 selection is Codex `gpt-6-sol` with high reasoning effort per GOAL.md. A later read-only Sol probe passed at low effort; current setup/probe evidence belongs in PROGRESS.md and linked reports. Do not infer current availability or unfinished startup work from this historical observation.
 - Public facades that share types with their own `internal/` code need a retained `model/` subpackage to avoid import cycles (v1-D004).
 
 ## What went wrong

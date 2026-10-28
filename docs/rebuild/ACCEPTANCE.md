@@ -1,19 +1,23 @@
 # Acceptance and traceability
 
-Prepared 2026-10-21, reset 2026-10-26; tightened 2026-10-27. Full acceptance remains **unverified**; partial evidence is reusable. R01–R29 are planning labels, not another spec layer. Map design behaviors to atomic specs through changes as each slice needs them, following authorized work in PROGRESS.md.
+Revised 2026-10-28. Full acceptance remains **unverified**; partial evidence is reusable. R01–R29 are planning labels, not another spec layer. Map design behaviors to atomic specs through changes as each slice needs them, following authorized work in PROGRESS.md.
 
-The authoritative design snapshot is [fireweed-design-v1.md](../../fireweed-design-v1.md) in this repository; its origin and checksum are recorded in [PLAN.md](PLAN.md).
+The authoritative design snapshot is [fireweed-design-v1.md](../../fireweed-design-v1.md) in this repository; its historical origin and checksums are recorded in [HISTORY.md](HISTORY.md#historical-reference-inspection-record--superseded-by-d004).
 
-GOAL.md/PLAN.md sequence the work; these rows describe eventual coverage, not implementation order. PROGRESS.md records completed milestones, the pinned 0.1.0 controller and current checkpoints. Historical pending-work statements below do not restart completed work.
+GOAL.md/PLAN.md sequence runnable CLI slices; these rows describe eventual coverage, not implementation order. PROGRESS.md records the current slice, pinned controller and checkpoint authority. Prior evidence is preserved in HISTORY.md; historical pending-work statements do not restart completed work.
 
 At safe author boundaries link rows to assigned IDs and durable eval/archive/report evidence. Shared evidence can satisfy overlapping rows; do not duplicate specs, tests or reports for each label. Record relevant exceptions and discrepancies briefly.
 
 **Scope.** The design defines obligations; SYSTEM.md bounds their implementation and verification, including supported environments, process-group cancellation, eval cost and audit scope. Conventions use review and one app PATH-shim test, even where several rows mention them. Inventory examples add no requirements or unnamed edge cases. R22–R25 cover bounded effort, R26–R28 usability and R29 merge strategies; overlapping obligations need evidence once.
 
-Current D006 migration changes diagnostics only on existing error paths. Unused
-allocations, their tests and explain entries wait for corresponding justified
-feature implementation; this does not waive eventual diagnostic requirements.
-Workflow file reorganization is not an acceptance or Milestone 2 prerequisite.
+D006's planned existing-path migration is complete through 0068. Keep diagnostics
+and explain accurate as justified features add real paths; unused allocations
+wait for those features. Workflow file reorganization is not a prerequisite.
+Neither statement waives eventual design obligations.
+
+A slice closes with observable NEW CLI evidence under PLAN; passing module evals
+alone does not prove it. Reuse that evidence across relevant rows rather than
+adding a separate acceptance campaign for every inventory entry.
 
 ## Requirement inventory
 
@@ -90,7 +94,7 @@ Use one design/inventory review, then check fixes against affected requirements.
 6. **Reference comparison (smoke):** one equivalent fixture lifecycle run with both binaries, comparing exit codes, JSON envelope shape and resulting commits/refs. Record intentional differences briefly. Reference bugs do not define acceptance, and per-edge-case equivalence is not required.
 7. **Real regeneration:** successful controller-driven drills for every rebuilt disposable module, dependency-first. Real agents reconstruct from retained specs/Decisions/interfaces/evals and permitted dependency interfaces, without old implementation/history, saved attempts, old binaries or bootstrap. Own/transitive dependent evals pass without preserved-contract edits. Commit reviewed reports/retain refs and clean scratch worktrees. Repeat only drills invalidated by relevant changes or unresolved failures. Gaps require human agreement before authored fixes; agent suggestions alone authorize none. Missing real-agent access blocks this gate.
 8. **Self-hosting:** in an isolated clone/fixture, the NEW binary governs a small real spec change and a real drill, with checked fail-first/audit/impl commits, archive/provenance, CI and scratch cleanup. Keep the original repository governed by the pinned bootstrap throughout acceptance.
-9. **Delivery:** README build/test/use instructions, locally validated distribution/installer checksum behavior, clean committed target tree, restartable evidence record and independent product executable. No product runtime read/import/command requires bootstrap. Report exact checks/commits/reports and limitations. Do not push, publish or tag.
+9. **Delivery:** README build/test/use instructions, locally validated distribution/installer checksum behavior, clean committed target tree, restartable evidence record and independent product executable. No product runtime read/import/command requires bootstrap. Report exact checks/commits/reports and limitations. Push only under explicit owner authorization recorded in PROGRESS; do not publish or tag.
 
 ## Evidence record shape
 
@@ -106,264 +110,11 @@ Status: unverified | in progress | verified | blocked
 
 Bulky logs may remain ignored. Commit concise findings/references once, without hash manifests or testcase inventories. Audit, platform, regeneration and self-hosting claims must match what ran.
 
-## Historical partial evidence (not current work instructions)
+## Evidence navigation
 
-The entries below record results and outstanding work at their cited revisions. Later entries may resolve earlier gaps; use PROGRESS.md and linked current reports for status. Reuse valid evidence without treating an incomplete row as a requirement to redo its passing portions.
-
-- R17/R20: AST-001–AST-003 cover embedded version/help, initial diagnostic lookups
-  and five playbooks through public assets evals `Test_AST_001_*`,
-  `Test_AST_002_*`, `Test_AST_003_Explanations`. Change
-  `changes/archive/0001-standalone-information.md`; phase commits
-  `a4ceb17` / `826b9e9` / `2248b8e`; 8 assertion failures before and 8 passes after.
-  CLI wiring, full diagnostics/versioning/playbooks/AGENTS remain unverified.
-
-- R17: APP-001–APP-003 cover standalone NEW-binary invocation outside a project
-  and with invalid config, schema-1 information JSON, usage errors and explicit
-  unsupported-command failures; 30 assertion failures before, 30 passes after.
-  Archive `0002-standalone-cli.md`; evals `1298acf`, controller audit `7de7d30`.
-  Independent audit found APP-003 JSON gaps discarded by the controller because
-  quotes folded line breaks. Correction through eval_fix remains pending.
-
-- R17: `json-error-assertions` eval_fix repairs the APP-003 JSON gaps; phase SHAs
-  `eb4704d` / `e184bb6` / `8796d37`. Separate restricted Sol/high audit passed
-  APP-003; all 26 app cases pass, with unchanged implementation. This is rebuild
-  process evidence, not evidence that the NEW product implements eval_fix.
-
-- R02/R03/R04 partial: CON-001–CON-005 provide document/section/item parsing,
-  canonical hashes, ID matching and zone precedence/globs. Archive
-  `0004-lifecycle-primitives.md`; evals `11d0180` (18 failures, 9 passes; all changed IDs fail), audit
-  `6e341a4` (independent no findings), impl `8e37dd7` (27 passes, existing app/assets
-  and direct dependents/boundaries pass). Full grammar, project validation and
-  lifecycle remain unverified.
-
-- R02/R04 partial: PRJ-001–PRJ-003 load the minimal fixture, validate module graph
-  identities/dependencies and author queued skeletons without assigned IDs. Archive
-  `0005-fixture-authoring.md`; initial evals `1bcba65`, audit findings `5c647a2`,
-  corrected evals `bfee6b8` (24 failures, 1 pass), passing independent re-audit
-  `06f17c6`, impl `91f036c` (25 own and 26 app cases pass). One audit round;
-  projection, stamping, other checks and CLI wiring remain unverified.
-
-## First human checkpoint — five applied changes
-
-Current-source Go build/test/race/vet and controller check/history/CI passed at
-`91f036cbb33981a5fb72798da3edec9bdc90b077`; exact range starts at
-`be35552b706aa3000ff8f11306d129ff1d701b85`. CI included doctor and all 86 reported
-cases (including parent cases), with no diagnostics. See PROGRESS for logs and
-limits. This is not fresh-checkout evidence or completion of any full acceptance
-row. The manual NEW lifecycle, remaining surface, real drills/self-hosting and
-delivery gates remain incomplete. Human review is required before change six.
-
-- R04/R17 partial: APP-004–APP-005 wire modules and new-change through the NEW
-  executable, including ancestor config discovery, graph/zone JSON and author
-  error semantics. Archive `0006-project-commands.md`; phases `da5dba8` /
-  `98e5852` / `5f09706`; 12 failures/39 passes before, all 51 app cases pass after.
-  NEW smoke created changes/0001-answer.md in the manual slice fixture; stamping
-  and lifecycle remain unverified.
-
-- R04 partial: CON-006 extends ParseItems to the design-required new: handles
-  without a parallel parser. Archive `0007-change-handles.md`; phases `a22fcd4` /
-  `a194629` / `7580897`; one genuine failing case, then all 34 contracts cases pass
-  with dependents/boundaries. Allocation, cross-change scope and rewriting remain
-  for project/workflow evidence.
-
-- R04/R05 partial: PRJ-004–PRJ-007 cover ordered queue parsing, projected edits/set
-  metadata, per-change handle ownership, preceding-projection stamp bases and
-  initial static diagnostics. Archive `0008-queue-authoring.md`; phases `6e3ca5f` /
-  `776b4d0` / `2ef37df`; 24 failures/25 passes before, all 53 project cases pass after
-  plus 51 app cases and boundaries. Full validation/views/lifecycle remain open.
-
-- R04/R05/R17 partial: APP-006–APP-008 expose stamp/check and current/projected
-  show through the NEW binary. Archive `0009-authoring-commands.md`; phases
-  `5720dce` / `b2aaa14` / `de65319`; 27 failures/51 passes before, all 78 app cases
-  pass after. Manual fixture stamp/check/projected and selected new:answer show
-  exited 0 with no assigned IDs. Product lifecycle remains unbuilt/unverified.
-
-## Shared-base approval gate after review 1
-
-At clean product source `de65319d646fd0e39e9810415a181dd28911762c`, build/test/race/
-vet, controller check and CI on explicit setup baseline `be35552...` passed. CI
-includes doctor canaries/recovery, boundaries, history and all 173 reported cases,
-with no diagnostics. This is current-source intermediate evidence, not final
-acceptance or a fresh-checkout/drill/self-hosting claim. Controller unapproved
-count is 5 against origin/main `6e341a4`; P07 requires human shared-base approval
-before another change. Four changes were applied since the explicit review at
-`3311f67`; no bound/ref was altered.
-
-- R06/R13/R14 partial: GIT-001–GIT-005 supply canonical primary/linked repository
-  metadata, local base selection, working/index/committed diffs, selected commits,
-  blobs/CAS and bounded process groups. Archive `0010-manual-lifecycle-git.md`;
-  evals `3e82adc` / `93ba9a6` / `5d00cac`, audits `98a799f` / `f2ddd0f` / `5911fab`,
-  impl `92f999a`; 7 fail-first cases, then 8 permanent passes plus 2 temporary
-  public smoke probes and dependent/boundary passes. Escaped process groups remain
-  unsupported. Claims/lifecycle and full Git surface remain unverified.
-
-- R07/R09/R10/R11 partial: CHK-001–CHK-005 cover public JUnit/results, hooks, zones and boundaries; archive `0011-lifecycle-checks.md`, phases `69933f7` / `eff6823` / `3c5b40b`. 25 failures before, 28 permanent cases and 4 public smoke probes pass after. Full dependents/boundaries pass. Product lifecycle and doctor integration remain unverified.
-
-- R05–R09/R14/R17 partial: FLOW-001–FLOW-005 provide manual claims/start/verify/done/audit/apply/archive/provenance/context through public APIs. Archive `0012-manual-lifecycle.md`, evals `c5c02de` / `ca11056` / `aec7154`, findings `0b5aeef` / `25e4775`, final audit `8627014`, impl `563d2ee`: 28 initial failures, 32 final permanent cases and 3 public smoke probes pass; full dependents/boundaries pass. Sol reset/retry recorded in ignored evidence. NEW CLI lifecycle, remaining kinds/recovery/history and full acceptance remain unverified.
-
-- Milestone 1 / R05–R11/R17 partial: APP-004, APP-009–APP-012 connect the manual
-  lifecycle through NEW source `89b7028`; original phases `678f7bb` / `7db8c47` /
-  `a9d195c` / `804cb84` / `89b7028`. Eight genuine initial failures, 86 final app
-  cases and 2 public coverage probes pass. Real Go fixture TOY-001 at
-  `/tmp/fireweed-stage2-manual-slice/project` completed native evals `f04e9f7`,
-  separate audit `bfb84d0`, apply `1323a31`, with Z01 and P2-01 rejections,
-  verify/no commit, frozen eval/facade, passing coverage, inspected provenance,
-  clean tree and released claim. All workers/auditor were real Sol/high CLI calls.
-  This verifies the manual milestone, not init/doctor/run or full acceptance.
-
-- R03/R04/R05/R17 refinement: PRJ-007's Check contract is now split into
-  PRJ-007–016 by archives 0030/0031. Existing validation assertions are retained
-  and linked to their atomic IDs; cause-specific diagnostic migration remains
-  pending. See [review 6 checkpoint](reports/review6-checkpoint.md) and PROGRESS
-  for phase commits, audit corrections and verification evidence. This does
-  not establish the remaining static-validation or CLI requirements.
-
-- R02/R04 refinement: archives 0032–0034 split PRJ-001–003 into focused
-  discovery, graph and authoring contracts, with PRJ-017–026 retaining their
-  separated rules. Existing assertions and cases are unchanged. See
-  [review 7 checkpoint](reports/review7-checkpoint.md) and PROGRESS for evidence
-  and the P07 shared-base gate; PRJ-004–006 and full validation remain open.
-
-- R04/R05 refinement: archives 0035–0039 complete the PRJ-004–006 split, with
-  PRJ-027–039 retaining queue, projection and Stamp rules. Existing public
-  assertions remain; 0038 strengthens complete-body checks after its audit.
-  See [the passing checkpoint review](reports/checkpoint-0035-0039.md) and
-  PROGRESS for phase evidence. Remaining module splits and D006 migration
-  still precede Milestone 2; full acceptance remains unverified.
-
-- R07/R10/R11 refinement: 0040–0044 split CHK-001–003 and retain CHK-005's
-  suppression rules under CHK-039–043 before its final narrowing. Assertions,
-  fixtures and implementation remain unchanged. See the
-  [passing checkpoint review](reports/checkpoint-0040-0044.md) and PROGRESS
-  for phase evidence; remaining splits and diagnostic migration are pending.
-
-- R02/R03/R05/R06/R09/R11/R14/R27 refinement: 0045–0049 finish CHK-005,
-  FLOW-004/005 and the identified contracts primitive bundles. Requirements
-  and assertions are retained; existing lifecycle fixtures gain direct
-  metadata/phase-base/shared-commit/provenance checks. See the
-  [passing checkpoint review](reports/checkpoint-0045-0049.md) and PROGRESS
-  for actual phase counts and approved execution-policy changes. Remaining
-  gitstore/assets/app splits and D006 migration still precede the contracts drill.
-
-- R02/R04/R05/R06/R17 refinement: 0050–0053 split gitstore/assets/app contracts
-  with existing obligations and assertions retained. 0054 repairs PRJ-007's
-  stale blanket C01 eval comparisons; exact cause migration remains pending.
-  See the [passing checkpoint review](reports/checkpoint-0050-0054.md) and
-  PROGRESS for phases and counts. This establishes no remaining acceptance gate.
-
-- R04/R07/R11/R17 diagnostic refinement: 0055–0059 assign existing validation
-  causes C04–C09 and boundary causes X01–X04, with exact cause assertions and
-  accurate explanations. All phase audits passed; current-source build/race/vet
-  and NEW JSON explanation smoke checks passed. See the
-  [checkpoint review](reports/checkpoint-0055-0059.md) and PROGRESS for scope and
-  phase counts. Remaining diagnostic migration and full acceptance are unverified.
-
-- R04/R07/R09/R11/R17 diagnostic refinement: 0060–0064 migrate scoped CLI,
-  static, eval and lifecycle causes while preserving existing behavior. All phase
-  audits passed, including one scoped correction/re-audit in 0064. Current-source
-  build/race/vet and NEW U01/U02 JSON smoke checks passed; see the
-  [checkpoint review](reports/checkpoint-0060-0064.md) and PROGRESS for evidence
-  and owner-approved policy updates. Remaining CLI classification/explanations,
-  contracts drill, Milestone 2 and full acceptance remain unverified.
-
-- R17 existing-path diagnostic slice: 0065–0068 finish current CLI classification
-  and emitted-code explanations, including the observed show C02/C05 correction.
-  All phase audits passed; NEW resolves all 30 emitted codes, targeted regressions
-  pass, and race/vet passed at 72a2860 (0068 only corrects explanation text).
-  PROGRESS and the archives hold phases/counts. This does not establish missing
-  commands, the full future diagnostic surface, regeneration or final acceptance.
-
-- R16 diagnostic drill evidence: the single contracts controller drill at 7afe9a0
-  reports 34 own/339 dependent passes, retains its ref and removes scratch.
-  [The review](reports/contracts-drill.md) records a CON-011/012 prefix gap and
-  dependent-implementation reads outside the retained-input boundary. This run
-  does not satisfy strict independence acceptance; no gap fix or repeat drill
-  is authorized. Other module regeneration and final acceptance remain open.
-
-- R01/R17/R19 partial: 0069 (APP-041–061) implements Go/none/local init and passes
-  144 app cases after one scoped audit correction. NEW Go init/modules/check,
-  current-source build/race/vet pass at cdc64ae. The
-  [0065–0069 checkpoint](reports/checkpoint-0065-0069.md) initially blocked for
-  missing recipe guidance in explain C12/U02. Owner-approved 0070 fixes
-  AST-003/024 with four runtime failures → 51 own/351 total phase passes;
-  scoped subagent re-review and NEW explanation JSON pass at 4b36a84. Prior
-  causes/assertions are retained. History evidence covers 397 baseline commits
-  plus the seven-commit correction extension, with no diagnostics. The passing
-  re-review authorizes push/continuation. Doctor,
-  remaining recipes, bounded execution and full acceptance remain unverified.
-
-- R08/R11/R28 remain unverified for Doctor: 0071 is blocked in evals after two
-  findings rounds, with the default-timeout assertion unresolved and a first-audit
-  input-boundary deviation. [The block report](reports/doctor-0071-block.md)
-  records exact phase evidence, retained attempt and proposed human-approved
-  recovery. No Doctor implementation, CLI pass or restricted full audit is claimed.
-
-  The subsequent approved recovery committed d78d618 with a real default-timeout
-  assertion (255 phase cases, 29 runtime failures, 226 passes). Its fresh full
-  audit stayed within permitted inputs and no longer flags CHK-065, but reports
-  eight other assertion gaps. Controller block a81b723 retains audit_rounds 2,
-  releases the claim and preserves attempt refs. Doctor remains unimplemented;
-  the recovery result is a stop for further human review, not acceptance.
-
-  A later approved eight-ID correction could not begin: native saved-attempt
-  recovery retained audit phase, so tests stayed frozen. No test edit or worker
-  launch occurred; native block 4c8439b released the claim. A one-time phase-only
-  repair requires explicit approval before that correction can proceed. No
-  counters, requirements or bounds changed, and no additional acceptance is claimed.
-
-  The explicitly approved one-time phase repair and eight-ID correction completed:
-  ebf127f records 260 phase cases (34 failures, 226 passes), and a restricted
-  re-review plus valid prior passes led to audit commit 8cafea6. The implementation
-  worker passed 71 own quick-check cases using Git 2.53.0, including the real
-  default-timeout case. Final full verification did not complete; coordinator
-  interruption produced native block ed8a9c7 and saved attempt 4. The frozen
-  helper's demonstrated Apple Git incompatibility needs a normal eval_fix after
-  approved recovery. No Doctor implementation application or acceptance gate is
-  claimed; see the updated block report for the exact state and proposed recovery.
-
-  Approved recovery now passed full native implementation verification and
-  applied/archived 0071 at e50061d: 260 tests, all passing, with claim released.
-  This establishes the CHK-049–069 backend eval evidence under Git 2.53.0;
-  ordinary-Apple-Git helper portability, C14–C16 explanations and app doctor
-  wiring remain pending. This is partial R08/R11/R28 evidence, not completion.
-
-  0072 eval_fix restores ordinary Apple Git helper compatibility while preserving
-  all CHK-050/051 placement, physical-cleanup and registration assertions. Evals
-  dc2b1e7 and impl 762052f each report 260 passes; audit 426e259 has no findings
-  and no implementation reads. Product implementation is unchanged.
-
-- R17 partial: 0073 implements AST-026/027 cause/action guidance for emitted
-  doctor C14–C16 and existing init P01 failures. Six fail-first cases precede
-  389 full phase passes at 8d27f34, with no independent audit findings. Doctor
-  CLI wiring, bounded execution and full acceptance remain open.
-
-- R08/R11/R28 partial: 0074 exposes doctor and agents-md --write through NEW,
-  with 153 app passes after one scoped audit correction. The fresh Go/fake-agent
-  [CLI smoke](reports/doctor-setup-cli.md) at 19d2b31 passes doctor with and without
-  agents, exact surrounding-text preservation, explanation lookup and scratch
-  cleanup. This completes the currently scoped Go doctor setup slice; remaining
-  recipes, bounded next/run, real regeneration and final acceptance remain open.
-
-- R08/R09/R28 partial: 0075 establishes RUN-001–009 bounded worker/auditor
-  invocation through the retained runner interface. Corrected evals record 25
-  runtime failures; implementation 4b2fe8e passes 25 own/178 phase cases after one
-  scoped re-audit. Queue selection, next/run orchestration, retries/recovery and
-  the required NEW fake-agent queue fixture remain pending. This foundation
-  does not establish unattended execution or final acceptance.
-
-- The [0071–0075 checkpoint](reports/checkpoint-0071-0075.md) is BLOCK: required
-  boundary hooks can be skipped, and cancelled doctor work leaves Git registration.
-  A NEW missing-hook repro returned false success. Full race also exposes a
-  timing-dependent RUN-007/009 eval; a focused pass does not close that failed
-  full gate. Build, vet, static check and the 52-commit history extension pass.
-  Existing healthy setup smoke remains valid, but doctor conformance, bounded
-  execution and final acceptance stay open. P07/human synchronization is required
-  before the proposed normal checks fix and runner eval_fix; no push occurred.
-
-- The approved 0076–0078 correction gate now [passes](reports/checkpoint-corrections-0076.md):
-  required-boundary/cancellation cleanup defects and baseline-stop coverage are
-  corrected, valid isolated audits pass, the same scoped checkpoint reviewer
-  returns PASS, and fresh full race/build/vet/static/history and NEW doctor smoke
-  pass at a34a32a. Earlier phase/audit deviations remain historical. This is
-  intermediate setup/execution-primitive evidence; next/run fixtures and every
-  remaining completion gate stay open under the updated vertical-slice goal.
+[PROGRESS.md](PROGRESS.md) records current capability status and the next slice.
+[HISTORY.md](HISTORY.md) preserves the former progress ledger, historical partial
+requirement mappings and reference inspection record. Linked reports and change
+archives carry detailed phase/checkpoint evidence. Keep results once and link
+them here when they establish coverage; do not infer current readiness from an
+older entry or turn its historical next-work text into a new instruction.

@@ -1,6 +1,6 @@
 # Rebuild decisions
 
-Record clarifications of the design and intentional differences from the bootstrap here, one short entry each. Decisions from the first run are on the `rebuild-v1` branch; [LESSONS.md](LESSONS.md) summarizes the ones that still matter.
+Record clarifications of the design and intentional differences from the bootstrap here, one short entry each. Dated preparation/restart statements below are historical; current readiness, approvals and next work belong in [PROGRESS.md](PROGRESS.md). Decisions from the first run are on the `rebuild-v1` branch; [LESSONS.md](LESSONS.md) summarizes the ones that still matter.
 
 ## D001 — Restart from the setup baseline
 
