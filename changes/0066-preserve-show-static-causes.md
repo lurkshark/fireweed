@@ -5,7 +5,7 @@ bases:
 fixes:
     - APP-037
 module: app
-phase: audit
+phase: impl
 run: 20261028T095449-04ccdcde82574460479716ce
 ---
 
@@ -60,6 +60,12 @@ fixed module spec identities remain C05 even if another item was requested.
 No new checks, unsupported features, speculative errors, interfaces or other
 module edits. Controller owns specs, commits and archive.
 
+## Audit
+
+Checked IDs: APP-037, APP-038
+No findings
+
 ## Provenance
 
 - evals 2026-10-28T09:56:59.671264Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=124 failing=3 passing=121
+- audit 2026-10-28T09:57:45.097988Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
