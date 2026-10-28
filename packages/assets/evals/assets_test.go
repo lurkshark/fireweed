@@ -197,6 +197,9 @@ func Test_AST_003_Explanations(t *testing.T) {
 		requirePattern(t, text, `(?i)(unknown|ambiguous)[^.\n]*(requested|lookup)[^.\n]*(item|change)|(requested|lookup)[^.\n]*(item|change)[^.\n]*(unknown|ambiguous)`, "unknown or ambiguous requested item or change")
 		requirePattern(t, text, `(?i)ambiguous[^.\n]*(projected|local)[^.\n]*handle|(projected|local)[^.\n]*handle[^.\n]*ambiguous`, "ambiguous projected local handle")
 		requirePattern(t, text, `(?i)(select|use|provide|specify)[^.\n]*(existing|valid|unambiguous|qualified|full)[^.\n]*(module|item|change|name|ID|handle)`, "corrective action for requested names")
+		requirePattern(t, text, `(?i)(unknown|unrecognized|invalid)[^.\n]*recipe name|recipe name[^.\n]*(unknown|unrecognized|invalid)`, "unknown recipe name")
+		requirePattern(t, text, `(?i)(choose|use|select)[^.\n]*supported recipe name`, "choose a supported recipe name")
+		requirePattern(t, text, `(?i)(choose|use|select|provide)[^.\n]*readable local recipe directory`, "choose a readable local recipe directory")
 	})
 	t.Run("P2-01", func(t *testing.T) {
 		text, err := assets.Explain("P2-01")
@@ -230,6 +233,10 @@ func Test_AST_024_StaticExplanations(t *testing.T) {
 			}
 			requirePattern(t, text, tc.cause, "cause")
 			requirePattern(t, text, tc.action, "corrective action")
+			if tc.code == "C12" {
+				requirePattern(t, text, `(?i)(invalid|missing|malformed)[^.\n]*local recipe metadata|local recipe metadata[^.\n]*(invalid|missing|malformed)`, "invalid local recipe metadata")
+				requirePattern(t, text, `(?i)(correct|fix|repair|edit|update)[^.\n]*recipe\.yaml`, "repair recipe.yaml")
+			}
 			if tc.code == "C02" {
 				requirePattern(t, text, `(?i)(empty|missing)[^.\n]*module name|module name[^.\n]*(empty|missing)`, "empty module name cause")
 				requirePattern(t, text, `(?i)duplicat[^.\n]*module name|module name[^.\n]*duplicat`, "duplicate module name cause")
