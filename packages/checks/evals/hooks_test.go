@@ -73,7 +73,7 @@ printf '%s' '` + passXML + `' > "$3"
 	}
 }
 
-func Test_CHK_003_CHK_034_ExitAndReportAgreement(t *testing.T) {
+func Test_CHK_038_CHK_034_ExitAndReportAgreement(t *testing.T) {
 	for _, tc := range []struct {
 		name, xml, exit string
 		valid           bool
@@ -94,7 +94,7 @@ func Test_CHK_003_CHK_034_ExitAndReportAgreement(t *testing.T) {
 	}
 }
 
-func Test_CHK_003_MissingReportAndLaunchFailure(t *testing.T) {
+func Test_CHK_036_CHK_037_MissingReportAndLaunchFailure(t *testing.T) {
 	for _, command := range []any{`exit 0`, []any{filepath.Join(t.TempDir(), "missing-command"), "{report}"}} {
 		snap := hookSnapshot(t, command, nil)
 		if _, err := checks.Evaluate(context.Background(), checks.HookRequest{Snapshot: snap, Module: "alpha", Timeout: time.Second}); err == nil {
@@ -103,7 +103,7 @@ func Test_CHK_003_MissingReportAndLaunchFailure(t *testing.T) {
 	}
 }
 
-func Test_CHK_003_TimeoutFails(t *testing.T) {
+func Test_CHK_036_TimeoutFails(t *testing.T) {
 	snap := hookSnapshot(t, `sleep 2; printf '%s' '`+passXML+`' > {report}`, nil)
 	start := time.Now()
 	_, err := checks.Evaluate(context.Background(), checks.HookRequest{Snapshot: snap, Module: "alpha", Timeout: 80 * time.Millisecond})

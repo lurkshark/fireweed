@@ -1,12 +1,15 @@
 ---
 already_satisfied:
     - CHK-003
-    - new:eval-hook-completion
-    - new:eval-hook-missing-report
-    - new:eval-hook-result-agreement
+    - CHK-036
+    - CHK-037
+    - CHK-038
+audit_rounds: 0
 bases:
     CHK-003: c337293b
 module: checks
+phase: audit
+run: 20261028T053805-c45a8c17f97c27326d9ef467
 ---
 
 
@@ -25,13 +28,13 @@ all behavior and assertions already exist.
 
 ## Added
 
-### new:eval-hook-completion
+### CHK-036
 Evaluate MUST fail when the eval hook cannot launch or exceeds its timeout.
 
-### new:eval-hook-missing-report
+### CHK-037
 Evaluate MUST fail when the eval hook does not write its JUnit report.
 
-### new:eval-hook-result-agreement
+### CHK-038
 Evaluate MUST reject a zero exit with mapped failures or a nonzero exit without mapped failures, while accepting a nonzero exit with mapped failures as valid report evidence.
 
 ## Modified
@@ -58,3 +61,7 @@ Preserve CHK-031–035 everywhere else. No new Test functions, t.Run cases,
 fixture instances, helpers, product code or interface changes. Leave
 hookSnapshot and its embedded fixture spec unchanged. Implementation may
 edit only this change file.
+
+## Provenance
+
+- evals 2026-10-28T05:38:45.790568Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=146 failing=0 passing=146
