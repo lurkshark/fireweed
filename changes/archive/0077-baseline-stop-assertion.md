@@ -4,7 +4,7 @@ bases: {}
 eval_fix:
     - CHK-055
 module: checks
-phase: impl
+phase: applied
 run: 20261028T230031-7c37d81c38953bf7362a2c42
 ---
 
@@ -68,6 +68,7 @@ unresolved issues or blocks stop for human review under the approved sequence.
 
 - evals 2026-10-28T23:08:29.023366Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=298 failing=0 passing=298
 - audit 2026-10-28T23:10:52.732036Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-28T23:11:02.628152Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=298 failing=0 passing=298
 
 ## Audit
 
