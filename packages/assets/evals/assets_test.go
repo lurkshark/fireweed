@@ -14,7 +14,7 @@ func Test_AST_001_Version(t *testing.T) {
 	}
 }
 
-func Test_AST_001_Help(t *testing.T) {
+func Test_AST_008_Help(t *testing.T) {
 	help := assets.Help()
 	if !regexp.MustCompile(`(?i)\bfireweed\b`).MatchString(help) {
 		t.Errorf("Help() must identify fireweed; got %q", help)
@@ -51,7 +51,7 @@ func Test_AST_002_Playbooks(t *testing.T) {
 	}
 }
 
-func Test_AST_002_AuditRules(t *testing.T) {
+func Test_AST_009_AST_010_AuditRules(t *testing.T) {
 	text, err := assets.Playbook("audit")
 	if err != nil {
 		t.Fatalf("Playbook(audit): %v", err)
@@ -61,7 +61,7 @@ func Test_AST_002_AuditRules(t *testing.T) {
 	requirePattern(t, text, `(?i)re.audit[^.\n]*(only|limit)[^.\n]*IDs?[^.\n]*(prior|previous|preceding|earlier)`, "re-audits limited to prior finding IDs")
 }
 
-func Test_AST_002_AuthorRules(t *testing.T) {
+func Test_AST_011_AST_012_AuthorRules(t *testing.T) {
 	text, err := assets.Playbook("author-change")
 	if err != nil {
 		t.Fatalf("Playbook(author-change): %v", err)

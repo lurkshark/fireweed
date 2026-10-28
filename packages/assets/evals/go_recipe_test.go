@@ -27,7 +27,7 @@ func goRecipe(t *testing.T) assets.Recipe {
 	return r
 }
 
-func Test_AST_004_GoRecipe(t *testing.T) {
+func Test_AST_004_AST_013_AST_014_AST_015_GoRecipe(t *testing.T) {
 	r := goRecipe(t)
 	if r.Name != "go" {
 		t.Errorf("recipe name = %q, want go", r.Name)
@@ -127,7 +127,7 @@ func Test_ALC001Skip(t *testing.T) { t.Skip("deliberate skip") }
 	}
 }
 
-func Test_AST_005_UnfinishedAndCompileFailure(t *testing.T) {
+func Test_AST_016_UnfinishedAndCompileFailure(t *testing.T) {
 	r := goRecipe(t)
 	w := newGoRecipeWorkspace(t, r)
 	w.write("packages/alpha/evals/unfinished_test.go", `package evals
@@ -176,7 +176,7 @@ func Test_BET001OtherModuleFails(t *testing.T) { t.Fatal("beta must be excluded 
 	}
 }
 
-func Test_AST_006_BoundaryGraph(t *testing.T) {
+func Test_AST_006_AST_017_AST_019_BoundaryGraph(t *testing.T) {
 	r := goRecipe(t)
 	w := newGoRecipeWorkspace(t, r)
 	w.setGraph(nil, "api.go", "evals/**")
@@ -203,7 +203,7 @@ import _ "example.com/recipefixture/packages/beta"
 	}
 }
 
-func Test_AST_006_EvalInterfaceZones(t *testing.T) {
+func Test_AST_006_AST_018_AST_019_EvalInterfaceZones(t *testing.T) {
 	r := goRecipe(t)
 	w := newGoRecipeWorkspace(t, r)
 	w.setGraph([]string{"beta"}, "public/**", "checks/**")
@@ -234,7 +234,7 @@ import _ "example.com/recipefixture/packages/beta/public"
 	}
 }
 
-func Test_AST_006_UsesModuleDirsAndWorkspacePath(t *testing.T) {
+func Test_AST_006_AST_017_AST_018_AST_019_UsesModuleDirsAndWorkspacePath(t *testing.T) {
 	w := newGoRecipeWorkspace(t, goRecipe(t))
 	w.write("go.mod", "module example.net/customworkspace\n\ngo 1.23\n")
 	w.remove("packages/alpha/api.go")
@@ -285,7 +285,7 @@ func Test_AST_006_UsesModuleDirsAndWorkspacePath(t *testing.T) {
 	}
 }
 
-func Test_AST_007_TemplatesAndCanaries(t *testing.T) {
+func Test_AST_007_AST_020_AST_021_AST_022_AST_023_TemplatesAndCanaries(t *testing.T) {
 	r := goRecipe(t)
 	w := newGoRecipeWorkspace(t, r)
 	for _, path := range []string{".fireweed/templates/module/SPEC.md", ".fireweed/templates/module/api.go.tmpl"} {

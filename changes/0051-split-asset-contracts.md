@@ -6,22 +6,23 @@ already_satisfied:
     - AST-005
     - AST-006
     - AST-007
-    - new:help-catalog
-    - new:audit-clause-scope
-    - new:audit-repeated-ids
-    - new:author-motivation
-    - new:author-cost-guidance
-    - new:go-bundle-payload
-    - new:go-setup-instructions
-    - new:go-graph-instructions
-    - new:go-incomplete-evals
-    - new:go-undeclared-imports
-    - new:go-eval-interfaces
-    - new:go-clean-boundaries
-    - new:go-template-substitution
-    - new:go-baseline-templates
-    - new:go-canary-detection
-    - new:go-canary-recovery
+    - AST-008
+    - AST-009
+    - AST-010
+    - AST-011
+    - AST-012
+    - AST-013
+    - AST-014
+    - AST-015
+    - AST-016
+    - AST-017
+    - AST-018
+    - AST-019
+    - AST-020
+    - AST-021
+    - AST-022
+    - AST-023
+audit_rounds: 0
 bases:
     AST-001: 5416a9ec
     AST-002: 1a5bc52f
@@ -30,6 +31,8 @@ bases:
     AST-006: "15183709"
     AST-007: 1d17def2
 module: assets
+phase: audit
+run: 20261028T064006-41b309e9b491a89365abb050
 ---
 
 
@@ -49,52 +52,52 @@ No product implementation or public interface changes are authorized.
 
 ## Added
 
-### new:help-catalog
+### AST-008
 Help MUST identify fireweed and list every command in the design's CLI table, including version, explain and playbook.
 
-### new:audit-clause-scope
+### AST-009
 The audit playbook MUST restrict findings to exact spec clauses without assertions.
 
-### new:audit-repeated-ids
+### AST-010
 The audit playbook MUST restrict re-audits to IDs with prior findings.
 
-### new:author-motivation
+### AST-011
 The author playbook MUST require a user-visible or design basis for Motivation.
 
-### new:author-cost-guidance
+### AST-012
 The author playbook MUST recommend narrowing costly specs with already_satisfied.
 
-### new:go-bundle-payload
+### AST-013
 The Go bundle MUST contain instructions, api.go/evals/**/internal/** defaults, eval/boundaries/setup commands, go.sum worker_writable and project-relative recipe, hook, template and canary files.
 
-### new:go-setup-instructions
+### AST-014
 Go recipe instructions MUST explain Go module and workspace setup.
 
-### new:go-graph-instructions
+### AST-015
 Go recipe instructions MUST explain deriving the graph from FIREWEED_BIN modules --json.
 
-### new:go-incomplete-evals
+### AST-016
 The Go eval hook MUST retain started-but-unfinished tests and package or compile failures as visible failures rather than passing or empty evidence.
 
-### new:go-undeclared-imports
+### AST-017
 The Go boundaries hook MUST report module-prefixed violations for imports of undeclared modules.
 
-### new:go-eval-interfaces
+### AST-018
 The Go boundaries hook MUST report module-prefixed violations for eval imports reaching beyond retained interface packages, including own internal implementation.
 
-### new:go-clean-boundaries
+### AST-019
 Clean module fixtures MUST pass the Go boundaries hook.
 
-### new:go-template-substitution
+### AST-020
 The Go bundle templates and canary snippets MUST be substitutable with name, prefix, package, go_module, module_dir and other_dir.
 
-### new:go-baseline-templates
+### AST-021
 Rendered Go baseline modules MUST compile and pass.
 
-### new:go-canary-detection
+### AST-022
 Each supplied Go canary MUST expose its named violation through the corresponding Go hook.
 
-### new:go-canary-recovery
+### AST-023
 Go hooks MUST pass cleanly after the supplied canary is removed.
 
 ## Modified
@@ -140,3 +143,7 @@ Go source strings, XML, template inputs, hook code, fixture paths, commands,
 helper behavior or Decisions. No new Test functions, t.Run cases, fixture
 instances, product code or interfaces. Implementation may edit only this
 change file. No obligation or assertion is removed.
+
+## Provenance
+
+- evals 2026-10-28T06:41:22.871566Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=219 failing=0 passing=219
