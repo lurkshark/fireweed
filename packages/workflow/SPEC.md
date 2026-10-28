@@ -145,6 +145,21 @@ When audit blocks a change, Done MUST include the blocking findings in its Quest
 ### FLOW-043
 Audit blocking MUST release the calling worktree's held change claim.
 
+### FLOW-044
+Successful impl Done MUST apply the change's set values to module metadata.
+
+### FLOW-045
+Successful impl Done MUST apply Decisions attributed to the change slug and remove entries quoted in Removed decisions.
+
+### FLOW-046
+Each successful Done MUST advance the phase base to its new commit.
+
+### FLOW-047
+Successful impl Done MUST release only the exact held claim upon application.
+
+### FLOW-048
+Failed Done verification MUST leave the phase unadvanced and create no commit.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
