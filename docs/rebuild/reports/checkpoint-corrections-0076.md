@@ -1,4 +1,11 @@
-# Checkpoint correction 0076 — human review required
+# Checkpoint corrections 0076–0078 — PASS
+
+Current result: the authorized scoped subagent re-review and fresh validation
+passed. Product head is 0f6f7b2; the clean verification/build source is a34a32a.
+The original audit deviation remains historical below. The owner-authorized
+correction push may proceed; the full rebuild goal remains incomplete.
+
+## Historical correction and review record
 
 The owner-approved initial push synchronized origin/main at ce165ab with the
 0071–0075 findings recorded. Normal checks correction 0076 applied at 995eebb:
@@ -91,3 +98,40 @@ interface/spec or controller limit changed. Coordinator provenance is manual,
 with actual fixed-profile CLI logs retained in run
 20261028T231208-cfb868c63baddc1bfdad0dda. Fresh full race and scoped checkpoint
 re-review remain pending; no push after ce165ab has occurred.
+
+## Final scoped review and verification — PASS
+
+The same checkpoint_0071_0075 subagent returned PASS at 0f6f7b2. Required boundary
+coverage is checked before probe overrides can mask absence; override-only and
+opt-out behavior remain covered. Cancellation cleanup uses an independent
+bounded 30-second context and tests both physical and Git-registration cleanup.
+CHK-055 now asserts hooks ran and probes stopped after baseline failures. The
+runner fixture retains both modes, readiness, output, prompt return, descendant
+completion assertions and all IDs. Specs/interfaces, runner product code and
+controller bounds are unchanged. The reviewer explicitly does not retroactively
+validate the original 0076 native audit; the approved isolated repairs are on track.
+
+Fresh validation at clean a34a32ac97c3c1a3ff571641117466963f338ca3:
+
+- CGO_ENABLED=0 build, go vet ./..., controller check and go test -race ./...
+  passed. Checks race package took 237.297s; runner took 20.576s. Other packages
+  passed or reused valid cache. No data-race report or failed case remained.
+- The build metadata confirms Go 1.27.2, darwin/arm64 and vcs.modified=false.
+  An optional module-version stat-cache write was sandbox-denied; build exit
+  remained 0. The unchanged embedded-recipe SPEC.md discovery warning is retained.
+- Explicit history a3c044a..a34a32a passed all 19 commits with no diagnostics,
+  extending the previously valid 404-commit baseline portion and 52-commit
+  extension. Documentation-only report commits follow this verification point.
+- The NEW missing-boundary fixture now exits 1 with X02 and C14 diagnostics,
+  naming the missing hook and skipped undeclared/internal_eval canaries.
+- The fresh healthy Go CLI smoke passed in 22.08s: 12 doctor checks with exactly
+  two fake-agent calls, 10 no-agent checks with no extra calls, guidance preserved
+  and scratch checkout/registration cleaned. Fixtures were removed.
+
+B02 for 16 CHK-055 cases remains informational; the eval_fix added no cases or
+weakened assertions. This passing scoped review closes the correction checkpoint
+and resets the five-application review count. No pending change or claim remains.
+The next observable outcome is one complete eligible lifecycle through NEW next,
+then bounded NEW run --max/continuation/empty-queue scenarios, as ordered by the
+updated goal. Recovery and remaining kinds follow that runnable path. No new
+drill or deferred contracts-gap fix is authorized.

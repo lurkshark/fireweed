@@ -8,30 +8,19 @@ cleanup complete. It reports an error-prefix contract gap and its agent read
 dependent internals, so strict independence acceptance is not established; see
 [the reviewed report](reports/contracts-drill.md). No gap fix or repeat drill is
 authorized. 0069 now implements recipe-based initialization through NEW.
-**Applied since review: 8; approved corrections applied, final review pending.**
-0071–0075 applied the doctor backend, portable cleanup helper, emitted-code
-explanations, doctor/guidance CLI and bounded invocation primitive. The approved
-0071 recovery passed; [its report](reports/doctor-0071-block.md) preserves the
-authorizations and earlier deviations. The healthy NEW Go/fake-agent
-[CLI smoke](reports/doctor-setup-cli.md) passes.
+**Applied since review: 0 after the passing scoped 0071–0078 review.**
+The doctor boundary/cancellation fixes and both approved eval fixes passed their
+phase checks, valid isolated assertion reviews and the same subagent's scoped
+re-review. Fresh build/vet/race/static/history and relevant NEW doctor smoke pass;
+see [the correction report](reports/checkpoint-corrections-0076.md). The earlier
+0076 native-audit deviation remains honestly recorded. No pending change or
+claim remains. The owner-authorized correction push is now permitted.
 
-The checkpoint subagent reports two doctor defects: missing required boundary
-hooks can pass, and cancellation leaves scratch Git registration. A real NEW
-repro confirms the false-success missing-hook path. Full race also found a
-timing-dependent runner eval; its focused rerun passes, but the full result
-remains failed. Build, vet, static check and explicit history extensions pass.
-See [the checkpoint report](reports/checkpoint-0071-0075.md). No pending change or
-claim remains. The owner now approves pushing the batch with findings recorded,
-then one scoped checks fix and one runner eval_fix, followed by the same
-subagent re-review and a correction push only on PASS. Use the normal approved
-push to synchronize the P07 shared base; preserve all bounds/history.
-0076 applied at 995eebb with 298 phase passes, but native audit inputs violated
-restrictions. A supplemental isolated assertion review found an unresolved
-CHK-055 stop-before-planting assertion gap. See
-[the correction report](reports/checkpoint-corrections-0076.md). The owner approved a normal CHK-055 eval_fix, then the pending runner eval_fix
-and scoped subagent re-review, with isolated phase auditors and push only on
-PASS. No push occurred after ce165ab. The full goal remains
-incomplete.
+Current capability: manual lifecycle, Go/none/local init, doctor/guidance CLI and
+bounded agent invocation. NEW next/run orchestration remains unimplemented. The
+updated goal now prioritizes one eligible spec change end-to-end through NEW next,
+then a small bounded queue through NEW run, before recovery/remaining scenarios.
+The full design and all final acceptance obligations remain open.
 
 The owner's goal update authorizes a subagent review at every five applied
 changes: push to origin and continue when the review finds the work on track, and
@@ -52,7 +41,7 @@ audits, audit bounds, timeouts and recurring checkpoint reviews remain in force.
 
 Controller: `.fireweed/bin/fireweed-bootstrap` 0.1.0, source `7f925190878e38fc38f30d16bb1cf47aca098cf7`, pin SHA-256 `f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f`; unchanged.
 Stage-2 history baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`; always check an explicit nonempty baseline..HEAD range. Use `GOCACHE=/tmp/fireweed-rebuild-cache`.
-NEW binary: `bin/fireweed`, clean source `a3c044a7a0f20c02789210fa9be1d4ef0c40949d` (CGO disabled); [committed manual-lifecycle report](reports/manual-lifecycle.md). Unbuilt commands remain explicit errors; next/run orchestration remains unimplemented.
+NEW binary: `bin/fireweed`, clean source `a34a32ac97c3c1a3ff571641117466963f338ca3` (CGO disabled); [committed manual-lifecycle report](reports/manual-lifecycle.md). Unbuilt commands remain explicit errors; next/run orchestration remains unimplemented.
 
 Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`. Interactive work through 0014's initial evals was followed by coordinator `done`, hence legacy `agent=manual` lines. Configured controller execution began at 0014's audit; its provenance records the actual command/model. Continue configured execution. Ignored runtime logs are auxiliary, not reviewable evidence; archives, permanent evals and committed reports carry the evidence.
 
@@ -248,15 +237,14 @@ acceptance remains unverified. No gap fix/rerun is authorized or performed.
 
 ## Next
 
-The approved checks fix and both eval fixes are applied. Complete fresh full race,
-build/vet, relevant NEW doctor smoke and explicit history extension; obtain the
-same subagent's scoped re-review before pushing. Push only on PASS. The updated
-goal then prioritizes one complete eligible change through NEW next, followed by
-bounded NEW run --max/continuation/empty-queue scenarios. Add recovery and other
-remaining behavior afterward as observable scenarios, not prerequisites for the
-first runnable path. Preserve assertions, interfaces/specs, history and bounds;
-stop on any new block or unresolved issue. Reconcile the documentation-refocus
-proposal with this newer evidence at a safe author boundary.
+The approved correction gate passed; push under the recorded authorization.
+Reconcile the documentation-refocus proposal with the latest evidence at a safe
+author boundary. Then author only the missing behavior needed for one complete
+eligible spec-change lifecycle through NEW next in a bounded fake-agent Go
+fixture. Return to app wiring promptly. After that, prove NEW run --max, later
+continuation and empty queue. Extend retries/recovery/remaining kinds afterward
+as observable scenarios; do not make them prerequisites for the first path.
+Existing audit/checkpoint/P07 and drill deferrals remain in force.
 
 0. The owner-approved 0070 explanation correction/re-review passed and pushed
    e083c5f. The following 0071–0075 slice now reaches the blocked checkpoint above;

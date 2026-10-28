@@ -120,3 +120,8 @@ deferred contracts-gap fix or phase-write exception is authorized.
 0076 subsequently applied with 298 phase passes, but an audit input/phase
 deviation and a supplemental CHK-055 assertion gap stop the correction sequence.
 See checkpoint-corrections-0076.md. Runner correction/re-review/push remain pending.
+
+The authorized 0076–0078 corrections and final scoped subagent re-review now
+PASS, with fresh validation and NEW smoke. See checkpoint-corrections-0076.md.
+The original BLOCK and native-audit deviation remain historical; the approved
+correction push/continuation gate is resolved.

@@ -359,3 +359,11 @@ before another change. Four changes were applied since the explicit review at
   Existing healthy setup smoke remains valid, but doctor conformance, bounded
   execution and final acceptance stay open. P07/human synchronization is required
   before the proposed normal checks fix and runner eval_fix; no push occurred.
+
+- The approved 0076–0078 correction gate now [passes](reports/checkpoint-corrections-0076.md):
+  required-boundary/cancellation cleanup defects and baseline-stop coverage are
+  corrected, valid isolated audits pass, the same scoped checkpoint reviewer
+  returns PASS, and fresh full race/build/vet/static/history and NEW doctor smoke
+  pass at a34a32a. Earlier phase/audit deviations remain historical. This is
+  intermediate setup/execution-primitive evidence; next/run fixtures and every
+  remaining completion gate stay open under the updated vertical-slice goal.
