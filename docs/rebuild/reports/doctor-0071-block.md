@@ -184,3 +184,14 @@ change are proposed. Only after that decision may the already scoped eight-ID
 correction and restricted re-review run; further unresolved findings still stop
 for human review. This exception has not been performed or inferred from the
 earlier approval.
+
+## One-time phase repair explicitly approved — 2026-10-28
+
+The owner explicitly approved the exception to controller-owned phase writes.
+Record a separate author repair changing only phase audit to evals after standard
+unblock/answered-Questions cleanup. Preserve audit_rounds 2, audit_pending,
+run/IDs, specs/Decisions, prior passes, the real default-timeout test and all saved
+refs/history. Resume normal controller ownership immediately afterward. The
+already approved correction/re-review stays limited to the eight outstanding
+IDs, with further unresolved findings stopping for human review. No global
+configuration or bound is changed by this one-time exception.
