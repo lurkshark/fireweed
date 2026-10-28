@@ -4,22 +4,25 @@ already_satisfied:
     - APP-010
     - APP-011
     - APP-012
-    - new:start-result-status
-    - new:start-json
-    - new:done-command
-    - new:verify-quick
-    - new:verify-done-json
-    - new:context-json
-    - new:context-errors
-    - new:coverage-results
-    - new:coverage-input-errors
-    - new:coverage-json
+    - APP-027
+    - APP-028
+    - APP-029
+    - APP-030
+    - APP-031
+    - APP-032
+    - APP-033
+    - APP-034
+    - APP-035
+    - APP-036
+audit_rounds: 0
 bases:
     APP-009: 26729c7a
     APP-010: 8d083138
     APP-011: 4e8cec43
     APP-012: b9303680
 module: app
+phase: audit
+run: 20261028T065728-9fe08d4bfed43e4d454a1b5c
 ---
 
 
@@ -39,34 +42,34 @@ path, unimplemented command or product behavior changes are authorized.
 
 ## Added
 
-### new:start-result-status
+### APP-027
 start MUST preserve reported warnings and return exit 1 for lifecycle rejection or exit 2 for usage or configuration errors, with corrective code/message diagnostics.
 
-### new:start-json
+### APP-028
 start --json MUST return schema 1 with context string data on success or null data on failure.
 
-### new:done-command
+### APP-029
 done [change] MUST invoke full workflow.Done with the actual invoking executable as Bin, returning 0 for success, 1 for failed checks or blocked state and 2 for usage or configuration errors; plain success names the resulting phase.
 
-### new:verify-quick
+### APP-030
 verify --quick MUST use quick checks without committing.
 
-### new:verify-done-json
+### APP-031
 verify and done --json MUST return schema 1 with result data on success or null on failure and reported code/message diagnostics.
 
-### new:context-json
+### APP-032
 context --json MUST return identical workflow.Context text as schema-1 string data.
 
-### new:context-errors
+### APP-033
 context MUST return exit 2 for usage or configuration errors and exit 1 for held-state lookup failures, with corrective code/message diagnostics and null JSON data.
 
-### new:coverage-results
+### APP-034
 coverage MUST map results to IDs and require coverage and pass, returning exit 0 on success or exit 1 on failed checks.
 
-### new:coverage-input-errors
+### APP-035
 coverage MUST return exit 2 with corrective diagnostics for usage, configuration or unknown module/change errors.
 
-### new:coverage-json
+### APP-036
 coverage --json MUST return schema 1 with report data on success, null on failure and code/message diagnostics.
 
 ## Modified
@@ -106,3 +109,7 @@ No new Test functions, t.Run cases or fixture instances; keep 86 app cases.
 Do not change helpers, command invocations, source fixture strings, hook code,
 binary builds, product code, interfaces or diagnostic assertions. Implementation
 may edit only this change file.
+
+## Provenance
+
+- evals 2026-10-28T06:59:30.256213Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=86 failing=0 passing=86

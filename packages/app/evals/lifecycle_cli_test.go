@@ -178,7 +178,7 @@ func lifecycleCommandFailure(t *testing.T, status, want int, stdout, stderr stri
 	}
 }
 
-func Test_APP_009_StartContextAssignmentAndRejection(t *testing.T) {
+func Test_APP_009_APP_027_APP_028_StartContextAssignmentAndRejection(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := lifecycleCLIProject(t, bin, true)
 	before := cliGit(t, root, "rev-parse", "HEAD")
@@ -220,7 +220,7 @@ func Test_APP_009_StartContextAssignmentAndRejection(t *testing.T) {
 	lifecycleCommandFailure(t, status, 2, out, errOut, true)
 }
 
-func Test_APP_009_StartPreservesApprovalWarning(t *testing.T) {
+func Test_APP_009_APP_027_APP_028_StartPreservesApprovalWarning(t *testing.T) {
 	bin := buildAppBinary(t)
 	for _, jsonMode := range []bool{false, true} {
 		root := lifecycleCLIProject(t, bin, false)
@@ -293,7 +293,7 @@ func Test_APP_004_HeldModulesUseApprovedProjection(t *testing.T) {
 	}
 }
 
-func Test_APP_011_ContextCompactFullAndErrors(t *testing.T) {
+func Test_APP_011_APP_032_APP_033_ContextCompactFullAndErrors(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := lifecycleCLIProject(t, bin, false)
 	appPut(t, root, "packages/alpha/internal/context-note.txt", "Full context marker.\n")
@@ -340,7 +340,7 @@ func Test_APP_011_ContextCompactFullAndErrors(t *testing.T) {
 	lifecycleCommandFailure(t, status, 2, out, errOut, true)
 }
 
-func Test_APP_012_CoverageCurrentProjectionAndErrors(t *testing.T) {
+func Test_APP_012_APP_034_APP_035_APP_036_CoverageCurrentProjectionAndErrors(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := lifecycleCLIProject(t, bin, false)
 	status, plain, stderr := runLifecycleBinary(t, bin, root, "coverage", "alpha")
@@ -395,7 +395,7 @@ func Test_APP_012_CoverageCurrentProjectionAndErrors(t *testing.T) {
 	lifecycleCommandFailure(t, status, 2, out, errOut, true)
 }
 
-func Test_APP_010_VerifyDoneAuditAndFullChecks(t *testing.T) {
+func Test_APP_010_APP_029_APP_030_APP_031_VerifyDoneAuditAndFullChecks(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := lifecycleCLIProject(t, bin, true)
 	appPut(t, root, ".fireweed/emit-new", "yes\n")
@@ -464,7 +464,7 @@ func Test_APP_010_VerifyDoneAuditAndFullChecks(t *testing.T) {
 	}
 }
 
-func Test_APP_010_VerifyRejectsFalseFailFirstAndFrozenEdits(t *testing.T) {
+func Test_APP_010_APP_029_APP_030_APP_031_VerifyRejectsFalseFailFirstAndFrozenEdits(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := lifecycleCLIProject(t, bin, false)
 	appPut(t, root, ".fireweed/emit-new", "yes\n")
@@ -509,7 +509,7 @@ func Test_APP_010_VerifyRejectsFalseFailFirstAndFrozenEdits(t *testing.T) {
 	}
 }
 
-func Test_APP_010_DoneReportsBlockedAudit(t *testing.T) {
+func Test_APP_029_APP_031_DoneReportsBlockedAudit(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := lifecycleCLIProject(t, bin, true)
 	appPut(t, root, ".fireweed/emit-new", "yes\n")
