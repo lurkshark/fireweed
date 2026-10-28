@@ -49,6 +49,12 @@ func write(root, path string, data []byte) error {
 func hard(ds []project.Diagnostic) error {
 	for _, d := range ds {
 		if !d.Warning {
+			if d.Code == "C08" && strings.HasPrefix(d.Message, "stale base for ") {
+				return fmt.Errorf("P05: C08: %s", d.Message)
+			}
+			if strings.HasPrefix(d.Message, d.Code+": ") {
+				return errors.New(d.Message)
+			}
 			return fmt.Errorf("%s: %s", d.Code, d.Message)
 		}
 	}
@@ -140,23 +146,23 @@ func changeBy(root, target string) (project.Change, error) {
 			return c, nil
 		}
 	}
-	return project.Change{}, fmt.Errorf("change %q not found", target)
+	return project.Change{}, fmt.Errorf("U02: change %q not found", target)
 }
 func existing(root, slug string) (claim, string, error) {
 	oid, ok, e := gitstore.Ref(root, ref(slug))
 	if e != nil {
-		return claim{}, "", e
+		return claim{}, "", fmt.Errorf("P02: read claim: %w", e)
 	}
 	if !ok {
-		return claim{}, "", errors.New("change has no claim")
+		return claim{}, "", errors.New("P02: change has no claim")
 	}
 	b, e := gitstore.ReadBlob(root, oid)
 	if e != nil {
-		return claim{}, "", e
+		return claim{}, "", fmt.Errorf("P02: read claim: %w", e)
 	}
 	var c claim
 	if e = json.Unmarshal(b, &c); e != nil {
-		return claim{}, "", e
+		return claim{}, "", fmt.Errorf("P02: decode claim: %w", e)
 	}
 	return c, oid, nil
 }
@@ -285,7 +291,7 @@ func Start(root, target string) (model.State, error) {
 		return model.State{}, e
 	}
 	if len(changes) > 0 {
-		return model.State{}, errors.New("start requires clean worktree")
+		return model.State{}, errors.New("P01: start requires clean worktree")
 	}
 	if e = hard(project.Check(root)); e != nil {
 		return model.State{}, e
@@ -295,7 +301,7 @@ func Start(root, target string) (model.State, error) {
 		return model.State{}, e
 	}
 	if len(q) == 0 {
-		return model.State{}, errors.New("empty queue")
+		return model.State{}, errors.New("P01: empty queue")
 	}
 	ch := project.Change{}
 	for _, candidate := range q {
@@ -305,10 +311,10 @@ func Start(root, target string) (model.State, error) {
 		}
 	}
 	if ch.Path == "" {
-		return model.State{}, errors.New("no eligible change")
+		return model.State{}, errors.New("P01: no eligible change")
 	}
 	if target != "" && target != ch.Slug && target != ch.Path && target != filepath.Base(ch.Path) {
-		return model.State{}, errors.New("change is not eligible queue head")
+		return model.State{}, errors.New("P01: change is not eligible queue head")
 	}
 	local, shared := baseRefs(root, mustLoad(root).Config)
 	ds := []project.Diagnostic{}
@@ -353,7 +359,7 @@ func Start(root, target string) (model.State, error) {
 	c.Audit = auditState(ch.Document)
 	oid, e := storeClaim(root, c, "")
 	if e != nil {
-		return model.State{Diagnostics: ds}, fmt.Errorf("claim already held: %w", e)
+		return model.State{Diagnostics: ds}, fmt.Errorf("P02: claim already held: %w", e)
 	}
 	rollback := func(err error) (model.State, error) {
 		_ = gitstore.CASRef(root, ref(ch.Slug), oid, "")
@@ -381,7 +387,7 @@ func Start(root, target string) (model.State, error) {
 	c.Audit = auditState(ch.Document)
 	oid, e = storeClaim(root, c, oid)
 	if e != nil {
-		return model.State{}, e
+		return model.State{}, fmt.Errorf("P02: update claim: %w", e)
 	}
 	s := state(root, ch, c, oid, repo.Head)
 	s.Diagnostics = ds
@@ -405,7 +411,7 @@ func Current(root, target string) (model.State, error) {
 				return state(root, ch, c, oid, repo.Head), nil
 			}
 		}
-		return model.State{}, errors.New("worktree holds no change")
+		return model.State{}, errors.New("P02: worktree holds no change")
 	}
 	ch, e := changeBy(root, target)
 	if e != nil {
@@ -416,20 +422,20 @@ func Current(root, target string) (model.State, error) {
 		return model.State{}, e
 	}
 	if c.Worktree != root || c.Change != ch.Slug {
-		return model.State{}, errors.New("claim belongs to another worktree")
+		return model.State{}, errors.New("P02: claim belongs to another worktree")
 	}
 	return state(root, ch, c, oid, repo.Head), nil
 }
 func validate(s model.State, c claim) error {
 	if s.Change.Slug != c.Change || str(s.Change.Document.Frontmatter["run"]) != c.Run || str(s.Change.Document.Frontmatter["phase"]) != c.Phase {
-		return errors.New("approved run or phase changed")
+		return errors.New("P03: approved run or phase changed")
 	}
 	a, sections := author(s.Change.Document)
 	if !equal(a, c.Author) || !equal(sections, c.Sections) {
-		return errors.New("approved author metadata changed")
+		return errors.New("P03: approved author metadata changed")
 	}
 	if !equal(auditState(s.Change.Document), c.Audit) {
-		return errors.New("approved audit state changed")
+		return errors.New("P03: approved audit state changed")
 	}
 	return nil
 }
@@ -531,7 +537,7 @@ func Verify(ctx context.Context, req model.Request) (model.Result, error) {
 		return r, nil
 	}
 	if c.Phase != "evals" && c.Phase != "impl" {
-		return r, fmt.Errorf("unsupported phase %s", c.Phase)
+		return r, fmt.Errorf("P01: unsupported phase %s", c.Phase)
 	}
 	names := []string{s.Change.Module}
 	if c.Phase == "impl" && !req.Quick {
@@ -576,7 +582,20 @@ func Verify(ctx context.Context, req model.Request) (model.Result, error) {
 		ds, err := checks.Boundaries(ctx, checks.BoundaryRequest{Snapshot: c.Snapshot, Bin: req.Bin, Timeout: req.Timeout})
 		r.Diagnostics = append(r.Diagnostics, ds...)
 		if err != nil && first == nil {
-			first = err
+			for _, d := range ds {
+				if d.Warning || d.Code == "" {
+					continue
+				}
+				if strings.Contains(err.Error(), d.Message) {
+					first = fmt.Errorf("%s: %w", d.Code, err)
+				} else {
+					first = fmt.Errorf("%s: %s: %w", d.Code, d.Message, err)
+				}
+				break
+			}
+			if first == nil {
+				first = fmt.Errorf("X02: %w", err)
+			}
 		}
 		if err = hard(ds); err != nil && first == nil {
 			first = err
@@ -699,7 +718,7 @@ func auditProcess(s model.State, c claim) (project.Change, string, bool, error) 
 	}
 	checked := regexp.MustCompile(`(?m)^Checked IDs:\s*(.+)$`).FindStringSubmatch(body)
 	if checked == nil || !strings.Contains(body, "No findings") {
-		return ch, "", false, errors.New("audit requires Checked IDs and No findings")
+		return ch, "", false, errors.New("P09: audit requires Checked IDs and No findings")
 	}
 	found := map[string]bool{}
 	for _, id := range regexp.MustCompile(`[A-Za-z][A-Za-z0-9-]*-\d+`).FindAllString(checked[1], -1) {
@@ -707,7 +726,7 @@ func auditProcess(s model.State, c claim) (project.Change, string, bool, error) 
 	}
 	for _, id := range selectedIDs(ch, specs(module(c.Snapshot, ch.Module))) {
 		if !found[id] {
-			return ch, "", false, fmt.Errorf("audit did not check %s", id)
+			return ch, "", false, fmt.Errorf("P09: audit did not check %s", id)
 		}
 	}
 	ch.Document.Body = contracts.ReplaceSection(ch.Document.Body, "Audit", "\nNo findings; checked "+strings.Join(sortedKeys(found), ", ")+"\n")
@@ -879,7 +898,7 @@ func Done(ctx context.Context, req model.Request) (model.Result, error) {
 	case "impl":
 		next = "applied"
 	default:
-		return result, fmt.Errorf("unsupported phase %s", c.Phase)
+		return result, fmt.Errorf("P01: unsupported phase %s", c.Phase)
 	}
 	ch, e = provenance(ch, c.Phase, req.Agent, result.Reports)
 	if e != nil {
@@ -927,7 +946,7 @@ func Done(ctx context.Context, req model.Request) (model.Result, error) {
 		result.State.Head = head
 		result.State.PhaseBase = head
 		result.State.Change = ch
-		return result, errors.New("change blocked")
+		return result, errors.New("P06: change blocked")
 	}
 	result.State, e = commitPhase(s, c, oid, ch, paths, subject, next)
 	return result, e

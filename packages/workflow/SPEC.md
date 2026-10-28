@@ -41,7 +41,7 @@ Start MUST replace each local Added handle throughout the change with the next a
 Start MUST assign a unique run identifier when starting an unstarted change.
 
 ### FLOW-009
-Start MUST report P04 when neither the local base nor the shared base contains the change file.
+Start MUST report P04 as a warning when neither the local base nor the shared base contains the change file.
 
 ### FLOW-010
 Start MUST reject a worktree containing uncommitted changes.
@@ -59,7 +59,7 @@ Start MUST set phase to evals when starting an unstarted spec change.
 Start MUST leave HEAD unchanged.
 
 ### FLOW-015
-Start MUST reject when the shared-base unapproved archive count reaches authoring.max_unapproved, whose default is 5.
+Start MUST reject with P07 when the shared-base unapproved archive count reaches authoring.max_unapproved, whose default is 5.
 
 ### FLOW-016
 Start MUST reject a competing worktree that attempts to claim the same change.
@@ -174,6 +174,33 @@ Successful Done MUST retain verification reports and process output under the ru
 
 ### FLOW-053
 State MUST expose the held projected snapshot so composing commands use the approved graph during hooks.
+
+### FLOW-054
+Start MUST prefix dirty-worktree and queue-eligibility rejections with P01.
+
+### FLOW-055
+Verify and Done MUST prefix unsupported-phase rejections with P01.
+
+### FLOW-056
+Start and Current MUST prefix existing claim ownership or contention failures with P02.
+
+### FLOW-057
+Verify and Done MUST prefix unapproved author, runtime or audit-state alteration errors with P03 before running hooks.
+
+### FLOW-058
+Start, Verify and Done MUST prefix stale-base rejections with P05, retaining the underlying cause.
+
+### FLOW-059
+Audit Done MUST prefix malformed or incomplete No findings submission errors with P09.
+
+### FLOW-060
+Done MUST prefix its existing blocked-change error with P06 while preserving the committed blocking state and claim release.
+
+### FLOW-061
+Current and Context MUST prefix unknown requested change lookup errors with U02.
+
+### FLOW-062
+Lifecycle operations MUST preserve assigned static, eval, zone and boundary causes when returning their existing failures, except for lifecycle stale-base classification P05.
 
 ## Decisions
 
