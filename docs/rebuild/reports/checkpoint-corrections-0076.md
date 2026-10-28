@@ -61,3 +61,18 @@ on PASS. Use native controller phase advancement with fixed-profile CLI workers
 and auditors; audit snapshots contain only permitted inputs. Record coordinator
 advancement honestly. No product-spec/interface, history, counter or bound change
 is authorized. The prior audit deviation remains part of the record.
+
+## CHK-055 eval_fix passed
+
+0077 committed evals 064d9ab, isolated audit 0fd7393 and application 435b176.
+Both full verification phases passed 298 cases. The real Sol/high eval worker
+strengthened five existing baseline cases; source/interfaces/specs stayed frozen.
+The separate Sol/high auditor read only an isolated snapshot and returned No
+findings, Checked CHK-055. Log inspection confirms no implementation/history
+access, execution or writes. The temporary snapshot was removed. Coordinator
+phase advancement honestly records agent=manual; actual CLI logs remain under
+run 20261028T230031-7c37d81c38953bf7362a2c42. This closes the missing assertion
+gap while retaining the earlier native audit deviation as historical fact.
+B02 reports 16 cases for CHK-055, one above the aim; all cases/assertions are
+retained and this correction adds no cases. Runner correction and final scoped
+checkpoint re-review remain pending; no push after ce165ab has occurred.
