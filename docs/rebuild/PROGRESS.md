@@ -5,7 +5,7 @@
 Human review 6 approved changes 0025–0029 and authorized the next spec-split
 slice, starting with PRJ-007, stopping at the next required checkpoint.
 HEAD and origin/main were already synchronized at c2da5e2 when work resumed.
-**Applied since review: 0.** Milestone 1 passed through the NEW binary;
+**Applied since review: 1.** Milestone 1 passed through the NEW binary;
 Milestone 2 waits for the spec splits, diagnostic migration and one contracts
 drill. Existing authorization for consecutive workflow/checks spec splits remains.
 Stop on any block, after five applications, or before an unauthorized third
@@ -49,6 +49,8 @@ Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -
 - 0029 narrow-audit-zone-spec — CHK-004/021–024; cdfb41c/e38d19b/db03f62; 28 own cases and dependents pass; CHK-004 narrowed, implementation unchanged.
 
 [Review 5 checkpoint](reports/review5-checkpoint.md): race/vet/controller CI passed, including 261 cases, doctor recovery and history; no pending change or claim. Approved in human review 6; the next slice starts with PRJ-007.
+
+- 0030 check-document-specs — PRJ-008–012; evals f8d1bc2/05825f0, audits 2909f64/4be3541, impl fcc385f; one findings round, 53 own cases and 199 total phase cases pass; implementation unchanged.
 
 ## Next
 
