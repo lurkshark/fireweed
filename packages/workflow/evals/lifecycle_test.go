@@ -891,7 +891,8 @@ func Test_FLOW_005_FLOW_051_FLOW_052_FLOW_053_ContextAndProvenanceAndRetainedRep
 	if !strings.Contains(full, "Full context content marker.") {
 		t.Error("full context omitted relevant file contents")
 	}
-	if _, err := done(root); err != nil {
+	evalsResult, err := done(root)
+	if err != nil {
 		t.Fatalf("evals Done: %v", err)
 	}
 	write(t, root, "packages/alpha/internal/ready", "ready\n")
@@ -915,6 +916,15 @@ func Test_FLOW_005_FLOW_051_FLOW_052_FLOW_053_ContextAndProvenanceAndRetainedRep
 				break
 			}
 		}
+		fields := strings.Fields(line)
+		if len(fields) < 3 {
+			t.Errorf("%s provenance line misses date: %q", phase, line)
+		} else if _, err := time.Parse(time.RFC3339Nano, fields[2]); err != nil {
+			t.Errorf("%s provenance line has invalid date %q: %v", phase, fields[2], err)
+		}
+		if !strings.Contains(line, " agent=manual ") || !strings.Contains(line, " fireweed="+assets.Version()+" ") {
+			t.Errorf("%s provenance line misses agent or version: %q", phase, line)
+		}
 		playbook, err := assets.Playbook(phase)
 		if err != nil {
 			t.Fatal(err)
@@ -923,22 +933,24 @@ func Test_FLOW_005_FLOW_051_FLOW_052_FLOW_053_ContextAndProvenanceAndRetainedRep
 		if line == "" || !strings.Contains(line, "playbook="+hex.EncodeToString(hash[:])) {
 			t.Errorf("%s provenance line misses matching playbook hash: %q", phase, line)
 		}
+		result := evalsResult
 		if phase == "impl" {
-			total, passing, failing := 0, 0, 0
-			for _, report := range implResult.Reports {
-				for _, c := range report.Cases {
-					total++
-					switch c.Result {
-					case "pass":
-						passing++
-					case "fail", "error":
-						failing++
-					}
+			result = implResult
+		}
+		total, passing, failing := 0, 0, 0
+		for _, report := range result.Reports {
+			for _, c := range report.Cases {
+				total++
+				switch c.Result {
+				case "pass":
+					passing++
+				case "fail", "error":
+					failing++
 				}
 			}
-			if total == 0 || passing == 0 || !strings.Contains(line, fmt.Sprintf("tests=%d failing=%d passing=%d", total, failing, passing)) {
-				t.Errorf("impl provenance line has wrong result counts for reports %#v: %q", implResult.Reports, line)
-			}
+		}
+		if total == 0 || passing == 0 || !strings.Contains(line, fmt.Sprintf("tests=%d failing=%d passing=%d", total, failing, passing)) {
+			t.Errorf("%s provenance line has wrong result counts for reports %#v: %q", phase, result.Reports, line)
 		}
 	}
 	runRoot := filepath.Join(root, ".fireweed/runs", state.Run)
