@@ -1,7 +1,10 @@
 ---
+audit_rounds: 0
 bases:
     AST-026: ded627c6
 module: assets
+phase: audit
+run: 20261028T204148-2d902c629e93cf96369b58aa
 ---
 
 
@@ -21,7 +24,7 @@ assignments or adding speculative behavior.
 
 ## Added
 
-### new:doctor-diagnostics
+### AST-027
 Explain MUST describe the cause and a corrective action for C14 (doctor hook/canary setup, detection or recovery failures), C15 (agent probe failures or usage limits, and the shared-auditor-command warning) and C16 (missing/stale managed guidance or playbook embedded_base metadata).
 
 ## Modified
@@ -61,3 +64,7 @@ Audit phase: use only the change, projected spec, evals, retained public interfa
 and governing audit rules. Do not read implementation files or implementation
 history. Review only the assigned IDs and report exact missing assertion clauses;
 helper/style critiques and unnamed cases are outside scope.
+
+## Provenance
+
+- evals 2026-10-28T20:45:51.8091Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=389 failing=6 passing=383

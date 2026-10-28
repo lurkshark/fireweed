@@ -293,6 +293,11 @@ func Test_AST_026_LifecycleExplanations(t *testing.T) {
 			requirePattern(t, text, tc.action, "corrective action")
 			if tc.code == "P01" {
 				requirePattern(t, text, `(?i)new.change[^.\n]*(precondition|prerequisite)|(precondition|prerequisite)[^.\n]*new.change`, "new-change operational precondition")
+				requirePattern(t, text, `(?i)lifecycle|\b(start|verify|done)\b`, "lifecycle operational precondition")
+				requirePattern(t, text, `(?i)(init|initializ)[^.\n]*(existing|conflict|already present)|(existing|conflict|already present)[^.\n]*(init|initializ)`, "init conflict precondition")
+				requirePattern(t, text, `(?i)(init|initializ)[^.\n]*(filesystem|permission|directory|setup|write)|(filesystem|permission|directory|setup|write)[^.\n]*(init|initializ)`, "init filesystem or setup precondition")
+				requirePattern(t, text, `(?i)(resolve|remove|rename|move|clear)[^.\n]*(conflict|existing|path|file|directory)`, "corrective action for init conflict")
+				requirePattern(t, text, `(?i)(fix|restore|provide|check|ensure|create)[^.\n]*(permission|filesystem|directory|path|setup|writ)`, "corrective action for init setup failure")
 			}
 			if tc.code == "P02" {
 				requirePattern(t, text, `(?i)(unreadable|undecodable)[^.\n]*claim|claim[^.\n]*(unreadable|undecodable)`, "unreadable or undecodable claim cause")
@@ -300,6 +305,51 @@ func Test_AST_026_LifecycleExplanations(t *testing.T) {
 				requirePattern(t, text, `(?i)(approved|human)[^.\n]*(review|recover)|(review|recover)[^.\n]*(approved|human)`, "approved review or recovery for invalid claims")
 				requirePattern(t, text, `(?i)(no|missing|absent)[^.\n]*claim[^.\n]*(start|begin)[^.\n]*eligible[^.\n]*change|(start|begin)[^.\n]*eligible[^.\n]*change[^.\n]*(no|missing|absent)[^.\n]*claim`, "start an eligible change when no claim exists")
 				requirePattern(t, text, `(?i)(coordinate|resolve)[^.\n]*(owner|holder|ownership)`, "coordinate with the claim holder")
+			}
+		})
+	}
+}
+
+func Test_AST_027_DoctorExplanations(t *testing.T) {
+	for _, tc := range []struct {
+		code   string
+		checks []struct{ pattern, description string }
+	}{
+		{"C14", []struct{ pattern, description string }{
+			{`(?i)(hook|template|canary)[^.\n]*(missing|invalid|broken|fail)|(missing|invalid|broken|fail)[^.\n]*(hook|template|canary)`, "doctor hook, template or canary setup failure"},
+			{`(?i)canary[^.\n]*(detect|miss|expos|report)[^.\n]*(violation|failure|error)|(detect|miss|expos|report)[^.\n]*(violation|failure|error)[^.\n]*canary`, "canary detection failure"},
+			{`(?i)recover(y|ing)?[^.\n]*(fail|violation|hook|canary)|(fail|violation|hook|canary)[^.\n]*recover(y|ing)?`, "canary recovery failure"},
+			{`(?i)(repair|fix|correct|restore)[^.\n]*(hook|template|canary)`, "repair the affected hook, template or canary"},
+			{`(?i)(rerun|run again|repeat)[^.\n]*doctor`, "rerun doctor after repair"},
+		}},
+		{"C15", []struct{ pattern, description string }{
+			{`(?i)(agent|worker|audit)[^.\n]*probe[^.\n]*(fail|error|timeout)|(fail|error|timeout)[^.\n]*(agent|worker|audit)[^.\n]*probe`, "failed agent probe"},
+			{`(?i)command[^.\n]*(fail|missing|invalid|unavailable|denied)|(fail|missing|invalid|unavailable|denied)[^.\n]*command`, "agent command failure cause"},
+			{`(?i)model[^.\n]*(fail|missing|invalid|unavailable|denied)|(fail|missing|invalid|unavailable|denied)[^.\n]*model`, "agent model failure cause"},
+			{`(?i)(log[ -]?in|authenticat)[^.\n]*(fail|missing|invalid|unavailable|denied)|(fail|missing|invalid|unavailable|denied)[^.\n]*(log[ -]?in|authenticat)`, "agent login failure cause"},
+			{`(?i)(check|fix|correct|configure|restore)[^.\n]*(command|model|log[ -]?in|authenticat)`, "correct agent command, model or login"},
+			{`(?i)(usage|rate)[^.\n]*limit|limit[^.\n]*(usage|rate)`, "usage limit cause"},
+			{`(?i)(wait|resolve|restore|increase|check)[^.\n]*(limit|quota|access|usage)`, "corrective action for usage limit"},
+			{`(?i)(shared|same)[^.\n]*(audit|auditor)[^.\n]*command|(audit|auditor)[^.\n]*command[^.\n]*(shared|same)`, "shared auditor command warning"},
+			{`(?i)(configure|set|provide)[^.\n]*(independent|separate|distinct)[^.\n]*(audit|auditor)[^.\n]*command`, "configure an independent audit command"},
+		}},
+		{"C16", []struct{ pattern, description string }{
+			{`(?i)missing[^.\n]*(managed[^.\n]*)?(guidance|AGENTS\.md)|(guidance|AGENTS\.md)[^.\n]*missing`, "missing managed guidance"},
+			{`(?i)(stale|out.of.date)[^.\n]*(managed[^.\n]*)?(guidance|AGENTS\.md)|(guidance|AGENTS\.md)[^.\n]*(stale|out.of.date)`, "stale managed guidance"},
+			{`(?i)missing[^.\n]*embedded_base|embedded_base[^.\n]*missing`, "missing playbook embedded_base"},
+			{`(?i)(stale|out.of.date)[^.\n]*embedded_base|embedded_base[^.\n]*(stale|out.of.date)`, "stale playbook embedded_base"},
+			{`(?i)agents-md[^.\n]*--write`, "regenerate managed guidance with agents-md --write"},
+			{`(?i)(review|update|refresh|correct)[^.\n]*(playbook[^.\n]*)?(override|embedded_base)`, "review or update the playbook override"},
+			{`(?i)embedded_base[^.\n]*(current|embedded)[^.\n]*playbook|(current|embedded)[^.\n]*playbook[^.\n]*embedded_base`, "compare embedded_base with the current embedded playbook"},
+		}},
+	} {
+		t.Run(tc.code, func(t *testing.T) {
+			text, err := assets.Explain(tc.code)
+			if err != nil {
+				t.Fatalf("Explain(%s): %v", tc.code, err)
+			}
+			for _, check := range tc.checks {
+				requirePattern(t, text, check.pattern, check.description)
 			}
 		})
 	}
