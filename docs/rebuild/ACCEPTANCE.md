@@ -272,3 +272,10 @@ before another change. Four changes were applied since the explicit review at
   pass, and race/vet passed at 72a2860 (0068 only corrects explanation text).
   PROGRESS and the archives hold phases/counts. This does not establish missing
   commands, the full future diagnostic surface, regeneration or final acceptance.
+
+- R16 diagnostic drill evidence: the single contracts controller drill at 7afe9a0
+  reports 34 own/339 dependent passes, retains its ref and removes scratch.
+  [The review](reports/contracts-drill.md) records a CON-011/012 prefix gap and
+  dependent-implementation reads outside the retained-input boundary. This run
+  does not satisfy strict independence acceptance; no gap fix or repeat drill
+  is authorized. Other module regeneration and final acceptance remain open.

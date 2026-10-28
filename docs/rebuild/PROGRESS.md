@@ -2,11 +2,13 @@
 
 ## Current status — 2026-10-28
 
-The 0060–0064 checkpoint review passed with no issues; its explicit baseline
-history check passed over 369 commits. Build/race/vet and NEW U01/U02 JSON smoke
-checks passed for source 4066479. **Applied since review: 4.** Complete the
-remaining app classification and emitted-code explanations after the authorized
-push, then perform the single contracts drill before Milestone 2.
+D006's planned existing-path slice is complete through 0068. The single contracts
+drill reports 34 own/339 dependent cases passing and retains its ref with scratch
+cleanup complete. It reports an error-prefix contract gap and its agent read
+dependent internals, so strict independence acceptance is not established; see
+[the reviewed report](reports/contracts-drill.md). No gap fix or repeat drill is
+authorized. **Applied since review: 4.** Continue Milestone 2's setup and bounded
+fake-agent execution through NEW; the full goal remains incomplete.
 
 The owner's goal update authorizes a subagent review at every five applied
 changes: push to origin and continue when the review finds the work on track, and
@@ -14,7 +16,7 @@ stop for human review with details when it reports an issue. Record each review.
 phase audits, blocked-change stops and P07 remain enforced; this policy does not
 alter bounds. The owner explicitly authorizes each push only after its
 passing five-change subagent review. Milestone 1 passed;
-Milestone 2 waits for the contracts drill; the existing-path diagnostic slice is complete.
+Milestone 2 is next; the diagnostic slice and single requested contracts drill are recorded.
 
 Owner approval on 2026-10-28 removes the numeric spec-count caps for all change
 kinds, superseding both the five-spec default and the 30-item exceptions. Batch
@@ -188,13 +190,19 @@ The planned D006 existing-path slice is complete through 0068: no legacy CLI
 labels remain, and all 30 emitted codes have NEW JSON explanations. Full phase
 checks passed; race/vet at 72a2860 remains valid for 0068's text-only correction.
 No new feature, public interface or speculative error was added. Full diagnostic
-surface for unimplemented commands is not claimed. The next authorized action is
-the single contracts drill; no gap changes or other module drills are authorized.
+surface for unimplemented commands is not claimed. The single contracts drill is now recorded below; no gap changes, repeat drill
+or other module drills are authorized.
+
+[Contracts drill review](reports/contracts-drill.md): native pass at 7afe9a0,
+34 own/339 dependent cases; retained ref and scratch cleanup verified. One
+CON-011/012 error-prefix gap is recorded. Agent reads of dependent internal
+implementations exceed the retained-input boundary, so strict independence
+acceptance remains unverified. No gap fix/rerun is authorized or performed.
 
 ## Next
 
 1. The previously identified project/checks/workflow/contracts/gitstore/assets/app splits are complete through 0053. All obligations and existing assertions are retained under focused specs; do not launch another global rewrite. Continue the agreed diagnostic migration.
 2. D006's planned existing-error-path migration and explanations are complete through 0068. Preserve assigned causes and keep explain accurate as justified features add real paths. No unsupported-feature scaffolding, speculative errors or unused-code explanations.
 3. Workflow file organization is not a Milestone 2 prerequisite. Defer splitting lifecycle/stub.go unless it causes a demonstrated problem during feature work; a later drill/regenerate may organize the implementation afresh. Do not substitute another speculative cleanup task.
-4. After items 1 and 2, run exactly one real controller drill on contracts. Commit its report and list gaps here; author no gap changes and drill no other module.
-5. Milestone 2 then centers projected blocking and fake-agent next/run through NEW. No NEW unattended real-agent execution before that fake-agent run completes. Full acceptance remains unverified.
+4. The single authorized contracts drill is complete and reviewed in reports/contracts-drill.md. Preserve its native report/ref and limitations. Defer the reported gap and any stricter rerun until human agreement; author no gap changes and drill no other module.
+5. Milestone 2 now centers init/doctor setup, projected blocking and fake-agent next/run through NEW. No NEW unattended real-agent execution before that fake-agent run completes. Full acceptance remains unverified.
