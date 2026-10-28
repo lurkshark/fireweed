@@ -6,7 +6,7 @@ audit_pending:
 audit_rounds: 1
 bases: {}
 module: app
-phase: audit
+phase: impl
 run: 20261028T205002-0d9939dfe0e685f7866c26a4
 ---
 
@@ -112,9 +112,10 @@ commit or change frozen evals/interfaces during implementation.
 - evals 2026-10-28T20:56:59.338624Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=152 failing=5 passing=147
 - audit 2026-10-28T20:58:30.579543Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 - evals 2026-10-28T21:02:16.248214Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=153 failing=6 passing=147
+- audit 2026-10-28T21:02:57.556031Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 
 ## Audit
 
-- APP-062: "doctor MUST discover the nearest ancestor fireweed.yaml and invoke checks.Doctor for that project root." — missing assertion that doctor selects the closer project when two ancestor projects have fireweed.yaml.
-- APP-068: "agents-md --write MUST discover the nearest ancestor fireweed.yaml and refresh AGENTS.md at that project root." — missing assertion that guidance is refreshed in the closer project when two ancestor projects have fireweed.yaml.
-- APP-070: "agents-md --write MUST create AGENTS.md when absent or append the managed block when neither marker exists." — missing assertion that either creation path writes the complete managed block, including its end marker and current guidance.
+No findings.
+
+Checked IDs: APP-062, APP-068, APP-070.
