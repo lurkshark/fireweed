@@ -1,9 +1,12 @@
 ---
 already_satisfied:
     - PRJ-004
+audit_rounds: 0
 bases:
     PRJ-004: 93a0113f
 module: project
+phase: audit
+run: 20261028T051148-62cbc9ce0b98bd1633865d8e
 ---
 
 
@@ -46,3 +49,7 @@ ambiguous-slug case and every other assertion/ID. Keep all 53 project cases.
 Only rename existing tests/labels; no new Test functions, t.Run cases,
 fixtures, helpers, product code or interface edits. Implementation may edit
 only this change file.
+
+## Provenance
+
+- evals 2026-10-28T05:12:51.311432Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=199 failing=0 passing=199

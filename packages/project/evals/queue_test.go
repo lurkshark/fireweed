@@ -51,7 +51,7 @@ func findItem(t *testing.T, items []contracts.Item, id string) contracts.Item {
 	return contracts.Item{}
 }
 
-func Test_PRJ_004_PRJ_027_PRJ_028_QueueOrderContentAndArchive(t *testing.T) {
+func Test_PRJ_027_PRJ_028_QueueOrderContentAndArchive(t *testing.T) {
 	root := fixture(t)
 	queued(t, root, "0002-zed.md", "set:\n  interface: [next.go]\n", "A queue item is needed.\n", "### new:feature\nFeature MUST work.\n", "### ALP-001\nAlpha MUST change.\n", "### ALP-002\n")
 	queued(t, root, "0002-ace.md", "", "Another queue item is needed.\n", "", "", "")
@@ -86,7 +86,7 @@ func Test_PRJ_004_PRJ_027_PRJ_028_QueueOrderContentAndArchive(t *testing.T) {
 	}
 }
 
-func Test_PRJ_004_PRJ_029_PRJ_030_QueueRejectsInvalidDocuments(t *testing.T) {
+func Test_PRJ_029_PRJ_030_QueueRejectsInvalidDocuments(t *testing.T) {
 	for _, tc := range []struct{ id, name, body string }{
 		{"PRJ-029", "malformed", "---\nmodule: [broken\n---\n"},
 		{"PRJ-030", "unknown_module", "---\nmodule: missing\n---\n## Motivation\nNeeded.\n"},
