@@ -109,7 +109,9 @@ func Doctor(ctx context.Context, request model.DoctorRequest) model.DoctorReport
 		return d.report
 	}
 	defer func() {
-		if _, e := d.git(request.Root, "worktree", "remove", "--force", scratch); e != nil {
+		cleanupCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		if _, e := d.gitWithContext(cleanupCtx, request.Root, "worktree", "remove", "--force", scratch); e != nil {
 			d.issue("C14", "scratch cleanup: "+e.Error(), "", false)
 		}
 		_ = os.RemoveAll(scratch)
@@ -146,8 +148,11 @@ func randomHex(n int) (string, error) {
 	return hex.EncodeToString(b), nil
 }
 func (d *doctorState) git(root string, args ...string) (gitstore.Result, error) {
+	return d.gitWithContext(d.ctx, root, args...)
+}
+func (d *doctorState) gitWithContext(ctx context.Context, root string, args ...string) (gitstore.Result, error) {
 	argv := append([]string{"git", "-C", root, "-c", "core.hooksPath=/dev/null"}, args...)
-	p, e := gitstore.Run(d.ctx, gitstore.Request{Args: argv, Timeout: 30 * time.Second, Env: map[string]string{"GIT_NO_LAZY_FETCH": "1", "GIT_TERMINAL_PROMPT": "0"}})
+	p, e := gitstore.Run(ctx, gitstore.Request{Args: argv, Timeout: 30 * time.Second, Env: map[string]string{"GIT_NO_LAZY_FETCH": "1", "GIT_TERMINAL_PROMPT": "0"}})
 	if e != nil {
 		return p, fmt.Errorf("git %s: %w: %s", strings.Join(args, " "), e, p.Stderr)
 	}
@@ -542,7 +547,34 @@ func (d *doctorState) crossClean(canary string, evals, bounds []doctorVariant) e
 func (d *doctorState) probeHooks() {
 	evals := d.variants("eval")
 	bounds := d.variants("boundaries")
-	// A missing boundary hook is acceptable only when the real project needs none.
+	// Probe variants supply temporary hooks, so check required coverage on the
+	// real modules before those hooks can mask a missing configuration.
+	real := d.snapshot
+	real.Modules = nil
+	globalBoundary := mapValue(real.Config, "hooks")["boundaries"]
+	missingBoundary := false
+	for _, m := range d.snapshot.Modules {
+		if m.Name == d.names[0] || m.Name == d.names[1] {
+			continue
+		}
+		real.Modules = append(real.Modules, m)
+		if globalBoundary == nil && mapValue(m.Document.Frontmatter, "hooks")["boundaries"] == nil && len(m.Zones.Disposable) > 0 && boundaryReason(m) == "" {
+			missingBoundary = true
+		}
+	}
+	if missingBoundary {
+		ds, err := Boundaries(d.ctx, model.BoundaryRequest{Snapshot: real, Bin: d.req.Bin, Timeout: d.req.Timeout})
+		for _, diagnostic := range ds {
+			if !diagnostic.Warning {
+				d.report.Diagnostics = append(d.report.Diagnostics, diagnostic)
+			}
+		}
+		d.fail("baseline boundaries", "", "boundary hook", fmt.Sprintf("required hook missing: %v", err))
+		for _, name := range []string{"undeclared", "internal_eval"} {
+			d.fail(name, "", "boundary hook", "skipped after missing required boundary hook")
+		}
+		return
+	}
 	for _, v := range evals {
 		s := d.variantSnapshot(v)
 		label := "baseline " + v.name
