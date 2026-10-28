@@ -2,12 +2,16 @@
 
 ## Current status — 2026-10-27
 
-Human review 8 approved 0032–0034 and explicitly authorized pushing reviewed
-main to origin. **Applied since review: 0.** Shared-base synchronization is
-now authorized; verify that P07 has cleared before another worker starts.
-The consecutive-project spec-split authorization remains for PRJ-004–006.
-Stop after five applications or on any block. Milestone 1 passed; Milestone 2
-still waits for the spec splits, diagnostic migration and one contracts drill.
+Human review 8 approved 0032–0034; the authorized push synchronized main and
+origin/main at 16cc688 and cleared P07. **Applied since review: 0.** Resume
+PRJ-004–006 with the existing consecutive-project split authorization.
+
+The owner's goal update authorizes a subagent review at every five applied
+changes: continue when the review finds the work on track, and stop for human
+review with details when it reports an issue. Record each review. Separate
+phase audits, blocked-change stops and P07 remain enforced; this policy does not
+alter bounds or independently authorize further pushes. Milestone 1 passed;
+Milestone 2 waits for the spec splits, diagnostic migration and contracts drill.
 
 Controller: `.fireweed/bin/fireweed-bootstrap` 0.1.0, source `7f925190878e38fc38f30d16bb1cf47aca098cf7`, pin SHA-256 `f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f`; unchanged.
 Stage-2 history baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`; always check an explicit nonempty baseline..HEAD range. Use `GOCACHE=/tmp/fireweed-rebuild-cache`.
