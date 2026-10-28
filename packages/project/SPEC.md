@@ -107,4 +107,19 @@ Queue MUST reject a pending change naming an unknown module.
 ### PRJ-031
 Queue MUST reject pending changes that share a slug.
 
+### PRJ-032
+Project MUST apply the queue through the named change inclusively, or the whole queue when through is empty.
+
+### PRJ-033
+Project MUST apply set values for depends_on, interface, evals, disposable, preserve, append_only, boundaries_opt_out and hooks to the projected module.
+
+### PRJ-034
+Project MUST reject identity or unknown fields in set.
+
+### PRJ-035
+Project MUST reject an invalid projected module graph.
+
+### PRJ-036
+Project MUST keep Added handles local to their declaring change, allowing different changes to reuse handle text.
+
 ## Decisions
