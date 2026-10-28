@@ -4,7 +4,7 @@
 
 The 0060–0064 checkpoint review passed with no issues; its explicit baseline
 history check passed over 369 commits. Build/race/vet and NEW U01/U02 JSON smoke
-checks passed for source 4066479. **Applied since review: 2.** Complete the
+checks passed for source 4066479. **Applied since review: 3.** Complete the
 remaining app classification and emitted-code explanations after the authorized
 push, then perform the single contracts drill before Milestone 2.
 
@@ -27,7 +27,7 @@ audits, audit bounds, timeouts and recurring checkpoint reviews remain in force.
 
 Controller: `.fireweed/bin/fireweed-bootstrap` 0.1.0, source `7f925190878e38fc38f30d16bb1cf47aca098cf7`, pin SHA-256 `f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f`; unchanged.
 Stage-2 history baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`; always check an explicit nonempty baseline..HEAD range. Use `GOCACHE=/tmp/fireweed-rebuild-cache`.
-NEW binary: `bin/fireweed`, clean source `39ecdb8de8c04c6b9563c4c0b40fc95e6a274619` (CGO disabled); [committed manual-lifecycle report](reports/manual-lifecycle.md). Unbuilt commands remain explicit errors; the empty runner is expected.
+NEW binary: `bin/fireweed`, clean source `72a2860feeebb7b60ad054f128821b98d477d6cb` (CGO disabled); [committed manual-lifecycle report](reports/manual-lifecycle.md). Unbuilt commands remain explicit errors; the empty runner is expected.
 
 Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`. Interactive work through 0014's initial evals was followed by coordinator `done`, hence legacy `agent=manual` lines. Configured controller execution began at 0014's audit; its provenance records the actual command/model. Continue configured execution. Ignored runtime logs are auxiliary, not reviewable evidence; archives, permanent evals and committed reports carry the evidence.
 
@@ -179,6 +179,8 @@ review; the applied count restarts. No queue or claim remains; D006 is incomplet
 - 0065 remaining-diagnostic-causes — APP-018/019/037–040; 2157abf/7697050/7eb9898; 30 reported failures → 121 app cases pass, no findings; legacy CLI labels removed. Post-application NEW smoke exposed show returning U02 for duplicate graph names and duplicate module spec IDs; correct those static causes next while retaining legitimate projected-handle ambiguity.
 
 - 0066 preserve-show-static-causes — APP-038 plus fixes APP-037; afdc02d/edbac55/39ecdb8; three reported failures → 124 app cases pass, no findings; duplicate graph names/spec IDs retain C02/C05 and valid projected local-handle ambiguity retains U02; rebuilt NEW confirms both observed regressions fixed.
+
+- 0067 emitted-cause-explanations — AST-003/024–026; 1360324/5d3e724/72a2860; 22 reported failures → 51 own/331 total phase cases pass, no findings; sixteen explanations added and C07/U02 clarified. All 30 emitted codes resolve through NEW; race/vet pass. Text review found C02 identity causes and P02 missing/unreadable-claim recovery underdescribed; correct those before the drill.
 
 ## Next
 
