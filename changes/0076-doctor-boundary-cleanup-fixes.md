@@ -1,4 +1,5 @@
 ---
+audit_rounds: 0
 bases: {}
 fixes:
     - CHK-051
@@ -6,6 +7,8 @@ fixes:
     - CHK-056
     - CHK-057
 module: checks
+phase: audit
+run: 20261028T213607-f7bde2247258cdc46a0653c9
 ---
 
 
@@ -79,3 +82,13 @@ controller alone advances, applies, archives and commits; workers never commit.
 Audit reads only this change, projected specs, evals, retained interfaces and
 governing rules, without implementation/history reads; re-audit only prior
 finding IDs and retain normal persisted bounds.
+
+Eval phase: four focused new cases ran against the existing implementation.
+Three failed at runtime: cancelled setup retained Git registration, and missing
+required boundaries were accepted both alone and beside an applicable override.
+The override-only control passed. The cancellation case also checked physical
+scratch removal and that the bounded setup descendant did not finish.
+
+## Provenance
+
+- evals 2026-10-28T21:42:27.947682Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=298 failing=3 passing=295

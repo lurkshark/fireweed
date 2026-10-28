@@ -368,6 +368,56 @@ func Test_CHK_051_CHK_052_SetupFailureStopsAndCleans(t *testing.T) {
 	assertScratchRemoved(t, f)
 }
 
+func Test_CHK_051_CancellationCleansScratchAndStopsSetupGroup(t *testing.T) {
+	f := localDoctorFixture(t)
+	ready := filepath.Join(t.TempDir(), "ready")
+	childFinished := filepath.Join(t.TempDir(), "child-finished")
+	f.put(".fireweed/setup.sh", fmt.Sprintf(`#!/bin/sh
+printf 'setup:%%s\n' "$PWD" >> %q
+sh -c 'sleep 2; printf finished > "$1"' sh %q &
+printf ready > %q
+wait
+`, f.log, childFinished, ready))
+	f.commit()
+	before := worktrees(f)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	reports := make(chan checks.DoctorReport, 1)
+	go func() { reports <- checks.Doctor(ctx, f.request(true)) }()
+	deadline := time.After(8 * time.Second)
+	for {
+		if _, err := os.Stat(ready); err == nil {
+			break
+		} else if !os.IsNotExist(err) {
+			t.Fatal(err)
+		}
+		select {
+		case report := <-reports:
+			t.Fatalf("setup exited before cancellation: %s", doctorText(report))
+		case <-deadline:
+			t.Fatal("setup never signalled readiness")
+		case <-time.After(10 * time.Millisecond):
+		}
+	}
+	cancel()
+	select {
+	case report := <-reports:
+		if !hasDoctorDiagnostic(report, "C14", false, "setup") {
+			t.Errorf("cancelled setup lacked C14: %s", doctorText(report))
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("cancelled doctor did not return promptly")
+	}
+	if got := worktrees(f); got != before {
+		t.Errorf("cancelled doctor retained Git registration: before %q after %q", before, got)
+	}
+	assertScratchRemoved(t, f)
+	time.Sleep(2200 * time.Millisecond)
+	if _, err := os.Stat(childFinished); !os.IsNotExist(err) {
+		t.Errorf("cancelled setup descendant continued: %v", err)
+	}
+}
+
 func Test_CHK_054_MissingTemplatesAndCanaryMaps(t *testing.T) {
 	for _, tc := range []struct{ name, path, body, term, input, affected string }{
 		{"missing template", ".fireweed/templates/module/SPEC.md", "", "template", "SPEC.md", "undeclared"},
@@ -563,6 +613,57 @@ done
 	}
 }
 
+func Test_CHK_055_CHK_056_CHK_057_MissingRequiredBoundaryHook(t *testing.T) {
+	f := localDoctorFixture(t)
+	f.editConfig(func(config map[string]any) { delete(config["hooks"].(map[string]any), "boundaries") })
+	f.put("packages/alpha/internal/live.txt", "disposable implementation\n")
+	f.commit()
+	report := checks.Doctor(context.Background(), f.request(true))
+	if !hasDoctorDiagnostic(report, "X02", false, "alpha", "boundar") {
+		t.Errorf("required boundary hook was not diagnosed: %s", doctorText(report))
+	}
+	if !hasDoctorDiagnostic(report, "C14", false, "baseline", "boundar") {
+		t.Errorf("missing boundary hook was accepted as a clean baseline: %s", doctorText(report))
+	}
+	for _, canary := range []string{"undeclared", "internal_eval"} {
+		if hasDoctorCheck(report, canary, true) {
+			t.Errorf("missing boundary hook counted as %s detection: %s", canary, doctorText(report))
+		}
+		if !hasDoctorDiagnostic(report, "C14", false, canary, "boundar") {
+			t.Errorf("missing boundary hook lacked named %s canary failure: %s", canary, doctorText(report))
+		}
+	}
+}
+
+func Test_CHK_055_MissingRequiredHookBesideOverride(t *testing.T) {
+	f := localDoctorFixture(t)
+	f.editConfig(func(config map[string]any) { delete(config["hooks"].(map[string]any), "boundaries") })
+	f.put(".fireweed/override-boundary.sh", fmt.Sprintf("#!/bin/sh\nprintf 'override-boundaries:%%s\\n' \"$PWD\" >> %q\nexec sh .fireweed/boundary.sh\n", f.log))
+	f.put("packages/alpha/SPEC.md", strings.Replace(string(mustRead(t, filepath.Join(f.root, "packages/alpha/SPEC.md"))), "depends_on: []", "depends_on: []\nhooks:\n  boundaries: sh .fireweed/override-boundary.sh", 1))
+	f.put("packages/beta/SPEC.md", "---\nname: beta\nid_prefix: BET\ndepends_on: []\n---\n# Beta\n\n## Specs\n\n### BET-001\nThe fixture MUST pass.\n")
+	f.put("packages/beta/internal/live.txt", "disposable implementation\n")
+	f.commit()
+	report := checks.Doctor(context.Background(), f.request(true))
+	if !hasDoctorDiagnostic(report, "X02", false, "beta", "boundar") {
+		t.Errorf("module without its own hook escaped required boundary enforcement: %s", doctorText(report))
+	}
+	if !strings.Contains(doctorLog(f), "override-boundaries:") {
+		t.Errorf("applicable override was not run: %s", doctorLog(f))
+	}
+}
+
+func Test_CHK_055_ApplicableOverrideNeedsNoGlobalHook(t *testing.T) {
+	f := localDoctorFixture(t)
+	f.editConfig(func(config map[string]any) { delete(config["hooks"].(map[string]any), "boundaries") })
+	f.put(".fireweed/override-boundary.sh", "#!/bin/sh\nexec sh .fireweed/boundary.sh\n")
+	f.put("packages/alpha/SPEC.md", strings.Replace(string(mustRead(t, filepath.Join(f.root, "packages/alpha/SPEC.md"))), "depends_on: []", "depends_on: []\nhooks:\n  boundaries: sh .fireweed/override-boundary.sh", 1))
+	f.commit()
+	report := checks.Doctor(context.Background(), f.request(true))
+	if doctorErrors(report) || !hasDoctorCheck(report, "undeclared", true) || !hasDoctorCheck(report, "internal_eval", true) {
+		t.Errorf("applicable override was rejected without a global hook: %s", doctorText(report))
+	}
+}
+
 func Test_CHK_060_CHK_062_ModuleOverridesAndBoundaryWarnings(t *testing.T) {
 	f := localDoctorFixture(t)
 	f.put(".fireweed/override-eval.sh", fmt.Sprintf("#!/bin/sh\nprintf 'override-eval:%%s\\n' \"$PWD\" >> %q\nexec sh .fireweed/eval.sh \"$@\"\n", f.log))
@@ -578,7 +679,7 @@ func Test_CHK_060_CHK_062_ModuleOverridesAndBoundaryWarnings(t *testing.T) {
 	g.put("packages/alpha/SPEC.md", strings.Replace(string(mustRead(t, filepath.Join(g.root, "packages/alpha/SPEC.md"))), "depends_on: []", "depends_on: []\nboundaries_opt_out: legacy", 1))
 	g.commit()
 	r := checks.Doctor(context.Background(), g.request(true))
-	if !hasDoctorDiagnostic(r, "X03", true, "legacy") || !hasDoctorDiagnostic(r, "X04", true, "no boundary enforcement required") {
+	if doctorErrors(r) || !hasDoctorDiagnostic(r, "X03", true, "legacy") || !hasDoctorDiagnostic(r, "X04", true, "no boundary enforcement required") {
 		t.Errorf("optional boundaries warning lost: %s", doctorText(r))
 	}
 }
