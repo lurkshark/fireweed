@@ -3,7 +3,7 @@
 ## Current status — 2026-10-27
 
 Human review 8 approved 0032–0034; the authorized push synchronized main and
-origin/main at 16cc688 and cleared P07. **Applied since review: 4.** Resume
+origin/main at 16cc688 and cleared P07. **Applied since review: 5.** Resume
 the remaining previously identified bundled specs; PRJ-004–006 are complete.
 
 The owner's goal update authorizes a subagent review at every five applied
@@ -117,6 +117,11 @@ push and continuation. The applied count restarts after this passing review.
 - 0047 narrow-application-spec — FLOW-004/049–050; 80b6992/6598b5a/2a087d7; 32 own cases and 118 total phase cases pass; no findings, archive/SPEC commit assertion strengthened, implementation unchanged.
 
 - 0048 narrow-context-spec — FLOW-005/051–053; evals c14ce8a/a146cbc, audits 63af469/a7969b6, impl 95a404a; one findings round, 32 own cases and 118 total phase cases pass; per-phase provenance assertions strengthened, implementation unchanged.
+
+- 0049 split-contract-primitives — CON-001/002/005/006/007–015; 208fd0a/e2809a5/71ac66e; 13 affected items, 34 own cases and 261 total phase cases pass; no findings, assertions/test data and implementation unchanged.
+
+[0045–0049 checkpoint](reports/checkpoint-0045-0049.md): five applied changes.
+Awaiting the required subagent review before pushing or continuing.
 
 ## Next
 
