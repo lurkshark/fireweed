@@ -3,6 +3,7 @@ audit_pending:
     - CHK-065
 audit_rounds: 2
 bases: {}
+blocked: interrupted; resume with --from-attempt after removing blocked
 module: checks
 phase: impl
 run: 20261028T143328-b8168faa7b2578efc49bb800
