@@ -11,7 +11,7 @@ audit_pending:
 audit_rounds: 1
 bases: {}
 module: project
-phase: evals
+phase: audit
 run: 20261028T033537-8ab523401bed5218f526ffc1
 ---
 
@@ -67,14 +67,21 @@ functions, t.Run cases or fixture instances. Keep 53 reported project cases.
 The existing missing_motivation, nonnormative_module/nonnormative_change,
 invalid_review_tag/invalid_quarantine_tag, duplicate_module_id and
 foreign_module_id/foreign_change_id cases provide the assertions. Only adjust
-case names/ID labels as needed; retain every other test and behavior assertion.
-No code, helper, fixture or interface changes are needed.
+case names/ID labels as needed for retargeting; retain every other test and
+behavior assertion. No product code, helper, fixture or interface changes are
+needed.
 Implementation may edit only this change file.
+
+Audit correction: within the existing nonnormative_change and
+invalid_review_tag cases, reuse each fixture after its original assertion to
+check a non-normative Modified item and an unsupported tag with a reason.
+Keep the original assertions and the 53 reported cases.
 
 ## Provenance
 
 - evals 2026-10-28T03:36:55.429843Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=199 failing=0 passing=199
 - audit 2026-10-28T03:38:01.799771Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- evals 2026-10-28T03:39:20.994902Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=199 failing=0 passing=199
 
 ## Audit
 

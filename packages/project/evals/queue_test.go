@@ -337,6 +337,27 @@ func Test_PRJ_007_CheckValidAndDiagnostics(t *testing.T) {
 			if !found {
 				t.Errorf("Check did not report nonempty C01 error diagnostic: %#v", diagnostics)
 			}
+			if tc.name == "nonnormative_change" || tc.name == "invalid_review_tag" {
+				front, added, modified, want := "", "", "", ""
+				if tc.name == "nonnormative_change" {
+					front = "bases:\n  ALP-001: " + baseHash + "\n"
+					modified = "### ALP-001\nAn observation.\n"
+					want = "non-normative spec body"
+				} else {
+					added = "### new:item [other: reason]\nItem MUST work.\n"
+					want = "invalid review/quarantine tag"
+				}
+				queued(t, root, "0001-check.md", front, "Needed.\n", added, modified, "")
+				found = false
+				for _, diagnostic := range project.Check(root) {
+					if !diagnostic.Warning && diagnostic.Code == "C01" && strings.Contains(diagnostic.Message, want) {
+						found = true
+					}
+				}
+				if !found {
+					t.Errorf("Check did not reject %s: wanted %q diagnostic", tc.name, want)
+				}
+			}
 		})
 	}
 }
