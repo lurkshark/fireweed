@@ -212,3 +212,9 @@ before another change. Four changes were applied since the explicit review at
   pending. See [review 6 checkpoint](reports/review6-checkpoint.md) and PROGRESS
   for phase commits, audit corrections and verification evidence. This does
   not establish the remaining static-validation or CLI requirements.
+
+- R02/R04 refinement: archives 0032–0034 split PRJ-001–003 into focused
+  discovery, graph and authoring contracts, with PRJ-017–026 retaining their
+  separated rules. Existing assertions and cases are unchanged. See
+  [review 7 checkpoint](reports/review7-checkpoint.md) and PROGRESS for evidence
+  and the P07 shared-base gate; PRJ-004–006 and full validation remain open.

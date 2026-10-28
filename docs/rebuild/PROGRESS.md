@@ -4,9 +4,11 @@
 
 Human review 7 approved 0030–0031 and authorized the remaining project spec
 splits, including consecutive project changes, for this slice. Stop after five
-applications or on any block. **Applied since review: 2.** The shared base is
-still c2da5e2, so the controller counts two unapproved archives; P07 permits only
-three more applications until the owner synchronizes the reviewed shared base.
+applications or on any block. **Applied since review: 3.** At resume the shared base was
+c2da5e2 and the controller counted two unapproved archives; P07 permitted only
+three more applications without owner shared-base synchronization.
+Those three are now applied (0032–0034); status reports P07 at five unapproved
+archives. Stopped on that gate, with no new change authored.
 Do not push or alter refs/bounds to clear it. Milestone 1 passed; Milestone 2
 still waits for the spec splits, diagnostic migration and one contracts drill.
 
@@ -61,9 +63,16 @@ worktree. Approved in human review 7, including consecutive project splits.
 
 - 0033 narrow-graph-spec — PRJ-002/019–022; d170452/8f084e2/5d1bb0f; 53 own cases and 199 total phase cases pass; no findings, implementation unchanged.
 
+- 0034 narrow-new-change-spec — PRJ-003/023–026; 305d5a3/ea7cd72/2519e8a; 53 own cases and 199 total phase cases pass; no findings, implementation unchanged.
+
+[Review 7 checkpoint](reports/review7-checkpoint.md): three applications; P07
+requires owner shared-base synchronization before further work. No pending
+change, claim or scratch worktree. Prior race/vet/CI/doctor evidence is reused
+because this slice changed only spec wording and eval labels/table metadata.
+
 ## Next
 
-1. Split permanent bundled behaviors through authored changes. Use already_satisfied and retarget existing evals; never hand-edit Specs/Decisions. FLOW-001/FLOW-002/FLOW-003/CHK-004/PRJ-007 are split. Human review 7 authorizes consecutive project splits for the remaining project bundles; continue PRJ-001–006 in order, within the five-application limit and the unchanged shared-base P07 gate. Add atomic specs before narrowing an old item when one change cannot hold the full split.
+1. Split permanent bundled behaviors through authored changes. Use already_satisfied and retarget existing evals; never hand-edit Specs/Decisions. FLOW-001/FLOW-002/FLOW-003/CHK-004/PRJ-001/PRJ-002/PRJ-003/PRJ-007 are split. Human review 7 authorizes consecutive project splits for the remaining project bundles; PRJ-001–003 are complete, and PRJ-004–006 remain. Stop at the current P07 gate until owner shared-base synchronization and continuation. Add atomic specs before narrowing an old item when one change cannot hold the full split.
 2. Apply D006: remove wrong label assertions through eval_fix, migrate implementation in normal changes, and keep explain accurate. Preserve all behavior assertions and coverage.
 3. Before Milestone 2 touches workflow implementation, split lifecycle/stub.go by responsibility as maintenance only. No other cleanup/hardening.
 4. After items 1 and 2, run exactly one real controller drill on contracts. Commit its report and list gaps here; author no gap changes and drill no other module.
