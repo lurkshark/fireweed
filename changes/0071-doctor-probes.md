@@ -1,8 +1,13 @@
 ---
-audit_rounds: 0
+audit_pending:
+    - CHK-054
+    - CHK-057
+    - CHK-060
+    - CHK-065
+audit_rounds: 1
 bases: {}
 module: checks
-phase: audit
+phase: evals
 run: 20261028T143328-b8168faa7b2578efc49bb800
 ---
 
@@ -164,6 +169,14 @@ and wire doctor through app. Do not run any drill or fix the deferred contracts
 drill gap. Controller owns phase commits/spec application/archive; workers never
 commit.
 
+## Audit
+
+- CHK-054: "Doctor MUST report C14 naming missing or malformed module templates or required canary maps and skip the affected probes." — no assertion covers a malformed module template or a missing required canary map other than baseline.
+- CHK-057: "Doctor MUST plant the supplied internal_eval canary and require its boundary hook to report a module-attributed interface violation; a missed canary MUST produce C14 naming the hook and canary." — no negative assertion rejects a same-module violation that is unrelated to the interface boundary.
+- CHK-060: "Doctor MUST test applicable global eval and boundary hooks and every per-module override through their corresponding canary probes." — override assertions count executions but do not require each override to detect its corresponding canary.
+- CHK-065: "Doctor MUST bound each agent probe by the request Timeout or three minutes when unset, and report C15 failures with the command and its final 20 output lines." — no assertion covers the three-minute default when Timeout is unset.
+
 ## Provenance
 
 - evals 2026-10-28T14:45:56.315816Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=248 failing=22 passing=226
+- audit 2026-10-28T14:52:00.442665Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
