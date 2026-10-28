@@ -118,13 +118,22 @@ func Test_APP_003_InvalidRequests(t *testing.T) {
 		name string
 		args []string
 		bad  string
+		code string
 	}{
-		{"unknown-command", []string{"not-a-command"}, "not-a-command"},
-		{"unknown-option", []string{"help", "--bogus"}, "--bogus"},
-		{"missing-argument", []string{"explain"}, "explain"},
-		{"extra-argument", []string{"version", "surplus"}, "version"},
-		{"APP_013_unknown-explanation", []string{"explain", "NO-SUCH-CODE"}, "NO-SUCH-CODE"},
-		{"APP_013_unknown-playbook", []string{"playbook", "no-such-playbook"}, "no-such-playbook"},
+		{"unknown-command", []string{"not-a-command"}, "not-a-command", "U01"},
+		{"unknown-option", []string{"help", "--bogus"}, "--bogus", "U01"},
+		{"missing-argument", []string{"explain"}, "explain", "U01"},
+		{"extra-argument", []string{"version", "surplus"}, "version", "U01"},
+		{"new-change-arity", []string{"new-change", "alpha"}, "new-change", "U01"},
+		{"stamp-arity", []string{"stamp"}, "stamp", "U01"},
+		{"check-arity", []string{"check", "extra"}, "check", "U01"},
+		{"show-arity", []string{"show"}, "show", "U01"},
+		{"start-arity", []string{"start"}, "start", "U01"},
+		{"context-arity", []string{"context"}, "context", "U01"},
+		{"coverage-arity", []string{"coverage"}, "coverage", "U01"},
+		{"verify-arity", []string{"verify", "manual", "extra"}, "verify", "U01"},
+		{"APP_013_unknown-explanation", []string{"explain", "NO-SUCH-CODE"}, "NO-SUCH-CODE", "U02"},
+		{"APP_013_unknown-playbook", []string{"playbook", "no-such-playbook"}, "no-such-playbook", "U02"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			for _, format := range []struct {
@@ -141,7 +150,9 @@ func Test_APP_003_InvalidRequests(t *testing.T) {
 				}
 				diagnostic := stdout + stderr
 				if format.json {
-					diagnostic = assertFailedJSON(t, stdout)
+					diagnostic = assertFailedJSON(t, stdout, tc.code)
+				} else if !strings.HasPrefix(strings.TrimSpace(diagnostic), tc.code+":") {
+					t.Errorf("%s diagnostic %q must have code %s", format.name, diagnostic, tc.code)
 				}
 				if !strings.Contains(diagnostic, tc.bad) || !corrective(diagnostic) {
 					t.Errorf("%s diagnostic %q must identify %q and suggest a correction", format.name, diagnostic, tc.bad)
@@ -161,7 +172,17 @@ func Test_APP_014_UnimplementedCommands(t *testing.T) {
 			if status == 0 || !regexp.MustCompile(`(?i)unimplemented|not implemented|under construction`).MatchString(stdout+stderr) {
 				t.Errorf("status=%d diagnostic=%q; want nonzero and explicit unimplemented notice", status, stdout+stderr)
 			}
+			if !strings.HasPrefix(strings.TrimSpace(stdout+stderr), "U01:") {
+				t.Errorf("diagnostic %q must have code U01", stdout+stderr)
+			}
 		})
+	}
+	status, stdout, stderr := run("init", "--json")
+	if status == 0 || stderr != "" {
+		t.Errorf("JSON status=%d stderr=%q; want nonzero and empty stderr", status, stderr)
+	}
+	if message := assertFailedJSON(t, stdout, "U01"); !regexp.MustCompile(`(?i)unimplemented|not implemented|under construction`).MatchString(message) {
+		t.Errorf("JSON diagnostic %q must explicitly report unimplemented", message)
 	}
 }
 
@@ -173,7 +194,7 @@ func Test_APP_015_FailedJSON(t *testing.T) {
 	assertFailedJSON(t, stdout)
 }
 
-func assertFailedJSON(t *testing.T, stdout string) string {
+func assertFailedJSON(t *testing.T, stdout string, wantCode ...string) string {
 	t.Helper()
 	envelope := decodeEnvelope(t, stdout)
 	if string(envelope["data"]) != "null" {
@@ -188,6 +209,9 @@ func assertFailedJSON(t *testing.T, stdout string) string {
 	}
 	if strings.TrimSpace(diagnostics[0].Code) == "" || strings.TrimSpace(diagnostics[0].Message) == "" {
 		t.Errorf("diagnostic needs code and message: %+v", diagnostics[0])
+	}
+	if len(wantCode) > 0 && diagnostics[0].Code != wantCode[0] {
+		t.Errorf("diagnostic code=%q; want %q", diagnostics[0].Code, wantCode[0])
 	}
 	return diagnostics[0].Message
 }
