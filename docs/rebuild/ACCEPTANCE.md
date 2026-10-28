@@ -283,7 +283,11 @@ before another change. Four changes were applied since the explicit review at
 - R01/R17/R19 partial: 0069 (APP-041–061) implements Go/none/local init and passes
   144 app cases after one scoped audit correction. NEW Go init/modules/check,
   current-source build/race/vet pass at cdc64ae. The
-  [0065–0069 checkpoint](reports/checkpoint-0065-0069.md) is BLOCKED for human
-  review because explain C12/U02 omit newly emitted recipe causes/repairs.
-  No follow-up change or further push is authorized by that review. Doctor,
+  [0065–0069 checkpoint](reports/checkpoint-0065-0069.md) initially blocked for
+  missing recipe guidance in explain C12/U02. Owner-approved 0070 fixes
+  AST-003/024 with four runtime failures → 51 own/351 total phase passes;
+  scoped subagent re-review and NEW explanation JSON pass at 4b36a84. Prior
+  causes/assertions are retained. History evidence covers 397 baseline commits
+  plus the seven-commit correction extension, with no diagnostics. The passing
+  re-review authorizes push/continuation. Doctor,
   remaining recipes, bounded execution and full acceptance remain unverified.

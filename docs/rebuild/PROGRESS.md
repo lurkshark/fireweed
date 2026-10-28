@@ -8,11 +8,11 @@ cleanup complete. It reports an error-prefix contract gap and its agent read
 dependent internals, so strict independence acceptance is not established; see
 [the reviewed report](reports/contracts-drill.md). No gap fix or repeat drill is
 authorized. 0069 now implements recipe-based initialization through NEW.
-**Applied since review: 5; approved correction and checkpoint re-review pending.**
-The independent 0065–0069 reviewer found that C12/U02 explanations omit the new
-init recipe causes and repairs. The owner now approves the scoped assets
-correction, subagent re-review, and push/continuation only if it passes.
-Keep the checkpoint count until that review; the full goal remains incomplete.
+**Applied since review: 0.** The owner-approved 0070 correction resolves the
+0065–0069 checkpoint's C12/U02 finding, and the original subagent returned PASS
+on re-review. The explicit correction history extension also passed; the
+owner-authorized push and Milestone 2 continuation follow. The full goal remains
+incomplete.
 
 The owner's goal update authorizes a subagent review at every five applied
 changes: push to origin and continue when the review finds the work on track, and
@@ -33,7 +33,7 @@ audits, audit bounds, timeouts and recurring checkpoint reviews remain in force.
 
 Controller: `.fireweed/bin/fireweed-bootstrap` 0.1.0, source `7f925190878e38fc38f30d16bb1cf47aca098cf7`, pin SHA-256 `f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f`; unchanged.
 Stage-2 history baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`; always check an explicit nonempty baseline..HEAD range. Use `GOCACHE=/tmp/fireweed-rebuild-cache`.
-NEW binary: `bin/fireweed`, clean source `cdc64ae65c088b61029d560eeaab136e66de14d5` (CGO disabled); [committed manual-lifecycle report](reports/manual-lifecycle.md). Unbuilt commands remain explicit errors; the empty runner is expected.
+NEW binary: `bin/fireweed`, clean source `4b36a84a8afb20806f4738528b3a7627810a8603` (CGO disabled); [committed manual-lifecycle report](reports/manual-lifecycle.md). Unbuilt commands remain explicit errors; the empty runner is expected.
 
 Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`. Interactive work through 0014's initial evals was followed by coordinator `done`, hence legacy `agent=manual` lines. Configured controller execution began at 0014's audit; its provenance records the actual command/model. Continue configured execution. Ignored runtime logs are auxiliary, not reviewable evidence; archives, permanent evals and committed reports carry the evidence.
 
@@ -192,12 +192,16 @@ review; the applied count restarts. No queue or claim remains; D006 is incomplet
 
 - 0069 project-initialization — APP-041–061; evals b3cbc19/734e476, audits 6fe48c5/07fcb6c, impl cdc64ae; one findings round, 17 reported runtime failures → 144 app cases pass; version-range membership and recipe default-protected assertions completed, scoped re-audit passed. Go/none/local init, optional app, managed instructions, preservation, usage/errors and JSON are wired through NEW; its Go init/modules/check fixture passes. Doctor and execution remain pending.
 
+- 0070 recipe-error-explanations — fixes AST-003/024; 39f82e1/95b998c/4b36a84; four reported runtime failures → 51 own/351 total phase cases pass, no findings; seven assertions added to existing cases and only C12/U02 explanation strings extended. Existing causes/guidance, assertions, public interfaces and init behavior are retained. NEW C12/U02 JSON smoke and owner-required checkpoint re-review pass.
+
 [0065–0069 checkpoint](reports/checkpoint-0065-0069.md): five applications since
-the passing 0060–0064 review. Subagent checkpoint_0065_0069 returned BLOCK:
-new init C12/U02 recipe failures are missing from explain's causes and repairs.
-No correction change or further push is authorized by the failed checkpoint;
-human review is required. Build/race/vet and NEW Go init/modules/check passed;
-explicit baseline history validation passed over 397 commits with no diagnostics.
+the passing 0060–0064 review. Subagent checkpoint_0065_0069 initially returned
+BLOCK for missing init recipe causes/repairs in explain C12/U02. The owner
+approved 0070 and conditional push/continuation; its scoped re-review now returns
+PASS. Build/race/vet and NEW Go init/modules/check passed at cdc64ae; the text-only
+correction's full phase checks and NEW C12/U02 JSON pass at 4b36a84. History
+validation passed over 397 baseline commits plus the seven-commit correction
+extension, both with no diagnostics. The count resets after this passing review.
 The owner's intervening direct push
 approval synchronized committed history through 3897b1a; it did not reset the
 five-application review count.
@@ -217,10 +221,9 @@ acceptance remains unverified. No gap fix/rerun is authorized or performed.
 
 ## Next
 
-0. The owner approved the scoped assets C12/U02 explanation correction after the
-   blocked 0065–0069 checkpoint. Apply it through the normal workflow and have
-   the checkpoint subagent re-review the correction; push and continue only on
-   PASS. Preserve the original block and its evidence in the report.
+0. The owner-approved 0070 explanation correction and checkpoint re-review pass.
+   Perform the authorized push, then continue Milestone 2; the original block,
+   human approval and resolution remain in the checkpoint report.
 1. The previously identified project/checks/workflow/contracts/gitstore/assets/app splits are complete through 0053. All obligations and existing assertions are retained under focused specs; do not launch another global rewrite. Continue the agreed diagnostic migration.
 2. D006's planned existing-error-path migration and explanations are complete through 0068. Preserve assigned causes and keep explain accurate as justified features add real paths. No unsupported-feature scaffolding, speculative errors or unused-code explanations.
 3. Workflow file organization is not a Milestone 2 prerequisite. Defer splitting lifecycle/stub.go unless it causes a demonstrated problem during feature work; a later drill/regenerate may organize the implementation afresh. Do not substitute another speculative cleanup task.

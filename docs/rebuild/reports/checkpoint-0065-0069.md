@@ -1,5 +1,8 @@
 # Checkpoint: changes 0065–0069
 
+Current result: **PASS after owner-approved correction 0070 and scoped
+subagent re-review at 4b36a84.** The initial BLOCK below is retained as history.
+
 Five applications since the passing 0060–0064 checkpoint.
 Previous reviewed base: `ba82fcfbfeb769b04b09bc0a8b421d583f75ef0c`.
 Checked source: `cdc64ae65c088b61029d560eeaab136e66de14d5`.
@@ -80,9 +83,38 @@ checks and other assertions. No init behavior or public interface change is need
 ## Next
 
 The owner approved the scoped correction on 2026-10-28, requiring a subagent
-re-review before push and continuation. Author and apply only the assets
-C12/U02 explanation fix through the normal fail-first/audit/implementation
-workflow, preserving existing causes/assertions and public interfaces. The
-five-application checkpoint count is not reset while the correction/re-review
-is pending. Doctor and bounded fake-agent execution follow a passing review;
+re-review before push and continuation. That correction and re-review now pass,
+authorizing the push and count reset. Continue doctor and bounded fake-agent
+execution through NEW;
 contracts drill limitations and final gates remain explicitly unverified.
+
+## Approved correction 0070 — PASS
+
+Correction source: `4b36a84a8afb20806f4738528b3a7627810a8603`.
+Correction range:
+`cdc64ae65c088b61029d560eeaab136e66de14d5..4b36a84a8afb20806f4738528b3a7627810a8603`.
+Normal phases: evals 39f82e1, audit 95b998c, impl 4b36a84. Four reported runtime
+failures became 51 own/351 total passing phase cases. The separate auditor
+reported no findings for AST-003/024. Existing C12/U02 cases gained seven
+assertions; implementation extends only those two explanation strings. Prior
+causes/guidance/assertions, unknown-code checks, init behavior and interfaces
+remain unchanged.
+
+NEW rebuilt cleanly with CGO disabled and vcs.modified=false; C12/U02 JSON smoke
+outside a project returns exit 0, schema 1, empty diagnostics/stderr and the new
+recipe causes/repairs. The unchanged nonfatal module stat-cache warning was
+observed. Race/vet evidence at cdc64ae is reused for this text-only correction;
+normal full phase verification ran. The 397-commit baseline history result
+through cdc64ae is retained; the explicit correction extension passed over seven
+commits with no diagnostics. Together these cover
+`be35552b706aa3000ff8f11306d129ff1d701b85..4b36a84a8afb20806f4738528b3a7627810a8603`
+without repeating the unchanged earlier checks.
+
+PASS — the original checkpoint subagent `checkpoint_0065_0069` re-reviewed its
+finding only. It confirmed C12's local recipe metadata/recipe.yaml guidance and
+U02's unknown recipe/supported-name/local-directory remedies resolve the issue,
+with prior causes, guidance and assertions intact. Review was read-only; no
+tests or drills were rerun. No push or new feature work preceded this result.
+Six applications (the original five plus the expressly approved correction)
+are now reviewed, and the applied count restarts at zero. This triggers the
+owner-authorized push and continuation, without claiming full acceptance.
