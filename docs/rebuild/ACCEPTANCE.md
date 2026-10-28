@@ -236,3 +236,11 @@ before another change. Four changes were applied since the explicit review at
   fixtures and implementation remain unchanged. See the
   [passing checkpoint review](reports/checkpoint-0040-0044.md) and PROGRESS
   for phase evidence; remaining splits and diagnostic migration are pending.
+
+- R02/R03/R05/R06/R09/R11/R14/R27 refinement: 0045–0049 finish CHK-005,
+  FLOW-004/005 and the identified contracts primitive bundles. Requirements
+  and assertions are retained; existing lifecycle fixtures gain direct
+  metadata/phase-base/shared-commit/provenance checks. See the
+  [passing checkpoint review](reports/checkpoint-0045-0049.md) and PROGRESS
+  for actual phase counts and approved execution-policy changes. Remaining
+  gitstore/assets/app splits and D006 migration still precede the contracts drill.

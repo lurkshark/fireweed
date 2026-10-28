@@ -3,7 +3,7 @@
 ## Current status — 2026-10-27
 
 Human review 8 approved 0032–0034; the authorized push synchronized main and
-origin/main at 16cc688 and cleared P07. **Applied since review: 5.** Resume
+origin/main at 16cc688 and cleared P07. **Applied since review: 0.** Resume
 the remaining previously identified bundled specs; PRJ-004–006 are complete.
 
 The owner's goal update authorizes a subagent review at every five applied
@@ -121,7 +121,9 @@ push and continuation. The applied count restarts after this passing review.
 - 0049 split-contract-primitives — CON-001/002/005/006/007–015; 208fd0a/e2809a5/71ac66e; 13 affected items, 34 own cases and 261 total phase cases pass; no findings, assertions/test data and implementation unchanged.
 
 [0045–0049 checkpoint](reports/checkpoint-0045-0049.md): five applied changes.
-Awaiting the required subagent review before pushing or continuing.
+Subagent checkpoint_0045_0049 returned PASS with no issues. The explicit
+baseline history check passed over 286 commits. The owner conditionally
+authorizes the push and continuation; the applied count restarts after review.
 
 ## Next
 

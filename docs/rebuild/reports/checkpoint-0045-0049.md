@@ -40,10 +40,24 @@ audits, audit bounds, P07 and recurring checkpoint review are unchanged.
 
 ## Verification and review
 
-Baseline history check and checkpoint subagent review are pending. No queue or
+The checkpoint subagent review and explicit baseline history validation passed;
+286 commits were checked with no diagnostics. No queue or
 claim remained after 0049. P08 reflects authorized consecutive spec splitting;
 the embedded recipe SPEC warning is known; P07 holds at five until a passing
 review permits the authorized push.
+
+## Checkpoint review
+
+PASS — subagent `checkpoint_0045_0049` reviewed the exact range, all five
+archives, affected specs/public evals, relevant design clauses and approved
+protected policy edits. It found original obligations/assertions represented
+under focused IDs, unchanged implementation/interfaces/dependencies, and 0049
+within the 30-item cap. Phase evidence supports the reported counts and
+0048's scoped correction/re-audit. Protected edits occurred in separate author
+commits between applied changes. No requirement-grounded issue was reported.
+The review was read-only, repeated no tests/drills and does not establish final
+acceptance. The history check also passed, triggering the owner-authorized push and
+continuation.
 
 ## Next
 
