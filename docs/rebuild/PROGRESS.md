@@ -3,7 +3,7 @@
 ## Current status — 2026-10-27
 
 Human review 8 approved 0032–0034; the authorized push synchronized main and
-origin/main at 16cc688 and cleared P07. **Applied since review: 4.** Resume
+origin/main at 16cc688 and cleared P07. **Applied since review: 5.** Resume
 PRJ-004–006 with the existing consecutive-project split authorization.
 
 The owner's goal update authorizes a subagent review at every five applied
@@ -81,9 +81,14 @@ because this slice changed only spec wording and eval labels/table metadata.
 
 - 0038 narrow-projection-edits-spec — PRJ-005; evals dc8847c/a6ecd35, audits ec740ab/e705509, impl 0850274; one findings round, 53 own cases and 199 total phase cases pass; full Modified-body assertion strengthened, implementation unchanged.
 
+- 0039 narrow-stamp-spec — PRJ-006/037–039; f33d236/7166bc5/430e56c; 53 own cases and 199 total phase cases pass; no findings, implementation unchanged.
+
+[0035–0039 checkpoint](reports/checkpoint-0035-0039.md): five applied project
+splits. Awaiting the owner-authorized subagent review before pushing or continuing.
+
 ## Next
 
-1. Split permanent bundled behaviors through authored changes. Use already_satisfied and retarget existing evals; never hand-edit Specs/Decisions. FLOW-001/FLOW-002/FLOW-003/CHK-004/PRJ-001/PRJ-002/PRJ-003/PRJ-007 are split. Human review 7 authorizes consecutive project splits for the remaining project bundles; PRJ-001–003 are complete, and PRJ-004–006 remain. Human review 8 approves the P07 checkpoint and authorizes a push; verify the shared-base gate has cleared before resuming. Add atomic specs before narrowing an old item when one change cannot hold the full split.
+1. Split permanent bundled behaviors through authored changes. Use already_satisfied and retarget existing evals; never hand-edit Specs/Decisions. FLOW-001/FLOW-002/FLOW-003/CHK-004/PRJ-001–007 are split. Human review 7 authorizes consecutive project splits for the remaining project bundles; PRJ-001–007 are now complete; other previously identified bundled specs remain. Human review 8 approves the P07 checkpoint and authorizes a push; verify the shared-base gate has cleared before resuming. Add atomic specs before narrowing an old item when one change cannot hold the full split.
 2. Apply D006: remove wrong label assertions through eval_fix, migrate implementation in normal changes, and keep explain accurate. Preserve all behavior assertions and coverage.
 3. Before Milestone 2 touches workflow implementation, split lifecycle/stub.go by responsibility as maintenance only. No other cleanup/hardening.
 4. After items 1 and 2, run exactly one real controller drill on contracts. Commit its report and list gaps here; author no gap changes and drill no other module.
