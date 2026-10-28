@@ -287,24 +287,27 @@ func Test_PRJ_007_CheckValidAndDiagnostics(t *testing.T) {
 			t.Errorf("valid spec/change received error diagnostic: %#v", diagnostic)
 		}
 	}
+}
 
+func Test_PRJ_008_PRJ_009_PRJ_010_PRJ_011_PRJ_012_CheckDiagnostics(t *testing.T) {
 	for _, tc := range []struct {
 		id, name, spec, front, motivation, added, modified, removed string
+		code, cause                                                 string
 	}{
-		{"PRJ-008", "missing_motivation", "", "", "\n", "", "", ""},
-		{"PRJ-009", "nonnormative_module", "### ALP-001\nAlpha works.\n", "", "Needed.\n", "", "", ""},
-		{"PRJ-009", "nonnormative_change", "", "", "Needed.\n", "### new:item\nAn observation.\n", "", ""},
-		{"PRJ-010", "invalid_review_tag", "", "", "Needed.\n", "### new:item [review: reason]\nItem MUST work.\n", "", ""},
-		{"PRJ-010", "invalid_quarantine_tag", "", "", "Needed.\n", "### new:item [quarantine]\nItem MUST work.\n", "", ""},
-		{"PRJ-011", "duplicate_module_id", "### ALP-001\nAlpha MUST work.\n\n### ALP-001\nDuplicate MUST fail.\n", "", "Needed.\n", "", "", ""},
-		{"PRJ-012", "foreign_module_id", "### BET-001\nForeign item MUST fail.\n", "", "Needed.\n", "", "", ""},
-		{"PRJ-012", "foreign_change_id", "", "", "Needed.\n", "", "### BET-001\nForeign edit MUST fail.\n", ""},
-		{"PRJ-013", "duplicate_edit_identity", "", "", "Needed.\n", "", "### ALP-001\nAlpha MUST change.\n", "### ALP-001\n"},
-		{"PRJ-014", "undeclared_handle", "", "", "Needed.\n", "### new:local\nLocal MUST work.\n", "### ALP-001\nAlpha MUST refer to new:foreign.\n", ""},
-		{"PRJ-015", "missing_base", "", "", "Needed.\n", "", "### ALP-001\nAlpha MUST change.\n", ""},
-		{"PRJ-015", "stale_base", "", "bases:\n  ALP-001: deadbeef\n", "Needed.\n", "", "### ALP-001\nAlpha MUST change.\n", ""},
-		{"PRJ-016", "absent_modified", "", "bases:\n  ALP-999: deadbeef\n", "Needed.\n", "", "### ALP-999\nAbsent MUST change.\n", ""},
-		{"PRJ-016", "absent_removed", "", "bases:\n  ALP-999: deadbeef\n", "Needed.\n", "", "", "### ALP-999\n"},
+		{"PRJ-008", "missing_motivation", "", "", "\n", "", "", "", "C07", "missing Motivation"},
+		{"PRJ-009", "nonnormative_module", "### ALP-001\nAlpha works.\n", "", "Needed.\n", "", "", "", "C04", "non-normative spec body"},
+		{"PRJ-009", "nonnormative_change", "", "", "Needed.\n", "### new:item\nAn observation.\n", "", "", "C04", "non-normative spec body"},
+		{"PRJ-010", "invalid_review_tag", "", "", "Needed.\n", "### new:item [review: reason]\nItem MUST work.\n", "", "", "C06", "invalid review/quarantine tag"},
+		{"PRJ-010", "invalid_quarantine_tag", "", "", "Needed.\n", "### new:item [quarantine]\nItem MUST work.\n", "", "", "C06", "invalid review/quarantine tag"},
+		{"PRJ-011", "duplicate_module_id", "### ALP-001\nAlpha MUST work.\n\n### ALP-001\nDuplicate MUST fail.\n", "", "Needed.\n", "", "", "", "C05", "duplicate item ID"},
+		{"PRJ-012", "foreign_module_id", "### BET-001\nForeign item MUST fail.\n", "", "Needed.\n", "", "", "", "C05", "foreign spec ID"},
+		{"PRJ-012", "foreign_change_id", "", "", "Needed.\n", "", "### BET-001\nForeign edit MUST fail.\n", "", "C05", "foreign module ID"},
+		{"PRJ-013", "duplicate_edit_identity", "", "", "Needed.\n", "", "### ALP-001\nAlpha MUST change.\n", "### ALP-001\n", "", ""},
+		{"PRJ-014", "undeclared_handle", "", "", "Needed.\n", "### new:local\nLocal MUST work.\n", "### ALP-001\nAlpha MUST refer to new:foreign.\n", "", "", ""},
+		{"PRJ-015", "missing_base", "", "", "Needed.\n", "", "### ALP-001\nAlpha MUST change.\n", "", "", ""},
+		{"PRJ-015", "stale_base", "", "bases:\n  ALP-001: deadbeef\n", "Needed.\n", "", "### ALP-001\nAlpha MUST change.\n", "", "", ""},
+		{"PRJ-016", "absent_modified", "", "bases:\n  ALP-999: deadbeef\n", "Needed.\n", "", "### ALP-999\nAbsent MUST change.\n", "", "", ""},
+		{"PRJ-016", "absent_removed", "", "bases:\n  ALP-999: deadbeef\n", "Needed.\n", "", "", "### ALP-999\n", "", ""},
 	} {
 		t.Run(tc.id+"_"+tc.name, func(t *testing.T) {
 			root := fixture(t)
@@ -329,6 +332,7 @@ func Test_PRJ_007_CheckValidAndDiagnostics(t *testing.T) {
 			queued(t, root, "0001-check.md", front, tc.motivation, tc.added, tc.modified, tc.removed)
 			diagnostics := project.Check(root)
 			found := false
+			foundCause := false
 			for _, diagnostic := range diagnostics {
 				if !diagnostic.Warning && (strings.TrimSpace(diagnostic.Code) == "" || strings.TrimSpace(diagnostic.Message) == "") {
 					t.Errorf("Check returned error diagnostic without code and message: %#v", diagnostic)
@@ -336,9 +340,15 @@ func Test_PRJ_007_CheckValidAndDiagnostics(t *testing.T) {
 				if !diagnostic.Warning && strings.TrimSpace(diagnostic.Code) != "" && strings.TrimSpace(diagnostic.Message) != "" {
 					found = true
 				}
+				if tc.code != "" && !diagnostic.Warning && diagnostic.Code == tc.code && strings.Contains(diagnostic.Message, tc.cause) {
+					foundCause = true
+				}
 			}
 			if !found {
 				t.Errorf("Check did not report error diagnostic with nonempty code and message: %#v", diagnostics)
+			}
+			if tc.code != "" && !foundCause {
+				t.Errorf("Check did not report %s for %s: %#v", tc.code, tc.cause, diagnostics)
 			}
 			if tc.name == "missing_base" || tc.name == "stale_base" {
 				queued(t, root, "0001-check.md", front, "Needed.\n", "", "", "### ALP-001\n")
@@ -358,11 +368,13 @@ func Test_PRJ_007_CheckValidAndDiagnostics(t *testing.T) {
 			}
 			if tc.name == "nonnormative_change" || tc.name == "invalid_review_tag" {
 				front, added, modified, want := "", "", "", ""
+				code := "C04"
 				if tc.name == "nonnormative_change" {
 					front = "bases:\n  ALP-001: " + baseHash + "\n"
 					modified = "### ALP-001\nAn observation.\n"
 					want = "non-normative spec body"
 				} else {
+					code = "C06"
 					added = "### new:item [other: reason]\nItem MUST work.\n"
 					want = "invalid review/quarantine tag"
 				}
@@ -372,12 +384,12 @@ func Test_PRJ_007_CheckValidAndDiagnostics(t *testing.T) {
 					if !diagnostic.Warning && (strings.TrimSpace(diagnostic.Code) == "" || strings.TrimSpace(diagnostic.Message) == "") {
 						t.Errorf("Check returned error diagnostic without code and message: %#v", diagnostic)
 					}
-					if !diagnostic.Warning && strings.TrimSpace(diagnostic.Code) != "" && strings.Contains(diagnostic.Message, want) {
+					if !diagnostic.Warning && diagnostic.Code == code && strings.Contains(diagnostic.Message, want) {
 						found = true
 					}
 				}
 				if !found {
-					t.Errorf("Check did not reject %s: wanted error diagnostic with nonempty code and message containing %q", tc.name, want)
+					t.Errorf("Check did not reject %s: wanted error diagnostic %s with message containing %q", tc.name, code, want)
 				}
 			}
 		})

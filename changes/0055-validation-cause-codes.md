@@ -1,4 +1,5 @@
 ---
+audit_rounds: 0
 bases:
     PRJ-008: 4efdf265
     PRJ-009: 3ab806fe
@@ -6,6 +7,8 @@ bases:
     PRJ-011: 074dd58a
     PRJ-012: ad7c76da
 module: project
+phase: audit
+run: 20261028T073403-02bb6a871c8d10a594784f1e
 ---
 
 
@@ -63,3 +66,7 @@ Implementation migrates only the existing error branches that supply these
 causes. Keep messages, existing rejection behavior and other cause labels intact.
 Do not add unsupported features or speculative error paths. Evals and interfaces
 freeze for implementation; controller owns specs, commits and archive.
+
+## Provenance
+
+- evals 2026-10-28T07:37:44.156467Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=200 failing=9 passing=191
