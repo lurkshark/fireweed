@@ -1,9 +1,9 @@
 # Rebuild progress
 
-## Current status — 2026-10-27
+## Current status — 2026-10-28
 
 Human review 8 approved 0032–0034; the authorized push synchronized main and
-origin/main at 16cc688 and cleared P07. **Applied since review: 3.** Resume
+origin/main at 16cc688 and cleared P07. **Applied since review: 4.** Resume
 the remaining previously identified bundled specs; PRJ-004–006 are complete.
 
 The owner's goal update authorizes a subagent review at every five applied
@@ -130,6 +130,8 @@ authorizes the push and continuation; the applied count restarts after review.
 - 0051 split-asset-contracts — AST-001/002/004–023; c9210cf/0d856fc/40cceb7; 22 affected items, 20 own cases and 219 total phase cases pass; no findings, assertions/fixtures and implementation unchanged.
 
 - 0052 split-authoring-cli-contracts — APP-003–008/013–026; evals ff54a43/4ad8388, audits 56a829c/bcc1400, impl ed94c03; 20 affected items, one findings round, 86 cases pass; existing zone-array assertion strengthened, implementation/diagnostics unchanged.
+
+- 0053 split-lifecycle-cli-contracts — APP-009–012/027–036; evals 863b578/28baed4, audits 62d07a5/ca18597, impl 11cb39a; 14 affected items, one findings round, 86 cases pass; existing omitted-Done/blocked-Verify assertions completed, implementation unchanged.
 
 ## Next
 
