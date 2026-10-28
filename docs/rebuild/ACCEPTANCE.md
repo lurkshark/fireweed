@@ -257,3 +257,11 @@ before another change. Four changes were applied since the explicit review at
   and NEW JSON explanation smoke checks passed. See the
   [checkpoint review](reports/checkpoint-0055-0059.md) and PROGRESS for scope and
   phase counts. Remaining diagnostic migration and full acceptance are unverified.
+
+- R04/R07/R09/R11/R17 diagnostic refinement: 0060–0064 migrate scoped CLI,
+  static, eval and lifecycle causes while preserving existing behavior. All phase
+  audits passed, including one scoped correction/re-audit in 0064. Current-source
+  build/race/vet and NEW U01/U02 JSON smoke checks passed; see the
+  [checkpoint review](reports/checkpoint-0060-0064.md) and PROGRESS for evidence
+  and owner-approved policy updates. Remaining CLI classification/explanations,
+  contracts drill, Milestone 2 and full acceptance remain unverified.
