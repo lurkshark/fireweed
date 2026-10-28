@@ -8,15 +8,16 @@ cleanup complete. It reports an error-prefix contract gap and its agent read
 dependent internals, so strict independence acceptance is not established; see
 [the reviewed report](reports/contracts-drill.md). No gap fix or repeat drill is
 authorized. 0069 now implements recipe-based initialization through NEW.
-**Applied since review: 2; doctor backend and helper portability passed.** The
+**Applied since review: 3; doctor backend, helper and explanations passed.** The
 owner-approved saved-attempt 4 recovery restored the implementation through the
 controller with Git 2.53.0. Full native done passed all 260 phase cases and
 committed/applied/archived at e50061d; the tree is clean and claim released.
 The explicitly approved phase repair and restricted re-review are complete;
 [the recovery report](reports/doctor-0071-block.md) retains their history and
 limitations. 0072 repaired only the scratch helper; 71 own/260 full phase cases pass with
-ordinary Apple Git, with no findings or product implementation edits. Doctor CLI
-wiring and C14–C16 explanations remain next. No further push occurred; the full goal
+ordinary Apple Git, with no findings or product implementation edits. 0073 now explains C14–C16 and existing init P01 failures, with six runtime
+failures before implementation and all 389 phase cases passing afterward. Doctor
+CLI wiring remains next. No further push occurred; the full goal
 remains incomplete.
 
 The owner's goal update authorizes a subagent review at every five applied
@@ -43,6 +44,7 @@ NEW binary: `bin/fireweed`, clean source `4b36a84a8afb20806f4738528b3a7627810a86
 Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`. Interactive work through 0014's initial evals was followed by coordinator `done`, hence legacy `agent=manual` lines. Configured controller execution began at 0014's audit; its provenance records the actual command/model. Continue configured execution. Ignored runtime logs are auxiliary, not reviewable evidence; archives, permanent evals and committed reports carry the evidence.
 
 ## Applied changes
+- 0073 doctor-diagnostic-explanations — AST-026/027; b364af7/53cae57/8d27f34. Six runtime failures → 55 own/389 phase passes; no findings, restricted auditor input reads confirmed. Explains emitted C14–C16 and existing init P01 causes, retaining prior causes/assertions.
 - 0072 doctor-helper-portability — eval_fix CHK-050/051; dc2b1e7/426e259/762052f. Five-line helper-only correction retains all assertions and 71 own cases; 260 phase passes with ordinary Apple Git, no findings, no implementation edit.
 - 0071 doctor-probes — CHK-049–069; final evals ebf127f (34 runtime failures/226 passes, 260 total), restricted audit 8cafea6, impl e50061d (260 passes). Full recovery and earlier phases are in the linked block report; native application/cleanup passed under Git 2.53.0. CLI wiring remains pending.
 - 0001 standalone-information — AST-001–003; phases a4ceb17/826b9e9/2248b8e; 8 fail-first → 8 pass.
@@ -228,10 +230,9 @@ acceptance remains unverified. No gap fix/rerun is authorized or performed.
 
 ## Next
 
-The approved recovery and normal helper eval_fix passed. Add assets explanations
-for emitted doctor codes C14–C16 and correct P01 guidance for existing init
-operational failures. Then wire doctor/agents-md through app promptly, before
-bounded fake-agent execution work. No further phase exception, bound change, new drill
+The doctor backend, helper eval_fix and emitted-code explanations passed. Wire
+doctor/agents-md through app promptly, then build and smoke NEW in a disposable
+Go/fake-agent fixture before bounded fake-agent execution work. No further phase exception, bound change, new drill
 or deferred contracts-gap fix is authorized. Stop at any new blocked change;
 the standing five-application subagent checkpoint remains in force.
 

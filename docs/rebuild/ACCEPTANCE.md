@@ -331,3 +331,8 @@ before another change. Four changes were applied since the explicit review at
   all CHK-050/051 placement, physical-cleanup and registration assertions. Evals
   dc2b1e7 and impl 762052f each report 260 passes; audit 426e259 has no findings
   and no implementation reads. Product implementation is unchanged.
+
+- R17 partial: 0073 implements AST-026/027 cause/action guidance for emitted
+  doctor C14–C16 and existing init P01 failures. Six fail-first cases precede
+  389 full phase passes at 8d27f34, with no independent audit findings. Doctor
+  CLI wiring, bounded execution and full acceptance remain open.
