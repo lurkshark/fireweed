@@ -288,29 +288,43 @@ func Test_FLOW_009_FLOW_015_ApprovalWarningAndSharedUnapprovedLimit(t *testing.T
 	if s := start(t, shared); containsCode(s.Diagnostics, "P04") {
 		t.Error("shared-base approval warned")
 	}
-	for _, limit := range []int{4, 5} {
-		t.Run(fmt.Sprint(limit), func(t *testing.T) {
-			root := fixture(t, "", "", "", "", "")
+	for _, tc := range []struct {
+		name   string
+		limit  int
+		config string
+		reject bool
+	}{
+		{name: "default-below", limit: 4},
+		{name: "default-at", limit: 5, reject: true},
+		{name: "configured-at", limit: 2, config: "authoring:\n  max_unapproved: 2\n", reject: true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := fixture(t, tc.config, "", "", "", "")
 			git(t, root, "checkout", "-b", "feature")
 			git(t, root, "checkout", "main")
 			git(t, root, "rm", "changes/0001-manual.md")
 			commit(t, root, "base without pending change")
 			git(t, root, "update-ref", "refs/remotes/origin/main", head(t, root))
 			git(t, root, "checkout", "feature")
-			for i := 0; i < limit; i++ {
+			for i := 0; i < tc.limit; i++ {
 				write(t, root, fmt.Sprintf("changes/archive/%04d-prior.md", i+1), fmt.Sprintf("---\nmodule: alpha\nphase: applied\n---\n## Motivation\nPrior %d.\n", i))
 				commit(t, root, "archived prior")
 			}
 			before := head(t, root)
 			s, err := workflow.Start(root, "manual")
-			if limit == 5 {
+			if tc.reject {
 				if err == nil || !containsCode(s.Diagnostics, "P07") || head(t, root) != before {
 					t.Errorf("shared max bound = %#v, %v", s, err)
 				}
 			}
-			if limit == 4 {
+			if !tc.reject {
 				if err != nil || !containsCode(s.Diagnostics, "P04") {
 					t.Errorf("unapproved below bound = %#v, %v", s, err)
+				}
+				for _, d := range s.Diagnostics {
+					if d.Code == "P04" && !d.Warning {
+						t.Errorf("P04 diagnostic is not a warning: %#v", d)
+					}
 				}
 			}
 		})
@@ -1160,6 +1174,10 @@ func Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses(t *testing.T) {
 	start(t, evalRoot)
 	if _, err := verify(evalRoot, true); err == nil || !strings.HasPrefix(err.Error(), "C10: no coverage for ALP-001") {
 		t.Errorf("coverage cause = %v", err)
+	}
+	before := head(t, evalRoot)
+	if _, err := done(evalRoot); err == nil || !strings.HasPrefix(err.Error(), "C10: no coverage for ALP-001") || head(t, evalRoot) != before {
+		t.Errorf("Done coverage cause = %v", err)
 	}
 	missingReport := fixture(t, "", "", "", "", "")
 	write(t, missingReport, ".fireweed/eval.sh", "#!/bin/sh\nexit 0\n")
