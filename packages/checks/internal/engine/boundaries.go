@@ -39,15 +39,15 @@ func Boundaries(ctx context.Context, request model.BoundaryRequest) ([]project.D
 		}
 		if global == nil && moduleHook == nil && len(module.Zones.Disposable) > 0 && boundaryReason(module) == "" {
 			violations++
-			diagnostics = append(diagnostics, project.Diagnostic{Code: "B05", Message: module.Name + ": missing boundaries hook"})
+			diagnostics = append(diagnostics, project.Diagnostic{Code: "X02", Message: module.Name + ": missing boundaries hook"})
 		}
 		if reason := boundaryReason(module); reason != "" {
-			diagnostics = append(diagnostics, project.Diagnostic{Code: "B05", Message: module.Name + ": boundaries opt-out: " + reason, Warning: true})
+			diagnostics = append(diagnostics, project.Diagnostic{Code: "X03", Message: module.Name + ": boundaries opt-out: " + reason, Warning: true})
 		}
 	}
 	if !configured {
 		if violations == 0 {
-			diagnostics = append(diagnostics, project.Diagnostic{Code: "B05", Message: "no boundary enforcement required; boundaries hook absent", Warning: true})
+			diagnostics = append(diagnostics, project.Diagnostic{Code: "X04", Message: "no boundary enforcement required; boundaries hook absent", Warning: true})
 			return diagnostics, nil
 		}
 		return diagnostics, fmt.Errorf("missing required boundaries hook")
@@ -74,6 +74,7 @@ func Boundaries(ctx context.Context, request model.BoundaryRequest) ([]project.D
 		values := map[string]string{"module": hook.module.Name, "module_dir": hook.module.Dir}
 		result, runErr := runHook(ctx, snapshot.Root, hook.command, values, request.Bin, request.Timeout)
 		if runErr != nil {
+			diagnostics = append(diagnostics, project.Diagnostic{Code: "X02", Message: "boundary hook: " + runErr.Error()})
 			return diagnostics, fmt.Errorf("boundary hook: %w", runErr)
 		}
 		for _, output := range []string{result.Stdout, result.Stderr} {
@@ -97,7 +98,7 @@ func Boundaries(ctx context.Context, request model.BoundaryRequest) ([]project.D
 				}
 				if owner != "" {
 					violations++
-					diagnostics = append(diagnostics, project.Diagnostic{Code: "B05", Message: line})
+					diagnostics = append(diagnostics, project.Diagnostic{Code: "X01", Message: line})
 				}
 			}
 		}

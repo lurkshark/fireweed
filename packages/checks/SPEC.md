@@ -130,10 +130,10 @@ Evaluate MUST fail when the eval hook does not write its JUnit report.
 Evaluate MUST reject a zero exit with mapped failures or a nonzero exit without mapped failures, while accepting a nonzero exit with mapped failures as valid report evidence.
 
 ### CHK-039
-Boundaries MUST return errors for unsuppressed module-attributed violations.
+Boundaries MUST return errors with diagnostic X01 for unsuppressed module-attributed violations.
 
 ### CHK-040
-Boundaries MUST return a visible warning containing the reason for a reasoned boundaries_opt_out.
+Boundaries MUST return a visible X03 warning containing the reason for a reasoned boundaries_opt_out.
 
 ### CHK-041
 Boundaries MUST suppress only exact baseline lines from normally exited hooks.
@@ -142,12 +142,12 @@ Boundaries MUST suppress only exact baseline lines from normally exited hooks.
 Boundaries MUST suppress only the opted-out module's violation lines through a reasoned opt-out after a hook exits normally.
 
 ### CHK-043
-Boundaries MUST report hook launch, cancellation or timeout failures as errors.
+Boundaries MUST report hook launch, cancellation or timeout failures as errors with diagnostic X02.
 
 ### CHK-044
-Boundaries MUST fail for a missing hook required by a module with disposable globs and no reasoned opt-out.
+Boundaries MUST fail with diagnostic X02 for a missing hook required by a module with disposable globs and no reasoned opt-out.
 
 ### CHK-045
-Boundaries MUST warn without an error for a missing hook when no boundary enforcement is required.
+Boundaries MUST warn with diagnostic X04 without an error for a missing hook when no boundary enforcement is required.
 
 ## Decisions
