@@ -114,6 +114,12 @@ func assertModuleJSON(t *testing.T, output string, names []string) {
 				t.Errorf("module %q missing resolved %s zone", module.Name, key)
 			}
 		}
+		for _, key := range []string{"protected", "append_only"} {
+			var paths []json.RawMessage
+			if err := json.Unmarshal(zoneFields[key], &paths); err != nil || paths == nil {
+				t.Errorf("module %q %s zone=%s; want array", module.Name, key, zoneFields[key])
+			}
+		}
 		got[module.Name] = true
 		switch module.Name {
 		case "alpha":
