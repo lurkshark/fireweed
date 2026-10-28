@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: runner
+phase: audit
+run: 20261028T211221-80fd9aefa1ac1fcec2faf6a6
 set:
     interface:
         - api.go
@@ -31,31 +34,31 @@ The projected set makes model/** retained interface before the first step.
 
 ## Added
 
-### new:agent-selection
+### RUN-001
 InvokeAgent MUST select agent.command for the worker role and audit.command for the audit role, falling back to agent.command when audit.command is unset.
 
-### new:agent-directory
+### RUN-002
 InvokeAgent MUST run the selected command from Snapshot.Root.
 
-### new:agent-expansion
+### RUN-003
 InvokeAgent MUST expand {prompt} and {git_common_dir} once in command templates and wrapper argv. Commands MUST accept shell strings or argv, quoting shell substitutions and preserving argv values literally.
 
-### new:agent-wrap
+### RUN-004
 InvokeAgent MUST prepend the configured agent.wrap argv prefix for both worker and audit commands.
 
-### new:agent-bin
+### RUN-005
 InvokeAgent MUST set the command's FIREWEED_BIN environment variable to the request Bin.
 
-### new:agent-output
+### RUN-006
 InvokeAgent MUST retain the command's stdout, stderr and exit code in AgentResult.
 
-### new:agent-lifetime
+### RUN-007
 InvokeAgent MUST use a positive request Timeout in preference to the configured timeout, using the configured timeout when the request is unset. It MUST stop the command's process group when that bound expires or its context is cancelled.
 
-### new:agent-usage
+### RUN-008
 InvokeAgent MUST set UsageLimit true exactly when a nonzero command exit has a configured limit_patterns match in its final 20 output lines.
 
-### new:agent-errors
+### RUN-009
 InvokeAgent MUST return command-launch, timeout or cancellation errors without discarding captured output.
 
 ## Modified
@@ -104,3 +107,7 @@ not compilation or unrelated failures. Implementation freezes evals/interface;
 workers never commit. Audit uses only the change, projected specs, evals,
 retained interfaces and governing rules, without implementation/history reads;
 re-audit only prior finding IDs and preserve prior passes and normal bounds.
+
+## Provenance
+
+- evals 2026-10-28T21:16:27.284693Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=177 failing=24 passing=153
