@@ -3,7 +3,6 @@ audit_pending:
     - CHK-065
 audit_rounds: 2
 bases: {}
-blocked: evals attempts exhausted
 module: checks
 phase: evals
 run: 20261028T143328-b8168faa7b2578efc49bb800
