@@ -229,7 +229,10 @@ func worktrees(f doctorFixture) string { return f.git("worktree", "list", "--por
 
 func assertScratchRemoved(t *testing.T, f doctorFixture) {
 	t.Helper()
-	common := strings.TrimSpace(f.git("rev-parse", "--path-format=absolute", "--git-common-dir"))
+	common := strings.TrimSpace(f.git("rev-parse", "--git-common-dir"))
+	if !filepath.IsAbs(common) {
+		common = filepath.Join(f.root, common)
+	}
 	common, err := filepath.EvalSymlinks(common)
 	if err != nil {
 		t.Fatal(err)

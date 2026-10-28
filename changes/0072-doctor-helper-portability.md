@@ -1,9 +1,12 @@
 ---
+audit_rounds: 0
 bases: {}
 eval_fix:
     - CHK-050
     - CHK-051
 module: checks
+phase: audit
+run: 20261028T203322-c8cf4243d0d0d9b57c2d399a
 ---
 
 
@@ -55,3 +58,7 @@ All 71 own cases must pass using ordinary PATH/Apple Git, with no newer-Git
 prefix. A focused cleanup run may precede required full controller phase checks;
 do not run another whole-suite quick check merely to duplicate those checks.
 The controller alone advances/commits. Implementation phase needs no source edit.
+
+## Provenance
+
+- evals 2026-10-28T20:39:26.095182Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=260 failing=0 passing=260
