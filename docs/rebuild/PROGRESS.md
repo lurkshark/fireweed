@@ -4,7 +4,7 @@
 
 The 0055–0059 checkpoint review passed with no issues and its explicit baseline
 history check passed over 341 commits. Current-source build/race/vet and NEW
-explanation JSON checks passed. **Applied since review: 3.** Continue D006 on
+explanation JSON checks passed. **Applied since review: 4.** Continue D006 on
 remaining existing static/CLI/lifecycle errors after the authorized push.
 
 The owner's goal update authorizes a subagent review at every five applied
@@ -164,6 +164,8 @@ count restarts. No queue or claim remains. Diagnostic migration is incomplete.
 - 0061 usage-code-explanations — AST-003; 3e801bf/dd38afc/875aff7; three reported failures → 32 own/240 total phase cases pass, no findings; U01/U02 explanations added with existing causes and unknown-code checks retained.
 
 - 0062 static-diagnostic-causes — PRJ-040–045 plus fixes PRJ-013; 7e2b3f6/d16c471/1e478b8; 17 reported failures → 74 own/228 total phase cases pass, no findings; existing Check graph/syntax/metadata/queue/target paths classified, C01 retained and duplicate-section C05 corrected; 20 focused public cases added with existing fixture helpers.
+
+- 0063 eval-diagnostic-causes — CHK-002/025–028/036–038/046–048; 4db7bf5/4b1e611/f6b9921; 17 reported failures → 37 own/163 total phase cases pass, no findings; existing eval/coverage/result errors now carry C10/C11/E01/P2-01, with static and lookup causes preserved; signatures unchanged.
 
 ## Next
 
