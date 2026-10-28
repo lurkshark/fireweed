@@ -52,3 +52,12 @@ Any further unresolved finding or block stops. No new phase-write exception,
 bound change, drill or deferred contracts-gap fix is proposed. The separately
 received documentation-refocus proposal remains unapplied in /tmp and must be
 reconciled with this newer state at a future safe author boundary.
+
+## Additional eval_fix explicitly approved — 2026-10-28
+
+The owner approved one CHK-055 eval_fix, completion of the existing runner
+eval_fix and scoped subagent re-review, using isolated auditors and pushing only
+on PASS. Use native controller phase advancement with fixed-profile CLI workers
+and auditors; audit snapshots contain only permitted inputs. Record coordinator
+advancement honestly. No product-spec/interface, history, counter or bound change
+is authorized. The prior audit deviation remains part of the record.

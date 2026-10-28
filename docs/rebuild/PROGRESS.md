@@ -8,7 +8,7 @@ cleanup complete. It reports an error-prefix contract gap and its agent read
 dependent internals, so strict independence acceptance is not established; see
 [the reviewed report](reports/contracts-drill.md). No gap fix or repeat drill is
 authorized. 0069 now implements recipe-based initialization through NEW.
-**Applied since review: 6; correction audit gap requires human review.**
+**Applied since review: 6; additional eval_fix and isolated review approved.**
 0071–0075 applied the doctor backend, portable cleanup helper, emitted-code
 explanations, doctor/guidance CLI and bounded invocation primitive. The approved
 0071 recovery passed; [its report](reports/doctor-0071-block.md) preserves the
@@ -28,8 +28,9 @@ push to synchronize the P07 shared base; preserve all bounds/history.
 0076 applied at 995eebb with 298 phase passes, but native audit inputs violated
 restrictions. A supplemental isolated assertion review found an unresolved
 CHK-055 stop-before-planting assertion gap. See
-[the correction report](reports/checkpoint-corrections-0076.md). The approved
-runner eval_fix is pending; no push occurred after ce165ab. The full goal remains
+[the correction report](reports/checkpoint-corrections-0076.md). The owner approved a normal CHK-055 eval_fix, then the pending runner eval_fix
+and scoped subagent re-review, with isolated phase auditors and push only on
+PASS. No push occurred after ce165ab. The full goal remains
 incomplete.
 
 The owner's goal update authorizes a subagent review at every five applied
@@ -51,7 +52,7 @@ audits, audit bounds, timeouts and recurring checkpoint reviews remain in force.
 
 Controller: `.fireweed/bin/fireweed-bootstrap` 0.1.0, source `7f925190878e38fc38f30d16bb1cf47aca098cf7`, pin SHA-256 `f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f`; unchanged.
 Stage-2 history baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`; always check an explicit nonempty baseline..HEAD range. Use `GOCACHE=/tmp/fireweed-rebuild-cache`.
-NEW binary: `bin/fireweed`, clean source `a3c044a7a0f20c02789210fa9be1d4ef0c40949d` (CGO disabled); [committed manual-lifecycle report](reports/manual-lifecycle.md). Unbuilt commands remain explicit errors; the empty runner is expected.
+NEW binary: `bin/fireweed`, clean source `a3c044a7a0f20c02789210fa9be1d4ef0c40949d` (CGO disabled); [committed manual-lifecycle report](reports/manual-lifecycle.md). Unbuilt commands remain explicit errors; next/run orchestration remains unimplemented.
 
 Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`. Interactive work through 0014's initial evals was followed by coordinator `done`, hence legacy `agent=manual` lines. Configured controller execution began at 0014's audit; its provenance records the actual command/model. Continue configured execution. Ignored runtime logs are auxiliary, not reviewable evidence; archives, permanent evals and committed reports carry the evidence.
 
@@ -245,12 +246,12 @@ acceptance remains unverified. No gap fix/rerun is authorized or performed.
 
 ## Next
 
-Stop for the [0076 correction review](reports/checkpoint-corrections-0076.md).
-Proposed additional authorization: one normal checks eval_fix for CHK-055, then
-the already-approved runner eval_fix, full verification and scoped checkpoint
-re-review before any correction push. Preserve specs/interfaces, assertions,
-history and controller bounds. No additional work is authorized by the failed
-supplemental review. The documentation-refocus proposal remains unapplied.
+Execute the approved CHK-055 eval_fix, then the already-approved runner eval_fix,
+using isolated auditors for each. Complete full verification and the same
+subagent's scoped checkpoint re-review; push corrections only on PASS. Preserve
+specs/interfaces, assertions, history and controller bounds. Any block or further
+unresolved issue stops. The documentation-refocus proposal remains unapplied and
+must be reconciled with newer evidence at a safe author boundary.
 
 0. The owner-approved 0070 explanation correction/re-review passed and pushed
    e083c5f. The following 0071–0075 slice now reaches the blocked checkpoint above;
