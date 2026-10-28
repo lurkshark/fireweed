@@ -1,0 +1,583 @@
+package evals_test
+
+import (
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"runtime"
+	"strings"
+	"testing"
+	"time"
+
+	"github.com/lurkshark/fireweed/packages/assets"
+	"github.com/lurkshark/fireweed/packages/checks"
+	"github.com/lurkshark/fireweed/packages/contracts"
+	"github.com/lurkshark/fireweed/packages/project"
+	"gopkg.in/yaml.v3"
+)
+
+const doctorGuidance = "<!-- fireweed:start -->\nThis project uses fireweed. Specs and change files are the source of truth.\nRun `fireweed playbook author-change` before authoring changes and\n`fireweed context <change>` before each step.\n<!-- fireweed:end -->\n"
+
+type doctorFixture struct {
+	t    *testing.T
+	root string
+	log  string
+	bin  string
+}
+
+func (f doctorFixture) put(name, body string) {
+	f.t.Helper()
+	path := filepath.Join(f.root, filepath.FromSlash(name))
+	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+		f.t.Fatal(err)
+	}
+	if err := os.WriteFile(path, []byte(body), 0644); err != nil {
+		f.t.Fatal(err)
+	}
+}
+
+func (f doctorFixture) git(args ...string) string {
+	f.t.Helper()
+	cmd := exec.Command("git", args...)
+	cmd.Dir = f.root
+	cmd.Env = append(os.Environ(), "GIT_CONFIG_NOSYSTEM=1", "GIT_TERMINAL_PROMPT=0")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		f.t.Fatalf("git %v: %v: %s", args, err, out)
+	}
+	return string(out)
+}
+
+func (f doctorFixture) commit() {
+	f.t.Helper()
+	f.git("init", "-b", "main")
+	f.git("config", "user.name", "Doctor Fixture")
+	f.git("config", "user.email", "doctor@example.test")
+	f.git("add", ".")
+	f.git("commit", "-m", "fixture")
+}
+
+func (f doctorFixture) request(noAgent bool) checks.DoctorRequest {
+	return checks.DoctorRequest{Root: f.root, Bin: f.bin, NoAgent: noAgent, Timeout: 15 * time.Second}
+}
+
+func doctorConfig(t *testing.T, recipe assets.Recipe) string {
+	t.Helper()
+	config := map[string]any{
+		"fireweed": ">=0.1, <0.2", "version": 1, "base": "main", "modules": []string{"packages/*"},
+		"limit_patterns":  []string{"rate limit"},
+		"module_defaults": map[string]any{"interface": recipe.ModuleDefaults.Interface, "evals": recipe.ModuleDefaults.Evals, "disposable": recipe.ModuleDefaults.Disposable},
+		"hooks":           recipe.Hooks,
+		"agent":           map[string]any{"command": []string{"sh", ".fireweed/agent.sh", "{prompt}", "{git_common_dir}"}, "wrap": []string{"sh", ".fireweed/wrap.sh"}},
+		"audit":           map[string]any{"enabled": true, "command": []string{"sh", ".fireweed/audit.sh", "{prompt}"}},
+	}
+	data, err := yaml.Marshal(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return string(data)
+}
+
+func (f doctorFixture) editConfig(change func(map[string]any)) {
+	f.t.Helper()
+	var config map[string]any
+	if err := yaml.Unmarshal(mustRead(f.t, filepath.Join(f.root, "fireweed.yaml")), &config); err != nil {
+		f.t.Fatal(err)
+	}
+	change(config)
+	data, err := yaml.Marshal(config)
+	if err != nil {
+		f.t.Fatal(err)
+	}
+	f.put("fireweed.yaml", string(data))
+}
+
+func newDoctorFixture(t *testing.T) doctorFixture {
+	t.Helper()
+	r, err := assets.BuiltinRecipe("go")
+	if err != nil {
+		t.Fatal(err)
+	}
+	f := doctorFixture{t: t, root: t.TempDir(), log: filepath.Join(t.TempDir(), "probes.log")}
+	f.put("go.mod", "module example.test/doctorfixture\n\ngo 1.23\n")
+	f.put("fireweed.yaml", doctorConfig(t, r))
+	f.put("AGENTS.md", "Before.\n"+doctorGuidance+"After.\n")
+	f.put("packages/alpha/SPEC.md", "---\nname: alpha\nid_prefix: ALP\ndepends_on: []\n---\n# Alpha\n\n## Specs\n\n### ALP-001\nThe fixture MUST pass.\n")
+	f.put("packages/alpha/api.go", "package alpha\n")
+	for path, body := range r.Files {
+		f.put(path, body)
+	}
+	f.put(".fireweed/wrap.sh", fmt.Sprintf("#!/bin/sh\nprintf 'wrap:%%s\n' \"$PWD\" >> %q\nexec \"$@\"\n", f.log))
+	f.put(".fireweed/agent.sh", fmt.Sprintf("#!/bin/sh\nprintf 'worker:%%s:%%s:%%s\n' \"$PWD\" \"$1\" \"$2\" >> %q\nprintf 'FIREWEED_DOCTOR_OK\\n'\n", f.log))
+	f.put(".fireweed/audit.sh", fmt.Sprintf("#!/bin/sh\nprintf 'audit:%%s:%%s\n' \"$PWD\" \"$1\" >> %q\nprintf 'FIREWEED_DOCTOR_OK\\n'\n", f.log))
+	return f
+}
+
+func localDoctorFixture(t *testing.T) doctorFixture {
+	t.Helper()
+	f := doctorFixture{t: t, root: t.TempDir(), log: filepath.Join(t.TempDir(), "probes.log")}
+	f.bin = filepath.Join(t.TempDir(), "fake-fireweed")
+	if err := os.WriteFile(f.bin, []byte(`#!/bin/sh
+if test "$1" != modules || test "$2" != --json; then exit 2; fi
+printf '{"data":['
+first=1
+find packages -name SPEC.md | while IFS= read -r spec; do
+  dir=${spec%/SPEC.md}; name=$(sed -n 's/^name: //p' "$spec" | head -1)
+  if test "$first" = 0; then printf ','; fi; first=0
+  printf '{"name":"%s","dir":"%s","depends_on":[],"zones":{"interface":["api.txt"],"evals":["evals/**"],"disposable":["internal/**"]}}' "$name" "$dir"
+done
+printf ']}'
+`), 0700); err != nil {
+		t.Fatal(err)
+	}
+	recipe := assets.Recipe{ModuleDefaults: structZones(), Hooks: map[string]any{
+		"eval":       "sh .fireweed/eval.sh {module} {module_dir} {report}",
+		"boundaries": "sh .fireweed/boundary.sh",
+		"setup":      "sh .fireweed/setup.sh",
+	}}
+	f.put("fireweed.yaml", doctorConfig(t, recipe))
+	f.put("AGENTS.md", doctorGuidance)
+	f.put("packages/alpha/SPEC.md", "---\nname: alpha\nid_prefix: ALP\ndepends_on: []\n---\n# Alpha\n\n## Specs\n\n### ALP-001\nThe fixture MUST pass.\n")
+	f.put("packages/alpha/api.txt", "public\n")
+	f.put(".fireweed/templates/module/SPEC.md", "---\nname: {{name}}\nid_prefix: {{prefix}}\ndepends_on: []\n---\n# {{name}}\n\n## Specs\n\n### {{prefix}}-001\nThe canary MUST pass.\n")
+	f.put(".fireweed/templates/module/api.txt.tmpl", "{{package}} {{go_module}} {{module_dir}} {{other_dir}}\n")
+	f.put(".fireweed/canaries/canaries.yaml", `version: 1
+baseline:
+  SPEC.md: "---\nname: {{name}}\nid_prefix: {{prefix}}\ndepends_on: []\n---\n# {{name}}\n\n## Specs\n\n### {{prefix}}-001\nThe canary MUST pass.\n"
+  api.txt: "{{package}} {{go_module}} {{module_dir}} {{other_dir}}"
+undeclared:
+  undeclared.txt: "{{other_dir}}"
+internal_eval:
+  internal/private.txt: "private"
+  evals/internal.txt: "{{module_dir}}"
+failing_eval:
+  evals/failing.txt: "{{prefix}}-001"
+missing_id:
+  evals/missing.txt: "UNMAPPED-999"
+`)
+	f.put(".fireweed/setup.sh", fmt.Sprintf("#!/bin/sh\nprintf 'setup:%%s\n' \"$PWD\" >> %q\n", f.log))
+	f.put(".fireweed/eval.sh", fmt.Sprintf(`#!/bin/sh
+printf 'eval:%%s:%%s:%%s\n' "$PWD" "$1" "$FIREWEED_BIN" >> %q
+prefix=$(sed -n 's/^id_prefix: //p' "$2/SPEC.md" | head -1)
+if test -f "$2/evals/failing.txt"; then printf '<testsuite><testcase name="%%s-001"><failure/></testcase></testsuite>' "$prefix" > "$3"; exit 1; fi
+if test -f "$2/evals/missing.txt"; then printf '<testsuite><testcase name="UNMAPPED-999"/></testsuite>' > "$3"; exit 0; fi
+printf '<testsuite><testcase name="%%s-001"/></testsuite>' "$prefix" > "$3"
+`, f.log))
+	f.put(".fireweed/boundary.sh", fmt.Sprintf(`#!/bin/sh
+printf 'boundaries:%%s:%%s\n' "$PWD" "$FIREWEED_BIN" >> %q
+find packages -name SPEC.md | while IFS= read -r spec; do
+  dir=${spec%%/SPEC.md}; name=$(sed -n 's/^name: //p' "$spec" | head -1)
+  if test -f "$dir/undeclared.txt"; then printf '%%s: undeclared import\n' "$name"; fi
+  if test -f "$dir/evals/internal.txt"; then printf '%%s: interface violation\n' "$name"; fi
+done
+`, f.log))
+	f.put(".fireweed/wrap.sh", fmt.Sprintf("#!/bin/sh\nprintf 'wrap:%%s\n' \"$PWD\" >> %q\nexec \"$@\"\n", f.log))
+	f.put(".fireweed/agent.sh", fmt.Sprintf("#!/bin/sh\nprintf 'worker:%%s:%%s:%%s\n' \"$PWD\" \"$1\" \"$2\" >> %q\nprintf 'FIREWEED_DOCTOR_OK\\n'\n", f.log))
+	f.put(".fireweed/audit.sh", fmt.Sprintf("#!/bin/sh\nprintf 'audit:%%s:%%s\n' \"$PWD\" \"$1\" >> %q\nprintf 'FIREWEED_DOCTOR_OK\\n'\n", f.log))
+	return f
+}
+
+func structZones() (z contracts.Zones) {
+	z.Interface = []string{"api.txt"}
+	z.Evals = []string{"evals/**"}
+	z.Disposable = []string{"internal/**"}
+	return
+}
+
+func doctorText(report checks.DoctorReport) string {
+	return fmt.Sprintf("checks=%+v diagnostics=%+v", report.Checks, report.Diagnostics)
+}
+func hasDoctorDiagnostic(report checks.DoctorReport, code string, warning bool, terms ...string) bool {
+	for _, d := range report.Diagnostics {
+		if d.Code != code || d.Warning != warning {
+			continue
+		}
+		ok := true
+		for _, s := range terms {
+			if !strings.Contains(strings.ToLower(d.Message), strings.ToLower(s)) {
+				ok = false
+			}
+		}
+		if ok {
+			return true
+		}
+	}
+	return false
+}
+func hasDoctorCheck(report checks.DoctorReport, name string, passed bool) bool {
+	for _, c := range report.Checks {
+		if strings.Contains(c.Name, name) && c.Passed == passed {
+			return true
+		}
+	}
+	return false
+}
+func doctorErrors(report checks.DoctorReport) bool {
+	for _, d := range report.Diagnostics {
+		if !d.Warning {
+			return true
+		}
+	}
+	return false
+}
+func doctorLog(f doctorFixture) string { b, _ := os.ReadFile(f.log); return string(b) }
+func worktrees(f doctorFixture) string { return f.git("worktree", "list", "--porcelain") }
+
+func Test_CHK_049_StaticDiagnosticsStopProbes(t *testing.T) {
+	f := localDoctorFixture(t)
+	f.put("packages/alpha/SPEC.md", "---\nname: alpha\nid_prefix: ALP\ndepends_on: []\n---\n## Specs\n### ALP-001\nA.\n### ALP-001\nB.\n")
+	f.commit()
+	want := project.Check(f.root)
+	if len(want) == 0 {
+		t.Fatal("fixture has no static diagnostic")
+	}
+	report := checks.Doctor(context.Background(), f.request(false))
+	for _, d := range want {
+		if d.Warning {
+			continue
+		}
+		if !hasDoctorDiagnostic(report, d.Code, false) {
+			t.Errorf("project diagnostic %v lost: %s", d, doctorText(report))
+		}
+	}
+	if strings.Contains(doctorLog(f), "setup:") || strings.Contains(doctorLog(f), "eval:") || strings.Contains(doctorLog(f), "worker:") {
+		t.Errorf("static error ran probes: %s", doctorLog(f))
+	}
+}
+
+func Test_CHK_050_CHK_051_CHK_052_CHK_053_CHK_055_CHK_056_CHK_057_CHK_058_CHK_059_CHK_060_CHK_061_CHK_067_RealGoRecipe(t *testing.T) {
+	f := newDoctorFixture(t)
+	f.commit()
+	f.bin = doctorBinary(t)
+	f.editConfig(func(config map[string]any) {
+		config["modules"] = []string{"packages/alpha"}
+		config["hooks"].(map[string]any)["setup"] = fmt.Sprintf("printf 'setup:%%s\\n' \"$PWD\" >> %q; test -z \"$(git symbolic-ref -q HEAD)\" && test -f .fireweed/doctor-untracked && go mod download", f.log)
+	})
+	f.put(".fireweed/doctor-untracked", "ready\n")
+	for _, d := range project.Check(f.root) {
+		if !d.Warning {
+			t.Fatalf("invalid Go doctor fixture: %+v", d)
+		}
+	}
+	beforeStatus, beforeWorktrees := f.git("status", "--porcelain", "--untracked-files=all"), worktrees(f)
+	report := checks.Doctor(context.Background(), f.request(true))
+	if doctorErrors(report) {
+		t.Errorf("real Go recipe doctor failed: %s", doctorText(report))
+	}
+	for _, name := range []string{"baseline", "undeclared", "internal_eval", "failing_eval", "missing_id", "recovery"} {
+		if !hasDoctorCheck(report, name, true) {
+			t.Errorf("missing passing %s outcome: %s", name, doctorText(report))
+		}
+	}
+	recoveries := 0
+	for _, check := range report.Checks {
+		if strings.Contains(strings.ToLower(check.Name), "recovery") && check.Passed {
+			recoveries++
+		}
+	}
+	if recoveries < 4 {
+		t.Errorf("clean recovery not reported after each canary: %s", doctorText(report))
+	}
+	modules := map[string]bool{}
+	for _, check := range report.Checks {
+		if check.Module != "" && check.Module != "alpha" {
+			modules[check.Module] = true
+		}
+	}
+	if len(modules) < 2 {
+		t.Errorf("two distinct throwaway modules absent: %s", doctorText(report))
+	}
+	if !strings.Contains(doctorLog(f), "setup:") || !strings.Contains(doctorLog(f), "/fireweed/worktrees/") {
+		t.Errorf("setup did not run in scratch: %s", doctorLog(f))
+	}
+	if strings.Contains(doctorLog(f), "worker:") || strings.Contains(doctorLog(f), "audit:") {
+		t.Errorf("NoAgent ran agents: %s", doctorLog(f))
+	}
+	if got := f.git("status", "--porcelain", "--untracked-files=all"); got != beforeStatus {
+		t.Errorf("caller changed: before %q after %q", beforeStatus, got)
+	}
+	if got := worktrees(f); got != beforeWorktrees {
+		t.Errorf("scratch registration leaked: before %q after %q", beforeWorktrees, got)
+	}
+}
+
+func Test_CHK_051_CHK_052_SetupFailureStopsAndCleans(t *testing.T) {
+	f := localDoctorFixture(t)
+	f.put(".fireweed/setup.sh", "#!/bin/sh\necho failed setup >&2\nexit 17\n")
+	f.commit()
+	before := worktrees(f)
+	report := checks.Doctor(context.Background(), f.request(false))
+	if !hasDoctorDiagnostic(report, "C14", false, "setup") {
+		t.Errorf("setup failure absent: %s", doctorText(report))
+	}
+	if strings.Contains(doctorLog(f), "eval:") || strings.Contains(doctorLog(f), "boundaries:") || strings.Contains(doctorLog(f), "worker:") {
+		t.Errorf("setup failure ran later probes: %s", doctorLog(f))
+	}
+	if got := worktrees(f); got != before {
+		t.Errorf("scratch worktree leaked: %q", got)
+	}
+}
+
+func Test_CHK_054_MissingTemplatesAndCanaryMaps(t *testing.T) {
+	for _, tc := range []struct{ name, path, body, term string }{{"template", ".fireweed/templates/module/SPEC.md", "", "template"}, {"canary", ".fireweed/canaries/canaries.yaml", "version: 1\nbaseline: {}\n", "canary"}, {"wrong version", ".fireweed/canaries/canaries.yaml", "version: 2\nbaseline: {}\n", "canary"}, {"malformed", ".fireweed/canaries/canaries.yaml", "version: [bad\n", "canary"}} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := localDoctorFixture(t)
+			if tc.body == "" {
+				if err := os.Remove(filepath.Join(f.root, tc.path)); err != nil {
+					t.Fatal(err)
+				}
+			} else {
+				f.put(tc.path, tc.body)
+			}
+			f.commit()
+			report := checks.Doctor(context.Background(), f.request(true))
+			if !hasDoctorDiagnostic(report, "C14", false, tc.term) {
+				t.Errorf("missing C14: %s", doctorText(report))
+			}
+			if hasDoctorCheck(report, "undeclared", true) {
+				t.Errorf("invalid recipe passed canary: %s", doctorText(report))
+			}
+		})
+	}
+}
+
+func Test_CHK_055_CHK_056_CHK_057_CHK_058_CHK_059_ZeroHookAndRecovery(t *testing.T) {
+	f := localDoctorFixture(t)
+	f.put(".fireweed/boundary.sh", "#!/bin/sh\nexit 0\n")
+	f.put(".fireweed/eval.sh", `#!/bin/sh
+printf '<testsuite><testcase name="ALP-001"/></testsuite>' > "$3"
+`)
+	f.commit()
+	before := worktrees(f)
+	report := checks.Doctor(context.Background(), f.request(true))
+	for _, tc := range []struct{ name, hook string }{{"undeclared", "boundar"}, {"internal_eval", "boundar"}, {"failing_eval", "eval"}, {"missing_id", "eval"}} {
+		if !hasDoctorDiagnostic(report, "C14", false, tc.name, tc.hook) {
+			t.Errorf("missed %s canary not diagnosed with hook: %s", tc.name, doctorText(report))
+		}
+	}
+	if !doctorErrors(report) {
+		t.Errorf("zero hooks accepted: %s", doctorText(report))
+	}
+	if got := worktrees(f); got != before {
+		t.Errorf("failed canary leaked worktree: %s", got)
+	}
+
+	g := localDoctorFixture(t)
+	g.put(".fireweed/boundary.sh", fmt.Sprintf(`#!/bin/sh
+find packages -name SPEC.md | while IFS= read -r spec; do
+  dir=${spec%%/SPEC.md}; name=$(sed -n 's/^name: //p' "$spec" | head -1)
+  if test -f "$dir/undeclared.txt"; then printf '%%s' "$name" > .fireweed/recovery-seen; printf '%%s: undeclared import\n' "$name"; fi
+done
+if test -f .fireweed/recovery-seen && ! find packages -name undeclared.txt | grep -q .; then printf '%%s: lingering violation\n' "$(cat .fireweed/recovery-seen)"; fi
+`))
+	g.commit()
+	r := checks.Doctor(context.Background(), g.request(true))
+	if !hasDoctorDiagnostic(r, "C14", false, "recovery", "undeclared", "boundar") {
+		t.Errorf("missing failed recovery diagnostic: %s", doctorText(r))
+	}
+}
+
+func Test_CHK_055_CHK_058_CHK_059_EvalEvidenceIsSpecific(t *testing.T) {
+	for _, tc := range []struct{ name, script, canary string }{
+		{"missing baseline coverage", `#!/bin/sh
+printf '<testsuite/>' > "$3"
+`, "baseline"},
+		{"failing eval compile error without report", `#!/bin/sh
+if test -f "$2/evals/failing.txt"; then echo 'compile error' >&2; exit 2; fi
+prefix=$(sed -n 's/^id_prefix: //p' "$2/SPEC.md" | head -1)
+printf '<testsuite><testcase name="%s-001"/></testsuite>' "$prefix" > "$3"
+`, "failing_eval"},
+		{"failing eval with unrelated failure", `#!/bin/sh
+if test -f "$2/evals/failing.txt"; then printf '<testsuite><testcase name="ALP-001"><failure/></testcase></testsuite>' > "$3"; exit 1; fi
+prefix=$(sed -n 's/^id_prefix: //p' "$2/SPEC.md" | head -1)
+printf '<testsuite><testcase name="%s-001"/></testsuite>' "$prefix" > "$3"
+`, "failing_eval"},
+		{"missing id with unrelated failure", `#!/bin/sh
+prefix=$(sed -n 's/^id_prefix: //p' "$2/SPEC.md" | head -1)
+if test -f "$2/evals/missing.txt"; then printf '<testsuite><testcase name="%s-001"><failure/></testcase></testsuite>' "$prefix" > "$3"; exit 1; fi
+printf '<testsuite><testcase name="%s-001"/></testsuite>' "$prefix" > "$3"
+`, "missing_id"},
+		{"missing id without report", `#!/bin/sh
+if test -f "$2/evals/missing.txt"; then echo 'hook failed' >&2; exit 2; fi
+prefix=$(sed -n 's/^id_prefix: //p' "$2/SPEC.md" | head -1)
+printf '<testsuite><testcase name="%s-001"/></testsuite>' "$prefix" > "$3"
+`, "missing_id"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := localDoctorFixture(t)
+			f.put(".fireweed/eval.sh", tc.script)
+			f.commit()
+			r := checks.Doctor(context.Background(), f.request(true))
+			if !hasDoctorDiagnostic(r, "C14", false, tc.canary, "eval") {
+				t.Errorf("unrelated eval outcome accepted: %s", doctorText(r))
+			}
+		})
+	}
+}
+
+func Test_CHK_056_CHK_057_BoundaryViolationMustNameCanaryModule(t *testing.T) {
+	f := localDoctorFixture(t)
+	f.put(".fireweed/boundary.sh", `#!/bin/sh
+if find packages \( -name undeclared.txt -o -name internal.txt \) | grep -q .; then printf 'alpha: unrelated violation\n'; fi
+`)
+	f.commit()
+	r := checks.Doctor(context.Background(), f.request(true))
+	for _, name := range []string{"undeclared", "internal_eval"} {
+		if !hasDoctorDiagnostic(r, "C14", false, name, "boundar") {
+			t.Errorf("unrelated module violation accepted for %s: %s", name, doctorText(r))
+		}
+	}
+}
+
+func Test_CHK_060_CHK_062_ModuleOverridesAndBoundaryWarnings(t *testing.T) {
+	f := localDoctorFixture(t)
+	f.put(".fireweed/override-eval.sh", fmt.Sprintf("#!/bin/sh\nprintf 'override-eval:%%s\\n' \"$PWD\" >> %q\nexec sh .fireweed/eval.sh \"$@\"\n", f.log))
+	f.put(".fireweed/override-boundary.sh", fmt.Sprintf("#!/bin/sh\nprintf 'override-boundaries:%%s:%%s\\n' \"$PWD\" \"$1\" >> %q\nexec sh .fireweed/boundary.sh\n", f.log))
+	f.put("packages/alpha/SPEC.md", "---\nname: alpha\nid_prefix: ALP\ndepends_on: []\nhooks:\n  eval: sh .fireweed/override-eval.sh {module} {module_dir} {report}\n  boundaries: sh .fireweed/override-boundary.sh {module}\n---\n# Alpha\n\n## Specs\n\n### ALP-001\nThe fixture MUST pass.\n")
+	f.commit()
+	report := checks.Doctor(context.Background(), f.request(true))
+	if doctorErrors(report) || strings.Count(doctorLog(f), "override-eval:") < 2 || strings.Count(doctorLog(f), "override-boundaries:") < 2 {
+		t.Errorf("override probes absent: %s", doctorLog(f))
+	}
+	g := localDoctorFixture(t)
+	g.editConfig(func(config map[string]any) { delete(config["hooks"].(map[string]any), "boundaries") })
+	g.put("packages/alpha/SPEC.md", strings.Replace(string(mustRead(t, filepath.Join(g.root, "packages/alpha/SPEC.md"))), "depends_on: []", "depends_on: []\nboundaries_opt_out: legacy", 1))
+	g.commit()
+	r := checks.Doctor(context.Background(), g.request(true))
+	if !hasDoctorDiagnostic(r, "X03", true, "legacy") || !hasDoctorDiagnostic(r, "X04", true, "no boundary enforcement required") {
+		t.Errorf("optional boundaries warning lost: %s", doctorText(r))
+	}
+}
+
+func Test_CHK_063_CHK_064_CHK_065_CHK_066_CHK_067_AgentProbes(t *testing.T) {
+	f := localDoctorFixture(t)
+	f.commit()
+	for _, d := range project.Check(f.root) {
+		if !d.Warning {
+			t.Fatalf("invalid agent fixture: %+v", d)
+		}
+	}
+	r := checks.Doctor(context.Background(), f.request(false))
+	log := doctorLog(f)
+	if doctorErrors(r) || strings.Count(log, "worker:") != 1 || strings.Count(log, "audit:") != 1 || strings.Count(log, "wrap:") != 2 || !strings.Contains(log, "FIREWEED_DOCTOR_OK") {
+		t.Errorf("worker/audit/wrap probes: %s; log=%s", doctorText(r), log)
+	}
+	for _, part := range []string{"/fireweed/worktrees/", "worker:", "audit:"} {
+		if !strings.Contains(log, part) {
+			t.Errorf("scratch/role marker %s absent: %s", part, log)
+		}
+	}
+
+	g := localDoctorFixture(t)
+	g.editConfig(func(config map[string]any) {
+		delete(config["audit"].(map[string]any), "command")
+		config["agent"].(map[string]any)["command"] = "sh .fireweed/agent.sh {prompt} {git_common_dir}"
+	})
+	g.commit()
+	rr := checks.Doctor(context.Background(), g.request(false))
+	if !hasDoctorDiagnostic(rr, "C15", true, "shared") || strings.Count(doctorLog(g), "worker:") != 2 {
+		t.Errorf("audit fallback: %s; log=%s", doctorText(rr), doctorLog(g))
+	}
+
+	h := localDoctorFixture(t)
+	h.put(".fireweed/agent.sh", fmt.Sprintf("#!/bin/sh\nfor i in $(seq 1 25); do printf 'line-%%02d\\n' \"$i\"; done\necho RATE LIMIT reached\nexit 9\n"))
+	h.commit()
+	bad := checks.Doctor(context.Background(), h.request(false))
+	if !hasDoctorDiagnostic(bad, "C15", false, "usage limit", "rate limit", "line-25") {
+		t.Errorf("usage-limit tail missing: %s", doctorText(bad))
+	}
+	if strings.Contains(doctorText(bad), "line-01") {
+		t.Errorf("agent output was not trimmed to final 20 lines: %s", doctorText(bad))
+	}
+	for _, tc := range []struct{ name, script string }{{"wrong reply", "#!/bin/sh\necho WRONG_REPLY\n"}, {"nonzero with reply", "#!/bin/sh\necho FIREWEED_DOCTOR_OK\nexit 7\n"}, {"ordinary failure", "#!/bin/sh\nfor i in $(seq 1 25); do printf 'ordinary-%02d\\n' \"$i\"; done\nexit 8\n"}} {
+		t.Run(tc.name, func(t *testing.T) {
+			q := localDoctorFixture(t)
+			q.put(".fireweed/agent.sh", tc.script)
+			q.commit()
+			r := checks.Doctor(context.Background(), q.request(false))
+			if !hasDoctorDiagnostic(r, "C15", false, "agent.sh") {
+				t.Errorf("agent failure accepted: %s", doctorText(r))
+			}
+			if tc.name == "ordinary failure" && (!hasDoctorDiagnostic(r, "C15", false, "ordinary-25") || strings.Contains(doctorText(r), "ordinary-01")) {
+				t.Errorf("ordinary failure tail incorrect: %s", doctorText(r))
+			}
+		})
+	}
+
+	i := localDoctorFixture(t)
+	i.put(".fireweed/audit.sh", "#!/bin/sh\nsleep 2\n")
+	i.commit()
+	req := i.request(false)
+	req.Timeout = 100 * time.Millisecond
+	start := time.Now()
+	timed := checks.Doctor(context.Background(), req)
+	if !hasDoctorDiagnostic(timed, "C15", false, "audit") || time.Since(start) > 4*time.Second {
+		t.Errorf("audit timeout not bounded: %s; elapsed=%s", doctorText(timed), time.Since(start))
+	}
+
+	j := localDoctorFixture(t)
+	j.commit()
+	skip := checks.Doctor(context.Background(), j.request(true))
+	if strings.Contains(doctorLog(j), "worker:") || strings.Contains(doctorLog(j), "audit:") || !hasDoctorCheck(skip, "undeclared", true) || !strings.Contains(doctorLog(j), j.bin) {
+		t.Errorf("NoAgent skipped hooks or ran agent: %s; log=%s", doctorText(skip), doctorLog(j))
+	}
+}
+
+func Test_CHK_068_CHK_069_ManagedGuidanceAndPlaybookBase(t *testing.T) {
+	f := localDoctorFixture(t)
+	text, err := assets.Playbook("evals")
+	if err != nil {
+		t.Fatal(err)
+	}
+	sum := sha256.Sum256([]byte(text))
+	base := hex.EncodeToString(sum[:])
+	f.put(".fireweed/playbooks/evals.md", "---\nembedded_base: "+base+"\n---\n# Local override\n")
+	f.commit()
+	r := checks.Doctor(context.Background(), f.request(true))
+	if hasDoctorDiagnostic(r, "C16", true) {
+		t.Errorf("current guidance/base warned: %s", doctorText(r))
+	}
+	f.put("AGENTS.md", "Before.\n<!-- fireweed:start -->\nold guidance\n<!-- fireweed:end -->\nAfter.\n")
+	f.put(".fireweed/playbooks/evals.md", "---\nembedded_base: stale\n---\n# Local override\n")
+	stale := checks.Doctor(context.Background(), f.request(true))
+	if !hasDoctorDiagnostic(stale, "C16", true, "AGENTS.md") || !hasDoctorDiagnostic(stale, "C16", true, "evals") {
+		t.Errorf("stale guidance/base not warned: %s", doctorText(stale))
+	}
+	if err := os.Remove(filepath.Join(f.root, "AGENTS.md")); err != nil {
+		t.Fatal(err)
+	}
+	f.put(".fireweed/playbooks/evals.md", "# No embedded base\n")
+	missing := checks.Doctor(context.Background(), f.request(true))
+	if !hasDoctorDiagnostic(missing, "C16", true, "AGENTS.md") || !hasDoctorDiagnostic(missing, "C16", true, "evals") {
+		t.Errorf("missing guidance/base not warned: %s", doctorText(missing))
+	}
+}
+
+func mustRead(t *testing.T, path string) []byte {
+	t.Helper()
+	b, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return b
+}
+func doctorBinary(t *testing.T) string {
+	t.Helper()
+	_, file, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatal("caller")
+	}
+	root := filepath.Clean(filepath.Join(filepath.Dir(file), "..", "..", ".."))
+	bin := filepath.Join(t.TempDir(), "fireweed-new")
+	cmd := exec.Command("go", "build", "-o", bin, ".")
+	cmd.Dir = root
+	cmd.Env = append(os.Environ(), "GOCACHE=/tmp/fireweed-rebuild-cache")
+	if out, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("build product: %v: %s", err, out)
+	}
+	return bin
+}

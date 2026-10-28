@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: checks
+phase: audit
+run: 20261028T143328-b8168faa7b2578efc49bb800
 ---
 
 
@@ -27,67 +30,67 @@ implementation internal. Existing public signatures remain unchanged.
 
 ## Added
 
-### new:doctor-project
+### CHK-049
 Doctor MUST retain project.Check diagnostics and prevent hook or agent probes when the current project has a static error.
 
-### new:doctor-scratch
+### CHK-050
 Doctor MUST run probes using current project files in a detached scratch worktree below the common Git directory's fireweed/worktrees, leaving the caller's checkout unchanged.
 
-### new:doctor-cleanup
+### CHK-051
 Doctor MUST remove its scratch worktree and Git registration after successful or failed probes.
 
-### new:doctor-setup
+### CHK-052
 Doctor MUST run the configured setup hook in scratch before probes; a setup failure MUST produce C14 naming the setup hook and prevent later probes.
 
-### new:doctor-modules
+### CHK-053
 Doctor MUST render two uniquely named throwaway modules from project-owned module templates and the version-1 canary baseline, substituting name, prefix, package, go_module, module_dir and other_dir.
 
-### new:doctor-inputs
+### CHK-054
 Doctor MUST report C14 naming missing or malformed module templates or required canary maps and skip the affected probes.
 
-### new:doctor-baselines
+### CHK-055
 Doctor MUST require passing baseline evals, coverage and applicable boundaries before planting canaries and after removing each planted canary, reporting C14 with the failed hook and canary when recovery fails.
 
-### new:doctor-undeclared
+### CHK-056
 Doctor MUST plant the supplied undeclared canary and require its boundary hook to report a module-attributed violation; a missed canary MUST produce C14 naming the hook and canary.
 
-### new:doctor-internal-eval
+### CHK-057
 Doctor MUST plant the supplied internal_eval canary and require its boundary hook to report a module-attributed interface violation; a missed canary MUST produce C14 naming the hook and canary.
 
-### new:doctor-failing-eval
+### CHK-058
 Doctor MUST require the supplied failing_eval canary to produce a failed referencing testcase and nonzero eval exit; compile errors, missing reports and unrelated failures MUST NOT count as detection.
 
-### new:doctor-missing-id
+### CHK-059
 Doctor MUST require the supplied missing_id canary to be rejected for its unmapped testcase ID; unrelated hook or report failures MUST NOT count as detection.
 
-### new:doctor-hook-overrides
+### CHK-060
 Doctor MUST test applicable global eval and boundary hooks and every per-module override through their corresponding canary probes.
 
-### new:doctor-hooks-bin
+### CHK-061
 Doctor MUST set probe hooks' FIREWEED_BIN to the request Bin and make the scratch canary modules discoverable through that executable's modules output.
 
-### new:doctor-boundary-warnings
+### CHK-062
 Doctor MUST retain each real module's reasoned X03 boundaries-opt-out warning and applicable X04 warning when no boundary enforcement is required.
 
-### new:doctor-agents
+### CHK-063
 Doctor MUST run the worker and audit commands once each in scratch through the configured agent.wrap with a fixed-reply prompt, requiring exit 0 and the requested reply for success.
 
-### new:doctor-agent-fallback
+### CHK-064
 Doctor MUST use agent.command for the audit probe when audit.command is unset and emit a C15 warning identifying the shared-command blind spot.
 
-### new:doctor-agent-failures
+### CHK-065
 Doctor MUST bound each agent probe by the request Timeout or three minutes when unset, and report C15 failures with the command and its final 20 output lines.
 
-### new:doctor-agent-limits
+### CHK-066
 Doctor MUST classify a configured limit_patterns match in an agent probe's final 20 output lines as a C15 usage-limit diagnostic rather than an ordinary command failure.
 
-### new:doctor-no-agent
+### CHK-067
 Doctor with NoAgent MUST skip worker and audit command execution while retaining hook canary and recovery checks.
 
-### new:doctor-agents-md
+### CHK-068
 Doctor MUST emit a C16 warning when the AGENTS.md managed block is missing or differs from the current fireweed guidance, while accepting a current block regardless of surrounding text.
 
-### new:doctor-playbook-base
+### CHK-069
 Doctor MUST emit a C16 warning when a project playbook override's embedded_base is missing or differs from the SHA-256 of its current embedded playbook; a matching base MUST avoid that warning.
 
 ## Modified
@@ -160,3 +163,7 @@ The next authorized slices explain these newly emitted doctor codes in assets
 and wire doctor through app. Do not run any drill or fix the deferred contracts
 drill gap. Controller owns phase commits/spec application/archive; workers never
 commit.
+
+## Provenance
+
+- evals 2026-10-28T14:45:56.315816Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=248 failing=22 passing=226

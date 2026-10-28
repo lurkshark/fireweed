@@ -45,3 +45,22 @@ type ZoneRequest struct {
 	InterfaceDeclared bool
 	Changes           []gitstore.Change
 }
+
+type DoctorRequest struct {
+	Root    string
+	Bin     string
+	NoAgent bool
+	Timeout time.Duration
+}
+
+type DoctorCheck struct {
+	Name   string
+	Module string
+	Passed bool
+	Detail string
+}
+
+type DoctorReport struct {
+	Checks      []DoctorCheck
+	Diagnostics []project.Diagnostic
+}
