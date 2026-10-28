@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"regexp"
 	"strings"
 	"testing"
@@ -574,7 +575,7 @@ func toAudit(t *testing.T, root string) workflow.State {
 	return r.State
 }
 
-func Test_FLOW_032_FLOW_033_EvalsDoneUsesDefaultAuditOrDisabledImpl(t *testing.T) {
+func Test_FLOW_032_FLOW_033_FLOW_046_EvalsDoneUsesDefaultAuditOrDisabledImpl(t *testing.T) {
 	for _, disabled := range []bool{false, true} {
 		t.Run(fmt.Sprint(disabled), func(t *testing.T) {
 			config := ""
@@ -587,7 +588,7 @@ func Test_FLOW_032_FLOW_033_EvalsDoneUsesDefaultAuditOrDisabledImpl(t *testing.T
 			start(t, root)
 			before := head(t, root)
 			r, err := done(root)
-			if err != nil || r.State.Phase != want || head(t, root) == before {
+			if err != nil || r.State.Phase != want || head(t, root) == before || r.State.PhaseBase != head(t, root) {
 				t.Errorf("Done = %#v, %v; want %s with commit", r, err, want)
 			}
 			current, err := workflow.Current(root, "manual")
@@ -598,12 +599,12 @@ func Test_FLOW_032_FLOW_033_EvalsDoneUsesDefaultAuditOrDisabledImpl(t *testing.T
 	}
 }
 
-func Test_FLOW_034_FLOW_036_FLOW_041_AuditAcceptsOnlyExactClauseFindingsAndCheckedNoFindings(t *testing.T) {
+func Test_FLOW_034_FLOW_036_FLOW_041_FLOW_046_AuditAcceptsOnlyExactClauseFindingsAndCheckedNoFindings(t *testing.T) {
 	root := fixture(t, "", "", "", "", "")
 	toAudit(t, root)
 	audit(t, root, "- ALP-999: \"Missing MUST clause.\" — invalid ID\n- ALP-001: \"Alpha MUST do something else.\" — invalid quote\nChecked IDs: ALP-001\nNo findings\n")
 	r, err := done(root)
-	if err != nil || r.State.Phase != "impl" {
+	if err != nil || r.State.Phase != "impl" || r.State.PhaseBase != head(t, root) {
 		t.Errorf("invalid findings were retained: %#v, %v", r, err)
 	}
 	b, _ := os.ReadFile(filepath.Join(root, "changes/0001-manual.md"))
@@ -619,7 +620,7 @@ func Test_FLOW_034_FLOW_036_FLOW_041_AuditAcceptsOnlyExactClauseFindingsAndCheck
 	}
 }
 
-func Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_AuditFindingsConvergeAndPersistTwoRoundBound(t *testing.T) {
+func Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_FLOW_046_AuditFindingsConvergeAndPersistTwoRoundBound(t *testing.T) {
 	root := fixture(t, "", "", "### new:extra [review]\nExtra MUST be visible.\n", "", "")
 	toAudit(t, root)
 	finding := "- ALP-001: \"" + newClause + "\" — missing assertion\n"
@@ -630,7 +631,7 @@ func Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_AuditFindingsCon
 		}
 		audit(t, root, body)
 		r, err := done(root)
-		if err != nil || r.State.Phase != "evals" {
+		if err != nil || r.State.Phase != "evals" || r.State.PhaseBase != head(t, root) {
 			t.Fatalf("finding round %d = %#v, %v", round, r, err)
 		}
 		current, err := workflow.Current(root, "manual")
@@ -665,7 +666,7 @@ func Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_AuditFindingsCon
 	toAudit(t, configured)
 	audit(t, configured, finding)
 	first, err := done(configured)
-	if err != nil || first.State.Phase != "evals" {
+	if err != nil || first.State.Phase != "evals" || first.State.PhaseBase != head(t, configured) {
 		t.Fatalf("configured first finding = %#v, %v", first, err)
 	}
 	firstCurrent, err := workflow.Current(configured, "manual")
@@ -702,7 +703,7 @@ func Test_FLOW_040_FLOW_042_FLOW_043_UntestableFindingBlocksWithQuestion(t *test
 	}
 }
 
-func Test_FLOW_004_FLOW_028_ImplDoneAppliesSpecsSetAndDecisionsAndArchives(t *testing.T) {
+func Test_FLOW_004_FLOW_028_FLOW_044_FLOW_045_FLOW_046_FLOW_047_ImplDoneAppliesSpecsSetAndDecisionsAndArchives(t *testing.T) {
 	root := fixture(t, "audit:\n  enabled: false\nverify_dependents: none\n", "set:\n  interface: [api.go, extra.go]\n  hooks:\n    eval: [sh, .fireweed/eval.sh, \"{module}\", \"{report}\"]\n", "### new:extra [review]\nExtra MUST be visible.\n", "", "### ALP-002\n")
 	p := filepath.Join(root, ".fireweed/eval.sh")
 	b, _ := os.ReadFile(p)
@@ -720,7 +721,7 @@ func Test_FLOW_004_FLOW_028_ImplDoneAppliesSpecsSetAndDecisionsAndArchives(t *te
 	start(t, root)
 	evalsHead := head(t, root)
 	r, err := done(root)
-	if err != nil || r.State.Phase != "impl" || head(t, root) == evalsHead {
+	if err != nil || r.State.Phase != "impl" || head(t, root) == evalsHead || r.State.PhaseBase != head(t, root) {
 		t.Fatalf("evals transition = %#v, %v", r, err)
 	}
 	implBase := head(t, root)
@@ -735,7 +736,7 @@ func Test_FLOW_004_FLOW_028_ImplDoneAppliesSpecsSetAndDecisionsAndArchives(t *te
 	}
 	write(t, root, "packages/alpha/internal/ready", "ready\n")
 	r, err = done(root)
-	if err != nil || r.State.Phase != "applied" || head(t, root) == implBase {
+	if err != nil || r.State.Phase != "applied" || head(t, root) == implBase || r.State.PhaseBase != head(t, root) {
 		t.Fatalf("impl transition = %#v, %v", r, err)
 	}
 	if _, err := os.Stat(filepath.Join(root, "changes/0001-manual.md")); !os.IsNotExist(err) {
@@ -748,6 +749,15 @@ func Test_FLOW_004_FLOW_028_ImplDoneAppliesSpecsSetAndDecisionsAndArchives(t *te
 	spec, err := os.ReadFile(filepath.Join(root, "packages/alpha/SPEC.md"))
 	if err != nil {
 		t.Fatal(err)
+	}
+	moduleDoc, err := contracts.ParseDocument(string(spec))
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantInterface := []any{"api.go", "extra.go"}
+	wantHooks := map[string]any{"eval": []any{"sh", ".fireweed/eval.sh", "{module}", "{report}"}}
+	if !reflect.DeepEqual(moduleDoc.Frontmatter["interface"], wantInterface) || !reflect.DeepEqual(moduleDoc.Frontmatter["hooks"], wantHooks) {
+		t.Errorf("set values missing from module metadata: %#v", moduleDoc.Frontmatter)
 	}
 	for _, want := range []string{"phase: applied", "## Provenance"} {
 		if !strings.Contains(string(archive), want) {
@@ -762,7 +772,7 @@ func Test_FLOW_004_FLOW_028_ImplDoneAppliesSpecsSetAndDecisionsAndArchives(t *te
 	if strings.Contains(string(spec), "### ALP-002") || strings.Contains(string(spec), "Retain old policy.") {
 		t.Errorf("removed spec/decision remains: %s", spec)
 	}
-	if !strings.Contains(string(spec), "manual") {
+	if !strings.Contains(string(spec), "- manual: Use the revised policy.") {
 		t.Errorf("decision attribution missing: %s", spec)
 	}
 	if _, err := workflow.Current(root, "manual"); err == nil {
@@ -776,7 +786,7 @@ func Test_FLOW_004_FLOW_028_ImplDoneAppliesSpecsSetAndDecisionsAndArchives(t *te
 	}
 }
 
-func Test_FLOW_003_FLOW_004_FLOW_024_FailedDoneKeepsPhaseAndHead(t *testing.T) {
+func Test_FLOW_003_FLOW_004_FLOW_024_FLOW_048_FailedDoneKeepsPhaseAndHead(t *testing.T) {
 	root := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
 	hookPath := filepath.Join(root, ".fireweed/eval.sh")
 	hook, err := os.ReadFile(hookPath)
