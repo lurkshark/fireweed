@@ -3,7 +3,7 @@
 ## Current status — 2026-10-27
 
 Human review 8 approved 0032–0034; the authorized push synchronized main and
-origin/main at 16cc688 and cleared P07. **Applied since review: 1.** Resume
+origin/main at 16cc688 and cleared P07. **Applied since review: 2.** Resume
 PRJ-004–006 with the existing consecutive-project split authorization.
 
 The owner's goal update authorizes a subagent review at every five applied
@@ -74,6 +74,8 @@ change, claim or scratch worktree. Prior race/vet/CI/doctor evidence is reused
 because this slice changed only spec wording and eval labels/table metadata.
 
 - 0035 queue-document-specs — PRJ-027–031; c22892f/ac152fa/6187c97; 53 own cases and 199 total phase cases pass; no findings, implementation unchanged.
+
+- 0036 narrow-change-resolution-spec — PRJ-004; 49b9f0e/9bdc62d/0fc27f1; 53 own cases and 199 total phase cases pass; no findings, implementation unchanged.
 
 ## Next
 
