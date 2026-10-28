@@ -13,7 +13,7 @@ func checkSpecs() []contracts.Item {
 	return []contracts.Item{{ID: "CHK-001"}, {ID: "CHK-002"}, {ID: "CHK-003"}}
 }
 
-func Test_CHK_001_NestedJUnitIDsResultsAndTime(t *testing.T) {
+func Test_CHK_001_CHK_029_CHK_030_NestedJUnitIDsResultsAndTime(t *testing.T) {
 	data := []byte(`<testsuites><testsuite name="outer"><testsuite name="inner">
 <testcase classname="suite.ChK_001" name="passes" time="1.25"/>
 <testcase classname="suite" name="test_chk002_failed" time="0.5"><failure message="bad"/></testcase>
@@ -41,7 +41,7 @@ func Test_CHK_001_NestedJUnitIDsResultsAndTime(t *testing.T) {
 	}
 }
 
-func Test_CHK_001_SingleSuiteSkippedDoesNotCover(t *testing.T) {
+func Test_CHK_001_CHK_002_CHK_029_CHK_030_SingleSuiteSkippedDoesNotCover(t *testing.T) {
 	report, err := checks.ParseJUnit([]byte(`<testsuite><testcase name="CHK-001" classname="unit" time="0.125"><skipped/></testcase></testsuite>`), checkSpecs())
 	if err != nil {
 		t.Fatal(err)
@@ -54,13 +54,13 @@ func Test_CHK_001_SingleSuiteSkippedDoesNotCover(t *testing.T) {
 	}
 }
 
-func Test_CHK_001_RejectMalformedXML(t *testing.T) {
+func Test_CHK_027_RejectMalformedXML(t *testing.T) {
 	if _, err := checks.ParseJUnit([]byte(`<testsuite><testcase name="CHK-001"></testsuite>`), checkSpecs()); err == nil {
 		t.Error("malformed XML accepted")
 	}
 }
 
-func Test_CHK_001_RejectMissingAndUnknownIDs(t *testing.T) {
+func Test_CHK_028_CHK_029_RejectMissingAndUnknownIDs(t *testing.T) {
 	for _, xml := range []string{
 		`<testsuite><testcase name="ordinary" classname="unit"/></testsuite>`,
 		`<testsuite><testcase name="ordinary" classname="unit"><skipped/></testcase></testsuite>`,

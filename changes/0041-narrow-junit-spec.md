@@ -1,13 +1,16 @@
 ---
 already_satisfied:
     - CHK-001
-    - new:junit-malformed
-    - new:junit-invalid-ids
-    - new:junit-id-mapping
-    - new:junit-results
+    - CHK-027
+    - CHK-028
+    - CHK-029
+    - CHK-030
+audit_rounds: 0
 bases:
     CHK-001: 6794875b
 module: checks
+phase: audit
+run: 20261028T053206-0fd8210f3a61dc9c5c2d10c5
 ---
 
 
@@ -26,16 +29,16 @@ bundled into ParseJUnit's contract. All existing assertions are retained.
 
 ## Added
 
-### new:junit-malformed
+### CHK-027
 ParseJUnit MUST reject malformed XML.
 
-### new:junit-invalid-ids
+### CHK-028
 ParseJUnit MUST reject testcases with missing or unknown spec IDs.
 
-### new:junit-id-mapping
+### CHK-029
 ParseJUnit MUST map testcase name and classname to current spec IDs using contracts.MatchesID.
 
-### new:junit-results
+### CHK-030
 ParseJUnit MUST classify failure and error elements as fail, and skipped elements as skip.
 
 ## Modified
@@ -61,3 +64,7 @@ uses the malformed ID; RejectMissingAndUnknownIDs uses invalid-ID/mapping IDs.
 Do not change checkSpecs, XML fixtures, helper behavior, code or interfaces.
 No new Test functions, t.Run cases or fixture instances. Implementation may
 edit only this change file. Preserve all other coverage labels.
+
+## Provenance
+
+- evals 2026-10-28T05:32:51.870903Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=146 failing=0 passing=146
