@@ -101,7 +101,7 @@ func Test_PRJ_029_PRJ_030_QueueRejectsInvalidDocuments(t *testing.T) {
 	}
 }
 
-func Test_PRJ_004_PRJ_031_TargetAliasesAndAmbiguousSlug(t *testing.T) {
+func Test_PRJ_004_PRJ_031_PRJ_032_TargetAliasesAndAmbiguousSlug(t *testing.T) {
 	root := fixture(t)
 	queued(t, root, "0001-first.md", "", "First.\n", "### new:first\nFirst MUST work.\n", "", "")
 	queued(t, root, "0002-second.md", "", "Second.\n", "### new:second\nSecond MUST work.\n", "", "")
@@ -141,7 +141,7 @@ func Test_PRJ_004_PRJ_031_TargetAliasesAndAmbiguousSlug(t *testing.T) {
 	}
 }
 
-func Test_PRJ_005_ProjectEditsAndLocalHandles(t *testing.T) {
+func Test_PRJ_005_PRJ_032_PRJ_036_ProjectEditsAndLocalHandles(t *testing.T) {
 	root := fixture(t)
 	queued(t, root, "0001-first.md", "", "First.\n", "### new:shared\nFirst change MUST retain its own text.\n", "### ALP-001 [review]\nAlpha MUST have revised full text.\n", "")
 	queued(t, root, "0002-second.md", "", "Second.\n", "### new:shared\nSecond change MUST retain different text.\n", "", "### ALP-001\n")
@@ -169,7 +169,7 @@ func Test_PRJ_005_ProjectEditsAndLocalHandles(t *testing.T) {
 	}
 }
 
-func Test_PRJ_005_SetFieldsAndRejections(t *testing.T) {
+func Test_PRJ_005_PRJ_033_PRJ_034_PRJ_035_SetFieldsAndRejections(t *testing.T) {
 	root := fixture(t)
 	put(t, root, "packages/beta/SPEC.md", "---\nname: beta\nid_prefix: BET\ndepends_on: []\n---\n# Beta\n\n## Specs\n")
 	queued(t, root, "0001-settings.md", "set:\n  depends_on: [beta]\n  interface: [next.go]\n  evals: [checks/**]\n  disposable: [generated/**]\n  preserve: [records/**]\n  append_only: [migrations/**]\n  boundaries_opt_out: reviewed boundary\n  hooks:\n    test:\n      command: [go, test, ./...]\n", "Settings are needed.\n", "", "", "")
@@ -195,13 +195,13 @@ func Test_PRJ_005_SetFieldsAndRejections(t *testing.T) {
 	if alpha.Document.Frontmatter["boundaries_opt_out"] != "reviewed boundary" || !reflect.DeepEqual(alpha.Document.Frontmatter["hooks"], wantHooks) {
 		t.Errorf("projected scalar/map settings lost: %#v", alpha.Document.Frontmatter)
 	}
-	for _, tc := range []struct{ name, settings string }{
-		{"identity_name", "name: renamed"},
-		{"identity_prefix", "id_prefix: NEW"},
-		{"unknown_field", "surprise: true"},
-		{"invalid_graph", "depends_on: [missing]"},
+	for _, tc := range []struct{ id, name, settings string }{
+		{"PRJ-034", "identity_name", "name: renamed"},
+		{"PRJ-034", "identity_prefix", "id_prefix: NEW"},
+		{"PRJ-034", "unknown_field", "surprise: true"},
+		{"PRJ-035", "invalid_graph", "depends_on: [missing]"},
 	} {
-		t.Run(tc.name, func(t *testing.T) {
+		t.Run(tc.id+"_"+tc.name, func(t *testing.T) {
 			badRoot := fixture(t)
 			queued(t, badRoot, "0001-invalid.md", "set:\n  "+tc.settings+"\n", "Needed.\n", "", "", "")
 			if _, err := project.Project(badRoot, ""); err == nil {
