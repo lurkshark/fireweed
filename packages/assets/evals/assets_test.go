@@ -174,6 +174,24 @@ func Test_AST_003_Explanations(t *testing.T) {
 		requirePattern(t, text, `(?i)(no|none)[^.\n]*boundar[^.\n]*enforcement[^.\n]*(required|needed)|(no|none)[^.\n]*module[^.\n]*(requires?|needs?)[^.\n]*boundar`, "no boundary enforcement required")
 		requirePattern(t, text, `(?i)(no (action|fix|change)|leave[^.\n]*hook[^.\n]*absent)|(configure|add)[^.\n]*hook[^.\n]*(if|when)[^.\n]*need`, "action appropriate when enforcement is unnecessary")
 	})
+	t.Run("U01", func(t *testing.T) {
+		text, err := assets.Explain("U01")
+		if err != nil {
+			t.Fatalf("Explain(U01): %v", err)
+		}
+		requirePattern(t, text, `(?i)(invalid|unexpected|unsupported|unrecognized)[^.\n]*argument|argument[^.\n]*(invalid|unexpected|unsupported|unrecognized)`, "invalid argument")
+		requirePattern(t, text, `(?i)(invalid|unexpected|unsupported|unrecognized)[^.\n]*option|option[^.\n]*(invalid|unexpected|unsupported|unrecognized)`, "invalid option")
+		requirePattern(t, text, `(?i)(unsupported|unknown|unrecognized)[^.\n]*command|command[^.\n]*(unsupported|unknown|unrecognized)`, "unsupported command")
+		requirePattern(t, text, `(?i)(use|check|consult|see|follow)[^.\n]*(supported|valid)[^.\n]*(syntax|usage)|(check|consult|see|run)[^.\n]*(help|--help)`, "corrective action using supported syntax or help")
+	})
+	t.Run("U02", func(t *testing.T) {
+		text, err := assets.Explain("U02")
+		if err != nil {
+			t.Fatalf("Explain(U02): %v", err)
+		}
+		requirePattern(t, text, `(?i)(unknown|unrecognized|invalid)[^.\n]*(lookup|name|playbook|explain)|(lookup|name|playbook|explain)[^.\n]*(unknown|unrecognized|invalid)`, "unknown lookup name")
+		requirePattern(t, text, `(?i)(choose|use|select|provide)[^.\n]*(valid|known|listed|supported)[^.\n]*(name|code|playbook|lookup)`, "corrective action to select a valid lookup name")
+	})
 	t.Run("P2-01", func(t *testing.T) {
 		text, err := assets.Explain("P2-01")
 		if err != nil {

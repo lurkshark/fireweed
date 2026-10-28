@@ -1,7 +1,10 @@
 ---
+audit_rounds: 0
 bases:
     AST-003: 477c5b10
 module: assets
+phase: audit
+run: 20261028T083045-4f27220f190698eb33960992
 ---
 
 
@@ -44,3 +47,9 @@ cover an unknown lookup name and selecting a valid name. These two currently
 unknown codes must genuinely fail before implementation. Only add explanation
 text for these emitted codes; do not implement commands or explain unused
 allocations. Controller owns specs, commits and archive.
+
+Fail-first evidence: `go test ./packages/assets/evals -run 'Test_AST_003_Explanations/U0[12]' -count=1` failed for both U01 and U02 because Explain returned `unknown diagnostic code`. `verify --quick` reported both new subcases failing and all existing explanation subcases passing.
+
+## Provenance
+
+- evals 2026-10-28T08:33:15.770359Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=240 failing=3 passing=237
