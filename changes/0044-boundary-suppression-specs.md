@@ -1,12 +1,15 @@
 ---
 already_satisfied:
-    - new:boundary-violations
-    - new:boundary-opt-out-warning
-    - new:boundary-baseline
-    - new:boundary-opt-out-suppression
-    - new:boundary-failed-hooks
+    - CHK-039
+    - CHK-040
+    - CHK-041
+    - CHK-042
+    - CHK-043
+audit_rounds: 0
 bases: {}
 module: checks
+phase: audit
+run: 20261028T054107-b7e31d3bfecf376475df71dc
 ---
 
 
@@ -25,19 +28,19 @@ public eval assertions already cover these requirements.
 
 ## Added
 
-### new:boundary-violations
+### CHK-039
 Boundaries MUST return errors for unsuppressed module-attributed violations.
 
-### new:boundary-opt-out-warning
+### CHK-040
 Boundaries MUST return a visible warning containing the reason for a reasoned boundaries_opt_out.
 
-### new:boundary-baseline
+### CHK-041
 Boundaries MUST suppress only exact baseline lines from normally exited hooks.
 
-### new:boundary-opt-out-suppression
+### CHK-042
 Boundaries MUST suppress only the opted-out module's violation lines through a reasoned opt-out after a hook exits normally.
 
-### new:boundary-failed-hooks
+### CHK-043
 Boundaries MUST report hook launch, cancellation or timeout failures as errors.
 
 ## Modified
@@ -61,3 +64,7 @@ baseline/opt-out IDs to NormalNonzeroExitCanUseBaselineAndOptOut; and failed-hoo
 ID to LaunchCancellationAndTimeoutStayErrors. Preserve every assertion and
 all 28 checks cases. No new Test functions, t.Run cases, fixture instances,
 helpers, product code or interfaces. Implementation may edit only this change file.
+
+## Provenance
+
+- evals 2026-10-28T05:41:57.09782Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=146 failing=0 passing=146

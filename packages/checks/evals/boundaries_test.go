@@ -58,7 +58,7 @@ func boundaryHasWarning(diags []project.Diagnostic) bool {
 	return false
 }
 
-func Test_CHK_005_GlobalAndModuleBoundaryHooks(t *testing.T) {
+func Test_CHK_005_CHK_039_GlobalAndModuleBoundaryHooks(t *testing.T) {
 	snap := boundarySnapshot(t, nil)
 	globalMarker := filepath.Join(snap.Root, "global-ran")
 	moduleMarker := filepath.Join(snap.Root, "module-ran")
@@ -84,7 +84,7 @@ func Test_CHK_005_GlobalAndModuleBoundaryHooks(t *testing.T) {
 	}
 }
 
-func Test_CHK_005_ExactBaselineOnly(t *testing.T) {
+func Test_CHK_005_CHK_041_ExactBaselineOnly(t *testing.T) {
 	snap := boundarySnapshot(t, nil)
 	if err := os.MkdirAll(filepath.Join(snap.Root, ".fireweed"), 0755); err != nil {
 		t.Fatal(err)
@@ -104,7 +104,7 @@ func Test_CHK_005_ExactBaselineOnly(t *testing.T) {
 	}
 }
 
-func Test_CHK_005_OptOutSuppressesOnlyItsModuleAndWarns(t *testing.T) {
+func Test_CHK_005_CHK_040_CHK_042_OptOutSuppressesOnlyItsModuleAndWarns(t *testing.T) {
 	snap := boundarySnapshot(t, nil)
 	snap.Modules[0].Document.Frontmatter["boundaries_opt_out"] = "legacy dependency"
 	snap.Modules = append(snap.Modules, project.Module{Name: "beta", Dir: "packages/beta", Zones: contracts.Zones{Disposable: []string{"internal/**"}}, Document: contracts.Document{Frontmatter: map[string]any{}}})
@@ -142,7 +142,7 @@ func Test_CHK_005_MissingHookRequiredVersusOptional(t *testing.T) {
 	}
 }
 
-func Test_CHK_005_NormalNonzeroExitCanUseBaselineAndOptOut(t *testing.T) {
+func Test_CHK_005_CHK_041_CHK_042_NormalNonzeroExitCanUseBaselineAndOptOut(t *testing.T) {
 	snap := boundarySnapshot(t, nil)
 	if err := os.MkdirAll(filepath.Join(snap.Root, ".fireweed"), 0755); err != nil {
 		t.Fatal(err)
@@ -158,7 +158,7 @@ func Test_CHK_005_NormalNonzeroExitCanUseBaselineAndOptOut(t *testing.T) {
 	}
 }
 
-func Test_CHK_005_LaunchCancellationAndTimeoutStayErrors(t *testing.T) {
+func Test_CHK_005_CHK_043_LaunchCancellationAndTimeoutStayErrors(t *testing.T) {
 	snap := boundarySnapshot(t, nil)
 	snap.Modules[0].Document.Frontmatter["boundaries_opt_out"] = "legacy"
 	snap.Config["hooks"] = map[string]any{"boundaries": []any{filepath.Join(snap.Root, "missing-executable")}}
