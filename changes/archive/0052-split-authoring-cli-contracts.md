@@ -31,7 +31,7 @@ bases:
     APP-007: 9427709a
     APP-008: cb56cc70
 module: app
-phase: impl
+phase: applied
 run: 20261028T064628-e207a5b15498f58dcd06a2b2
 ---
 
@@ -144,9 +144,14 @@ assertions. Keep helpers, fixture paths/strings, binary builds, hooks, code,
 interfaces and diagnostic assertions unchanged. No new Test functions, t.Run
 cases or fixture instances. Implementation may edit only this change file.
 
+Implementation review found the split contracts already satisfied by the
+existing CLI and retargeted evals. Quick verification passed; no product or eval
+files changed in this step.
+
 ## Provenance
 
 - evals 2026-10-28T06:50:09.147566Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=86 failing=0 passing=86
 - audit 2026-10-28T06:51:44.032583Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 - evals 2026-10-28T06:53:21.440089Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=86 failing=0 passing=86
 - audit 2026-10-28T06:53:49.130328Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-28T06:55:10.946356Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=86 failing=0 passing=86

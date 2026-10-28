@@ -27,26 +27,22 @@ Each information command MUST accept --json and emit one JSON object with schema
 It MUST return exit 0 and leave stderr empty.
 
 ### APP-003
-Unknown commands/options, missing or extra arguments, and unknown lookup names
-MUST return exit 2 with a nonempty corrective diagnostic. Commands listed by help
-but still under construction MUST explicitly report that they are unimplemented
-and return nonzero. Failed --json requests MUST use the schema-1 envelope with
-null data and a diagnostic containing code and message.
+Unknown commands or options and missing or extra arguments MUST return exit 2 with a nonempty corrective diagnostic.
 
 ### APP-004
-modules MUST discover the nearest ancestor fireweed.yaml and report the validated graph, using the held approved projected snapshot while this worktree owns a change. With --json it MUST return schema 1 with array data containing name, id_prefix, dir, depends_on and resolved zone arrays, plus empty diagnostics. Success and missing/invalid configuration MUST return exits 0 and 2 respectively, with a corrective C01 failure diagnostic.
+modules MUST report the validated graph, using the held approved projected snapshot while this worktree owns a change.
 
 ### APP-005
-The new-change <module> <slug> command MUST use the discovered project root to create the project API's queued skeleton and print its repository-relative path with exit 0. Missing/extra arguments, invalid module/slug and duplicate slugs MUST return exit 2 with a corrective diagnostic, preserving existing files. --json MUST use schema 1 with string path data on success, or null data and code/message diagnostics on failure.
+new-change <module> <slug> MUST use the discovered project root to create the project API's queued skeleton and print its repository-relative path with exit 0.
 
 ### APP-006
-stamp <change> MUST discover the root, invoke project.Stamp and print confirmation with exit 0, accepting the existing change aliases and leaving Added handles unassigned. It MUST return exit 2 for usage/configuration errors and exit 1 for stamping rejections, with code/message diagnostics. With --json it MUST return schema 1 with string confirmation data on success, or null data and diagnostics on failure.
+stamp <change> MUST discover the root, invoke project.Stamp and print confirmation with exit 0, accepting the existing change aliases and leaving Added handles unassigned.
 
 ### APP-007
-check MUST invoke project.Check and exit 0 when no error diagnostics remain, or exit 1 with all diagnostics when static checks fail. Usage/configuration errors MUST return exit 2 with code/message diagnostics. With --json it MUST return schema 1 with string summary data on success, null data on failure and the reported diagnostics.
+check MUST invoke project.Check and exit 0 when no error diagnostics remain, or exit 1 with all diagnostics when static checks fail.
 
 ### APP-008
-show <module> [ID] MUST return the current module document or selected item, using the whole-queue project projection with --projected. With --json it MUST return the same text as string data in schema 1 with empty diagnostics and exit 0. Unknown/ambiguous module or item, invalid arguments and configuration errors MUST return exit 2 with code/message diagnostics.
+show <module> [ID] MUST return the current module document or selected item, using the whole-queue project projection with --projected.
 
 ### APP-009
 start <change> MUST discover the root, invoke workflow.Start and print first-step workflow.Context with exit 0, assigning IDs/run/phase without committing. It MUST preserve reported warnings and return exit 1 for lifecycle rejection or 2 for usage/configuration errors, with corrective code/message diagnostics. --json MUST use schema 1 with context string data on success or null data on failure.
@@ -59,5 +55,47 @@ context <change> [--full] MUST return the held workflow.Context text, using comp
 
 ### APP-012
 coverage <module> MUST evaluate current specs, or the selected projection with --with-change <change>, using approved metadata while held and setting FIREWEED_BIN to the actual executable. It MUST map results to IDs, require coverage/pass and return exit 0 on success or 1 on failed checks. Usage/configuration/unknown module/change errors MUST return 2 with corrective diagnostics; --json uses schema 1 with report data on success, null on failure and code/message diagnostics.
+
+### APP-013
+Unknown explain codes or playbook names MUST return exit 2 with a nonempty corrective diagnostic.
+
+### APP-014
+Commands listed by help but still under construction MUST explicitly report that they are unimplemented and return nonzero.
+
+### APP-015
+Failed --json requests MUST use the schema-1 envelope with null data and a diagnostic containing code and message.
+
+### APP-016
+modules MUST discover the nearest ancestor fireweed.yaml.
+
+### APP-017
+modules --json MUST return schema 1 with array data containing name, id_prefix, dir, depends_on and resolved zone arrays, plus empty diagnostics on success.
+
+### APP-018
+modules MUST return exit 0 on success or exit 2 for missing or invalid configuration, with a corrective C01 failure diagnostic.
+
+### APP-019
+new-change MUST return exit 2 with a corrective diagnostic for missing or extra arguments, invalid module or slug, or duplicate slugs, preserving existing files.
+
+### APP-020
+new-change --json MUST use schema 1 with string path data on success, or null data and code/message diagnostics on failure.
+
+### APP-021
+stamp MUST return exit 2 for usage or configuration errors and exit 1 for stamping rejections, with code/message diagnostics.
+
+### APP-022
+stamp --json MUST return schema 1 with string confirmation data on success, or null data and diagnostics on failure.
+
+### APP-023
+check MUST return exit 2 for usage or configuration errors with code/message diagnostics.
+
+### APP-024
+check --json MUST return schema 1 with string summary data on success, null data on failure and the reported diagnostics.
+
+### APP-025
+show --json MUST return identical text as schema-1 string data with empty diagnostics and exit 0 on success.
+
+### APP-026
+show MUST return exit 2 with code/message diagnostics for unknown or ambiguous module or item, invalid arguments or configuration errors.
 
 ## Decisions
