@@ -15,23 +15,27 @@ the passing correction does not retroactively validate them. See the
 [correction report](reports/checkpoint-corrections-0076.md) and
 [checkpoint report](reports/checkpoint-0071-0075.md).
 
-## Active slice and next observable exit
+## Blocked slice — human checkpoint required
 
-Prove one eligible spec change end-to-end through **NEW next** in a disposable
-Go fixture using bounded deterministic fake agents. Build only the missing
-runner loop, return promptly to app wiring, and inspect genuine fail-first,
-separate audit, implementation, checked phase commits, SPEC application,
-archive, provenance and claim release. Library evals alone do not close this
-slice. Authored 0079-single-change-execution targets the minimum runner
-loop using the existing workflow and invocation APIs; app wiring follows.
-The author boundary also reconciled the documentation proposal at 18da36d,
-preserving the full inventory, gates and newer correction evidence.
+0079-single-change-execution is blocked at impl. The native controller saved
+attempt 1 at `refs/fireweed/attempts/0079-single-change-execution/1`, committed
+only state/Questions at `00edbd3`, restored work and released the claim.
+The checkout is clean; **Applied since review remains 0**. No new push occurred.
+See [the blocker and concrete correction](reports/next-0079-block.md).
 
-Then prove NEW run processes a small queue with --max, later continuation and
-empty-queue behavior. Extend retries/recovery, attempts, blocking/independent
-continuation, limits and remaining kinds afterward as observable scenarios;
-they are not prerequisites for the first next/run path. See [PLAN.md](PLAN.md).
-No NEW unattended real-agent execution before the bounded fake-agent run passes.
+The first next loop reached application in its fixture, but a frozen RUN-013/014
+assertion wrongly requires impl in the final commit subject; workflow.Done
+emits apply. No product implementation Done/application passed. The proposed
+correction checks the committed archived phase instead, retaining all other
+assertions. It remains unapplied in /tmp/fireweed-0079-phase-assertion.patch.
+Honor the blocked-change stop before recovery or any new implementation.
+
+After owner review and controller-owned recovery, the observable exit remains
+one complete **NEW next** lifecycle in a bounded fake-agent Go fixture, followed
+promptly by app wiring if the runner dependency passes. Then prove NEW run
+--max, later continuation and empty queue. Retry/recovery/remaining kinds follow
+that runnable path. No NEW unattended real-agent execution before the fake-agent
+run passes. All final gates and drill deferrals remain open; see [PLAN.md](PLAN.md).
 
 ## Authority and deferred work
 
