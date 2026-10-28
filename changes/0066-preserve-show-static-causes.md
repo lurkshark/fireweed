@@ -1,9 +1,12 @@
 ---
+audit_rounds: 0
 bases:
     APP-038: 037fc33c
 fixes:
     - APP-037
 module: app
+phase: audit
+run: 20261028T095449-04ccdcde82574460479716ce
 ---
 
 
@@ -56,3 +59,7 @@ existing show classification: graph-validation failures remain C02, and duplicat
 fixed module spec identities remain C05 even if another item was requested.
 No new checks, unsupported features, speculative errors, interfaces or other
 module edits. Controller owns specs, commits and archive.
+
+## Provenance
+
+- evals 2026-10-28T09:56:59.671264Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=124 failing=3 passing=121

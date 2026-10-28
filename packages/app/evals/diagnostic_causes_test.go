@@ -107,6 +107,28 @@ func Test_APP_037_StaticCauses(t *testing.T) {
 	}
 }
 
+func Test_APP_037_APP_038_ShowStaticCauses(t *testing.T) {
+	bin := buildAppBinary(t)
+	for _, tc := range []struct {
+		name, code, cause string
+		args              []string
+		edit              func(*testing.T, string)
+	}{
+		{"duplicate-graph-name", "C02", "duplicate module name", []string{"show", "alpha"}, func(t *testing.T, root string) {
+			appPut(t, root, "packages/beta/SPEC.md", "---\nname: alpha\nid_prefix: BET\ndepends_on: []\n---\n# Beta\n\n## Specs\n")
+		}},
+		{"duplicate-fixed-spec-id", "C05", "duplicate item ID", []string{"show", "alpha", "ALP-002"}, func(t *testing.T, root string) {
+			appPut(t, root, "packages/alpha/SPEC.md", authoringSpec+"\n### ALP-001\nDuplicate MUST fail.\n\n### ALP-002\nDistinct MUST remain selectable.\n")
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := authoringFixture(t)
+			tc.edit(t, root)
+			appCause(t, bin, root, tc.args, 2, tc.code, tc.cause)
+		})
+	}
+}
+
 func Test_APP_038_LookupCauses(t *testing.T) {
 	bin := buildAppBinary(t)
 	for _, tc := range []struct {
