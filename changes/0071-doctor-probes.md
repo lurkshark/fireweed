@@ -4,7 +4,7 @@ audit_pending:
 audit_rounds: 2
 bases: {}
 module: checks
-phase: evals
+phase: audit
 run: 20261028T143328-b8168faa7b2578efc49bb800
 ---
 
@@ -166,6 +166,14 @@ and wire doctor through app. Do not run any drill or fix the deferred contracts
 drill gap. Controller owns phase commits/spec application/archive; workers never
 commit.
 
+Human-approved recovery retains run/IDs, audit_rounds 2, the existing findings
+and saved attempt ref. The author removed only blocked, then controller start
+with from-attempt 1 resumed evals. A separate Sol/high CLI worker added one real
+CHK-065 default-timeout regression using the existing immediate worker fixture
+and a 210-second audit command. The test compiles and verify --quick records
+runtime fail-first against the stub. The coordinator advances phases through
+the controller; the approved fresh restricted full audit is still pending.
+
 ## Audit
 
 - CHK-065: "Doctor MUST bound each agent probe by the request Timeout or three minutes when unset, and report C15 failures with the command and its final 20 output lines." — the unset-timeout assertion only shows that 0.2-second probes complete; it does not assert the three-minute default bound.
@@ -176,3 +184,4 @@ commit.
 - audit 2026-10-28T14:52:00.442665Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 - evals 2026-10-28T14:54:52.097153Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=254 failing=28 passing=226
 - audit 2026-10-28T14:55:47.966815Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- evals 2026-10-28T15:12:16.071299Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=255 failing=29 passing=226

@@ -595,6 +595,28 @@ func Test_CHK_063_CHK_064_CHK_065_CHK_066_CHK_067_AgentProbes(t *testing.T) {
 	}
 }
 
+func Test_CHK_065_UnsetTimeoutBoundsAuditProbe(t *testing.T) {
+	f := localDoctorFixture(t)
+	f.put(".fireweed/audit.sh", fmt.Sprintf("#!/bin/sh\nprintf 'audit:%%s:%%s\n' \"$PWD\" \"$1\" >> %q\nprintf 'audit-timeout-started\n'\nsleep 210\nprintf 'FIREWEED_DOCTOR_OK\n'\n", f.log))
+	f.commit()
+	req := f.request(false)
+	req.Timeout = 0
+
+	start := time.Now()
+	report := checks.Doctor(context.Background(), req)
+	elapsed := time.Since(start)
+	log := doctorLog(f)
+	if !hasDoctorCheck(report, "worker", true) || strings.Count(log, "worker:") != 1 || strings.Count(log, "audit:") != 1 {
+		t.Errorf("agent probes did not run once with immediate worker reply: %s; log=%s", doctorText(report), log)
+	}
+	if !hasDoctorCheck(report, "audit", false) || !hasDoctorDiagnostic(report, "C15", false, "audit.sh", "audit-timeout-started") {
+		t.Errorf("long audit probe lacked a C15 timeout with its command and output: %s", doctorText(report))
+	}
+	if elapsed < 165*time.Second || elapsed > 200*time.Second {
+		t.Errorf("unset audit timeout took %s, want a bound near three minutes", elapsed)
+	}
+}
+
 func Test_CHK_068_CHK_069_ManagedGuidanceAndPlaybookBase(t *testing.T) {
 	f := localDoctorFixture(t)
 	text, err := assets.Playbook("evals")
