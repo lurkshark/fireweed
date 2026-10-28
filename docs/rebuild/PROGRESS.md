@@ -4,7 +4,7 @@
 
 The 0055–0059 checkpoint review passed with no issues and its explicit baseline
 history check passed over 341 commits. Current-source build/race/vet and NEW
-explanation JSON checks passed. **Applied since review: 1.** Continue D006 on
+explanation JSON checks passed. **Applied since review: 2.** Continue D006 on
 remaining existing static/CLI/lifecycle errors after the authorized push.
 
 The owner's goal update authorizes a subagent review at every five applied
@@ -15,19 +15,14 @@ alter bounds. The owner explicitly authorizes each push only after its
 passing five-change subagent review. Milestone 1 passed;
 Milestone 2 waits for the remaining diagnostic migration and contracts drill.
 
-The owner approved batching related spec-only splits and eval retargeting within
-one module, up to 30 affected Added/Modified/Removed items per change. Resulting
-specs stay atomic; preserve every obligation/assertion and leave behavior and
-interfaces unchanged. Other changes retain five focused specs; verification,
-independent audits and checkpoint policy are unchanged. The protected policy
-patch was applied between 0047 and the next worker step.
-
-Owner approval on 2026-10-28 also allows related one-module D006 diagnostic-code
-migrations to affect up to 30 spec items per change, including implementation on
-existing error paths, eval corrections and explanations for emitted codes. Keep
-behavioral assertions and interfaces intact; add no unsupported features or
-speculative errors. Normal verification, independent audits, checkpoint rules
-and the five-spec limit for other changes remain unchanged.
+Owner approval on 2026-10-28 removes the numeric spec-count caps for all change
+kinds, superseding both the five-spec default and the 30-item exceptions. Batch
+related work within one module, keeping changes coherent and reviewable and
+specs atomic. Spec-only splits preserve all obligations/assertions and behavior;
+D006 remains limited to existing error paths, eval corrections and explanations
+for emitted codes, preserving behavioral assertions and interfaces without
+unsupported features or speculative errors. Normal verification, independent
+audits, audit bounds, timeouts and recurring checkpoint reviews remain in force.
 
 Controller: `.fireweed/bin/fireweed-bootstrap` 0.1.0, source `7f925190878e38fc38f30d16bb1cf47aca098cf7`, pin SHA-256 `f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f`; unchanged.
 Stage-2 history baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`; always check an explicit nonempty baseline..HEAD range. Use `GOCACHE=/tmp/fireweed-rebuild-cache`.
@@ -165,6 +160,8 @@ source c7eabf9. The passing review authorizes push and continuation; the applied
 count restarts. No queue or claim remains. Diagnostic migration is incomplete.
 
 - 0060 usage-lookup-codes — APP-003/013/014; ab0f0d6/9b95b13/df1c10d; 18 reported failures → 94 app cases pass, no findings; existing usage/unsupported rejections now U01 and information lookups U02; eight arity table cases added, all prior behavior assertions retained.
+
+- 0061 usage-code-explanations — AST-003; 3e801bf/dd38afc/875aff7; three reported failures → 32 own/240 total phase cases pass, no findings; U01/U02 explanations added with existing causes and unknown-code checks retained.
 
 ## Next
 
