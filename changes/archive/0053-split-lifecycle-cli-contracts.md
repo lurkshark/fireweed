@@ -24,7 +24,7 @@ bases:
     APP-011: 4e8cec43
     APP-012: b9303680
 module: app
-phase: impl
+phase: applied
 run: 20261028T065728-9fe08d4bfed43e4d454a1b5c
 ---
 
@@ -119,6 +119,9 @@ blocked-audit fixture and identifies the existing omitted-change done success
 assertion. Do not change helpers, other command invocations, source fixture
 strings, hook code, binary builds, product code, interfaces or existing diagnostic
 assertions. Implementation may edit only this change file.
+The corrected evals already assert the omitted-change done success, full
+Done behavior, executable Bin, and blocked-state verify rejection. The
+independent audit found no remaining gaps; no product change is needed.
 
 ## Provenance
 
@@ -126,3 +129,4 @@ assertions. Implementation may edit only this change file.
 - audit 2026-10-28T07:01:14.036448Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 - evals 2026-10-28T07:04:50.573297Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=86 failing=0 passing=86
 - audit 2026-10-28T07:06:19.345111Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-28T07:07:47.789388Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=86 failing=0 passing=86

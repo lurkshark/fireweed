@@ -45,16 +45,16 @@ check MUST invoke project.Check and exit 0 when no error diagnostics remain, or 
 show <module> [ID] MUST return the current module document or selected item, using the whole-queue project projection with --projected.
 
 ### APP-009
-start <change> MUST discover the root, invoke workflow.Start and print first-step workflow.Context with exit 0, assigning IDs/run/phase without committing. It MUST preserve reported warnings and return exit 1 for lifecycle rejection or 2 for usage/configuration errors, with corrective code/message diagnostics. --json MUST use schema 1 with context string data on success or null data on failure.
+start <change> MUST discover the root, invoke workflow.Start and print first-step workflow.Context with exit 0, assigning IDs, run and phase without committing.
 
 ### APP-010
-verify [change] [--quick] and done [change] MUST invoke workflow with the actual invoking executable as Bin, returning 0 for success, 1 for failed checks/blocked state and 2 for usage/configuration errors. Done MUST always use full checks; verify --quick uses quick checks without commits. --json MUST return schema 1 with result data on success or null on failure and reported code/message diagnostics; plain success names the resulting phase.
+verify [change] MUST invoke workflow with the actual invoking executable as Bin, returning 0 for success, 1 for failed checks or blocked state and 2 for usage or configuration errors; plain success names the resulting phase.
 
 ### APP-011
-context <change> [--full] MUST return the held workflow.Context text, using compact or full behavior as requested, with exit 0 and empty diagnostics. --json MUST return identical text as schema-1 string data. Usage/configuration errors MUST return 2 and held-state lookup failures 1, with corrective code/message diagnostics and null JSON data.
+context <change> [--full] MUST return the held workflow.Context text, using compact or full behavior as requested, with exit 0 and empty diagnostics.
 
 ### APP-012
-coverage <module> MUST evaluate current specs, or the selected projection with --with-change <change>, using approved metadata while held and setting FIREWEED_BIN to the actual executable. It MUST map results to IDs, require coverage/pass and return exit 0 on success or 1 on failed checks. Usage/configuration/unknown module/change errors MUST return 2 with corrective diagnostics; --json uses schema 1 with report data on success, null on failure and code/message diagnostics.
+coverage <module> MUST evaluate current specs, or the selected projection with --with-change <change>, using approved metadata while held and setting FIREWEED_BIN to the actual executable.
 
 ### APP-013
 Unknown explain codes or playbook names MUST return exit 2 with a nonempty corrective diagnostic.
@@ -97,5 +97,35 @@ show --json MUST return identical text as schema-1 string data with empty diagno
 
 ### APP-026
 show MUST return exit 2 with code/message diagnostics for unknown or ambiguous module or item, invalid arguments or configuration errors.
+
+### APP-027
+start MUST preserve reported warnings and return exit 1 for lifecycle rejection or exit 2 for usage or configuration errors, with corrective code/message diagnostics.
+
+### APP-028
+start --json MUST return schema 1 with context string data on success or null data on failure.
+
+### APP-029
+done [change] MUST invoke full workflow.Done with the actual invoking executable as Bin, returning 0 for success, 1 for failed checks or blocked state and 2 for usage or configuration errors; plain success names the resulting phase.
+
+### APP-030
+verify --quick MUST use quick checks without committing.
+
+### APP-031
+verify and done --json MUST return schema 1 with result data on success or null on failure and reported code/message diagnostics.
+
+### APP-032
+context --json MUST return identical workflow.Context text as schema-1 string data.
+
+### APP-033
+context MUST return exit 2 for usage or configuration errors and exit 1 for held-state lookup failures, with corrective code/message diagnostics and null JSON data.
+
+### APP-034
+coverage MUST map results to IDs and require coverage and pass, returning exit 0 on success or exit 1 on failed checks.
+
+### APP-035
+coverage MUST return exit 2 with corrective diagnostics for usage, configuration or unknown module/change errors.
+
+### APP-036
+coverage --json MUST return schema 1 with report data on success, null on failure and code/message diagnostics.
 
 ## Decisions
