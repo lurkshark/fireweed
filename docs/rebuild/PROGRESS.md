@@ -3,7 +3,7 @@
 ## Current status — 2026-10-27
 
 Human review 8 approved 0032–0034; the authorized push synchronized main and
-origin/main at 16cc688 and cleared P07. **Applied since review: 0.** Resume
+origin/main at 16cc688 and cleared P07. **Applied since review: 1.** Resume
 the remaining previously identified bundled specs; PRJ-004–006 are complete.
 
 The owner's goal update authorizes a subagent review at every five applied
@@ -124,6 +124,8 @@ push and continuation. The applied count restarts after this passing review.
 Subagent checkpoint_0045_0049 returned PASS with no issues. The explicit
 baseline history check passed over 286 commits. The owner conditionally
 authorizes the push and continuation; the applied count restarts after review.
+
+- 0050 split-git-primitive-apis — GIT-003/004/006–010; d0179bd/bf6acb6/3519faa; seven affected items, eight own cases and 207 total phase cases pass; no findings, assertions and implementation unchanged.
 
 ## Next
 
