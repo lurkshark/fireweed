@@ -4,7 +4,7 @@ audit_pending:
 audit_rounds: 2
 bases: {}
 module: checks
-phase: audit
+phase: impl
 run: 20261028T143328-b8168faa7b2578efc49bb800
 ---
 
@@ -188,7 +188,20 @@ and no-speculative-scaffolding guardrails; it does not remove a spec obligation.
 
 ## Audit
 
-- CHK-065: "Doctor MUST bound each agent probe by the request Timeout or three minutes when unset, and report C15 failures with the command and its final 20 output lines." — the unset-timeout assertion only shows that 0.2-second probes complete; it does not assert the three-minute default bound.
+No findings.
+
+Checked IDs: CHK-049, CHK-050, CHK-051, CHK-052, CHK-053, CHK-054, CHK-055,
+CHK-056, CHK-057, CHK-058, CHK-059, CHK-060, CHK-061, CHK-062, CHK-063,
+CHK-064, CHK-065, CHK-066, CHK-067, CHK-068, CHK-069.
+
+Consolidated result of the owner-approved process repair: the fresh restricted
+full review at d78d618 left only eight IDs open, including no finding for the
+new CHK-065 timeout assertion. The restricted re-review at ebf127f checked only
+CHK-049/050/051/054/055/063/066/068 and returned No findings. Prior passes stayed
+passed; they were not reopened. Both recovery audit logs show only supplied
+change/spec/eval/retained-interface reads, with no implementation or history
+access, code execution or file edits. The coordinator transfers those separate
+Sol/high results to the native controller; this is not a same-context audit.
 
 ## Provenance
 
@@ -216,3 +229,4 @@ restricted re-review remain the only authorized recovery work; further unresolve
 findings stop for human review. These Questions are answered by that explicit
 approval; no test was changed before the phase repair.
 - evals 2026-10-28T19:49:04.557521Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=260 failing=34 passing=226
+- audit 2026-10-28T19:52:59.845313Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
