@@ -4,7 +4,7 @@ audit_pending:
 audit_rounds: 2
 bases: {}
 module: checks
-phase: impl
+phase: applied
 run: 20261028T143328-b8168faa7b2578efc49bb800
 ---
 
@@ -230,3 +230,4 @@ findings stop for human review. These Questions are answered by that explicit
 approval; no test was changed before the phase repair.
 - evals 2026-10-28T19:49:04.557521Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=260 failing=34 passing=226
 - audit 2026-10-28T19:52:59.845313Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-28T20:32:31.197737Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=260 failing=0 passing=260
