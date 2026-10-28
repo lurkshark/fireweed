@@ -279,3 +279,11 @@ before another change. Four changes were applied since the explicit review at
   dependent-implementation reads outside the retained-input boundary. This run
   does not satisfy strict independence acceptance; no gap fix or repeat drill
   is authorized. Other module regeneration and final acceptance remain open.
+
+- R01/R17/R19 partial: 0069 (APP-041–061) implements Go/none/local init and passes
+  144 app cases after one scoped audit correction. NEW Go init/modules/check,
+  current-source build/race/vet pass at cdc64ae. The
+  [0065–0069 checkpoint](reports/checkpoint-0065-0069.md) is BLOCKED for human
+  review because explain C12/U02 omit newly emitted recipe causes/repairs.
+  No follow-up change or further push is authorized by that review. Doctor,
+  remaining recipes, bounded execution and full acceptance remain unverified.
