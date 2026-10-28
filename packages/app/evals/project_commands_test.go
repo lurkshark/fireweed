@@ -197,16 +197,23 @@ func Test_APP_018_ModulesConfigurationErrors(t *testing.T) {
 	bin := buildAppBinary(t)
 	for _, tc := range []struct {
 		name string
+		code string
 		edit func(*testing.T, string)
 	}{
-		{"missing", func(t *testing.T, root string) {
+		{"missing", "C01", func(t *testing.T, root string) {
 			if err := os.Remove(filepath.Join(root, "fireweed.yaml")); err != nil {
 				t.Fatal(err)
 			}
 		}},
-		{"malformed", func(t *testing.T, root string) { appPut(t, root, "fireweed.yaml", "modules: [broken\n") }},
-		{"invalid-graph", func(t *testing.T, root string) {
+		{"malformed", "C01", func(t *testing.T, root string) { appPut(t, root, "fireweed.yaml", "modules: [broken\n") }},
+		{"invalid-graph", "C02", func(t *testing.T, root string) {
 			appPut(t, root, "packages/beta/SPEC.md", "---\nname: beta\nid_prefix: BET\ndepends_on: [missing]\n---\n# Beta\n\n## Specs\n")
+		}},
+		{"invalid-document", "C03", func(t *testing.T, root string) {
+			appPut(t, root, "packages/beta/SPEC.md", "---\nname: beta\nid_prefix: BET\ndepends_on: [missing\n---\n# Beta\n\n## Specs\n")
+		}},
+		{"invalid-metadata", "C12", func(t *testing.T, root string) {
+			appPut(t, root, "packages/beta/SPEC.md", "---\nname: beta\nid_prefix: BET\ndepends_on: invalid\n---\n# Beta\n\n## Specs\n")
 		}},
 	} {
 		for _, jsonMode := range []bool{false, true} {
@@ -229,20 +236,20 @@ func Test_APP_018_ModulesConfigurationErrors(t *testing.T) {
 					if stderr != "" {
 						t.Errorf("JSON stderr=%q; want empty", stderr)
 					}
-					diagnostic := assertFailedJSON(t, stdout)
+					diagnostic := assertFailedJSON(t, stdout, tc.code)
 					var result struct {
 						Diagnostics []struct {
 							Code string `json:"code"`
 						} `json:"diagnostics"`
 					}
-					if err := json.Unmarshal([]byte(stdout), &result); err != nil || len(result.Diagnostics) == 0 || result.Diagnostics[0].Code != "C01" {
-						t.Errorf("JSON diagnostic needs C01: %s", stdout)
+					if err := json.Unmarshal([]byte(stdout), &result); err != nil || len(result.Diagnostics) == 0 || result.Diagnostics[0].Code != tc.code {
+						t.Errorf("JSON diagnostic needs %s: %s", tc.code, stdout)
 					}
 					if !corrective(diagnostic) {
 						t.Errorf("diagnostic %q needs correction", diagnostic)
 					}
-				} else if !strings.Contains(stdout+stderr, "C01") || !corrective(stdout+stderr) {
-					t.Errorf("plain diagnostic=%q; want corrective C01", stdout+stderr)
+				} else if !strings.HasPrefix(strings.TrimSpace(stdout+stderr), tc.code+":") || !corrective(stdout+stderr) {
+					t.Errorf("plain diagnostic=%q; want corrective %s", stdout+stderr, tc.code)
 				}
 			})
 		}
@@ -344,19 +351,20 @@ func changeFiles(t *testing.T, root string) map[string]string {
 	return files
 }
 
-func Test_APP_019_APP_020_NewChangeErrorsPreserveFiles(t *testing.T) {
+func Test_APP_019_NewChangeErrorsPreserveFiles(t *testing.T) {
 	bin := buildAppBinary(t)
 	for _, tc := range []struct {
 		name string
 		args []string
 		seed string
+		code string
 	}{
-		{"missing-argument", []string{"new-change", "alpha"}, ""},
-		{"extra-argument", []string{"new-change", "alpha", "valid", "extra"}, ""},
-		{"invalid-module", []string{"new-change", "unknown", "valid"}, ""},
-		{"invalid-slug", []string{"new-change", "alpha", "Bad"}, ""},
-		{"duplicate-pending", []string{"new-change", "alpha", "repeat"}, "changes/0003-repeat.md"},
-		{"duplicate-archived", []string{"new-change", "alpha", "repeat"}, "changes/archive/0003-repeat.md"},
+		{"missing-argument", []string{"new-change", "alpha"}, "", "U01"},
+		{"extra-argument", []string{"new-change", "alpha", "valid", "extra"}, "", "U01"},
+		{"invalid-module", []string{"new-change", "unknown", "valid"}, "", "U02"},
+		{"invalid-slug", []string{"new-change", "alpha", "Bad"}, "", "U01"},
+		{"duplicate-pending", []string{"new-change", "alpha", "repeat"}, "changes/0003-repeat.md", "C13"},
+		{"duplicate-archived", []string{"new-change", "alpha", "repeat"}, "changes/archive/0003-repeat.md", "C13"},
 	} {
 		for _, jsonMode := range []bool{false, true} {
 			format := "plain"
@@ -382,16 +390,28 @@ func Test_APP_019_APP_020_NewChangeErrorsPreserveFiles(t *testing.T) {
 					if stderr != "" {
 						t.Errorf("JSON stderr=%q; want empty", stderr)
 					}
-					if diagnostic := assertFailedJSON(t, stdout); !corrective(diagnostic) {
+					if diagnostic := assertFailedJSON(t, stdout, tc.code); !corrective(diagnostic) {
 						t.Errorf("diagnostic %q needs correction", diagnostic)
 					}
-				} else if !corrective(stdout + stderr) {
-					t.Errorf("diagnostic=%q; want correction", stdout+stderr)
+				} else if !strings.HasPrefix(strings.TrimSpace(stdout+stderr), tc.code+":") || !corrective(stdout+stderr) {
+					t.Errorf("diagnostic=%q; want corrective %s", stdout+stderr, tc.code)
 				}
 				if after := changeFiles(t, root); !reflect.DeepEqual(after, before) {
 					t.Errorf("changes modified: before=%v after=%v", before, after)
 				}
 			})
 		}
+	}
+}
+
+func Test_APP_020_NewChangeJSONFailureEnvelope(t *testing.T) {
+	bin := buildAppBinary(t)
+	root := appProjectFixture(t)
+	status, stdout, stderr := runAppBinary(t, bin, root, "new-change", "alpha", "Bad", "--json")
+	if status != 2 || stderr != "" {
+		t.Errorf("status=%d stderr=%q; want JSON failure", status, stderr)
+	}
+	if message := assertFailedJSON(t, stdout); !corrective(message) {
+		t.Errorf("diagnostic %q needs correction", message)
 	}
 }

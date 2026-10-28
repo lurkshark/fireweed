@@ -220,7 +220,7 @@ func Test_APP_009_APP_027_APP_028_StartContextAssignmentAndRejection(t *testing.
 	lifecycleCommandFailure(t, status, 2, out, errOut, true)
 }
 
-func Test_APP_009_APP_027_APP_028_StartPreservesApprovalWarning(t *testing.T) {
+func Test_APP_009_APP_027_APP_028_APP_040_StartPreservesApprovalWarning(t *testing.T) {
 	bin := buildAppBinary(t)
 	for _, jsonMode := range []bool{false, true} {
 		root := lifecycleCLIProject(t, bin, false)
@@ -245,8 +245,9 @@ func Test_APP_009_APP_027_APP_028_StartPreservesApprovalWarning(t *testing.T) {
 			var diagnostics []struct {
 				Code    string `json:"code"`
 				Message string `json:"message"`
+				Warning bool   `json:"warning"`
 			}
-			if err := json.Unmarshal(decodeEnvelope(t, output)["diagnostics"], &diagnostics); err != nil || len(diagnostics) == 0 || diagnostics[0].Code != "P04" || diagnostics[0].Message == "" {
+			if err := json.Unmarshal(decodeEnvelope(t, output)["diagnostics"], &diagnostics); err != nil || len(diagnostics) == 0 || diagnostics[0].Code != "P04" || diagnostics[0].Message == "" || !diagnostics[0].Warning {
 				t.Errorf("approval warning missing: %s, %v", output, err)
 			}
 		} else if !strings.Contains(output, "# Write evals") || !strings.Contains(output+stderr, "P04") {

@@ -1,10 +1,13 @@
 ---
 already_satisfied:
-    - new:dependency-causes
+    - APP-040
+audit_rounds: 0
 bases:
     APP-018: 809a11b0
     APP-019: 756f1953
 module: app
+phase: audit
+run: 20261028T093045-d87e49608d83ccbc2dd44107
 ---
 
 
@@ -24,16 +27,16 @@ No public interface or signature changes.
 
 ## Added
 
-### new:static-causes
+### APP-037
 Existing static failures exposed by the CLI MUST retain their D006 cause: C01 configuration, C02 graph, C03 syntax, C04 normative text, C05 identities, C06 tags, C07 change structure, C08 bases, C09 handles, C12 metadata or C13 queue identity.
 
-### new:lookup-causes
+### APP-038
 CLI lookup rejections for unknown or ambiguous requested names MUST use U02, retaining C13 for queue identity ambiguity.
 
-### new:operational-causes
+### APP-039
 Existing operational precondition failures without a more specific D006 cause MUST report P01.
 
-### new:dependency-causes
+### APP-040
 For workflow or checks failures carrying an assigned code, the CLI MUST preserve that code and reported warnings.
 
 ## Modified
@@ -79,3 +82,7 @@ text and corrective actions; avoid duplicate identical prefixes in plain output.
 All JSON/status rules remain unchanged. Do not implement unsupported commands,
 add validations/speculative failures, change behavior or edit another module.
 Controller owns spec application, commits and archive.
+
+## Provenance
+
+- evals 2026-10-28T09:41:12.300656Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=121 failing=30 passing=91
