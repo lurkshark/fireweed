@@ -5,7 +5,7 @@ eval_fix:
     - RUN-007
     - RUN-009
 module: runner
-phase: impl
+phase: applied
 run: 20261028T231208-cfb868c63baddc1bfdad0dda
 ---
 
@@ -73,6 +73,7 @@ stops for human review; no bound or phase-write exception is authorized.
 
 - evals 2026-10-28T23:15:35.96126Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=178 failing=0 passing=178
 - audit 2026-10-28T23:17:21.243427Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-28T23:17:24.084547Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=178 failing=0 passing=178
 
 ## Audit
 
