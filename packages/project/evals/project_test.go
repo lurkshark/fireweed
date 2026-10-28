@@ -43,7 +43,7 @@ func fixture(t *testing.T) string {
 	return root
 }
 
-func Test_PRJ_001_LoadConfiguredModulesAndDefaults(t *testing.T) {
+func Test_PRJ_001_PRJ_017_LoadConfiguredModulesAndDefaults(t *testing.T) {
 	root := fixture(t)
 	put(t, root, "other/ignored/SPEC.md", "not a document")
 	got, err := project.Load(root)
@@ -84,7 +84,7 @@ func Test_PRJ_001_LoadConfiguredModulesAndDefaults(t *testing.T) {
 	}
 }
 
-func Test_PRJ_001_LoadInvalidDocuments(t *testing.T) {
+func Test_PRJ_018_LoadInvalidDocuments(t *testing.T) {
 	for _, tc := range []struct {
 		name string
 		edit func(*testing.T, string)
