@@ -1,14 +1,14 @@
 # Acceptance and traceability
 
-Prepared 2026-10-21, reset 2026-10-26 when the rebuild restarted. All rows are **unverified**. R01–R29 are planning labels, not fireweed spec IDs. Expand them into atomic observable specs through changes; this inventory does not replace reading the full design.
+Prepared 2026-10-21, reset 2026-10-26; tightened 2026-10-27. Full acceptance remains **unverified**; partial evidence is reusable. R01–R29 are planning labels, not another spec layer. Map design behaviors to atomic specs through changes as each slice needs them, following authorized work in PROGRESS.md.
 
 The authoritative design snapshot is [fireweed-design-v1.md](../../fireweed-design-v1.md) in this repository; its origin and checksum are recorded in [PLAN.md](PLAN.md).
 
-The first evidence milestone is the NEW binary's manual lifecycle slice in GOAL.md/PLAN.md; the rows below are eventual coverage, not a layer-by-layer implementation order. The current controller candidate is 0.1.0 from HANDOFF.md; old controller assertions do not establish readiness.
+GOAL.md/PLAN.md sequence the work; these rows describe eventual coverage, not implementation order. PROGRESS.md records completed milestones, the pinned 0.1.0 controller and current checkpoints. Historical pending-work statements below do not restart completed work.
 
-At safe author boundaries map each row to actual assigned spec IDs, permanent eval names, archived changes/phase commits and results. Record exceptions and design/reference discrepancies explicitly.
+At safe author boundaries link rows to assigned IDs and durable eval/archive/report evidence. Shared evidence can satisfy overlapping rows; do not duplicate specs, tests or reports for each label. Record relevant exceptions and discrepancies briefly.
 
-**Scope (revised 2026-10-26, see LESSONS.md).** Rows describe design behavior, not hardening beyond it. The SYSTEM.md scope guardrails decide how far each row goes: supported environment, process-group cancellation, conventions checked by review and one app PATH-shim test rather than per-spec locality evals, eval cost limits and audit scope. Do not expand a row with edge cases the design does not name. R22–R25 cover the bounded-effort revision of the design R26–R28 the usability revision and R29 the merge-strategy revision; they replace nothing above.
+**Scope.** The design defines obligations; SYSTEM.md bounds their implementation and verification, including supported environments, process-group cancellation, eval cost and audit scope. Conventions use review and one app PATH-shim test, even where several rows mention them. Inventory examples add no requirements or unnamed edge cases. R22–R25 cover bounded effort, R26–R28 usability and R29 merge strategies; overlapping obligations need evidence once.
 
 ## Requirement inventory
 
@@ -46,7 +46,7 @@ At safe author boundaries map each row to actual assigned spec IDs, permanent ev
 
 ## Required command inventory
 
-Exercise the new executable, beyond public function tests. Cover applicable documented options, JSON output, invalid input and exit semantics. JSON is required for design read commands. Additional old-controller syntax is not a product requirement.
+Exercise NEW beyond public function tests: every design command and documented option, read-command JSON, and representative invalid-input and exit behavior. Combine related checks in existing fixtures; no Cartesian product of commands, options, errors, recipes or platforms is required unless the design specifies the interaction. Old-controller syntax adds no requirements.
 
 ```text
 help, version
@@ -75,36 +75,35 @@ gc, migrate, agents-md --write
 
 ## Completion gates
 
-1. **Traceability:** all design requirements mapped to assigned specs, black-box evals referencing them (or honest review requirements), and archived changes. All R rows verified. Do not evade acceptance through review/quarantine/already_satisfied/maintenance.
+Use one design/inventory review, then check fixes against affected requirements. Reuse valid evidence under SYSTEM's rules; required phase checks still run. All gates must pass; passing gates end verification unless later changes invalidate evidence. Rebuild-planning edits alone do not require product tests/drills.
+
+1. **Traceability:** map design requirements to specs, referencing evals and archives; SYSTEM conventions use prescribed review/eval evidence. Verify every R row within that scope. Legitimate already_satisfied changes reuse existing assertions; review, quarantine or maintenance cannot waive design obligations. No extra spec layer or testcase inventory is required.
 2. **Process:** bootstrap-managed fail-first/audit/impl/archive commits for behavioral work; immutable evals/interfaces during impl; separate protected setup/author commits; no pending/blocked rebuild changes or active claims.
 3. **Go:** with `GOCACHE=/tmp/fireweed-rebuild-cache`, a fresh checkout builds the new binary and passes `go test ./...`, `go test -race ./...`, `go vet ./...`. Permanent tests run with local fixtures/fake agents and without bootstrap/agent authentication. Cross-compilation is not platform runtime testing; report limits accurately.
-4. **Bootstrap checks:** controller `check`, `doctor`, `check-commits <setup-sha>..HEAD`, and `ci <setup-sha>..HEAD` with doctor enabled. Record the exact nonempty SHA range and per-module coverage. Resolve errors and account for warnings. An empty default range on main proves no history.
+4. **Bootstrap checks:** controller `check`, `doctor`, `check-commits <setup-sha>..HEAD`, and `ci <setup-sha>..HEAD` with doctor enabled. Use the recorded stage-2 baseline; record the exact nonempty range and link per-module coverage. Resolve errors. For warnings, make a scoped correction or record the reason/limitation; zero warnings is not a separate gate. An empty default range proves no history.
 5. **Product checks:** NEW binary in fresh repositories performs init/doctor, author/stamp/check, documented base approval, start/failing-evals/audit/impl/done, coverage/history/PR/CI. Exercise fixes, eval_fix, maintenance, blocked recovery and regenerate. Normal unattended approval rejection is tested without --allow-unmerged. Pin subject paths so bootstrap cannot be used accidentally.
 6. **Reference comparison (smoke):** one equivalent fixture lifecycle run with both binaries, comparing exit codes, JSON envelope shape and resulting commits/refs. Record intentional differences briefly. Reference bugs do not define acceptance, and per-edge-case equivalence is not required.
-7. **Real regeneration:** successful bootstrap-driven drills for every rebuilt module declaring disposable code, using a working agent reconstructing from specs/Decisions/interfaces/evals without consulting old implementation/history/bootstrap source as an oracle. Run dependency-first; repeat only when relevant changes stale evidence. Own and transitive dependent evals pass without preserved-contract edits. Commit reviewed reports/retain refs. Fix agreed gaps through changes; never automatically approve all agent suggestions. Missing agent access blocks this gate; a fake agent cannot satisfy it.
+7. **Real regeneration:** successful controller-driven drills for every rebuilt disposable module, dependency-first. Real agents reconstruct from retained specs/Decisions/interfaces/evals and permitted dependency interfaces, without old implementation/history, saved attempts, old binaries or bootstrap. Own/transitive dependent evals pass without preserved-contract edits. Commit reviewed reports/retain refs and clean scratch worktrees. Repeat only drills invalidated by relevant changes or unresolved failures. Gaps require human agreement before authored fixes; agent suggestions alone authorize none. Missing real-agent access blocks this gate.
 8. **Self-hosting:** in an isolated clone/fixture, the NEW binary governs a small real spec change and a real drill, with checked fail-first/audit/impl commits, archive/provenance, CI and scratch cleanup. Keep the original repository governed by the pinned bootstrap throughout acceptance.
 9. **Delivery:** README build/test/use instructions, locally validated distribution/installer checksum behavior, clean committed target tree, restartable evidence record and independent product executable. No product runtime read/import/command requires bootstrap. Report exact checks/commits/reports and limitations. Do not push, publish or tag.
 
 ## Evidence record shape
 
-Create execution evidence when work runs; never prefill predicted successes.
+Link evidence produced when work runs; never prefill successes. This optional guide needs no separate report if change/progress records already supply the facts.
 
 ```text
-Requirement: R07 (specific clause)
-Module / actual spec ID:
-Change / archive path:
-Permanent eval names and asserted edge cases:
-Fail-first command, testcase IDs, and evidence location:
-Evals / audit / implementation commit SHAs:
-Final verification command, exit status, and evidence location:
-Reference discrepancy / decision, if any:
+Requirement(s) / assigned spec IDs:
+Change/archive and phase commits:
+Eval/report link; actual fail/pass counts and command/result:
+Discrepancy, limitation or unrun work, if any:
 Status: unverified | in progress | verified | blocked
 ```
 
-Bulky logs may remain ignored; commit concise findings/counts and durable commit/test references. Independent audits, platform execution, real regeneration and self-hosting claims must match what actually ran.
+Bulky logs may remain ignored. Commit concise findings/references once, without hash manifests or testcase inventories. Audit, platform, regeneration and self-hosting claims must match what ran.
 
+## Historical partial evidence (not current work instructions)
 
-## Partial evidence (rows remain unverified)
+The entries below record results and outstanding work at their cited revisions. Later entries may resolve earlier gaps; use PROGRESS.md and linked current reports for status. Reuse valid evidence without treating an incomplete row as a requirement to redo its passing portions.
 
 - R17/R20: AST-001–AST-003 cover embedded version/help, initial diagnostic lookups
   and five playbooks through public assets evals `Test_AST_001_*`,
