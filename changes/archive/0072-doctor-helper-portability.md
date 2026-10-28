@@ -5,7 +5,7 @@ eval_fix:
     - CHK-050
     - CHK-051
 module: checks
-phase: impl
+phase: applied
 run: 20261028T203322-c8cf4243d0d0d9b57c2d399a
 ---
 
@@ -63,6 +63,7 @@ The controller alone advances/commits. Implementation phase needs no source edit
 
 - evals 2026-10-28T20:39:26.095182Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=260 failing=0 passing=260
 - audit 2026-10-28T20:40:18.422553Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-28T20:40:53.705848Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=260 failing=0 passing=260
 
 ## Audit
 
