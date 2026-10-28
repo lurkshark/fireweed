@@ -323,9 +323,23 @@ func Test_CHK_051_CHK_052_SetupFailureStopsAndCleans(t *testing.T) {
 }
 
 func Test_CHK_054_MissingTemplatesAndCanaryMaps(t *testing.T) {
-	for _, tc := range []struct{ name, path, body, term string }{{"template", ".fireweed/templates/module/SPEC.md", "", "template"}, {"canary", ".fireweed/canaries/canaries.yaml", "version: 1\nbaseline: {}\n", "canary"}, {"wrong version", ".fireweed/canaries/canaries.yaml", "version: 2\nbaseline: {}\n", "canary"}, {"malformed", ".fireweed/canaries/canaries.yaml", "version: [bad\n", "canary"}} {
+	for _, tc := range []struct{ name, path, body, term, affected string }{
+		{"missing template", ".fireweed/templates/module/SPEC.md", "", "template", "undeclared"},
+		{"malformed template", ".fireweed/templates/module/SPEC.md", "---\nname: [broken\nid_prefix: {{prefix}}\n---\n", "template", "undeclared"},
+		{"missing baseline", ".fireweed/canaries/canaries.yaml", "version: 1\nbaseline: {}\n", "canary", "undeclared"},
+		{"missing internal_eval", ".fireweed/canaries/canaries.yaml", "missing_id:\n  evals/missing.txt: missing\n", "internal_eval", "internal_eval"},
+		{"wrong version", ".fireweed/canaries/canaries.yaml", "version: 2\nbaseline: {}\n", "canary", "undeclared"},
+		{"malformed canary", ".fireweed/canaries/canaries.yaml", "version: [bad\n", "canary", "undeclared"},
+	} {
 		t.Run(tc.name, func(t *testing.T) {
 			f := localDoctorFixture(t)
+			if tc.name == "missing internal_eval" {
+				body := string(mustRead(t, filepath.Join(f.root, tc.path)))
+				tc.body = strings.Replace(body, "internal_eval:\n  internal/private.txt: \"private\"\n  evals/internal.txt: \"{{module_dir}}\"\n", "", 1)
+				if tc.body == body {
+					t.Fatal("fixture did not remove internal_eval map")
+				}
+			}
 			if tc.body == "" {
 				if err := os.Remove(filepath.Join(f.root, tc.path)); err != nil {
 					t.Fatal(err)
@@ -338,7 +352,7 @@ func Test_CHK_054_MissingTemplatesAndCanaryMaps(t *testing.T) {
 			if !hasDoctorDiagnostic(report, "C14", false, tc.term) {
 				t.Errorf("missing C14: %s", doctorText(report))
 			}
-			if hasDoctorCheck(report, "undeclared", true) {
+			if hasDoctorCheck(report, tc.affected, true) {
 				t.Errorf("invalid recipe passed canary: %s", doctorText(report))
 			}
 		})
@@ -433,6 +447,25 @@ if find packages \( -name undeclared.txt -o -name internal.txt \) | grep -q .; t
 	}
 }
 
+func Test_CHK_057_InternalEvalRequiresInterfaceViolation(t *testing.T) {
+	f := localDoctorFixture(t)
+	f.put(".fireweed/boundary.sh", `#!/bin/sh
+find packages -name SPEC.md | while IFS= read -r spec; do
+  dir=${spec%/SPEC.md}; name=$(sed -n 's/^name: //p' "$spec" | head -1)
+  if test -f "$dir/undeclared.txt"; then printf '%s: undeclared import\n' "$name"; fi
+  if test -f "$dir/evals/internal.txt"; then printf '%s: unrelated boundary violation\n' "$name"; fi
+done
+`)
+	f.commit()
+	r := checks.Doctor(context.Background(), f.request(true))
+	if !hasDoctorDiagnostic(r, "C14", false, "internal_eval", "boundar") || hasDoctorCheck(r, "internal_eval", true) {
+		t.Errorf("same-module non-interface violation accepted: %s", doctorText(r))
+	}
+	if !hasDoctorCheck(r, "undeclared", true) {
+		t.Errorf("fixture did not detect the independent undeclared canary: %s", doctorText(r))
+	}
+}
+
 func Test_CHK_060_CHK_062_ModuleOverridesAndBoundaryWarnings(t *testing.T) {
 	f := localDoctorFixture(t)
 	f.put(".fireweed/override-eval.sh", fmt.Sprintf("#!/bin/sh\nprintf 'override-eval:%%s\\n' \"$PWD\" >> %q\nexec sh .fireweed/eval.sh \"$@\"\n", f.log))
@@ -450,6 +483,30 @@ func Test_CHK_060_CHK_062_ModuleOverridesAndBoundaryWarnings(t *testing.T) {
 	r := checks.Doctor(context.Background(), g.request(true))
 	if !hasDoctorDiagnostic(r, "X03", true, "legacy") || !hasDoctorDiagnostic(r, "X04", true, "no boundary enforcement required") {
 		t.Errorf("optional boundaries warning lost: %s", doctorText(r))
+	}
+}
+
+func Test_CHK_060_OverridesMustDetectTheirCanaries(t *testing.T) {
+	for _, tc := range []struct {
+		name, hook, command, script, canary string
+	}{
+		{"eval", "eval", "sh .fireweed/override-eval.sh {module} {module_dir} {report}", `#!/bin/sh
+prefix=$(sed -n 's/^id_prefix: //p' "$2/SPEC.md" | head -1)
+printf '<testsuite><testcase name="%s-001"/></testsuite>' "$prefix" > "$3"
+`, "failing_eval"},
+		{"boundary", "boundaries", "sh .fireweed/override-boundary.sh {module}", "#!/bin/sh\nexit 0\n", "internal_eval"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := localDoctorFixture(t)
+			path := ".fireweed/override-" + tc.name + ".sh"
+			f.put(path, tc.script)
+			f.put("packages/alpha/SPEC.md", strings.Replace(string(mustRead(t, filepath.Join(f.root, "packages/alpha/SPEC.md"))), "depends_on: []", "depends_on: []\nhooks:\n  "+tc.hook+": "+tc.command, 1))
+			f.commit()
+			r := checks.Doctor(context.Background(), f.request(true))
+			if !hasDoctorDiagnostic(r, "C14", false, tc.canary, tc.name) {
+				t.Errorf("broken %s override missed its %s canary without C14: %s", tc.name, tc.canary, doctorText(r))
+			}
+		})
 	}
 }
 
@@ -517,6 +574,17 @@ func Test_CHK_063_CHK_064_CHK_065_CHK_066_CHK_067_AgentProbes(t *testing.T) {
 	timed := checks.Doctor(context.Background(), req)
 	if !hasDoctorDiagnostic(timed, "C15", false, "audit") || time.Since(start) > 4*time.Second {
 		t.Errorf("audit timeout not bounded: %s; elapsed=%s", doctorText(timed), time.Since(start))
+	}
+
+	defaulted := localDoctorFixture(t)
+	defaulted.put(".fireweed/agent.sh", "#!/bin/sh\nsleep 0.2\nprintf 'FIREWEED_DOCTOR_OK\\n'\n")
+	defaulted.put(".fireweed/audit.sh", "#!/bin/sh\nsleep 0.2\nprintf 'FIREWEED_DOCTOR_OK\\n'\n")
+	defaulted.commit()
+	defaultRequest := defaulted.request(false)
+	defaultRequest.Timeout = 0
+	defaultReport := checks.Doctor(context.Background(), defaultRequest)
+	if doctorErrors(defaultReport) || !hasDoctorCheck(defaultReport, "worker", true) || !hasDoctorCheck(defaultReport, "audit", true) {
+		t.Errorf("unset timeout did not give both agent probes their default allowance: %s", doctorText(defaultReport))
 	}
 
 	j := localDoctorFixture(t)
