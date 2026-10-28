@@ -28,7 +28,7 @@ Evaluate MUST run the configured eval hook, accepting shell strings or argv.
 During audit, Zones MUST allow edits only to the current change file.
 
 ### CHK-005
-Boundaries MUST run applicable global/module hooks, returning errors for unsuppressed module-attributed violations and visible warnings for reasoned opt-outs. It MUST suppress only exact baseline lines or opted-out module lines from normally exited hooks; launch/cancel/timeout failures remain errors. A missing hook MUST fail for unopted disposable modules and warn when no boundary enforcement is required.
+Boundaries MUST run applicable global and per-module boundary hooks.
 
 ### CHK-006
 Zones MUST reject edits to protected paths in every phase.
@@ -143,5 +143,11 @@ Boundaries MUST suppress only the opted-out module's violation lines through a r
 
 ### CHK-043
 Boundaries MUST report hook launch, cancellation or timeout failures as errors.
+
+### CHK-044
+Boundaries MUST fail for a missing hook required by a module with disposable globs and no reasoned opt-out.
+
+### CHK-045
+Boundaries MUST warn without an error for a missing hook when no boundary enforcement is required.
 
 ## Decisions
