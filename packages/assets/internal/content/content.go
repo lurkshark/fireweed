@@ -40,7 +40,7 @@ func Playbook(name string) (string, error) {
 
 var explanations = map[string]string{
 	"C01":   "The project configuration is invalid: fireweed.yaml is missing or has an invalid required setting. Edit the configuration file to correct the reported field, then run fireweed check again.",
-	"C02":   "The module graph is invalid because a dependency names an unknown module or creates a cycle. Correct the module dependency in SPEC.md so it names an existing module and the graph is acyclic.",
+	"C02":   "The module graph is invalid because of an empty module name, a duplicate module name, an empty module prefix, a duplicate module prefix, or a dependency that names an unknown module or creates a cycle. Correct module names and prefixes in SPEC.md so they are nonempty and unique. Correct the module dependency in SPEC.md so it names an existing module and the graph is acyclic.",
 	"C03":   "A document or spec item is unreadable or malformed. Repair the document syntax or restore the missing file, then check it again.",
 	"C04":   "The spec item is non-normative because its body lacks MUST or SHOULD wording. Rewrite the spec with a MUST or SHOULD requirement that states the expected behavior.",
 	"C05":   "A spec ID uses a foreign module prefix or duplicates another ID, or a change has a duplicate edit identity. Change a foreign ID to use the owning module prefix, assign a unique unused ID for a duplicate spec ID, or remove or combine the repeated edit.",
@@ -59,8 +59,8 @@ var explanations = map[string]string{
 	"X04":   "Warning: no boundary enforcement is required, and the boundaries hook is absent. No action is needed; configure a boundaries hook if a module later needs enforcement.",
 	"U01":   "An invalid argument or option, or an unsupported command, was requested. Check fireweed help and use the supported command syntax and options.",
 	"U02":   "An unknown lookup name was given to explain or playbook, an unknown or ambiguous requested module, item or change was given to a lookup, or a projected local handle is ambiguous. Select a valid name or code from the listed explain codes or playbook names; specify an existing, fully qualified module, item or change ID to resolve a requested lookup.",
-	"P01":   "A lifecycle precondition is missing or unmet for the requested operation. Complete the required precondition and retry from the expected state.",
-	"P02":   "A change claim is missing or held by another owner. Wait for the holder to release the claim, or resolve ownership with that holder before retrying.",
+	"P01":   "A lifecycle or new-change operational precondition is missing or unmet for the requested operation. Complete the required precondition and retry from the expected state.",
+	"P02":   "A change claim is missing, held by another owner, or unreadable or undecodable because its claim data is invalid. If no claim exists, start an eligible change. If claim data is unreadable, undecodable, or invalid, seek approved human review and recovery before retrying. If another owner holds the claim, wait for the holder to release it or coordinate with that holder to resolve ownership before retrying.",
 	"P03":   "The working state has an unapproved alteration. Restore the approved state or have the alteration reviewed and approved through the normal workflow.",
 	"P04":   "Warning: approval for this change is not recorded on the base branch. Obtain approval through review before unattended execution.",
 	"P05":   "A change base is stale or mismatches the intended state. Refresh the base through the approved workflow, or restore the intended state through that workflow.",
