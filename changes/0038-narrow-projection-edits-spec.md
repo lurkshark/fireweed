@@ -1,11 +1,13 @@
 ---
 already_satisfied:
     - PRJ-005
-audit_rounds: 0
+audit_pending:
+    - PRJ-005
+audit_rounds: 1
 bases:
     PRJ-005: 5858aeac
 module: project
-phase: audit
+phase: evals
 run: 20261028T051636-4780cbd89dbfdcec5b3cd2b6
 ---
 
@@ -51,3 +53,8 @@ or interface changes. Implementation may edit only this change file.
 ## Provenance
 
 - evals 2026-10-28T05:17:11.492029Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=199 failing=0 passing=199
+- audit 2026-10-28T05:17:58.997507Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+
+## Audit
+
+- PRJ-005: "Project MUST preserve complete Added and Modified item text and remove Removed items when applying pending spec edits." — No assertion checks the complete Modified item body; the eval checks only a substring.
