@@ -8,7 +8,7 @@ cleanup complete. It reports an error-prefix contract gap and its agent read
 dependent internals, so strict independence acceptance is not established; see
 [the reviewed report](reports/contracts-drill.md). No gap fix or repeat drill is
 authorized. 0069 now implements recipe-based initialization through NEW.
-**Applied since review: 5; checkpoint correction sequence explicitly approved.**
+**Applied since review: 6; correction audit gap requires human review.**
 0071–0075 applied the doctor backend, portable cleanup helper, emitted-code
 explanations, doctor/guidance CLI and bounded invocation primitive. The approved
 0071 recovery passed; [its report](reports/doctor-0071-block.md) preserves the
@@ -25,7 +25,12 @@ claim remains. The owner now approves pushing the batch with findings recorded,
 then one scoped checks fix and one runner eval_fix, followed by the same
 subagent re-review and a correction push only on PASS. Use the normal approved
 push to synchronize the P07 shared base; preserve all bounds/history.
-The full goal remains incomplete.
+0076 applied at 995eebb with 298 phase passes, but native audit inputs violated
+restrictions. A supplemental isolated assertion review found an unresolved
+CHK-055 stop-before-planting assertion gap. See
+[the correction report](reports/checkpoint-corrections-0076.md). The approved
+runner eval_fix is pending; no push occurred after ce165ab. The full goal remains
+incomplete.
 
 The owner's goal update authorizes a subagent review at every five applied
 changes: push to origin and continue when the review finds the work on track, and
@@ -51,6 +56,7 @@ NEW binary: `bin/fireweed`, clean source `a3c044a7a0f20c02789210fa9be1d4ef0c4094
 Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`. Interactive work through 0014's initial evals was followed by coordinator `done`, hence legacy `agent=manual` lines. Configured controller execution began at 0014's audit; its provenance records the actual command/model. Continue configured execution. Ignored runtime logs are auxiliary, not reviewable evidence; archives, permanent evals and committed reports carry the evidence.
 
 ## Applied changes
+- 0076 doctor-boundary-cleanup-fixes — CHK-051/055/056/057; e2b5b3b/37fc2e9/995eebb; three runtime failures → 298 phase passes. Native audit input deviation and supplemental CHK-055 assertion gap remain open in the correction report; no correction push.
 - 0075 bounded-agent-invocation — RUN-001–009; evals 53d9279/2e40588, audits 6fdcb9f/6f898ea, impl 4b2fe8e. One scoped correction; 25 runtime failures → 25 own/178 phase passes. Retained API/model types and execution primitive are implemented; next/run queue wiring remains pending.
 - 0074 doctor-setup-commands — APP-062–073; evals 5620604/eb05e41, audits a02d10d/3769100, impl 19d2b31. One scoped correction; six runtime failures → 153 app passes. Fresh NEW Go/doctor/guidance smoke passes; see the linked report.
 - 0073 doctor-diagnostic-explanations — AST-026/027; b364af7/53cae57/8d27f34. Six runtime failures → 55 own/389 phase passes; no findings, restricted auditor input reads confirmed. Explains emitted C14–C16 and existing init P01 causes, retaining prior causes/assertions.
@@ -239,13 +245,12 @@ acceptance remains unverified. No gap fix/rerun is authorized or performed.
 
 ## Next
 
-Execute the explicitly approved [checkpoint correction sequence](reports/checkpoint-0071-0075.md):
-push the recorded batch, apply one normal checks fixes change for the two doctor
-defects and one runner eval_fix for the observed timing failure, then full checks
-and scoped re-review by the same subagent. Push corrections and continue the main
-goal only if that review passes. Preserve product specs/interfaces, assertions,
-controller bounds and all history. Stop on any new block or unresolved issue.
-No new drill, deferred contracts-gap fix or phase exception is authorized.
+Stop for the [0076 correction review](reports/checkpoint-corrections-0076.md).
+Proposed additional authorization: one normal checks eval_fix for CHK-055, then
+the already-approved runner eval_fix, full verification and scoped checkpoint
+re-review before any correction push. Preserve specs/interfaces, assertions,
+history and controller bounds. No additional work is authorized by the failed
+supplemental review. The documentation-refocus proposal remains unapplied.
 
 0. The owner-approved 0070 explanation correction/re-review passed and pushed
    e083c5f. The following 0071–0075 slice now reaches the blocked checkpoint above;

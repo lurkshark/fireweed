@@ -116,3 +116,7 @@ base through the approved push; preserve bounds, history, assertions and specs.
 The re-review remains limited to the two doctor findings and observed runner
 eval timing issue. Any new block or unresolved issue still stops. No new drill,
 deferred contracts-gap fix or phase-write exception is authorized.
+
+0076 subsequently applied with 298 phase passes, but an audit input/phase
+deviation and a supplemental CHK-055 assertion gap stop the correction sequence.
+See checkpoint-corrections-0076.md. Runner correction/re-review/push remain pending.
