@@ -1,11 +1,14 @@
 ---
 already_satisfied:
     - CHK-005
-    - new:boundary-required-hook
-    - new:boundary-optional-hook
+    - CHK-044
+    - CHK-045
+audit_rounds: 0
 bases:
     CHK-005: 26a5d821
 module: checks
+phase: audit
+run: 20261028T055100-0b05225b487f7c0fcc71d7da
 ---
 
 
@@ -24,10 +27,10 @@ requirements. Existing public evals already assert all these behaviors.
 
 ## Added
 
-### new:boundary-required-hook
+### CHK-044
 Boundaries MUST fail for a missing hook required by a module with disposable globs and no reasoned opt-out.
 
-### new:boundary-optional-hook
+### CHK-045
 Boundaries MUST warn without an error for a missing hook when no boundary enforcement is required.
 
 ## Modified
@@ -54,3 +57,7 @@ retaining its disposable, nondisposable and reasoned-opt-out assertions.
 Rename tests only. Keep all 28 checks cases and every assertion, fixture,
 helper and other ID. No product code or interface edits. Implementation may
 edit only this change file.
+
+## Provenance
+
+- evals 2026-10-28T05:51:43.093855Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=146 failing=0 passing=146
