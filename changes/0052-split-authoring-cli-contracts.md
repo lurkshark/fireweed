@@ -20,7 +20,9 @@ already_satisfied:
     - APP-024
     - APP-025
     - APP-026
-audit_rounds: 0
+audit_pending:
+    - APP-017
+audit_rounds: 1
 bases:
     APP-003: c2581669
     APP-004: cd043073
@@ -29,7 +31,7 @@ bases:
     APP-007: 9427709a
     APP-008: cb56cc70
 module: app
-phase: audit
+phase: evals
 run: 20261028T064628-e207a5b15498f58dcd06a2b2
 ---
 
@@ -116,6 +118,10 @@ show <module> [ID] MUST return the current module document or selected item, usi
 
 
 
+## Audit
+
+- APP-017: "modules --json MUST return schema 1 with array data containing name, id_prefix, dir, depends_on and resolved zone arrays, plus empty diagnostics on success." — missing assertion that the protected and append_only zones are arrays; the eval checks only that those fields exist.
+
 ## Decisions
 
 
@@ -140,3 +146,4 @@ cases or fixture instances. Implementation may edit only this change file.
 ## Provenance
 
 - evals 2026-10-28T06:50:09.147566Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=86 failing=0 passing=86
+- audit 2026-10-28T06:51:44.032583Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
