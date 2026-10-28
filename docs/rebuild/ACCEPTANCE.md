@@ -297,3 +297,10 @@ before another change. Four changes were applied since the explicit review at
   input-boundary deviation. [The block report](reports/doctor-0071-block.md)
   records exact phase evidence, retained attempt and proposed human-approved
   recovery. No Doctor implementation, CLI pass or restricted full audit is claimed.
+
+  The subsequent approved recovery committed d78d618 with a real default-timeout
+  assertion (255 phase cases, 29 runtime failures, 226 passes). Its fresh full
+  audit stayed within permitted inputs and no longer flags CHK-065, but reports
+  eight other assertion gaps. Controller block a81b723 retains audit_rounds 2,
+  releases the claim and preserves attempt refs. Doctor remains unimplemented;
+  the recovery result is a stop for further human review, not acceptance.

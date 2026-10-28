@@ -8,17 +8,19 @@ cleanup complete. It reports an error-prefix contract gap and its agent read
 dependent internals, so strict independence acceptance is not established; see
 [the reviewed report](reports/contracts-drill.md). No gap fix or repeat drill is
 authorized. 0069 now implements recipe-based initialization through NEW.
-**Applied since review: 0; bounded recovery approved.** The owner-approved 0070
+**Applied since review: 0; stopped after the approved recovery.** The owner-approved 0070
 correction and scoped re-review passed and were pushed at e083c5f. The next
 change, 0071 doctor-probes, is blocked in evals with attempts exhausted after
 two audit findings rounds. CHK-065 still lacks a three-minute-default timeout
 assertion. Its first auditor also exceeded the input boundary and temporarily
 edited implementation; the controller rejected that edit and it was restored.
-See [the block report](reports/doctor-0071-block.md). The owner now approves one
-saved-attempt recovery, a real default-timeout eval and a fresh restricted audit
-of all doctor IDs, retaining existing counters/history. Further unresolved
-findings stop for human review. No doctor implementation was applied; the full
-goal remains incomplete.
+See [the block report](reports/doctor-0071-block.md). The approved saved-attempt
+recovery added the real default-timeout eval in d78d618 (255 phase cases: 29
+runtime failures, 226 passes). A fresh restricted audit reviewed all doctor IDs
+without implementation access and no longer reports CHK-065, but reported eight
+other assertion gaps. The controller blocked 0071 in audit at a81b723, retaining
+audit_rounds 2 and both saved refs. Tree clean, claim released. No doctor
+implementation was applied; the full goal remains incomplete.
 
 The owner's goal update authorizes a subagent review at every five applied
 changes: push to origin and continue when the review finds the work on track, and
@@ -227,11 +229,11 @@ acceptance remains unverified. No gap fix/rerun is authorized or performed.
 
 ## Next
 
-Perform the owner-approved [bounded recovery of 0071](reports/doctor-0071-block.md).
-Retain audit/attempt bounds and history; do not start a replacement change or
-push during recovery. Obtain the real default-timeout assertion and one fresh
-restricted full audit before implementation. Any further unresolved finding
-requires human review. The following sequence remains planned after recovery:
+Stop for human review of [the fresh audit findings](reports/doctor-0071-block.md).
+The one approved recovery has finished and its stop condition was triggered.
+Do not perform another correction round, start a replacement, alter bounds or
+push without a further decision. The following sequence remains planned after
+an approved resolution:
 
 0. The owner-approved 0070 explanation correction and checkpoint re-review pass.
    The authorized push reached e083c5f; continue Milestone 2. The original block,

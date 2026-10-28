@@ -1,6 +1,11 @@
 # Doctor 0071 — blocked for human review
 
-Controller stopped at `697ddb2` with `evals attempts exhausted`.
+Current result: the approved recovery finished, but the fresh restricted audit
+reported eight further assertion gaps. Controller block a81b723 leaves 0071 in
+audit with audit_rounds 2. No implementation was applied; tree clean and claim
+released. The original block and its deviation remain below as history.
+
+The original controller run stopped at `697ddb2` with `evals attempts exhausted`.
 0071 remains in evals with audit_rounds 2 and audit_pending CHK-065. No change
 was applied, so the post-review application count remains zero. The working
 tree is clean and no claim remains. Saved attempt:
@@ -71,3 +76,66 @@ inspect its invocation log before accepting the result. No global audit bounds,
 attempt limits or product requirements are changed by this recovery.
 Doctor diagnostic explanations and app wiring remain
 planned; no drill or deferred contracts-gap change is authorized.
+
+## Recovery outcome — further human review required
+
+Author approval commit c3c895e records the owner's decision. Native start with
+from-attempt 1 initially refused the existing blocked marker. The design's
+Resuming/state-fields clauses explicitly require removing that marker; author
+commit 58cf943 removes only that line. Native start with from-attempt 1 then
+succeeded, preserving run, IDs, audit_rounds 2, findings and the original ref.
+
+The separate Sol/high eval worker added one 22-line CHK-065 regression. With
+Timeout zero, its worker returns immediately and its audit command sleeps 210
+seconds; assertions require a C15 failure naming that command/output and elapsed
+time between 165 and 200 seconds. Existing assertions remain. The stub fails at
+runtime, and coordinator-driven native done committed evals d78d618: 255 total
+cases, 29 failures, 226 passes (66 own cases, 37 existing passes). Provenance
+honestly says agent=manual for coordinator advancement; the actual Sol/high CLI
+worker is recorded in recovery-evals-1.log under the existing run directory.
+The first CLI launch failed during sandbox initialization before worker execution;
+the same command succeeded with the controller's parent execution permissions.
+
+The fresh Sol/high auditor received a separate temporary Git input directory
+with only the current change, projected checks SPEC, checks evals, retained
+public interfaces and governing audit rules. Its complete invocation log
+`recovery-fresh-audit-1.log` shows only reads of those supplied files, with no
+implementation/history reads, file edits or code/test execution. This is a
+valid restricted input review; unlike the original invocation, it did not
+construct an implementation. It checked CHK-049–069 and no longer reports
+CHK-065. This closes the assertion finding, not proof of implemented timeout
+behavior; implementation verification has not run.
+
+The fresh review reports these remaining assertions missing in doctor_test.go:
+
+- CHK-049 (line 238): retaining warning diagnostics and suppressing boundary/audit probes after a static error.
+- CHK-050 (line 294): placing scratch below the actual common Git directory, beyond a path-substring check.
+- CHK-051 (line 300): deleting the physical scratch directory, beyond registration cleanup.
+- CHK-054 (line 325): naming the particular missing template or baseline map in C14.
+- CHK-055 (lines 383/398): failed baseline eval/boundary and recovery eval/coverage paths.
+- CHK-063 (lines 521/553): the audit role's fixed-reply prompt and wrong-reply rejection.
+- CHK-066 (line 543): rejecting a limit-pattern match outside the final 20 output lines.
+- CHK-068 (line 620): accepting current managed guidance with surrounding text.
+
+The coordinator directly confirmed the common-directory, physical-cleanup and
+surrounding-text gaps against their explicit clauses. Some other findings ask
+for additional combinations; human scoping should retain SYSTEM's representative
+assertion and cost rules, without treating this as permission for a Cartesian
+matrix or unbounded audit loop.
+
+Per the approved plan's stop condition, these findings became Questions and a
+blocked reason in the current change. Native done made state-only block a81b723
+and released the claim; no audit scope field/counter was reset. Original attempt
+ref 1 remains, and native block retained ref 2 at
+`8413bab317def40d1770682067fb25fe4bdd0323`. Do not inspect saved implementation
+attempts as oracles. No further correction, implementation, feature or push ran.
+
+## Decision needed
+
+Any further recovery needs explicit approval: scope the missing assertions under
+the existing guardrails, resume this same change through the controller, retain
+all prior passes and the completed default-timeout test, and re-audit only the
+outstanding approved IDs from a restricted input snapshot. Preserve counters,
+requirements and history. If the controller cannot restore an eval step without
+changing bounds, stop before editing frozen evals. No such further recovery is
+authorized by the approval already consumed above.
