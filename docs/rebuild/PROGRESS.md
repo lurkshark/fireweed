@@ -3,7 +3,7 @@
 ## Current status — 2026-10-27
 
 Human review 8 approved 0032–0034; the authorized push synchronized main and
-origin/main at 16cc688 and cleared P07. **Applied since review: 3.** Resume
+origin/main at 16cc688 and cleared P07. **Applied since review: 4.** Resume
 the remaining previously identified bundled specs; PRJ-004–006 are complete.
 
 The owner's goal update authorizes a subagent review at every five applied
@@ -116,10 +116,12 @@ push and continuation. The applied count restarts after this passing review.
 
 - 0047 narrow-application-spec — FLOW-004/049–050; 80b6992/6598b5a/2a087d7; 32 own cases and 118 total phase cases pass; no findings, archive/SPEC commit assertion strengthened, implementation unchanged.
 
+- 0048 narrow-context-spec — FLOW-005/051–053; evals c14ce8a/a146cbc, audits 63af469/a7969b6, impl 95a404a; one findings round, 32 own cases and 118 total phase cases pass; per-phase provenance assertions strengthened, implementation unchanged.
+
 ## Next
 
 1. Split permanent bundled behaviors through authored changes. Use already_satisfied and retarget existing evals; never hand-edit Specs/Decisions. FLOW-001/FLOW-002/FLOW-003/CHK-004/PRJ-001–007 are split. Human review 7 authorizes consecutive project splits for the remaining project bundles; PRJ-001–007 are now complete; other previously identified bundled specs remain. Human review 8 approves the P07 checkpoint and authorizes a push; verify the shared-base gate has cleared before resuming. Add atomic specs before narrowing an old item when one change cannot hold the full split.
 2. Apply D006 only to existing emitted error paths and behavior assertions, using eval_fix and normal implementation changes. Do not stub or implement unsupported features or speculative errors for codes. Keep explain accurate for implemented paths; unused allocations/tests/explanations wait for a justified feature change. Preserve assertions and coverage.
-3. Before Milestone 2 touches workflow implementation, split lifecycle/stub.go by responsibility as maintenance only. No other cleanup/hardening.
+3. Workflow file organization is not a Milestone 2 prerequisite. Defer splitting lifecycle/stub.go unless it causes a demonstrated problem during feature work; a later drill/regenerate may organize the implementation afresh. Do not substitute another speculative cleanup task.
 4. After items 1 and 2, run exactly one real controller drill on contracts. Commit its report and list gaps here; author no gap changes and drill no other module.
 5. Milestone 2 then centers projected blocking and fake-agent next/run through NEW. No NEW unattended real-agent execution before that fake-agent run completes. Full acceptance remains unverified.

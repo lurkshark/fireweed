@@ -88,6 +88,13 @@ Derive new evals from the design and public interfaces in isolated fixtures. Use
 
 ## Verification and recovery
 
+Workflow file organization is not a Milestone 2 gate. Defer splitting
+`packages/workflow/internal/lifecycle/stub.go` unless feature work demonstrates
+a problem with the current file. A later drill/regenerate may organize the
+implementation afresh; retained contracts/evals and normal verification/audits
+remain the safeguards. This removes no behavioral or acceptance obligation and
+authorizes no replacement cleanup task.
+
 Permanent tests use temporary Git repositories, explicit fixture identities, local hooks/fake agents, bounded timeouts and deterministic failure injection. They must run without bootstrap access, authenticated agents or network access. Fake-agent protocol tests do not prove real regeneration.
 
 Follow the currently authorized drill in PROGRESS.md. For final acceptance, run real-agent drills dependency-first for all disposable modules. Give reconstruction only retained specs/Decisions/interfaces/evals and permitted dependency interfaces, without old implementation/history, saved attempts, old binaries or bootstrap. Retain reports/refs and clean scratch worktrees. Gaps require human agreement before follow-up changes; a report alone authorizes none.

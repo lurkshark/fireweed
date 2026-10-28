@@ -10,6 +10,11 @@ At safe author boundaries link rows to assigned IDs and durable eval/archive/rep
 
 **Scope.** The design defines obligations; SYSTEM.md bounds their implementation and verification, including supported environments, process-group cancellation, eval cost and audit scope. Conventions use review and one app PATH-shim test, even where several rows mention them. Inventory examples add no requirements or unnamed edge cases. R22–R25 cover bounded effort, R26–R28 usability and R29 merge strategies; overlapping obligations need evidence once.
 
+Current D006 migration changes diagnostics only on existing error paths. Unused
+allocations, their tests and explain entries wait for corresponding justified
+feature implementation; this does not waive eventual diagnostic requirements.
+Workflow file reorganization is not an acceptance or Milestone 2 prerequisite.
+
 ## Requirement inventory
 
 | Ref | Design section / proposed owner | Required behavior and representative evidence |
