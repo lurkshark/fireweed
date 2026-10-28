@@ -4,7 +4,7 @@ audit_pending:
 audit_rounds: 2
 bases: {}
 module: checks
-phase: audit
+phase: evals
 run: 20261028T143328-b8168faa7b2578efc49bb800
 ---
 
