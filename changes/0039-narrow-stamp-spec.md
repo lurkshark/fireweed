@@ -1,12 +1,15 @@
 ---
 already_satisfied:
     - PRJ-006
-    - new:stamp-absent-targets
-    - new:stamp-preserve-author-content
-    - new:stamp-added-only
+    - PRJ-037
+    - PRJ-038
+    - PRJ-039
+audit_rounds: 0
 bases:
     PRJ-006: 51f3a69b
 module: project
+phase: audit
+run: 20261028T052053-ca9c681bda62d2755ae6ec17
 ---
 
 
@@ -24,13 +27,13 @@ late ID assignment. Existing public evals already assert these behaviors.
 
 ## Added
 
-### new:stamp-absent-targets
+### PRJ-037
 Stamp MUST reject Modified or Removed IDs absent from the projection preceding the target change.
 
-### new:stamp-preserve-author-content
+### PRJ-038
 Stamp MUST retain other frontmatter values and human section contents.
 
-### new:stamp-added-only
+### PRJ-039
 Stamp MUST succeed on an Added-only change without assigning spec IDs.
 
 ## Modified
@@ -55,3 +58,7 @@ absent-target IDs instead of PRJ-006, retaining both Modified and Removed
 rejection assertions and its successful Added-only assertion. No new Test
 functions, t.Run cases, fixture instances, helpers, product code or interface
 changes. Keep every unrelated ID. Implementation may edit only this change file.
+
+## Provenance
+
+- evals 2026-10-28T05:21:26.54955Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=199 failing=0 passing=199

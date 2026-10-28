@@ -211,7 +211,7 @@ func Test_PRJ_033_PRJ_034_PRJ_035_SetFieldsAndRejections(t *testing.T) {
 	}
 }
 
-func Test_PRJ_006_StampPrecedingProjectionAndPreservation(t *testing.T) {
+func Test_PRJ_006_PRJ_038_StampPrecedingProjectionAndPreservation(t *testing.T) {
 	root := fixture(t)
 	queued(t, root, "0001-revise.md", "", "Earlier change.\n", "", "### ALP-001 [review]\nAlpha MUST reflect the earlier revision.\n", "")
 	queued(t, root, "0002-target.md", "custom: author-value\n", "Keep this human motivation.\n", "", "### ALP-001\nAlpha MUST reflect the later revision.\n", "")
@@ -253,7 +253,7 @@ func Test_PRJ_006_StampPrecedingProjectionAndPreservation(t *testing.T) {
 	}
 }
 
-func Test_PRJ_006_StampAddedOnlyAndAbsentID(t *testing.T) {
+func Test_PRJ_037_PRJ_039_StampAddedOnlyAndAbsentID(t *testing.T) {
 	root := fixture(t)
 	queued(t, root, "0001-added.md", "", "Added item.\n", "### new:thing\nThing MUST work.\n", "", "")
 	if err := project.Stamp(root, "added"); err != nil {
