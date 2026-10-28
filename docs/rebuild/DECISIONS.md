@@ -79,3 +79,13 @@ Apply normal eval_fix and implementation changes to existing emitted diagnostics
 and behavior assertions. Explain must be accurate for codes actually emitted;
 unused allocations and their tests/explanations wait for the corresponding
 justified feature change.
+
+## D007 — Doctor diagnostics
+
+The Milestone 2 doctor feature uses the previously reserved C14–C16 slots:
+C14 for doctor hook/canary setup, detection and recovery failures; C15 for agent
+probe failures or usage limits, and the shared-auditor-command warning; C16 for
+stale or missing managed guidance and playbook override base metadata. Severity
+remains a property of the diagnostic. Add accurate assets explanations after
+the doctor backend emits these causes and before CLI wiring/checkpoint review;
+D006's existing assignments remain unchanged.

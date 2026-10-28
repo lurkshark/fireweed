@@ -222,8 +222,10 @@ acceptance remains unverified. No gap fix/rerun is authorized or performed.
 ## Next
 
 0. The owner-approved 0070 explanation correction and checkpoint re-review pass.
-   Perform the authorized push, then continue Milestone 2; the original block,
-   human approval and resolution remain in the checkpoint report.
+   The authorized push reached e083c5f; continue Milestone 2. The original block,
+   human approval and resolution remain in the checkpoint report. Next is the
+   checks-owned doctor backend, then accurate explanations for its emitted
+   diagnostics and app wiring. D007 allocates its reserved C14–C16 slots.
 1. The previously identified project/checks/workflow/contracts/gitstore/assets/app splits are complete through 0053. All obligations and existing assertions are retained under focused specs; do not launch another global rewrite. Continue the agreed diagnostic migration.
 2. D006's planned existing-error-path migration and explanations are complete through 0068. Preserve assigned causes and keep explain accurate as justified features add real paths. No unsupported-feature scaffolding, speculative errors or unused-code explanations.
 3. Workflow file organization is not a Milestone 2 prerequisite. Defer splitting lifecycle/stub.go unless it causes a demonstrated problem during feature work; a later drill/regenerate may organize the implementation afresh. Do not substitute another speculative cleanup task.
