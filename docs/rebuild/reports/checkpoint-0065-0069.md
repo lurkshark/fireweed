@@ -79,8 +79,10 @@ checks and other assertions. No init behavior or public interface change is need
 
 ## Next
 
-Obtain human review of the scoped C12/U02 explanation correction before authoring
-it or continuing implementation/pushes. Preserve existing causes/assertions and
-use the normal change/audit workflow if approved. Doctor and bounded fake-agent
-execution follow resolution; contracts drill limitations and final gates remain
-explicitly unverified.
+The owner approved the scoped correction on 2026-10-28, requiring a subagent
+re-review before push and continuation. Author and apply only the assets
+C12/U02 explanation fix through the normal fail-first/audit/implementation
+workflow, preserving existing causes/assertions and public interfaces. The
+five-application checkpoint count is not reset while the correction/re-review
+is pending. Doctor and bounded fake-agent execution follow a passing review;
+contracts drill limitations and final gates remain explicitly unverified.

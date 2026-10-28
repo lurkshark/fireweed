@@ -8,10 +8,11 @@ cleanup complete. It reports an error-prefix contract gap and its agent read
 dependent internals, so strict independence acceptance is not established; see
 [the reviewed report](reports/contracts-drill.md). No gap fix or repeat drill is
 authorized. 0069 now implements recipe-based initialization through NEW.
-**Applied since review: 5; checkpoint BLOCKED for human review.** The independent
-0065–0069 reviewer found that C12/U02 explanations omit the new init recipe
-causes and repairs. Stop implementation and further pushes until human review;
-the full goal remains incomplete.
+**Applied since review: 5; approved correction and checkpoint re-review pending.**
+The independent 0065–0069 reviewer found that C12/U02 explanations omit the new
+init recipe causes and repairs. The owner now approves the scoped assets
+correction, subagent re-review, and push/continuation only if it passes.
+Keep the checkpoint count until that review; the full goal remains incomplete.
 
 The owner's goal update authorizes a subagent review at every five applied
 changes: push to origin and continue when the review finds the work on track, and
@@ -216,9 +217,10 @@ acceptance remains unverified. No gap fix/rerun is authorized or performed.
 
 ## Next
 
-0. Stop for the blocked 0065–0069 checkpoint. Human review is required before
-   authoring the scoped assets C12/U02 explanation correction or continuing
-   implementation/pushes; see the checkpoint report for exact evidence.
+0. The owner approved the scoped assets C12/U02 explanation correction after the
+   blocked 0065–0069 checkpoint. Apply it through the normal workflow and have
+   the checkpoint subagent re-review the correction; push and continue only on
+   PASS. Preserve the original block and its evidence in the report.
 1. The previously identified project/checks/workflow/contracts/gitstore/assets/app splits are complete through 0053. All obligations and existing assertions are retained under focused specs; do not launch another global rewrite. Continue the agreed diagnostic migration.
 2. D006's planned existing-error-path migration and explanations are complete through 0068. Preserve assigned causes and keep explain accurate as justified features add real paths. No unsupported-feature scaffolding, speculative errors or unused-code explanations.
 3. Workflow file organization is not a Milestone 2 prerequisite. Defer splitting lifecycle/stub.go unless it causes a demonstrated problem during feature work; a later drill/regenerate may organize the implementation afresh. Do not substitute another speculative cleanup task.
