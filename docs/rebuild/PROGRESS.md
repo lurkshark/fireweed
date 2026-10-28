@@ -3,7 +3,7 @@
 ## Current status — 2026-10-27
 
 Human review 8 approved 0032–0034; the authorized push synchronized main and
-origin/main at 16cc688 and cleared P07. **Applied since review: 2.** Resume
+origin/main at 16cc688 and cleared P07. **Applied since review: 3.** Resume
 the remaining previously identified bundled specs; PRJ-004–006 are complete.
 
 The owner's goal update authorizes a subagent review at every five applied
@@ -13,6 +13,13 @@ phase audits, blocked-change stops and P07 remain enforced; this policy does not
 alter bounds. The owner explicitly authorizes each push only after its
 passing five-change subagent review. Milestone 1 passed;
 Milestone 2 waits for the spec splits, diagnostic migration and contracts drill.
+
+The owner approved batching related spec-only splits and eval retargeting within
+one module, up to 30 affected Added/Modified/Removed items per change. Resulting
+specs stay atomic; preserve every obligation/assertion and leave behavior and
+interfaces unchanged. Other changes retain five focused specs; verification,
+independent audits and checkpoint policy are unchanged. The protected policy
+patch was applied between 0047 and the next worker step.
 
 Controller: `.fireweed/bin/fireweed-bootstrap` 0.1.0, source `7f925190878e38fc38f30d16bb1cf47aca098cf7`, pin SHA-256 `f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f`; unchanged.
 Stage-2 history baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`; always check an explicit nonempty baseline..HEAD range. Use `GOCACHE=/tmp/fireweed-rebuild-cache`.
@@ -107,10 +114,12 @@ push and continuation. The applied count restarts after this passing review.
 
 - 0046 application-state-specs — FLOW-044–048; 5a5df43/7ab36b4/e52698f; 32 own cases and 118 total phase cases pass; no findings, existing metadata/Decision/phase-base assertions strengthened, implementation unchanged.
 
+- 0047 narrow-application-spec — FLOW-004/049–050; 80b6992/6598b5a/2a087d7; 32 own cases and 118 total phase cases pass; no findings, archive/SPEC commit assertion strengthened, implementation unchanged.
+
 ## Next
 
 1. Split permanent bundled behaviors through authored changes. Use already_satisfied and retarget existing evals; never hand-edit Specs/Decisions. FLOW-001/FLOW-002/FLOW-003/CHK-004/PRJ-001–007 are split. Human review 7 authorizes consecutive project splits for the remaining project bundles; PRJ-001–007 are now complete; other previously identified bundled specs remain. Human review 8 approves the P07 checkpoint and authorizes a push; verify the shared-base gate has cleared before resuming. Add atomic specs before narrowing an old item when one change cannot hold the full split.
-2. Apply D006: remove wrong label assertions through eval_fix, migrate implementation in normal changes, and keep explain accurate. Preserve all behavior assertions and coverage.
+2. Apply D006 only to existing emitted error paths and behavior assertions, using eval_fix and normal implementation changes. Do not stub or implement unsupported features or speculative errors for codes. Keep explain accurate for implemented paths; unused allocations/tests/explanations wait for a justified feature change. Preserve assertions and coverage.
 3. Before Milestone 2 touches workflow implementation, split lifecycle/stub.go by responsibility as maintenance only. No other cleanup/hardening.
 4. After items 1 and 2, run exactly one real controller drill on contracts. Commit its report and list gaps here; author no gap changes and drill no other module.
 5. Milestone 2 then centers projected blocking and fake-agent next/run through NEW. No NEW unattended real-agent execution before that fake-agent run completes. Full acceptance remains unverified.

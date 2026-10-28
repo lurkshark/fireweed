@@ -70,3 +70,12 @@ eval_fix without losing the behavior assertions or ID coverage. Normal changes
 then establish exact assigned-code assertions and migrate implementation. The
 spec split removes the old blanket C01 promise before that migration; no existing
 Specs or Decisions are edited by hand.
+
+Owner-approved migration scope: change codes only on error paths that already
+exist. Do not stub, scaffold or implement missing behavior to attach or exercise
+a diagnostic, and do not add speculative error paths. Existing unsupported-command
+rejections may have their codes corrected without implementing those commands.
+Apply normal eval_fix and implementation changes to existing emitted diagnostics
+and behavior assertions. Explain must be accurate for codes actually emitted;
+unused allocations and their tests/explanations wait for the corresponding
+justified feature change.
