@@ -2,10 +2,13 @@
 already_satisfied:
     - FLOW-009
     - FLOW-015
+audit_rounds: 0
 bases:
     FLOW-009: 08a1783d
     FLOW-015: c68f7655
 module: workflow
+phase: audit
+run: 20261028T085834-150085df4949d47edb812329
 ---
 
 
@@ -25,31 +28,31 @@ code followed by a colon, retaining the original cause text and wrapping.
 
 ## Added
 
-### new:start-precondition-codes
+### FLOW-054
 Start MUST prefix dirty-worktree and queue-eligibility rejections with P01.
 
-### new:unsupported-phase-codes
+### FLOW-055
 Verify and Done MUST prefix unsupported-phase rejections with P01.
 
-### new:claim-codes
+### FLOW-056
 Start and Current MUST prefix existing claim ownership or contention failures with P02.
 
-### new:approved-state-codes
+### FLOW-057
 Verify and Done MUST prefix unapproved author, runtime or audit-state alteration errors with P03 before running hooks.
 
-### new:stale-base-codes
+### FLOW-058
 Start, Verify and Done MUST prefix stale-base rejections with P05, retaining the underlying cause.
 
-### new:audit-submission-codes
+### FLOW-059
 Audit Done MUST prefix malformed or incomplete No findings submission errors with P09.
 
-### new:blocked-completion-codes
+### FLOW-060
 Done MUST prefix its existing blocked-change error with P06 while preserving the committed blocking state and claim release.
 
-### new:change-lookup-codes
+### FLOW-061
 Current and Context MUST prefix unknown requested change lookup errors with U02.
 
-### new:dependency-codes
+### FLOW-062
 Lifecycle operations MUST preserve assigned static, eval, zone and boundary causes when returning their existing failures, except for lifecycle stale-base classification P05.
 
 ## Modified
@@ -95,3 +98,7 @@ checks, approval features, claims/recovery features or speculative errors.
 Do not change audit filtering/round bounds, lifecycle steps, process control,
 public interfaces, other modules or enforcement. No file-organization refactor
 or general error framework. Controller owns spec application, commits and archive.
+
+## Provenance
+
+- evals 2026-10-28T09:08:58.570902Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=138 failing=12 passing=126
