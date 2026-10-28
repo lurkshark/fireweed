@@ -151,7 +151,7 @@ func containsCode(ds []project.Diagnostic, code string) bool {
 	return false
 }
 
-func Test_FLOW_001_FLOW_006_FLOW_007_FLOW_008_FLOW_012_FLOW_013_FLOW_014_FLOW_017_FLOW_018_FLOW_019_StartAssignsLateIDsAndRetainsSnapshotWithoutCommit(t *testing.T) {
+func Test_FLOW_001_FLOW_006_FLOW_007_FLOW_008_FLOW_012_FLOW_013_FLOW_014_FLOW_017_FLOW_018_FLOW_019_FLOW_053_StartAssignsLateIDsAndRetainsSnapshotWithoutCommit(t *testing.T) {
 	root := fixture(t, "", "", "### new:first\nFirst MUST work.\n\n### new:second\nSecond MUST use new:first.\n", "", "")
 	before := head(t, root)
 	s := start(t, root+"/.")
@@ -861,7 +861,7 @@ func Test_FLOW_003_FLOW_024_FLOW_048_FLOW_049_FailedDoneKeepsPhaseAndHead(t *tes
 	}
 }
 
-func Test_FLOW_005_ContextAndProvenanceAndRetainedReports(t *testing.T) {
+func Test_FLOW_005_FLOW_051_FLOW_052_FLOW_053_ContextAndProvenanceAndRetainedReports(t *testing.T) {
 	root := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
 	write(t, root, "packages/alpha/internal/context-note.txt", "Full context content marker.\n")
 	commit(t, root, "context file")
