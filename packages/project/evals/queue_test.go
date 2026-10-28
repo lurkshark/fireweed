@@ -330,12 +330,31 @@ func Test_PRJ_007_CheckValidAndDiagnostics(t *testing.T) {
 			diagnostics := project.Check(root)
 			found := false
 			for _, diagnostic := range diagnostics {
+				if !diagnostic.Warning && (strings.TrimSpace(diagnostic.Code) == "" || strings.TrimSpace(diagnostic.Message) == "") {
+					t.Errorf("Check returned error diagnostic without code and message: %#v", diagnostic)
+				}
 				if !diagnostic.Warning && diagnostic.Code == "C01" && strings.TrimSpace(diagnostic.Message) != "" {
 					found = true
 				}
 			}
 			if !found {
 				t.Errorf("Check did not report nonempty C01 error diagnostic: %#v", diagnostics)
+			}
+			if tc.name == "missing_base" || tc.name == "stale_base" {
+				queued(t, root, "0001-check.md", front, "Needed.\n", "", "", "### ALP-001\n")
+				removedDiagnostics := project.Check(root)
+				found = false
+				for _, diagnostic := range removedDiagnostics {
+					if !diagnostic.Warning && (strings.TrimSpace(diagnostic.Code) == "" || strings.TrimSpace(diagnostic.Message) == "") {
+						t.Errorf("Check returned error diagnostic without code and message for Removed entry: %#v", diagnostic)
+					}
+					if !diagnostic.Warning && diagnostic.Code == "C01" && strings.TrimSpace(diagnostic.Message) != "" {
+						found = true
+					}
+				}
+				if !found {
+					t.Errorf("Check accepted Removed entry with %s: %#v", tc.name, removedDiagnostics)
+				}
 			}
 			if tc.name == "nonnormative_change" || tc.name == "invalid_review_tag" {
 				front, added, modified, want := "", "", "", ""
@@ -350,6 +369,9 @@ func Test_PRJ_007_CheckValidAndDiagnostics(t *testing.T) {
 				queued(t, root, "0001-check.md", front, "Needed.\n", added, modified, "")
 				found = false
 				for _, diagnostic := range project.Check(root) {
+					if !diagnostic.Warning && (strings.TrimSpace(diagnostic.Code) == "" || strings.TrimSpace(diagnostic.Message) == "") {
+						t.Errorf("Check returned error diagnostic without code and message: %#v", diagnostic)
+					}
 					if !diagnostic.Warning && diagnostic.Code == "C01" && strings.Contains(diagnostic.Message, want) {
 						found = true
 					}
