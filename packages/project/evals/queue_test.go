@@ -150,7 +150,7 @@ func Test_PRJ_005_PRJ_032_PRJ_036_ProjectEditsAndLocalHandles(t *testing.T) {
 		t.Fatalf("Project first: %v", err)
 	}
 	firstItems := specItems(t, moduleByName(t, first, "alpha"))
-	if len(firstItems) != 2 || findItem(t, firstItems, "ALP-001").Tag != "review" || !strings.Contains(findItem(t, firstItems, "ALP-001").Body, "revised full text") || !strings.Contains(findItem(t, firstItems, "new:shared").Body, "First change") {
+	if len(firstItems) != 2 || findItem(t, firstItems, "ALP-001").Tag != "review" || findItem(t, firstItems, "ALP-001").Body != "Alpha MUST have revised full text.\n\n" || findItem(t, firstItems, "new:shared").Body != "First change MUST retain its own text.\n\n" {
 		t.Errorf("first projection = %#v", firstItems)
 	}
 	all, err := project.Project(root, "")
