@@ -24,7 +24,7 @@ bases:
     APP-011: 4e8cec43
     APP-012: b9303680
 module: app
-phase: evals
+phase: audit
 run: 20261028T065728-9fe08d4bfed43e4d454a1b5c
 ---
 
@@ -104,21 +104,24 @@ coverage <module> MUST evaluate current specs, or the selected projection with -
 
 ## Notes
 
-Retarget existing lifecycle_cli_test.go labels only. Start context/assignment
+Retarget existing lifecycle_cli_test.go labels. Start context/assignment
 and warning tests retain APP-009 and gain status/JSON IDs as asserted. Context
 compact/full/errors retains APP-011 and gains Context JSON/error IDs. Coverage
 current/projection/errors retains APP-012 and gains results/input/JSON IDs.
 VerifyDoneAuditAndFullChecks and VerifyRejectsFalseFailFirstAndFrozenEdits keep
 APP-010 where verify is asserted and gain Done/quick/JSON IDs as relevant.
-DoneReportsBlockedAudit uses Done/JSON IDs instead of APP-010. Preserve all
+DoneReportsBlockedAudit uses Done/JSON IDs and APP-010 for blocked verify. Preserve all
 explicit executable-Bin, quick/no-commit, full-Done, blocked-state, result-data,
 warning, error, metadata and coverage assertions. Keep every unrelated ID.
 No new Test functions, t.Run cases or fixture instances; keep 86 app cases.
-Do not change helpers, command invocations, source fixture strings, hook code,
-binary builds, product code, interfaces or diagnostic assertions. Implementation
-may edit only this change file.
+The audit correction adds one blocked-state verify invocation to the existing
+blocked-audit fixture and identifies the existing omitted-change done success
+assertion. Do not change helpers, other command invocations, source fixture
+strings, hook code, binary builds, product code, interfaces or existing diagnostic
+assertions. Implementation may edit only this change file.
 
 ## Provenance
 
 - evals 2026-10-28T06:59:30.256213Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=86 failing=0 passing=86
 - audit 2026-10-28T07:01:14.036448Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- evals 2026-10-28T07:04:50.573297Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=86 failing=0 passing=86

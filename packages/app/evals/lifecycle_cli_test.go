@@ -455,6 +455,7 @@ func Test_APP_010_APP_029_APP_030_APP_031_VerifyDoneAuditAndFullChecks(t *testin
 	if err := os.Remove(filepath.Join(root, ".fireweed/runs/beta-fail")); err != nil {
 		t.Fatal(err)
 	}
+	// Omitted change must resolve the held change and complete its full checks.
 	status, plain, stderr = runLifecycleBinary(t, bin, root, "done")
 	if status != 0 || stderr != "" || !strings.Contains(strings.ToLower(plain), "applied") {
 		t.Fatalf("impl done: %d %q %q", status, plain, stderr)
@@ -509,7 +510,7 @@ func Test_APP_010_APP_029_APP_030_APP_031_VerifyRejectsFalseFailFirstAndFrozenEd
 	}
 }
 
-func Test_APP_029_APP_031_DoneReportsBlockedAudit(t *testing.T) {
+func Test_APP_010_APP_029_APP_031_DoneReportsBlockedAudit(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := lifecycleCLIProject(t, bin, true)
 	appPut(t, root, ".fireweed/emit-new", "yes\n")
@@ -532,4 +533,6 @@ func Test_APP_029_APP_031_DoneReportsBlockedAudit(t *testing.T) {
 	if err != nil || !strings.Contains(string(blocked), "blocked:") {
 		t.Errorf("blocked audit state missing: %q, %v", blocked, err)
 	}
+	status, output, stderr = runLifecycleBinary(t, bin, root, "verify", "--json")
+	commandFailure(t, status, 1, output, stderr, true)
 }
