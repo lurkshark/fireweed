@@ -6,20 +6,21 @@ already_satisfied:
     - APP-006
     - APP-007
     - APP-008
-    - new:unknown-information-lookup
-    - new:unsupported-command
-    - new:failed-json-envelope
-    - new:modules-discovery
-    - new:modules-json
-    - new:modules-result-status
-    - new:new-change-errors
-    - new:new-change-json
-    - new:stamp-result-status
-    - new:stamp-json
-    - new:check-usage-config
-    - new:check-json
-    - new:show-json
-    - new:show-errors
+    - APP-013
+    - APP-014
+    - APP-015
+    - APP-016
+    - APP-017
+    - APP-018
+    - APP-019
+    - APP-020
+    - APP-021
+    - APP-022
+    - APP-023
+    - APP-024
+    - APP-025
+    - APP-026
+audit_rounds: 0
 bases:
     APP-003: c2581669
     APP-004: cd043073
@@ -28,6 +29,8 @@ bases:
     APP-007: 9427709a
     APP-008: cb56cc70
 module: app
+phase: audit
+run: 20261028T064628-e207a5b15498f58dcd06a2b2
 ---
 
 
@@ -47,46 +50,46 @@ normal D006 migration on existing paths. Do not implement unsupported commands.
 
 ## Added
 
-### new:unknown-information-lookup
+### APP-013
 Unknown explain codes or playbook names MUST return exit 2 with a nonempty corrective diagnostic.
 
-### new:unsupported-command
+### APP-014
 Commands listed by help but still under construction MUST explicitly report that they are unimplemented and return nonzero.
 
-### new:failed-json-envelope
+### APP-015
 Failed --json requests MUST use the schema-1 envelope with null data and a diagnostic containing code and message.
 
-### new:modules-discovery
+### APP-016
 modules MUST discover the nearest ancestor fireweed.yaml.
 
-### new:modules-json
+### APP-017
 modules --json MUST return schema 1 with array data containing name, id_prefix, dir, depends_on and resolved zone arrays, plus empty diagnostics on success.
 
-### new:modules-result-status
+### APP-018
 modules MUST return exit 0 on success or exit 2 for missing or invalid configuration, with a corrective C01 failure diagnostic.
 
-### new:new-change-errors
+### APP-019
 new-change MUST return exit 2 with a corrective diagnostic for missing or extra arguments, invalid module or slug, or duplicate slugs, preserving existing files.
 
-### new:new-change-json
+### APP-020
 new-change --json MUST use schema 1 with string path data on success, or null data and code/message diagnostics on failure.
 
-### new:stamp-result-status
+### APP-021
 stamp MUST return exit 2 for usage or configuration errors and exit 1 for stamping rejections, with code/message diagnostics.
 
-### new:stamp-json
+### APP-022
 stamp --json MUST return schema 1 with string confirmation data on success, or null data and diagnostics on failure.
 
-### new:check-usage-config
+### APP-023
 check MUST return exit 2 for usage or configuration errors with code/message diagnostics.
 
-### new:check-json
+### APP-024
 check --json MUST return schema 1 with string summary data on success, null data on failure and the reported diagnostics.
 
-### new:show-json
+### APP-025
 show --json MUST return identical text as schema-1 string data with empty diagnostics and exit 0 on success.
 
-### new:show-errors
+### APP-026
 show MUST return exit 2 with code/message diagnostics for unknown or ambiguous module or item, invalid arguments or configuration errors.
 
 ## Modified
@@ -133,3 +136,7 @@ FailedJSON assertion is retained, and command-specific format IDs own their
 assertions. Keep helpers, fixture paths/strings, binary builds, hooks, code,
 interfaces and diagnostic assertions unchanged. No new Test functions, t.Run
 cases or fixture instances. Implementation may edit only this change file.
+
+## Provenance
+
+- evals 2026-10-28T06:50:09.147566Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=86 failing=0 passing=86

@@ -123,8 +123,8 @@ func Test_APP_003_InvalidRequests(t *testing.T) {
 		{"unknown-option", []string{"help", "--bogus"}, "--bogus"},
 		{"missing-argument", []string{"explain"}, "explain"},
 		{"extra-argument", []string{"version", "surplus"}, "version"},
-		{"unknown-explanation", []string{"explain", "NO-SUCH-CODE"}, "NO-SUCH-CODE"},
-		{"unknown-playbook", []string{"playbook", "no-such-playbook"}, "no-such-playbook"},
+		{"APP_013_unknown-explanation", []string{"explain", "NO-SUCH-CODE"}, "NO-SUCH-CODE"},
+		{"APP_013_unknown-playbook", []string{"playbook", "no-such-playbook"}, "no-such-playbook"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			for _, format := range []struct {
@@ -151,7 +151,7 @@ func Test_APP_003_InvalidRequests(t *testing.T) {
 	}
 }
 
-func Test_APP_003_UnimplementedCommands(t *testing.T) {
+func Test_APP_014_UnimplementedCommands(t *testing.T) {
 	for _, command := range []string{"init", "status"} {
 		t.Run(command, func(t *testing.T) {
 			if !strings.Contains(assets.Help(), command) {
@@ -165,7 +165,7 @@ func Test_APP_003_UnimplementedCommands(t *testing.T) {
 	}
 }
 
-func Test_APP_003_FailedJSON(t *testing.T) {
+func Test_APP_015_FailedJSON(t *testing.T) {
 	status, stdout, _ := run("init", "--json")
 	if status == 0 {
 		t.Error("failed request returned exit 0")

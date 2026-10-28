@@ -145,7 +145,7 @@ func assertModuleJSON(t *testing.T, output string, names []string) {
 	}
 }
 
-func Test_APP_004_ModulesGraphAndNearestAncestor(t *testing.T) {
+func Test_APP_004_APP_016_APP_017_APP_018_ModulesGraphAndNearestAncestor(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := appProjectFixture(t)
 	nested := appNestedDir(t, root)
@@ -187,7 +187,7 @@ func Test_APP_004_ModulesGraphAndNearestAncestor(t *testing.T) {
 	})
 }
 
-func Test_APP_004_ModulesConfigurationErrors(t *testing.T) {
+func Test_APP_018_ModulesConfigurationErrors(t *testing.T) {
 	bin := buildAppBinary(t)
 	for _, tc := range []struct {
 		name string
@@ -274,7 +274,7 @@ func assertChangeSkeleton(t *testing.T, root, rel, module string) {
 	}
 }
 
-func Test_APP_005_NewChangePlainAndJSON(t *testing.T) {
+func Test_APP_005_APP_020_NewChangePlainAndJSON(t *testing.T) {
 	bin := buildAppBinary(t)
 	for _, jsonMode := range []bool{false, true} {
 		{
@@ -338,7 +338,7 @@ func changeFiles(t *testing.T, root string) map[string]string {
 	return files
 }
 
-func Test_APP_005_NewChangeErrorsPreserveFiles(t *testing.T) {
+func Test_APP_019_APP_020_NewChangeErrorsPreserveFiles(t *testing.T) {
 	bin := buildAppBinary(t)
 	for _, tc := range []struct {
 		name string

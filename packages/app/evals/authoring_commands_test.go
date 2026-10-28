@@ -62,7 +62,7 @@ func commandFailure(t *testing.T, status, want int, stdout, stderr string, jsonM
 	return stdout + stderr
 }
 
-func Test_APP_006_StampAliasesAndUnassignedHandles(t *testing.T) {
+func Test_APP_006_APP_022_StampAliasesAndUnassignedHandles(t *testing.T) {
 	bin := buildAppBinary(t)
 	for _, alias := range []string{"revise", "0001-revise.md", "changes/0001-revise.md"} {
 		t.Run(alias, func(t *testing.T) {
@@ -105,7 +105,7 @@ func Test_APP_006_StampAliasesAndUnassignedHandles(t *testing.T) {
 	}
 }
 
-func Test_APP_006_StampErrorExits(t *testing.T) {
+func Test_APP_021_APP_022_StampErrorExits(t *testing.T) {
 	bin := buildAppBinary(t)
 	for _, tc := range []struct {
 		name string
@@ -138,7 +138,7 @@ func Test_APP_006_StampErrorExits(t *testing.T) {
 	}
 }
 
-func Test_APP_007_CheckValidAndAllDiagnostics(t *testing.T) {
+func Test_APP_007_APP_024_CheckValidAndAllDiagnostics(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := authoringFixture(t)
 	authoringChange(t, root, "0001-valid.md", "Users need this addition.\n", "### new:valid\nValid MUST work.\n", "")
@@ -195,7 +195,7 @@ func Test_APP_007_CheckValidAndAllDiagnostics(t *testing.T) {
 	}
 }
 
-func Test_APP_007_CheckUsageAndConfiguration(t *testing.T) {
+func Test_APP_023_APP_024_CheckUsageAndConfiguration(t *testing.T) {
 	bin := buildAppBinary(t)
 	for _, tc := range []struct {
 		name string
@@ -222,7 +222,7 @@ func Test_APP_007_CheckUsageAndConfiguration(t *testing.T) {
 	}
 }
 
-func Test_APP_008_ShowCurrentProjectedAndJSONParity(t *testing.T) {
+func Test_APP_008_APP_025_ShowCurrentProjectedAndJSONParity(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := authoringFixture(t)
 	authoringChange(t, root, "0001-first.md", "Users need the first item.\n", "### new:first\nFirst MUST work.\n", "")
@@ -266,7 +266,7 @@ func Test_APP_008_ShowCurrentProjectedAndJSONParity(t *testing.T) {
 	}
 }
 
-func Test_APP_008_ShowNamedErrors(t *testing.T) {
+func Test_APP_026_ShowNamedErrors(t *testing.T) {
 	bin := buildAppBinary(t)
 	for _, tc := range []struct {
 		name string
