@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: runner
+phase: audit
+run: 20261028T232748-8a17fd5f3261c7dfe4264076
 ---
 
 
@@ -26,29 +29,29 @@ public dependency interfaces, without own-parent import cycles.
 
 ## Added
 
-### new:empty-next
+### RUN-010
 Next MUST return Empty true without invoking agents when the queue is empty.
 
-### new:start-next
+### RUN-011
 For a nonempty queue, Next MUST select its first unblocked change and start it
 through workflow.Start, propagating start failures without invoking an agent.
 
-### new:next-approval
+### RUN-012
 Unless AllowUnmerged is true, Next MUST reject a selected change absent from
 both the local and shared base before claiming it or assigning IDs.
 
-### new:next-agent-context
+### RUN-013
 For each phase, Next MUST invoke the worker role for evals and impl, and the
 audit role for audit, using the held snapshot and request Bin and Timeout.
 Worker prompts MUST include full workflow context. Audit prompts MUST include
 the change, projected spec and eval contents without implementation contents.
 
-### new:next-advance
+### RUN-014
 After each successful agent invocation, Next MUST verify the current phase and
 call workflow.Done only when verification passes, continuing until applied.
 It MUST return the applied state and the ordered phase invocation results.
 
-### new:next-failure
+### RUN-015
 When invocation or phase verification fails, Next MUST return an error and
 captured invocation results without advancing that phase.
 
@@ -104,3 +107,7 @@ workers use the fixed Sol/high profile; workers never call start/done/next/run,
 commit or edit protected docs, phase/counters or other modules. Separate auditors
 receive only an isolated snapshot of permitted inputs. Any new block or unresolved
 finding follows normal audit/checkpoint bounds; no exception is authorized.
+
+## Provenance
+
+- evals 2026-10-28T23:34:54.251732Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=191 failing=12 passing=179

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/lurkshark/fireweed/packages/project"
+	"github.com/lurkshark/fireweed/packages/workflow"
 )
 
 type AgentRequest struct {
@@ -19,4 +20,23 @@ type AgentResult struct {
 	Stderr     string
 	ExitCode   int
 	UsageLimit bool
+}
+
+type NextRequest struct {
+	Root          string
+	Bin           string
+	AllowUnmerged bool
+	Timeout       time.Duration
+}
+
+type StepResult struct {
+	Phase string
+	Role  string
+	Agent AgentResult
+}
+
+type NextResult struct {
+	State workflow.State
+	Empty bool
+	Steps []StepResult
 }
