@@ -105,3 +105,14 @@ Proposed human-reviewed sequence, requiring explicit approval:
 
 No correction, push, new drill or deferred contracts-gap work is authorized or
 performed by this report. No phase-write exception or bound change is proposed.
+
+## Scoped correction explicitly approved — 2026-10-28
+
+The owner approved pushing the current batch with findings recorded, then the
+normal scoped checks fix and runner eval_fix, followed by the same subagent's
+re-review and a correction push only if it passes. This resolves the human
+checkpoint for that sequence, not the reported defects. Synchronize the shared
+base through the approved push; preserve bounds, history, assertions and specs.
+The re-review remains limited to the two doctor findings and observed runner
+eval timing issue. Any new block or unresolved issue still stops. No new drill,
+deferred contracts-gap fix or phase-write exception is authorized.

@@ -8,7 +8,7 @@ cleanup complete. It reports an error-prefix contract gap and its agent read
 dependent internals, so strict independence acceptance is not established; see
 [the reviewed report](reports/contracts-drill.md). No gap fix or repeat drill is
 authorized. 0069 now implements recipe-based initialization through NEW.
-**Applied since review: 5; checkpoint BLOCK requires human review.**
+**Applied since review: 5; checkpoint correction sequence explicitly approved.**
 0071–0075 applied the doctor backend, portable cleanup helper, emitted-code
 explanations, doctor/guidance CLI and bounded invocation primitive. The approved
 0071 recovery passed; [its report](reports/doctor-0071-block.md) preserves the
@@ -21,8 +21,10 @@ repro confirms the false-success missing-hook path. Full race also found a
 timing-dependent runner eval; its focused rerun passes, but the full result
 remains failed. Build, vet, static check and explicit history extensions pass.
 See [the checkpoint report](reports/checkpoint-0071-0075.md). No pending change or
-claim remains, and no push occurred. P07 reports five unapproved changes; normal
-corrections require explicit human-authorized shared-base synchronization first.
+claim remains. The owner now approves pushing the batch with findings recorded,
+then one scoped checks fix and one runner eval_fix, followed by the same
+subagent re-review and a correction push only on PASS. Use the normal approved
+push to synchronize the P07 shared base; preserve all bounds/history.
 The full goal remains incomplete.
 
 The owner's goal update authorizes a subagent review at every five applied
@@ -237,16 +239,13 @@ acceptance remains unverified. No gap fix/rerun is authorized or performed.
 
 ## Next
 
-Stop for human review of the [BLOCK checkpoint](reports/checkpoint-0071-0075.md).
-P07 reports five unapproved changes, so correction work cannot start before
-explicit human-authorized shared-base synchronization. Proposed sequence: push
-the current five changes with findings recorded, one normal checks fixes change
-for the two doctor defects, one runner eval_fix for the observed timing failure,
-then full checks and scoped subagent re-review before another push/continuation.
-No push, correction, counter/ref/bound change or phase exception is authorized by
-the failed review. The main goal remains incomplete. No new drill or deferred contracts-gap fix
-is authorized. Stop at any new blocked change;
-the standing five-application subagent checkpoint remains in force.
+Execute the explicitly approved [checkpoint correction sequence](reports/checkpoint-0071-0075.md):
+push the recorded batch, apply one normal checks fixes change for the two doctor
+defects and one runner eval_fix for the observed timing failure, then full checks
+and scoped re-review by the same subagent. Push corrections and continue the main
+goal only if that review passes. Preserve product specs/interfaces, assertions,
+controller bounds and all history. Stop on any new block or unresolved issue.
+No new drill, deferred contracts-gap fix or phase exception is authorized.
 
 0. The owner-approved 0070 explanation correction/re-review passed and pushed
    e083c5f. The following 0071–0075 slice now reaches the blocked checkpoint above;
