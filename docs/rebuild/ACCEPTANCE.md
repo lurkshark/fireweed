@@ -326,3 +326,8 @@ before another change. Four changes were applied since the explicit review at
   This establishes the CHK-049–069 backend eval evidence under Git 2.53.0;
   ordinary-Apple-Git helper portability, C14–C16 explanations and app doctor
   wiring remain pending. This is partial R08/R11/R28 evidence, not completion.
+
+  0072 eval_fix restores ordinary Apple Git helper compatibility while preserving
+  all CHK-050/051 placement, physical-cleanup and registration assertions. Evals
+  dc2b1e7 and impl 762052f each report 260 passes; audit 426e259 has no findings
+  and no implementation reads. Product implementation is unchanged.
