@@ -59,7 +59,7 @@ var diagnosticPrefix = regexp.MustCompile(`^([A-Z][A-Z0-9-]+):\s*`)
 
 func lifecycleError(err error, ds []diagnostic, action string) []diagnostic {
 	message := err.Error()
-	code := "CLI_LIFECYCLE"
+	code := "P01"
 	if parts := diagnosticPrefix.FindStringSubmatch(message); parts != nil {
 		code = parts[1]
 		message = strings.TrimPrefix(message, parts[0])
@@ -109,7 +109,7 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 	}
 	snapshot, err := loadValidatedProject()
 	if err != nil {
-		return fail(2, "C01", fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
+		return fail(2, projectFailureCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
 	}
 	root := snapshot.Root
 	if command == "start" {
@@ -133,7 +133,7 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 	}
 	bin, err := os.Executable()
 	if err != nil {
-		return fail(2, "CLI_CONFIG", fmt.Sprintf("Find invoking executable: %v. Run the installed fireweed executable.", err))
+		return fail(2, "P01", fmt.Sprintf("Find invoking executable: %v. Run the installed fireweed executable.", err))
 	}
 	if command == "coverage" {
 		if withChange != "" {
@@ -147,7 +147,7 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 				snapshot, err = project.Project(root, withChange)
 			}
 			if err != nil {
-				return fail(2, "CLI_COVERAGE", fmt.Sprintf("%v. Use a valid queued change alias.", err))
+				return fail(2, projectFailureCode(err, "P01"), fmt.Sprintf("%v. Use a valid queued change alias.", err))
 			}
 		}
 		var module *project.Module
@@ -158,7 +158,7 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 			}
 		}
 		if module == nil {
-			return fail(2, "CLI_COVERAGE", fmt.Sprintf("Unknown module %q. Use modules to choose a valid module.", args[0]))
+			return fail(2, "U02", fmt.Sprintf("Unknown module %q. Use modules to choose a valid module.", args[0]))
 		}
 		if withChange == "" {
 			if _, statErr := os.Stat(filepath.Join(root, ".git")); statErr == nil {
@@ -178,7 +178,11 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 		section, _ := contracts.Section(module.Document.Body, "Specs")
 		specs, err := contracts.ParseItems(section)
 		if err != nil {
-			return fail(2, "CLI_COVERAGE", fmt.Sprintf("%v. Correct the module Specs and retry coverage.", err))
+			code := "C03"
+			if strings.HasPrefix(err.Error(), "duplicate item ID: ") {
+				code = "C05"
+			}
+			return fail(2, code, fmt.Sprintf("%v. Correct the module Specs and retry coverage.", err))
 		}
 		report, err := checks.Evaluate(context.Background(), checks.HookRequest{Snapshot: snapshot, Module: module.Name, Bin: bin, Timeout: hookTimeout(snapshot)})
 		if err == nil {

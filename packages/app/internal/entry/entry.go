@@ -119,7 +119,7 @@ func Run(args []string, out, errOut io.Writer) int {
 		}
 		snapshot, err := loadModuleProject()
 		if err != nil {
-			return fail("C01", fmt.Sprintf("%v. Provide a valid fireweed.yaml and correct module declarations in SPEC.md, then run modules again.", err))
+			return fail(projectFailureCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and correct module declarations in SPEC.md, then run modules again.", err))
 		}
 		modules := moduleResults(snapshot.Modules)
 		if jsonMode {
@@ -136,11 +136,11 @@ func Run(args []string, out, errOut io.Writer) int {
 		}
 		snapshot, err := loadValidatedProject()
 		if err != nil {
-			return fail("C01", fmt.Sprintf("%v. Provide a valid fireweed.yaml and correct module declarations in SPEC.md, then retry.", err))
+			return fail(projectFailureCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and correct module declarations in SPEC.md, then retry.", err))
 		}
 		path, err := project.NewChange(snapshot.Root, positional[1], positional[2])
 		if err != nil {
-			return fail("CLI_AUTHOR", fmt.Sprintf("%v. Use a valid module and an unused lowercase slug.", err))
+			return fail(newChangeFailureCode(err), fmt.Sprintf("%v. Use a valid module and an unused lowercase slug.", err))
 		}
 		if jsonMode {
 			_ = json.NewEncoder(out).Encode(envelope{Schema: 1, Data: path, Diagnostics: []diagnostic{}})
@@ -154,10 +154,14 @@ func Run(args []string, out, errOut io.Writer) int {
 		}
 		snapshot, err := loadValidatedProject()
 		if err != nil {
-			return fail("C01", fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
+			return fail(projectFailureCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
 		}
 		if err := project.Stamp(snapshot.Root, positional[1]); err != nil {
-			return failStatus(1, "CLI_STAMP", err.Error())
+			code := projectFailureCode(err, "P01")
+			if strings.Contains(err.Error(), " bases must be a mapping") {
+				code = "C08"
+			}
+			return failStatus(1, code, err.Error())
 		}
 		body = fmt.Sprintf("Stamped %s\n", positional[1])
 	case "check":
@@ -166,7 +170,7 @@ func Run(args []string, out, errOut io.Writer) int {
 		}
 		snapshot, err := loadValidatedProject()
 		if err != nil {
-			return fail("C01", fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
+			return fail(projectFailureCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
 		}
 		results := project.Check(snapshot.Root)
 		diagnostics := make([]diagnostic, 0, len(results))
@@ -201,36 +205,43 @@ func Run(args []string, out, errOut io.Writer) int {
 		}
 		snapshot, err := loadValidatedProject()
 		if err != nil {
-			return fail("C01", fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
+			code := projectFailureCode(err, "C01")
+			if strings.Contains(err.Error(), fmt.Sprintf("duplicate module name %q", positional[1])) {
+				code = "U02"
+			}
+			return fail(code, fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
 		}
 		if projected {
 			snapshot, err = project.Project(snapshot.Root, "")
 			if err != nil {
-				return fail("CLI_SHOW", err.Error())
+				return fail(projectFailureCode(err, "P01"), err.Error())
 			}
 		}
 		var found *project.Module
 		for i := range snapshot.Modules {
 			if snapshot.Modules[i].Name == positional[1] {
 				if found != nil {
-					return fail("CLI_SHOW", fmt.Sprintf("ambiguous module %q", positional[1]))
+					return fail("U02", fmt.Sprintf("ambiguous module %q", positional[1]))
 				}
 				found = &snapshot.Modules[i]
 			}
 		}
 		if found == nil {
-			return fail("CLI_SHOW", fmt.Sprintf("unknown module %q", positional[1]))
+			return fail("U02", fmt.Sprintf("unknown module %q", positional[1]))
 		}
 		if count == 1 {
 			body, err = contracts.RenderDocument(found.Document)
 			if err != nil {
-				return fail("CLI_SHOW", err.Error())
+				return fail("C03", err.Error())
 			}
 		} else {
 			section, _ := contracts.Section(found.Document.Body, "Specs")
 			items, err := contracts.ParseItems(section)
 			if err != nil {
-				return fail("CLI_SHOW", err.Error())
+				if strings.HasPrefix(err.Error(), "duplicate item ID: ") {
+					return fail("U02", err.Error())
+				}
+				return fail("C03", err.Error())
 			}
 			for _, item := range items {
 				if item.ID == positional[2] {
@@ -239,7 +250,7 @@ func Run(args []string, out, errOut io.Writer) int {
 				}
 			}
 			if body == "" {
-				return fail("CLI_SHOW", fmt.Sprintf("unknown item %q in module %q", positional[2], positional[1]))
+				return fail("U02", fmt.Sprintf("unknown item %q in module %q", positional[2], positional[1]))
 			}
 		}
 	default:

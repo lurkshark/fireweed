@@ -72,10 +72,10 @@ modules MUST discover the nearest ancestor fireweed.yaml.
 modules --json MUST return schema 1 with array data containing name, id_prefix, dir, depends_on and resolved zone arrays, plus empty diagnostics on success.
 
 ### APP-018
-modules MUST return exit 0 on success or exit 2 for missing or invalid configuration, with a corrective C01 failure diagnostic.
+modules MUST return exit 0 on success or exit 2 for missing or invalid project inputs, with a corrective failure diagnostic: C01 for configuration, C02 for graph, C03 for document syntax or C12 for metadata errors.
 
 ### APP-019
-new-change MUST return exit 2 with a corrective diagnostic for missing or extra arguments, invalid module or slug, or duplicate slugs, preserving existing files.
+new-change MUST return exit 2 with corrective diagnostics U01 for invalid arguments or slug, U02 for an unknown module and C13 for duplicate slugs, preserving existing files.
 
 ### APP-020
 new-change --json MUST use schema 1 with string path data on success, or null data and code/message diagnostics on failure.
@@ -127,5 +127,17 @@ coverage MUST return exit 2 with corrective diagnostics for usage, configuration
 
 ### APP-036
 coverage --json MUST return schema 1 with report data on success, null on failure and code/message diagnostics.
+
+### APP-037
+Existing static failures exposed by the CLI MUST retain their D006 cause: C01 configuration, C02 graph, C03 syntax, C04 normative text, C05 identities, C06 tags, C07 change structure, C08 bases, C09 handles, C12 metadata or C13 queue identity.
+
+### APP-038
+CLI lookup rejections for unknown or ambiguous requested names MUST use U02, retaining C13 for queue identity ambiguity.
+
+### APP-039
+Existing operational precondition failures without a more specific D006 cause MUST report P01.
+
+### APP-040
+For workflow or checks failures carrying an assigned code, the CLI MUST preserve that code and reported warnings.
 
 ## Decisions
