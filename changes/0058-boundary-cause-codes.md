@@ -1,4 +1,5 @@
 ---
+audit_rounds: 0
 bases:
     CHK-039: e2f7fef5
     CHK-040: 4afd84bb
@@ -6,6 +7,8 @@ bases:
     CHK-044: fee76f33
     CHK-045: 80ec1642
 module: checks
+phase: audit
+run: 20261028T075519-0002777982f944bdc44ae5e7
 ---
 
 
@@ -63,3 +66,7 @@ existing hook-launch/cancellation/timeout errors; no new error condition is
 authorized. Keep all error returns, warnings, normal-exit/suppression semantics
 and process control behavior. B05 is no longer emitted here. Do not modify
 other modules or add unused codes. Controller owns specs, commits and archive.
+
+## Provenance
+
+- evals 2026-10-28T07:58:12.918004Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=146 failing=3 passing=143

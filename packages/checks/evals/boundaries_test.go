@@ -58,7 +58,26 @@ func boundaryHasWarning(diags []project.Diagnostic) bool {
 	return false
 }
 
-func Test_CHK_005_CHK_039_GlobalAndModuleBoundaryHooks(t *testing.T) {
+func requireBoundaryDiagnostic(t *testing.T, diags []project.Diagnostic, code string, warning bool, message string) {
+	t.Helper()
+	for _, d := range diags {
+		if message == "" {
+			if d.Code == code && d.Warning == warning {
+				return
+			}
+			continue
+		}
+		if strings.Contains(d.Message, message) {
+			if d.Code != code || d.Warning != warning {
+				t.Errorf("boundary diagnostic for %q = %#v; want code %s, warning %t", message, d, code, warning)
+			}
+			return
+		}
+	}
+	t.Errorf("boundary diagnostic for %q absent: %#v", message, diags)
+}
+
+func Test_CHK_005_GlobalAndModuleBoundaryHooks(t *testing.T) {
 	snap := boundarySnapshot(t, nil)
 	globalMarker := filepath.Join(snap.Root, "global-ran")
 	moduleMarker := filepath.Join(snap.Root, "module-ran")
@@ -104,7 +123,7 @@ func Test_CHK_041_ExactBaselineOnly(t *testing.T) {
 	}
 }
 
-func Test_CHK_040_CHK_042_OptOutSuppressesOnlyItsModuleAndWarns(t *testing.T) {
+func Test_CHK_039_CHK_040_OptOutSuppressesOnlyItsModuleAndWarns(t *testing.T) {
 	snap := boundarySnapshot(t, nil)
 	snap.Modules[0].Document.Frontmatter["boundaries_opt_out"] = "legacy dependency"
 	snap.Modules = append(snap.Modules, project.Module{Name: "beta", Dir: "packages/beta", Zones: contracts.Zones{Disposable: []string{"internal/**"}}, Document: contracts.Document{Frontmatter: map[string]any{}}})
@@ -116,11 +135,16 @@ func Test_CHK_040_CHK_042_OptOutSuppressesOnlyItsModuleAndWarns(t *testing.T) {
 	if !strings.Contains(fmt.Sprint(diags), "legacy dependency") {
 		t.Errorf("opt-out reason absent from warning: %#v", diags)
 	}
+	requireBoundaryDiagnostic(t, diags, "X03", true, "legacy dependency")
 	snap.Config["hooks"] = map[string]any{"boundaries": boundaryScript(t, snap.Root, `printf 'alpha: ignored\nbeta: enforced\n'`)}
 	diags, err = checks.Boundaries(context.Background(), checks.BoundaryRequest{Snapshot: snap, Timeout: time.Second})
 	if !boundaryHasError(diags, err) {
 		t.Error("opt-out hid another module's violation")
 	}
+	if err == nil {
+		t.Error("unsuppressed beta violation returned no error")
+	}
+	requireBoundaryDiagnostic(t, diags, "X01", false, "beta: enforced")
 }
 
 func Test_CHK_044_CHK_045_MissingHookRequiredVersusOptional(t *testing.T) {
@@ -129,17 +153,24 @@ func Test_CHK_044_CHK_045_MissingHookRequiredVersusOptional(t *testing.T) {
 	if !boundaryHasError(diags, err) {
 		t.Error("missing hook for disposable module accepted")
 	}
+	if err == nil {
+		t.Error("missing required hook returned no error")
+	}
+	requireBoundaryDiagnostic(t, diags, "X02", false, "alpha: missing boundaries hook")
 	snap.Modules[0].Zones.Disposable = nil
 	diags, err = checks.Boundaries(context.Background(), checks.BoundaryRequest{Snapshot: snap, Timeout: time.Second})
 	if boundaryHasError(diags, err) || !boundaryHasWarning(diags) {
 		t.Errorf("missing optional hook = %#v, %v", diags, err)
 	}
+	requireBoundaryDiagnostic(t, diags, "X04", true, "no boundary enforcement required")
 	snap.Modules[0].Zones.Disposable = []string{"internal/**"}
 	snap.Modules[0].Document.Frontmatter["boundaries_opt_out"] = "legacy"
 	diags, err = checks.Boundaries(context.Background(), checks.BoundaryRequest{Snapshot: snap, Timeout: time.Second})
 	if boundaryHasError(diags, err) || !boundaryHasWarning(diags) {
 		t.Errorf("missing hook with reasoned opt-out = %#v, %v", diags, err)
 	}
+	requireBoundaryDiagnostic(t, diags, "X03", true, "legacy")
+	requireBoundaryDiagnostic(t, diags, "X04", true, "no boundary enforcement required")
 }
 
 func Test_CHK_041_CHK_042_NormalNonzeroExitCanUseBaselineAndOptOut(t *testing.T) {
@@ -166,6 +197,10 @@ func Test_CHK_043_LaunchCancellationAndTimeoutStayErrors(t *testing.T) {
 	if !boundaryHasError(diags, err) {
 		t.Error("launch failure hidden by opt-out")
 	}
+	if err == nil {
+		t.Error("launch failure returned no error")
+	}
+	requireBoundaryDiagnostic(t, diags, "X02", false, "")
 	snap.Config["hooks"] = map[string]any{"boundaries": boundaryScript(t, snap.Root, `sleep 2`)}
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
@@ -173,11 +208,19 @@ func Test_CHK_043_LaunchCancellationAndTimeoutStayErrors(t *testing.T) {
 	if !boundaryHasError(diags, err) {
 		t.Error("cancelled hook hidden by opt-out")
 	}
+	if err == nil {
+		t.Error("cancelled hook returned no error")
+	}
+	requireBoundaryDiagnostic(t, diags, "X02", false, "")
 	start := time.Now()
 	diags, err = checks.Boundaries(context.Background(), checks.BoundaryRequest{Snapshot: snap, Timeout: 80 * time.Millisecond})
 	if !boundaryHasError(diags, err) {
 		t.Error("timed-out hook hidden by opt-out")
 	}
+	if err == nil {
+		t.Error("timed-out hook returned no error")
+	}
+	requireBoundaryDiagnostic(t, diags, "X02", false, "")
 	if time.Since(start) > 3*time.Second {
 		t.Error("boundary timeout did not bound execution")
 	}
