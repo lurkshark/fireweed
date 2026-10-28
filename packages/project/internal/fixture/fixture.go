@@ -1,6 +1,7 @@
 package fixture
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
 	"os"
@@ -12,6 +13,25 @@ import (
 	"github.com/lurkshark/fireweed/packages/project/model"
 	"gopkg.in/yaml.v3"
 )
+
+type loadFailure struct {
+	code string
+	err  error
+}
+
+func (e *loadFailure) Error() string { return e.err.Error() }
+func (e *loadFailure) Unwrap() error { return e.err }
+
+// LoadCode identifies the diagnostic cause retained by a Load error.
+func LoadCode(err error) string {
+	var failure *loadFailure
+	if errors.As(err, &failure) {
+		return failure.code
+	}
+	return "C01"
+}
+
+func loadCause(code string, err error) error { return &loadFailure{code: code, err: err} }
 
 func Load(root string) (model.Snapshot, error) {
 	data, err := os.ReadFile(filepath.Join(root, "fireweed.yaml"))
@@ -58,30 +78,30 @@ func Load(root string) (model.Snapshot, error) {
 		}
 		data, err := os.ReadFile(filepath.Join(path, "SPEC.md"))
 		if err != nil {
-			return fmt.Errorf("read %s/SPEC.md: %w", rel, err)
+			return loadCause("C03", fmt.Errorf("read %s/SPEC.md: %w", rel, err))
 		}
 		doc, err := contracts.ParseDocument(string(data))
 		if err != nil {
-			return fmt.Errorf("parse %s/SPEC.md: %w", rel, err)
+			return loadCause("C03", fmt.Errorf("parse %s/SPEC.md: %w", rel, err))
 		}
 		name, ok := doc.Frontmatter["name"].(string)
 		if !ok {
-			return fmt.Errorf("%s/SPEC.md name must be a string", rel)
+			return loadCause("C12", fmt.Errorf("%s/SPEC.md name must be a string", rel))
 		}
 		prefix, ok := doc.Frontmatter["id_prefix"].(string)
 		if !ok {
-			return fmt.Errorf("%s/SPEC.md id_prefix must be a string", rel)
+			return loadCause("C12", fmt.Errorf("%s/SPEC.md id_prefix must be a string", rel))
 		}
 		var dependencies []string
 		if value, ok := doc.Frontmatter["depends_on"]; ok {
 			dependencies, err = stringList(value, rel+"/SPEC.md depends_on")
 			if err != nil {
-				return err
+				return loadCause("C12", err)
 			}
 		}
 		zones, err := moduleZones(doc.Frontmatter, defaults, rel)
 		if err != nil {
-			return err
+			return loadCause("C12", err)
 		}
 		snapshot.Modules = append(snapshot.Modules, model.Module{
 			Name: name, IDPrefix: prefix, Dir: rel, DependsOn: dependencies,

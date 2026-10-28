@@ -17,24 +17,17 @@ func Check(root string) []model.Diagnostic {
 	addCode := func(code, path, message string) {
 		diagnostics = append(diagnostics, model.Diagnostic{Code: code, Path: path, Message: message})
 	}
-	add := func(path, message string) {
-		addCode("C01", path, message)
-	}
 	snapshot, err := fixture.Load(root)
 	if err != nil {
-		add("fireweed.yaml", err.Error())
+		addCode(fixture.LoadCode(err), "fireweed.yaml", err.Error())
 		return diagnostics
 	}
 	if err := fixture.ValidateGraph(snapshot.Modules); err != nil {
-		add("fireweed.yaml", err.Error())
+		addCode("C02", "fireweed.yaml", err.Error())
 	}
 	p, err := newProjection(snapshot)
 	if err != nil {
-		if strings.Contains(err.Error(), "/SPEC.md: duplicate item ID: ") {
-			addCode("C05", "SPEC.md", err.Error())
-		} else {
-			add("SPEC.md", err.Error())
-		}
+		addCode(errorCode(err, "C03"), "SPEC.md", err.Error())
 		return diagnostics
 	}
 	for _, module := range snapshot.Modules {
@@ -49,7 +42,7 @@ func Check(root string) []model.Diagnostic {
 	}
 	changes, err := readQueue(root, snapshot)
 	if err != nil {
-		add("changes", err.Error())
+		addCode(errorCode(err, "C03"), "changes", err.Error())
 		return diagnostics
 	}
 	for _, change := range changes {
@@ -104,12 +97,7 @@ func Check(root string) []model.Diagnostic {
 			}
 		}
 		if err := p.apply(change); err != nil {
-			message := err.Error()
-			if (strings.HasPrefix(message, path+": Modified ID ") || strings.HasPrefix(message, path+": Removed ID ")) && strings.HasSuffix(message, " absent from preceding projection") {
-				addCode("C08", path, message)
-			} else {
-				add(path, message)
-			}
+			addCode(errorCode(err, "C02"), path, err.Error())
 		}
 	}
 	return diagnostics

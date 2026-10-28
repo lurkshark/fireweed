@@ -28,7 +28,7 @@ func newProjection(snapshot model.Snapshot) (*projection, error) {
 		section, _ := contracts.Section(module.Document.Body, "Specs")
 		items, err := contracts.ParseItems(section)
 		if err != nil {
-			return nil, fmt.Errorf("%s/SPEC.md: %w", module.Dir, err)
+			return nil, withCause(itemErrorCode(err), fmt.Errorf("%s/SPEC.md: %w", module.Dir, err))
 		}
 		for _, item := range items {
 			p.items[module.Name] = append(p.items[module.Name], ownedItem{item: item})
@@ -55,10 +55,10 @@ func (p *projection) apply(change model.Change) error {
 		}
 	}
 	if index < 0 {
-		return fmt.Errorf("unknown module %q", change.Module)
+		return withCause("C07", fmt.Errorf("unknown module %q", change.Module))
 	}
 	if err := applySet(&p.snapshot.Modules[index], change.Document.Frontmatter["set"]); err != nil {
-		return fmt.Errorf("%s: %w", change.Path, err)
+		return withCause("C12", fmt.Errorf("%s: %w", change.Path, err))
 	}
 	items := p.items[change.Module]
 	for _, edit := range change.Modified {
@@ -71,7 +71,7 @@ func (p *projection) apply(change model.Change) error {
 			}
 		}
 		if !found {
-			return fmt.Errorf("%s: Modified ID %s absent from preceding projection", change.Path, edit.ID)
+			return withCause("C08", fmt.Errorf("%s: Modified ID %s absent from preceding projection", change.Path, edit.ID))
 		}
 	}
 	for _, edit := range change.Removed {
@@ -84,7 +84,7 @@ func (p *projection) apply(change model.Change) error {
 			}
 		}
 		if !found {
-			return fmt.Errorf("%s: Removed ID %s absent from preceding projection", change.Path, edit.ID)
+			return withCause("C08", fmt.Errorf("%s: Removed ID %s absent from preceding projection", change.Path, edit.ID))
 		}
 	}
 	for _, edit := range change.Added {
@@ -95,7 +95,10 @@ func (p *projection) apply(change model.Change) error {
 		items = append(items, ownedItem{item: edit, owner: owner})
 	}
 	p.items[change.Module] = items
-	return fixture.ValidateGraph(p.snapshot.Modules)
+	if err := fixture.ValidateGraph(p.snapshot.Modules); err != nil {
+		return withCause("C02", err)
+	}
+	return nil
 }
 
 func applySet(module *model.Module, raw any) error {

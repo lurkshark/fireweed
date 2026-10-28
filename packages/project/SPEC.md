@@ -131,4 +131,22 @@ Stamp MUST retain other frontmatter values and human section contents.
 ### PRJ-039
 Stamp MUST succeed on an Added-only change without assigning spec IDs.
 
+### PRJ-040
+Check MUST report configuration discovery or decoding failures with diagnostic C01.
+
+### PRJ-041
+Check MUST report invalid current or projected module graphs with diagnostic C02.
+
+### PRJ-042
+Check MUST report unreadable or malformed module/change documents and malformed item syntax with diagnostic C03, retaining C05 for duplicate identities.
+
+### PRJ-043
+Check MUST report invalid module metadata or zone field types, and invalid set keys or value types, with diagnostic C12.
+
+### PRJ-044
+Check MUST report pending queue identity errors with diagnostic C13.
+
+### PRJ-045
+Check MUST report invalid pending change module targets with diagnostic C07.
+
 ## Decisions
