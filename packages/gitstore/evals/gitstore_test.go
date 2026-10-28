@@ -135,7 +135,7 @@ func Test_GIT_002_BaseRefPreferenceDefaultsAndMissing(t *testing.T) {
 	}
 }
 
-func Test_GIT_003_ChangesReadAtAndSelectedCommit(t *testing.T) {
+func Test_GIT_003_GIT_006_GIT_007_ChangesReadAtAndSelectedCommit(t *testing.T) {
 	root := repo(t)
 	for _, name := range []string{"selected.txt", "staged.txt", "unstaged.txt", "old-name.txt"} {
 		put(t, root, name, []byte("original\n"))
@@ -202,7 +202,7 @@ func Test_GIT_003_ChangesReadAtAndSelectedCommit(t *testing.T) {
 	}
 }
 
-func Test_GIT_004_BlobsAndRefCAS(t *testing.T) {
+func Test_GIT_004_GIT_008_GIT_009_GIT_010_BlobsAndRefCAS(t *testing.T) {
 	root := repo(t)
 	payload := []byte{0, 'b', '\n', 255}
 	oid, err := gitstore.WriteBlob(root, payload)
