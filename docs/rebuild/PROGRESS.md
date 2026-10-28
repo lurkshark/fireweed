@@ -8,7 +8,7 @@ cleanup complete. It reports an error-prefix contract gap and its agent read
 dependent internals, so strict independence acceptance is not established; see
 [the reviewed report](reports/contracts-drill.md). No gap fix or repeat drill is
 authorized. 0069 now implements recipe-based initialization through NEW.
-**Applied since review: 4; doctor setup is exposed through NEW and smoke passes.** The
+**Applied since review: 5; checkpoint validation and subagent review pending.** The
 owner-approved saved-attempt 4 recovery restored the implementation through the
 controller with Git 2.53.0. Full native done passed all 260 phase cases and
 committed/applied/archived at e50061d; the tree is clean and claim released.
@@ -18,7 +18,10 @@ limitations. 0072 repaired only the scratch helper; 71 own/260 full phase cases 
 ordinary Apple Git, with no findings or product implementation edits. 0073 now explains C14–C16 and existing init P01 failures, with six runtime
 failures before implementation and all 389 phase cases passing afterward. 0074 exposes doctor and agents-md --write with 153 app passes after one scoped
 audit correction. A fresh NEW Go/fake-agent smoke passes, with guidance preserved
-and scratch cleanup verified; see [the report](reports/doctor-setup-cli.md). No further push occurred; the full goal
+and scratch cleanup verified; see [the report](reports/doctor-setup-cli.md).
+0075 now provides bounded runner invocation, with 25 own/178 phase passes after
+one scoped assertion correction. No pending change or claim remains. Hold further
+implementation and push until the five-change checkpoint review passes. No further push occurred; the full goal
 remains incomplete.
 
 The owner's goal update authorizes a subagent review at every five applied
@@ -45,6 +48,7 @@ NEW binary: `bin/fireweed`, clean source `19d2b3172b88be5268bb87998be8b67cb6bc44
 Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`. Interactive work through 0014's initial evals was followed by coordinator `done`, hence legacy `agent=manual` lines. Configured controller execution began at 0014's audit; its provenance records the actual command/model. Continue configured execution. Ignored runtime logs are auxiliary, not reviewable evidence; archives, permanent evals and committed reports carry the evidence.
 
 ## Applied changes
+- 0075 bounded-agent-invocation — RUN-001–009; evals 53d9279/2e40588, audits 6fdcb9f/6f898ea, impl 4b2fe8e. One scoped correction; 25 runtime failures → 25 own/178 phase passes. Retained API/model types and execution primitive are implemented; next/run queue wiring remains pending.
 - 0074 doctor-setup-commands — APP-062–073; evals 5620604/eb05e41, audits a02d10d/3769100, impl 19d2b31. One scoped correction; six runtime failures → 153 app passes. Fresh NEW Go/doctor/guidance smoke passes; see the linked report.
 - 0073 doctor-diagnostic-explanations — AST-026/027; b364af7/53cae57/8d27f34. Six runtime failures → 55 own/389 phase passes; no findings, restricted auditor input reads confirmed. Explains emitted C14–C16 and existing init P01 causes, retaining prior causes/assertions.
 - 0072 doctor-helper-portability — eval_fix CHK-050/051; dc2b1e7/426e259/762052f. Five-line helper-only correction retains all assertions and 71 own cases; 260 phase passes with ordinary Apple Git, no findings, no implementation edit.
@@ -232,11 +236,11 @@ acceptance remains unverified. No gap fix/rerun is authorized or performed.
 
 ## Next
 
-Doctor setup, helper portability, emitted-code explanations and NEW CLI smoke
-passed. Next is the runner-owned bounded agent invocation needed by next/run,
-then the five-application subagent review before further implementation. After a
-passing review/push, connect the queue loop and CLI promptly using bounded fake
-agents; no NEW unattended real-agent execution before that fixture passes. No further phase exception, bound change, new drill
+Five changes (0071–0075) have applied. Complete checkpoint validation and obtain
+the authorized independent subagent review. Push origin and continue only on
+PASS; any reported issue requires human review. After a passing checkpoint,
+connect the runner queue loop and CLI promptly using bounded fake agents; no
+NEW unattended real-agent execution before that fixture passes. No further phase exception, bound change, new drill
 or deferred contracts-gap fix is authorized. Stop at any new blocked change;
 the standing five-application subagent checkpoint remains in force.
 

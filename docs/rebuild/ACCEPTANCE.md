@@ -343,3 +343,10 @@ before another change. Four changes were applied since the explicit review at
   agents, exact surrounding-text preservation, explanation lookup and scratch
   cleanup. This completes the currently scoped Go doctor setup slice; remaining
   recipes, bounded next/run, real regeneration and final acceptance remain open.
+
+- R08/R09/R28 partial: 0075 establishes RUN-001–009 bounded worker/auditor
+  invocation through the retained runner interface. Corrected evals record 25
+  runtime failures; implementation 4b2fe8e passes 25 own/178 phase cases after one
+  scoped re-audit. Queue selection, next/run orchestration, retries/recovery and
+  the required NEW fake-agent queue fixture remain pending. This foundation
+  does not establish unattended execution or final acceptance.
