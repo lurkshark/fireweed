@@ -304,3 +304,9 @@ before another change. Four changes were applied since the explicit review at
   eight other assertion gaps. Controller block a81b723 retains audit_rounds 2,
   releases the claim and preserves attempt refs. Doctor remains unimplemented;
   the recovery result is a stop for further human review, not acceptance.
+
+  A later approved eight-ID correction could not begin: native saved-attempt
+  recovery retained audit phase, so tests stayed frozen. No test edit or worker
+  launch occurred; native block 4c8439b released the claim. A one-time phase-only
+  repair requires explicit approval before that correction can proceed. No
+  counters, requirements or bounds changed, and no additional acceptance is claimed.

@@ -8,7 +8,7 @@ cleanup complete. It reports an error-prefix contract gap and its agent read
 dependent internals, so strict independence acceptance is not established; see
 [the reviewed report](reports/contracts-drill.md). No gap fix or repeat drill is
 authorized. 0069 now implements recipe-based initialization through NEW.
-**Applied since review: 0; one further bounded correction approved.** The owner-approved 0070
+**Applied since review: 0; stopped because native recovery retained audit.** The owner-approved 0070
 correction and scoped re-review passed and were pushed at e083c5f. The next
 change, 0071 doctor-probes, originally blocked in evals after two audit findings
 rounds with CHK-065's default-timeout assertion missing. Its first auditor exceeded
@@ -23,7 +23,13 @@ audit_rounds 2 and both saved refs. The owner now approves one bounded correctio
 of the eight outstanding IDs, preserving the timeout test and prior passes, with
 restricted re-review of only those IDs. Use the native saved eval attempt; if it
 cannot restore evals without changing bounds, stop before editing frozen tests.
-No doctor implementation was applied; the full goal remains incomplete.
+Native start from saved eval attempt 1 succeeded but retained phase audit; it
+does not rewind the committed step. Per the approved stop condition, no frozen
+test was edited and no worker/auditor launched. Native block 4c8439b released the
+claim and retained ref 3 as well as refs 1/2. The eight-ID correction scope is
+approved, but a one-time phase-only repair needs an explicit exception to the
+controller-owned-phase rule. No doctor implementation was applied; the full
+goal remains incomplete.
 
 The owner's goal update authorizes a subagent review at every five applied
 changes: push to origin and continue when the review finds the work on track, and
@@ -232,13 +238,12 @@ acceptance remains unverified. No gap fix/rerun is authorized or performed.
 
 ## Next
 
-Perform the newly approved bounded correction of [the eight fresh audit findings](reports/doctor-0071-block.md).
-Retain prior passes, the real default-timeout test, counters, requirements and
-history. Restore an eval step through the controller before editing tests; if
-that cannot be done without changing bounds, stop. Re-review only the eight
-outstanding IDs from restricted inputs; any unresolved finding stops again.
-No replacement change, bound change or push is authorized by this recovery.
-The following sequence remains planned after a passing resolution:
+The [eight-ID correction](reports/doctor-0071-block.md) is approved, but its
+native phase-restoration precondition failed. Stop for the proposed one-time
+phase-only repair decision before editing frozen tests. Retain prior passes,
+the real default-timeout test, counters, requirements and history. No replacement,
+bound change, worker launch or push occurred. The following sequence remains
+planned after an approved phase repair and passing correction/re-review:
 
 0. The owner-approved 0070 explanation correction and checkpoint re-review pass.
    The authorized push reached e083c5f; continue Milestone 2. The original block,

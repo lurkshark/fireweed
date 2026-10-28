@@ -5,6 +5,12 @@ reported eight further assertion gaps. Controller block a81b723 leaves 0071 in
 audit with audit_rounds 2. No implementation was applied; tree clean and claim
 released. The original block and its deviation remain below as history.
 
+Latest state: the owner approved the eight-ID correction, but native saved-attempt
+recovery retained audit phase. The agreed stop condition triggered before any
+test edit. Native block 4c8439b leaves the tree clean and releases the claim.
+An explicit one-time phase-only repair decision is needed; the correction's
+scope remains approved.
+
 The original controller run stopped at `697ddb2` with `evals attempts exhausted`.
 0071 remains in evals with audit_rounds 2 and audit_pending CHK-065. No change
 was applied, so the post-review application count remains zero. The working
@@ -150,3 +156,31 @@ bound change or push is authorized. Use the controller's saved eval attempt to
 restore the correct step; if it cannot restore evals without changing bounds,
 stop before editing frozen tests. Any further unresolved finding requires human
 review rather than another automatic correction round.
+
+## Native phase-restoration limit — human decision needed
+
+Approval was recorded in 9cbe777. Author commit 3d592f5 removes the block and
+answered Questions without changing phase, counters, specs, run/IDs or prior
+passes. The saved attempt's change metadata names phase evals, but native
+`start doctor-probes --from-attempt 1` retained the current committed audit phase.
+It loaded an attempt into the working tree without rewinding the workflow step.
+No file diff remained and the completed default-timeout regression was retained.
+
+Because evals are frozen during audit, the coordinator stopped before editing any
+test/interface and launched no worker or auditor. Native done committed the
+blocked reason and Questions at 4c8439b, released the claim, and retained another
+attempt at `refs/fireweed/attempts/0071-doctor-probes/3`:
+`2ead5ed35ab48091db840ccdefd5ab49ed26a327`. Original refs 1/2 remain. audit_rounds
+is still 2 and the native pending field remains CHK-065. No bound, count, approved
+requirement or saved ref was reset, and no implementation or push ran.
+
+The scoped correction itself is approved. The additional decision required is a
+one-time explicit exception to controller-owned phase writes: allow the author
+to change only phase audit to evals for this same change, in a separately recorded
+repair commit, then resume normal controller ownership. Preserve run/IDs,
+audit_rounds 2, audit_pending, requirements, findings/history, prior passes and the
+real default-timeout test. No global configuration/bound changes or replacement
+change are proposed. Only after that decision may the already scoped eight-ID
+correction and restricted re-review run; further unresolved findings still stop
+for human review. This exception has not been performed or inferred from the
+earlier approval.
