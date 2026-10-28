@@ -15,7 +15,7 @@ name: project
 ## Specs
 
 ### PRJ-001
-Load MUST read fireweed.yaml and module SPEC.md files only in configured modules globs, returning module names, prefixes, dependencies, documents and zones. Omitted module zone fields MUST inherit module_defaults while explicit empty lists remain empty. Missing or malformed config/module documents MUST return an error.
+Load MUST read fireweed.yaml and module SPEC.md files only in configured modules globs, returning module names, prefixes, dependencies, documents and zones.
 
 ### PRJ-002
 ValidateGraph MUST reject empty or duplicate module names/prefixes and dependencies naming absent modules, self-dependencies or cycles. It MUST accept an acyclic graph with unique identities and return an explanatory error on rejection.
@@ -61,5 +61,11 @@ Check MUST reject Modified or Removed entries whose bases hash is missing or dif
 
 ### PRJ-016
 Check MUST reject Modified or Removed IDs absent from the projection preceding the change.
+
+### PRJ-017
+Load MUST inherit an omitted module zone field from module_defaults while retaining an explicitly empty module zone list as empty.
+
+### PRJ-018
+Load MUST return an error for missing or malformed config or module documents.
 
 ## Decisions
