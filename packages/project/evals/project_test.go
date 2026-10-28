@@ -119,21 +119,22 @@ func Test_PRJ_002_Graph(t *testing.T) {
 		return project.Module{Name: name, IDPrefix: prefix, DependsOn: deps}
 	}
 	for _, tc := range []struct {
+		id      string
 		name    string
 		modules []project.Module
 		valid   bool
 		explain []string
 	}{
-		{"acyclic", []project.Module{module("alpha", "ALP"), module("beta", "BET", "alpha"), module("gamma", "GAM", "beta")}, true, nil},
-		{"empty_name", []project.Module{module("", "ALP")}, false, []string{"empty", "name"}},
-		{"empty_prefix", []project.Module{module("alpha", "")}, false, []string{"empty", "prefix"}},
-		{"duplicate_name", []project.Module{module("alpha", "ALP"), module("alpha", "BET")}, false, []string{"duplicate", "alpha"}},
-		{"duplicate_prefix", []project.Module{module("alpha", "ALP"), module("beta", "ALP")}, false, []string{"duplicate", "alp"}},
-		{"missing_dependency", []project.Module{module("alpha", "ALP", "missing")}, false, []string{"depend", "missing"}},
-		{"self_dependency", []project.Module{module("alpha", "ALP", "alpha")}, false, []string{"self", "alpha"}},
-		{"cycle", []project.Module{module("alpha", "ALP", "beta"), module("beta", "BET", "alpha")}, false, []string{"cycl"}},
+		{"PRJ-002", "acyclic", []project.Module{module("alpha", "ALP"), module("beta", "BET", "alpha"), module("gamma", "GAM", "beta")}, true, nil},
+		{"PRJ-019", "empty_name", []project.Module{module("", "ALP")}, false, []string{"empty", "name"}},
+		{"PRJ-020", "empty_prefix", []project.Module{module("alpha", "")}, false, []string{"empty", "prefix"}},
+		{"PRJ-019", "duplicate_name", []project.Module{module("alpha", "ALP"), module("alpha", "BET")}, false, []string{"duplicate", "alpha"}},
+		{"PRJ-020", "duplicate_prefix", []project.Module{module("alpha", "ALP"), module("beta", "ALP")}, false, []string{"duplicate", "alp"}},
+		{"PRJ-021", "missing_dependency", []project.Module{module("alpha", "ALP", "missing")}, false, []string{"depend", "missing"}},
+		{"PRJ-021", "self_dependency", []project.Module{module("alpha", "ALP", "alpha")}, false, []string{"self", "alpha"}},
+		{"PRJ-022", "cycle", []project.Module{module("alpha", "ALP", "beta"), module("beta", "BET", "alpha")}, false, []string{"cycl"}},
 	} {
-		t.Run(tc.name, func(t *testing.T) {
+		t.Run(tc.id+"_"+tc.name, func(t *testing.T) {
 			err := project.ValidateGraph(tc.modules)
 			if tc.valid && err != nil {
 				t.Errorf("valid graph rejected: %v", err)
