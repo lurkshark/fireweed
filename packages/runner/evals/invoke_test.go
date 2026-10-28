@@ -16,10 +16,11 @@ import (
 
 func agentFixture(t *testing.T) project.Snapshot {
 	t.Helper()
-	root, err := filepath.EvalSymlinks(t.TempDir())
+	parent, err := filepath.EvalSymlinks(t.TempDir())
 	if err != nil {
 		t.Fatal(err)
 	}
+	root := filepath.Join(parent, "repo with spaces")
 	for _, args := range [][]string{
 		{"init", "-q", root},
 		{"-C", root, "config", "user.name", "Fixture"},
@@ -76,6 +77,9 @@ func Test_RUN_003_ShellAndArgvExpandOnceAndPreserveValues(t *testing.T) {
 	common, err := gitstore.Inspect(snap.Root)
 	if err != nil {
 		t.Fatal(err)
+	}
+	if !strings.Contains(common.CommonDir, " ") {
+		t.Fatalf("fixture common Git directory must contain spaces: %q", common.CommonDir)
 	}
 	printArgs := agentScript(t, snap.Root, "args.sh", `printf '%s\n' "$1" "$2"`)
 	prompt := `a'b ; $(printf hacked) {git_common_dir}`
@@ -228,6 +232,7 @@ func Test_RUN_008_UsageLimitOnlyForNonzeroMatchInLastTwentyLines(t *testing.T) {
 		want          bool
 	}{
 		{"late_stderr_match", `printf normal; printf 'rAtE LiMiT\n' >&2; exit 9`, true},
+		{"late_stdout_match", `printf 'rAtE LiMiT\n'; printf normal >&2; exit 9`, true},
 		{"successful_match", `printf 'rate limit\n'; exit 0`, false},
 		{"outside_last_twenty", `printf 'rate limit\n'; i=0; while [ "$i" -lt 21 ]; do printf 'noise\n'; i=$((i+1)); done; exit 9`, false},
 		{"stdout_before_stderr_window", `printf 'rate limit\n'; i=0; while [ "$i" -lt 21 ]; do printf 'noise\n' >&2; i=$((i+1)); done; exit 9`, false},
