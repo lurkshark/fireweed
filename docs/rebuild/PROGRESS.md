@@ -22,8 +22,10 @@ Go fixture using bounded deterministic fake agents. Build only the missing
 runner loop, return promptly to app wiring, and inspect genuine fail-first,
 separate audit, implementation, checked phase commits, SPEC application,
 archive, provenance and claim release. Library evals alone do not close this
-slice. No active change yet; the next author change targets the minimum runner
-behavior needed by this scenario.
+slice. Authored 0079-single-change-execution targets the minimum runner
+loop using the existing workflow and invocation APIs; app wiring follows.
+The author boundary also reconciled the documentation proposal at 18da36d,
+preserving the full inventory, gates and newer correction evidence.
 
 Then prove NEW run processes a small queue with --max, later continuation and
 empty-queue behavior. Extend retries/recovery, attempts, blocking/independent
