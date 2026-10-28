@@ -3,7 +3,7 @@
 ## Current status — 2026-10-27
 
 Human review 8 approved 0032–0034; the authorized push synchronized main and
-origin/main at 16cc688 and cleared P07. **Applied since review: 5.** Resume
+origin/main at 16cc688 and cleared P07. **Applied since review: 0.** Resume
 the remaining previously identified bundled specs; PRJ-004–006 are complete.
 
 The owner's goal update authorizes a subagent review at every five applied
@@ -99,7 +99,9 @@ push and continuation. The applied count restarts after this passing review.
 - 0044 boundary-suppression-specs — CHK-039–043; 8492280/7cbffac/06699f9; 28 own cases and 146 total phase cases pass; no findings, implementation unchanged.
 
 [0040–0044 checkpoint](reports/checkpoint-0040-0044.md): five applied checks
-splits. Awaiting the required subagent review before pushing or continuing.
+splits. Subagent checkpoint_0040_0044 returned PASS with no issues. The explicit
+baseline history check passed over 258 commits, authorizing the conditional
+push and continuation. The applied count restarts after this passing review.
 
 ## Next
 

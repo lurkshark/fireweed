@@ -225,3 +225,9 @@ before another change. Four changes were applied since the explicit review at
   See [the passing checkpoint review](reports/checkpoint-0035-0039.md) and
   PROGRESS for phase evidence. Remaining module splits and D006 migration
   still precede Milestone 2; full acceptance remains unverified.
+
+- R07/R10/R11 refinement: 0040–0044 split CHK-001–003 and retain CHK-005's
+  suppression rules under CHK-039–043 before its final narrowing. Assertions,
+  fixtures and implementation remain unchanged. See the
+  [passing checkpoint review](reports/checkpoint-0040-0044.md) and PROGRESS
+  for phase evidence; remaining splits and diagnostic migration are pending.

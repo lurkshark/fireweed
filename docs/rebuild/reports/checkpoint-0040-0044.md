@@ -22,14 +22,22 @@ phase commits and actual counts. Previous broad CI/race/vet/doctor evidence is
 reused for unchanged behavior and enforcement. Full acceptance is unverified.
 No new broad tests, agent-access probes, drills or self-hosting ran.
 
-The baseline history check and scoped checkpoint subagent review are pending.
+The scoped checkpoint subagent review and explicit baseline history check
+passed; history covered 258 commits with no diagnostics.
 P08 is authorized consecutive checks splitting. The embedded recipe SPEC.md
 warning is unchanged. P07 holds at five unapproved archives until a passing
 review permits the owner-authorized push. No bounds or refs are altered.
 
 ## Checkpoint review
 
-Pending.
+PASS — subagent `checkpoint_0040_0044` reviewed the exact batch range, archives,
+checks specs/public evals, phase commits and relevant design clauses. It found
+obligations, assertions and public interfaces preserved, with focused observable
+spec items and honest first-round audit/phase evidence. It explicitly confirmed
+CHK-005 retains the requirements not yet split. No issue was reported. Review
+was read-only and repeated no tests or drills; full acceptance is outside scope.
+The history check also passed. This review therefore triggers the owner's
+explicit authorization to push to origin and continue.
 
 ## Next work
 
