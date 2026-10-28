@@ -2,12 +2,14 @@
 
 ## Current status — 2026-10-27
 
-Human review 5 approved changes 0020–0024 and the checkpoint report. The reviewed main was pushed at the owner’s explicit request. **Applied since review: 5.** Milestone 1 passed through the NEW binary;
+Human review 6 approved changes 0025–0029 and authorized the next spec-split
+slice, starting with PRJ-007, stopping at the next required checkpoint.
+HEAD and origin/main were already synchronized at c2da5e2 when work resumed.
+**Applied since review: 0.** Milestone 1 passed through the NEW binary;
 Milestone 2 waits for the spec splits, diagnostic migration and one contracts
-drill. Consecutive workflow/checks changes are authorized for the spec split.
-Stopped for human review of 0025–0029. Synchronize approved work with the shared
-base before resuming. Stop on any block or a drill failure that calls the spec
-approach into question.
+drill. Existing authorization for consecutive workflow/checks spec splits remains.
+Stop on any block, after five applications, or before an unauthorized third
+consecutive change to the same module/behavior.
 
 Controller: `.fireweed/bin/fireweed-bootstrap` 0.1.0, source `7f925190878e38fc38f30d16bb1cf47aca098cf7`, pin SHA-256 `f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f`; unchanged.
 Stage-2 history baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`; always check an explicit nonempty baseline..HEAD range. Use `GOCACHE=/tmp/fireweed-rebuild-cache`.
@@ -46,7 +48,7 @@ Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -
 - 0028 impl-zone-permission-specs — CHK-016–020; e4bb1be/1a73eb6/5c54ca1; 28 own cases and dependents pass; existing eval retargeted, implementation unchanged.
 - 0029 narrow-audit-zone-spec — CHK-004/021–024; cdfb41c/e38d19b/db03f62; 28 own cases and dependents pass; CHK-004 narrowed, implementation unchanged.
 
-[Review 5 checkpoint](reports/review5-checkpoint.md): race/vet/controller CI passed, including 261 cases, doctor recovery and history; no pending change or claim. Awaiting human review; count stays five.
+[Review 5 checkpoint](reports/review5-checkpoint.md): race/vet/controller CI passed, including 261 cases, doctor recovery and history; no pending change or claim. Approved in human review 6; the next slice starts with PRJ-007.
 
 ## Next
 
