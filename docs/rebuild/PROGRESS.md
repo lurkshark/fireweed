@@ -8,25 +8,22 @@ cleanup complete. It reports an error-prefix contract gap and its agent read
 dependent internals, so strict independence acceptance is not established; see
 [the reviewed report](reports/contracts-drill.md). No gap fix or repeat drill is
 authorized. 0069 now implements recipe-based initialization through NEW.
-**Applied since review: 5; checkpoint BLOCK requires human review.** The
-owner-approved saved-attempt 4 recovery restored the implementation through the
-controller with Git 2.53.0. Full native done passed all 260 phase cases and
-committed/applied/archived at e50061d; the tree is clean and claim released.
-The explicitly approved phase repair and restricted re-review are complete;
-[the recovery report](reports/doctor-0071-block.md) retains their history and
-limitations. 0072 repaired only the scratch helper; 71 own/260 full phase cases pass with
-ordinary Apple Git, with no findings or product implementation edits. 0073 now explains C14–C16 and existing init P01 failures, with six runtime
-failures before implementation and all 389 phase cases passing afterward. 0074 exposes doctor and agents-md --write with 153 app passes after one scoped
-audit correction. A fresh NEW Go/fake-agent smoke passes, with guidance preserved
-and scratch cleanup verified; see [the report](reports/doctor-setup-cli.md).
-0075 now provides bounded runner invocation, with 25 own/178 phase passes after
-one scoped assertion correction. No pending change or claim remains. The checkpoint subagent reports two doctor
-defects: missing required boundary hooks can pass, and cancellation leaves scratch
-Git registration. A real NEW repro confirms the first. Full race also found a
-timing-dependent runner eval; its focused rerun passes, but the full result remains
-failed. Build, vet, controller check and explicit history extensions pass. See
-[the checkpoint report](reports/checkpoint-0071-0075.md). No push occurred. No further push occurred; the full goal
-remains incomplete.
+**Applied since review: 5; checkpoint BLOCK requires human review.**
+0071–0075 applied the doctor backend, portable cleanup helper, emitted-code
+explanations, doctor/guidance CLI and bounded invocation primitive. The approved
+0071 recovery passed; [its report](reports/doctor-0071-block.md) preserves the
+authorizations and earlier deviations. The healthy NEW Go/fake-agent
+[CLI smoke](reports/doctor-setup-cli.md) passes.
+
+The checkpoint subagent reports two doctor defects: missing required boundary
+hooks can pass, and cancellation leaves scratch Git registration. A real NEW
+repro confirms the false-success missing-hook path. Full race also found a
+timing-dependent runner eval; its focused rerun passes, but the full result
+remains failed. Build, vet, static check and explicit history extensions pass.
+See [the checkpoint report](reports/checkpoint-0071-0075.md). No pending change or
+claim remains, and no push occurred. P07 reports five unapproved changes; normal
+corrections require explicit human-authorized shared-base synchronization first.
+The full goal remains incomplete.
 
 The owner's goal update authorizes a subagent review at every five applied
 changes: push to origin and continue when the review finds the work on track, and
@@ -247,15 +244,13 @@ the current five changes with findings recorded, one normal checks fixes change
 for the two doctor defects, one runner eval_fix for the observed timing failure,
 then full checks and scoped subagent re-review before another push/continuation.
 No push, correction, counter/ref/bound change or phase exception is authorized by
-the failed review. The main goal remains incomplete. No further phase exception, bound change, new drill
-or deferred contracts-gap fix is authorized. Stop at any new blocked change;
+the failed review. The main goal remains incomplete. No new drill or deferred contracts-gap fix
+is authorized. Stop at any new blocked change;
 the standing five-application subagent checkpoint remains in force.
 
-0. The owner-approved 0070 explanation correction and checkpoint re-review pass.
-   The authorized push reached e083c5f; continue Milestone 2. The original block,
-   human approval and resolution remain in the checkpoint report. Next is the
-   checks-owned doctor backend, then accurate explanations for its emitted
-   diagnostics and app wiring. D007 allocates its reserved C14–C16 slots.
+0. The owner-approved 0070 explanation correction/re-review passed and pushed
+   e083c5f. The following 0071–0075 slice now reaches the blocked checkpoint above;
+   do not restart the completed backend, explanations or CLI setup work.
 1. The previously identified project/checks/workflow/contracts/gitstore/assets/app splits are complete through 0053. All obligations and existing assertions are retained under focused specs; do not launch another global rewrite. Continue the agreed diagnostic migration.
 2. D006's planned existing-error-path migration and explanations are complete through 0068. Preserve assigned causes and keep explain accurate as justified features add real paths. No unsupported-feature scaffolding, speculative errors or unused-code explanations.
 3. Workflow file organization is not a Milestone 2 prerequisite. Defer splitting lifecycle/stub.go unless it causes a demonstrated problem during feature work; a later drill/regenerate may organize the implementation afresh. Do not substitute another speculative cleanup task.

@@ -80,7 +80,7 @@ controller bounds stay unchanged. No eval edit or blanket race rerun was made.
 ## Human decision and bounded correction proposal
 
 Controller status reports unapproved=5 and P07. origin/main remains
- e083c5f2976575f5ec114a8117b3cc4800ba339a. The standing push authorization applies
+e083c5f2976575f5ec114a8117b3cc4800ba339a. The standing push authorization applies
 only after PASS, so this BLOCK does not authorize a push. The pinned controller
 also refuses a sixth unapproved change even with --allow-unmerged. Approval
 metadata alone cannot reset this shared-base count; normal synchronization is
