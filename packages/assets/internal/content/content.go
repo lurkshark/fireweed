@@ -41,9 +41,15 @@ func Playbook(name string) (string, error) {
 var explanations = map[string]string{
 	"C01":   "The project configuration is invalid: fireweed.yaml is missing or has an invalid required setting. Edit the configuration file to correct the reported field, then run fireweed check again.",
 	"C04":   "The spec item is non-normative because its body lacks MUST or SHOULD wording. Rewrite the spec with a MUST or SHOULD requirement that states the expected behavior.",
-	"C05":   "A spec ID uses a foreign module prefix or duplicates another ID. Change a foreign ID to use the owning module prefix, and assign a unique unused ID for a duplicate.",
+	"C05":   "A spec ID uses a foreign module prefix or duplicates another ID, or a change has a duplicate edit identity. Change a foreign ID to use the owning module prefix, assign a unique unused ID for a duplicate spec ID, or remove or combine the repeated edit.",
 	"C06":   "The spec has an invalid review or quarantine tag. Correct the tag to use a valid review or quarantine form, or remove it.",
 	"C07":   "The change has a missing Motivation section or its body is empty. Add a Motivation explaining the user-visible or design need for the change.",
+	"C08":   "An edit base is missing or stale, or its target ID is absent from the preceding projection. Stamp or update the base against the preceding projection, and correct or remove an edit whose target is absent.",
+	"C09":   "A change references an undeclared handle. Declare the handle in Added, or correct or remove the reference.",
+	"X01":   "A boundary violation was reported for an import crossing a module dependency or interface boundary. Fix the import or declare the required dependency.",
+	"X02":   "A required boundaries hook is missing, or a configured boundary hook failed to complete. Configure a boundaries hook for the module; fix and rerun the hook if it fails or times out.",
+	"X03":   "Warning: a module declares a boundaries opt-out with a reason. Review the reason and remove the opt-out when it no longer applies; configure a boundary hook if enforcement is needed.",
+	"X04":   "Warning: no boundary enforcement is required, and the boundaries hook is absent. No action is needed; configure a boundaries hook if a module later needs enforcement.",
 	"P2-01": "Genuine fail-first evidence is missing for an assigned spec ID: its new eval did not fail against the pre-implementation code. Write or correct a test assertion for the specified behavior, rerun the eval before implementing it, and record the failing result.",
 }
 
