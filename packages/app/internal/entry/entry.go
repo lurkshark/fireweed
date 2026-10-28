@@ -15,7 +15,7 @@ type diagnostic struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
 	Path    string `json:"path,omitempty"`
-	Warning bool   `json:"warning,omitempty"`
+	Warning bool   `json:"warning"`
 }
 
 type envelope struct {
@@ -25,13 +25,12 @@ type envelope struct {
 }
 
 var pending = map[string]bool{
-	"doctor":     true,
 	"new-module": true,
 	"list":       true, "status": true,
 	"check-commits": true, "ci": true, "pr-body": true,
 	"next": true, "run": true,
 	"release": true, "commits": true, "abandon": true,
-	"drill": true, "gc": true, "migrate": true, "agents-md": true,
+	"drill": true, "gc": true, "migrate": true,
 }
 
 func Run(args []string, out, errOut io.Writer) int {
@@ -42,6 +41,8 @@ func Run(args []string, out, errOut io.Writer) int {
 	projected := false
 	quick := false
 	full := false
+	noAgent := false
+	write := false
 	withChange := ""
 	positional := make([]string, 0, len(args))
 	for i := 0; i < len(args); i++ {
@@ -54,6 +55,10 @@ func Run(args []string, out, errOut io.Writer) int {
 			quick = true
 		} else if arg == "--full" {
 			full = true
+		} else if arg == "--no-agent" {
+			noAgent = true
+		} else if arg == "--write" {
+			write = true
 		} else if arg == "--with-change" {
 			if i+1 >= len(args) || strings.HasPrefix(args[i+1], "-") {
 				return cliFailure(2, jsonMode || contains(args, "--json"), out, errOut, "U01", "--with-change requires a change value. Use coverage <module> --with-change <change>.")
@@ -89,6 +94,9 @@ func Run(args []string, out, errOut io.Writer) int {
 	}
 	if quick && command != "verify" || full && command != "context" || withChange != "" && command != "coverage" {
 		return fail("U01", "Use --quick only with verify, --full only with context, and --with-change only with coverage.")
+	}
+	if noAgent && command != "doctor" || write && command != "agents-md" {
+		return fail("U01", "Use --no-agent only with doctor and --write only with agents-md.")
 	}
 	count := len(positional) - 1
 	var body string
@@ -133,6 +141,16 @@ func Run(args []string, out, errOut io.Writer) int {
 		return 0
 	case "start", "verify", "done", "context", "coverage":
 		return runLifecycle(command, positional[1:], jsonMode, quick, full, withChange, out, errOut)
+	case "doctor":
+		if count != 0 {
+			return fail("U01", "doctor takes no arguments. Use doctor [--no-agent] [--json].")
+		}
+		return runDoctor(noAgent, jsonMode, out, errOut)
+	case "agents-md":
+		if count != 0 || !write {
+			return fail("U01", "agents-md requires --write and no arguments. Use agents-md --write [--json].")
+		}
+		return runAgentsMD(jsonMode, out, errOut)
 	case "new-change":
 		if count != 2 {
 			return fail("U01", "new-change requires a module and slug. Use new-change <module> <slug>.")
