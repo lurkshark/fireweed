@@ -31,7 +31,7 @@ bases:
     AST-006: "15183709"
     AST-007: 1d17def2
 module: assets
-phase: audit
+phase: impl
 run: 20261028T064006-41b309e9b491a89365abb050
 ---
 
@@ -147,3 +147,10 @@ change file. No obligation or assertion is removed.
 ## Provenance
 
 - evals 2026-10-28T06:41:22.871566Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=219 failing=0 passing=219
+- audit 2026-10-28T06:42:42.545475Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+
+## Audit
+
+No findings. Checked AST-001, AST-002, AST-004, AST-005, AST-006, AST-007,
+AST-008, AST-009, AST-010, AST-011, AST-012, AST-013, AST-014, AST-015,
+AST-016, AST-017, AST-018, AST-019, AST-020, AST-021, AST-022, AST-023.
