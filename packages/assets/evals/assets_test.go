@@ -230,6 +230,14 @@ func Test_AST_024_StaticExplanations(t *testing.T) {
 			}
 			requirePattern(t, text, tc.cause, "cause")
 			requirePattern(t, text, tc.action, "corrective action")
+			if tc.code == "C02" {
+				requirePattern(t, text, `(?i)(empty|missing)[^.\n]*module name|module name[^.\n]*(empty|missing)`, "empty module name cause")
+				requirePattern(t, text, `(?i)duplicat[^.\n]*module name|module name[^.\n]*duplicat`, "duplicate module name cause")
+				requirePattern(t, text, `(?i)(empty|missing)[^.\n]*prefix|prefix[^.\n]*(empty|missing)`, "empty module prefix cause")
+				requirePattern(t, text, `(?i)duplicat[^.\n]*prefix|prefix[^.\n]*duplicat`, "duplicate module prefix cause")
+				requirePattern(t, text, `(?i)(correct|fix|rename|assign|give|set|use)[^.\n]*module name`, "corrective action for module names")
+				requirePattern(t, text, `(?i)(correct|fix|rename|assign|give|set|use)[^.\n]*prefix`, "corrective action for module prefixes")
+			}
 		})
 	}
 }
@@ -276,6 +284,16 @@ func Test_AST_026_LifecycleExplanations(t *testing.T) {
 			}
 			requirePattern(t, text, tc.cause, "cause")
 			requirePattern(t, text, tc.action, "corrective action")
+			if tc.code == "P01" {
+				requirePattern(t, text, `(?i)new.change[^.\n]*(precondition|prerequisite)|(precondition|prerequisite)[^.\n]*new.change`, "new-change operational precondition")
+			}
+			if tc.code == "P02" {
+				requirePattern(t, text, `(?i)(unreadable|undecodable)[^.\n]*claim|claim[^.\n]*(unreadable|undecodable)`, "unreadable or undecodable claim cause")
+				requirePattern(t, text, `(?i)invalid[^.\n]*claim[^.\n]*data|claim[^.\n]*data[^.\n]*invalid`, "invalid claim data cause")
+				requirePattern(t, text, `(?i)(approved|human)[^.\n]*(review|recover)|(review|recover)[^.\n]*(approved|human)`, "approved review or recovery for invalid claims")
+				requirePattern(t, text, `(?i)(no|missing|absent)[^.\n]*claim[^.\n]*(start|begin)[^.\n]*eligible[^.\n]*change|(start|begin)[^.\n]*eligible[^.\n]*change[^.\n]*(no|missing|absent)[^.\n]*claim`, "start an eligible change when no claim exists")
+				requirePattern(t, text, `(?i)(coordinate|resolve)[^.\n]*(owner|holder|ownership)`, "coordinate with the claim holder")
+			}
 		})
 	}
 }
