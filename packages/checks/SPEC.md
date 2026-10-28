@@ -22,7 +22,7 @@ ParseJUnit MUST accept testsuite or testsuites documents, including nested suite
 RequireCoverage MUST cover each current spec except review or quarantine with a non-skipped referencing case.
 
 ### CHK-003
-Evaluate MUST run the module eval override or global eval hook, accepting shell strings or argv with one-pass module/module_dir/report placeholders (shell values quoted) and FIREWEED_BIN set to request Bin. It MUST parse the written JUnit and retain process output/exit. Launch/timeout, missing report and exit/report disagreement MUST fail; a nonzero exited hook with mapped failures is valid report evidence.
+Evaluate MUST run the configured eval hook, accepting shell strings or argv.
 
 ### CHK-004
 During audit, Zones MUST allow edits only to the current change file.
@@ -119,5 +119,14 @@ Evaluate MUST retain the hook process's stdout, stderr and exit code in its retu
 
 ### CHK-035
 Evaluate MUST parse the hook's written JUnit report into the returned report's cases.
+
+### CHK-036
+Evaluate MUST fail when the eval hook cannot launch or exceeds its timeout.
+
+### CHK-037
+Evaluate MUST fail when the eval hook does not write its JUnit report.
+
+### CHK-038
+Evaluate MUST reject a zero exit with mapped failures or a nonzero exit without mapped failures, while accepting a nonzero exit with mapped failures as valid report evidence.
 
 ## Decisions
