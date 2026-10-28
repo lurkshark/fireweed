@@ -19,7 +19,7 @@ name: checks
 ParseJUnit MUST accept testsuite or testsuites documents, including nested suites, returning testcase name, classname and time.
 
 ### CHK-002
-RequireCoverage MUST cover each current spec except review or quarantine with a non-skipped referencing case.
+RequireCoverage MUST cover each current spec except review or quarantine with a non-skipped referencing case. Missing coverage MUST return a C10-prefixed error.
 
 ### CHK-003
 Evaluate MUST run the configured eval hook, accepting shell strings or argv.
@@ -88,16 +88,16 @@ During evals, Zones MUST reject edits in the target module's append_only zone.
 Zones MUST check both the source and destination of a rename against phase permissions.
 
 ### CHK-025
-RequireFailFirst MUST find a failed or errored referencing case for every requested enforced ID except already_satisfied; passing, skipped, empty or unrelated failures do not qualify.
+RequireFailFirst MUST find a failed or errored referencing case for every requested enforced ID except already_satisfied; passing, skipped, empty or unrelated failures do not qualify. Missing genuine fail-first evidence MUST return a P2-01-prefixed error.
 
 ### CHK-026
-RequirePass MUST reject failed or errored cases referencing any non-quarantined spec.
+RequirePass MUST reject failed or errored cases referencing any non-quarantined spec with an E01-prefixed error.
 
 ### CHK-027
-ParseJUnit MUST reject malformed XML.
+ParseJUnit MUST reject malformed XML with a C11-prefixed error.
 
 ### CHK-028
-ParseJUnit MUST reject testcases with missing or unknown spec IDs.
+ParseJUnit MUST reject testcases with missing or unknown spec IDs with a C11-prefixed error.
 
 ### CHK-029
 ParseJUnit MUST map testcase name and classname to current spec IDs using contracts.MatchesID.
@@ -121,13 +121,13 @@ Evaluate MUST retain the hook process's stdout, stderr and exit code in its retu
 Evaluate MUST parse the hook's written JUnit report into the returned report's cases.
 
 ### CHK-036
-Evaluate MUST fail when the eval hook cannot launch or exceeds its timeout.
+Evaluate MUST fail with a C11-prefixed error when the eval hook cannot launch or exceeds its timeout.
 
 ### CHK-037
-Evaluate MUST fail when the eval hook does not write its JUnit report.
+Evaluate MUST fail with a C11-prefixed error when the eval hook does not write its JUnit report.
 
 ### CHK-038
-Evaluate MUST reject a zero exit with mapped failures or a nonzero exit without mapped failures, while accepting a nonzero exit with mapped failures as valid report evidence.
+Evaluate MUST reject a zero exit with mapped failures or a nonzero exit without mapped failures with a C11-prefixed error, while accepting a nonzero exit with mapped failures as valid report evidence.
 
 ### CHK-039
 Boundaries MUST return errors with diagnostic X01 for unsuppressed module-attributed violations.
@@ -149,5 +149,14 @@ Boundaries MUST fail with diagnostic X02 for a missing hook required by a module
 
 ### CHK-045
 Boundaries MUST warn with diagnostic X04 without an error for a missing hook when no boundary enforcement is required.
+
+### CHK-046
+Evaluate MUST return C11-prefixed errors for existing eval-hook setup failures, including missing or invalid hook commands.
+
+### CHK-047
+Evaluate MUST return a U02-prefixed error for an unknown requested module.
+
+### CHK-048
+Evaluate MUST return C03-prefixed errors for malformed module item syntax and C05-prefixed errors for duplicate module item identities.
 
 ## Decisions

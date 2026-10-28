@@ -28,10 +28,10 @@ type junitCase struct {
 func ParseJUnit(data []byte, specs []contracts.Item) (model.Report, error) {
 	var root junitSuite
 	if err := xml.Unmarshal(data, &root); err != nil {
-		return model.Report{}, fmt.Errorf("parse JUnit: %w", err)
+		return model.Report{}, fmt.Errorf("C11: parse JUnit: %w", err)
 	}
 	if root.XMLName.Local != "testsuite" && root.XMLName.Local != "testsuites" {
-		return model.Report{}, fmt.Errorf("invalid JUnit root %q", root.XMLName.Local)
+		return model.Report{}, fmt.Errorf("C11: invalid JUnit root %q", root.XMLName.Local)
 	}
 	var report model.Report
 	idShape := regexp.MustCompile(`^([A-Za-z][A-Za-z0-9]*?)[-_]?[0-9]+$`)
@@ -76,13 +76,13 @@ func ParseJUnit(data []byte, specs []contracts.Item) (model.Report, error) {
 							}
 						}
 						if !known {
-							return fmt.Errorf("testcase %q references unknown spec ID %q", c.Name, candidate)
+							return fmt.Errorf("C11: testcase %q references unknown spec ID %q", c.Name, candidate)
 						}
 					}
 				}
 			}
 			if len(c.IDs) == 0 {
-				return fmt.Errorf("testcase %q has no known spec ID", c.Name)
+				return fmt.Errorf("C11: testcase %q has no known spec ID", c.Name)
 			}
 			report.Cases = append(report.Cases, c)
 			report.Seconds += c.Seconds
@@ -130,7 +130,7 @@ func RequireCoverage(report model.Report, specs []contracts.Item) error {
 			}
 		}
 		if !covered {
-			return fmt.Errorf("no coverage for %s", spec.ID)
+			return fmt.Errorf("C10: no coverage for %s", spec.ID)
 		}
 	}
 	return nil
@@ -155,7 +155,7 @@ func RequireFailFirst(report model.Report, ids, already []string) error {
 			}
 		}
 		if !satisfied {
-			return fmt.Errorf("no fail-first case for %s", id)
+			return fmt.Errorf("P2-01: no fail-first case for %s", id)
 		}
 	}
 	return nil
@@ -168,7 +168,7 @@ func RequirePass(report model.Report, specs []contracts.Item) error {
 		}
 		for _, c := range report.Cases {
 			if c.Result == "fail" && references(c, spec.ID) {
-				return fmt.Errorf("failed case %q for %s", c.Name, spec.ID)
+				return fmt.Errorf("E01: failed case %q for %s", c.Name, spec.ID)
 			}
 		}
 	}

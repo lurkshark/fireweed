@@ -10,7 +10,7 @@ bases:
     CHK-037: 3681b776
     CHK-038: 888600aa
 module: checks
-phase: impl
+phase: applied
 run: 20261028T084945-cd3602bd735f5ca5842b722d
 ---
 
@@ -97,6 +97,7 @@ public interfaces or general error framework. Controller owns specs and archive.
 
 - evals 2026-10-28T08:53:24.929099Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=163 failing=17 passing=146
 - audit 2026-10-28T08:54:13.560331Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-28T08:56:24.941722Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=163 failing=0 passing=163
 
 ## Audit
 
