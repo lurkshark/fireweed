@@ -8,11 +8,14 @@ cleanup complete. It reports an error-prefix contract gap and its agent read
 dependent internals, so strict independence acceptance is not established; see
 [the reviewed report](reports/contracts-drill.md). No gap fix or repeat drill is
 authorized. 0069 now implements recipe-based initialization through NEW.
-**Applied since review: 0.** The owner-approved 0070 correction resolves the
-0065–0069 checkpoint's C12/U02 finding, and the original subagent returned PASS
-on re-review. The explicit correction history extension also passed; the
-owner-authorized push and Milestone 2 continuation follow. The full goal remains
-incomplete.
+**Applied since review: 0; stopped for human review.** The owner-approved 0070
+correction and scoped re-review passed and were pushed at e083c5f. The next
+change, 0071 doctor-probes, is blocked in evals with attempts exhausted after
+two audit findings rounds. CHK-065 still lacks a three-minute-default timeout
+assertion. Its first auditor also exceeded the input boundary and temporarily
+edited implementation; the controller rejected that edit and it was restored.
+See [the block report](reports/doctor-0071-block.md). No doctor implementation
+was applied; the full goal remains incomplete.
 
 The owner's goal update authorizes a subagent review at every five applied
 changes: push to origin and continue when the review finds the work on track, and
@@ -220,6 +223,11 @@ implementations exceed the retained-input boundary, so strict independence
 acceptance remains unverified. No gap fix/rerun is authorized or performed.
 
 ## Next
+
+Stop for human review of [0071's block and proposed recovery](reports/doctor-0071-block.md).
+Do not start another change, alter audit/attempt bounds, push, or continue the
+doctor feature until the owner decides. The following sequence remains planned
+after an approved recovery:
 
 0. The owner-approved 0070 explanation correction and checkpoint re-review pass.
    The authorized push reached e083c5f; continue Milestone 2. The original block,

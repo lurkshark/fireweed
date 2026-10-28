@@ -291,3 +291,9 @@ before another change. Four changes were applied since the explicit review at
   plus the seven-commit correction extension, with no diagnostics. The passing
   re-review authorizes push/continuation. Doctor,
   remaining recipes, bounded execution and full acceptance remain unverified.
+
+- R08/R11/R28 remain unverified for Doctor: 0071 is blocked in evals after two
+  findings rounds, with the default-timeout assertion unresolved and a first-audit
+  input-boundary deviation. [The block report](reports/doctor-0071-block.md)
+  records exact phase evidence, retained attempt and proposed human-approved
+  recovery. No Doctor implementation, CLI pass or restricted full audit is claimed.
