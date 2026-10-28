@@ -4,7 +4,7 @@ bases: {}
 eval_fix:
     - CHK-055
 module: checks
-phase: audit
+phase: impl
 run: 20261028T230031-7c37d81c38953bf7362a2c42
 ---
 
@@ -67,3 +67,9 @@ unresolved issues or blocks stop for human review under the approved sequence.
 ## Provenance
 
 - evals 2026-10-28T23:08:29.023366Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=298 failing=0 passing=298
+- audit 2026-10-28T23:10:52.732036Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+
+## Audit
+
+No findings. Checked CHK-055. The isolated auditor confirmed baseline-stop
+assertions and retained recovery assertions using permitted inputs only.
