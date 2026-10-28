@@ -1,12 +1,15 @@
 ---
 already_satisfied:
-    - new:eval-hook-selection
-    - new:eval-hook-placeholders
-    - new:eval-hook-bin
-    - new:eval-hook-output
-    - new:eval-hook-report
+    - CHK-031
+    - CHK-032
+    - CHK-033
+    - CHK-034
+    - CHK-035
+audit_rounds: 0
 bases: {}
 module: checks
+phase: audit
+run: 20261028T053501-8ccd279ce0fce2358ab2b579
 ---
 
 
@@ -24,19 +27,19 @@ already assert these rules. Keep CHK-003 until its remaining rules are split.
 
 ## Added
 
-### new:eval-hook-selection
+### CHK-031
 Evaluate MUST prefer a module's eval hook override over the global eval hook.
 
-### new:eval-hook-placeholders
+### CHK-032
 Evaluate MUST expand module, module_dir and report placeholders once in shell strings or argv, quoting substituted shell values.
 
-### new:eval-hook-bin
+### CHK-033
 Evaluate MUST set the hook's FIREWEED_BIN environment variable to the request Bin.
 
-### new:eval-hook-output
+### CHK-034
 Evaluate MUST retain the hook process's stdout, stderr and exit code in its returned report.
 
-### new:eval-hook-report
+### CHK-035
 Evaluate MUST parse the hook's written JUnit report into the returned report's cases.
 
 ## Modified
@@ -62,3 +65,7 @@ exit retention. Add the corresponding IDs without removing any assertion or
 other label. Keep 28 reported checks cases. No new Test functions, t.Run cases,
 fixture instances, helper changes, product code or interfaces. Leave hookSnapshot
 and its embedded fixture spec unchanged. Implementation may edit only this change file.
+
+## Provenance
+
+- evals 2026-10-28T05:35:49.258642Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=146 failing=0 passing=146

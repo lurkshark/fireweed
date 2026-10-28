@@ -33,7 +33,7 @@ func hookSnapshot(t *testing.T, global, override any) project.Snapshot {
 	return project.Snapshot{Root: root, Config: config, Modules: []project.Module{module}}
 }
 
-func Test_CHK_003_GlobalShellHookQuotesAndOnePassExpansion(t *testing.T) {
+func Test_CHK_003_CHK_032_CHK_033_CHK_034_CHK_035_GlobalShellHookQuotesAndOnePassExpansion(t *testing.T) {
 	cmd := `printf '%s|%s|%s' {module} {module_dir} "$FIREWEED_BIN"; printf '%s' '` + passXML + `' > {report}`
 	snap := hookSnapshot(t, cmd, nil)
 	snap.Modules[0].Name = "alpha {report}'s"
@@ -51,7 +51,7 @@ func Test_CHK_003_GlobalShellHookQuotesAndOnePassExpansion(t *testing.T) {
 	}
 }
 
-func Test_CHK_003_ModuleOverrideArgvAndOutput(t *testing.T) {
+func Test_CHK_003_CHK_031_CHK_032_CHK_033_CHK_034_CHK_035_ModuleOverrideArgvAndOutput(t *testing.T) {
 	snap := hookSnapshot(t, `echo global-was-run; exit 4`, nil)
 	script := filepath.Join(snap.Root, "fixture.sh")
 	code := `#!/bin/sh
@@ -73,7 +73,7 @@ printf '%s' '` + passXML + `' > "$3"
 	}
 }
 
-func Test_CHK_003_ExitAndReportAgreement(t *testing.T) {
+func Test_CHK_003_CHK_034_ExitAndReportAgreement(t *testing.T) {
 	for _, tc := range []struct {
 		name, xml, exit string
 		valid           bool
@@ -115,7 +115,7 @@ func Test_CHK_003_TimeoutFails(t *testing.T) {
 	}
 }
 
-func Test_CHK_003_ArgvPlaceholdersAreOnePass(t *testing.T) {
+func Test_CHK_003_CHK_032_ArgvPlaceholdersAreOnePass(t *testing.T) {
 	snap := hookSnapshot(t, nil, nil)
 	snap.Modules[0].Name = "alpha-{report}"
 	snap.Modules[0].Dir = "dir-{module}"
