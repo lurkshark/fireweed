@@ -18,7 +18,7 @@ name: project
 Load MUST read fireweed.yaml and module SPEC.md files only in configured modules globs, returning module names, prefixes, dependencies, documents and zones.
 
 ### PRJ-002
-ValidateGraph MUST reject empty or duplicate module names/prefixes and dependencies naming absent modules, self-dependencies or cycles. It MUST accept an acyclic graph with unique identities and return an explanatory error on rejection.
+ValidateGraph MUST return nil for a valid graph and an explanatory error identifying the rejection cause for an invalid graph.
 
 ### PRJ-003
 NewChange MUST create a queued Markdown skeleton for an existing module with Motivation, Interface, Added, Modified, Removed and Decisions sections, containing no assigned spec IDs. It MUST use the next number after the largest pending or archived change number and reject an existing pending/archived slug without overwriting files. Unknown modules and slugs containing anything besides lowercase letters, digits and hyphens MUST be rejected.
@@ -67,5 +67,17 @@ Load MUST inherit an omitted module zone field from module_defaults while retain
 
 ### PRJ-018
 Load MUST return an error for missing or malformed config or module documents.
+
+### PRJ-019
+ValidateGraph MUST reject module names that are empty or duplicated in the graph.
+
+### PRJ-020
+ValidateGraph MUST reject module prefixes that are empty or duplicated in the graph.
+
+### PRJ-021
+ValidateGraph MUST reject a dependency that does not name a different existing module.
+
+### PRJ-022
+ValidateGraph MUST reject a graph containing a dependency cycle.
 
 ## Decisions
