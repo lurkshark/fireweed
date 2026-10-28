@@ -4,21 +4,24 @@ already_satisfied:
     - CON-002
     - CON-005
     - CON-006
-    - new:invalid-frontmatter
-    - new:render-document
-    - new:replace-section
-    - new:parse-items
-    - new:invalid-item-headings
-    - new:duplicate-items
-    - new:render-item
-    - new:resolve-zone
-    - new:invalid-handles
+    - CON-007
+    - CON-008
+    - CON-009
+    - CON-010
+    - CON-011
+    - CON-012
+    - CON-013
+    - CON-014
+    - CON-015
+audit_rounds: 0
 bases:
     CON-001: "60569833"
     CON-002: "00932638"
     CON-005: 349314ec
     CON-006: 6739d280
 module: contracts
+phase: audit
+run: 20261028T062314-ffc823125b2ebb9b8c75c473
 ---
 
 
@@ -39,31 +42,31 @@ product behavior.
 
 ## Added
 
-### new:invalid-frontmatter
+### CON-007
 ParseDocument MUST reject malformed, non-mapping or unterminated frontmatter.
 
-### new:render-document
+### CON-008
 RenderDocument MUST produce a document whose parsed frontmatter and body equal its input.
 
-### new:replace-section
+### CON-009
 ReplaceSection MUST replace a named level-two Markdown section without changing other sections, appending the section when absent.
 
-### new:parse-items
+### CON-010
 ParseItems MUST return level-three items in source order with ID, optional bracketed tag and complete body, including mixed assigned-ID and handle items.
 
-### new:invalid-item-headings
+### CON-011
 ParseItems MUST reject malformed item headings.
 
-### new:duplicate-items
+### CON-012
 ParseItems MUST reject duplicate item IDs, including duplicate handles.
 
-### new:render-item
+### CON-013
 RenderItem MUST reproduce an item's heading, tag and body.
 
-### new:resolve-zone
+### CON-014
 ResolveZone MUST choose the first matching zone in order protected, SPEC.md, evals, interface, append_only, preserve, disposable, other, treating SPEC.md as the module's root spec path.
 
-### new:invalid-handles
+### CON-015
 ParseItems MUST reject empty handles and handles containing characters other than lowercase letters, digits and hyphens.
 
 ## Modified
@@ -105,3 +108,7 @@ or other test data. No new Test functions, t.Run cases, fixture instances,
 helpers, implementation or interface edits. Implementation may edit only this
 change file. The common parser/duplicate specs retain the guarantees formerly
 repeated in CON-006; no obligation is removed.
+
+## Provenance
+
+- evals 2026-10-28T06:24:20.408504Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=261 failing=0 passing=261

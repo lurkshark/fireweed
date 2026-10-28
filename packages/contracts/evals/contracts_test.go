@@ -24,7 +24,7 @@ func Test_CON_001_ParseDocument(t *testing.T) {
 	}
 }
 
-func Test_CON_001_RejectInvalidFrontmatter(t *testing.T) {
+func Test_CON_007_RejectInvalidFrontmatter(t *testing.T) {
 	for _, tc := range []struct{ name, source string }{
 		{"malformed", "---\nname: [broken\n---\nbody\n"},
 		{"non_mapping", "---\n- first\n---\nbody\n"},
@@ -38,7 +38,7 @@ func Test_CON_001_RejectInvalidFrontmatter(t *testing.T) {
 	}
 }
 
-func Test_CON_001_RenderRoundTrip(t *testing.T) {
+func Test_CON_008_RenderRoundTrip(t *testing.T) {
 	want := contracts.Document{
 		Frontmatter: map[string]any{"name": "contracts", "enabled": true},
 		Body:        "# Title\n\nBody\n",
@@ -56,7 +56,7 @@ func Test_CON_001_RenderRoundTrip(t *testing.T) {
 	}
 }
 
-func Test_CON_002_Sections(t *testing.T) {
+func Test_CON_002_CON_009_Sections(t *testing.T) {
 	source := "intro\n## Alpha\nA  \n\n## Beta\nB\n\n## Gamma\nC\n"
 	if got, ok := contracts.Section(source, "Beta"); !ok || got != "B\n\n" {
 		t.Errorf("Section(Beta) = %q, %v", got, ok)
@@ -70,7 +70,7 @@ func Test_CON_002_Sections(t *testing.T) {
 	}
 }
 
-func Test_CON_002_AppendSection(t *testing.T) {
+func Test_CON_009_CON_002_AppendSection(t *testing.T) {
 	source := "# Doc\n\n## Existing\nkeep\n"
 	got := contracts.ReplaceSection(source, "New", "added\n")
 	if !strings.HasPrefix(got, source) {
@@ -81,7 +81,7 @@ func Test_CON_002_AppendSection(t *testing.T) {
 	}
 }
 
-func Test_CON_002_ParseItems(t *testing.T) {
+func Test_CON_010_ParseItems(t *testing.T) {
 	source := "### CON-001 [draft]\nFirst line\n\nSecond line\n### CON-002\nNext\n"
 	want := []contracts.Item{
 		{ID: "CON-001", Tag: "draft", Body: "First line\n\nSecond line\n"},
@@ -96,10 +96,10 @@ func Test_CON_002_ParseItems(t *testing.T) {
 	}
 }
 
-func Test_CON_002_RejectInvalidItems(t *testing.T) {
+func Test_CON_011_CON_012_RejectInvalidItems(t *testing.T) {
 	for _, tc := range []struct{ name, source string }{
-		{"duplicate", "### CON-001\nFirst\n### CON-001\nSecond\n"},
-		{"malformed_heading", "### CON-001 [draft\nBody\n"},
+		{"CON_012_duplicate", "### CON-001\nFirst\n### CON-001\nSecond\n"},
+		{"CON_011_malformed_heading", "### CON-001 [draft\nBody\n"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			if _, err := contracts.ParseItems(tc.source); err == nil {
@@ -109,7 +109,7 @@ func Test_CON_002_RejectInvalidItems(t *testing.T) {
 	}
 }
 
-func Test_CON_006_ParseHandlesInSourceOrder(t *testing.T) {
+func Test_CON_006_CON_010_ParseHandlesInSourceOrder(t *testing.T) {
 	source := "### new:alpha-2 [draft]\nFirst line\n\nSecond line\n### CON-007\nAssigned body\n### new:7-beta\nHandle body\n"
 	want := []contracts.Item{
 		{ID: "new:alpha-2", Tag: "draft", Body: "First line\n\nSecond line\n"},
@@ -125,13 +125,13 @@ func Test_CON_006_ParseHandlesInSourceOrder(t *testing.T) {
 	}
 }
 
-func Test_CON_006_RejectInvalidOrDuplicateHandles(t *testing.T) {
+func Test_CON_015_CON_012_RejectInvalidOrDuplicateHandles(t *testing.T) {
 	for _, tc := range []struct{ name, source string }{
-		{"empty", "### new:\nBody\n"},
-		{"uppercase", "### new:Alpha\nBody\n"},
-		{"underscore", "### new:alpha_beta\nBody\n"},
-		{"punctuation", "### new:alpha.beta\nBody\n"},
-		{"duplicate", "### new:alpha-2\nFirst\n### new:alpha-2\nSecond\n"},
+		{"CON_015_empty", "### new:\nBody\n"},
+		{"CON_015_uppercase", "### new:Alpha\nBody\n"},
+		{"CON_015_underscore", "### new:alpha_beta\nBody\n"},
+		{"CON_015_punctuation", "### new:alpha.beta\nBody\n"},
+		{"CON_012_duplicate", "### new:alpha-2\nFirst\n### new:alpha-2\nSecond\n"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			if _, err := contracts.ParseItems(tc.source); err == nil {
@@ -141,7 +141,7 @@ func Test_CON_006_RejectInvalidOrDuplicateHandles(t *testing.T) {
 	}
 }
 
-func Test_CON_002_RenderItem(t *testing.T) {
+func Test_CON_013_RenderItem(t *testing.T) {
 	for _, tc := range []struct {
 		item contracts.Item
 		want string
@@ -223,7 +223,7 @@ func Test_CON_005_MatchGlob(t *testing.T) {
 	}
 }
 
-func Test_CON_005_ResolveZone(t *testing.T) {
+func Test_CON_014_ResolveZone(t *testing.T) {
 	for _, tc := range []struct {
 		name, path, want string
 		zones            contracts.Zones
