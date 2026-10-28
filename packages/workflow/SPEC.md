@@ -26,7 +26,7 @@ Verify MUST reject edits forbidden by the approved projected phase zones before 
 Done MUST require full verification to succeed before committing a phase transition.
 
 ### FLOW-004
-Successful impl Done MUST apply Added/Modified/Removed, set values and Decisions (attributed to the slug), including Removed decisions, then archive with phase applied and commit together after static validation. Every phase commit MUST advance the claim's phase base, freezing prior eval/interface edits and releasing the exact held claim upon application. Failed verification MUST leave the phase unadvanced and create no commit.
+Successful impl Done MUST apply Added, Modified and Removed spec edits to the module's SPEC.md.
 
 ### FLOW-005
 Each successful Done MUST append provenance with phase, date, manual/configured agent, version, playbook hash and result counts, retaining reports/output under the run directory. Context MUST include the change, projected spec, interface contents, SYSTEM and matching playbook, listing other relevant files by path/size or including contents with full. State MUST expose the held projected snapshot so composing commands use the approved graph during hooks.
@@ -159,6 +159,12 @@ Successful impl Done MUST release only the exact held claim upon application.
 
 ### FLOW-048
 Failed Done verification MUST leave the phase unadvanced and create no commit.
+
+### FLOW-049
+Impl Done MUST require the applied project to pass static validation before committing.
+
+### FLOW-050
+Successful impl Done MUST move the active change to the archive with phase applied and commit it together with the application.
 
 ## Decisions
 
