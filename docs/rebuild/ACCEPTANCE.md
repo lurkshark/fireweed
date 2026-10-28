@@ -320,3 +320,9 @@ before another change. Four changes were applied since the explicit review at
   helper's demonstrated Apple Git incompatibility needs a normal eval_fix after
   approved recovery. No Doctor implementation application or acceptance gate is
   claimed; see the updated block report for the exact state and proposed recovery.
+
+  Approved recovery now passed full native implementation verification and
+  applied/archived 0071 at e50061d: 260 tests, all passing, with claim released.
+  This establishes the CHK-049–069 backend eval evidence under Git 2.53.0;
+  ordinary-Apple-Git helper portability, C14–C16 explanations and app doctor
+  wiring remain pending. This is partial R08/R11/R28 evidence, not completion.

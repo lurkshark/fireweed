@@ -8,27 +8,15 @@ cleanup complete. It reports an error-prefix contract gap and its agent read
 dependent internals, so strict independence acceptance is not established; see
 [the reviewed report](reports/contracts-drill.md). No gap fix or repeat drill is
 authorized. 0069 now implements recipe-based initialization through NEW.
-**Applied since review: 0; saved attempt 4 recovery explicitly approved.** The owner-approved
-0070 correction and scoped re-review passed and were pushed at e083c5f. The
-explicit one-time phase repair was completed at c7daac7, preserving counters and
-history. The approved eight-ID eval correction committed ebf127f (260 phase
-cases: 34 runtime failures, 226 passes; 71 own cases, 37 existing passes). Its
-restricted re-review found no remaining findings for those eight IDs. Combined
-with the valid prior thirteen passes, native audit commit 8cafea6 advanced 0071
-to implementation with audit_rounds 2 unchanged. See
-[the block report](reports/doctor-0071-block.md) for recovery provenance and the
-resolved warning-producer clarification.
-
-The configured Sol/high implementation worker completed. With the available Git
-2.53.0 on PATH, its controller quick check passed all 71 own cases, including
-the real three-minute default-timeout case; a focused rerun after its final edit
-also passed. The frozen scratch-cleanup helper uses a Git flag unsupported by
-the default Apple Git 2.30.1. The coordinator interrupted the controller to
-switch the verification toolchain. Native execution exited 3 with a checks-hook
-timeout and interruption, made block commit ed8a9c7, retained implementation in
-saved attempt 4 (9268b52), restored the committed tree and released the claim.
-Full implementation verification/application has not passed. No Doctor feature
-was applied or further push performed; the full goal remains incomplete.
+**Applied since review: 1; 0071 doctor backend passed and applied.** The
+owner-approved saved-attempt 4 recovery restored the implementation through the
+controller with Git 2.53.0. Full native done passed all 260 phase cases and
+committed/applied/archived at e50061d; the tree is clean and claim released.
+The explicitly approved phase repair and restricted re-review are complete;
+[the recovery report](reports/doctor-0071-block.md) retains their history and
+limitations. Doctor CLI wiring and C14–C16 explanations remain next after the
+authorized helper portability eval_fix. No further push occurred; the full goal
+remains incomplete.
 
 The owner's goal update authorizes a subagent review at every five applied
 changes: push to origin and continue when the review finds the work on track, and
@@ -54,6 +42,7 @@ NEW binary: `bin/fireweed`, clean source `4b36a84a8afb20806f4738528b3a7627810a86
 Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`. Interactive work through 0014's initial evals was followed by coordinator `done`, hence legacy `agent=manual` lines. Configured controller execution began at 0014's audit; its provenance records the actual command/model. Continue configured execution. Ignored runtime logs are auxiliary, not reviewable evidence; archives, permanent evals and committed reports carry the evidence.
 
 ## Applied changes
+- 0071 doctor-probes — CHK-049–069; final evals ebf127f (34 runtime failures/226 passes, 260 total), restricted audit 8cafea6, impl e50061d (260 passes). Full recovery and earlier phases are in the linked block report; native application/cleanup passed under Git 2.53.0. CLI wiring remains pending.
 - 0001 standalone-information — AST-001–003; phases a4ceb17/826b9e9/2248b8e; 8 fail-first → 8 pass.
 - 0002 standalone-cli — APP-001–003; phases 1298acf/7de7d30/db77de7; 30 fail-first → 30 pass; auditor findings were discarded by folded quotes, corrected in 0003.
 - 0003 json-error-assertions — APP-003 eval_fix; eb4704d/e184bb6/8796d37; 26 app cases pass, independent audit passed.
@@ -237,14 +226,13 @@ acceptance remains unverified. No gap fix/rerun is authorized or performed.
 
 ## Next
 
-The owner approved recovery of the current blocked change: remove only the
-interruption block, use native start from saved attempt 4, and finish full
-controller verification/application with the existing Git 2.53.0 directory on PATH. Preserve frozen evals/interface, audit_rounds 2,
-run/IDs, requirements and all saved refs/history. No phase exception or bounds
-change is needed or proposed. Any unresolved failure stops for human review.
-After 0071 passes, correct the demonstrated frozen-helper Git portability issue
-through a normal checks eval_fix, preserving its assertions, before assets
-explanations and app doctor wiring. The broader sequence remains:
+The approved recovery passed. Correct the demonstrated frozen scratch-helper
+Git portability issue through a normal checks eval_fix, preserving assertions,
+coverage and all 71 own cases. Then add assets explanations for emitted doctor
+codes C14–C16 and wire doctor/agents-md through app promptly, before bounded
+fake-agent execution work. No further phase exception, bound change, new drill
+or deferred contracts-gap fix is authorized. Stop at any new blocked change;
+the standing five-application subagent checkpoint remains in force.
 
 0. The owner-approved 0070 explanation correction and checkpoint re-review pass.
    The authorized push reached e083c5f; continue Milestone 2. The original block,

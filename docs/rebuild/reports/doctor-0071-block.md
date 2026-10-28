@@ -1,10 +1,10 @@
 # Doctor 0071 — blocked for human review
 
-Current result: the approved phase repair, eight-ID correction and restricted
-re-review passed. Implementation is now saved but blocked after an operational
-interruption at ed8a9c7. The working tree is clean and no claim remains. Native
-full implementation verification/application has not passed. See the latest
-outcome below; earlier blocks remain as history.
+Current result: the approved saved-attempt 4 recovery passed full native
+implementation verification and applied/archived at e50061d. All 260 phase cases
+passed; the tree is clean and no claim remains. Earlier blocks and deviations
+remain as history. Helper portability, emitted-code explanations and CLI wiring
+continue through normal changes; the full rebuild goal remains incomplete.
 
 The original controller run stopped at `697ddb2` with `evals attempts exhausted`.
 0071 remains in evals with audit_rounds 2 and audit_pending CHK-065. No change
@@ -265,3 +265,19 @@ run/IDs, frozen evals/interface and all saved refs/history. No further phase-wri
 exception, bounds change or direct source copy is needed. Use the pinned
 controller for required full verification, application and archive. Continue the
 standing five-change subagent review/push policy; new blocks still stop.
+
+## Recovery passed — 2026-10-28
+
+Author approval/unblock commit 01014e6 preserved phase impl and counters. Native
+start --from-attempt 4 restored the saved implementation without a manual source
+copy. With Git 2.53.0 on PATH, native done completed full verification, applied
+the specs/Decisions and archived 0071 at e50061d: 260 tests, zero failures, 260
+passes. The claim is released and the working tree is clean. Coordinator-driven
+advancement honestly records agent=manual; the actual configured Sol/high
+implementation worker remains recorded in impl-1.log. Its command log contains
+no bootstrap, deleted implementation or saved-source oracle reads.
+
+This closes the implementation block. It does not establish app doctor/agents-md
+commands, C14–C16 explanations, regeneration or final acceptance. The approved
+normal eval_fix will remove the demonstrated helper dependency on newer Git,
+while retaining scratch-location, physical-cleanup and registration assertions.
