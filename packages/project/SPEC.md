@@ -21,7 +21,7 @@ Load MUST read fireweed.yaml and module SPEC.md files only in configured modules
 ValidateGraph MUST return nil for a valid graph and an explanatory error identifying the rejection cause for an invalid graph.
 
 ### PRJ-003
-NewChange MUST create a queued Markdown skeleton for an existing module with Motivation, Interface, Added, Modified, Removed and Decisions sections, containing no assigned spec IDs. It MUST use the next number after the largest pending or archived change number and reject an existing pending/archived slug without overwriting files. Unknown modules and slugs containing anything besides lowercase letters, digits and hyphens MUST be rejected.
+NewChange MUST create a queued Markdown skeleton for an existing module with Motivation, Interface, Added, Modified, Removed and Decisions sections, containing no assigned spec IDs.
 
 ### PRJ-004
 Queue MUST read pending NNNN-slug.md documents in numeric-then-slug order, allowing tied numbers and excluding archives. It MUST return each change's module, frontmatter and parsed Added/Modified/Removed items, rejecting malformed documents, unknown modules and ambiguous slugs. A change argument MUST resolve its unique slug, queued basename or repository-relative queued path, rejecting missing or ambiguous targets.
@@ -79,5 +79,17 @@ ValidateGraph MUST reject a dependency that does not name a different existing m
 
 ### PRJ-022
 ValidateGraph MUST reject a graph containing a dependency cycle.
+
+### PRJ-023
+NewChange MUST use the next number after the largest pending or archived change number.
+
+### PRJ-024
+NewChange MUST reject a slug already present in the pending queue or archive without overwriting existing files.
+
+### PRJ-025
+NewChange MUST reject an unknown target module.
+
+### PRJ-026
+NewChange MUST reject an empty slug or a slug containing characters other than lowercase letters, digits and hyphens.
 
 ## Decisions
