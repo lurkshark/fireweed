@@ -57,3 +57,14 @@ and normal phase enforcement intact; it needs owner approval at this checkpoint.
 Do not start a replacement to bypass a bound, alter phase history, reuse the
 consumed phase-write exception, or push this blocked batch. The prior correction
 batch through 510cc91 remains pushed and passed. NEW next/run remain unproved.
+
+## Owner-approved native recovery
+
+The owner approved the proposed native abandon/re-author and scoped assertion
+correction. Native abandon committed e5059ae, reverting the former phase work
+and deleting the blocked pending change. Historical phase/block commits and
+attempt 1 remain retained. The same 0079 scope is reauthored; new late IDs are
+left to the controller. Only retained API/types/evals and authored spec text were
+saved for reuse; no deleted or saved implementation is copied or read. Normal
+fail-first and isolated audit must run again. This is the first correction of
+the same recorded issue, with applied count 0 and no bound/phase-write exception.

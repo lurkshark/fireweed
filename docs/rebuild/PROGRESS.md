@@ -15,27 +15,25 @@ the passing correction does not retroactively validate them. See the
 [correction report](reports/checkpoint-corrections-0076.md) and
 [checkpoint report](reports/checkpoint-0071-0075.md).
 
-## Blocked slice — human checkpoint required
+## Active slice — approved 0079 recovery
 
-0079-single-change-execution is blocked at impl. The native controller saved
-attempt 1 at `refs/fireweed/attempts/0079-single-change-execution/1`, committed
-only state/Questions at `00edbd3`, restored work and released the claim.
-The checkout is clean; **Applied since review remains 0**. No new push occurred.
-See [the blocker and concrete correction](reports/next-0079-block.md).
+The owner approved native abandon/re-author and the scoped final-commit
+assertion correction. Native abandon committed e5059ae, removed the blocked
+change and reverted its phase work. Its block/history and saved attempt 1
+remain retained; no implementation is read from them. A freshly authored
+0079-single-change-execution retains the same scope, API and six specs.
+The evals step restores only permitted retained interfaces/evals, corrects the
+unsupported subject assertion to inspect committed applied phase, then runs
+normal fail-first, isolated audit and implementation. This is the first
+correction of the same recorded issue. **Applied since review: 0.**
+See [the historical blocker and approved recovery](reports/next-0079-block.md).
 
-The first next loop reached application in its fixture, but a frozen RUN-013/014
-assertion wrongly requires impl in the final commit subject; workflow.Done
-emits apply. No product implementation Done/application passed. The proposed
-correction checks the committed archived phase instead, retaining all other
-assertions. It remains unapplied in /tmp/fireweed-0079-phase-assertion.patch.
-Honor the blocked-change stop before recovery or any new implementation.
-
-After owner review and controller-owned recovery, the observable exit remains
-one complete **NEW next** lifecycle in a bounded fake-agent Go fixture, followed
-promptly by app wiring if the runner dependency passes. Then prove NEW run
---max, later continuation and empty queue. Retry/recovery/remaining kinds follow
-that runnable path. No NEW unattended real-agent execution before the fake-agent
-run passes. All final gates and drill deferrals remain open; see [PLAN.md](PLAN.md).
+After this minimum runner dependency passes, wire app promptly and prove one
+complete **NEW next** lifecycle in a bounded fake-agent Go fixture. Then prove
+NEW run --max, later continuation and empty queue. Retry/recovery/remaining
+kinds follow that runnable path. No NEW unattended real-agent execution before
+the fake-agent run passes. Final gates and drill deferrals remain open; see
+[PLAN.md](PLAN.md). No new push or controller phase-write exception is approved.
 
 ## Authority and deferred work
 
