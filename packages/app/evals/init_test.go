@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -90,6 +91,61 @@ func assertNoInitConfig(t *testing.T, root string) {
 	}
 }
 
+func initVersionParts(value string) ([3]int, bool) {
+	var parts [3]int
+	fields := strings.Split(value, ".")
+	if len(fields) == 0 || len(fields) > len(parts) {
+		return parts, false
+	}
+	for i, field := range fields {
+		part, err := strconv.Atoi(field)
+		if err != nil || part < 0 {
+			return parts, false
+		}
+		parts[i] = part
+	}
+	return parts, true
+}
+
+func initRangeContainsVersion(versionRange, version string) bool {
+	want, ok := initVersionParts(version)
+	if !ok || strings.TrimSpace(versionRange) == "" {
+		return false
+	}
+	for _, clause := range strings.Split(versionRange, ",") {
+		clause = strings.TrimSpace(clause)
+		operator := ""
+		for _, candidate := range []string{">=", "<=", ">", "<", "="} {
+			if strings.HasPrefix(clause, candidate) {
+				operator = candidate
+				break
+			}
+		}
+		if operator == "" {
+			return false
+		}
+		bound, ok := initVersionParts(strings.TrimSpace(strings.TrimPrefix(clause, operator)))
+		if !ok {
+			return false
+		}
+		comparison := 0
+		for i := range want {
+			if want[i] < bound[i] {
+				comparison = -1
+				break
+			}
+			if want[i] > bound[i] {
+				comparison = 1
+				break
+			}
+		}
+		if !(operator == ">=" && comparison >= 0 || operator == "<=" && comparison <= 0 || operator == ">" && comparison > 0 || operator == "<" && comparison < 0 || operator == "=" && comparison == 0) {
+			return false
+		}
+	}
+	return true
+}
+
 func Test_APP_041_APP_042_APP_043_APP_044_APP_045_APP_046_APP_050_APP_053_APP_054_APP_059_GoInit(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := t.TempDir()
@@ -104,10 +160,10 @@ func Test_APP_041_APP_042_APP_043_APP_044_APP_045_APP_046_APP_050_APP_053_APP_05
 	status, stdout, stderr := runAppBinary(t, bin, root, "init", "--recipe", "go", "--agent", "codex")
 	assertInitOutput(t, status, stdout, stderr, recipe.Instructions) // APP-046
 	config := readInitConfig(t, root)
-	if config.Version != 1 || !strings.Contains(config.Fireweed, strings.TrimSuffix(assets.Version(), ".0")) || config.Base != "main" || config.Remote != "origin" || !reflect.DeepEqual(config.Modules, []string{"packages/*"}) {
+	if config.Version != 1 || !initRangeContainsVersion(config.Fireweed, assets.Version()) || config.Base != "main" || config.Remote != "origin" || !reflect.DeepEqual(config.Modules, []string{"packages/*"}) {
 		t.Errorf("APP-041 configuration header = %+v", config)
 	}
-	if !reflect.DeepEqual(config.ModuleDefaults.Interface, recipe.ModuleDefaults.Interface) || !reflect.DeepEqual(config.ModuleDefaults.Evals, recipe.ModuleDefaults.Evals) || !reflect.DeepEqual(config.ModuleDefaults.Disposable, recipe.ModuleDefaults.Disposable) || !reflect.DeepEqual(config.Hooks, recipe.Hooks) || !reflect.DeepEqual(config.Protected, recipe.Protected) || !reflect.DeepEqual(config.WorkerWritable, recipe.WorkerWritable) {
+	if !reflect.DeepEqual(config.ModuleDefaults.Protected, recipe.ModuleDefaults.Protected) || !reflect.DeepEqual(config.ModuleDefaults.Interface, recipe.ModuleDefaults.Interface) || !reflect.DeepEqual(config.ModuleDefaults.Evals, recipe.ModuleDefaults.Evals) || !reflect.DeepEqual(config.ModuleDefaults.Disposable, recipe.ModuleDefaults.Disposable) || !reflect.DeepEqual(config.Hooks, recipe.Hooks) || !reflect.DeepEqual(config.Protected, recipe.Protected) || !reflect.DeepEqual(config.WorkerWritable, recipe.WorkerWritable) {
 		t.Errorf("APP-042 recipe metadata differs: %+v", config)
 	}
 	if got := readInitFile(t, root, "SYSTEM.md"); got != "# Existing project instructions\n" {
@@ -250,7 +306,7 @@ func Test_APP_042_APP_048_APP_049_APP_050_APP_053_APP_054_APP_060_LocalInit(t *t
 	root := t.TempDir()
 	recipeDir := filepath.Join(root, "recipe")
 	instructions := "# Local setup\nConfigure the eval, boundaries and setup hooks.\n"
-	appPut(t, recipeDir, "recipe.yaml", "module_defaults:\n  interface: [api.txt]\n  evals: [evals/**]\n  disposable: [internal/**]\n  preserve: [data/**]\n  append_only: [log/**]\nhooks:\n  eval: 'touch HOOK_RAN'\n  boundaries: 'touch BOUNDARIES_RAN'\n  setup: 'touch SETUP_RAN'\nprotected: [.fireweed/**, SYSTEM.md]\nworker_writable: [local.lock]\n")
+	appPut(t, recipeDir, "recipe.yaml", "module_defaults:\n  protected: [schema.lock]\n  interface: [api.txt]\n  evals: [evals/**]\n  disposable: [internal/**]\n  preserve: [data/**]\n  append_only: [log/**]\nhooks:\n  eval: 'touch HOOK_RAN'\n  boundaries: 'touch BOUNDARIES_RAN'\n  setup: 'touch SETUP_RAN'\nprotected: [.fireweed/**, SYSTEM.md]\nworker_writable: [local.lock]\n")
 	appPut(t, recipeDir, "recipe.md", instructions)
 	appPut(t, recipeDir, "files/assets/banner.txt", "sentinel payload\n")
 	appPut(t, recipeDir, "files/.fireweed/templates/module/SPEC.md", "---\nname: {{name}}\nid_prefix: {{prefix}}\ndepends_on: []\n---\n# {{name}}\n\n## Specs\n\n## Decisions\n")
@@ -260,7 +316,7 @@ func Test_APP_042_APP_048_APP_049_APP_050_APP_053_APP_054_APP_060_LocalInit(t *t
 	status, stdout, stderr := runAppBinary(t, bin, root, "init", "--recipe", "./recipe", "--agent", agent, "--audit-agent", auditor)
 	assertInitOutput(t, status, stdout, stderr, instructions)
 	config := readInitConfig(t, root)
-	if !reflect.DeepEqual(config.ModuleDefaults.Interface, []string{"api.txt"}) || !reflect.DeepEqual(config.ModuleDefaults.Evals, []string{"evals/**"}) || !reflect.DeepEqual(config.ModuleDefaults.Disposable, []string{"internal/**"}) || !reflect.DeepEqual(config.ModuleDefaults.Preserve, []string{"data/**"}) || !reflect.DeepEqual(config.ModuleDefaults.AppendOnly, []string{"log/**"}) || config.Hooks["eval"] != "touch HOOK_RAN" || config.Hooks["boundaries"] != "touch BOUNDARIES_RAN" || config.Hooks["setup"] != "touch SETUP_RAN" || !reflect.DeepEqual(config.Protected, []string{".fireweed/**", "SYSTEM.md"}) || !reflect.DeepEqual(config.WorkerWritable, []string{"local.lock"}) {
+	if !reflect.DeepEqual(config.ModuleDefaults.Protected, []string{"schema.lock"}) || !reflect.DeepEqual(config.ModuleDefaults.Interface, []string{"api.txt"}) || !reflect.DeepEqual(config.ModuleDefaults.Evals, []string{"evals/**"}) || !reflect.DeepEqual(config.ModuleDefaults.Disposable, []string{"internal/**"}) || !reflect.DeepEqual(config.ModuleDefaults.Preserve, []string{"data/**"}) || !reflect.DeepEqual(config.ModuleDefaults.AppendOnly, []string{"log/**"}) || config.Hooks["eval"] != "touch HOOK_RAN" || config.Hooks["boundaries"] != "touch BOUNDARIES_RAN" || config.Hooks["setup"] != "touch SETUP_RAN" || !reflect.DeepEqual(config.Protected, []string{".fireweed/**", "SYSTEM.md"}) || !reflect.DeepEqual(config.WorkerWritable, []string{"local.lock"}) {
 		t.Errorf("APP-042/048 local metadata differs: %+v", config)
 	}
 	if got := readInitFile(t, root, "assets/banner.txt"); got != "sentinel payload\n" {
