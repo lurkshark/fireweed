@@ -3,6 +3,7 @@ audit_pending:
     - CHK-065
 audit_rounds: 2
 bases: {}
+blocked: saved-attempt recovery retained audit phase; evals remain frozen
 module: checks
 phase: audit
 run: 20261028T143328-b8168faa7b2578efc49bb800
@@ -195,3 +196,18 @@ controller must restore an eval step from saved eval attempt 1 before any test
 edit; if it cannot do so without changing bounds, stop. Any further unresolved
 finding stops for human review. The answered Questions and blocked marker are
 removed solely to permit that explicitly approved native recovery.
+
+## Questions
+
+The owner approved one bounded correction of the eight fresh audit findings,
+conditional on the controller restoring an eval step without changing bounds.
+Native start with from-attempt 1 succeeded but retained the committed audit
+phase, despite the saved attempt's evals metadata. No test or interface was
+edited and no worker/auditor was launched. The real CHK-065 timeout regression,
+prior passes, audit_rounds 2 and both original saved refs remain intact.
+
+The approved stop condition is now reached: evals remain frozen. Does the owner
+authorize one explicit phase-only repair to return this same change to evals,
+preserving run/IDs, requirements, counters, prior passes and history, solely to
+perform the already scoped correction and restricted re-review? Do not alter
+the phase manually or start a replacement without that explicit decision.
