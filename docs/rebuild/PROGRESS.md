@@ -4,7 +4,7 @@
 
 Human review 7 approved 0030–0031 and authorized the remaining project spec
 splits, including consecutive project changes, for this slice. Stop after five
-applications or on any block. **Applied since review: 0.** The shared base is
+applications or on any block. **Applied since review: 1.** The shared base is
 still c2da5e2, so the controller counts two unapproved archives; P07 permits only
 three more applications until the owner synchronizes the reviewed shared base.
 Do not push or alter refs/bounds to clear it. Milestone 1 passed; Milestone 2
@@ -56,6 +56,8 @@ Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -
 [Review 6 checkpoint](reports/review6-checkpoint.md): race/vet/controller CI passed,
 including 261 cases, doctor and history; no pending change, claim or scratch
 worktree. Approved in human review 7, including consecutive project splits.
+
+- 0032 narrow-load-spec — PRJ-001/017–018; 58d1946/b7d1061/f36a557; 53 own cases and 199 total phase cases pass; no findings, implementation unchanged.
 
 ## Next
 
