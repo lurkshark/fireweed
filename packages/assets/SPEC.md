@@ -88,7 +88,10 @@ Explain MUST describe the cause and a corrective action for C02 (invalid module 
 Explain MUST describe the cause and a corrective action for C10 (missing enforced coverage), C11 (eval-hook/JUnit contract failures) and E01 (failed enforced testcases).
 
 ### AST-026
-Explain MUST describe the cause and a corrective action for P01 (preconditions), P02 (claims), P03 (unapproved state alteration), P04 (approval warning), P05 (stale bases), P06 (blocked change), P07 (unapproved-work bound), P09 (audit submissions) and Z01 (forbidden phase-zone edits).
+Explain MUST describe the cause and a corrective action for P01 (operational preconditions, including lifecycle, new-change and init), P02 (claims), P03 (unapproved state alteration), P04 (approval warning), P05 (stale bases), P06 (blocked change), P07 (unapproved-work bound), P09 (audit submissions) and Z01 (forbidden phase-zone edits).
+
+### AST-027
+Explain MUST describe the cause and a corrective action for C14 (doctor hook/canary setup, detection or recovery failures), C15 (agent probe failures or usage limits, and the shared-auditor-command warning) and C16 (missing/stale managed guidance or playbook embedded_base metadata).
 
 ## Decisions
 
