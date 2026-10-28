@@ -118,6 +118,8 @@ func Test_AST_003_Explanations(t *testing.T) {
 		}
 		requirePattern(t, text, `(?i)(missing|empty|absent)[^.\n]*Motivation`, "missing change Motivation")
 		requirePattern(t, text, `(?i)(add|write|fill|provide|complete)[^.\n]*Motivation`, "corrective action to provide Motivation")
+		requirePattern(t, text, `(?i)(missing|invalid|unknown|undeclared)[^.\n]*(change|pending)[^.\n]*module|(change|pending)[^.\n]*module[^.\n]*(missing|invalid|unknown|undeclared)`, "invalid pending change module target")
+		requirePattern(t, text, `(?i)(set|correct|change|select|specify)[^.\n]*(change|pending)[^.\n]*module|(set|correct|change|select|specify)[^.\n]*module[^.\n]*(change|pending|target|existing|valid)`, "corrective action for change module target")
 	})
 	t.Run("C08", func(t *testing.T) {
 		text, err := assets.Explain("C08")
@@ -191,6 +193,10 @@ func Test_AST_003_Explanations(t *testing.T) {
 		}
 		requirePattern(t, text, `(?i)(unknown|unrecognized|invalid)[^.\n]*(lookup|name|playbook|explain)|(lookup|name|playbook|explain)[^.\n]*(unknown|unrecognized|invalid)`, "unknown lookup name")
 		requirePattern(t, text, `(?i)(choose|use|select|provide)[^.\n]*(valid|known|listed|supported)[^.\n]*(name|code|playbook|lookup)`, "corrective action to select a valid lookup name")
+		requirePattern(t, text, `(?i)(unknown|ambiguous)[^.\n]*(requested|lookup)[^.\n]*module|(requested|lookup)[^.\n]*module[^.\n]*(unknown|ambiguous)`, "unknown or ambiguous requested module")
+		requirePattern(t, text, `(?i)(unknown|ambiguous)[^.\n]*(requested|lookup)[^.\n]*(item|change)|(requested|lookup)[^.\n]*(item|change)[^.\n]*(unknown|ambiguous)`, "unknown or ambiguous requested item or change")
+		requirePattern(t, text, `(?i)ambiguous[^.\n]*(projected|local)[^.\n]*handle|(projected|local)[^.\n]*handle[^.\n]*ambiguous`, "ambiguous projected local handle")
+		requirePattern(t, text, `(?i)(select|use|provide|specify)[^.\n]*(existing|valid|unambiguous|qualified|full)[^.\n]*(module|item|change|name|ID|handle)`, "corrective action for requested names")
 	})
 	t.Run("P2-01", func(t *testing.T) {
 		text, err := assets.Explain("P2-01")
@@ -204,6 +210,73 @@ func Test_AST_003_Explanations(t *testing.T) {
 	})
 	if _, err := assets.Explain("not-a-code"); err == nil {
 		t.Error("Explain must reject an unknown code")
+	}
+}
+
+func Test_AST_024_StaticExplanations(t *testing.T) {
+	cases := []struct {
+		code, cause, action string
+	}{
+		{"C02", `(?i)(invalid|cycle|unknown|missing)[^.\n]*module[^.\n]*(graph|dependenc)|(module|dependenc)[^.\n]*(graph|cycle|unknown|missing)`, `(?i)(fix|correct|remove|declare|update)[^.\n]*(module|dependenc|graph)`},
+		{"C03", `(?i)(unreadable|malformed|invalid)[^.\n]*(document|item|file)|(document|item|file)[^.\n]*(unreadable|malformed|invalid)`, `(?i)(repair|correct|fix|restore)[^.\n]*(document|item|file|syntax|format)`},
+		{"C12", `(?i)(invalid|missing|malformed)[^.\n]*(metadata|zone)|(metadata|zone)[^.\n]*(invalid|missing|malformed)`, `(?i)(correct|fix|define|update)[^.\n]*(metadata|zone|field)`},
+		{"C13", `(?i)(duplicate|repeated)[^.\n]*(queue|slug)|(queue|slug)[^.\n]*(duplicate|repeated)`, `(?i)(use|assign|choose|rename)[^.\n]*(unused|unique)[^.\n]*slug`},
+	}
+	for _, tc := range cases {
+		t.Run(tc.code, func(t *testing.T) {
+			text, err := assets.Explain(tc.code)
+			if err != nil {
+				t.Fatalf("Explain(%s): %v", tc.code, err)
+			}
+			requirePattern(t, text, tc.cause, "cause")
+			requirePattern(t, text, tc.action, "corrective action")
+		})
+	}
+}
+
+func Test_AST_025_EvaluationExplanations(t *testing.T) {
+	cases := []struct {
+		code, cause, action string
+	}{
+		{"C10", `(?i)(missing|no|lacks?)[^.\n]*(mapped[^.\n]*non.skipped|non.skipped[^.\n]*mapped)[^.\n]*(testcase|case)|(mapped[^.\n]*non.skipped|non.skipped[^.\n]*mapped)[^.\n]*(testcase|case)[^.\n]*(missing|absent)`, `(?i)(add|map|provide|run)[^.\n]*(mapped|non.skipped)[^.\n]*(testcase|case|eval)`},
+		{"C11", `(?i)(JUnit|eval|hook)[^.\n]*(report|mapping|exit)[^.\n]*(invalid|missing|mismatch|disagree|fail)|(invalid|missing|mismatch|disagree|fail)[^.\n]*(JUnit|eval|hook)[^.\n]*(report|mapping|exit)`, `(?i)(fix|correct|repair|rerun)[^.\n]*(hook|report|mapping|exit|JUnit)`},
+		{"E01", `(?i)(enforced|required)[^.\n]*testcase[^.\n]*(fail|error)|(fail|error)[^.\n]*(enforced|required)[^.\n]*testcase`, `(?i)(fix|repair|correct)[^.\n]*(test|code|implementation|failure)[^.\n]*(rerun|verify|eval)|(fix|repair|correct)[^.\n]*(test|code|implementation|failure)`},
+	}
+	for _, tc := range cases {
+		t.Run(tc.code, func(t *testing.T) {
+			text, err := assets.Explain(tc.code)
+			if err != nil {
+				t.Fatalf("Explain(%s): %v", tc.code, err)
+			}
+			requirePattern(t, text, tc.cause, "cause")
+			requirePattern(t, text, tc.action, "corrective action")
+		})
+	}
+}
+
+func Test_AST_026_LifecycleExplanations(t *testing.T) {
+	cases := []struct {
+		code, cause, action string
+	}{
+		{"P01", `(?i)(precondition|prerequisite)[^.\n]*(missing|unmet|fail)|(missing|unmet|fail)[^.\n]*(precondition|prerequisite)`, `(?i)(complete|satisfy|fix|restore)[^.\n]*(precondition|prerequisite|required|state)`},
+		{"P02", `(?i)(claim|claimed)[^.\n]*(missing|held|owned|conflict|invalid)|(missing|held|owned|conflict|invalid)[^.\n]*(claim|claimed)`, `(?i)(release|wait|resolve|acquire)[^.\n]*(claim|owner|holder|change)`},
+		{"P03", `(?i)(unapproved|unauthorized|unexpected)[^.\n]*(state|alteration|change)|(state|alteration|change)[^.\n]*(unapproved|unauthorized|unexpected)`, `(?i)(restore|revert|review|approve)[^.\n]*(state|change|alteration|work)`},
+		{"P04", `(?i)warn[^.\n]*approv|approv[^.\n]*warn`, `(?i)(review|obtain|record|request)[^.\n]*approv`},
+		{"P05", `(?i)(stale|mismatch)[^.\n]*base|base[^.\n]*(stale|mismatch)`, `(?i)(refresh|update|repair|restore)[^.\n]*(base|state)[^.\n]*(approved|workflow)|(refresh|update|repair)[^.\n]*base|restore[^.\n]*state[^.\n]*approved`},
+		{"P06", `(?i)(blocked|unresolved)[^.\n]*change|change[^.\n]*(blocked|unresolved)`, `(?i)review[^.\n]*Questions`},
+		{"P07", `(?i)(shared[^.\n]*base[^.\n]*(bound|limit)|(bound|limit)[^.\n]*shared[^.\n]*base|unapproved[^.\n]*work[^.\n]*(bound|limit))`, `(?i)(review|synchroniz)[^.\n]*(shared|base|change|work)`},
+		{"P09", `(?i)(missing|incomplete|invalid)[^.\n]*(No findings|Checked IDs|audit)|(audit|submission)[^.\n]*(missing|incomplete|invalid)[^.\n]*(No findings|Checked IDs)`, `(?is)(submit|record|include|provide).*No findings.*complete.*Checked IDs|(submit|record|include|provide).*complete.*Checked IDs.*No findings`},
+		{"Z01", `(?i)(forbidden|unauthorized|outside)[^.\n]*(phase|zone)[^.\n]*edit|edit[^.\n]*(forbidden|unauthorized|outside)[^.\n]*(phase|zone)`, `(?i)(restore|revert)[^.\n]*edit|(move|make)[^.\n]*work[^.\n]*(authorized|appropriate)[^.\n]*(phase|zone)`},
+	}
+	for _, tc := range cases {
+		t.Run(tc.code, func(t *testing.T) {
+			text, err := assets.Explain(tc.code)
+			if err != nil {
+				t.Fatalf("Explain(%s): %v", tc.code, err)
+			}
+			requirePattern(t, text, tc.cause, "cause")
+			requirePattern(t, text, tc.action, "corrective action")
+		})
 	}
 }
 

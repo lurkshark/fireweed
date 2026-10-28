@@ -1,7 +1,10 @@
 ---
+audit_rounds: 0
 bases:
     AST-003: 56ae01a3
 module: assets
+phase: audit
+run: 20261028T100403-d54b997f6ac9f78ecbbbb087
 ---
 
 
@@ -20,13 +23,13 @@ No public interface change.
 
 ## Added
 
-### new:static-explanations
+### AST-024
 Explain MUST describe the cause and a corrective action for C02 (invalid module graph), C03 (unreadable or malformed documents/items), C12 (invalid metadata or zones) and C13 (queue identity errors).
 
-### new:eval-explanations
+### AST-025
 Explain MUST describe the cause and a corrective action for C10 (missing enforced coverage), C11 (eval-hook/JUnit contract failures) and E01 (failed enforced testcases).
 
-### new:lifecycle-explanations
+### AST-026
 Explain MUST describe the cause and a corrective action for P01 (preconditions), P02 (claims), P03 (unapproved state alteration), P04 (approval warning), P05 (stale bases), P06 (blocked change), P07 (unapproved-work bound), P09 (audit submissions) and Z01 (forbidden phase-zone edits).
 
 ## Modified
@@ -69,3 +72,7 @@ bypassing enforcement, weakening evals or changing claims to evade bounds.
 No explanations/tests for unused B/H allocations, P08, C17–C19, reserved numbers
 or unsupported features. Recipes, playbooks, public interfaces and other
 behavior remain unchanged. Controller owns specs, commits and archive.
+
+## Provenance
+
+- evals 2026-10-28T10:07:25.819297Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=331 failing=22 passing=309
