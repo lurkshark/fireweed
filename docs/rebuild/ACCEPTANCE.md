@@ -310,3 +310,13 @@ before another change. Four changes were applied since the explicit review at
   launch occurred; native block 4c8439b released the claim. A one-time phase-only
   repair requires explicit approval before that correction can proceed. No
   counters, requirements or bounds changed, and no additional acceptance is claimed.
+
+  The explicitly approved one-time phase repair and eight-ID correction completed:
+  ebf127f records 260 phase cases (34 failures, 226 passes), and a restricted
+  re-review plus valid prior passes led to audit commit 8cafea6. The implementation
+  worker passed 71 own quick-check cases using Git 2.53.0, including the real
+  default-timeout case. Final full verification did not complete; coordinator
+  interruption produced native block ed8a9c7 and saved attempt 4. The frozen
+  helper's demonstrated Apple Git incompatibility needs a normal eval_fix after
+  approved recovery. No Doctor implementation application or acceptance gate is
+  claimed; see the updated block report for the exact state and proposed recovery.

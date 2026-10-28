@@ -1,15 +1,10 @@
 # Doctor 0071 — blocked for human review
 
-Current result: the approved recovery finished, but the fresh restricted audit
-reported eight further assertion gaps. Controller block a81b723 leaves 0071 in
-audit with audit_rounds 2. No implementation was applied; tree clean and claim
-released. The original block and its deviation remain below as history.
-
-Latest state: the owner approved the eight-ID correction, but native saved-attempt
-recovery retained audit phase. The agreed stop condition triggered before any
-test edit. Native block 4c8439b leaves the tree clean and releases the claim.
-An explicit one-time phase-only repair decision is needed; the correction's
-scope remains approved.
+Current result: the approved phase repair, eight-ID correction and restricted
+re-review passed. Implementation is now saved but blocked after an operational
+interruption at ed8a9c7. The working tree is clean and no claim remains. Native
+full implementation verification/application has not passed. See the latest
+outcome below; earlier blocks remain as history.
 
 The original controller run stopped at `697ddb2` with `evals attempts exhausted`.
 0071 remains in evals with audit_rounds 2 and audit_pending CHK-065. No change
@@ -195,3 +190,68 @@ refs/history. Resume normal controller ownership immediately afterward. The
 already approved correction/re-review stays limited to the eight outstanding
 IDs, with further unresolved findings stopping for human review. No global
 configuration or bound is changed by this one-time exception.
+
+## Phase repair and scoped correction completed
+
+Approval was recorded at fd6014c. Standard author unblock/answered-Questions
+cleanup committed 7cdb2c0; c7daac7 changed only phase audit to evals. Counters,
+run/IDs, requirements, prior passes, the real default-timeout test and saved refs
+were retained. Controller ownership resumed immediately.
+
+The first bounded worker stopped over whether CHK-049 required manufacturing a
+warning. Current public project.Check produces errors but has no warning
+producer. The author clarified that retaining all actually returned diagnostics,
+including their Warning values, covers the current domain; no new warning API,
+scaffolding or requirement narrowing was authorized. Preserve the generic
+retention requirement and add integration coverage when a real warning-producing
+feature lands, before final acceptance. The partial test edits were reverted
+before the clarified correction continued.
+
+The separate Sol/high worker corrected only the approved eight IDs, retaining
+prior assertions and the real CHK-065 test. A prompt check was corrected before
+freezing to allow surrounding prompt text. Native eval commit ebf127f reported
+260 total cases: 34 runtime failures and 226 passes (71 own cases, with all 37
+existing cases passing). A fresh isolated restricted Sol/high re-review checked
+only CHK-049/050/051/054/055/063/066/068 and found no remaining findings. Its log
+shows only supplied-input reads, without implementation/history access, edits
+or execution. The valid prior thirteen passes were retained rather than reopened.
+Native audit commit 8cafea6 advanced to impl with audit_rounds 2 unchanged. The
+legacy pending field remains CHK-065; it is not an unresolved assertion finding.
+
+## Implementation interruption — human decision required
+
+The configured Sol/high implementation worker completed its source edit. Its
+controller verify --quick used the available Git 2.53.0 and reported hook_exit 0,
+with all 71 own cases passing, including Test_CHK_065_UnsetTimeoutBoundsAuditProbe.
+After its final edit, a focused CHK-050/055/058/059 rerun passed in 15.844 seconds.
+The quick result preceded that final edit, so it does not replace final full
+verification. Worker log: impl-1.log under the existing run directory.
+
+The frozen assertScratchRemoved helper invokes git rev-parse with
+--path-format=absolute. The checkout's default /usr/bin/git is Apple Git 2.30.1;
+it treats that option as literal output, causing cleanup assertions to construct
+the wrong path. The available bundled fallback Git is 2.53.0. This is a
+demonstrated eval portability issue on the supported host, not evidence that
+product scratch cleanup failed. Product compatibility still needs normal checks.
+
+The coordinator interrupted the active controller to change the parent PATH
+before final verification. Native execution exited 3, reporting P02 checks eval
+hook did not finish: command timeout and P05 interrupted. Block commit ed8a9c7
+retained the implementation in refs/fireweed/attempts/0071-doctor-probes/4 at
+9268b52d9fb33f20a9e1652151ac294498fc6b55, restored the committed working tree and
+released the claim. No implementation was applied; the application count remains
+zero. Refs 1/2/3, counters, frozen evals/interface and prior audit evidence remain.
+The interruption itself creates a required human checkpoint under the goal;
+the prior phase-write exception does not authorize bypassing this new block.
+
+Proposed bounded recovery: remove only the interruption block and resume this
+same implementation via native start --from-attempt 4. Prefix controller
+verification/application commands with the existing directory
+/Users/joel/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback
+on PATH, with GOCACHE=/tmp/fireweed-rebuild-cache. Finish required full checks
+and application through the pinned controller; no manual source copy, phase
+write, counter/bound reset or frozen-test edit. Any unresolved failure stops.
+After a pass, use a normal checks eval_fix to make the scratch helper use portable
+git rev-parse --git-common-dir and resolve its path in Go, retaining assertions
+and coverage. Then continue emitted-code explanations and CLI wiring under the
+standing five-change review policy. No push or new drill is proposed here.

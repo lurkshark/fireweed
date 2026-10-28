@@ -8,29 +8,27 @@ cleanup complete. It reports an error-prefix contract gap and its agent read
 dependent internals, so strict independence acceptance is not established; see
 [the reviewed report](reports/contracts-drill.md). No gap fix or repeat drill is
 authorized. 0069 now implements recipe-based initialization through NEW.
-**Applied since review: 0; explicit one-time phase repair approved.** The owner-approved 0070
-correction and scoped re-review passed and were pushed at e083c5f. The next
-change, 0071 doctor-probes, originally blocked in evals after two audit findings
-rounds with CHK-065's default-timeout assertion missing. Its first auditor exceeded
-the input boundary and temporarily
-edited implementation; the controller rejected that edit and it was restored.
-See [the block report](reports/doctor-0071-block.md). The approved saved-attempt
-recovery added the real default-timeout eval in d78d618 (255 phase cases: 29
-runtime failures, 226 passes). A fresh restricted audit reviewed all doctor IDs
-without implementation access and no longer reports CHK-065, but reported eight
-other assertion gaps. The controller blocked 0071 in audit at a81b723, retaining
-audit_rounds 2 and both saved refs. The owner now approves one bounded correction
-of the eight outstanding IDs, preserving the timeout test and prior passes, with
-restricted re-review of only those IDs. Use the native saved eval attempt; if it
-cannot restore evals without changing bounds, stop before editing frozen tests.
-Native start from saved eval attempt 1 succeeded but retained phase audit; it
-does not rewind the committed step. Per the approved stop condition, no frozen
-test was edited and no worker/auditor launched. Native block 4c8439b released the
-claim and retained ref 3 as well as refs 1/2. The eight-ID correction scope is
-approved. The owner now explicitly approves the one-time controller-owned-phase
-exception: author repair audit to evals, with counters/history intact, followed
-by normal controller ownership and the scoped eight-ID correction/re-review.
-No doctor implementation was applied; the full goal remains incomplete.
+**Applied since review: 0; 0071 is blocked in implementation.** The owner-approved
+0070 correction and scoped re-review passed and were pushed at e083c5f. The
+explicit one-time phase repair was completed at c7daac7, preserving counters and
+history. The approved eight-ID eval correction committed ebf127f (260 phase
+cases: 34 runtime failures, 226 passes; 71 own cases, 37 existing passes). Its
+restricted re-review found no remaining findings for those eight IDs. Combined
+with the valid prior thirteen passes, native audit commit 8cafea6 advanced 0071
+to implementation with audit_rounds 2 unchanged. See
+[the block report](reports/doctor-0071-block.md) for recovery provenance and the
+resolved warning-producer clarification.
+
+The configured Sol/high implementation worker completed. With the available Git
+2.53.0 on PATH, its controller quick check passed all 71 own cases, including
+the real three-minute default-timeout case; a focused rerun after its final edit
+also passed. The frozen scratch-cleanup helper uses a Git flag unsupported by
+the default Apple Git 2.30.1. The coordinator interrupted the controller to
+switch the verification toolchain. Native execution exited 3 with a checks-hook
+timeout and interruption, made block commit ed8a9c7, retained implementation in
+saved attempt 4 (9268b52), restored the committed tree and released the claim.
+Full implementation verification/application has not passed. No Doctor feature
+was applied or further push performed; the full goal remains incomplete.
 
 The owner's goal update authorizes a subagent review at every five applied
 changes: push to origin and continue when the review finds the work on track, and
@@ -239,12 +237,15 @@ acceptance remains unverified. No gap fix/rerun is authorized or performed.
 
 ## Next
 
-Perform the explicitly approved one-time phase-only repair, then the
-[eight-ID correction](reports/doctor-0071-block.md) and restricted re-review.
-Retain prior passes, the real default-timeout test, counters, requirements and
-history. All subsequent phase commits remain controller-owned. No replacement
-or bound change is authorized; further unresolved findings stop for human review.
-The following sequence remains planned after a passing correction/re-review:
+Stop for the current blocked-change checkpoint. Proposed recovery requires
+human approval: remove only the interruption block, use native start from saved
+attempt 4, and finish full controller verification/application with the existing
+Git 2.53.0 directory on PATH. Preserve frozen evals/interface, audit_rounds 2,
+run/IDs, requirements and all saved refs/history. No phase exception or bounds
+change is needed or proposed. Any unresolved failure stops for human review.
+After 0071 passes, correct the demonstrated frozen-helper Git portability issue
+through a normal checks eval_fix, preserving its assertions, before assets
+explanations and app doctor wiring. The broader sequence remains:
 
 0. The owner-approved 0070 explanation correction and checkpoint re-review pass.
    The authorized push reached e083c5f; continue Milestone 2. The original block,
