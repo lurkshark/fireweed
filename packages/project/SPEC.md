@@ -33,7 +33,7 @@ Project MUST apply pending changes through the named change inclusively, or the 
 Stamp MUST write the canonical SpecHash of each Modified/Removed item from the projection preceding the target change into its bases. It MUST reject IDs absent from that projection and preserve other frontmatter and human sections. Stamping an Added-only change MUST succeed without assigning IDs.
 
 ### PRJ-007
-Check MUST reject missing Motivation, non-normative spec bodies, invalid review/quarantine tags, duplicate or foreign module IDs, duplicate edit identities within a change and references to undeclared handles. It MUST reject missing/stale bases and Modified/Removed IDs absent from the preceding projection. Check results MUST have no error diagnostics for valid module specs/changes, and nonempty C01 code/message diagnostics for failures.
+Check MUST return no error diagnostics for valid module specs and changes. Each failure diagnostic MUST have a nonempty code and message.
 
 ### PRJ-008
 Check MUST reject a pending change without a nonempty Motivation section.
@@ -49,5 +49,17 @@ Check MUST reject duplicate spec IDs within a module's Specs section.
 
 ### PRJ-012
 Check MUST reject module spec IDs and change edit IDs whose prefix belongs to another module.
+
+### PRJ-013
+Check MUST reject a change that uses the same edit identity more than once across Added, Modified and Removed.
+
+### PRJ-014
+Check MUST reject a pending change that references a handle absent from that change's Added entries.
+
+### PRJ-015
+Check MUST reject Modified or Removed entries whose bases hash is missing or differs from the preceding projected spec's canonical hash.
+
+### PRJ-016
+Check MUST reject Modified or Removed IDs absent from the projection preceding the change.
 
 ## Decisions
