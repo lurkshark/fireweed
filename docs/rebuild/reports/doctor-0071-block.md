@@ -49,9 +49,9 @@ interrupt found the controller process already gone; no signal was delivered.
 The native block is the authoritative stopping state. No ref, attempt bound,
 audit bound or approved change body was altered by the coordinator.
 
-## Proposed recovery — not authorized yet
+## Approved bounded recovery — 2026-10-28
 
-Approve one bounded recovery of this same change through the controller's saved
+The owner approved the following plan. Perform one bounded recovery of this same change through the controller's saved
 attempt mechanism, retaining the audit-round history and saved ref. Add a real
 default-timeout eval: with request Timeout zero, one local fake command runs
 longer than three minutes and the other returns immediately; assert C15 timeout
@@ -63,6 +63,11 @@ restricted audit of all CHK-049–069 from only the change, projected specs, eva
 retained interface and governing audit rules. This is an explicit human process
 repair, not an implicit scope or round reset. Any further unresolved finding
 stops for human review. Preserve the original logs, findings and counters.
-Do not continue implementation or push before this recovery is approved and its
-required checks/audit pass. Doctor diagnostic explanations and app wiring remain
+Do not continue implementation or push before the required checks/audit pass.
+Use separate Sol/high CLI worker and auditor invocations; coordinate phase
+advancement with the pinned controller, which alone owns commits. Supply the
+fresh auditor an isolated directory containing only its permitted inputs and
+inspect its invocation log before accepting the result. No global audit bounds,
+attempt limits or product requirements are changed by this recovery.
+Doctor diagnostic explanations and app wiring remain
 planned; no drill or deferred contracts-gap change is authorized.
