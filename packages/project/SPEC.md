@@ -51,16 +51,16 @@ Check MUST reject duplicate spec IDs within a module's Specs section with diagno
 Check MUST reject module spec IDs and change edit IDs whose prefix belongs to another module with diagnostic C05.
 
 ### PRJ-013
-Check MUST reject a change that uses the same edit identity more than once across Added, Modified and Removed.
+Check MUST reject a change that uses the same edit identity more than once across Added, Modified and Removed with diagnostic C05.
 
 ### PRJ-014
-Check MUST reject a pending change that references a handle absent from that change's Added entries.
+Check MUST reject a pending change that references a handle absent from that change's Added entries with diagnostic C09.
 
 ### PRJ-015
-Check MUST reject Modified or Removed entries whose bases hash is missing or differs from the preceding projected spec's canonical hash.
+Check MUST reject Modified or Removed entries whose bases hash is missing or differs from the preceding projected spec's canonical hash with diagnostic C08.
 
 ### PRJ-016
-Check MUST reject Modified or Removed IDs absent from the projection preceding the change.
+Check MUST reject Modified or Removed IDs absent from the projection preceding the change with diagnostic C08.
 
 ### PRJ-017
 Load MUST inherit an omitted module zone field from module_defaults while retaining an explicitly empty module zone list as empty.

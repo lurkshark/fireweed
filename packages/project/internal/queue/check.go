@@ -72,7 +72,7 @@ func Check(root string) []model.Diagnostic {
 		} {
 			for _, item := range group.items {
 				if seen[item.ID] {
-					add(path, "duplicate edit identity "+item.ID)
+					addCode("C05", path, "duplicate edit identity "+item.ID)
 				}
 				seen[item.ID] = true
 				if !strings.HasPrefix(item.ID, "new:") && !strings.HasPrefix(item.ID, modulePrefix(snapshot, change.Module)+"-") {
@@ -83,7 +83,7 @@ func Check(root string) []model.Diagnostic {
 		}
 		for _, ref := range handleReference.FindAllString(change.Document.Body, -1) {
 			if !declared[ref] {
-				add(path, "reference to undeclared handle "+ref)
+				addCode("C09", path, "reference to undeclared handle "+ref)
 			}
 		}
 		var bases map[string]any
@@ -93,18 +93,23 @@ func Check(root string) []model.Diagnostic {
 		for _, item := range append(append([]contracts.Item{}, change.Modified...), change.Removed...) {
 			base, ok := p.find(change.Module, item.ID)
 			if !ok {
-				add(path, "ID "+item.ID+" absent from preceding projection")
+				addCode("C08", path, "ID "+item.ID+" absent from preceding projection")
 				continue
 			}
 			got, ok := bases[item.ID].(string)
 			if !ok || got == "" {
-				add(path, "missing base for "+item.ID)
+				addCode("C08", path, "missing base for "+item.ID)
 			} else if got != contracts.SpecHash(base) {
-				add(path, "stale base for "+item.ID)
+				addCode("C08", path, "stale base for "+item.ID)
 			}
 		}
 		if err := p.apply(change); err != nil {
-			add(path, err.Error())
+			message := err.Error()
+			if (strings.HasPrefix(message, path+": Modified ID ") || strings.HasPrefix(message, path+": Removed ID ")) && strings.HasSuffix(message, " absent from preceding projection") {
+				addCode("C08", path, message)
+			} else {
+				add(path, message)
+			}
 		}
 	}
 	return diagnostics
