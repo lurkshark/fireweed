@@ -105,4 +105,19 @@ ParseJUnit MUST map testcase name and classname to current spec IDs using contra
 ### CHK-030
 ParseJUnit MUST classify failure and error elements as fail, and skipped elements as skip.
 
+### CHK-031
+Evaluate MUST prefer a module's eval hook override over the global eval hook.
+
+### CHK-032
+Evaluate MUST expand module, module_dir and report placeholders once in shell strings or argv, quoting substituted shell values.
+
+### CHK-033
+Evaluate MUST set the hook's FIREWEED_BIN environment variable to the request Bin.
+
+### CHK-034
+Evaluate MUST retain the hook process's stdout, stderr and exit code in its returned report.
+
+### CHK-035
+Evaluate MUST parse the hook's written JUnit report into the returned report's cases.
+
 ## Decisions
