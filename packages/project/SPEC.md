@@ -92,4 +92,19 @@ NewChange MUST reject an unknown target module.
 ### PRJ-026
 NewChange MUST reject an empty slug or a slug containing characters other than lowercase letters, digits and hyphens.
 
+### PRJ-027
+Queue MUST return pending NNNN-slug.md changes in numeric-then-slug order, allowing tied numbers and excluding archives.
+
+### PRJ-028
+Queue MUST return each pending change's module, frontmatter and parsed Added, Modified and Removed items.
+
+### PRJ-029
+Queue MUST reject a malformed pending change document.
+
+### PRJ-030
+Queue MUST reject a pending change naming an unknown module.
+
+### PRJ-031
+Queue MUST reject pending changes that share a slug.
+
 ## Decisions
