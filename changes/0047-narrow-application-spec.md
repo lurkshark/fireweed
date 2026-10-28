@@ -1,11 +1,14 @@
 ---
 already_satisfied:
     - FLOW-004
-    - new:apply-static-validation
-    - new:archive-application-commit
+    - FLOW-049
+    - FLOW-050
+audit_rounds: 0
 bases:
     FLOW-004: "103006e6"
 module: workflow
+phase: audit
+run: 20261028T060306-e0fe15b43c2f8421a76d5286
 ---
 
 
@@ -24,10 +27,10 @@ already satisfies all these obligations.
 
 ## Added
 
-### new:apply-static-validation
+### FLOW-049
 Impl Done MUST require the applied project to pass static validation before committing.
 
-### new:archive-application-commit
+### FLOW-050
 Successful impl Done MUST move the active change to the archive with phase applied and commit it together with the application.
 
 ## Modified
@@ -54,3 +57,7 @@ retaining FLOW-003/024/048 and its injected invalid-spec failure assertions.
 Keep all other IDs and every assertion. No new Test functions, t.Run cases,
 fixture instances or helpers; retain 32 workflow cases. No product code or
 interface changes. Implementation may edit only this change file.
+
+## Provenance
+
+- evals 2026-10-28T06:06:20.196059Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=118 failing=0 passing=118

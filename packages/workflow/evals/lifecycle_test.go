@@ -703,7 +703,7 @@ func Test_FLOW_040_FLOW_042_FLOW_043_UntestableFindingBlocksWithQuestion(t *test
 	}
 }
 
-func Test_FLOW_004_FLOW_028_FLOW_044_FLOW_045_FLOW_046_FLOW_047_ImplDoneAppliesSpecsSetAndDecisionsAndArchives(t *testing.T) {
+func Test_FLOW_004_FLOW_028_FLOW_044_FLOW_045_FLOW_046_FLOW_047_FLOW_050_ImplDoneAppliesSpecsSetAndDecisionsAndArchives(t *testing.T) {
 	root := fixture(t, "audit:\n  enabled: false\nverify_dependents: none\n", "set:\n  interface: [api.go, extra.go]\n  hooks:\n    eval: [sh, .fireweed/eval.sh, \"{module}\", \"{report}\"]\n", "### new:extra [review]\nExtra MUST be visible.\n", "", "### ALP-002\n")
 	p := filepath.Join(root, ".fireweed/eval.sh")
 	b, _ := os.ReadFile(p)
@@ -750,6 +750,15 @@ func Test_FLOW_004_FLOW_028_FLOW_044_FLOW_045_FLOW_046_FLOW_047_ImplDoneAppliesS
 	if err != nil {
 		t.Fatal(err)
 	}
+	appliedHead := head(t, root)
+	archiveAtHead, err := gitstore.ReadAt(root, appliedHead, "changes/archive/0001-manual.md")
+	if err != nil || string(archiveAtHead) != string(archive) {
+		t.Errorf("applied HEAD lacks archived change: %q, %v", archiveAtHead, err)
+	}
+	specAtHead, err := gitstore.ReadAt(root, appliedHead, "packages/alpha/SPEC.md")
+	if err != nil || string(specAtHead) != string(spec) {
+		t.Errorf("applied HEAD lacks applied spec: %q, %v", specAtHead, err)
+	}
 	moduleDoc, err := contracts.ParseDocument(string(spec))
 	if err != nil {
 		t.Fatal(err)
@@ -786,7 +795,7 @@ func Test_FLOW_004_FLOW_028_FLOW_044_FLOW_045_FLOW_046_FLOW_047_ImplDoneAppliesS
 	}
 }
 
-func Test_FLOW_003_FLOW_004_FLOW_024_FLOW_048_FailedDoneKeepsPhaseAndHead(t *testing.T) {
+func Test_FLOW_003_FLOW_024_FLOW_048_FLOW_049_FailedDoneKeepsPhaseAndHead(t *testing.T) {
 	root := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
 	hookPath := filepath.Join(root, ".fireweed/eval.sh")
 	hook, err := os.ReadFile(hookPath)
