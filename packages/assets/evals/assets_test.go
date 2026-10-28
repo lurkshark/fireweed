@@ -98,8 +98,10 @@ func Test_AST_003_Explanations(t *testing.T) {
 		}
 		requirePattern(t, text, `(?i)(foreign|wrong module|wrong prefix)[^.\n]*(ID|identifier)|(ID|identifier)[^.\n]*(foreign|wrong module|wrong prefix)`, "foreign spec ID")
 		requirePattern(t, text, `(?i)duplicat[^.\n]*(ID|identifier)|(ID|identifier)[^.\n]*duplicat`, "duplicate spec ID")
+		requirePattern(t, text, `(?i)duplicat[^.\n]*edit|repeated[^.\n]*edit`, "duplicate edit identity")
 		requirePattern(t, text, `(?i)(use|change|replace|correct|assign|rename)[^.\n]*(module|prefix)`, "corrective action for foreign spec IDs")
 		requirePattern(t, text, `(?i)(use|change|replace|correct|assign|rename)[^.\n]*(unique|distinct|unused)`, "corrective action for duplicate spec IDs")
+		requirePattern(t, text, `(?i)(remove|combine|merge)[^.\n]*(repeated|duplicate)[^.\n]*edit`, "corrective action for duplicate edits")
 	})
 	t.Run("C06", func(t *testing.T) {
 		text, err := assets.Explain("C06")
@@ -116,6 +118,61 @@ func Test_AST_003_Explanations(t *testing.T) {
 		}
 		requirePattern(t, text, `(?i)(missing|empty|absent)[^.\n]*Motivation`, "missing change Motivation")
 		requirePattern(t, text, `(?i)(add|write|fill|provide|complete)[^.\n]*Motivation`, "corrective action to provide Motivation")
+	})
+	t.Run("C08", func(t *testing.T) {
+		text, err := assets.Explain("C08")
+		if err != nil {
+			t.Fatalf("Explain(C08): %v", err)
+		}
+		requirePattern(t, text, `(?i)missing[^.\n]*base|base[^.\n]*missing`, "missing edit base")
+		requirePattern(t, text, `(?i)stale[^.\n]*base|base[^.\n]*stale`, "stale edit base")
+		requirePattern(t, text, `(?i)(absent|missing|not found)[^.\n]*(target|ID|spec)[^.\n]*(preceding|projection)|(target|ID|spec)[^.\n]*(absent|missing|not found)[^.\n]*(preceding|projection)`, "target absent from preceding projection")
+		requirePattern(t, text, `(?i)(stamp|update|refresh|correct|fix)[^.\n]*base`, "corrective action for edit base")
+		requirePattern(t, text, `(?i)(correct|change|remove|drop|rebase)[^.\n]*(target|ID|edit|change)`, "corrective action for absent target")
+	})
+	t.Run("C09", func(t *testing.T) {
+		text, err := assets.Explain("C09")
+		if err != nil {
+			t.Fatalf("Explain(C09): %v", err)
+		}
+		requirePattern(t, text, `(?i)(undeclared|undefined|not declared)[^.\n]*handle`, "undeclared handle reference")
+		requirePattern(t, text, `(?i)(declare|add)[^.\n]*(handle|Added)|(correct|change|remove)[^.\n]*reference`, "corrective action for undeclared handle")
+	})
+	t.Run("X01", func(t *testing.T) {
+		text, err := assets.Explain("X01")
+		if err != nil {
+			t.Fatalf("Explain(X01): %v", err)
+		}
+		requirePattern(t, text, `(?i)boundar[^.\n]*violation|violation[^.\n]*boundar`, "boundary violation")
+		requirePattern(t, text, `(?i)(fix|remove|change|correct)[^.\n]*(import|dependenc|violation)|(declare|add)[^.\n]*dependenc`, "corrective action for boundary violation")
+	})
+	t.Run("X02", func(t *testing.T) {
+		text, err := assets.Explain("X02")
+		if err != nil {
+			t.Fatalf("Explain(X02): %v", err)
+		}
+		requirePattern(t, text, `(?i)(required|needed)[^.\n]*boundar[^.\n]*hook[^.\n]*(missing|absent)|(missing|absent)[^.\n]*(required|needed)[^.\n]*boundar[^.\n]*hook`, "missing required boundary hook")
+		requirePattern(t, text, `(?i)hook[^.\n]*(fail|timeout|timed out|cancel|not complete|did not complete)|(fail|timeout|timed out|cancel|not complete|did not complete)[^.\n]*hook`, "boundary hook did not complete")
+		requirePattern(t, text, `(?i)(configure|add|provide)[^.\n]*hook`, "corrective action for missing hook")
+		requirePattern(t, text, `(?i)(fix|repair|rerun|check)[^.\n]*hook`, "corrective action for incomplete hook")
+	})
+	t.Run("X03", func(t *testing.T) {
+		text, err := assets.Explain("X03")
+		if err != nil {
+			t.Fatalf("Explain(X03): %v", err)
+		}
+		requirePattern(t, text, `(?i)warn`, "boundary opt-out warning")
+		requirePattern(t, text, `(?i)boundar[^.\n]*opt.out[^.\n]*reason|reason[^.\n]*boundar[^.\n]*opt.out`, "reasoned boundary opt-out")
+		requirePattern(t, text, `(?i)(review|revisit|remove)[^.\n]*(reason|opt.out)|(configure|add)[^.\n]*hook`, "corrective action for boundary opt-out")
+	})
+	t.Run("X04", func(t *testing.T) {
+		text, err := assets.Explain("X04")
+		if err != nil {
+			t.Fatalf("Explain(X04): %v", err)
+		}
+		requirePattern(t, text, `(?i)warn`, "unnecessary boundary enforcement warning")
+		requirePattern(t, text, `(?i)(no|none)[^.\n]*boundar[^.\n]*enforcement[^.\n]*(required|needed)|(no|none)[^.\n]*module[^.\n]*(requires?|needs?)[^.\n]*boundar`, "no boundary enforcement required")
+		requirePattern(t, text, `(?i)(no (action|fix|change)|leave[^.\n]*hook[^.\n]*absent)|(configure|add)[^.\n]*hook[^.\n]*(if|when)[^.\n]*need`, "action appropriate when enforcement is unnecessary")
 	})
 	t.Run("P2-01", func(t *testing.T) {
 		text, err := assets.Explain("P2-01")

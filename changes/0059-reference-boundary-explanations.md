@@ -1,7 +1,10 @@
 ---
+audit_rounds: 0
 bases:
     AST-003: 63d2d29a
 module: assets
+phase: audit
+run: 20261028T080146-819e3aba6c430abbfef92056
 ---
 
 
@@ -48,3 +51,7 @@ No new fixture/helper infrastructure, instrumentation or unused explanations.
 The newly supported codes must genuinely fail before implementation. Add only
 explanation text and the scoped C05 clarification; preserve recipes/playbooks
 and all other product behavior. Controller owns specs, commits and archive.
+
+## Provenance
+
+- evals 2026-10-28T08:04:31.344119Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=230 failing=8 passing=222
