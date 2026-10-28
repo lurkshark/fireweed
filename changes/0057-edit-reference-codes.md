@@ -1,10 +1,13 @@
 ---
+audit_rounds: 0
 bases:
     PRJ-013: 403da758
     PRJ-014: f84a2ce6
     PRJ-015: 76e385f9
     PRJ-016: 940ee23a
 module: project
+phase: audit
+run: 20261028T074742-dcbae3e58d8dd0936380dd2a
 ---
 
 
@@ -60,3 +63,7 @@ and absent preceding target paths, including existing projection-application
 errors for those absent targets. Preserve messages and error behavior, and leave
 other diagnostic causes unchanged. Do not implement missing features or create
 speculative errors. Controller owns spec application, commits and archive.
+
+## Provenance
+
+- evals 2026-10-28T07:51:45.052296Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=200 failing=7 passing=193
