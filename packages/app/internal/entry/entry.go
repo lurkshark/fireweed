@@ -25,7 +25,7 @@ type envelope struct {
 }
 
 var pending = map[string]bool{
-	"init": true, "doctor": true,
+	"doctor":     true,
 	"new-module": true,
 	"list":       true, "status": true,
 	"check-commits": true, "ci": true, "pr-body": true,
@@ -35,6 +35,9 @@ var pending = map[string]bool{
 }
 
 func Run(args []string, out, errOut io.Writer) int {
+	if isInitRequest(args) {
+		return runInit(args, out, errOut)
+	}
 	jsonMode := false
 	projected := false
 	quick := false

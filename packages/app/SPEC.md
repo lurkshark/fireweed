@@ -140,4 +140,69 @@ Existing operational precondition failures without a more specific D006 cause MU
 ### APP-040
 For workflow or checks failures carrying an assigned code, the CLI MUST preserve that code and reported warnings.
 
+### APP-041
+init MUST create fireweed.yaml in the current directory with format version 1, a binary range containing assets.Version, base main, remote origin and modules [packages/*].
+
+### APP-042
+init MUST write the selected recipe's module_defaults, hooks, protected and worker_writable values into the generated configuration.
+
+### APP-043
+init MUST create an editable SYSTEM.md project scaffold when absent and retain an existing SYSTEM.md unchanged.
+
+### APP-044
+init MUST create or update the fireweed managed AGENTS.md block, pointing to author-change and context, while preserving text outside the markers.
+
+### APP-045
+init --recipe go MUST copy assets.BuiltinRecipe(go)'s Files into their project-relative destinations without changing their contents.
+
+### APP-046
+Successful init MUST print the selected recipe's instructions on stdout and return exit 0 with empty stderr.
+
+### APP-047
+init --recipe none MUST write minimal setup without language hooks, templates or canaries and print the eval, boundaries and setup hook contract.
+
+### APP-048
+init --recipe ./directory MUST load recipe.yaml module_defaults, hooks, protected and worker_writable metadata and recipe.md instructions from that directory.
+
+### APP-049
+init with a local recipe MUST copy the directory's files/ contents into matching project-relative destinations and copy its instructions to .fireweed/recipes/local.md.
+
+### APP-050
+By default init MUST create a normal packages/app module named app with prefix APP and no dependencies, rendering available module templates with name app, prefix APP and package app.
+
+### APP-051
+init --no-app MUST skip creation of the app module.
+
+### APP-052
+When the selected recipe supplies no module templates, init MUST create a minimal app SPEC.md with empty Specs and Decisions sections.
+
+### APP-053
+init MUST configure codex or claude command presets, or preserve a custom agent command template containing {prompt}, in agent.command.
+
+### APP-054
+init MUST enable audit by default and write a separately selected --audit-agent command when supplied, otherwise leaving audit.command unset for agent fallback.
+
+### APP-055
+init MUST reject missing --recipe or --agent values, malformed options or extra positional arguments with corrective U01 and exit 2 before creating files; missing-input messages MUST list valid recipe and agent choices.
+
+### APP-056
+init MUST return U02 and exit 2 for an unknown recipe name, C03 for unreadable or malformed local recipe documents, and C12 for invalid local recipe metadata types, without creating setup files.
+
+### APP-057
+init MUST refuse an existing fireweed.yaml with P01 and exit 2, preserving existing project files.
+
+### APP-058
+init MUST refuse conflicting generated recipe or module files with P01 and exit 2 rather than overwrite them.
+
+### APP-059
+init MUST retain existing .gitignore entries and ensure .fireweed/runs/ is ignored so lifecycle reports do not become forbidden worktree edits.
+
+### APP-060
+init MUST copy setup and print instructions without executing configured agents or hooks.
+
+### APP-061
+init --json MUST return schema 1 with instruction text as string data and empty diagnostics on success, or null data and code/message diagnostics on failure, with empty stderr.
+
 ## Decisions
+
+[0069-project-initialization] Init accepts codex and claude presets as argv commands; other selections are shell command templates containing {prompt}, stored as strings for one-pass quoted substitution when execution is implemented. Local recipes use recipe.yaml metadata, recipe.md instructions and a files/ project-relative payload; none uses empty language defaults and a generic module scaffold.
