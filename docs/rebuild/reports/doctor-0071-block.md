@@ -255,3 +255,13 @@ After a pass, use a normal checks eval_fix to make the scratch helper use portab
 git rev-parse --git-common-dir and resolve its path in Go, retaining assertions
 and coverage. Then continue emitted-code explanations and CLI wiring under the
 standing five-change review policy. No push or new drill is proposed here.
+
+## Saved attempt 4 recovery explicitly approved — 2026-10-28
+
+The owner approved native recovery of saved attempt 4 with Git 2.53.0, completion
+of full verification, then the normal helper-portability eval_fix and continued
+main-goal work. Remove only the interruption block; retain phase impl, counters,
+run/IDs, frozen evals/interface and all saved refs/history. No further phase-write
+exception, bounds change or direct source copy is needed. Use the pinned
+controller for required full verification, application and archive. Continue the
+standing five-change subagent review/push policy; new blocks still stop.

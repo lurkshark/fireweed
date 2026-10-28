@@ -8,7 +8,7 @@ cleanup complete. It reports an error-prefix contract gap and its agent read
 dependent internals, so strict independence acceptance is not established; see
 [the reviewed report](reports/contracts-drill.md). No gap fix or repeat drill is
 authorized. 0069 now implements recipe-based initialization through NEW.
-**Applied since review: 0; 0071 is blocked in implementation.** The owner-approved
+**Applied since review: 0; saved attempt 4 recovery explicitly approved.** The owner-approved
 0070 correction and scoped re-review passed and were pushed at e083c5f. The
 explicit one-time phase repair was completed at c7daac7, preserving counters and
 history. The approved eight-ID eval correction committed ebf127f (260 phase
@@ -237,10 +237,9 @@ acceptance remains unverified. No gap fix/rerun is authorized or performed.
 
 ## Next
 
-Stop for the current blocked-change checkpoint. Proposed recovery requires
-human approval: remove only the interruption block, use native start from saved
-attempt 4, and finish full controller verification/application with the existing
-Git 2.53.0 directory on PATH. Preserve frozen evals/interface, audit_rounds 2,
+The owner approved recovery of the current blocked change: remove only the
+interruption block, use native start from saved attempt 4, and finish full
+controller verification/application with the existing Git 2.53.0 directory on PATH. Preserve frozen evals/interface, audit_rounds 2,
 run/IDs, requirements and all saved refs/history. No phase exception or bounds
 change is needed or proposed. Any unresolved failure stops for human review.
 After 0071 passes, correct the demonstrated frozen-helper Git portability issue
