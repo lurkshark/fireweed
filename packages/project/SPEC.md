@@ -24,7 +24,7 @@ ValidateGraph MUST return nil for a valid graph and an explanatory error identif
 NewChange MUST create a queued Markdown skeleton for an existing module with Motivation, Interface, Added, Modified, Removed and Decisions sections, containing no assigned spec IDs.
 
 ### PRJ-004
-Queue MUST read pending NNNN-slug.md documents in numeric-then-slug order, allowing tied numbers and excluding archives. It MUST return each change's module, frontmatter and parsed Added/Modified/Removed items, rejecting malformed documents, unknown modules and ambiguous slugs. A change argument MUST resolve its unique slug, queued basename or repository-relative queued path, rejecting missing or ambiguous targets.
+Project and Stamp MUST resolve a change argument from its unique slug, queued basename or repository-relative queued path, rejecting missing or ambiguous targets.
 
 ### PRJ-005
 Project MUST apply pending changes through the named change inclusively, or the whole queue when through is empty, preserving Added/Modified full text and removing Removed items. It MUST apply set values for depends_on, interface, evals, disposable, preserve, append_only, boundaries_opt_out and hooks, rejecting identity/unknown fields and an invalid projected graph. Added handles MUST remain local to their declaring change; different changes may reuse handle text.
