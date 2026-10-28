@@ -3,7 +3,7 @@
 ## Current status — 2026-10-27
 
 Human review 8 approved 0032–0034; the authorized push synchronized main and
-origin/main at 16cc688 and cleared P07. **Applied since review: 0.** Resume
+origin/main at 16cc688 and cleared P07. **Applied since review: 1.** Resume
 the remaining previously identified bundled specs; PRJ-004–006 are complete.
 
 The owner's goal update authorizes a subagent review at every five applied
@@ -102,6 +102,8 @@ push and continuation. The applied count restarts after this passing review.
 splits. Subagent checkpoint_0040_0044 returned PASS with no issues. The explicit
 baseline history check passed over 258 commits, authorizing the conditional
 push and continuation. The applied count restarts after this passing review.
+
+- 0045 narrow-boundary-hook-spec — CHK-005/044–045; 8d23fd6/cb9e161/ab79c6c; 28 own cases and 146 total phase cases pass; no findings, implementation unchanged.
 
 ## Next
 
