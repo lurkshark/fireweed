@@ -3,7 +3,7 @@
 ## Current status — 2026-10-27
 
 Human review 8 approved 0032–0034; the authorized push synchronized main and
-origin/main at 16cc688 and cleared P07. **Applied since review: 2.** Resume
+origin/main at 16cc688 and cleared P07. **Applied since review: 3.** Resume
 the remaining previously identified bundled specs; PRJ-004–006 are complete.
 
 The owner's goal update authorizes a subagent review at every five applied
@@ -128,6 +128,8 @@ authorizes the push and continuation; the applied count restarts after review.
 - 0050 split-git-primitive-apis — GIT-003/004/006–010; d0179bd/bf6acb6/3519faa; seven affected items, eight own cases and 207 total phase cases pass; no findings, assertions and implementation unchanged.
 
 - 0051 split-asset-contracts — AST-001/002/004–023; c9210cf/0d856fc/40cceb7; 22 affected items, 20 own cases and 219 total phase cases pass; no findings, assertions/fixtures and implementation unchanged.
+
+- 0052 split-authoring-cli-contracts — APP-003–008/013–026; evals ff54a43/4ad8388, audits 56a829c/bcc1400, impl ed94c03; 20 affected items, one findings round, 86 cases pass; existing zone-array assertion strengthened, implementation/diagnostics unchanged.
 
 ## Next
 
