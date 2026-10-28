@@ -40,6 +40,10 @@ func Playbook(name string) (string, error) {
 
 var explanations = map[string]string{
 	"C01":   "The project configuration is invalid: fireweed.yaml is missing or has an invalid required setting. Edit the configuration file to correct the reported field, then run fireweed check again.",
+	"C04":   "The spec item is non-normative because its body lacks MUST or SHOULD wording. Rewrite the spec with a MUST or SHOULD requirement that states the expected behavior.",
+	"C05":   "A spec ID uses a foreign module prefix or duplicates another ID. Change a foreign ID to use the owning module prefix, and assign a unique unused ID for a duplicate.",
+	"C06":   "The spec has an invalid review or quarantine tag. Correct the tag to use a valid review or quarantine form, or remove it.",
+	"C07":   "The change has a missing Motivation section or its body is empty. Add a Motivation explaining the user-visible or design need for the change.",
 	"P2-01": "Genuine fail-first evidence is missing for an assigned spec ID: its new eval did not fail against the pre-implementation code. Write or correct a test assertion for the specified behavior, rerun the eval before implementing it, and record the failing result.",
 }
 

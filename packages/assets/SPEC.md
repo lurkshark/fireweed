@@ -19,9 +19,7 @@ Version MUST return 0.1.0.
 Playbook MUST return nonempty instructions for author-change, evals, audit, impl and regenerate, and reject unknown names.
 
 ### AST-003
-Explain MUST describe the cause and a corrective action for C01 (invalid project
-configuration) and P2-01 (missing genuine fail-first evidence). Explain MUST
-reject unknown codes.
+Explain MUST describe the cause and a corrective action for C01 (invalid project configuration), C04 (non-normative spec text), C05 (foreign or duplicate spec IDs), C06 (invalid spec tags), C07 (missing change Motivation) and P2-01 (missing genuine fail-first evidence). Explain MUST reject unknown codes.
 
 ### AST-004
 BuiltinRecipe MUST return the embedded Go recipe for go and reject unknown names.
