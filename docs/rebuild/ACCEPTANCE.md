@@ -244,3 +244,9 @@ before another change. Four changes were applied since the explicit review at
   [passing checkpoint review](reports/checkpoint-0045-0049.md) and PROGRESS
   for actual phase counts and approved execution-policy changes. Remaining
   gitstore/assets/app splits and D006 migration still precede the contracts drill.
+
+- R02/R04/R05/R06/R17 refinement: 0050–0053 split gitstore/assets/app contracts
+  with existing obligations and assertions retained. 0054 repairs PRJ-007's
+  stale blanket C01 eval comparisons; exact cause migration remains pending.
+  See the [passing checkpoint review](reports/checkpoint-0050-0054.md) and
+  PROGRESS for phases and counts. This establishes no remaining acceptance gate.

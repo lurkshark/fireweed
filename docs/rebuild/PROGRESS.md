@@ -2,9 +2,10 @@
 
 ## Current status — 2026-10-28
 
-Human review 8 approved 0032–0034; the authorized push synchronized main and
-origin/main at 16cc688 and cleared P07. **Applied since review: 4.** Resume
-the remaining previously identified bundled specs; PRJ-004–006 are complete.
+The 0050–0054 checkpoint review passed with no issues and its explicit baseline
+history check passed over 316 commits. The owner approves pushing this slice.
+**Applied since review: 0.** The identified spec splits are complete; continue
+D006 on existing error paths after synchronizing origin/main.
 
 The owner's goal update authorizes a subagent review at every five applied
 changes: push to origin and continue when the review finds the work on track, and
@@ -133,9 +134,16 @@ authorizes the push and continuation; the applied count restarts after review.
 
 - 0053 split-lifecycle-cli-contracts — APP-009–012/027–036; evals 863b578/28baed4, audits 62d07a5/ca18597, impl 11cb39a; 14 affected items, one findings round, 86 cases pass; existing omitted-Done/blocked-Verify assertions completed, implementation unchanged.
 
+- 0054 repair-validation-code-assertions — eval_fix PRJ-007; aa756c5/7aa96d6/706ce7e; 53 own cases and 199 total phase cases pass; no findings, stale blanket C01 comparisons replaced with nonempty-code checks while retaining reason assertions; implementation unchanged.
+
+[0050–0054 checkpoint](reports/checkpoint-0050-0054.md): five applied changes.
+Subagent checkpoint_0050_0054 returned PASS with no issues. The explicit baseline
+history check passed over 316 commits, authorizing push and continuation. The
+applied count restarts after this passing review.
+
 ## Next
 
-1. Split permanent bundled behaviors through authored changes. Use already_satisfied and retarget existing evals; never hand-edit Specs/Decisions. FLOW-001/FLOW-002/FLOW-003/CHK-004/PRJ-001–007 are split. Human review 7 authorizes consecutive project splits for the remaining project bundles; PRJ-001–007 are now complete; other previously identified bundled specs remain. Human review 8 approves the P07 checkpoint and authorizes a push; verify the shared-base gate has cleared before resuming. Add atomic specs before narrowing an old item when one change cannot hold the full split.
+1. The previously identified project/checks/workflow/contracts/gitstore/assets/app splits are complete through 0053. All obligations and existing assertions are retained under focused specs; do not launch another global rewrite. Continue the agreed diagnostic migration.
 2. Apply D006 only to existing emitted error paths and behavior assertions, using eval_fix and normal implementation changes. Do not stub or implement unsupported features or speculative errors for codes. Keep explain accurate for implemented paths; unused allocations/tests/explanations wait for a justified feature change. Preserve assertions and coverage.
 3. Workflow file organization is not a Milestone 2 prerequisite. Defer splitting lifecycle/stub.go unless it causes a demonstrated problem during feature work; a later drill/regenerate may organize the implementation afresh. Do not substitute another speculative cleanup task.
 4. After items 1 and 2, run exactly one real controller drill on contracts. Commit its report and list gaps here; author no gap changes and drill no other module.
