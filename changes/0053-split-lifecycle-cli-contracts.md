@@ -14,14 +14,17 @@ already_satisfied:
     - APP-034
     - APP-035
     - APP-036
-audit_rounds: 0
+audit_pending:
+    - APP-010
+    - APP-029
+audit_rounds: 1
 bases:
     APP-009: 26729c7a
     APP-010: 8d083138
     APP-011: 4e8cec43
     APP-012: b9303680
 module: app
-phase: audit
+phase: evals
 run: 20261028T065728-9fe08d4bfed43e4d454a1b5c
 ---
 
@@ -94,6 +97,11 @@ coverage <module> MUST evaluate current specs, or the selected projection with -
 
 
 
+## Audit
+
+- APP-010: "verify [change] MUST invoke workflow with the actual invoking executable as Bin, returning 0 for success, 1 for failed checks or blocked state and 2 for usage or configuration errors; plain success names the resulting phase." — no assertion checks verify returning exit 1 from a blocked state.
+- APP-029: "done [change] MUST invoke full workflow.Done with the actual invoking executable as Bin, returning 0 for success, 1 for failed checks or blocked state and 2 for usage or configuration errors; plain success names the resulting phase." — no assertion invokes done with the optional change argument omitted.
+
 ## Notes
 
 Retarget existing lifecycle_cli_test.go labels only. Start context/assignment
@@ -113,3 +121,4 @@ may edit only this change file.
 ## Provenance
 
 - evals 2026-10-28T06:59:30.256213Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=86 failing=0 passing=86
+- audit 2026-10-28T07:01:14.036448Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
