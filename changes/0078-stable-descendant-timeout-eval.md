@@ -1,9 +1,12 @@
 ---
+audit_rounds: 0
 bases: {}
 eval_fix:
     - RUN-007
     - RUN-009
 module: runner
+phase: audit
+run: 20261028T231208-cfb868c63baddc1bfdad0dda
 ---
 
 
@@ -65,3 +68,7 @@ has no source work. The separate auditor receives only an isolated snapshot of
 change, projected specs, evals, public interfaces and governing rules. Review
 only RUN-007/RUN-009 and preserve prior passes. Any new block or unresolved issue
 stops for human review; no bound or phase-write exception is authorized.
+
+## Provenance
+
+- evals 2026-10-28T23:15:35.96126Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=178 failing=0 passing=178

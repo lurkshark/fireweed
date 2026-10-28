@@ -171,13 +171,13 @@ func Test_RUN_007_RUN_009_TimeoutSelectionAndCapturedOutput(t *testing.T) {
 
 func Test_RUN_007_RUN_009_TimeoutAndCancellationKillOrdinaryDescendant(t *testing.T) {
 	snap := agentFixture(t)
-	script := agentScript(t, snap.Root, "descendant.sh", `(sleep 1; printf child > "$2") & printf ready > "$1"; printf begun; printf warning >&2; wait`)
+	script := agentScript(t, snap.Root, "descendant.sh", `(sleep 5; printf child > "$2") & printf begun; printf warning >&2; printf ready > "$1"; wait`)
 	for _, mode := range []string{"timeout", "cancel"} {
 		t.Run(mode, func(t *testing.T) {
 			ready := filepath.Join(snap.Root, mode+"-ready")
 			marker := filepath.Join(snap.Root, mode+"-child-finished")
 			snap.Config["agent"] = map[string]any{"command": []any{script, ready, marker}}
-			snap.Config["timeout"] = "500ms"
+			snap.Config["timeout"] = "3s"
 			if mode == "cancel" {
 				snap.Config["timeout"] = "5s"
 			}
@@ -192,7 +192,7 @@ func Test_RUN_007_RUN_009_TimeoutAndCancellationKillOrdinaryDescendant(t *testin
 				result, err := runner.InvokeAgent(ctx, request(snap, "worker", ""))
 				done <- outcome{result, err}
 			}()
-			deadline := time.After(2 * time.Second)
+			deadline := time.After(4 * time.Second)
 			for {
 				if _, err := os.Stat(ready); err == nil {
 					break
@@ -213,10 +213,10 @@ func Test_RUN_007_RUN_009_TimeoutAndCancellationKillOrdinaryDescendant(t *testin
 				if got.err == nil || got.result.Stdout != "begun" || got.result.Stderr != "warning" {
 					t.Errorf("terminated agent = %#v, %v", got.result, got.err)
 				}
-			case <-time.After(2 * time.Second):
+			case <-time.After(4 * time.Second):
 				t.Fatal("terminated agent did not stop promptly")
 			}
-			time.Sleep(1200 * time.Millisecond)
+			time.Sleep(5200 * time.Millisecond)
 			if _, err := os.Stat(marker); !os.IsNotExist(err) {
 				t.Errorf("descendant completed after %s: stat error %v", mode, err)
 			}
