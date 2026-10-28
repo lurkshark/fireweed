@@ -336,3 +336,10 @@ before another change. Four changes were applied since the explicit review at
   doctor C14–C16 and existing init P01 failures. Six fail-first cases precede
   389 full phase passes at 8d27f34, with no independent audit findings. Doctor
   CLI wiring, bounded execution and full acceptance remain open.
+
+- R08/R11/R28 partial: 0074 exposes doctor and agents-md --write through NEW,
+  with 153 app passes after one scoped audit correction. The fresh Go/fake-agent
+  [CLI smoke](reports/doctor-setup-cli.md) at 19d2b31 passes doctor with and without
+  agents, exact surrounding-text preservation, explanation lookup and scratch
+  cleanup. This completes the currently scoped Go doctor setup slice; remaining
+  recipes, bounded next/run, real regeneration and final acceptance remain open.
