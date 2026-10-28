@@ -1,6 +1,7 @@
 ---
 audit_rounds: 0
 bases: {}
+blocked: frozen RUN-013/014 eval requires an unsupported implementation commit subject
 module: runner
 phase: impl
 run: 20261028T232748-8a17fd5f3261c7dfe4264076
@@ -119,3 +120,15 @@ No findings. Checked IDs: RUN-010, RUN-011, RUN-012, RUN-013, RUN-014, RUN-015.
 The independent Sol/high auditor reviewed an isolated snapshot of permitted
 inputs only; full command-log inspection confirms read-only supplied-file
 access without implementation/history reads or test execution.
+
+## Questions
+
+The implementation worker reached applied in the full lifecycle fixture, but
+the frozen Test_RUN_013_RUN_014_CompleteSpecChange at next_test.go:353 requires
+the third commit subject to contain impl. Existing workflow.Done emits
+feat(alpha): apply next. The design identifies implementation commits from
+phase state, not subjects. Correct this assertion through the approved
+controller-owned recovery/eval_fix path, retaining actual phase-transition,
+fail-first/pass, archive, provenance, SPEC and claim-release assertions. Do not
+change workflow behavior or frozen evals during implementation merely to satisfy
+the subject check. Human checkpoint required before further changes.
