@@ -16,7 +16,7 @@ name: checks
 ## Specs
 
 ### CHK-001
-ParseJUnit MUST accept testsuite/testsuites documents, including nested suites, and read testcase name, classname, failure/error, skipped and time, mapping IDs with contracts.MatchesID. It MUST reject malformed XML and testcases with missing/unknown IDs. It MUST classify failure/error as fail and skipped as skip, with skipped cases contributing no coverage.
+ParseJUnit MUST accept testsuite or testsuites documents, including nested suites, returning testcase name, classname and time.
 
 ### CHK-002
 RequireCoverage MUST cover each current spec except review or quarantine with a non-skipped referencing case.
@@ -92,5 +92,17 @@ RequireFailFirst MUST find a failed or errored referencing case for every reques
 
 ### CHK-026
 RequirePass MUST reject failed or errored cases referencing any non-quarantined spec.
+
+### CHK-027
+ParseJUnit MUST reject malformed XML.
+
+### CHK-028
+ParseJUnit MUST reject testcases with missing or unknown spec IDs.
+
+### CHK-029
+ParseJUnit MUST map testcase name and classname to current spec IDs using contracts.MatchesID.
+
+### CHK-030
+ParseJUnit MUST classify failure and error elements as fail, and skipped elements as skip.
 
 ## Decisions
