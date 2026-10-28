@@ -51,7 +51,14 @@ func doctorCLIFile(t *testing.T, path string) string {
 
 func doctorCLIFixture(t *testing.T, bin string) (string, string, string) {
 	t.Helper()
-	root := t.TempDir()
+	return doctorCLIFixtureAt(t, bin, t.TempDir())
+}
+
+func doctorCLIFixtureAt(t *testing.T, bin, root string) (string, string, string) {
+	t.Helper()
+	if err := os.MkdirAll(root, 0755); err != nil {
+		t.Fatal(err)
+	}
 	log := filepath.Join(t.TempDir(), "probes.log")
 	appPut(t, root, "go.mod", "module example.test/doctorcli\n\ngo 1.23\n")
 	status, out, errOut := runAppBinary(t, bin, root, "init", "--recipe", "go", "--agent", "sh .fireweed/agent.sh {prompt}", "--audit-agent", "sh .fireweed/audit.sh {prompt}", "--no-app")
@@ -203,6 +210,22 @@ func Test_APP_062_APP_063_APP_064_APP_065_APP_066_APP_067_DoctorCLI(t *testing.T
 	}
 }
 
+func Test_APP_062_DoctorUsesCloserProject(t *testing.T) {
+	bin := buildAppBinary(t)
+	outer, _, outerLog := doctorCLIFixture(t, bin)
+	inner, nested, innerLog := doctorCLIFixtureAt(t, bin, filepath.Join(outer, "closer"))
+	status, output, stderr := runAppBinary(t, bin, nested, "doctor", "--no-agent")
+	if status != 0 || !doctorCLIPlainOutcome(output+stderr, "recovery", "pass") {
+		t.Fatalf("APP-062 closer doctor status=%d output=%q", status, output+stderr)
+	}
+	if got := doctorCLIFile(t, innerLog); !strings.Contains(got, "setup:") || !strings.Contains(got, bin) {
+		t.Errorf("APP-062 closer project %q setup hook was not used: %q", inner, got)
+	}
+	if got := doctorCLIFile(t, outerLog); got != "" {
+		t.Errorf("APP-062 farther project hook ran: %q", got)
+	}
+}
+
 func Test_APP_065_APP_066_APP_067_DoctorFailures(t *testing.T) {
 	bin := buildAppBinary(t)
 	root, nested, _ := doctorCLIFixture(t, bin)
@@ -320,6 +343,21 @@ func Test_APP_068_APP_069_APP_070_APP_071_APP_072_APP_073_AgentsMDWrite(t *testi
 	if err := json.Unmarshal(envelope["diagnostics"], &diags); err != nil || diags == nil || len(diags) != 0 {
 		t.Errorf("APP-073 diagnostics=%s: %v", envelope["diagnostics"], err)
 	}
+	outerGuidance := agents
+	closer := filepath.Join(root, "closer")
+	appPut(t, closer, "fireweed.yaml", appFixtureConfig)
+	appPut(t, closer, "packages/alpha/SPEC.md", "---\nname: alpha\nid_prefix: ALP\ndepends_on: []\n---\n# Alpha\n\n## Specs\n")
+	appPut(t, closer, "AGENTS.md", "Closer before.\n<!-- fireweed:start -->\nstale\n<!-- fireweed:end -->\nCloser after.\n")
+	status, stdout, stderr = runAppBinary(t, bin, appNestedDir(t, closer), "agents-md", "--write")
+	if status != 0 || stderr != "" {
+		t.Errorf("APP-068 closer write status=%d stdout=%q stderr=%q", status, stdout, stderr)
+	}
+	if got := readInitFile(t, closer, "AGENTS.md"); got != "Closer before.\n"+doctorCLIManagedBlock+"\nCloser after.\n" {
+		t.Errorf("APP-068 closer guidance=%q", got)
+	}
+	if got := readInitFile(t, root, "AGENTS.md"); got != outerGuidance {
+		t.Errorf("APP-068 farther project guidance changed: %q", got)
+	}
 
 	for _, tc := range []struct {
 		name, initial string
@@ -341,7 +379,7 @@ func Test_APP_068_APP_069_APP_070_APP_071_APP_072_APP_073_AgentsMDWrite(t *testi
 				t.Errorf("APP-070/072 status=%d stdout=%q stderr=%q", status, stdout, stderr)
 			}
 			got := readInitFile(t, root, "AGENTS.md")
-			if !strings.HasPrefix(got, tc.initial) || strings.Count(got, "<!-- fireweed:start -->") != 1 || !strings.Contains(got, "playbook author-change") {
+			if !strings.HasPrefix(got, tc.initial) || strings.Count(got, "<!-- fireweed:start -->") != 1 || strings.Count(got, "<!-- fireweed:end -->") != 1 || !strings.Contains(got, doctorCLIManagedBlock) {
 				t.Errorf("APP-070 content=%q", got)
 			}
 		})
