@@ -5,10 +5,13 @@ already_satisfied:
     - PRJ-010
     - PRJ-011
     - PRJ-012
-audit_rounds: 0
+audit_pending:
+    - PRJ-009
+    - PRJ-010
+audit_rounds: 1
 bases: {}
 module: project
-phase: audit
+phase: evals
 run: 20261028T033537-8ab523401bed5218f526ffc1
 ---
 
@@ -71,3 +74,9 @@ Implementation may edit only this change file.
 ## Provenance
 
 - evals 2026-10-28T03:36:55.429843Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=199 failing=0 passing=199
+- audit 2026-10-28T03:38:01.799771Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+
+## Audit
+
+- PRJ-009: "Check MUST reject a module spec or Added/Modified spec whose body contains no normative keyword." — missing assertion for a Modified spec with no normative keyword.
+- PRJ-010: "Check MUST reject spec tags other than review or quarantine with a nonempty reason." — missing assertion for a tag other than review or quarantine.
