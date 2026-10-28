@@ -1,12 +1,15 @@
 ---
 already_satisfied:
-    - new:motivation
-    - new:normative-text
-    - new:spec-tags
-    - new:duplicate-spec-ids
-    - new:foreign-spec-ids
+    - PRJ-008
+    - PRJ-009
+    - PRJ-010
+    - PRJ-011
+    - PRJ-012
+audit_rounds: 0
 bases: {}
 module: project
+phase: audit
+run: 20261028T033537-8ab523401bed5218f526ffc1
 ---
 
 
@@ -25,19 +28,19 @@ rules have IDs in the following change.
 
 ## Added
 
-### new:motivation
+### PRJ-008
 Check MUST reject a pending change without a nonempty Motivation section.
 
-### new:normative-text
+### PRJ-009
 Check MUST reject a module spec or Added/Modified spec whose body contains no normative keyword.
 
-### new:spec-tags
+### PRJ-010
 Check MUST reject spec tags other than review or quarantine with a nonempty reason.
 
-### new:duplicate-spec-ids
+### PRJ-011
 Check MUST reject duplicate spec IDs within a module's Specs section.
 
-### new:foreign-spec-ids
+### PRJ-012
 Check MUST reject module spec IDs and change edit IDs whose prefix belongs to another module.
 
 ## Modified
@@ -64,3 +67,7 @@ foreign_module_id/foreign_change_id cases provide the assertions. Only adjust
 case names/ID labels as needed; retain every other test and behavior assertion.
 No code, helper, fixture or interface changes are needed.
 Implementation may edit only this change file.
+
+## Provenance
+
+- evals 2026-10-28T03:36:55.429843Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=199 failing=0 passing=199

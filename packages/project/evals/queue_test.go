@@ -289,24 +289,24 @@ func Test_PRJ_007_CheckValidAndDiagnostics(t *testing.T) {
 	}
 
 	for _, tc := range []struct {
-		name, spec, front, motivation, added, modified, removed string
+		id, name, spec, front, motivation, added, modified, removed string
 	}{
-		{"missing_motivation", "", "", "\n", "", "", ""},
-		{"nonnormative_module", "### ALP-001\nAlpha works.\n", "", "Needed.\n", "", "", ""},
-		{"nonnormative_change", "", "", "Needed.\n", "### new:item\nAn observation.\n", "", ""},
-		{"invalid_review_tag", "", "", "Needed.\n", "### new:item [review: reason]\nItem MUST work.\n", "", ""},
-		{"invalid_quarantine_tag", "", "", "Needed.\n", "### new:item [quarantine]\nItem MUST work.\n", "", ""},
-		{"duplicate_module_id", "### ALP-001\nAlpha MUST work.\n\n### ALP-001\nDuplicate MUST fail.\n", "", "Needed.\n", "", "", ""},
-		{"foreign_module_id", "### BET-001\nForeign item MUST fail.\n", "", "Needed.\n", "", "", ""},
-		{"foreign_change_id", "", "", "Needed.\n", "", "### BET-001\nForeign edit MUST fail.\n", ""},
-		{"duplicate_edit_identity", "", "", "Needed.\n", "", "### ALP-001\nAlpha MUST change.\n", "### ALP-001\n"},
-		{"undeclared_handle", "", "", "Needed.\n", "### new:local\nLocal MUST work.\n", "### ALP-001\nAlpha MUST refer to new:foreign.\n", ""},
-		{"missing_base", "", "", "Needed.\n", "", "### ALP-001\nAlpha MUST change.\n", ""},
-		{"stale_base", "", "bases:\n  ALP-001: deadbeef\n", "Needed.\n", "", "### ALP-001\nAlpha MUST change.\n", ""},
-		{"absent_modified", "", "bases:\n  ALP-999: deadbeef\n", "Needed.\n", "", "### ALP-999\nAbsent MUST change.\n", ""},
-		{"absent_removed", "", "bases:\n  ALP-999: deadbeef\n", "Needed.\n", "", "", "### ALP-999\n"},
+		{"PRJ-008", "missing_motivation", "", "", "\n", "", "", ""},
+		{"PRJ-009", "nonnormative_module", "### ALP-001\nAlpha works.\n", "", "Needed.\n", "", "", ""},
+		{"PRJ-009", "nonnormative_change", "", "", "Needed.\n", "### new:item\nAn observation.\n", "", ""},
+		{"PRJ-010", "invalid_review_tag", "", "", "Needed.\n", "### new:item [review: reason]\nItem MUST work.\n", "", ""},
+		{"PRJ-010", "invalid_quarantine_tag", "", "", "Needed.\n", "### new:item [quarantine]\nItem MUST work.\n", "", ""},
+		{"PRJ-011", "duplicate_module_id", "### ALP-001\nAlpha MUST work.\n\n### ALP-001\nDuplicate MUST fail.\n", "", "Needed.\n", "", "", ""},
+		{"PRJ-012", "foreign_module_id", "### BET-001\nForeign item MUST fail.\n", "", "Needed.\n", "", "", ""},
+		{"PRJ-012", "foreign_change_id", "", "", "Needed.\n", "", "### BET-001\nForeign edit MUST fail.\n", ""},
+		{"PRJ-007", "duplicate_edit_identity", "", "", "Needed.\n", "", "### ALP-001\nAlpha MUST change.\n", "### ALP-001\n"},
+		{"PRJ-007", "undeclared_handle", "", "", "Needed.\n", "### new:local\nLocal MUST work.\n", "### ALP-001\nAlpha MUST refer to new:foreign.\n", ""},
+		{"PRJ-007", "missing_base", "", "", "Needed.\n", "", "### ALP-001\nAlpha MUST change.\n", ""},
+		{"PRJ-007", "stale_base", "", "bases:\n  ALP-001: deadbeef\n", "Needed.\n", "", "### ALP-001\nAlpha MUST change.\n", ""},
+		{"PRJ-007", "absent_modified", "", "bases:\n  ALP-999: deadbeef\n", "Needed.\n", "", "### ALP-999\nAbsent MUST change.\n", ""},
+		{"PRJ-007", "absent_removed", "", "bases:\n  ALP-999: deadbeef\n", "Needed.\n", "", "", "### ALP-999\n"},
 	} {
-		t.Run(tc.name, func(t *testing.T) {
+		t.Run(tc.id+"_"+tc.name, func(t *testing.T) {
 			root := fixture(t)
 			front := tc.front
 			baseHash := contracts.SpecHash(contracts.Item{ID: "ALP-001", Body: "Alpha MUST work.\n"})
