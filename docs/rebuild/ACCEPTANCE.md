@@ -250,3 +250,10 @@ before another change. Four changes were applied since the explicit review at
   stale blanket C01 eval comparisons; exact cause migration remains pending.
   See the [passing checkpoint review](reports/checkpoint-0050-0054.md) and
   PROGRESS for phases and counts. This establishes no remaining acceptance gate.
+
+- R04/R07/R11/R17 diagnostic refinement: 0055–0059 assign existing validation
+  causes C04–C09 and boundary causes X01–X04, with exact cause assertions and
+  accurate explanations. All phase audits passed; current-source build/race/vet
+  and NEW JSON explanation smoke checks passed. See the
+  [checkpoint review](reports/checkpoint-0055-0059.md) and PROGRESS for scope and
+  phase counts. Remaining diagnostic migration and full acceptance are unverified.

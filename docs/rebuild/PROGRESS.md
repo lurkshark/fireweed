@@ -2,10 +2,10 @@
 
 ## Current status — 2026-10-28
 
-The 0050–0054 checkpoint review passed with no issues and its explicit baseline
-history check passed over 316 commits. The owner approves pushing this slice.
-**Applied since review: 4.** The identified spec splits are complete; continue
-D006 on existing error paths after synchronizing origin/main.
+The 0055–0059 checkpoint review passed with no issues and its explicit baseline
+history check passed over 341 commits. Current-source build/race/vet and NEW
+explanation JSON checks passed. **Applied since review: 0.** Continue D006 on
+remaining existing static/CLI/lifecycle errors after the authorized push.
 
 The owner's goal update authorizes a subagent review at every five applied
 changes: push to origin and continue when the review finds the work on track, and
@@ -13,7 +13,7 @@ stop for human review with details when it reports an issue. Record each review.
 phase audits, blocked-change stops and P07 remain enforced; this policy does not
 alter bounds. The owner explicitly authorizes each push only after its
 passing five-change subagent review. Milestone 1 passed;
-Milestone 2 waits for the spec splits, diagnostic migration and contracts drill.
+Milestone 2 waits for the remaining diagnostic migration and contracts drill.
 
 The owner approved batching related spec-only splits and eval retargeting within
 one module, up to 30 affected Added/Modified/Removed items per change. Resulting
@@ -24,7 +24,7 @@ patch was applied between 0047 and the next worker step.
 
 Controller: `.fireweed/bin/fireweed-bootstrap` 0.1.0, source `7f925190878e38fc38f30d16bb1cf47aca098cf7`, pin SHA-256 `f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f`; unchanged.
 Stage-2 history baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`; always check an explicit nonempty baseline..HEAD range. Use `GOCACHE=/tmp/fireweed-rebuild-cache`.
-NEW binary: `bin/fireweed`, clean source `ac3779b71bbdab0df016a99e74db38c4b190a659` (CGO disabled); [committed manual-lifecycle report](reports/manual-lifecycle.md). Unbuilt commands remain explicit errors; the empty runner is expected.
+NEW binary: `bin/fireweed`, clean source `c7eabf94b898410a3b7d9656356752c73412adc0` (CGO disabled); [committed manual-lifecycle report](reports/manual-lifecycle.md). Unbuilt commands remain explicit errors; the empty runner is expected.
 
 Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`. Interactive work through 0014's initial evals was followed by coordinator `done`, hence legacy `agent=manual` lines. Configured controller execution began at 0014's audit; its provenance records the actual command/model. Continue configured execution. Ignored runtime logs are auxiliary, not reviewable evidence; archives, permanent evals and committed reports carry the evidence.
 
@@ -148,6 +148,14 @@ applied count restarts after this passing review.
 - 0057 edit-reference-codes — PRJ-013–016; 7f099ed/80a1760/12cd5bc; seven reported failures → 54 own/200 total phase cases pass, no findings; existing duplicate edit/handle/base/absent-target paths now C05/C09/C08, fixtures and earlier assertions retained.
 
 - 0058 boundary-cause-codes — CHK-039/040/043–045; 69ae618/700c317/0bfd581; three reported failures → 28 own/146 total phase cases pass, no findings; existing violations/hook failures/opt-out/unnecessary warnings now X01–X04, B05 retired here.
+
+- 0059 reference-boundary-explanations — AST-003; 9d109e6/5ec2a2b/c7eabf9; eight reported failures → 30 own/230 total phase cases pass, no findings; C08/C09/X01–X04 explanations added and C05 repeated-edit repair clarified.
+
+[0055–0059 checkpoint](reports/checkpoint-0055-0059.md): five applied changes.
+Subagent checkpoint_0055_0059 returned PASS with no issues. Baseline history
+passed over 341 commits; build/race/vet and NEW explanation JSON passed for
+source c7eabf9. The passing review authorizes push and continuation; the applied
+count restarts. No queue or claim remains. Diagnostic migration is incomplete.
 
 ## Next
 
