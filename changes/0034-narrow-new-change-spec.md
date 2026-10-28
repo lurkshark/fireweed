@@ -1,13 +1,16 @@
 ---
 already_satisfied:
     - PRJ-003
-    - new:change-numbering
-    - new:change-slug-collisions
-    - new:change-module-lookup
-    - new:change-slug-validation
+    - PRJ-023
+    - PRJ-024
+    - PRJ-025
+    - PRJ-026
+audit_rounds: 0
 bases:
     PRJ-003: c0a8d930
 module: project
+phase: audit
+run: 20261028T035627-a8c9ede0a5c2baeb3762ba21
 ---
 
 
@@ -25,16 +28,16 @@ checks. Every rule is already implemented and asserted by the public evals.
 
 ## Added
 
-### new:change-numbering
+### PRJ-023
 NewChange MUST use the next number after the largest pending or archived change number.
 
-### new:change-slug-collisions
+### PRJ-024
 NewChange MUST reject a slug already present in the pending queue or archive without overwriting existing files.
 
-### new:change-module-lookup
+### PRJ-025
 NewChange MUST reject an unknown target module.
 
-### new:change-slug-validation
+### PRJ-026
 NewChange MUST reject an empty slug or a slug containing characters other than lowercase letters, digits and hyphens.
 
 ## Modified
@@ -61,3 +64,7 @@ label these with the corresponding Added IDs, keeping both relevant IDs on
 the table parent as necessary for coverage. No new Test functions, t.Run cases,
 fixture instances, helpers, product code or interface changes are needed.
 Implementation may edit only this change file. Preserve every unrelated ID.
+
+## Provenance
+
+- evals 2026-10-28T03:57:10.060361Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=199 failing=0 passing=199

@@ -152,7 +152,7 @@ func Test_PRJ_002_Graph(t *testing.T) {
 	}
 }
 
-func Test_PRJ_003_NewChangeSkeletonAndNumbering(t *testing.T) {
+func Test_PRJ_003_PRJ_023_NewChangeSkeletonAndNumbering(t *testing.T) {
 	root := fixture(t)
 	put(t, root, "changes/0003-waiting.md", "pending marker")
 	put(t, root, "changes/archive/0007-finished.md", "archived marker")
@@ -189,7 +189,7 @@ func Test_PRJ_003_NewChangeSkeletonAndNumbering(t *testing.T) {
 	}
 }
 
-func Test_PRJ_003_NewChangeRejectsDuplicatesWithoutOverwrite(t *testing.T) {
+func Test_PRJ_024_NewChangeRejectsDuplicatesWithoutOverwrite(t *testing.T) {
 	for _, archived := range []bool{false, true} {
 		name := "pending"
 		path := "changes/0002-repeat.md"
@@ -211,15 +211,15 @@ func Test_PRJ_003_NewChangeRejectsDuplicatesWithoutOverwrite(t *testing.T) {
 	}
 }
 
-func Test_PRJ_003_NewChangeInvalidArguments(t *testing.T) {
-	for _, tc := range []struct{ name, module, slug string }{
-		{"unknown_module", "missing", "valid"},
-		{"uppercase_slug", "alpha", "Bad"},
-		{"underscore_slug", "alpha", "bad_name"},
-		{"slash_slug", "alpha", "../bad"},
-		{"empty_slug", "alpha", ""},
+func Test_PRJ_025_PRJ_026_NewChangeInvalidArguments(t *testing.T) {
+	for _, tc := range []struct{ id, name, module, slug string }{
+		{"PRJ-025", "unknown_module", "missing", "valid"},
+		{"PRJ-026", "uppercase_slug", "alpha", "Bad"},
+		{"PRJ-026", "underscore_slug", "alpha", "bad_name"},
+		{"PRJ-026", "slash_slug", "alpha", "../bad"},
+		{"PRJ-026", "empty_slug", "alpha", ""},
 	} {
-		t.Run(tc.name, func(t *testing.T) {
+		t.Run(tc.id+"_"+tc.name, func(t *testing.T) {
 			root := fixture(t)
 			if _, err := project.NewChange(root, tc.module, tc.slug); err == nil {
 				t.Errorf("accepted module %q and slug %q", tc.module, tc.slug)
