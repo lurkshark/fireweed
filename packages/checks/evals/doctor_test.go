@@ -227,6 +227,22 @@ func doctorErrors(report checks.DoctorReport) bool {
 func doctorLog(f doctorFixture) string { b, _ := os.ReadFile(f.log); return string(b) }
 func worktrees(f doctorFixture) string { return f.git("worktree", "list", "--porcelain") }
 
+func logDoctorCanaryProbes(t *testing.T, f doctorFixture) {
+	t.Helper()
+	logProbe := fmt.Sprintf(`printf 'probe:%%s\n' "$PWD" >> %q
+for marker in undeclared.txt internal.txt failing.txt missing.txt; do
+  if find packages -name "$marker" | grep -q .; then printf 'planted:%%s\n' "$marker" >> %q; fi
+done
+`, f.log, f.log)
+	for _, path := range []string{".fireweed/eval.sh", ".fireweed/boundary.sh"} {
+		body := string(mustRead(t, filepath.Join(f.root, path)))
+		if !strings.HasPrefix(body, "#!/bin/sh\n") {
+			t.Fatalf("fixture hook %s has no shell header", path)
+		}
+		f.put(path, strings.Replace(body, "#!/bin/sh\n", "#!/bin/sh\n"+logProbe, 1))
+	}
+}
+
 func assertScratchRemoved(t *testing.T, f doctorFixture) {
 	t.Helper()
 	common := strings.TrimSpace(f.git("rev-parse", "--git-common-dir"))
@@ -537,10 +553,19 @@ printf '<testsuite><testcase name="%s-001"/></testsuite>' "$prefix" > "$3"
 		t.Run(tc.name, func(t *testing.T) {
 			f := localDoctorFixture(t)
 			f.put(".fireweed/eval.sh", tc.script)
+			if tc.name == "missing baseline coverage" {
+				logDoctorCanaryProbes(t, f)
+			}
 			f.commit()
 			r := checks.Doctor(context.Background(), f.request(true))
 			if !hasDoctorDiagnostic(r, "C14", false, tc.canary, "eval") {
 				t.Errorf("unrelated eval outcome accepted: %s", doctorText(r))
+			}
+			if tc.name == "missing baseline coverage" && !strings.Contains(doctorLog(f), "probe:") {
+				t.Errorf("failed baseline coverage hook did not run: %s", doctorLog(f))
+			}
+			if tc.name == "missing baseline coverage" && strings.Contains(doctorLog(f), "planted:") {
+				t.Errorf("failed baseline coverage continued into canary probes: %s", doctorLog(f))
 			}
 		})
 	}
@@ -554,10 +579,17 @@ func Test_CHK_055_BaselineAndRecoveryFailures(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			f := localDoctorFixture(t)
 			f.put(tc.path, tc.script)
+			logDoctorCanaryProbes(t, f)
 			f.commit()
 			r := checks.Doctor(context.Background(), f.request(true))
 			if !hasDoctorDiagnostic(r, "C14", false, tc.phase, tc.hook) {
 				t.Errorf("failed baseline accepted: %s", doctorText(r))
+			}
+			if !strings.Contains(doctorLog(f), "probe:") {
+				t.Errorf("failed baseline hook did not run: %s", doctorLog(f))
+			}
+			if strings.Contains(doctorLog(f), "planted:") {
+				t.Errorf("failed baseline continued into canary probes: %s", doctorLog(f))
 			}
 		})
 	}
@@ -617,6 +649,7 @@ func Test_CHK_055_CHK_056_CHK_057_MissingRequiredBoundaryHook(t *testing.T) {
 	f := localDoctorFixture(t)
 	f.editConfig(func(config map[string]any) { delete(config["hooks"].(map[string]any), "boundaries") })
 	f.put("packages/alpha/internal/live.txt", "disposable implementation\n")
+	logDoctorCanaryProbes(t, f)
 	f.commit()
 	report := checks.Doctor(context.Background(), f.request(true))
 	if !hasDoctorDiagnostic(report, "X02", false, "alpha", "boundar") {
@@ -624,6 +657,9 @@ func Test_CHK_055_CHK_056_CHK_057_MissingRequiredBoundaryHook(t *testing.T) {
 	}
 	if !hasDoctorDiagnostic(report, "C14", false, "baseline", "boundar") {
 		t.Errorf("missing boundary hook was accepted as a clean baseline: %s", doctorText(report))
+	}
+	if strings.Contains(doctorLog(f), "planted:") {
+		t.Errorf("missing baseline boundary hook continued into canary probes: %s", doctorLog(f))
 	}
 	for _, canary := range []string{"undeclared", "internal_eval"} {
 		if hasDoctorCheck(report, canary, true) {
@@ -642,10 +678,14 @@ func Test_CHK_055_MissingRequiredHookBesideOverride(t *testing.T) {
 	f.put("packages/alpha/SPEC.md", strings.Replace(string(mustRead(t, filepath.Join(f.root, "packages/alpha/SPEC.md"))), "depends_on: []", "depends_on: []\nhooks:\n  boundaries: sh .fireweed/override-boundary.sh", 1))
 	f.put("packages/beta/SPEC.md", "---\nname: beta\nid_prefix: BET\ndepends_on: []\n---\n# Beta\n\n## Specs\n\n### BET-001\nThe fixture MUST pass.\n")
 	f.put("packages/beta/internal/live.txt", "disposable implementation\n")
+	logDoctorCanaryProbes(t, f)
 	f.commit()
 	report := checks.Doctor(context.Background(), f.request(true))
 	if !hasDoctorDiagnostic(report, "X02", false, "beta", "boundar") {
 		t.Errorf("module without its own hook escaped required boundary enforcement: %s", doctorText(report))
+	}
+	if strings.Contains(doctorLog(f), "planted:") {
+		t.Errorf("failed baseline beside override continued into canary probes: %s", doctorLog(f))
 	}
 	if !strings.Contains(doctorLog(f), "override-boundaries:") {
 		t.Errorf("applicable override was not run: %s", doctorLog(f))

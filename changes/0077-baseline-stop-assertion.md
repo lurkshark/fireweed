@@ -1,8 +1,11 @@
 ---
+audit_rounds: 0
 bases: {}
 eval_fix:
     - CHK-055
 module: checks
+phase: audit
+run: 20261028T230031-7c37d81c38953bf7362a2c42
 ---
 
 
@@ -60,3 +63,7 @@ change any implementation. The separate auditor receives an isolated snapshot
 of this change, projected specs, evals and retained public interfaces only.
 Audit only CHK-055's assertions; prior passes in other IDs stay passed. Further
 unresolved issues or blocks stop for human review under the approved sequence.
+
+## Provenance
+
+- evals 2026-10-28T23:08:29.023366Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=298 failing=0 passing=298
