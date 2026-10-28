@@ -8,7 +8,7 @@ cleanup complete. It reports an error-prefix contract gap and its agent read
 dependent internals, so strict independence acceptance is not established; see
 [the reviewed report](reports/contracts-drill.md). No gap fix or repeat drill is
 authorized. 0069 now implements recipe-based initialization through NEW.
-**Applied since review: 5; checkpoint validation and subagent review pending.** The
+**Applied since review: 5; checkpoint BLOCK requires human review.** The
 owner-approved saved-attempt 4 recovery restored the implementation through the
 controller with Git 2.53.0. Full native done passed all 260 phase cases and
 committed/applied/archived at e50061d; the tree is clean and claim released.
@@ -20,8 +20,12 @@ failures before implementation and all 389 phase cases passing afterward. 0074 e
 audit correction. A fresh NEW Go/fake-agent smoke passes, with guidance preserved
 and scratch cleanup verified; see [the report](reports/doctor-setup-cli.md).
 0075 now provides bounded runner invocation, with 25 own/178 phase passes after
-one scoped assertion correction. No pending change or claim remains. Hold further
-implementation and push until the five-change checkpoint review passes. No further push occurred; the full goal
+one scoped assertion correction. No pending change or claim remains. The checkpoint subagent reports two doctor
+defects: missing required boundary hooks can pass, and cancellation leaves scratch
+Git registration. A real NEW repro confirms the first. Full race also found a
+timing-dependent runner eval; its focused rerun passes, but the full result remains
+failed. Build, vet, controller check and explicit history extensions pass. See
+[the checkpoint report](reports/checkpoint-0071-0075.md). No push occurred. No further push occurred; the full goal
 remains incomplete.
 
 The owner's goal update authorizes a subagent review at every five applied
@@ -43,7 +47,7 @@ audits, audit bounds, timeouts and recurring checkpoint reviews remain in force.
 
 Controller: `.fireweed/bin/fireweed-bootstrap` 0.1.0, source `7f925190878e38fc38f30d16bb1cf47aca098cf7`, pin SHA-256 `f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f`; unchanged.
 Stage-2 history baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`; always check an explicit nonempty baseline..HEAD range. Use `GOCACHE=/tmp/fireweed-rebuild-cache`.
-NEW binary: `bin/fireweed`, clean source `19d2b3172b88be5268bb87998be8b67cb6bc4456` (CGO disabled); [committed manual-lifecycle report](reports/manual-lifecycle.md). Unbuilt commands remain explicit errors; the empty runner is expected.
+NEW binary: `bin/fireweed`, clean source `a3c044a7a0f20c02789210fa9be1d4ef0c40949d` (CGO disabled); [committed manual-lifecycle report](reports/manual-lifecycle.md). Unbuilt commands remain explicit errors; the empty runner is expected.
 
 Workers and separate auditors use `codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`. Interactive work through 0014's initial evals was followed by coordinator `done`, hence legacy `agent=manual` lines. Configured controller execution began at 0014's audit; its provenance records the actual command/model. Continue configured execution. Ignored runtime logs are auxiliary, not reviewable evidence; archives, permanent evals and committed reports carry the evidence.
 
@@ -236,11 +240,14 @@ acceptance remains unverified. No gap fix/rerun is authorized or performed.
 
 ## Next
 
-Five changes (0071–0075) have applied. Complete checkpoint validation and obtain
-the authorized independent subagent review. Push origin and continue only on
-PASS; any reported issue requires human review. After a passing checkpoint,
-connect the runner queue loop and CLI promptly using bounded fake agents; no
-NEW unattended real-agent execution before that fixture passes. No further phase exception, bound change, new drill
+Stop for human review of the [BLOCK checkpoint](reports/checkpoint-0071-0075.md).
+P07 reports five unapproved changes, so correction work cannot start before
+explicit human-authorized shared-base synchronization. Proposed sequence: push
+the current five changes with findings recorded, one normal checks fixes change
+for the two doctor defects, one runner eval_fix for the observed timing failure,
+then full checks and scoped subagent re-review before another push/continuation.
+No push, correction, counter/ref/bound change or phase exception is authorized by
+the failed review. The main goal remains incomplete. No further phase exception, bound change, new drill
 or deferred contracts-gap fix is authorized. Stop at any new blocked change;
 the standing five-application subagent checkpoint remains in force.
 

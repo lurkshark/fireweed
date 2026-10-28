@@ -38,3 +38,11 @@ Git registration returned to the single fixture worktree and its physical scratc
 root was empty. The fixture was removed. Total smoke time was 16.58 seconds.
 These are local fake-agent results; NEW unattended real-agent execution,
 remaining recipes, strict regeneration and final acceptance remain unverified.
+
+## Later checkpoint limitation
+
+The 0071–0075 checkpoint returned BLOCK for two untested doctor behaviors:
+missing required boundary enforcement and cancellation cleanup registration.
+See checkpoint-0071-0075.md for a false-success NEW repro and the human decision.
+The healthy fixture results above remain accurate; they do not establish full
+doctor conformance.

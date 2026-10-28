@@ -350,3 +350,12 @@ before another change. Four changes were applied since the explicit review at
   scoped re-audit. Queue selection, next/run orchestration, retries/recovery and
   the required NEW fake-agent queue fixture remain pending. This foundation
   does not establish unattended execution or final acceptance.
+
+- The [0071–0075 checkpoint](reports/checkpoint-0071-0075.md) is BLOCK: required
+  boundary hooks can be skipped, and cancelled doctor work leaves Git registration.
+  A NEW missing-hook repro returned false success. Full race also exposes a
+  timing-dependent RUN-007/009 eval; a focused pass does not close that failed
+  full gate. Build, vet, static check and the 52-commit history extension pass.
+  Existing healthy setup smoke remains valid, but doctor conformance, bounded
+  execution and final acceptance stay open. P07/human synchronization is required
+  before the proposed normal checks fix and runner eval_fix; no push occurred.
