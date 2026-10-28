@@ -27,7 +27,7 @@ Each information command MUST accept --json and emit one JSON object with schema
 It MUST return exit 0 and leave stderr empty.
 
 ### APP-003
-Unknown commands or options and missing or extra arguments MUST return exit 2 with a nonempty corrective diagnostic.
+Unknown commands or options and missing or extra arguments MUST return exit 2 with a nonempty corrective U01 diagnostic.
 
 ### APP-004
 modules MUST report the validated graph, using the held approved projected snapshot while this worktree owns a change.
@@ -57,10 +57,10 @@ context <change> [--full] MUST return the held workflow.Context text, using comp
 coverage <module> MUST evaluate current specs, or the selected projection with --with-change <change>, using approved metadata while held and setting FIREWEED_BIN to the actual executable.
 
 ### APP-013
-Unknown explain codes or playbook names MUST return exit 2 with a nonempty corrective diagnostic.
+Unknown explain codes or playbook names MUST return exit 2 with a nonempty corrective U02 diagnostic.
 
 ### APP-014
-Commands listed by help but still under construction MUST explicitly report that they are unimplemented and return nonzero.
+Commands listed by help but still under construction MUST explicitly report that they are unimplemented with diagnostic U01 and return nonzero.
 
 ### APP-015
 Failed --json requests MUST use the schema-1 envelope with null data and a diagnostic containing code and message.

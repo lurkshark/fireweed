@@ -98,14 +98,14 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 	}
 	if command == "start" || command == "context" {
 		if len(args) != 1 {
-			return fail(2, "CLI_USAGE", "Use "+command+" <change> with exactly one change.")
+			return fail(2, "U01", "Use "+command+" <change> with exactly one change.")
 		}
 	} else if command == "coverage" {
 		if len(args) != 1 {
-			return fail(2, "CLI_USAGE", "Use coverage <module> [--with-change <change>].")
+			return fail(2, "U01", "Use coverage <module> [--with-change <change>].")
 		}
 	} else if len(args) > 1 {
-		return fail(2, "CLI_USAGE", "Use "+command+" [change] with at most one change.")
+		return fail(2, "U01", "Use "+command+" [change] with at most one change.")
 	}
 	snapshot, err := loadValidatedProject()
 	if err != nil {

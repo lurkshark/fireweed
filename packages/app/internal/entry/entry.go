@@ -53,7 +53,7 @@ func Run(args []string, out, errOut io.Writer) int {
 			full = true
 		} else if arg == "--with-change" {
 			if i+1 >= len(args) || strings.HasPrefix(args[i+1], "-") {
-				return cliFailure(2, jsonMode || contains(args, "--json"), out, errOut, "CLI_USAGE", "--with-change requires a change value. Use coverage <module> --with-change <change>.")
+				return cliFailure(2, jsonMode || contains(args, "--json"), out, errOut, "U01", "--with-change requires a change value. Use coverage <module> --with-change <change>.")
 			}
 			i++
 			withChange = args[i]
@@ -74,18 +74,18 @@ func Run(args []string, out, errOut io.Writer) int {
 	}
 	for _, arg := range positional {
 		if strings.HasPrefix(arg, "-") {
-			return fail("CLI_OPTION", fmt.Sprintf("Unknown option %q. Use help to see available commands and options.", arg))
+			return fail("U01", fmt.Sprintf("Unknown option %q. Use help to see available commands and options.", arg))
 		}
 	}
 	if len(positional) == 0 {
-		return fail("CLI_USAGE", "A command is required. Use help to see available commands.")
+		return fail("U01", "A command is required. Use help to see available commands.")
 	}
 	command := positional[0]
 	if projected && command != "show" {
-		return fail("CLI_OPTION", "--projected is only available with show.")
+		return fail("U01", "--projected is only available with show.")
 	}
 	if quick && command != "verify" || full && command != "context" || withChange != "" && command != "coverage" {
-		return fail("CLI_OPTION", "Use --quick only with verify, --full only with context, and --with-change only with coverage.")
+		return fail("U01", "Use --quick only with verify, --full only with context, and --with-change only with coverage.")
 	}
 	count := len(positional) - 1
 	var body string
@@ -93,17 +93,17 @@ func Run(args []string, out, errOut io.Writer) int {
 	switch command {
 	case "help":
 		if count != 0 {
-			return fail("CLI_USAGE", "help takes no arguments. Use help alone.")
+			return fail("U01", "help takes no arguments. Use help alone.")
 		}
 		body = assets.Help()
 	case "version":
 		if count != 0 {
-			return fail("CLI_USAGE", "version takes no arguments. Use version alone.")
+			return fail("U01", "version takes no arguments. Use version alone.")
 		}
 		body = assets.Version()
 	case "explain", "playbook":
 		if count != 1 {
-			return fail("CLI_USAGE", fmt.Sprintf("%s requires exactly one %s. Use %s <%s>.", command, lookupKind(command), command, lookupKind(command)))
+			return fail("U01", fmt.Sprintf("%s requires exactly one %s. Use %s <%s>.", command, lookupKind(command), command, lookupKind(command)))
 		}
 		if command == "explain" {
 			body, err = assets.Explain(positional[1])
@@ -111,11 +111,11 @@ func Run(args []string, out, errOut io.Writer) int {
 			body, err = assets.Playbook(positional[1])
 		}
 		if err != nil {
-			return fail("CLI_LOOKUP", fmt.Sprintf("%v. Use a valid %s name.", err, lookupKind(command)))
+			return fail("U02", fmt.Sprintf("%v. Use a valid %s name.", err, lookupKind(command)))
 		}
 	case "modules":
 		if count != 0 {
-			return fail("CLI_USAGE", "modules takes no arguments. Use modules alone.")
+			return fail("U01", "modules takes no arguments. Use modules alone.")
 		}
 		snapshot, err := loadModuleProject()
 		if err != nil {
@@ -132,7 +132,7 @@ func Run(args []string, out, errOut io.Writer) int {
 		return runLifecycle(command, positional[1:], jsonMode, quick, full, withChange, out, errOut)
 	case "new-change":
 		if count != 2 {
-			return fail("CLI_USAGE", "new-change requires a module and slug. Use new-change <module> <slug>.")
+			return fail("U01", "new-change requires a module and slug. Use new-change <module> <slug>.")
 		}
 		snapshot, err := loadValidatedProject()
 		if err != nil {
@@ -150,7 +150,7 @@ func Run(args []string, out, errOut io.Writer) int {
 		return 0
 	case "stamp":
 		if count != 1 {
-			return fail("CLI_USAGE", "stamp requires exactly one change. Use stamp <change>.")
+			return fail("U01", "stamp requires exactly one change. Use stamp <change>.")
 		}
 		snapshot, err := loadValidatedProject()
 		if err != nil {
@@ -162,7 +162,7 @@ func Run(args []string, out, errOut io.Writer) int {
 		body = fmt.Sprintf("Stamped %s\n", positional[1])
 	case "check":
 		if count != 0 {
-			return fail("CLI_USAGE", "check takes no arguments. Use check alone.")
+			return fail("U01", "check takes no arguments. Use check alone.")
 		}
 		snapshot, err := loadValidatedProject()
 		if err != nil {
@@ -197,7 +197,7 @@ func Run(args []string, out, errOut io.Writer) int {
 		return 0
 	case "show":
 		if count < 1 || count > 2 {
-			return fail("CLI_USAGE", "show requires a module and optional item ID. Use show <module> [ID] [--projected].")
+			return fail("U01", "show requires a module and optional item ID. Use show <module> [ID] [--projected].")
 		}
 		snapshot, err := loadValidatedProject()
 		if err != nil {
@@ -244,9 +244,9 @@ func Run(args []string, out, errOut io.Writer) int {
 		}
 	default:
 		if pending[command] {
-			return fail("CLI_UNIMPLEMENTED", fmt.Sprintf("%s is under construction and is not implemented yet. Use help for available information commands.", command))
+			return fail("U01", fmt.Sprintf("%s is under construction and is not implemented yet. Use help for available information commands.", command))
 		}
-		return fail("CLI_COMMAND", fmt.Sprintf("Unknown command %q. Use help to see available commands.", command))
+		return fail("U01", fmt.Sprintf("Unknown command %q. Use help to see available commands.", command))
 	}
 	if !strings.HasSuffix(body, "\n") {
 		body += "\n"
