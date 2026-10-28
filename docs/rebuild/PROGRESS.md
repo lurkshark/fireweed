@@ -196,7 +196,8 @@ the passing 0060–0064 review. Subagent checkpoint_0065_0069 returned BLOCK:
 new init C12/U02 recipe failures are missing from explain's causes and repairs.
 No correction change or further push is authorized by the failed checkpoint;
 human review is required. Build/race/vet and NEW Go init/modules/check passed;
-explicit baseline history validation is still running. The owner's intervening direct push
+explicit baseline history validation passed over 397 commits with no diagnostics.
+The owner's intervening direct push
 approval synchronized committed history through 3897b1a; it did not reset the
 five-application review count.
 

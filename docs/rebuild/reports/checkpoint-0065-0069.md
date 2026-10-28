@@ -41,7 +41,8 @@ exit 0, schema 1, empty stderr and no diagnostics; generated config, guidance,
 recipe hook and app SPEC were inspected. No configured agent or hook was run.
 
 Current-source `go test -race ./...` and `go vet ./...` passed. Explicit baseline
-history validation is still running against the fixed source above.
+history validation passed over 397 commits with no diagnostics against the
+fixed source above.
 No queue or claim remains. The embedded
 recipe SPEC warning is unchanged. Setup doctor/canary evidence is reused because
 controller enforcement/setup did not change. This is intermediate current-checkout
@@ -68,6 +69,13 @@ and drill/final-gate limitations reported honestly. It edited nothing and ran
 no tests or drills. No correction change was authored and no further push made.
 The application count stays at five until the failed checkpoint is resolved
 through human review.
+
+Proposed scoped resolution, awaiting approval: a normal assets change with
+`fixes: [AST-003, AST-024]` adds assertions that C12 identifies recipe metadata
+and repairs in recipe.yaml, and U02 identifies an unknown recipe and advises
+selecting a supported name or readable local directory. Extend those two
+explanations while retaining all existing causes, corrective guidance, unknown-code
+checks and other assertions. No init behavior or public interface change is needed.
 
 ## Next
 
