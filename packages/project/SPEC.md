@@ -36,19 +36,19 @@ Stamp MUST write each Modified or Removed item's canonical SpecHash from the pro
 Check MUST return no error diagnostics for valid module specs and changes. Each failure diagnostic MUST have a nonempty code and message.
 
 ### PRJ-008
-Check MUST reject a pending change without a nonempty Motivation section.
+Check MUST reject a pending change without a nonempty Motivation section with diagnostic C07.
 
 ### PRJ-009
-Check MUST reject a module spec or Added/Modified spec whose body contains no normative keyword.
+Check MUST reject a module spec or Added/Modified spec whose body contains no normative keyword with diagnostic C04.
 
 ### PRJ-010
-Check MUST reject spec tags other than review or quarantine with a nonempty reason.
+Check MUST reject spec tags other than review or quarantine with a nonempty reason with diagnostic C06.
 
 ### PRJ-011
-Check MUST reject duplicate spec IDs within a module's Specs section.
+Check MUST reject duplicate spec IDs within a module's Specs section with diagnostic C05.
 
 ### PRJ-012
-Check MUST reject module spec IDs and change edit IDs whose prefix belongs to another module.
+Check MUST reject module spec IDs and change edit IDs whose prefix belongs to another module with diagnostic C05.
 
 ### PRJ-013
 Check MUST reject a change that uses the same edit identity more than once across Added, Modified and Removed.

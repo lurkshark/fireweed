@@ -14,8 +14,11 @@ var normative = regexp.MustCompile(`\b(MUST|SHOULD)\b`)
 
 func Check(root string) []model.Diagnostic {
 	var diagnostics []model.Diagnostic
+	addCode := func(code, path, message string) {
+		diagnostics = append(diagnostics, model.Diagnostic{Code: code, Path: path, Message: message})
+	}
 	add := func(path, message string) {
-		diagnostics = append(diagnostics, model.Diagnostic{Code: "C01", Path: path, Message: message})
+		addCode("C01", path, message)
 	}
 	snapshot, err := fixture.Load(root)
 	if err != nil {
@@ -27,7 +30,11 @@ func Check(root string) []model.Diagnostic {
 	}
 	p, err := newProjection(snapshot)
 	if err != nil {
-		add("SPEC.md", err.Error())
+		if strings.Contains(err.Error(), "/SPEC.md: duplicate item ID: ") {
+			addCode("C05", "SPEC.md", err.Error())
+		} else {
+			add("SPEC.md", err.Error())
+		}
 		return diagnostics
 	}
 	for _, module := range snapshot.Modules {
@@ -35,9 +42,9 @@ func Check(root string) []model.Diagnostic {
 		for _, entry := range p.items[module.Name] {
 			item := entry.item
 			if !strings.HasPrefix(item.ID, module.IDPrefix+"-") {
-				add(path, "foreign spec ID "+item.ID)
+				addCode("C05", path, "foreign spec ID "+item.ID)
 			}
-			checkItem(path, item, true, add)
+			checkItem(path, item, true, addCode)
 		}
 	}
 	changes, err := readQueue(root, snapshot)
@@ -49,7 +56,7 @@ func Check(root string) []model.Diagnostic {
 		path := change.Path
 		motivation, exists := contracts.Section(change.Document.Body, "Motivation")
 		if !exists || strings.TrimSpace(motivation) == "" {
-			add(path, "missing Motivation")
+			addCode("C07", path, "missing Motivation")
 		}
 		declared, seen := map[string]bool{}, map[string]bool{}
 		for _, item := range change.Added {
@@ -69,9 +76,9 @@ func Check(root string) []model.Diagnostic {
 				}
 				seen[item.ID] = true
 				if !strings.HasPrefix(item.ID, "new:") && !strings.HasPrefix(item.ID, modulePrefix(snapshot, change.Module)+"-") {
-					add(path, "foreign module ID "+item.ID)
+					addCode("C05", path, "foreign module ID "+item.ID)
 				}
-				checkItem(path, item, group.normative, add)
+				checkItem(path, item, group.normative, addCode)
 			}
 		}
 		for _, ref := range handleReference.FindAllString(change.Document.Body, -1) {
@@ -112,11 +119,11 @@ func modulePrefix(snapshot model.Snapshot, name string) string {
 	return ""
 }
 
-func checkItem(path string, item contracts.Item, requireNormative bool, add func(string, string)) {
+func checkItem(path string, item contracts.Item, requireNormative bool, addCode func(string, string, string)) {
 	if tag := item.Tag; tag != "" && tag != "review" && !(strings.HasPrefix(tag, "quarantine: ") && strings.TrimSpace(strings.TrimPrefix(tag, "quarantine: ")) != "") {
-		add(path, "invalid review/quarantine tag "+tag)
+		addCode("C06", path, "invalid review/quarantine tag "+tag)
 	}
 	if requireNormative && !normative.MatchString(item.Body) {
-		add(path, "non-normative spec body for "+item.ID)
+		addCode("C04", path, "non-normative spec body for "+item.ID)
 	}
 }
