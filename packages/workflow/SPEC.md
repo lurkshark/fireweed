@@ -29,7 +29,7 @@ Done MUST require full verification to succeed before committing a phase transit
 Successful impl Done MUST apply Added, Modified and Removed spec edits to the module's SPEC.md.
 
 ### FLOW-005
-Each successful Done MUST append provenance with phase, date, manual/configured agent, version, playbook hash and result counts, retaining reports/output under the run directory. Context MUST include the change, projected spec, interface contents, SYSTEM and matching playbook, listing other relevant files by path/size or including contents with full. State MUST expose the held projected snapshot so composing commands use the approved graph during hooks.
+Context MUST include the change, projected spec, interface contents, SYSTEM and matching playbook. It MUST list other relevant files by path and size, or include their contents when full is requested.
 
 ### FLOW-006
 Start MUST include the approved projected project snapshot in its returned State.
@@ -165,6 +165,15 @@ Impl Done MUST require the applied project to pass static validation before comm
 
 ### FLOW-050
 Successful impl Done MUST move the active change to the archive with phase applied and commit it together with the application.
+
+### FLOW-051
+Each successful Done MUST append provenance containing phase, date, manual or configured agent, version, playbook hash and result counts.
+
+### FLOW-052
+Successful Done MUST retain verification reports and process output under the run directory.
+
+### FLOW-053
+State MUST expose the held projected snapshot so composing commands use the approved graph during hooks.
 
 ## Decisions
 
