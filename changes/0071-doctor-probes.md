@@ -3,7 +3,6 @@ audit_pending:
     - CHK-065
 audit_rounds: 2
 bases: {}
-blocked: fresh restricted audit has unresolved findings after approved recovery
 module: checks
 phase: audit
 run: 20261028T143328-b8168faa7b2578efc49bb800
@@ -187,22 +186,12 @@ the controller; the approved fresh restricted full audit is still pending.
 - audit 2026-10-28T14:55:47.966815Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 - evals 2026-10-28T15:12:16.071299Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=255 failing=29 passing=226
 
-## Questions
-
-The one approved recovery established CHK-065 runtime fail-first and obtained a
-fresh read-only full audit from permitted inputs. That review no longer reports
-CHK-065, but reports the following unresolved assertion gaps. The approved plan
-requires a human decision now; no implementation or further correction round is
-authorized. Retain audit_rounds 2 and the original findings/history.
-
-- CHK-049: retain warning diagnostics and suppress boundary/audit probes after a static error.
-- CHK-050: assert the scratch path is below the actual common Git directory.
-- CHK-051: assert the scratch directory itself is removed, beyond Git registration cleanup.
-- CHK-054: assert C14 names the missing template or baseline map.
-- CHK-055: assert failed baseline eval/boundary and recovery eval/coverage paths.
-- CHK-063: assert the audit command receives the fixed-reply prompt and rejects a wrong reply.
-- CHK-066: assert a limit-pattern match outside the last 20 lines is not classified as a usage limit.
-- CHK-068: assert a current managed block with surrounding text avoids C16.
-
-The fresh audit's invocation log contains only reads of the supplied isolated
-change/spec/evals/retained-interface files; it ran no code and edited no files.
+The owner approved one further bounded correction for the fresh audit's
+CHK-049/050/051/054/055/063/066/068 findings, followed by restricted re-review of
+only those IDs. Their exact outstanding clauses are retained in the block report
+and prior block commit. Preserve the completed CHK-065 test and all prior passes;
+do not reset counts, alter requirements or start a replacement change. The
+controller must restore an eval step from saved eval attempt 1 before any test
+edit; if it cannot do so without changing bounds, stop. Any further unresolved
+finding stops for human review. The answered Questions and blocked marker are
+removed solely to permit that explicitly approved native recovery.
