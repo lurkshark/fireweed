@@ -132,7 +132,7 @@ coverage --json MUST return schema 1 with report data on success, null on failur
 Existing static failures exposed by the CLI MUST retain their D006 cause: C01 configuration, C02 graph, C03 syntax, C04 normative text, C05 identities, C06 tags, C07 change structure, C08 bases, C09 handles, C12 metadata or C13 queue identity.
 
 ### APP-038
-CLI lookup rejections for unknown or ambiguous requested names MUST use U02, retaining C13 for queue identity ambiguity.
+CLI lookup rejections for unknown names or ambiguous projected change-local handles MUST use U02. Invalid graphs, module spec identities and other static validation failures MUST retain their D006 static codes.
 
 ### APP-039
 Existing operational precondition failures without a more specific D006 cause MUST report P01.

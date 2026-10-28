@@ -206,9 +206,6 @@ func Run(args []string, out, errOut io.Writer) int {
 		snapshot, err := loadValidatedProject()
 		if err != nil {
 			code := projectFailureCode(err, "C01")
-			if strings.Contains(err.Error(), fmt.Sprintf("duplicate module name %q", positional[1])) {
-				code = "U02"
-			}
 			return fail(code, fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
 		}
 		if projected {
@@ -239,7 +236,10 @@ func Run(args []string, out, errOut io.Writer) int {
 			items, err := contracts.ParseItems(section)
 			if err != nil {
 				if strings.HasPrefix(err.Error(), "duplicate item ID: ") {
-					return fail("U02", err.Error())
+					if strings.HasPrefix(err.Error(), "duplicate item ID: new:") {
+						return fail("U02", err.Error())
+					}
+					return fail("C05", err.Error())
 				}
 				return fail("C03", err.Error())
 			}
