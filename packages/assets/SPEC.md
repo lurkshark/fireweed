@@ -19,7 +19,7 @@ Version MUST return 0.1.0.
 Playbook MUST return nonempty instructions for author-change, evals, audit, impl and regenerate, and reject unknown names.
 
 ### AST-003
-Explain MUST describe the cause and a corrective action for C01 (invalid configuration), C04 (non-normative text), C05 (foreign or duplicate spec/edit identities), C06 (invalid tags), C07 (missing Motivation), C08 (missing/stale edit bases or absent targets), C09 (undeclared handles), X01 (boundary violations), X02 (missing/incomplete boundary hooks), X03 (reasoned boundary opt-out), X04 (unnecessary boundary enforcement) and P2-01 (missing genuine fail-first evidence). Explain MUST reject unknown codes.
+Explain MUST describe the cause and a corrective action for C01 (invalid configuration), C04 (non-normative text), C05 (foreign or duplicate spec/edit identities), C06 (invalid tags), C07 (missing Motivation), C08 (missing/stale edit bases or absent targets), C09 (undeclared handles), X01 (boundary violations), X02 (missing/incomplete boundary hooks), X03 (reasoned boundary opt-out), X04 (unnecessary boundary enforcement), U01 (invalid arguments/options or unsupported commands), U02 (unknown lookup names) and P2-01 (missing genuine fail-first evidence). Explain MUST reject unknown codes.
 
 ### AST-004
 BuiltinRecipe MUST return the embedded Go recipe for go and reject unknown names.

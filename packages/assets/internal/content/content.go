@@ -50,6 +50,8 @@ var explanations = map[string]string{
 	"X02":   "A required boundaries hook is missing, or a configured boundary hook failed to complete. Configure a boundaries hook for the module; fix and rerun the hook if it fails or times out.",
 	"X03":   "Warning: a module declares a boundaries opt-out with a reason. Review the reason and remove the opt-out when it no longer applies; configure a boundary hook if enforcement is needed.",
 	"X04":   "Warning: no boundary enforcement is required, and the boundaries hook is absent. No action is needed; configure a boundaries hook if a module later needs enforcement.",
+	"U01":   "An invalid argument or option, or an unsupported command, was requested. Check fireweed help and use the supported command syntax and options.",
+	"U02":   "An unknown lookup name was given to explain or playbook. Select a valid name or code from the listed explain codes or playbook names.",
 	"P2-01": "Genuine fail-first evidence is missing for an assigned spec ID: its new eval did not fail against the pre-implementation code. Write or correct a test assertion for the specified behavior, rerun the eval before implementing it, and record the failing result.",
 }
 
