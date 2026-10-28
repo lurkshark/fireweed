@@ -227,24 +227,65 @@ func doctorErrors(report checks.DoctorReport) bool {
 func doctorLog(f doctorFixture) string { b, _ := os.ReadFile(f.log); return string(b) }
 func worktrees(f doctorFixture) string { return f.git("worktree", "list", "--porcelain") }
 
+func assertScratchRemoved(t *testing.T, f doctorFixture) {
+	t.Helper()
+	common := strings.TrimSpace(f.git("rev-parse", "--path-format=absolute", "--git-common-dir"))
+	common, err := filepath.EvalSymlinks(common)
+	if err != nil {
+		t.Fatal(err)
+	}
+	base := filepath.Join(common, "fireweed", "worktrees")
+	for _, line := range strings.Split(doctorLog(f), "\n") {
+		if !strings.HasPrefix(line, "setup:") {
+			continue
+		}
+		path := strings.TrimPrefix(line, "setup:")
+		for parent := path; ; parent = filepath.Dir(parent) {
+			resolved, err := filepath.EvalSymlinks(parent)
+			if err == nil {
+				suffix, err := filepath.Rel(parent, path)
+				if err != nil {
+					t.Fatal(err)
+				}
+				path = filepath.Join(resolved, suffix)
+				break
+			}
+			if parent == filepath.Dir(parent) {
+				t.Fatal(err)
+			}
+		}
+		rel, err := filepath.Rel(base, path)
+		if err != nil || rel == "." || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+			t.Errorf("scratch %q is not below common Git directory %q", path, base)
+		}
+		if _, err := os.Stat(path); !os.IsNotExist(err) {
+			t.Errorf("physical scratch directory %q remains or cannot be checked: %v", path, err)
+		}
+		return
+	}
+	t.Error("setup did not record a scratch path")
+}
+
 func Test_CHK_049_StaticDiagnosticsStopProbes(t *testing.T) {
 	f := localDoctorFixture(t)
 	f.put("packages/alpha/SPEC.md", "---\nname: alpha\nid_prefix: ALP\ndepends_on: []\n---\n## Specs\n### ALP-001\nA.\n### ALP-001\nB.\n")
 	f.commit()
 	want := project.Check(f.root)
-	if len(want) == 0 {
+	if len(want) == 0 || !doctorErrors(checks.DoctorReport{Diagnostics: want}) {
 		t.Fatal("fixture has no static diagnostic")
 	}
 	report := checks.Doctor(context.Background(), f.request(false))
-	for _, d := range want {
-		if d.Warning {
-			continue
-		}
-		if !hasDoctorDiagnostic(report, d.Code, false) {
-			t.Errorf("project diagnostic %v lost: %s", d, doctorText(report))
-		}
+	remaining := map[project.Diagnostic]int{}
+	for _, d := range report.Diagnostics {
+		remaining[d]++
 	}
-	if strings.Contains(doctorLog(f), "setup:") || strings.Contains(doctorLog(f), "eval:") || strings.Contains(doctorLog(f), "worker:") {
+	for _, d := range want {
+		if remaining[d] == 0 {
+			t.Errorf("complete project diagnostic %+v lost: %s", d, doctorText(report))
+		}
+		remaining[d]--
+	}
+	if strings.Contains(doctorLog(f), "setup:") || strings.Contains(doctorLog(f), "eval:") || strings.Contains(doctorLog(f), "boundaries:") || strings.Contains(doctorLog(f), "worker:") || strings.Contains(doctorLog(f), "audit:") {
 		t.Errorf("static error ran probes: %s", doctorLog(f))
 	}
 }
@@ -303,11 +344,12 @@ func Test_CHK_050_CHK_051_CHK_052_CHK_053_CHK_055_CHK_056_CHK_057_CHK_058_CHK_05
 	if got := worktrees(f); got != beforeWorktrees {
 		t.Errorf("scratch registration leaked: before %q after %q", beforeWorktrees, got)
 	}
+	assertScratchRemoved(t, f)
 }
 
 func Test_CHK_051_CHK_052_SetupFailureStopsAndCleans(t *testing.T) {
 	f := localDoctorFixture(t)
-	f.put(".fireweed/setup.sh", "#!/bin/sh\necho failed setup >&2\nexit 17\n")
+	f.put(".fireweed/setup.sh", fmt.Sprintf("#!/bin/sh\nprintf 'setup:%%s\\n' \"$PWD\" >> %q\necho failed setup >&2\nexit 17\n", f.log))
 	f.commit()
 	before := worktrees(f)
 	report := checks.Doctor(context.Background(), f.request(false))
@@ -320,19 +362,28 @@ func Test_CHK_051_CHK_052_SetupFailureStopsAndCleans(t *testing.T) {
 	if got := worktrees(f); got != before {
 		t.Errorf("scratch worktree leaked: %q", got)
 	}
+	assertScratchRemoved(t, f)
 }
 
 func Test_CHK_054_MissingTemplatesAndCanaryMaps(t *testing.T) {
-	for _, tc := range []struct{ name, path, body, term, affected string }{
-		{"missing template", ".fireweed/templates/module/SPEC.md", "", "template", "undeclared"},
-		{"malformed template", ".fireweed/templates/module/SPEC.md", "---\nname: [broken\nid_prefix: {{prefix}}\n---\n", "template", "undeclared"},
-		{"missing baseline", ".fireweed/canaries/canaries.yaml", "version: 1\nbaseline: {}\n", "canary", "undeclared"},
-		{"missing internal_eval", ".fireweed/canaries/canaries.yaml", "missing_id:\n  evals/missing.txt: missing\n", "internal_eval", "internal_eval"},
-		{"wrong version", ".fireweed/canaries/canaries.yaml", "version: 2\nbaseline: {}\n", "canary", "undeclared"},
-		{"malformed canary", ".fireweed/canaries/canaries.yaml", "version: [bad\n", "canary", "undeclared"},
+	for _, tc := range []struct{ name, path, body, term, input, affected string }{
+		{"missing template", ".fireweed/templates/module/SPEC.md", "", "template", "SPEC.md", "undeclared"},
+		{"malformed template", ".fireweed/templates/module/SPEC.md", "---\nname: [broken\nid_prefix: {{prefix}}\n---\n", "template", "SPEC.md", "undeclared"},
+		{"missing baseline", ".fireweed/canaries/canaries.yaml", "version: 1\nbaseline: {}\n", "canary", "baseline", "undeclared"},
+		{"missing internal_eval", ".fireweed/canaries/canaries.yaml", "missing_id:\n  evals/missing.txt: missing\n", "internal_eval", "internal_eval", "internal_eval"},
+		{"wrong version", ".fireweed/canaries/canaries.yaml", "version: 2\nbaseline: {}\n", "canary", "canaries.yaml", "undeclared"},
+		{"malformed canary", ".fireweed/canaries/canaries.yaml", "version: [bad\n", "canary", "canaries.yaml", "undeclared"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			f := localDoctorFixture(t)
+			if tc.name == "missing baseline" {
+				body := string(mustRead(t, filepath.Join(f.root, tc.path)))
+				start, end := strings.Index(body, "baseline:\n"), strings.Index(body, "undeclared:\n")
+				if start < 0 || end <= start {
+					t.Fatal("fixture cannot isolate baseline map")
+				}
+				tc.body = body[:start] + "baseline: {}\n" + body[end:]
+			}
 			if tc.name == "missing internal_eval" {
 				body := string(mustRead(t, filepath.Join(f.root, tc.path)))
 				tc.body = strings.Replace(body, "internal_eval:\n  internal/private.txt: \"private\"\n  evals/internal.txt: \"{{module_dir}}\"\n", "", 1)
@@ -351,6 +402,15 @@ func Test_CHK_054_MissingTemplatesAndCanaryMaps(t *testing.T) {
 			report := checks.Doctor(context.Background(), f.request(true))
 			if !hasDoctorDiagnostic(report, "C14", false, tc.term) {
 				t.Errorf("missing C14: %s", doctorText(report))
+			}
+			identified := false
+			for _, d := range report.Diagnostics {
+				if d.Code == "C14" && !d.Warning && strings.Contains(strings.ToLower(d.Message+" "+d.Path), strings.ToLower(tc.input)) {
+					identified = true
+				}
+			}
+			if !identified {
+				t.Errorf("C14 did not identify %s: %s", tc.input, doctorText(report))
 			}
 			if hasDoctorCheck(report, tc.affected, true) {
 				t.Errorf("invalid recipe passed canary: %s", doctorText(report))
@@ -428,6 +488,40 @@ printf '<testsuite><testcase name="%s-001"/></testsuite>' "$prefix" > "$3"
 			r := checks.Doctor(context.Background(), f.request(true))
 			if !hasDoctorDiagnostic(r, "C14", false, tc.canary, "eval") {
 				t.Errorf("unrelated eval outcome accepted: %s", doctorText(r))
+			}
+		})
+	}
+}
+
+func Test_CHK_055_BaselineAndRecoveryFailures(t *testing.T) {
+	for _, tc := range []struct{ name, path, script, phase, hook string }{
+		{"baseline eval failure", ".fireweed/eval.sh", "#!/bin/sh\necho baseline-eval-failed >&2\nexit 9\n", "baseline", "eval"},
+		{"baseline boundary failure", ".fireweed/boundary.sh", "#!/bin/sh\nprintf 'alpha: baseline violation\\n'\n", "baseline", "boundar"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := localDoctorFixture(t)
+			f.put(tc.path, tc.script)
+			f.commit()
+			r := checks.Doctor(context.Background(), f.request(true))
+			if !hasDoctorDiagnostic(r, "C14", false, tc.phase, tc.hook) {
+				t.Errorf("failed baseline accepted: %s", doctorText(r))
+			}
+		})
+	}
+	for _, tc := range []struct{ name, failure string }{
+		{"recovery eval failure", "echo recovery-eval-failed >&2; exit 9"},
+		{"recovery coverage failure", "printf '<testsuite/>' > \"$3\"; exit 0"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := localDoctorFixture(t)
+			original := string(mustRead(t, filepath.Join(f.root, ".fireweed/eval.sh")))
+			injection := "if test -f \"$2/evals/failing.txt\"; then printf '%s' \"$2\" > .fireweed/eval-recovery-module; fi\n" +
+				"if test -f .fireweed/eval-recovery-module && test \"$(cat .fireweed/eval-recovery-module)\" = \"$2\" && ! test -f \"$2/evals/failing.txt\"; then " + tc.failure + "; fi\n"
+			f.put(".fireweed/eval.sh", strings.Replace(original, "#!/bin/sh\n", "#!/bin/sh\n"+injection, 1))
+			f.commit()
+			r := checks.Doctor(context.Background(), f.request(true))
+			if !hasDoctorDiagnostic(r, "C14", false, "recovery", "failing_eval", "eval") {
+				t.Errorf("failed %s accepted: %s", tc.name, doctorText(r))
 			}
 		})
 	}
@@ -523,6 +617,15 @@ func Test_CHK_063_CHK_064_CHK_065_CHK_066_CHK_067_AgentProbes(t *testing.T) {
 	if doctorErrors(r) || strings.Count(log, "worker:") != 1 || strings.Count(log, "audit:") != 1 || strings.Count(log, "wrap:") != 2 || !strings.Contains(log, "FIREWEED_DOCTOR_OK") {
 		t.Errorf("worker/audit/wrap probes: %s; log=%s", doctorText(r), log)
 	}
+	auditPrompt := false
+	for _, line := range strings.Split(log, "\n") {
+		if fields := strings.SplitN(line, ":", 3); len(fields) == 3 && fields[0] == "audit" && strings.Contains(fields[2], "FIREWEED_DOCTOR_OK") {
+			auditPrompt = true
+		}
+	}
+	if !auditPrompt {
+		t.Errorf("audit did not receive its fixed-reply prompt: %s", log)
+	}
 	for _, part := range []string{"/fireweed/worktrees/", "worker:", "audit:"} {
 		if !strings.Contains(log, part) {
 			t.Errorf("scratch/role marker %s absent: %s", part, log)
@@ -550,6 +653,18 @@ func Test_CHK_063_CHK_064_CHK_065_CHK_066_CHK_067_AgentProbes(t *testing.T) {
 	if strings.Contains(doctorText(bad), "line-01") {
 		t.Errorf("agent output was not trimmed to final 20 lines: %s", doctorText(bad))
 	}
+	outOfTail := localDoctorFixture(t)
+	outOfTail.put(".fireweed/agent.sh", "#!/bin/sh\necho RATE LIMIT early\nfor i in $(seq 1 25); do printf 'later-%02d\\n' \"$i\"; done\nexit 9\n")
+	outOfTail.commit()
+	ordinary := checks.Doctor(context.Background(), outOfTail.request(false))
+	if !hasDoctorDiagnostic(ordinary, "C15", false, "agent.sh", "later-25") {
+		t.Errorf("ordinary out-of-tail failure absent: %s", doctorText(ordinary))
+	}
+	for _, d := range ordinary.Diagnostics {
+		if d.Code == "C15" && !d.Warning && strings.Contains(strings.ToLower(d.Message), "usage limit") {
+			t.Errorf("out-of-tail pattern classified as usage limit: %s", doctorText(ordinary))
+		}
+	}
 	for _, tc := range []struct{ name, script string }{{"wrong reply", "#!/bin/sh\necho WRONG_REPLY\n"}, {"nonzero with reply", "#!/bin/sh\necho FIREWEED_DOCTOR_OK\nexit 7\n"}, {"ordinary failure", "#!/bin/sh\nfor i in $(seq 1 25); do printf 'ordinary-%02d\\n' \"$i\"; done\nexit 8\n"}} {
 		t.Run(tc.name, func(t *testing.T) {
 			q := localDoctorFixture(t)
@@ -563,6 +678,13 @@ func Test_CHK_063_CHK_064_CHK_065_CHK_066_CHK_067_AgentProbes(t *testing.T) {
 				t.Errorf("ordinary failure tail incorrect: %s", doctorText(r))
 			}
 		})
+	}
+	wrongAudit := localDoctorFixture(t)
+	wrongAudit.put(".fireweed/audit.sh", "#!/bin/sh\necho WRONG_REPLY\n")
+	wrongAudit.commit()
+	auditFailure := checks.Doctor(context.Background(), wrongAudit.request(false))
+	if !hasDoctorDiagnostic(auditFailure, "C15", false, "audit.sh") || hasDoctorCheck(auditFailure, "audit", true) {
+		t.Errorf("wrong audit reply accepted: %s", doctorText(auditFailure))
 	}
 
 	i := localDoctorFixture(t)
@@ -630,6 +752,11 @@ func Test_CHK_068_CHK_069_ManagedGuidanceAndPlaybookBase(t *testing.T) {
 	r := checks.Doctor(context.Background(), f.request(true))
 	if hasDoctorDiagnostic(r, "C16", true) {
 		t.Errorf("current guidance/base warned: %s", doctorText(r))
+	}
+	f.put("AGENTS.md", "Before.\n"+doctorGuidance+"After.\n")
+	surrounded := checks.Doctor(context.Background(), f.request(true))
+	if hasDoctorDiagnostic(surrounded, "C16", true) {
+		t.Errorf("current managed guidance with surrounding text warned: %s", doctorText(surrounded))
 	}
 	f.put("AGENTS.md", "Before.\n<!-- fireweed:start -->\nold guidance\n<!-- fireweed:end -->\nAfter.\n")
 	f.put(".fireweed/playbooks/evals.md", "---\nembedded_base: stale\n---\n# Local override\n")

@@ -4,7 +4,7 @@ audit_pending:
 audit_rounds: 2
 bases: {}
 module: checks
-phase: evals
+phase: audit
 run: 20261028T143328-b8168faa7b2578efc49bb800
 ---
 
@@ -174,6 +174,18 @@ and a 210-second audit command. The test compiles and verify --quick records
 runtime fail-first against the stub. The coordinator advances phases through
 the controller; the approved fresh restricted full audit is still pending.
 
+Author clarification of the CHK-049 fixture Question: this clause requires
+retaining project.Check's returned diagnostics; it does not require project to
+produce warnings. Current public Check produces only error diagnostics, and its
+diagnostic constructor leaves Warning false. Assert complete actual diagnostic
+values, including Warning, against the public project.Check result without a
+conditional/vacuous warning assertion. Preserve the generic retention requirement
+and add the real missing probe-suppression checks. Do not scaffold project
+warnings or a testing API merely to manufacture an unreachable input. Warning
+producer features and their observable integration evidence remain later work.
+This resolves the fixture Question under the existing representative-assertion
+and no-speculative-scaffolding guardrails; it does not remove a spec obligation.
+
 ## Audit
 
 - CHK-065: "Doctor MUST bound each agent probe by the request Timeout or three minutes when unset, and report C15 failures with the command and its final 20 output lines." — the unset-timeout assertion only shows that 0.2-second probes complete; it does not assert the three-minute default bound.
@@ -203,3 +215,4 @@ controller ownership resumes immediately afterward. The eight-ID correction and
 restricted re-review remain the only authorized recovery work; further unresolved
 findings stop for human review. These Questions are answered by that explicit
 approval; no test was changed before the phase repair.
+- evals 2026-10-28T19:49:04.557521Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=260 failing=34 passing=226
