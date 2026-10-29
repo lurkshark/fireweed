@@ -315,6 +315,17 @@ P02, leaving refs unchanged.
 Release MUST accept the same unambiguous change path, filename and slug
 selectors as Current.
 
+### FLOW-087
+Commits MUST return the full object IDs, newest first, of commits reachable
+from HEAD that change the selected change document's phase relative to their
+first parent, following its pending and archive paths. Selection MUST use file
+contents rather than commit messages.
+
+### FLOW-088
+Commits MUST resolve pending or archived changes by repository-relative path,
+filename or unambiguous slug. It MUST reject missing or ambiguous selectors
+with U02.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
