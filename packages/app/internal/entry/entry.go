@@ -28,7 +28,7 @@ var pending = map[string]bool{
 	"new-module": true,
 	"list":       true, "status": true,
 	"check-commits": true, "ci": true, "pr-body": true,
-	"next": true, "run": true,
+	"run":     true,
 	"release": true, "commits": true, "abandon": true,
 	"drill": true, "gc": true, "migrate": true,
 }
@@ -43,6 +43,7 @@ func Run(args []string, out, errOut io.Writer) int {
 	full := false
 	noAgent := false
 	write := false
+	allowUnmerged := false
 	withChange := ""
 	positional := make([]string, 0, len(args))
 	for i := 0; i < len(args); i++ {
@@ -59,6 +60,11 @@ func Run(args []string, out, errOut io.Writer) int {
 			noAgent = true
 		} else if arg == "--write" {
 			write = true
+		} else if arg == "--allow-unmerged" {
+			if allowUnmerged {
+				return cliFailure(2, jsonMode || contains(args, "--json"), out, errOut, "U01", "--allow-unmerged may be specified once. Use next [--allow-unmerged] [--json].")
+			}
+			allowUnmerged = true
 		} else if arg == "--with-change" {
 			if i+1 >= len(args) || strings.HasPrefix(args[i+1], "-") {
 				return cliFailure(2, jsonMode || contains(args, "--json"), out, errOut, "U01", "--with-change requires a change value. Use coverage <module> --with-change <change>.")
@@ -97,6 +103,9 @@ func Run(args []string, out, errOut io.Writer) int {
 	}
 	if noAgent && command != "doctor" || write && command != "agents-md" {
 		return fail("U01", "Use --no-agent only with doctor and --write only with agents-md.")
+	}
+	if allowUnmerged && command != "next" {
+		return fail("U01", "--allow-unmerged is only available with next. Use next [--allow-unmerged] [--json].")
 	}
 	count := len(positional) - 1
 	var body string
@@ -141,6 +150,11 @@ func Run(args []string, out, errOut io.Writer) int {
 		return 0
 	case "start", "verify", "done", "context", "coverage":
 		return runLifecycle(command, positional[1:], jsonMode, quick, full, withChange, out, errOut)
+	case "next":
+		if count != 0 {
+			return fail("U01", "next takes no arguments. Use next [--allow-unmerged] [--json].")
+		}
+		return runNext(allowUnmerged, jsonMode, out, errOut)
 	case "doctor":
 		if count != 0 {
 			return fail("U01", "doctor takes no arguments. Use doctor [--no-agent] [--json].")

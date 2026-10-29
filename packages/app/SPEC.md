@@ -239,6 +239,33 @@ agents-md --write MUST print confirmation and exit 0 on success, or exit 2 with 
 ### APP-073
 agents-md --write --json MUST emit schema 1 with confirmation string data and empty diagnostics on success, or null data and code/message diagnostics on failure, leaving stderr empty.
 
+### APP-074
+next MUST discover the nearest ancestor fireweed.yaml and invoke runner.Next
+for that project, supplying the actual invoking executable as Bin.
+
+### APP-075
+next MUST accept --allow-unmerged, passing true only when present. It MUST
+reject extra positional arguments and unsupported options with corrective U01
+and exit 2; --allow-unmerged MUST be rejected for unrelated implemented commands.
+
+### APP-076
+Plain next MUST identify the applied change or empty queue on stdout after
+successful runner completion.
+
+### APP-077
+next MUST return exit 0 for an applied change or empty queue, exit 1 for runner
+execution or lifecycle failure, and exit 2 for usage or configuration-loading
+failure.
+
+### APP-078
+next failure diagnostics MUST retain existing cause codes from wrapped
+dependency errors and include a corrective action.
+
+### APP-079
+next --json MUST emit schema 1 with object data containing change, run, phase
+and empty on success, or null data with code/message diagnostics on failure.
+It MUST leave stderr empty.
+
 ## Decisions
 
 [0069-project-initialization] Init accepts codex and claude presets as argv commands; other selections are shell command templates containing {prompt}, stored as strings for one-pass quoted substitution when execution is implemented. Local recipes use recipe.yaml metadata, recipe.md instructions and a files/ project-relative payload; none uses empty language defaults and a generic module scaffold.
