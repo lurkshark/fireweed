@@ -7,7 +7,7 @@ checked NEW next/run, verification retry and clean saved blocking work. NEW run
 now continues independent work while blocked dependencies wait, retaining exit 1
 and the blocking cause/ref. The full design and final ACCEPTANCE remain open.
 
-**Applied since review: 0; separate 0089–0093 checkpoint PASS.** The separate Sol/high 0084–0088 checkpoint
+**Applied since review: 1 (0094); separate 0089–0093 checkpoint PASS.** The separate Sol/high 0084–0088 checkpoint
 passed with build/vet/race/static/history at clean 940ef0e; its explicit new
 history extension passed 37 commits with zero diagnostics. The owner directly
 approved the reviewed push and the attachment's standing subagent-review/push
@@ -77,12 +77,20 @@ zero history diagnostics; unchanged warning explanations remain. See
 origin/main from 82ef71d to 28ced38; continuation is authorized. No new final
 acceptance, CI/doctor, drill or self-hosting claim follows.
 
-Next: re-author bounded usage handling using retained contracts/evals, recreate
-implementation fresh, wire app exit 3 promptly and close the actual NEW wait/
-success/stop/resume scenario. Explicit approval covers consecutive runner
-recovery changes. No pending change or claim; no phase-write exception or drill.
-Time --for, remaining kinds/bounds, the complete design and final ACCEPTANCE
-stay open.
+0094-usage-limit-control archived at a720cf6: RUN-029–035 and qualified RUN-015,
+247 full phase passes after one native RUN-033 snapshot-policy correction and
+isolated scoped re-audit PASS. Fresh implementation corrected an attempt-count
+error and passed69 own cases. Existing evals/interfaces stayed frozen. See
+[the runner report](reports/usage-limit-runner-0094.md). P08 for three consecutive
+runner applications is covered by explicit approved recovery; next targets app.
+No pending change/claim; installed NEW remains checkpoint source06a94e9.
+
+Next: wire app clean usage exit3, retained JSON/plain results and resume guidance,
+map invalid usage policy to config exit2, then build NEW and run the prepared
+actual Go wait/success/shared-budget-stop/owned-resume proof. The fixture must
+retain earlier Alpha application and Beta claim/work/run/ID, then resume Beta
+without touching Gamma. No phase-write exception or new drill. Time --for,
+remaining kinds/bounds, the complete design and final ACCEPTANCE remain open.
 
 ## Authority and deferred work
 
