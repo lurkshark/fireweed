@@ -53,14 +53,24 @@ three checked phases archived Alpha, three phase-tagged P05 warnings appeared,
 and tree/claims were clean. Fixture removed. See
 [the proof](reports/agent-commits-0092.md). No governing pending change or claim.
 
-Current change: 0093-usage-limit-control. Usage-limit agent exits must wait/retry the same
-attempt, preserve work, and stop cleanly when wait budget is exhausted, with
-resume possible. Supply only needed runner control and then promptly wire CLI
-exit 3 and close an actual NEW scenario. The next application is the fifth:
-perform the standing separate quality/goal-adherence review and required checks;
-PASS authorizes push/continuation, any finding requires a human stop. A checkpoint
-may interrupt the dependency/caller slice, which resumes immediately afterward.
-Time --for, remaining kinds/bounds, full design and final ACCEPTANCE stay open.
+0093-usage-limit-control did not apply. Its bounded implementation check had
+67 passes and one frozen assertion conflict: the ordinary applied-result helper
+required three invocations but the usage retry correctly retained four. The
+owner approved scoped discard/native abandonment, a fixture-only RUN-016
+`eval_fix`, then re-authoring with fresh implementation, including consecutive
+runner recovery changes. Native abandonment b08c4d0 released the claim and
+removed the uncommitted implementation. Only requirements/evals were retained;
+old implementation and logs are not implementation inputs. Prior two-round
+assertion audit reached PASS; abandonment addresses the frozen helper conflict,
+not an outstanding audit finding or a new round-limit exception.
+
+Next: factor the shared applied-result helper into an exact-count form while
+keeping its ordinary three-step wrapper and all assertions. This eval_fix is the
+fifth applied change and requires the standing separate quality/goal review and
+checks before push/continuation. Then re-author bounded usage handling, wire
+app exit 3 promptly and close the actual NEW wait/success/stop/resume scenario.
+No phase-write exception or drill is authorized. Time --for, remaining kinds/
+bounds, the complete design and final ACCEPTANCE stay open.
 
 ## Authority and deferred work
 
