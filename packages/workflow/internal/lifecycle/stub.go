@@ -344,6 +344,12 @@ func Start(root, target string) (model.State, error) {
 	phase := str(ch.Document.Frontmatter["phase"])
 	if phase == "" {
 		phase = "evals"
+		_, hasEvalFix := ch.Document.Frontmatter["eval_fix"]
+		if len(ch.Added) == 0 && len(ch.Modified) == 0 && len(ch.Removed) == 0 &&
+			len(list(ch.Document.Frontmatter["fixes"])) == 0 &&
+			!hasEvalFix && ch.Document.Frontmatter["regenerate"] != true {
+			phase = "impl"
+		}
 	}
 	c := claim{Worktree: root, Change: ch.Slug, Run: run, Phase: phase, PhaseBase: repo.Head, Snapshot: snap}
 	c.Author, c.Sections = author(ch.Document)
@@ -779,14 +785,17 @@ func apply(s model.State, c claim, ch project.Change, oid string) (model.State, 
 		}
 		decision += fmt.Sprintf("\n- %s: %s\n", ch.Slug, added)
 	}
-	doc := m.Document
-	doc.Body = contracts.ReplaceSection(doc.Body, "Decisions", decision)
-	rendered, e := contracts.RenderDocument(doc)
-	if e != nil {
-		return s, e
-	}
-	if e = write(root, specPath, []byte(rendered)); e != nil {
-		return s, e
+	if len(ch.Added) > 0 || len(ch.Modified) > 0 || len(ch.Removed) > 0 ||
+		ch.Document.Frontmatter["set"] != nil || strings.TrimSpace(removed) != "" || added != "" {
+		doc := m.Document
+		doc.Body = contracts.ReplaceSection(doc.Body, "Decisions", decision)
+		rendered, e := contracts.RenderDocument(doc)
+		if e != nil {
+			return s, e
+		}
+		if e = write(root, specPath, []byte(rendered)); e != nil {
+			return s, e
+		}
 	}
 	ch.Document.Frontmatter["phase"] = "applied"
 	archived, e := contracts.RenderDocument(ch.Document)

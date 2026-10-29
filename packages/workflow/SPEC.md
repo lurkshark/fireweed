@@ -270,6 +270,10 @@ runtime state and controller-written provenance.
 StartFromAttempt MUST reject a non-positive attempt number or missing saved
 attempt ref with P01 before claiming or writing the change.
 
+### FLOW-077
+For an unstarted change with no Added, Modified or Removed specs, fixes or
+eval_fix, and regenerate not true, Start MUST set phase to impl.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
