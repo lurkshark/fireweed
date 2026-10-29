@@ -9,12 +9,12 @@ The approved 0076–0078 corrections passed isolated audits, full phase checks,
 fresh build/vet/race/static/history, the NEW doctor smoke and the same checkpoint
 subagent's scoped re-review. The owner-authorized push synchronized main with
 origin at `510cc91`. No pending change or claim remained at that boundary.
-**Applied since review: 0 after local 0084–0088 review PASS; paused for owner decision.** Earlier audit/phase deviations remain recorded;
+**Applied since review: 0 after 0084–0088 review PASS; renewed push/resume authorization recorded.** Earlier audit/phase deviations remain recorded;
 the passing correction does not retroactively validate them. See the
 [correction report](reports/checkpoint-corrections-0076.md) and
 [checkpoint report](reports/checkpoint-0071-0075.md).
 
-## Paused checkpoint — local 0084–0088 review; push rejected
+## Active slice — authorized push and independent continuation
 
 The reviewed 0079–0083 batch pushed to origin/main at `8aff1e4` after separate
 checkpoint PASS and fresh build/vet/race/static/history. Reuse the actual
@@ -69,18 +69,20 @@ Build/vet/race/static/history passed; the explicit history extension covers 37
 commits with zero diagnostics. Relevant race suites reran and unaffected
 packages reused valid cache results. See
 [the local checkpoint](reports/checkpoint-0084-0088.md). Review resets the applied
-count, but does not override the owner's newer explicit stop.
+count. The later updated goal explicitly authorizes pushing to origin and
+resuming after subagent PASS; reuse this completed review and verification.
 
-Automatic approval review rejected the proposed origin/main push because the
-latest trusted owner instruction required stopping after 0087 and did not
-authorize resumed external mutation. The invocation never ran. Nothing has
-pushed after 8aff1e4. Stop pending the owner's decision on pushing the concrete
-local batch and resuming work; do not start runner wiring, push or run a drill.
+The previous push was rejected by automatic approval review under the earlier
+explicit stop, and did not run. The updated owner objective now states:
+“You are explicitly authorized to push to origin and resume after subagent
+review passes.” This supersedes that stop for the reviewed batch. Push the
+passing batch, then immediately return to Next/Run; do not repeat valid checks
+or the passing review merely because the authorization changed.
 
-If explicitly resumed, the next step remains canonical eligibility in Next and
-continuation in Run after a clean saved block, followed by actual NEW run with
-Alpha blocked, dependent Beta waiting and independent Gamma applied. Full design
-and final ACCEPTANCE remain open. No phase-write exception is available.
+Next: canonical eligibility in Next and continuation in Run after a clean saved
+block, followed by actual NEW run with Alpha blocked, dependent Beta waiting and
+independent Gamma applied. Full design and final ACCEPTANCE remain open. No
+new drill or phase-write exception is authorized.
 
 ## Authority and deferred work
 

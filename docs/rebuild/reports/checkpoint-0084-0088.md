@@ -39,3 +39,8 @@ authorize a resumed externally visible push. The rejected tool invocation never
 ran; no push occurred. Work stops pending an explicit owner decision on pushing
 this concrete local batch and resuming the runner caller. No workaround, further
 feature change, drill, phase-write exception or publication follows.
+
+The subsequently updated owner objective explicitly authorizes pushing to origin
+and resuming after subagent PASS. That renewed authorization supersedes the
+earlier stop for this passing batch; the earlier rejected invocation remains
+recorded and is not treated as an executed push. Existing verification is reused.
