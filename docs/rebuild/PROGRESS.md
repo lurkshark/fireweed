@@ -10,7 +10,7 @@ The approved 0076–0078 corrections passed isolated audits, full phase checks,
 fresh build/vet/race/static/history, the NEW doctor smoke and the same checkpoint
 subagent's scoped re-review. The owner-authorized push synchronized main with
 origin at `510cc91`. No pending change or claim remained at that boundary.
-**Applied since review: 2 after 0079–0080.** Earlier audit/phase deviations remain recorded;
+**Applied since review: 3 after 0079–0081.** Earlier audit/phase deviations remain recorded;
 the passing correction does not retroactively validate them. See the
 [correction report](reports/checkpoint-corrections-0076.md) and
 [checkpoint report](reports/checkpoint-0071-0075.md).
@@ -26,10 +26,14 @@ SPEC/archive/provenance, separate fake agents ran exactly three times, and claim
 released with a clean tree. See [the phase and CLI proof](reports/next-0080-block.md).
 The completed disposable fixture was removed after inspection.
 
-0081-bounded-queue-execution now targets the minimum runner loop for the next
-observable outcome: NEW run processes a small queue with --max, permits later
-continuation and returns success for an empty queue. Return to app wiring after
-that dependency passes; library success alone does not close this slice.
+0081 applied at 6bdfb43 with 204 full phase passes and an isolated audit pass.
+runner.Run now handles a small successful queue, Max/continuation and held
+errors without losing prior results. Authored 0082-run-command returns to app
+wiring now. After application, build NEW and run
+/tmp/fireweed-run-cli-smoke.py run; its prepared Go fixture and state are at
+/private/tmp/fireweed-run-cli-8w_shj2n and /tmp/fireweed-run-cli-smoke-state.json.
+The proof must inspect --max termination, continuation and empty queue through
+the actual executable. Library success alone does not close this slice.
 
 Retries/saved attempts, blocking/independent continuation, resume, time/usage
 stops and remaining kinds follow the runnable queue path. No NEW unattended

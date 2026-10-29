@@ -1,0 +1,111 @@
+---
+bases: {}
+module: app
+---
+
+
+
+## Motivation
+
+The design's Driving the state machine and CLI sections require run to process
+queued changes until empty or a limit. 0081 now provides the small bounded loop;
+NEW next already passed an actual Go fixture lifecycle. Wire run promptly and
+prove --max, a later continuation and empty queue through NEW with separate
+bounded fake agents. Do not build a broad recovery subsystem before this
+observable queue path.
+
+## Interface
+
+No public interface change. Compose app.Run with the existing runner.Run API;
+keep parsing, output and diagnostics in app internal implementation.
+
+## Added
+
+### new:run-dispatch
+run MUST discover the nearest ancestor fireweed.yaml and invoke runner.Run for
+that project with the actual invoking executable as Bin.
+
+### new:run-max-option
+run --max N MUST accept a positive integer and supply it as Max, using zero
+when --max is absent. It MUST reject missing, noninteger or nonpositive values,
+extra positional arguments and unsupported options with corrective U01 and
+exit 2; --max MUST be rejected for unrelated implemented commands.
+
+### new:run-approval-option
+run MUST accept --allow-unmerged and supply AllowUnmerged true only when the
+flag is present, using false by default.
+
+### new:run-plain-result
+After successful runner completion, plain run MUST identify applied changes
+and their count on stdout, including whether the queue is empty or Max left
+queued work.
+
+### new:run-exits
+run MUST return exit 0 for successful queue completion, Max termination or an
+empty queue, exit 1 for runner execution or lifecycle failure, and exit 2 for
+usage or configuration-loading failure.
+
+### new:run-failure-detail
+run failure diagnostics MUST retain existing cause codes from wrapped
+dependency errors and include a corrective action.
+
+### new:run-json
+run --json MUST emit schema 1 with object data containing an applied array of
+change/run/phase summaries, empty and limited flags on success, or null data
+with code/message diagnostics on failure. It MUST leave stderr empty.
+
+## Modified
+
+
+
+## Removed
+
+
+
+## Decisions
+
+
+
+## Rejected alternatives
+
+
+
+## Notes
+
+This closes the bounded successful queue slice, not the complete run surface.
+Do not implement --for, usage waits, retry/recovery, saved/block attempts,
+approval skipping or released-claim independent continuation, other change
+kinds, agent-commit undo, drills or unrelated cleanup here. Keep unsupported
+options explicit errors. Future scenarios retain every design obligation.
+
+Reuse nearest-project loading, schema/diagnostic helpers and current runner.Run.
+Leave request Timeout unset for existing configured behavior. Extend the shared
+--allow-unmerged parsing to run while preserving rejection for unrelated commands.
+Use representative valid/invalid --max values; do not freeze expectations about
+planned named options that later changes will implement. Applied JSON is an
+array even when empty; summaries identify each change, run and applied phase.
+Successful output may retain dependency warnings. Unprefixed runner failures
+use existing P01; preserve a wrapped cause such as P07 and add corrective text.
+
+Black-box evals run actual NEW binaries in ordinary temporary Go repositories
+with explicit identities, local hooks and separate bounded fake agents. Reuse
+existing helpers where possible; no bootstrap, agent auth, network, private
+imports, process observers or test matrices. Validate representative fixture
+setup through CURRENT public runner.Run before freezing CLI evals, using a
+small temporary harness removed before controller verification. The prior
+C11/C10 fixture mistake and inline-audit mismatch must not recur: use consistent
+hook exit/report pairs and canonical separate-line No findings/Checked IDs.
+
+Exercise a small independent queue from a nested directory with --max, inspect
+applied/remaining changes, count/flags and actual FIREWEED_BIN, then continue and
+verify no reapplication or claim remains; empty invocation must make no calls or
+commits. Include approval flag/default, representative usage/config errors,
+wrapped diagnostics and JSON success/failure. Use committed phase state, never
+assumed commit subjects. Keep earlier assertions/interfaces frozen and own
+Verify below five minutes. Full native Done is authoritative. After application
+build NEW and execute the prepared /tmp/fireweed-run-cli-smoke.py scenario.
+
+Coordinator owns native start/context/done and all commits. Workers never
+commit or call controller start/done/next/run, edit protected docs or phase/
+counters. Separate isolated Sol/high auditors check unasserted clauses only.
+Normal checkpoint/audit/P07 bounds remain; no new exception is authorized.
