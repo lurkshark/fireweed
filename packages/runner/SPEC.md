@@ -44,6 +44,32 @@ InvokeAgent MUST set UsageLimit true exactly when a nonzero command exit has a c
 ### RUN-009
 InvokeAgent MUST return command-launch, timeout or cancellation errors without discarding captured output.
 
+### RUN-010
+Next MUST return Empty true without invoking agents when the queue is empty.
+
+### RUN-011
+For a nonempty queue, Next MUST select its first unblocked change and start it
+through workflow.Start, propagating start failures without invoking an agent.
+
+### RUN-012
+Unless AllowUnmerged is true, Next MUST reject a selected change absent from
+both the local and shared base before claiming it or assigning IDs.
+
+### RUN-013
+For each phase, Next MUST invoke the worker role for evals and impl, and the
+audit role for audit, using the held snapshot and request Bin and Timeout.
+Worker prompts MUST include full workflow context. Audit prompts MUST include
+the change, projected spec and eval contents without implementation contents.
+
+### RUN-014
+After each successful agent invocation, Next MUST verify the current phase and
+call workflow.Done only when verification passes, continuing until applied.
+It MUST return the applied state and the ordered phase invocation results.
+
+### RUN-015
+When invocation or phase verification fails, Next MUST return an error and
+captured invocation results without advancing that phase.
+
 ## Decisions
 
 [0075-bounded-agent-invocation] An unset configured timeout defaults to 90 minutes. limit_patterns are
