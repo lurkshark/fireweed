@@ -9,28 +9,28 @@ next corrects a wrong eval under the audited eval-fix path, preserving contracts
 and implementation, with three checked commits and clean claim release.
 See [0099 proof](reports/eval-fix-cli-0099.md). Full acceptance remains open.
 
-**Applied since review: 2 (0099–0100).** Separate Sol/high0094–0098 checkpoint
+**Applied since review: 3 (0099–0101).** Separate Sol/high0094–0098 checkpoint
 PASS at clean9949dfe with build/vet/race/static/history. [Checkpoint](reports/checkpoint-0094-0098.md).
 Last authorized push origin/main28ced38→7e0da27. No pending change or claim;
 applied ledger in [HISTORY](HISTORY.md).
 
-0100 eval-fix playbooks archived atf418f88:569 full passes within15m,
-isolated three-ID audit PASS,59 own passes. Actual NEW evals/audit/impl
-playbook JSON commands return the conditional guidance, correct envelope and
-no diagnostics/stderr. See [0100 proof](reports/eval-fix-playbooks-0100.md).
-This closes the two-change eval-fix slice; do not extend the same behavior
-for speculative validation. Earlier CLI proofs remain valid.
+0101 regenerate workflow dependency archived at006fda8:368 full passes,
+isolated four-ID audit PASS. Final nested-module preservation guard was scoped
+corrected and verified after coordinator caught an ancestor-selection defect;
+initial native check interrupted before archive, final full check passed with
+same run/IDs. See [0101 report](reports/regenerate-api-0101.md). No actual drill.
+0100 closes eval-fix guidance; its actual CLI results and earlier proofs remain
+valid. Installed NEW stillf418f88; regenerate CLI fixture has not run.
 
-## Next slice — regenerate lifecycle
+## Next slice — P10 explanation, then actual regenerate caller
 
-The design sends regenerate:true straight to impl with disposable files removed,
-uses retained contracts for reconstruction and warns without a sufficiently
-recent passing drill. NEW currently sends regenerate to evals and leaves code
-in place. Establish this missing path through normal workflow changes, return
-to its existing CLI caller and prove a bounded fake-agent Go reconstruction.
-No actual drill is authorized here. Keep warning explanations accurate when
-a justified diagnostic is emitted. Remaining kinds/bounds, full command
-inventory and final gates remain open.
+Immediately add the accurate P10 cause/corrective-action explanation in assets,
+as allocated in D008. Then build clean NEW and run the prepared actual Go
+fixture: start selects impl, deletes disposable code while retaining contracts,
+shows the non-blocking freshness warning and regenerate context; owned next
+reconstructs through normal checked archive with a bounded fake worker. This
+is not a real drill. The two-change regenerate slice ends after that proof;
+remaining kinds/bounds, command inventory and final gates stay open.
 
 ## Authority and deferred work
 
