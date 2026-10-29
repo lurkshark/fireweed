@@ -6,13 +6,14 @@ they are not current instructions, permissions or readiness claims. Resume from
 [PROGRESS.md](PROGRESS.md). Preserve evidence and checkpoint history; do not
 repeat passed work because an older entry calls it pending.
 
-## Applied changes through 0087
+## Applied changes through 0088
 
 [0079–0083 checkpoint](reports/checkpoint-0079-0083.md) PASS: separate subagent
 review and fresh build/vet/race/static/history at clean 6ce22e9; 38 new history
 commits have zero diagnostics. Actual NEW Next and bounded Run fixtures pass.
 The standing policy authorizes push and continuation; final gates remain open.
 
+- 0088 projected-blocking-eligibility — FLOW-011/068–072; 49fecf4/d5e477d/199f373. Fresh implementation from retained contracts only; 13 genuine failures/270 passes → 283 full phase passes, isolated audit no findings. Canonical projected selection and Start dependency ready; runner/CLI continuation still pending after fifth checkpoint. [Report](reports/projected-eligibility-0088.md).
 - 0087 independent-blocked-fixture — eval_fix RUN-011; f898bd7/2c44359/931c17f. Both full phases passed 213 cases; 47 own pass and isolated audit no findings. Fixture inputs only; all assertions/IDs preserved. Earlier 0087-projected-blocking-eligibility was natively abandoned at 3d65370 after dependent-fixture incompatibility, with only contracts retained for fresh reuse. Owner requested stop after this archive; [correction](reports/independent-blocked-fixture-0087.md), [progress review](reports/progress-review-after-0087.md).
 - 0086 exhausted-verification-blocking — RUN-023/024, narrowed already-satisfied RUN-015; e0b5c8f/3af876d/c797264. Two genuine failures/211 passes → 213 full phase passes; isolated audit no findings. Existing assertions retained with changed terminal-state expectations; ten-line caller handoff. Actual NEW Go next exhaustion proof passes in 5.61s (expected exit 1), saving final work/ref and restoring state-only clean release; [report](reports/exhausted-next-0086.md).
 - 0085 saved-attempt-blocking — FLOW-063–067; initial evals 5b9076e, valid findings 188b41f, corrected evals a7134cf, passing audit 7875cce, impl 526f90e. Two genuine failures/266 passes → 268 full phase passes; 54 own pass. Native round 1/same run/IDs retained through two explicitly approved author revert recoveries; ignored mechanical passes remain invalid. Scoped FLOW-066 correction/re-audit passed. Public lifecycle dependency ready; runner/CLI exhaustion proof follows. [Report](reports/saved-attempt-blocking-0085.md).

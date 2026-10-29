@@ -9,12 +9,12 @@ The approved 0076–0078 corrections passed isolated audits, full phase checks,
 fresh build/vet/race/static/history, the NEW doctor smoke and the same checkpoint
 subagent's scoped re-review. The owner-authorized push synchronized main with
 origin at `510cc91`. No pending change or claim remained at that boundary.
-**Applied since review: 4 after 0084–0087; the next application requires the standing checkpoint review.** Earlier audit/phase deviations remain recorded;
+**Applied since review: 5 after 0084–0088; separate checkpoint review is required before continuation.** Earlier audit/phase deviations remain recorded;
 the passing correction does not retroactively validate them. See the
 [correction report](reports/checkpoint-corrections-0076.md) and
 [checkpoint report](reports/checkpoint-0071-0075.md).
 
-## Active slice — fresh projected eligibility after progress review
+## Active checkpoint — 0084–0088 review
 
 The reviewed 0079–0083 batch pushed to origin/main at `8aff1e4` after separate
 checkpoint PASS and fresh build/vet/race/static/history. Reuse the actual
@@ -57,19 +57,19 @@ CLI capabilities, missing recovery/command behavior and evidence limits. Static
 checking and the new 31-commit history extension passed. Whole-root race/vet and
 final acceptance are not newly claimed. No push after `8aff1e4` occurred.
 
-The active goal continuation resumed work after the completed review. Current
-change: 0088-projected-blocking-eligibility, re-authored from retained author
-requirements, public interface and evals only. Its implementation must be fresh;
-do not read discarded implementation or old worker logs as an oracle. The
-observable slice remains NEW run leaving dependent work waiting and applying
-independent work after a clean block; workflow eligibility is the needed
-selection dependency. Return to runner after this dependency and its checkpoint.
+The active goal continuation resumed work after the completed progress review.
+0088-projected-blocking-eligibility applied at 199f373: FLOW-011/068–072, fresh
+implementation from retained contracts only, 283 full phase passes and isolated
+assertion audit PASS. Start now uses canonical projected eligibility. No pending
+change files or claims remain. See [the report](reports/projected-eligibility-0088.md).
 
-The four-change counter is not reset by the requested progress review. The next
-application reaches the standing five-change separate subagent checkpoint;
-PASS authorizes push/continuation, findings require a human stop. Full design
-and all final ACCEPTANCE gates stay open. No drill or phase-write exception is
-authorized.
+Five applications since the reviewed push at 8aff1e4 now require the standing
+separate subagent checkpoint. Fresh build/vet/race/static/history and that review
+are pending; do not start runner wiring before PASS. PASS authorizes push and
+continuation; findings require a human stop. The earlier progress review did not
+reset the count. After PASS, immediately return to Next/Run and prove independent
+continuation through actual NEW run. Full design/final acceptance remain open;
+no drill or phase-write exception is authorized.
 
 ## Authority and deferred work
 
