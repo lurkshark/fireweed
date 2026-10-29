@@ -53,7 +53,7 @@ three checked phases archived Alpha, three phase-tagged P05 warnings appeared,
 and tree/claims were clean. Fixture removed. See
 [the proof](reports/agent-commits-0092.md). No governing pending change or claim.
 
-Next unmet runnable behavior: usage-limit agent exits must wait/retry the same
+Current change: 0093-usage-limit-control. Usage-limit agent exits must wait/retry the same
 attempt, preserve work, and stop cleanly when wait budget is exhausted, with
 resume possible. Supply only needed runner control and then promptly wire CLI
 exit 3 and close an actual NEW scenario. The next application is the fifth:
