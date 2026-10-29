@@ -96,7 +96,7 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 	fail := func(status int, code, message string) int {
 		return cliFailure(status, jsonMode, out, errOut, code, message)
 	}
-	if command == "start" || command == "context" || command == "release" {
+	if command == "start" || command == "context" || command == "release" || command == "commits" {
 		if len(args) != 1 {
 			return fail(2, "U01", "Use "+command+" <change> with exactly one change.")
 		}
@@ -142,6 +142,25 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 		}
 		body := fmt.Sprintf("Released %s\n", args[0])
 		return cliResponse(0, jsonMode, out, errOut, body, body, nil)
+	}
+	if command == "commits" {
+		ids, err := workflow.Commits(root, args[0])
+		if err != nil {
+			ds := lifecycleError(err, nil, "Use a valid pending or archived change selector in a Git project, then retry commits.")
+			status := 1
+			if ds[0].Code == "U02" {
+				status = 2
+			}
+			return cliResponse(status, jsonMode, out, errOut, nil, "", ds)
+		}
+		if ids == nil {
+			ids = []string{}
+		}
+		plain := ""
+		if len(ids) > 0 {
+			plain = strings.Join(ids, "\n") + "\n"
+		}
+		return cliResponse(0, jsonMode, out, errOut, ids, plain, nil)
 	}
 	bin, err := os.Executable()
 	if err != nil {

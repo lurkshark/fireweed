@@ -346,6 +346,22 @@ release --json MUST emit schema1 with confirmation string data and empty
 diagnostics on success, or null data with code/message diagnostics on failure.
 It MUST leave stderr empty.
 
+### APP-094
+commits <change> MUST discover the nearest project root and invoke
+workflow.Commits. Plain success MUST print the returned object IDs one per line
+in returned order with exit0, returning empty output when the list is empty.
+
+### APP-095
+commits MUST return exit2 with corrective U01 for usage errors, U02 for selector
+errors, and the existing cause code for project configuration errors. Other
+workflow failures MUST return exit1 retaining their cause code and a corrective
+action.
+
+### APP-096
+commits --json MUST emit schema1 with an array of returned object IDs, including
+an empty array for no commits, and empty diagnostics on success. On failure it
+MUST emit null data with code/message diagnostics. It MUST leave stderr empty.
+
 ## Decisions
 
 [0069-project-initialization] Init accepts codex and claude presets as argv commands; other selections are shell command templates containing {prompt}, stored as strings for one-pass quoted substitution when execution is implemented. Local recipes use recipe.yaml metadata, recipe.md instructions and a files/ project-relative payload; none uses empty language defaults and a generic module scaffold.
