@@ -2,7 +2,7 @@
 audit_rounds: 0
 bases: {}
 module: workflow
-phase: audit
+phase: impl
 run: 20261029T233903-c9fd8b6bf7425b01233b2e82
 ---
 
@@ -87,3 +87,9 @@ audit and native full checks; own under5m/full under15m with unchanged bounds.
 ## Provenance
 
 - evals 2026-10-29T23:42:51.29465Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=402 failing=12 passing=390
+- audit 2026-10-29T23:44:54.446633Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+
+## Audit
+
+No findings
+Checked IDs: FLOW-089, FLOW-090, FLOW-091, FLOW-092, FLOW-093, FLOW-094, FLOW-095, FLOW-096
