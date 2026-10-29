@@ -1,8 +1,11 @@
 ---
+audit_rounds: 0
 bases: {}
 eval_fix:
     - RUN-011
 module: runner
+phase: audit
+run: 20261029T070406-ea5196b72786ec9e4118faa0
 ---
 
 
@@ -50,3 +53,7 @@ preparatory fix precedes any future fresh authoring of projected eligibility.
 The owner now requires stopping immediately after this change archives and
 generating a current-progress review; do not re-author eligibility or push. Do not use
 any discarded eligibility implementation as an oracle.
+
+## Provenance
+
+- evals 2026-10-29T07:10:35.574684Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=213 failing=0 passing=213

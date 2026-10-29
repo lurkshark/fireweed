@@ -281,7 +281,8 @@ func Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents(t *testing.T) {
 	})
 	t.Run("first_unblocked", func(t *testing.T) {
 		f := newNextFixture(t, true, true, "exit")
-		nextWrite(t, f.root, "changes/0000-blocked.md", "---\nmodule: alpha\nblocked: human review\n---\n\n## Motivation\nBlocked work.\n\n## Interface\n\n## Added\n\n## Modified\n\n## Removed\n\n## Decisions\n")
+		nextWrite(t, f.root, "packages/beta/SPEC.md", "---\nname: beta\nid_prefix: BET\ndepends_on: []\n---\n# Beta\n\n## Specs\n\n### BET-001\nBeta MUST work.\n")
+		nextWrite(t, f.root, "changes/0000-blocked.md", "---\nmodule: beta\nblocked: human review\n---\n\n## Motivation\nBlocked work.\n\n## Interface\n\n## Added\n\n## Modified\n\n## Removed\n\n## Decisions\n")
 		nextCommit(t, f.root, "blocked first change")
 		_, err := f.run(false)
 		if err == nil {
