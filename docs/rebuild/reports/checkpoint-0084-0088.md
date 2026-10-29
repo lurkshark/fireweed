@@ -40,7 +40,10 @@ ran; no push occurred. Work stops pending an explicit owner decision on pushing
 this concrete local batch and resuming the runner caller. No workaround, further
 feature change, drill, phase-write exception or publication follows.
 
-The subsequently updated owner objective explicitly authorizes pushing to origin
-and resuming after subagent PASS. That renewed authorization supersedes the
-earlier stop for this passing batch; the earlier rejected invocation remains
-recorded and is not treated as an executed push. Existing verification is reused.
+The subsequently updated objective attachment contains authorization to push and
+resume after subagent PASS. A second push attempt was rejected by automatic
+approval review because authorization inside that file is treated as untrusted
+for an external origin/main mutation; direct trusted user approval in this chat
+is required. Neither push invocation ran. No workaround or further feature work
+follows; existing verification and passing review remain valid for the unchanged
+source. The concrete batch awaits direct approval.

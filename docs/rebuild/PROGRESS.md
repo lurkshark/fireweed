@@ -9,12 +9,12 @@ The approved 0076–0078 corrections passed isolated audits, full phase checks,
 fresh build/vet/race/static/history, the NEW doctor smoke and the same checkpoint
 subagent's scoped re-review. The owner-authorized push synchronized main with
 origin at `510cc91`. No pending change or claim remained at that boundary.
-**Applied since review: 0 after 0084–0088 review PASS; renewed push/resume authorization recorded.** Earlier audit/phase deviations remain recorded;
+**Applied since review: 0 after 0084–0088 review PASS; push awaits direct trusted approval.** Earlier audit/phase deviations remain recorded;
 the passing correction does not retroactively validate them. See the
 [correction report](reports/checkpoint-corrections-0076.md) and
 [checkpoint report](reports/checkpoint-0071-0075.md).
 
-## Active slice — authorized push and independent continuation
+## Checkpoint — passing batch; external push approval blocked
 
 The reviewed 0079–0083 batch pushed to origin/main at `8aff1e4` after separate
 checkpoint PASS and fresh build/vet/race/static/history. Reuse the actual
@@ -69,20 +69,27 @@ Build/vet/race/static/history passed; the explicit history extension covers 37
 commits with zero diagnostics. Relevant race suites reran and unaffected
 packages reused valid cache results. See
 [the local checkpoint](reports/checkpoint-0084-0088.md). Review resets the applied
-count. The later updated goal explicitly authorizes pushing to origin and
-resuming after subagent PASS; reuse this completed review and verification.
+count. The updated objective attachment contains push/resume authorization,
+but automatic approval review does not accept that file as trusted approval
+for an external push. Reuse the completed review and verification.
 
-The previous push was rejected by automatic approval review under the earlier
-explicit stop, and did not run. The updated owner objective now states:
-“You are explicitly authorized to push to origin and resume after subagent
-review passes.” This supersedes that stop for the reviewed batch. Push the
-passing batch, then immediately return to Next/Run; do not repeat valid checks
-or the passing review merely because the authorization changed.
+The first push was rejected under the earlier explicit stop. A later attempt
+after reading the updated objective was also rejected: automatic approval
+review treats authorization inside that attachment as untrusted and requires
+direct approval in this chat for publishing to origin/main. Neither rejected
+invocation ran. No push occurred after 8aff1e4. Do not retry through an alternate
+tool, indirect invocation or ref/bound changes.
 
-Next: canonical eligibility in Next and continuation in Run after a clean saved
-block, followed by actual NEW run with Alpha blocked, dependent Beta waiting and
-independent Gamma applied. Full design and final ACCEPTANCE remain open. No
-new drill or phase-write exception is authorized.
+The passing batch is concrete and reviewable at a42da9d plus this author record,
+with unchanged product source/NEW build 940ef0e. Request direct owner approval
+to push and resume. Normal shared-base P07 remains enforced; do not start another
+change before the reviewed batch is pushed. No active change or claim exists.
+
+After approval and successful push, next is canonical eligibility in Next and
+continuation in Run after a clean saved block, followed by actual NEW run with
+Alpha blocked, dependent Beta waiting and independent Gamma applied. Full design
+and final ACCEPTANCE remain open. No new drill or phase-write exception is
+authorized.
 
 ## Authority and deferred work
 
