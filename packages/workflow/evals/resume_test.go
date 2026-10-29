@@ -218,6 +218,92 @@ func Test_FLOW_073_FLOW_074_FLOW_075_StartFromAttemptImplRetainsCommittedEvalsAu
 	}
 }
 
+func Test_FLOW_074_StartFromAttemptSelectsRequestedSavedRef(t *testing.T) {
+	root, _, first := savedEvalsAttempt(t)
+	unblockAttempt(t, root)
+	start(t, root)
+	write(t, root, "packages/alpha/evals/current_test.go", "second modified eval\n")
+	write(t, root, "packages/alpha/evals/new_test.go", "second new eval\n")
+	second := block(t, root, "second eval attempt exhausted")
+	if second.AttemptRef != "refs/fireweed/attempts/manual/2" || second.AttemptOID == "" || second.AttemptOID == first.AttemptOID {
+		t.Fatalf("Block did not save a distinct attempt 2: first=%#v, second=%#v", first, second)
+	}
+	if got := git(t, root, "show", first.AttemptRef+":packages/alpha/evals/current_test.go"); got != "saved modified eval" {
+		t.Fatalf("attempt 1 content = %q", got)
+	}
+	if got := git(t, root, "show", second.AttemptRef+":packages/alpha/evals/current_test.go"); got != "second modified eval" {
+		t.Fatalf("attempt 2 content = %q", got)
+	}
+	unblockAttempt(t, root)
+	if _, err := workflow.StartFromAttempt(root, "manual", 2); err != nil {
+		t.Fatalf("StartFromAttempt(%s): %v", second.AttemptRef, err)
+	}
+	if got := readFile(t, root, "packages/alpha/evals/current_test.go"); got != "second modified eval\n" {
+		t.Errorf("requested attempt 2 modified eval = %q", got)
+	}
+	if got := readFile(t, root, "packages/alpha/evals/new_test.go"); got != "second new eval\n" {
+		t.Errorf("requested attempt 2 new eval = %q", got)
+	}
+}
+
+func Test_FLOW_075_StartFromAttemptRestoresAuditBodyAndRetainsCurrentApproval(t *testing.T) {
+	root := blockFixture(t, "", "", "", "", "")
+	auditState := toAudit(t, root)
+	path := "changes/0001-manual.md"
+	committed, err := contracts.ParseDocument(readFile(t, root, path))
+	if err != nil {
+		t.Fatal(err)
+	}
+	committedAudit, _ := contracts.Section(committed.Body, "Audit")
+	audit(t, root, "Checked IDs: ALP-001\nNo findings\n")
+	worker, err := contracts.ParseDocument(readFile(t, root, path))
+	if err != nil {
+		t.Fatal(err)
+	}
+	savedAudit, ok := contracts.Section(worker.Body, "Audit")
+	if !ok || savedAudit == committedAudit || !strings.Contains(savedAudit, "No findings") {
+		t.Fatalf("fixture lacks distinct worker Audit body: saved=%q, committed=%q", savedAudit, committedAudit)
+	}
+	saved := block(t, root, "audit attempt exhausted")
+	if saved.AttemptRef != "refs/fireweed/attempts/manual/1" || saved.AttemptOID == "" {
+		t.Fatalf("Block did not save audit attempt: %#v", saved)
+	}
+	unblockAttempt(t, root)
+	before, err := contracts.ParseDocument(readFile(t, root, path))
+	if err != nil {
+		t.Fatal(err)
+	}
+	currentAudit, _ := contracts.Section(before.Body, "Audit")
+	currentProvenance, hasProvenance := contracts.Section(before.Body, "Provenance")
+	if currentAudit == savedAudit || !hasProvenance || strings.TrimSpace(currentProvenance) == "" {
+		t.Fatalf("fixture lacks separate committed Audit or controller provenance: Audit=%q, Provenance=%q", currentAudit, currentProvenance)
+	}
+	got, err := workflow.StartFromAttempt(root, "manual", 1)
+	if err != nil {
+		t.Fatalf("audit StartFromAttempt(%s): %v", saved.AttemptRef, err)
+	}
+	if got.Phase != auditState.Phase || got.Run != auditState.Run {
+		t.Errorf("audit resume changed phase or run: %#v", got)
+	}
+	resumed, err := contracts.ParseDocument(readFile(t, root, path))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if body, _ := contracts.Section(resumed.Body, "Audit"); body != savedAudit {
+		t.Errorf("restored Audit = %q, want saved worker body %q", body, savedAudit)
+	}
+	for _, name := range []string{"Motivation", "Interface", "Added", "Modified", "Removed", "Removed decisions", "Provenance"} {
+		want, _ := contracts.Section(before.Body, name)
+		actual, _ := contracts.Section(resumed.Body, name)
+		if actual != want {
+			t.Errorf("current %s changed: got %q, want %q", name, actual, want)
+		}
+	}
+	if !reflect.DeepEqual(resumed.Frontmatter, before.Frontmatter) {
+		t.Errorf("audit resume changed current author/runtime frontmatter: got %#v, want %#v", resumed.Frontmatter, before.Frontmatter)
+	}
+}
+
 func Test_FLOW_073_StartFromAttemptRequiresCleanEligibleUnblockedAndUnclaimedChange(t *testing.T) {
 	t.Run("dirty", func(t *testing.T) {
 		root, _, _ := savedEvalsAttempt(t)
