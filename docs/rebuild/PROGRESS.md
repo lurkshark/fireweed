@@ -9,42 +9,39 @@ The approved 0076–0078 corrections passed isolated audits, full phase checks,
 fresh build/vet/race/static/history, the NEW doctor smoke and the same checkpoint
 subagent's scoped re-review. The owner-authorized push synchronized main with
 origin at `510cc91`. No pending change or claim remained at that boundary.
-**Applied since review: 1 after 0084; the 0079–0083 checkpoint passed.** Earlier audit/phase deviations remain recorded;
+**Applied since review: 2 after 0084–0085; the 0079–0083 checkpoint passed.** Earlier audit/phase deviations remain recorded;
 the passing correction does not retroactively validate them. See the
 [correction report](reports/checkpoint-corrections-0076.md) and
 [checkpoint report](reports/checkpoint-0071-0075.md).
 
-## Active slice — saved-attempt recovery through NEW
+## Active slice — NEW next exhaustion and saved work
 
-The reviewed 0079–0083 batch pushed to origin/main at 8aff1e4 after separate
+The reviewed 0079–0083 batch pushed to origin/main at8aff1e4 after separate
 checkpoint PASS and fresh build/vet/race/static/history. Reuse the actual
 [Next lifecycle](reports/next-0080-block.md), [bounded queue](reports/bounded-run-cli.md)
 and [checkpoint](reports/checkpoint-0079-0083.md) evidence.
 
-0084-verification-retries applied at 667e419: 214 full phase cases pass and a
-valid isolated assertion audit passed RUN-015/021/022. Both capacity-stopped
-workers were resumed by separately approved one-time same Sol/high retries.
-The mistaken initial audit working directory is retained as invalid evidence;
-the fresh correctly isolated audit is the accepted one. No pending change or
-claim remains. See [the retry report](reports/verification-retries-0084.md).
+0084 verification retries passed214 full phase cases and the actual NEW next
+retry fixture; see [the report](reports/verification-retries-0084.md). The CLI ran
+actual NEW next retry in6.53s, preserving work and exact verification feedback,
+with four fake-agent calls, three phase commits and clean claim/tree cleanup.
 
-Fresh NEW at clean 667e419, CGO disabled and vcs.modified=false, passed the actual
-Go next retry fixture in 6.53s. One genuine impl failure was corrected on its
-second attempt, preserving work and exact recorded verification feedback.
-Four fake-agent calls, three phase commits, SPEC/archive/provenance, claim
-release and clean tree were inspected; the fixture was removed. The external
-verifier's over-specific output assertion was corrected against the same
-completed fixture, without a product change or another execution.
+0085 saved-attempt blocking applied at526f90e with268 full phase passes. The
+sole FLOW-066 finding was corrected in native round1, and its isolated scoped
+re-audit passed. Same run/IDs were retained through two explicitly approved
+author revert recoveries after ignored finding submissions. Those mechanical
+passes remain invalid audit evidence; both phase-write exceptions are consumed.
+The quote diagnosis, capacity retry and full phase history are in
+[the dependency report](reports/saved-attempt-blocking-0085.md). No pending
+change or claim remains, and no push after8aff1e4 occurred.
 
-Next change 0085-saved-attempt-blocking: exhausted verification work must be
-saved on an attempt ref, checkout
-restored, and a state-only block committed with claim release. Add only the
-needed lifecycle primitive, return promptly to its runner caller and close
-with an actual NEW next exhaustion fixture. Then projected blocking with
-independent continuation, saved-attempt resume, nonzero-agent retries,
-time/usage stops, remaining kinds and persistent bounds follow. Bounded fake
-Next/Run proof has passed; full design and final ACCEPTANCE gates remain open.
-No new push or drill occurred.
+Next: wire runner Next's exhausted verification to the new lifecycle Block
+operation, retaining cause/results. Close with actual NEW next returning1 and
+inspect its saved attempt ref/work, restored checkout, state-only block and
+claim release. Return directly to this caller; no broad recovery library.
+Then projected blocking/independent continuation, saved-attempt resume,
+nonzero-agent retries, time/usage stops, remaining kinds and persistent bounds
+follow. Full design and all final ACCEPTANCE gates remain open; no new drill.
 
 ## Authority and deferred work
 
