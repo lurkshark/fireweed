@@ -10,7 +10,7 @@ An ordinary fix then proves real fail-first/pass through three checked phases.
 Both fixtures clean/unclaimed and removed. [0102 proofs](reports/regenerate-fixes-cli-0102.md).
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 2 (0106–0107).** The owner-approved0104–0105 corrections pass:
+**Applied since review: 3 (0106–0108).** The owner-approved0104–0105 corrections pass:
 central C07 rejects mixed eval_fix with fixes/spec edits; C07 explains the cause
 and separation action. Same scoped Sol/high checkpoint reviewer PASS plus
 actual NEW rejection, build/vet/race/static/history16 commits pass at clean4cf21a1.
@@ -27,10 +27,16 @@ retains exact dirty files/runtime/HEAD while dropping only the owned claim;
 repeated release returns P02.203 native/own passes and restricted audit PASS;
 fixture removed. [Release proof](reports/release-cli-0106.md).
 
-**Next:** immediately expose0107 workflow.Commits through app commits <change>,
-then close the slice with an actual NEW Go lifecycle/listing proof. Pending and
-archived selectors return reachable phase-changing IDs in order, independent
-of commit messages. Remaining management surface and final acceptance stay open.
+0108 exposes workflow.Commits through NEW. Actual Go next then plain/JSON
+listing matches all three phase OIDs; empty history/U02 cases pass, read state
+unchanged, clean/unclaimed fixture removed.209 full native passes and scoped
+APP-095 re-audit PASS. [Commits proof](reports/commits-cli-0108.md).
+
+**Next:** abandon <change> drops unapplied work in one commit, retains saved
+attempt refs and frees assigned IDs. Build its minimum workflow API, immediately
+wire app and close with actual NEW proof. These are applications4/5; perform the
+required separate quality/goal checkpoint and appropriate checks after app.
+Remaining management surface and final acceptance stay open.
 
 ## Approved correction gate
 
@@ -74,7 +80,7 @@ Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
 recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-39a1d36, Go1.27.2 darwin/arm64, CGO disabled,
+6143176f793d965f0670f15a9f19afb0c066705f, Go1.27.2 darwin/arm64, CGO disabled,
 vcs.modified=false. This build completed without a warning.
 Build/vet/race/static/history and scoped quality review passed at4cf21a1;
 actual NEW rejects the recorded invalid mixed-kind fixture before mutation. No final CI/doctor/fresh-checkout/drill/self-hosting

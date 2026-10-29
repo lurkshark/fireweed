@@ -190,3 +190,9 @@ disposable deletion/context/P10 and completes owned next; an ordinary fix
 retains contracts/evals and proves a real Go failure before implementation.
 Both archive cleanly and release claims. No actual drill or self-hosting claim;
 persistent bounds, management surface and final gates remain open.
+
+The [NEW release proof](reports/release-cli-0106.md) and
+[commits proof](reports/commits-cli-0108.md) add partial lifecycle/ref-management
+evidence: owned claim removal with retained work, and current-branch phase-ID
+listing after a real Go lifecycle. Unknown/empty cases and unchanged read state
+are recorded. Abandon, remaining management commands and final gates stay open.
