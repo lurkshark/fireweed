@@ -2,7 +2,7 @@
 audit_rounds: 0
 bases: {}
 module: workflow
-phase: impl
+phase: audit
 run: 20261029T043714-a528702cc3674dd30fe43e62
 ---
 
@@ -92,8 +92,3 @@ Separate auditors receive isolated change/projected specs/evals/interfaces.
 ## Provenance
 
 - evals 2026-10-29T05:08:52.313761Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=268 failing=2 passing=266
-- audit 2026-10-29T05:16:47.521978Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
-
-## Audit
-
-No findings. Checked FLOW-063, FLOW-064, FLOW-065, FLOW-066, FLOW-067.
