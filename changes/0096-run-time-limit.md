@@ -2,10 +2,13 @@
 already_satisfied:
     - RUN-016
     - RUN-030
+audit_rounds: 0
 bases:
     RUN-016: e626633e
     RUN-030: 1dde6570
 module: runner
+phase: audit
+run: 20261029T155505-139e6ccaaac6b169ce975070
 ---
 
 
@@ -34,28 +37,28 @@ caller cannot report interrupted work as successful before app integration.
 
 ## Added
 
-### new:run-time-budget
+### RUN-036
 Run MUST treat For zero as unbounded and positive For as one elapsed-time
 budget for the whole invocation, including agent and verification time across
 phases and changes.
 
-### new:run-time-stop
+### RUN-037
 When its For bound stops execution, Run MUST return a nonnil clean time-stop
 error naming the limit, with already-applied results retained. A step interrupted
 during agent invocation or verification MUST keep its work, claim, run, phase
 and assigned IDs without advancing, blocking, committing or releasing that step.
 
-### new:run-time-usage-wait
+### RUN-038
 When a usage wait fits its usage budget but would pass Run's For deadline,
 execution MUST return a clean time stop before waiting. It MUST preserve the
 held step's work and identity.
 
-### new:time-stop-classifier
+### RUN-039
 IsTimeStop MUST recognize clean time-stop errors through wrapping. It MUST
 return false for nil, usage stops, ordinary failures and parent-context
 cancellation.
 
-### new:blocked-time-stop
+### RUN-040
 If Run blocked a change before a time stop, it MUST return ordinary failure
 retaining the blocking cause/ref and time-stop reason. IsTimeStop MUST return
 false for that combined failure.
@@ -115,3 +118,7 @@ source/tests, rebuild-v1, deleted/abandoned/saved implementation or old worker
 logs as oracles. No CLI --for/parser/status/new-module or unused diagnostics in
 this dependency. After archive, wire app immediately and close actual NEW proof.
 Two applied changes since review precede this one; normal checkpoints continue.
+
+## Provenance
+
+- evals 2026-10-29T16:27:41.954923Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=262 failing=5 passing=257

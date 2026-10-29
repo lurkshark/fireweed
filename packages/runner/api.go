@@ -32,3 +32,7 @@ func Run(ctx context.Context, request RunRequest) (RunResult, error) {
 func IsUsageStop(err error) bool {
 	return next.IsUsageStop(err)
 }
+
+func IsTimeStop(err error) bool {
+	return run.IsTimeStop(err)
+}

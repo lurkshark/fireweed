@@ -47,6 +47,7 @@ type RunRequest struct {
 	AllowUnmerged bool
 	Timeout       time.Duration
 	Max           int
+	For           time.Duration
 }
 
 type RunResult struct {
