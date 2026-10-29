@@ -9,12 +9,12 @@ The approved 0076–0078 corrections passed isolated audits, full phase checks,
 fresh build/vet/race/static/history, the NEW doctor smoke and the same checkpoint
 subagent's scoped re-review. The owner-authorized push synchronized main with
 origin at `510cc91`. No pending change or claim remained at that boundary.
-**Applied since review: 0 after 0084–0088 review PASS; push awaits direct trusted approval.** Earlier audit/phase deviations remain recorded;
+**Applied since review: 0 after 0084–0088 review PASS; direct push/resume approval received.** Earlier audit/phase deviations remain recorded;
 the passing correction does not retroactively validate them. See the
 [correction report](reports/checkpoint-corrections-0076.md) and
 [checkpoint report](reports/checkpoint-0071-0075.md).
 
-## Checkpoint — passing batch; external push approval blocked
+## Active slice — approved push and runner continuation
 
 The reviewed 0079–0083 batch pushed to origin/main at `8aff1e4` after separate
 checkpoint PASS and fresh build/vet/race/static/history. Reuse the actual
@@ -80,16 +80,18 @@ direct approval in this chat for publishing to origin/main. Neither rejected
 invocation ran. No push occurred after 8aff1e4. Do not retry through an alternate
 tool, indirect invocation or ref/bound changes.
 
-The passing batch is concrete and reviewable at a42da9d plus this author record,
-with unchanged product source/NEW build 940ef0e. Request direct owner approval
-to push and resume. Normal shared-base P07 remains enforced; do not start another
-change before the reviewed batch is pushed. No active change or claim exists.
+The owner directly approved in this chat: “Approved; and consider this explicit
+authorization for the subagent review and push process described in the
+attachment.” This clears the push/resume approval block and explicitly
+reauthorizes the standing fifth-change subagent PASS → push/continue process;
+findings still require a human stop. Reuse the passing 0084–0088 review and
+checks, with unchanged product source/NEW build 940ef0e. Push this reviewed
+batch before starting the next change. No active change or claim exists.
 
-After approval and successful push, next is canonical eligibility in Next and
-continuation in Run after a clean saved block, followed by actual NEW run with
-Alpha blocked, dependent Beta waiting and independent Gamma applied. Full design
-and final ACCEPTANCE remain open. No new drill or phase-write exception is
-authorized.
+Next is canonical eligibility in Next and continuation in Run after a clean
+saved block, followed by actual NEW run with Alpha blocked, dependent Beta
+waiting and independent Gamma applied. Full design/final ACCEPTANCE remain
+open. No new drill or phase-write exception is authorized.
 
 ## Authority and deferred work
 

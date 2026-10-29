@@ -47,3 +47,8 @@ for an external origin/main mutation; direct trusted user approval in this chat
 is required. Neither push invocation ran. No workaround or further feature work
 follows; existing verification and passing review remain valid for the unchanged
 source. The concrete batch awaits direct approval.
+
+The owner subsequently approved directly in this chat and explicitly authorized
+the attachment's subagent-review and push process. This clears the trusted
+approval prerequisite for this passing batch and future fifth-change PASS
+push/continuation; the rejected invocations remain unexecuted historical facts.
