@@ -69,8 +69,9 @@ call workflow.Done only when verification passes, continuing until applied.
 It MUST return the applied state and the ordered phase invocation results.
 
 ### RUN-015
-When agent invocation fails, Next MUST return an error and captured invocation
-results without advancing the phase or releasing its held claim.
+For a non-usage-limit agent invocation failure, Next MUST return an error and
+captured invocation results without advancing the phase or releasing its held
+claim.
 
 ### RUN-016
 Run without a positive Max MUST continue single-change execution until no
@@ -134,6 +135,42 @@ retaining the step's working-tree and index work.
 For each such recovery, Next MUST return a P05 warning in State.Diagnostics
 identifying the phase and that work was retained. It MUST preserve these warnings
 across phase advancement and on an invocation-failure return.
+
+### RUN-029
+Next MUST read limit_wait and limit_budget as durations, defaulting to 30m and
+4h when unset. It MUST reject malformed durations, a nonpositive wait or negative
+budget with C01 before claiming a fresh change or invoking an agent.
+
+### RUN-030
+For an AgentResult with UsageLimit true, Next MUST wait limit_wait and repeat
+the same phase attempt without spending a failed attempt. It MUST retain earlier
+step work and captured invocations, keeping existing verification feedback.
+
+### RUN-031
+When another usage wait would exceed limit_budget, Next MUST return a clean
+usage-stop error identifying completed wait, next wait and budget. It MUST retain
+the held State, work and ordered Steps without advancing, blocking, committing
+or releasing the claim.
+
+### RUN-032
+Run MUST account for total usage wait across phases and changes in one
+invocation. On a clean usage stop it MUST retain already-applied results and
+propagate the stop classification.
+
+### RUN-033
+When the calling worktree already holds a queued step, Next MUST resume that
+owned State using its approved snapshot without a fresh Start, retaining its
+run, phase, assigned IDs and work. Existing approval and unapproved-work bounds
+MUST remain enforced for starting another change.
+
+### RUN-034
+IsUsageStop MUST recognize clean usage-stop errors through wrapping and return
+false for nil or ordinary failures.
+
+### RUN-035
+If Run blocked a change before a usage stop, it MUST return failure with the
+blocking cause/ref and stop reason retained. IsUsageStop MUST return false for
+that combined failure so the caller cannot report it as a clean stop.
 
 ## Decisions
 

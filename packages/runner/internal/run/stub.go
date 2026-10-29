@@ -19,13 +19,17 @@ func Execute(ctx context.Context, request model.RunRequest) (model.RunResult, er
 		Timeout:       request.Timeout,
 	}
 	var blockedErr error
+	budget := &next.UsageBudget{}
 	for {
-		change, err := next.Run(ctx, nextRequest)
+		change, err := next.RunWithBudget(ctx, nextRequest, budget)
 		if err != nil {
 			var blocked *next.BlockedError
 			if errors.As(err, &blocked) {
 				blockedErr = errors.Join(blockedErr, err)
 				continue
+			}
+			if blockedErr != nil && next.IsUsageStop(err) {
+				return result, &next.CombinedUsageFailure{Blocked: blockedErr, Stop: err}
 			}
 			return result, errors.Join(blockedErr, err)
 		}

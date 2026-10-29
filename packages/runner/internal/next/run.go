@@ -21,26 +21,48 @@ import (
 )
 
 func Run(ctx context.Context, request model.NextRequest) (model.NextResult, error) {
+	return RunWithBudget(ctx, request, &UsageBudget{})
+}
+
+// RunWithBudget shares completed usage waits across changes in one Run call.
+func RunWithBudget(ctx context.Context, request model.NextRequest, budget *UsageBudget) (model.NextResult, error) {
 	var result model.NextResult
-	queue, err := workflow.Eligible(request.Root)
-	if err != nil {
-		return result, fmt.Errorf("read eligible changes: %w", err)
+	state, currentErr := workflow.Current(request.Root, "")
+	if currentErr != nil && !strings.Contains(currentErr.Error(), "P02: worktree holds no change") {
+		return result, fmt.Errorf("read held change: %w", currentErr)
 	}
-	if len(queue) == 0 {
-		result.Empty = true
-		return result, nil
-	}
-	selected := &queue[0]
-	if !request.AllowUnmerged {
-		if err := requireApproval(request.Root, selected.Path); err != nil {
+	if currentErr != nil {
+		queue, err := workflow.Eligible(request.Root)
+		if err != nil {
+			return result, fmt.Errorf("read eligible changes: %w", err)
+		}
+		if len(queue) == 0 {
+			result.Empty = true
+			return result, nil
+		}
+		selected := &queue[0]
+		snapshot, err := project.Load(request.Root)
+		if err != nil {
+			return result, fmt.Errorf("load usage policy: %w", err)
+		}
+		if _, err := readUsagePolicy(snapshot.Config); err != nil {
 			return result, err
 		}
+		if !request.AllowUnmerged {
+			if err := requireApproval(request.Root, selected.Path); err != nil {
+				return result, err
+			}
+		}
+		state, err = workflow.Start(request.Root, selected.Path)
+		result.State = state
+		if err != nil {
+			return result, fmt.Errorf("start %s: %w", selected.Path, err)
+		}
 	}
-
-	state, err := workflow.Start(request.Root, selected.Path)
 	result.State = state
+	policy, err := readUsagePolicy(state.Snapshot.Config)
 	if err != nil {
-		return result, fmt.Errorf("start %s: %w", selected.Path, err)
+		return result, err
 	}
 	var recoveryWarnings []project.Diagnostic
 	for state.Phase != "applied" {
@@ -65,7 +87,14 @@ func Run(ctx context.Context, request model.NextRequest) (model.NextResult, erro
 		}
 		attempts := configuredAttempts(state.Snapshot.Config)
 		feedback := ""
-		for attempt := 0; attempt < attempts; attempt++ {
+		for attempt := 0; attempt < attempts; {
+			preInvoke, inspectErr := gitstore.Inspect(state.Snapshot.Root)
+			if inspectErr != nil {
+				return result, fmt.Errorf("inspect held phase HEAD: %w", inspectErr)
+			}
+			if preInvoke.Head != state.PhaseBase {
+				return result, fmt.Errorf("P05: held %s phase HEAD moved from %s to %s before agent invocation", phase, state.PhaseBase, preInvoke.Head)
+			}
 			agent, invokeErr := invoke.Agent(ctx, model.AgentRequest{
 				Snapshot: state.Snapshot, Role: role, Prompt: prompt + feedback,
 				Bin: request.Bin, Timeout: request.Timeout,
@@ -82,17 +111,24 @@ func Run(ctx context.Context, request model.NextRequest) (model.NextResult, erro
 				})
 				result.State = withRecoveryWarnings(state, recoveryWarnings)
 			}
+			if agent.UsageLimit && ctx.Err() == nil && !errors.Is(invokeErr, context.Canceled) && !errors.Is(invokeErr, context.DeadlineExceeded) {
+				if err := budget.Wait(ctx, policy); err != nil {
+					return result, err
+				}
+				continue
+			}
 			if invokeErr != nil {
 				return result, fmt.Errorf("invoke %s agent: %w", phase, invokeErr)
 			}
 			if agent.ExitCode != 0 {
 				return result, fmt.Errorf("%s agent exited with code %d", phase, agent.ExitCode)
 			}
+			attempt++
 			verification, verifyErr := workflow.Verify(ctx, step)
 			if verifyErr == nil {
 				break
 			}
-			if attempt+1 == attempts {
+			if attempt == attempts {
 				blocked, blockErr := workflow.Block(workflow.BlockRequest{
 					Root: state.Snapshot.Root, Change: state.Change.Path,
 					Reason: phase + " verification attempts exhausted",
