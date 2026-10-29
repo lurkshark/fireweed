@@ -70,6 +70,29 @@ It MUST return the applied state and the ordered phase invocation results.
 When invocation or phase verification fails, Next MUST return an error and
 captured invocation results without advancing that phase.
 
+### RUN-016
+When single-change executions succeed, Run without a positive Max MUST
+continue until the queue is empty, returning each applied NextResult in queue
+order.
+
+### RUN-017
+With a positive Max, Run MUST apply at most Max changes per invocation. A later
+Run invocation MUST continue the remaining queue without reapplying archived
+changes.
+
+### RUN-018
+On successful return, Run MUST set Empty when no queued changes remain and set
+Limited exactly when a positive Max stopped it with queued work remaining.
+
+### RUN-019
+Run MUST supply its Root, Bin, AllowUnmerged and Timeout to single-change
+execution for every change it processes.
+
+### RUN-020
+If single-change execution fails while the calling worktree still holds the
+change, Run MUST return the error with its cause and already-applied results
+retained, leaving later changes unstarted.
+
 ## Decisions
 
 [0075-bounded-agent-invocation] An unset configured timeout defaults to 90 minutes. limit_patterns are
