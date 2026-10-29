@@ -6,7 +6,7 @@ they are not current instructions, permissions or readiness claims. Resume from
 [PROGRESS.md](PROGRESS.md). Preserve evidence and checkpoint history; do not
 repeat passed work because an older entry calls it pending.
 
-## Applied changes through 0095
+## Applied changes through 0096
 
 [0079–0083 checkpoint](reports/checkpoint-0079-0083.md) PASS: separate subagent
 review and fresh build/vet/race/static/history at clean 6ce22e9; 38 new history
@@ -19,6 +19,7 @@ commits have zero diagnostics. The proposed push was rejected by automatic
 approval review under the latest explicit owner stop; nothing was pushed and
 further work awaits an owner decision.
 
+- 0096 run-time-limit — RUN-036–040 and qualified RUN-016/030; f83f4ac/a847f9f/2f6870f. Complete native262 cases: five failures/257 passes →262 passes; isolated seven-ID audit PASS,76 own passes in194.04s. Initial pre-freeze240.503s timeout was incomplete and superseded after fixture simplification/direct identity assertions. Library dependency only; app --for and actual Go proof next. [Report](reports/run-time-runner-0096.md).
 - 0095 usage-stop-command — APP-076/077/079/083/084/086; 6978e2a/51924d9/6dfe616/e546a01/dbda392. Seven genuine failures/179 passes →186 full passes after one APP-076 identity assertion correction and scoped re-audit PASS. Implementation wording correction passed focused config then full native checks. Actual NEW Go shared-budget stop/resume proof PASS: exit3 after Alpha applies/Beta holds, then same-run Beta archive, eight calls/six phase commits, Gamma unchanged, clean/unclaimed; fixture removed. [Report](reports/usage-stop-cli-0095.md).
 - 0094 usage-limit-control — RUN-029–035, qualified RUN-015; c9a5729/03f9476/5ff9b3d/b3cbdc2/a720cf6. 15 failures/231 passes →16 failures/231 passes after one scoped RUN-033 approved-policy assertion →247 full passes; isolated re-audit PASS. Fresh implementation corrected one attempt-counting error and passed69 own cases. Runner dependency only; app exit3 and actual NEW proof immediately next. [Report](reports/usage-limit-runner-0094.md).
 - 0093 applied-result-count — eval_fix RUN-016; b8a9260/bd4d862/5b0e642. Both full phases passed 231 cases; 53 own passes and isolated RUN-016 audit PASS. Exact-count helper preserves the ordinary three-step wrapper and every existing assertion/caller. Earlier usage change natively abandoned at b08c4d0 under explicit owner approval after a frozen three-versus-four-step conflict; fresh re-authoring remains pending. [Report](reports/applied-result-count-0093.md).

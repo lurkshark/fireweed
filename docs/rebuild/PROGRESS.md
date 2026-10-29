@@ -10,7 +10,7 @@ retains its claim/work/run/ID at the shared budget, then next completes the same
 Beta run; Gamma stays queued, final tree/claims clean. See
 [0095 proof](reports/usage-stop-cli-0095.md). Full design/ACCEPTANCE remain open.
 
-**Applied since review: 2 (0094–0095).** Separate Sol/high 0089–0093 checkpoint
+**Applied since review: 3 (0094–0096).** Separate Sol/high 0089–0093 checkpoint
 passed at clean06a94e9 with build/vet/race/static and40-commit history extension
 (zero history diagnostics). Authorized push advanced origin/main82ef71d→28ced38.
 See [checkpoint](reports/checkpoint-0089-0093.md). No pending change or claim.
@@ -28,14 +28,18 @@ remain in [HISTORY](HISTORY.md) and linked reports; do not repeat valid proofs.
 
 ## Next slice — run --for time limit
 
-The design's --for6h option is still absent. Add only needed runner total-time
-control and caller parsing/classification, then close an actual NEW Go scenario:
-bounded run stops cleanly with exit3 while preserving held work/run/IDs, and a
-later invocation resumes. Include the design's usage-wait/time-limit interaction
-without waiting a full configured interval. Return to app as soon as the needed
-library API works. No unused general scheduler, extra process instrumentation,
-real-agent run/drill or speculative cleanup. Remaining kinds/bounds, command
-inventory, full design and every final acceptance gate stay open.
+0096-run-time-limit archived at2f6870f: RUN-036–040 plus qualifiedRUN-016/030,
+262 full passes and isolated seven-ID audit PASS;76 own passes in194.04s.
+Incomplete pre-freeze timeout was superseded by complete native evidence.
+Only For/IsTimeStop were added publicly; total deadline, interruption, wait
+preflight and mixed-failure control are private. See
+[runner report](reports/run-time-runner-0096.md). No pending change/claim.
+
+Next: wire app run --for duration parsing and clean time-stop output immediately,
+then build NEW and run the prepared actual Go fixture: stop an agent while
+retaining exact claim/run/phase/IDs/work, then complete the same run through
+next. The time fixture has not run yet; installed NEW is still dbda392.
+Remaining kinds/bounds, command inventory, full design and final gates stay open.
 
 ## Authority and deferred work
 
