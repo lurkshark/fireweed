@@ -183,3 +183,10 @@ The [NEW eval-fix playbook check](reports/eval-fix-playbooks-0100.md) adds parti
 R17/R20/R23 guidance evidence: actual CLI instructions match the corrected
 evals/audit/impl restrictions. The0099 Go proof remains valid. Regenerate and
 remaining inventory/final gates stay open.
+
+The [NEW regenerate and ordinary-fixes proofs](reports/regenerate-fixes-cli-0102.md)
+add partial R06/R08/R09/R16/R17/R23/R29 evidence: regenerate starts with
+disposable deletion/context/P10 and completes owned next; an ordinary fix
+retains contracts/evals and proves a real Go failure before implementation.
+Both archive cleanly and release claims. No actual drill or self-hosting claim;
+persistent bounds, management surface and final gates remain open.

@@ -2,35 +2,33 @@
 
 ## Current handoff — 2026-10-29
 
-NEW proves manual lifecycle and setup, bounded next/run, retries/blocking,
-independent continuation, saved-attempt loading, agent-commit undo, time/usage
-stops with owned resume, maintenance and eval-fix. Latest actual Go proof:
-next corrects a wrong eval under the audited eval-fix path, preserving contracts
-and implementation, with three checked commits and clean claim release.
-See [0099 proof](reports/eval-fix-cli-0099.md). Full acceptance remains open.
+NEW proves manual lifecycle/setup, bounded next/run, recovery/resume, agent-
+commit undo, time/usage stops and valid maintenance/eval-fix/ordinary-fix/
+regenerate paths. Latest actual Go proofs: regenerate start deletes disposable
+code and shows P10/context; owned next reconstructs and archives in one commit.
+An ordinary fix then proves real fail-first/pass through three checked phases.
+Both fixtures clean/unclaimed and removed. [0102 proofs](reports/regenerate-fixes-cli-0102.md).
+Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 3 (0099–0101).** Separate Sol/high0094–0098 checkpoint
+**Applied since review: 4 (0099–0102).** Separate Sol/high0094–0098 checkpoint
 PASS at clean9949dfe with build/vet/race/static/history. [Checkpoint](reports/checkpoint-0094-0098.md).
-Last authorized push origin/main28ced38→7e0da27. No pending change or claim;
+Last authorized push origin/main28ced38→7e0da27. No pending main change or claim;
 applied ledger in [HISTORY](HISTORY.md).
 
-0101 regenerate workflow dependency archived at006fda8:368 full passes,
-isolated four-ID audit PASS. Final nested-module preservation guard was scoped
-corrected and verified after coordinator caught an ancestor-selection defect;
-initial native check interrupted before archive, final full check passed with
-same run/IDs. See [0101 report](reports/regenerate-api-0101.md). No actual drill.
-0100 closes eval-fix guidance; its actual CLI results and earlier proofs remain
-valid. Installed NEW stillf418f88; regenerate CLI fixture has not run.
+0102 P10 explanation archived at31c28d1:577 full passes, isolated AST-032
+audit PASS and60 own passes. Actual NEW Go regenerate and ordinary-fixes proofs
+pass; no real drill. This closes the two-change regenerate slice. Earlier
+proofs remain valid; do not repeat them.
 
-## Next slice — P10 explanation, then actual regenerate caller
+## Next slice — release claim command
 
-Immediately add the accurate P10 cause/corrective-action explanation in assets,
-as allocated in D008. Then build clean NEW and run the prepared actual Go
-fixture: start selects impl, deletes disposable code while retaining contracts,
-shows the non-blocking freshness warning and regenerate context; owned next
-reconstructs through normal checked archive with a bounded fake worker. This
-is not a real drill. The two-change regenerate slice ends after that proof;
-remaining kinds/bounds, command inventory and final gates stay open.
+The design's release <change> drops the calling worktree's local claim. NEW's
+CLI still rejects it. Add only the workflow API needed by this caller, preserving
+work/HEAD/change state and rejecting foreign ownership. The fifth application
+will require separate Sol/high quality/goal review plus fresh appropriate checks;
+PASS authorizes push and immediate app wiring/actual NEW release proof. A
+checkpoint may interrupt this one-dependency slice. Remaining management
+commands, persistent bounds, inventory and full final gates stay open.
 
 ## Authority and deferred work
 
@@ -63,9 +61,9 @@ Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
 recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-f418f880a9adc2577ffbb8555147c31a64ab94cc, Go1.27.2 darwin/arm64, CGO disabled,
+31c28d1710be2b59f320bed619797d222dcf8adc, Go1.27.2 darwin/arm64, CGO disabled,
 vcs.modified=false. This build completed without a warning.
-Last checkpoint build/vet/race/static/history source is9949dfe;0099–0100 native
+Last checkpoint build/vet/race/static/history source is9949dfe;0099–0102 native
 full checks and actual CLI proofs pass. No fresh final race/vet/CI/doctor/
 checkout/drill/self-hosting claim follows from these changes.
 

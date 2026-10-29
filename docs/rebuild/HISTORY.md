@@ -6,7 +6,7 @@ they are not current instructions, permissions or readiness claims. Resume from
 [PROGRESS.md](PROGRESS.md). Preserve evidence and checkpoint history; do not
 repeat passed work because an older entry calls it pending.
 
-## Applied changes through 0101
+## Applied changes through 0102
 
 [0079–0083 checkpoint](reports/checkpoint-0079-0083.md) PASS: separate subagent
 review and fresh build/vet/race/static/history at clean 6ce22e9; 38 new history
@@ -21,6 +21,7 @@ further work awaits an owner decision.
 
 [0094–0098 checkpoint](reports/checkpoint-0094-0098.md) PASS: separate Sol/high quality/goal review plus clean9949dfe build/vet/race/static/history;33 new history commits have zero diagnostics. Actual NEW usage/time stops, resume and maintenance proofs pass; fixtures removed. Standing owner authorization covers push and continuation; final gates remain open.
 
+- 0102 regenerate-warning-explanation — AST-032; dc6da04/59499c3/31c28d1. One failure/576 passes →577 full passes; isolated audit PASS,60 own passes. Actual NEW Go regenerate start/owned-next/P10 proof passes with deletion/context/warning, one impl agent/commit, retained contracts and clean release. Separate ordinary-fixes next passes5.33s with real fail-first/pass and three commits; both fixtures removed. [Report](reports/regenerate-fixes-cli-0102.md).
 - 0101 regenerate-start — FLOW-080–083; 73fa079/24ec135/006fda8. Six failure events/362 passes →368 full passes; isolated four-ID audit PASS. Untested late nested guard corrected after scoped public ancestor-target failure; seven focused passes and fixed repro, then final native pass. Initial native impl check interrupted before archive; no phase exception. Library dependency only, P10 explanation and actual Go CLI proof next. [Report](reports/regenerate-api-0101.md).
 - 0100 eval-fix-playbooks — AST-029/030/031; b2841bf/6361924/f418f88. Three failures/566 passes →569 full passes within15m; isolated three-ID audit PASS,59 own passes. Actual NEW evals/audit/impl playbook JSON commands pass with conditional rules, schema1/string data, no diagnostics/stderr. Reuses0099 lifecycle proof. [Report](reports/eval-fix-playbooks-0100.md).
 - 0099 eval-fix-lifecycle — FLOW-078/079, modified FLOW-036/023 (023 already_satisfied); 35ce303/3e30063d/23ad9de. Six failure events/355 passes →361 full passes; isolated four-ID audit PASS,89 own passes. Actual NEW Go eval-fix proof passes4.74s: wrong baseline test fails, correction passes under evals/audit/no-op impl, three commits, contracts/implementation unchanged, clean/unclaimed; fixture removed. [Report](reports/eval-fix-cli-0099.md).
