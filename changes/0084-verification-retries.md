@@ -3,7 +3,7 @@ audit_rounds: 0
 bases:
     RUN-015: 5d5d135e
 module: runner
-phase: audit
+phase: impl
 run: 20261029T032332-d2f9262403cce62e6c8ed149
 ---
 
@@ -81,3 +81,15 @@ change/projected specs/evals/permitted public interfaces only.
 ## Provenance
 
 - evals 2026-10-29T03:38:08.317166Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=214 failing=5 passing=209
+- audit 2026-10-29T03:41:11.208025Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+
+## Audit
+
+No findings
+Checked IDs: RUN-015, RUN-021, RUN-022
+
+The accepted separate Sol/high auditor ran from the isolated snapshot. Complete
+command-log inspection shows supplied snapshot reads only, without outside or
+implementation/history access, execution or writes. The earlier mislocated
+invocation was stopped and is not accepted as audit evidence; its log and the
+coordinator launch deviation remain recorded.
