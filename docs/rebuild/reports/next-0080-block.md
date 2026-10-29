@@ -1,4 +1,10 @@
-# NEW next wiring — 0080 blocked
+# NEW next wiring — recovery and CLI proof passed
+
+Current result: 0080 applied at a11d713 with 159 full phase cases passing, and
+the clean-built NEW next Go fixture passed. Applied-since-review is 2. Earlier
+block/capacity records below remain historical, without retroactive validation.
+
+## Historical scope and phase record
 
 0079's owner-approved native abandon/re-author succeeded: RUN-010–015 applied at
 1ddea1c with all 191 full phase cases passing. The earlier 0079 failure and
@@ -59,7 +65,7 @@ C11/C10 fixture issue. No new phase-write exception or bound change is proposed.
 
 After application, build NEW and run /tmp/fireweed-next-cli-smoke.py run. Its
 prepared, clean ordinary Go repository is /private/tmp/fireweed-next-cli-135aellc
-with 30-second hook/agent limits; state is in
+with a configured 30-second agent timeout; state is in
 /tmp/fireweed-next-cli-smoke-state.json. The external smoke has not run. Clean it
 up after the proof. Library success or the uncommitted candidate's focused CLI
 passes do not establish final CLI acceptance. Bounded run follows that proof;
@@ -98,3 +104,48 @@ with native start/context for the existing audit phase and a regenerated isolate
 snapshot when the same fixed profile is available/authorized to retry. Do not
 repeat the passed eval phase or use saved/deleted implementation as an oracle.
 Applied-since-review remains 1; no new push or implementation application occurred.
+
+## Authorized audit retry and implementation — PASS
+
+The owner approved one retry of the same Sol/high audit and continuation on
+PASS. That invocation returned No findings for APP-074–079. Full command-log
+inspection confirms only supplied isolated snapshot reads; no implementation,
+history, execution or writes were used. The snapshot was removed. Native audit
+commit fff9dba records honest manual coordinator advancement. Fresh fixed-profile
+implementation passed all six focused cases and quick verification; native full
+Done applied/archived at a11d713 with 159 passes and released the claim. Evals and
+interfaces stayed frozen. The earlier capacity invocation had no result.
+
+## Actual NEW next Go CLI proof — PASS
+
+CGO_ENABLED=0 build passed at clean source
+a11d713e13922087f2172ab5665570a80db1ec0c, Go 1.27.2 darwin/arm64,
+vcs.modified=false. An optional module-version stat-cache write outside the
+sandbox was denied without failing the build. No fresh full-repository race/vet
+or final acceptance claim is added by this milestone.
+
+The actual /Users/joel/Workspace/fireweed/bin/fireweed next command exited 0 in
+5.73s, stdout Applied changes/0001-one-value.md, empty stderr. It used an ordinary
+Go-recipe repository, explicit Git identity, separate deterministic fake worker
+and auditor scripts, and a configured 30-second agent timeout. The recipe's real
+Go hook reported APP-001 failing before implementation (one case, exit 1), then
+passing afterward (one case, exit 0). Saved case IDs/results were inspected.
+
+Fixture baseline 3cff382d1ad58c2b721337726a95d867d23331e7; checked phase commits:
+69c28fae0d595556364def3465cb6b91468660e2 (audit phase),
+a4a48a5d32cc7456b813d7ad0751472fb03af985 (impl phase),
+09f1195df4a14bdaa8153ad0938db468a331fe5a (applied archive). Product run
+20261029T015624-3819560ec6e98a3d5b3524ab retains evals/audit/impl provenance,
+SPEC application and the assigned APP-001. Exactly three agent calls used the
+NEW executable as FIREWEED_BIN. No pending change, claim or dirty file remained.
+The owned temporary repository was removed after these inspections.
+
+Two smoke-helper issues were corrected without changing product source: the
+fake auditor initially used an inline checked-ID field rejected with P09, so the
+passing fixture uses the canonical separate-line form from the public evals;
+then the report reader was corrected to the saved report's Cases/IDs/Result
+field names. The final fresh smoke captures command exit/output before checking
+all artifacts and passes. Logs/results remain in /tmp/fireweed-next-cli-*.json
+and the reusable script /tmp/fireweed-next-cli-smoke.py. This proves the first
+bounded fake-agent next lifecycle, not general audit-format flexibility, run,
+retry/recovery, real-agent self-hosting or final acceptance. Bounded run follows.

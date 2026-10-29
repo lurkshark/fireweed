@@ -3,47 +3,39 @@
 ## Current handoff — 2026-10-28
 
 Manual lifecycle, Go/none/local init, doctor/guidance CLI and bounded agent
-invocation work through NEW. Queue orchestration through NEW next/run remains
+invocation work through NEW. NEW next now completes a checked spec-change lifecycle; bounded run remains
 unimplemented. The full design and all final ACCEPTANCE gates remain open.
 
 The approved 0076–0078 corrections passed isolated audits, full phase checks,
 fresh build/vet/race/static/history, the NEW doctor smoke and the same checkpoint
 subagent's scoped re-review. The owner-authorized push synchronized main with
 origin at `510cc91`. No pending change or claim remained at that boundary.
-**Applied since review: 1 after 0079.** Earlier audit/phase deviations remain recorded;
+**Applied since review: 2 after 0079–0080.** Earlier audit/phase deviations remain recorded;
 the passing correction does not retroactively validate them. See the
 [correction report](reports/checkpoint-corrections-0076.md) and
 [checkpoint report](reports/checkpoint-0071-0075.md).
 
-## Waiting prerequisite — fixed-profile auditor capacity
+## Active slice — bounded NEW run
 
-0079's approved recovery remains applied at 1ddea1c. 0080's owner-approved
-native abandon/re-author completed, and its one-line fixture correction was
-validated through public runner.Next: C10 naming ALP-002, with no C11. The
-temporary validation test was removed; every permanent assertion/ID is retained.
-Native evals commit 5e6d0bb reports 159 cases, six genuine runtime failures and
-153 passes. **Applied since review: 1.**
+The authorized single Sol/high audit retry passed. 0080 applied at a11d713 with
+159 full phase cases passing; no pending change or claim remains at that boundary.
+Fresh NEW build source is a11d713e13922087f2172ab5665570a80db1ec0c, CGO disabled
+and vcs.modified=false. The actual NEW next Go fixture passed in 5.73 seconds:
+one genuine Go eval failure became a pass, three checked phase commits applied
+SPEC/archive/provenance, separate fake agents ran exactly three times, and claims
+released with a clean tree. See [the phase and CLI proof](reports/next-0080-block.md).
+The completed disposable fixture was removed after inspection.
 
-The separate Sol/high auditor terminated with Selected model is at capacity
-and no audit result. It only listed the isolated snapshot entry point before
-failure; no passing audit or implementation is claimed. The snapshot was
-removed and actual logs remain under run 20261029T012539-cf09ff80f620517ce580ef2f.
-Native release dropped this worktree's own claim; 0080 remains committed at
-phase audit with its run/IDs intact and no blocked field. The tree is clean.
-See [the recovery/capacity record](reports/next-0080-block.md).
+0081-bounded-queue-execution now targets the minimum runner loop for the next
+observable outcome: NEW run processes a small queue with --max, permits later
+continuation and returns success for an empty queue. Return to app wiring after
+that dependency passes; library success alone does not close this slice.
 
-The goal explicitly requires stopping on unavailable fixed-profile access.
-Resume with native start/context at the existing audit phase, then regenerate
-the isolated snapshot and retry the same Sol/high auditor when authorized and
-available. Do not switch models, fabricate an audit, rewrite phase state or
-restart the completed evals. After a passing audit, reconstruct app wiring from
-contracts, run full Done, build NEW and execute the prepared Go CLI smoke.
-Its script/state remain /tmp/fireweed-next-cli-smoke.py and
-/tmp/fireweed-next-cli-smoke-state.json. NEW next is not yet an applied CLI feature.
-
-Bounded NEW run --max/continuation/empty queue follows that proof, then recovery
-and remaining kinds. No NEW unattended real-agent execution before the fake-agent
-run passes. Final gates/drill deferrals remain open. No new push occurred.
+Retries/saved attempts, blocking/independent continuation, resume, time/usage
+stops and remaining kinds follow the runnable queue path. No NEW unattended
+real-agent execution before the bounded fake-agent run passes. Full design and
+final ACCEPTANCE gates remain open; drill deferrals and normal bounds remain.
+No new push occurred.
 
 ## Authority and deferred work
 
@@ -76,8 +68,7 @@ keep unchanged. History baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`;
 use explicit nonempty ranges. Set `GOCACHE=/tmp/fireweed-rebuild-cache`.
 
 NEW: `/Users/joel/Workspace/fireweed/bin/fireweed`, built at clean source
-`a34a32ac97c3c1a3ff571641117466963f338ca3`, CGO disabled. Subsequent commits
-through 510cc91 changed only evidence. Reuse the
+`a11d713e13922087f2172ab5665570a80db1ec0c`, CGO disabled. Reuse the
 [manual lifecycle](reports/manual-lifecycle.md) and corrected
 [doctor smoke](reports/doctor-setup-cli.md) evidence where valid.
 

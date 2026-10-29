@@ -9,7 +9,7 @@ live state and authorizations. [SYSTEM.md](../../SYSTEM.md) owns guardrails;
 ## Current route to a usable product
 
 The manual lifecycle passed. Init/doctor and bounded agent invocation now exist;
-queue orchestration through NEW does not. The approved checkpoint corrections and scoped re-review passed and pushed.
+NEW next completes one checked change; bounded run does not yet exist. The approved checkpoint corrections and scoped re-review passed and pushed.
 Build the next CLI outcome,
 using the existing lifecycle and invocation primitive.
 
@@ -17,7 +17,7 @@ using the existing lifecycle and invocation primitive.
 | --- | --- | --- |
 | Manual lifecycle — passed | Author, check, start, fail evals, audit, implement, apply and archive one change. | Reuse the [manual lifecycle report](reports/manual-lifecycle.md); do not rebuild this milestone. |
 | Setup — passed | Create a Go fixture with init and verify hooks/guidance with doctor. | Existing [setup smoke](reports/doctor-setup-cli.md) plus approved doctor corrections and scoped checkpoint PASS. Setup is not a reason to delay next after that correction gate. |
-| One-change execution — next feature | In a disposable Go fixture, next drives one eligible spec change through evals, separate audit, impl and archive using bounded deterministic fake agents. | NEW invocation succeeds; tests genuinely fail before implementation and pass afterward; assigned IDs, phase commits, SPEC/archive/provenance and claim release are inspectable. Library invocation tests alone do not close this slice. |
+| One-change execution — passed | In a disposable Go fixture, next drives one eligible spec change through evals, separate audit, impl and archive using bounded deterministic fake agents. | NEW invocation succeeds; tests genuinely fail before implementation and pass afterward; assigned IDs, phase commits, SPEC/archive/provenance and claim release are inspectable. Library invocation tests alone do not close this slice. |
 | Bounded queue | run processes eligible changes, honors --max, and a later invocation continues the remaining queue; an empty queue exits 0. | NEW runs a small fixture queue; inspect the exact applied/remaining changes, commits, exit codes and claims. Implement this before broad recovery or whole-module completion. |
 | Recoverable execution | A failed verification feeds a bounded retry; exhausted work is saved and blocked, independent work can continue, and a saved attempt can resume. Time/usage stops preserve recoverable state. | Focused NEW fixture scenarios for retries/refs/state-only block commits, projected blocking, resume, agent-commit undo and exit 3. Split by observable scenario as needed; do not build a failure matrix. |
 | Remaining lifecycle kinds and bounds | The same CLI path handles fixes, eval_fix, maintenance/regenerate and enforces audit/approval bounds for manual and unattended use. | Relevant NEW scenarios, including ordinary approval rejection without --allow-unmerged, plus linked-worktree claims and persisted bounds. Reuse existing assertions where valid. |

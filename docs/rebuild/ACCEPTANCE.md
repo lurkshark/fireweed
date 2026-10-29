@@ -118,3 +118,9 @@ requirement mappings and reference inspection record. Linked reports and change
 archives carry detailed phase/checkpoint evidence. Keep results once and link
 them here when they establish coverage; do not infer current readiness from an
 older entry or turn its historical next-work text into a new instruction.
+
+The first NEW next lifecycle now has [actual Go CLI evidence](reports/next-0080-block.md)
+for the successful-path portions of R06–R09/R17: genuine fail-first, separate
+bounded fake audit, checked commits, SPEC/archive/provenance and claim release.
+This is partial coverage; run, retry/recovery, remaining kinds and all final gates
+stay open. Reuse the result without repeating it for each inventory row.
