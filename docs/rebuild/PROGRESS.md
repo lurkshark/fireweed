@@ -1,6 +1,6 @@
 # Rebuild progress
 
-## Current handoff — 2026-10-28
+## Current handoff — 2026-10-29
 
 Manual lifecycle, Go/none/local init, doctor/guidance CLI and bounded agent
 invocation work through NEW. NEW next now completes a checked spec-change lifecycle; bounded Run now also passes its actual Go CLI fixture. The full design and all final ACCEPTANCE gates remain open.
@@ -42,12 +42,27 @@ was created. Four fake calls, three branch commits and the saved commit were
 inspected; fixture removed. See [the CLI proof](reports/exhausted-next-0086.md).
 No governing change/claim remains and no push after `8aff1e4` occurred.
 
-Next change 0087-projected-blocking-eligibility adds canonical lifecycle
-eligibility/Start selection so waiting changes can be skipped; return immediately to runner
-Next/Run and prove independent continuation through actual NEW run. Status
-views, saved-attempt resume, nonzero-agent retries, agent-commit undo, time/usage
-stops, remaining kinds and persistent bounds follow. Full design and all final
-ACCEPTANCE gates remain open; no new drill is authorized.
+0087-projected-blocking-eligibility passed its own 70 cases and isolated
+assertion audit, but full verification exposed a legacy runner fixture that
+assumes same-module work can start behind a blocked change. The owner approved
+an ordered recovery. Only its two uncommitted implementation edits were
+discarded; native abandon 3d65370 removed that change without rewriting history.
+Its author requirements, public interface and evals remain retained; no real
+implementation was retained for reuse.
+
+Current change: 0087-independent-blocked-fixture, a normal runner eval_fix for
+RUN-011. It moves the prior blocked fixture to an independent module, preserving
+all assertions and IDs. The candidate passed under both legacy and new Start
+selection in an owned diagnostic copy, which was removed. No product/interface/
+spec change is authorized in this correction.
+
+**Latest owner checkpoint: stop immediately after this eval_fix completes and
+archives, then generate a current-progress review.** Do not re-author
+eligibility, start another change or push after that archive. This checkpoint
+overrides automatic continuation until the owner resumes work. Independent NEW
+run continuation remains unimplemented; retained eligibility contracts can be
+re-authored with a fresh implementation after review. Full design and all final
+ACCEPTANCE gates remain open; no new drill or phase-write exception exists.
 
 ## Authority and deferred work
 
