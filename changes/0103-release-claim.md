@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: workflow
+phase: audit
+run: 20261029T193658-a91309a40464314bde9455ee
 ---
 
 
@@ -23,15 +26,15 @@ compiling private stub is permitted during evals, with actual behavior in impl.
 
 ## Added
 
-### new:release-owned-claim
+### FLOW-084
 Release MUST drop only the named claim owned by the calling worktree while
 preserving its working files, HEAD and recorded change state.
 
-### new:release-ownership-rejection
+### FLOW-085
 Release MUST reject a missing claim or a claim owned by another worktree with
 P02, leaving refs unchanged.
 
-### new:release-selectors
+### FLOW-086
 Release MUST accept the same unambiguous change path, filename and slug
 selectors as Current.
 
@@ -72,3 +75,7 @@ Workers never commit or advance workflow; coordinator owns native checks,
 isolated audit/archive and the mandatory fifth-change review. Actual NEW release
 proof follows the app caller after that checkpoint. Own under5m/full under15m;
 do not raise bounds. The broader goal remains incomplete.
+
+## Provenance
+
+- evals 2026-10-29T19:51:18.209266Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=374 failing=6 passing=368

@@ -20,6 +20,7 @@ func StartFromAttempt(root, change string, attempt int) (State, error) {
 }
 func Eligible(root string) ([]project.Change, error) { return lifecycle.Eligible(root) }
 func Current(root, change string) (State, error)     { return lifecycle.Current(root, change) }
+func Release(root, change string) error              { return lifecycle.Release(root, change) }
 func Verify(ctx context.Context, request Request) (Result, error) {
 	return lifecycle.Verify(ctx, request)
 }
