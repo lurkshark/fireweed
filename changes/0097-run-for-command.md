@@ -1,7 +1,10 @@
 ---
+audit_rounds: 0
 bases:
     APP-084: 070b95dc
 module: app
+phase: audit
+run: 20261029T165024-3fef7348df22114b38bedf67
 ---
 
 
@@ -26,13 +29,13 @@ reason and ordinary failure shapes/codes stay unchanged.
 
 ## Added
 
-### new:run-for-option
+### APP-089
 run --for D MUST require one positive Go duration and pass it as RunRequest.For,
 using zero when absent. It MUST reject missing, malformed, nonpositive or repeated
 values and use by other commands with corrective U01 and exit2 before mutation,
 showing valid run usage.
 
-### new:run-time-stop-output
+### APP-090
 On a clean runner time stop, run MUST return exit3 with retained applied summaries
 and a nonempty reason naming the time limit. Plain output MUST include the
 applied count and resume guidance. JSON MUST use the existing schema1 run object
@@ -86,3 +89,7 @@ bootstrap/rebuild-v1/deleted/abandoned/saved implementation or old worker logs a
 oracles. Coordinator owns normal phases and then builds clean NEW and runs the
 prepared actual time fixture. Three applications since review precede this one;
 normal fifth-change checkpoint remains in force.
+
+## Provenance
+
+- evals 2026-10-29T17:05:15.902012Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=196 failing=10 passing=186
