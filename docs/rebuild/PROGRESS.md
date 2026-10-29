@@ -7,7 +7,7 @@ checked NEW next/run, verification retry and clean saved blocking work. NEW run
 now continues independent work while blocked dependencies wait, retaining exit 1
 and the blocking cause/ref. The full design and final ACCEPTANCE remain open.
 
-**Applied since review: 1 (0089).** The separate Sol/high 0084–0088 checkpoint
+**Applied since review: 2 (0089–0090).** The separate Sol/high 0084–0088 checkpoint
 passed with build/vet/race/static/history at clean 940ef0e; its explicit new
 history extension passed 37 commits with zero diagnostics. The owner directly
 approved the reviewed push and the attachment's standing subagent-review/push
@@ -31,7 +31,10 @@ branch commits, exit1/E01/ref, empty stderr and clean unclaimed checkout were
 inspected. Alpha's spec remained unapplied. This closes independent continuation
 for this bounded scenario, not the whole recovery milestone.
 
-Current change: 0090-saved-attempt-resume supplies StartFromAttempt. Then wire
+0090-saved-attempt-resume archived at da16b68 with all 297 cases passing.
+StartFromAttempt is ready; FLOW-074/075 were corrected and re-audited in native
+round 1, with same run/IDs and no exception. See
+[the API report](reports/saved-resume-api-0090.md). Immediately wire
 start --from-attempt <n> promptly, then prove actual NEW restores saved Alpha
 work without new IDs/run/phase or a start commit, lets it be corrected, and
 archives it through the existing lifecycle. Use only the needed workflow
