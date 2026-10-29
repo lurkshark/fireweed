@@ -139,3 +139,8 @@ and R17 evidence: exhausted work/ref retained, phase-base checkout restored,
 state-only block committed, original cause reported and claim released. Saved
 attempt resume, projected waiting/independent continuation and other recovery
 obligations remain open.
+
+The [NEW independent-continuation proof](reports/independent-run-0089.md) adds
+partial R12/R17 evidence: projected waiting, independent application after a
+clean saved block, and retained exit1/cause/ref despite later successful work.
+Saved-attempt loading and remaining recovery/final obligations remain open.
