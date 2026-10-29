@@ -10,7 +10,7 @@ An ordinary fix then proves real fail-first/pass through three checked phases.
 Both fixtures clean/unclaimed and removed. [0102 proofs](reports/regenerate-fixes-cli-0102.md).
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 0.** The owner-approved0104–0105 corrections pass:
+**Applied since review: 1 (0106).** The owner-approved0104–0105 corrections pass:
 central C07 rejects mixed eval_fix with fixes/spec edits; C07 explains the cause
 and separation action. Same scoped Sol/high checkpoint reviewer PASS plus
 actual NEW rejection, build/vet/race/static/history16 commits pass at clean4cf21a1.
@@ -19,10 +19,16 @@ Seven applications reviewed, count reset only at passing gate. See
 Authorized correction push succeeded: origin/main dac2d16→5358b5f.
 No governing change or claim.
 
-**Next:** expose0103 workflow.Release through app release <change>, preserving
-dirty work/runtime state and removing only this worktree's claim. Close with
-actual NEW Go release/retention/missing-claim proof. Return to this caller now;
-remaining management surface and full design/ACCEPTANCE stay incomplete.
+0106 now exposes workflow.Release through NEW. Actual nested Go start/release
+retains exact dirty files/runtime/HEAD while dropping only the owned claim;
+repeated release returns P02.203 native/own passes and restricted audit PASS;
+fixture removed. [Release proof](reports/release-cli-0106.md).
+
+**Next:** commits <change> lists current-branch phase commits for pending and
+archived changes, using file state rather than messages. Add only the needed
+workflow dependency, immediately wire the app caller and close with an actual
+NEW Go lifecycle/listing proof. This supports the design's later abandon path.
+Remaining management surface and all final acceptance stay open.
 
 ## Approved correction gate
 
@@ -66,7 +72,7 @@ Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
 recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-4cf21a1014122eb1f4c7b35f3f7d81a480eba4bd, Go1.27.2 darwin/arm64, CGO disabled,
+39a1d36, Go1.27.2 darwin/arm64, CGO disabled,
 vcs.modified=false. This build completed without a warning.
 Build/vet/race/static/history and scoped quality review passed at4cf21a1;
 actual NEW rejects the recorded invalid mixed-kind fixture before mutation. No final CI/doctor/fresh-checkout/drill/self-hosting
