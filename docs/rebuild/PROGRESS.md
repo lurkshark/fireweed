@@ -16,27 +16,26 @@ the passing correction does not retroactively validate them. See the
 
 ## Active slice — NEW next exhaustion and saved work
 
-The reviewed 0079–0083 batch pushed to origin/main at8aff1e4 after separate
+The reviewed 0079–0083 batch pushed to origin/main at `8aff1e4` after separate
 checkpoint PASS and fresh build/vet/race/static/history. Reuse the actual
 [Next lifecycle](reports/next-0080-block.md), [bounded queue](reports/bounded-run-cli.md)
 and [checkpoint](reports/checkpoint-0079-0083.md) evidence.
 
-0084 verification retries passed214 full phase cases and the actual NEW next
-retry fixture; see [the report](reports/verification-retries-0084.md). The CLI ran
-actual NEW next retry in6.53s, preserving work and exact verification feedback,
+0084 verification retries passed 214 full phase cases and the actual NEW next
+retry fixture; see [the report](reports/verification-retries-0084.md). It completed in 6.53s, preserving work and exact verification feedback,
 with four fake-agent calls, three phase commits and clean claim/tree cleanup.
 
-0085 saved-attempt blocking applied at526f90e with268 full phase passes. The
-sole FLOW-066 finding was corrected in native round1, and its isolated scoped
+0085 saved-attempt blocking applied at `526f90e` with 268 full phase passes. The
+sole FLOW-066 finding was corrected in native round 1, and its isolated scoped
 re-audit passed. Same run/IDs were retained through two explicitly approved
 author revert recoveries after ignored finding submissions. Those mechanical
 passes remain invalid audit evidence; both phase-write exceptions are consumed.
 The quote diagnosis, capacity retry and full phase history are in
 [the dependency report](reports/saved-attempt-blocking-0085.md). No pending
-change or claim remains, and no push after8aff1e4 occurred.
+change or claim remains, and no push after `8aff1e4` occurred.
 
-Next: wire runner Next's exhausted verification to the new lifecycle Block
-operation, retaining cause/results. Close with actual NEW next returning1 and
+Next change 0086-exhausted-verification-blocking wires runner Next's exhausted
+verification to the new lifecycle Block operation, retaining cause/results. Close with actual NEW next returning 1 and
 inspect its saved attempt ref/work, restored checkout, state-only block and
 claim release. Return directly to this caller; no broad recovery library.
 Then projected blocking/independent continuation, saved-attempt resume,
