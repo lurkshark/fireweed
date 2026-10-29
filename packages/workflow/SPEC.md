@@ -202,6 +202,29 @@ Current and Context MUST prefix unknown requested change lookup errors with U02.
 ### FLOW-062
 Lifecycle operations MUST preserve assigned static, eval, zone and boundary causes when returning their existing failures, except for lifecycle stale-base classification P05.
 
+### FLOW-063
+Block MUST require the calling worktree's current claim with unchanged approved
+metadata and phase. It MUST reject a changed HEAD rather than blocking a stale
+phase base.
+
+### FLOW-064
+Block MUST save the held step's tracked and untracked work as a commit at the
+next unused positive refs/fireweed/attempts/<slug>/<n>, preserving prior attempt
+refs. BlockResult MUST identify that ref and its commit OID.
+
+### FLOW-065
+After saving the attempt, Block MUST restore the step's tracked files, untracked
+files and index to the phase base, removing the step's edits from the checkout.
+
+### FLOW-066
+Block MUST commit only the held change's assigned IDs, run, current phase and
+requested blocked reason over the phase base. The block commit MUST preserve
+the approved author and already-committed audit content and exclude step work.
+
+### FLOW-067
+On successful blocking, Block MUST release the current claim and return the
+blocked State with no held ClaimOID. The resulting working tree MUST be clean.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
