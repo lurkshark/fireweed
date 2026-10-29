@@ -3,14 +3,13 @@
 ## Current handoff — 2026-10-28
 
 Manual lifecycle, Go/none/local init, doctor/guidance CLI and bounded agent
-invocation work through NEW. NEW next now completes a checked spec-change lifecycle; bounded run remains
-unimplemented. The full design and all final ACCEPTANCE gates remain open.
+invocation work through NEW. NEW next now completes a checked spec-change lifecycle; bounded Run now also passes its actual Go CLI fixture. The full design and all final ACCEPTANCE gates remain open.
 
 The approved 0076–0078 corrections passed isolated audits, full phase checks,
 fresh build/vet/race/static/history, the NEW doctor smoke and the same checkpoint
 subagent's scoped re-review. The owner-authorized push synchronized main with
 origin at `510cc91`. No pending change or claim remained at that boundary.
-**Applied since review: 3 after 0079–0081.** Earlier audit/phase deviations remain recorded;
+**Applied since review: 4 after 0079–0082.** Earlier audit/phase deviations remain recorded;
 the passing correction does not retroactively validate them. See the
 [correction report](reports/checkpoint-corrections-0076.md) and
 [checkpoint report](reports/checkpoint-0071-0075.md).
@@ -26,14 +25,18 @@ SPEC/archive/provenance, separate fake agents ran exactly three times, and claim
 released with a clean tree. See [the phase and CLI proof](reports/next-0080-block.md).
 The completed disposable fixture was removed after inspection.
 
-0081 applied at 6bdfb43 with 204 full phase passes and an isolated audit pass.
-runner.Run now handles a small successful queue, Max/continuation and held
-errors without losing prior results. Authored 0082-run-command returns to app
-wiring now. After application, build NEW and run
-/tmp/fireweed-run-cli-smoke.py run; its prepared Go fixture and state are at
-/private/tmp/fireweed-run-cli-8w_shj2n and /tmp/fireweed-run-cli-smoke-state.json.
-The proof must inspect --max termination, continuation and empty queue through
-the actual executable. Library success alone does not close this slice.
+0082 applied at 58351b2 with 166 full phase passes and an isolated audit pass.
+The actual NEW run --max 1 applied Alpha in 6.35s, a later run applied Beta and
+Gamma in 9.16s, and an empty run added no calls or commits. All exited 0 with
+empty stderr; nine checked phase commits, real Go fail-first/pass, provenance
+and claim cleanup were inspected. The owned fixture was removed. See
+[the bounded-run proof](reports/bounded-run-cli.md).
+
+0083-audit-passing-example addresses the observed P09 smoke mismatch: the audit
+playbook does not show the separate-line passing submission the product expects.
+Add only that accepted example so the runnable path can guide real agents. This
+is the fifth pending application in the batch; obtain the standing subagent
+checkpoint review after it applies, before any next change or push.
 
 Retries/saved attempts, blocking/independent continuation, resume, time/usage
 stops and remaining kinds follow the runnable queue path. No NEW unattended
@@ -72,7 +75,7 @@ keep unchanged. History baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`;
 use explicit nonempty ranges. Set `GOCACHE=/tmp/fireweed-rebuild-cache`.
 
 NEW: `/Users/joel/Workspace/fireweed/bin/fireweed`, built at clean source
-`a11d713e13922087f2172ab5665570a80db1ec0c`, CGO disabled. Reuse the
+`58351b2d4f024cd3b8c5aec9be72685430cf4a3f`, CGO disabled. Reuse the
 [manual lifecycle](reports/manual-lifecycle.md) and corrected
 [doctor smoke](reports/doctor-setup-cli.md) evidence where valid.
 

@@ -124,3 +124,7 @@ for the successful-path portions of R06–R09/R17: genuine fail-first, separate
 bounded fake audit, checked commits, SPEC/archive/provenance and claim release.
 This is partial coverage; run, retry/recovery, remaining kinds and all final gates
 stay open. Reuse the result without repeating it for each inventory row.
+
+The [bounded NEW run proof](reports/bounded-run-cli.md) adds partial R12/R13/R17
+evidence for successful queue order, --max, later continuation and empty queue.
+Retries/recovery, time/usage limits and remaining obligations remain open.

@@ -6,7 +6,8 @@ they are not current instructions, permissions or readiness claims. Resume from
 [PROGRESS.md](PROGRESS.md). Preserve evidence and checkpoint history; do not
 repeat passed work because an older entry calls it pending.
 
-## Applied changes through 0081
+## Applied changes through 0082
+- 0082 run-command — APP-080–086; 0e17dae/8220c66/58351b2. Seven runtime failures/159 passes → 166 full phase passes; isolated Sol/high audit no findings. The diagnostic fixture was corrected/validated before freezing. Actual NEW Go queue --max/continuation/empty smoke passes with nine phase commits and claim cleanup; [report](reports/bounded-run-cli.md).
 - 0081 bounded-queue-execution — RUN-016–020; 4c8c330/b788753/6bdfb43. Seven runtime failures/197 passes → 204 full phase passes; isolated Sol/high audit no findings. Small independent Go queue, Max/continuation, Empty/Limited, request forwarding and held-error progress are covered; app wiring and actual NEW run proof follow.
 - 0080 next-command — APP-074–079; 5e6d0bb/fff9dba/a11d713. Owner-approved native reauthoring corrected one fixture exit code; public Next preflight confirms C10/ALP-002. Six runtime failures/153 passes → 159 full phase passes. The authorized single Sol/high audit retry passed after a capacity-only stop. Fresh NEW next Go smoke passes in 5.73s with checked phases/archive/provenance/claim cleanup; [report](reports/next-0080-block.md).
 - 0079 single-change-execution — RUN-010–015; 7ed35d4/54f7f5c/1ddea1c. Reauthored under explicit owner approval after native abandon e5059ae; corrected only the unsupported final commit-subject assertion. 12 genuine runtime failures/179 passes → 191 full phase passes; isolated audit no findings. Runner library works; CLI wiring follows. Prior block/attempt retained in the [recovery record](reports/next-0079-block.md).
