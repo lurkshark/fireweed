@@ -16,7 +16,8 @@ and separation action. Same scoped Sol/high checkpoint reviewer PASS plus
 actual NEW rejection, build/vet/race/static/history16 commits pass at clean4cf21a1.
 Seven applications reviewed, count reset only at passing gate. See
 [correction gate](reports/checkpoint-corrections-0104-0105.md).
-Authorized correction push pending; no governing change or claim.
+Authorized correction push succeeded: origin/main dac2d16→5358b5f.
+No governing change or claim.
 
 **Next:** expose0103 workflow.Release through app release <change>, preserving
 dirty work/runtime state and removing only this worktree's claim. Close with
