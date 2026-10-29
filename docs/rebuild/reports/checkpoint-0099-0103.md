@@ -65,3 +65,7 @@ batch/finding may now be pushed, followed by the two scoped corrections, native
 audits/full checks and scoped checkpoint re-review. Corrections are not yet
 implemented; review remains BLOCK until re-review passes. No general bound,
 phase-write or drill exception is granted.
+
+The explicitly authorized push succeeded: origin/main7e0da27→dac2d16, with
+the finding and owner correction-gate approval recorded. Review count remains
+five pending the scoped corrections and passing re-review.

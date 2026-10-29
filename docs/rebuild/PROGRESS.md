@@ -15,8 +15,8 @@ review at clean75f05f8 found mixed eval_fix/fixes can bypass fail-first. Build,
 vet, full race, static and28-commit history extension pass, but do not override
 that finding. See [checkpoint and correction proposal](reports/checkpoint-0099-0103.md).
 Owner explicitly approved pushing this batch with the finding recorded and the
-scoped two-change correction gate. Push is next; origin/main remains7e0da27
-until success. Review count is not reset. No pending governing change or claim;
+scoped two-change correction gate. Authorized push advanced origin/main7e0da27→dac2d16 successfully.
+Review count is not reset. No pending governing change or claim;
 applied ledger in [HISTORY](HISTORY.md).
 
 Valid eval-fix/regenerate/ordinary-fix proofs remain valid for their recorded
