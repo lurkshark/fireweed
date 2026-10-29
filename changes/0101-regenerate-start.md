@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: workflow
+phase: audit
+run: 20261029T184119-8942b3694b847f629b8cc91b
 ---
 
 
@@ -26,20 +29,20 @@ Provenance for freshness, not commit ancestry. No new report-writing command.
 
 ## Added
 
-### new:regenerate-impl-phase
+### FLOW-080
 Start MUST set phase to impl for an unstarted change with regenerate true.
 
-### new:regenerate-disposable-deletion
+### FLOW-081
 Before returning from successful Start of an unstarted regenerate change,
 Fireweed MUST delete only the target module's files classified as disposable
 by the approved projected zone map, retaining all other files.
 
-### new:regenerate-drill-warning
+### FLOW-082
 For a regenerate change, Start MUST emit warning P10 when the module has no
 passing drill dated after its latest applied change's implementation Provenance.
 A newer passing drill MUST suppress that warning.
 
-### new:regenerate-context
+### FLOW-083
 For a held regenerate change in impl, Context MUST supply the regenerate
 playbook in place of the ordinary impl playbook.
 
@@ -89,3 +92,7 @@ Evals/interfaces freeze in impl; coordinator owns native checks/audit/archive,
 fresh NEW build and the actual bounded fake-agent CLI proof. Own under5m/full
 under15m; do not raise limits. Add P10 explanation immediately after application
 before closing this user-facing slice; no unrelated diagnostics.
+
+## Provenance
+
+- evals 2026-10-29T18:50:45.672515Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=368 failing=6 passing=362
