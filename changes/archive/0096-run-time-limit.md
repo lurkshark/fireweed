@@ -7,7 +7,7 @@ bases:
     RUN-016: e626633e
     RUN-030: 1dde6570
 module: runner
-phase: impl
+phase: applied
 run: 20261029T155505-139e6ccaaac6b169ce975070
 ---
 
@@ -123,6 +123,7 @@ Two applied changes since review precede this one; normal checkpoints continue.
 
 - evals 2026-10-29T16:27:41.954923Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=262 failing=5 passing=257
 - audit 2026-10-29T16:36:40.288023Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-29T16:49:15.609604Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=262 failing=0 passing=262
 
 ## Audit
 

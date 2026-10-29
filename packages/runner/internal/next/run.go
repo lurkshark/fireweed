@@ -27,6 +27,9 @@ func Run(ctx context.Context, request model.NextRequest) (model.NextResult, erro
 // RunWithBudget shares completed usage waits across changes in one Run call.
 func RunWithBudget(ctx context.Context, request model.NextRequest, budget *UsageBudget) (model.NextResult, error) {
 	var result model.NextResult
+	if stop := budget.TimeStop(ctx); stop != nil {
+		return result, stop
+	}
 	state, currentErr := workflow.Current(request.Root, "")
 	if currentErr != nil && !strings.Contains(currentErr.Error(), "P02: worktree holds no change") {
 		return result, fmt.Errorf("read held change: %w", currentErr)
@@ -60,12 +63,18 @@ func RunWithBudget(ctx context.Context, request model.NextRequest, budget *Usage
 		}
 	}
 	result.State = state
+	if stop := budget.TimeStop(ctx); stop != nil {
+		return result, stop
+	}
 	policy, err := readUsagePolicy(state.Snapshot.Config)
 	if err != nil {
 		return result, err
 	}
 	var recoveryWarnings []project.Diagnostic
 	for state.Phase != "applied" {
+		if stop := budget.TimeStop(ctx); stop != nil {
+			return result, stop
+		}
 		phase := state.Phase
 		role := "worker"
 		var prompt string
@@ -88,6 +97,9 @@ func RunWithBudget(ctx context.Context, request model.NextRequest, budget *Usage
 		attempts := configuredAttempts(state.Snapshot.Config)
 		feedback := ""
 		for attempt := 0; attempt < attempts; {
+			if stop := budget.TimeStop(ctx); stop != nil {
+				return result, stop
+			}
 			preInvoke, inspectErr := gitstore.Inspect(state.Snapshot.Root)
 			if inspectErr != nil {
 				return result, fmt.Errorf("inspect held phase HEAD: %w", inspectErr)
@@ -111,6 +123,9 @@ func RunWithBudget(ctx context.Context, request model.NextRequest, budget *Usage
 				})
 				result.State = withRecoveryWarnings(state, recoveryWarnings)
 			}
+			if stop := budget.TimeStop(ctx); stop != nil {
+				return result, stop
+			}
 			if agent.UsageLimit && ctx.Err() == nil && !errors.Is(invokeErr, context.Canceled) && !errors.Is(invokeErr, context.DeadlineExceeded) {
 				if err := budget.Wait(ctx, policy); err != nil {
 					return result, err
@@ -125,6 +140,9 @@ func RunWithBudget(ctx context.Context, request model.NextRequest, budget *Usage
 			}
 			attempt++
 			verification, verifyErr := workflow.Verify(ctx, step)
+			if stop := budget.TimeStop(ctx); stop != nil {
+				return result, stop
+			}
 			if verifyErr == nil {
 				break
 			}
@@ -141,10 +159,16 @@ func RunWithBudget(ctx context.Context, request model.NextRequest, budget *Usage
 			}
 			feedback = verificationFeedback(phase, verification, verifyErr)
 		}
+		if stop := budget.TimeStop(ctx); stop != nil {
+			return result, stop
+		}
 		done, err := workflow.Done(ctx, step)
 		if err != nil {
 			if done.State.Phase != "" {
 				result.State = withRecoveryWarnings(done.State, recoveryWarnings)
+			}
+			if stop := budget.TimeStop(ctx); stop != nil {
+				return result, stop
 			}
 			return result, fmt.Errorf("complete %s: %w", phase, err)
 		}

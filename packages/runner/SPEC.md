@@ -75,7 +75,8 @@ claim.
 
 ### RUN-016
 Run without a positive Max MUST continue single-change execution until no
-eligible changes remain, returning applied NextResults in execution order.
+eligible changes remain or its For bound stops it, returning applied NextResults
+in execution order.
 
 ### RUN-017
 With a positive Max, Run MUST apply at most Max changes per invocation. A later
@@ -142,9 +143,10 @@ Next MUST read limit_wait and limit_budget as durations, defaulting to 30m and
 budget with C01 before claiming a fresh change or invoking an agent.
 
 ### RUN-030
-For an AgentResult with UsageLimit true, Next MUST wait limit_wait and repeat
-the same phase attempt without spending a failed attempt. It MUST retain earlier
-step work and captured invocations, keeping existing verification feedback.
+Subject to the usage budget and Run's For bound, an AgentResult with UsageLimit
+true MUST make Next wait limit_wait and repeat the same phase attempt without
+spending a failed attempt. It MUST retain earlier step work and captured
+invocations, keeping existing verification feedback.
 
 ### RUN-031
 When another usage wait would exceed limit_budget, Next MUST return a clean
@@ -171,6 +173,32 @@ false for nil or ordinary failures.
 If Run blocked a change before a usage stop, it MUST return failure with the
 blocking cause/ref and stop reason retained. IsUsageStop MUST return false for
 that combined failure so the caller cannot report it as a clean stop.
+
+### RUN-036
+Run MUST treat For zero as unbounded and positive For as one elapsed-time
+budget for the whole invocation, including agent and verification time across
+phases and changes.
+
+### RUN-037
+When its For bound stops execution, Run MUST return a nonnil clean time-stop
+error naming the limit, with already-applied results retained. A step interrupted
+during agent invocation or verification MUST keep its work, claim, run, phase
+and assigned IDs without advancing, blocking, committing or releasing that step.
+
+### RUN-038
+When a usage wait fits its usage budget but would pass Run's For deadline,
+execution MUST return a clean time stop before waiting. It MUST preserve the
+held step's work and identity.
+
+### RUN-039
+IsTimeStop MUST recognize clean time-stop errors through wrapping. It MUST
+return false for nil, usage stops, ordinary failures and parent-context
+cancellation.
+
+### RUN-040
+If Run blocked a change before a time stop, it MUST return ordinary failure
+retaining the blocking cause/ref and time-stop reason. IsTimeStop MUST return
+false for that combined failure.
 
 ## Decisions
 

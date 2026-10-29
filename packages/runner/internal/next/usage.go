@@ -49,19 +49,49 @@ func usageDuration(value any, name string, fallback time.Duration) (time.Duratio
 }
 
 // UsageBudget records only completed waits, excluding agent and verification time.
-type UsageBudget struct{ waited time.Duration }
+type UsageBudget struct {
+	waited   time.Duration
+	deadline time.Time
+	stop     *TimeStopError
+}
+
+type TimeStopError struct{ Limit time.Duration }
+
+func (e *TimeStopError) Error() string {
+	return fmt.Sprintf("run time limit %s reached", e.Limit)
+}
+
+func (b *UsageBudget) SetTimeLimit(deadline time.Time, stop *TimeStopError) {
+	b.deadline, b.stop = deadline, stop
+}
+
+func (b *UsageBudget) TimeStop(ctx context.Context) error {
+	if b.stop != nil && context.Cause(ctx) == b.stop {
+		return b.stop
+	}
+	return nil
+}
 
 func (b *UsageBudget) Wait(ctx context.Context, policy usagePolicy) error {
 	if err := ctx.Err(); err != nil {
+		if stop := b.TimeStop(ctx); stop != nil {
+			return stop
+		}
 		return err
 	}
 	if b.waited > policy.budget || policy.wait > policy.budget-b.waited {
 		return &UsageStopError{Completed: b.waited, Next: policy.wait, Budget: policy.budget}
 	}
+	if b.stop != nil && time.Until(b.deadline) <= policy.wait {
+		return b.stop
+	}
 	timer := time.NewTimer(policy.wait)
 	defer timer.Stop()
 	select {
 	case <-ctx.Done():
+		if stop := b.TimeStop(ctx); stop != nil {
+			return stop
+		}
 		return ctx.Err()
 	case <-timer.C:
 		b.waited += policy.wait
