@@ -1,10 +1,13 @@
 ---
 already_satisfied:
     - FLOW-023
+audit_rounds: 0
 bases:
     FLOW-023: 67dcdbbe
     FLOW-036: ba36463a
 module: workflow
+phase: audit
+run: 20261029T175930-a47eee99acd8dcc2416ccf47
 ---
 
 
@@ -27,12 +30,12 @@ needed. Worker guidance updates and regenerate semantics are separate work.
 
 ## Added
 
-### new:eval-fix-zones
+### FLOW-078
 For an eval_fix change, Verify MUST permit evals-phase edits only in the target
 module's evals zone and the current change file. During impl it MUST permit
 edits only to that change file.
 
-### new:eval-fix-passing-coverage
+### FLOW-079
 During evals for an eval_fix change, Verify MUST require all target-module
 evals to pass rather than fail first, with every listed eval_fix ID covered by
 at least one referencing testcase.
@@ -83,3 +86,7 @@ process instrumentation, protected infrastructure, drill or phase exception.
 Use existing cause codes for existing rejection classes. Own check under5m,
 full under15m. Workers never commit or advance workflow. Coordinator owns
 native phases, isolated audits, clean NEW build and actual Go fixture.
+
+## Provenance
+
+- evals 2026-10-29T18:04:53.124143Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=361 failing=6 passing=355
