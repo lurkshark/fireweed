@@ -61,6 +61,25 @@ func Test_AST_009_AST_010_AuditRules(t *testing.T) {
 	requirePattern(t, text, `(?i)re.audit[^.\n]*(only|limit)[^.\n]*IDs?[^.\n]*(prior|previous|preceding|earlier)`, "re-audits limited to prior finding IDs")
 }
 
+func Test_AST_028_AuditPassingExample(t *testing.T) {
+	text, err := assets.Playbook("audit")
+	if err != nil {
+		t.Fatalf("Playbook(audit): %v", err)
+	}
+	heading := regexp.MustCompile(`(?m)^## Audit[ \t]*$`).FindStringIndex(text)
+	if heading == nil {
+		t.Fatal("audit playbook lacks a ## Audit example")
+	}
+	example := text[heading[1]:]
+	noFindings := regexp.MustCompile(`(?m)^[ \t]*No findings[ \t]*$`).FindStringIndex(example)
+	checkedIDs := regexp.MustCompile(`(?m)^[ \t]*Checked IDs:[ \t]*$`).FindStringIndex(example)
+	if noFindings == nil || checkedIDs == nil || checkedIDs[0] <= noFindings[1] {
+		t.Fatal("audit example must put No findings and Checked IDs: on separate lines, in that order")
+	}
+	requirePattern(t, example[checkedIDs[1]:], `(?m)^[ \t]*[-*][ \t]+[A-Z][A-Z0-9]*-[0-9]+\b`, "checked ID list below Checked IDs:")
+	requirePattern(t, text, `(?i)\b(use|replace|list|include)\b[^.\n]{0,120}\b(actual|actually|real)\b`, "instruction to use actual checked IDs")
+}
+
 func Test_AST_011_AST_012_AuthorRules(t *testing.T) {
 	text, err := assets.Playbook("author-change")
 	if err != nil {

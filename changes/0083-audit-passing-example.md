@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: assets
+phase: audit
+run: 20261029T024648-f67119a09cc3fbd11b3cf937
 ---
 
 
@@ -22,7 +25,7 @@ the existing Playbook API; retain all previous audit-scope and re-audit guidance
 
 ## Added
 
-### new:passing-audit-example
+### AST-028
 The audit playbook MUST show a passing ## Audit example with No findings and
 Checked IDs: followed by a list of IDs on separate lines, instructing the auditor
 to use the actual checked IDs.
@@ -57,3 +60,7 @@ protected docs or other modules. Coordinator owns native commits/application.
 After this fifth application, stop for the standing subagent checkpoint review;
 PASS authorizes push/continuation, an issue requires human review. Do not start
 a sixth change or evade P07. No new drill or phase-write exception is authorized.
+
+## Provenance
+
+- evals 2026-10-29T02:50:02.521195Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=461 failing=1 passing=460
