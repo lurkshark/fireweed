@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: app
+phase: audit
+run: 20261029T204957-38077114aff7e59b34419d29
 ---
 
 
@@ -21,18 +24,18 @@ lookup, CLI diagnostics and envelope helpers.
 
 ## Added
 
-### new:release-command
+### APP-091
 release <change> MUST discover the nearest project root and invoke
 workflow.Release for the named change. On success it MUST print confirmation
 with exit0, preserving work, runtime state and HEAD while dropping only the
 owned claim.
 
-### new:release-failure
+### APP-092
 release MUST return exit1 with the workflow cause code and corrective action
 when claim release fails, including missing or foreign claims. It MUST return
 exit2 with a corrective diagnostic for usage or project configuration errors.
 
-### new:release-json
+### APP-093
 release --json MUST emit schema1 with confirmation string data and empty
 diagnostics on success, or null data with code/message diagnostics on failure.
 It MUST leave stderr empty.
@@ -61,3 +64,7 @@ never commit or advance phases; coordinator owns full verification and separate
 restricted audit/application. Own under5m/full under15m; do not raise bounds.
 This is the release slice's immediate caller; no third release behavior change.
 First application after the passing correction gate; normal checkpoint bounds.
+
+## Provenance
+
+- evals 2026-10-29T20:59:19.983187Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=203 failing=7 passing=196
