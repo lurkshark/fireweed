@@ -134,5 +134,5 @@ func Test_APP_095_APP_096_CommitsFailures(t *testing.T) {
 	if dependencyErr == nil {
 		t.Fatal("fixture must cause workflow.Commits to fail")
 	}
-	commitsAppFailure(t, operational, []string{"commits", "manual", "--json"}, 1, "")
+	commitsAppFailure(t, operational, []string{"commits", "manual", "--json"}, 1, "P01")
 }
