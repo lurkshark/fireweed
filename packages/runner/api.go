@@ -28,3 +28,7 @@ func Next(ctx context.Context, request NextRequest) (NextResult, error) {
 func Run(ctx context.Context, request RunRequest) (RunResult, error) {
 	return run.Execute(ctx, request)
 }
+
+func IsUsageStop(err error) bool {
+	return next.IsUsageStop(err)
+}

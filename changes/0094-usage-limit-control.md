@@ -1,9 +1,12 @@
 ---
 already_satisfied:
     - RUN-015
+audit_rounds: 0
 bases:
     RUN-015: 63014c25
 module: runner
+phase: audit
+run: 20261029T142712-c76b3cdf9fbe34c2581fe5f8
 ---
 
 
@@ -32,38 +35,38 @@ not falsely report an unapplied change as applied while integration is pending.
 
 ## Added
 
-### new:usage-policy
+### RUN-029
 Next MUST read limit_wait and limit_budget as durations, defaulting to 30m and
 4h when unset. It MUST reject malformed durations, a nonpositive wait or negative
 budget with C01 before claiming a fresh change or invoking an agent.
 
-### new:usage-retry
+### RUN-030
 For an AgentResult with UsageLimit true, Next MUST wait limit_wait and repeat
 the same phase attempt without spending a failed attempt. It MUST retain earlier
 step work and captured invocations, keeping existing verification feedback.
 
-### new:usage-stop
+### RUN-031
 When another usage wait would exceed limit_budget, Next MUST return a clean
 usage-stop error identifying completed wait, next wait and budget. It MUST retain
 the held State, work and ordered Steps without advancing, blocking, committing
 or releasing the claim.
 
-### new:shared-usage-wait
+### RUN-032
 Run MUST account for total usage wait across phases and changes in one
 invocation. On a clean usage stop it MUST retain already-applied results and
 propagate the stop classification.
 
-### new:owned-step-resume
+### RUN-033
 When the calling worktree already holds a queued step, Next MUST resume that
 owned State using its approved snapshot without a fresh Start, retaining its
 run, phase, assigned IDs and work. Existing approval and unapproved-work bounds
 MUST remain enforced for starting another change.
 
-### new:usage-stop-classifier
+### RUN-034
 IsUsageStop MUST recognize clean usage-stop errors through wrapping and return
 false for nil or ordinary failures.
 
-### new:blocked-usage-stop
+### RUN-035
 If Run blocked a change before a usage stop, it MUST return failure with the
 blocking cause/ref and stop reason retained. IsUsageStop MUST return false for
 that combined failure so the caller cannot report it as a clean stop.
@@ -128,3 +131,7 @@ implementation, old worker logs or rebuild-v1 as oracle. No drill or phase-write
 exception. The owner approved this consecutive runner recovery change. After application,
 return immediately to app exit-3 wiring and actual NEW proof; normal future
 five-application checkpoints and all other enforcement remain in force.
+
+## Provenance
+
+- evals 2026-10-29T14:37:16.655357Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=246 failing=15 passing=231
