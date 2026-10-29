@@ -74,3 +74,27 @@ with no counter/bound/phase-write exception. Only retained evals and authored
 spec text are supplied for reuse. Before freezing, a temporary public-API check
 will validate the fixture returns C10/ALP-002; remove that harness before normal
 controller verification. No saved/deleted implementation is an input.
+
+## Corrected fixture and fresh fail-first passed; audit capacity unavailable
+
+The fixed-profile eval worker restored the retained file and applied exactly
+the approved exit 0 line. A temporary Go test using the public runner.Next API
+and the actual fixture returned verify evals: C10: no coverage for ALP-002,
+without C11; the harness was removed before verification. All six CLI specs
+compile and fail at runtime against the still-unsupported next command. Native
+evals commit 5e6d0bb reports 159 cases: six failures and 153 passes.
+
+The new independent Sol/high auditor invocation terminated with exit 1 after
+Selected model is at capacity. It made only a supplied-snapshot pwd/file-list
+read and produced no assertion review or No findings result. No substitute model
+or manual audit was used. The snapshot was removed; the actual audit/worker
+logs remain under run 20261029T012539-cf09ff80f620517ce580ef2f.
+
+The goal explicitly requires stopping on unavailable fixed-profile access.
+Native release dropped this worktree's own claim without changing the committed
+audit phase, IDs, run or counters. No step work is left uncommitted. This is an
+external prerequisite, not a spec finding or a new native block commit. Resume
+with native start/context for the existing audit phase and a regenerated isolated
+snapshot when the same fixed profile is available/authorized to retry. Do not
+repeat the passed eval phase or use saved/deleted implementation as an oracle.
+Applied-since-review remains 1; no new push or implementation application occurred.

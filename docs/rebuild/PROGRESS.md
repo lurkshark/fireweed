@@ -15,26 +15,35 @@ the passing correction does not retroactively validate them. See the
 [correction report](reports/checkpoint-corrections-0076.md) and
 [checkpoint report](reports/checkpoint-0071-0075.md).
 
-## Active slice — approved 0080 recovery
+## Waiting prerequisite — fixed-profile auditor capacity
 
-0079's approved recovery applied at 1ddea1c with 191 full phase passes. The
-owner now approved native abandon/re-author of 0080 and its one-line diagnostic
-fixture correction. Native abandon committed c014190; earlier block/history
-and attempt 1 remain retained. Only the authored change and retained evals were
-saved for reuse, with no implementation oracle. Applied-since-review stays 1.
+0079's approved recovery remains applied at 1ddea1c. 0080's owner-approved
+native abandon/re-author completed, and its one-line fixture correction was
+validated through public runner.Next: C10 naming ALP-002, with no C11. The
+temporary validation test was removed; every permanent assertion/ID is retained.
+Native evals commit 5e6d0bb reports 159 cases, six genuine runtime failures and
+153 passes. **Applied since review: 1.**
 
-Reauthored 0080 keeps the same six CLI specs and no API changes. Restore the
-retained evals and make only the omit-new hook exit consistently with its passing
-report. Validate that this public fixture now returns C10/ALP-002 before
-freezing it; then run normal fail-first, isolated audit and implementation.
-See [the historical blocker and approved recovery](reports/next-0080-block.md).
+The separate Sol/high auditor terminated with Selected model is at capacity
+and no audit result. It only listed the isolated snapshot entry point before
+failure; no passing audit or implementation is claimed. The snapshot was
+removed and actual logs remain under run 20261029T012539-cf09ff80f620517ce580ef2f.
+Native release dropped this worktree's own claim; 0080 remains committed at
+phase audit with its run/IDs intact and no blocked field. The tree is clean.
+See [the recovery/capacity record](reports/next-0080-block.md).
 
-After application, build NEW and run /tmp/fireweed-next-cli-smoke.py run using
-/tmp/fireweed-next-cli-smoke-state.json. Its clean Go fixture remains retained
-for that proof. Then prove bounded NEW run --max, later continuation and empty
-queue. Retry/recovery and remaining kinds follow that runnable path. No NEW
-unattended real-agent execution before the bounded fake-agent run passes. All
-final gates and drill deferrals remain open; no new push or phase-write exception.
+The goal explicitly requires stopping on unavailable fixed-profile access.
+Resume with native start/context at the existing audit phase, then regenerate
+the isolated snapshot and retry the same Sol/high auditor when authorized and
+available. Do not switch models, fabricate an audit, rewrite phase state or
+restart the completed evals. After a passing audit, reconstruct app wiring from
+contracts, run full Done, build NEW and execute the prepared Go CLI smoke.
+Its script/state remain /tmp/fireweed-next-cli-smoke.py and
+/tmp/fireweed-next-cli-smoke-state.json. NEW next is not yet an applied CLI feature.
+
+Bounded NEW run --max/continuation/empty queue follows that proof, then recovery
+and remaining kinds. No NEW unattended real-agent execution before the fake-agent
+run passes. Final gates/drill deferrals remain open. No new push occurred.
 
 ## Authority and deferred work
 
