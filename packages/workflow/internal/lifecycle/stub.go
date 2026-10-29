@@ -473,6 +473,29 @@ func selectedIDs(ch project.Change, projected []contracts.Item) []string {
 	}
 	return ids
 }
+func evalFixIDs(ch project.Change) []string {
+	return list(ch.Document.Frontmatter["eval_fix"])
+}
+func evalFixZones(s model.State, c claim, diff []gitstore.Change) []project.Diagnostic {
+	if len(evalFixIDs(s.Change)) == 0 || c.Phase != "evals" && c.Phase != "impl" {
+		return nil
+	}
+	m := module(c.Snapshot, s.Change.Module)
+	prefix := strings.TrimSuffix(m.Dir, "/") + "/"
+	var ds []project.Diagnostic
+	for _, change := range diff {
+		for _, file := range []string{change.OldPath, change.Path} {
+			if file == "" || file == s.Change.Path {
+				continue
+			}
+			if c.Phase == "evals" && strings.HasPrefix(file, prefix) && contracts.ResolveZone(strings.TrimPrefix(file, prefix), m.Zones) == "evals" {
+				continue
+			}
+			ds = append(ds, diag("Z01", fmt.Sprintf("eval_fix %s phase cannot edit %s", c.Phase, file), false))
+		}
+	}
+	return ds
+}
 func dependents(s project.Snapshot, name, mode string) []string {
 	if mode == "none" {
 		return nil
@@ -527,6 +550,7 @@ func Verify(ctx context.Context, req model.Request) (model.Result, error) {
 		return r, e
 	}
 	r.Diagnostics = checks.Zones(checks.ZoneRequest{Snapshot: c.Snapshot, Module: s.Change.Module, Phase: c.Phase, ChangePath: s.Change.Path, Base: c.PhaseBase, InterfaceDeclared: strings.TrimSpace(c.Sections["Interface"]) != "", Changes: diff})
+	r.Diagnostics = append(r.Diagnostics, evalFixZones(s, c, diff)...)
 	if e = hard(r.Diagnostics); e != nil {
 		return r, e
 	}
@@ -561,10 +585,23 @@ func Verify(ctx context.Context, req model.Request) (model.Result, error) {
 				first = err
 			}
 			if c.Phase == "evals" {
-				if err = checks.RequireFailFirst(rep, selectedIDs(s.Change, items), list(s.Change.Document.Frontmatter["already_satisfied"])); err != nil {
-					r.Diagnostics = append(r.Diagnostics, diag("P2-01", err.Error(), false))
-					if first == nil {
-						first = err
+				if ids := evalFixIDs(s.Change); len(ids) > 0 {
+					for _, id := range ids {
+						if err = checks.RequireCoverage(rep, []contracts.Item{{ID: id}}); err != nil && first == nil {
+							first = err
+						}
+					}
+					for _, testcase := range rep.Cases {
+						if testcase.Result != "pass" && first == nil {
+							first = fmt.Errorf("E01: eval_fix testcase %q did not pass", testcase.Name)
+						}
+					}
+				} else {
+					if err = checks.RequireFailFirst(rep, selectedIDs(s.Change, items), list(s.Change.Document.Frontmatter["already_satisfied"])); err != nil {
+						r.Diagnostics = append(r.Diagnostics, diag("P2-01", err.Error(), false))
+						if first == nil {
+							first = err
+						}
 					}
 				}
 			}
@@ -659,7 +696,7 @@ func auditProcess(s model.State, c claim) (project.Change, string, bool, error) 
 	for _, it := range append(append([]contracts.Item{}, ch.Added...), ch.Modified...) {
 		all[it.ID] = it.Body
 	}
-	for _, id := range list(ch.Document.Frontmatter["fixes"]) {
+	for _, id := range append(list(ch.Document.Frontmatter["fixes"]), evalFixIDs(ch)...) {
 		if all[id] == "" {
 			for _, it := range specs(module(c.Snapshot, ch.Module)) {
 				if it.ID == id {
@@ -721,7 +758,7 @@ func auditProcess(s model.State, c claim) (project.Change, string, bool, error) 
 	for _, id := range regexp.MustCompile(`[A-Za-z][A-Za-z0-9-]*-\d+`).FindAllString(checked[1], -1) {
 		found[id] = true
 	}
-	for _, id := range selectedIDs(ch, specs(module(c.Snapshot, ch.Module))) {
+	for _, id := range append(selectedIDs(ch, specs(module(c.Snapshot, ch.Module))), evalFixIDs(ch)...) {
 		if !found[id] {
 			return ch, "", false, fmt.Errorf("P09: audit did not check %s", id)
 		}
@@ -875,6 +912,7 @@ func Done(ctx context.Context, req model.Request) (model.Result, error) {
 		return result, e
 	}
 	postZones := checks.Zones(checks.ZoneRequest{Snapshot: c.Snapshot, Module: fresh.Change.Module, Phase: c.Phase, ChangePath: fresh.Change.Path, Base: c.PhaseBase, InterfaceDeclared: strings.TrimSpace(c.Sections["Interface"]) != "", Changes: diffAfter})
+	postZones = append(postZones, evalFixZones(fresh, c, diffAfter)...)
 	result.Diagnostics = append(result.Diagnostics, postZones...)
 	if e = hard(postZones); e != nil {
 		return result, e

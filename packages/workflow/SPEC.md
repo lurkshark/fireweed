@@ -85,7 +85,8 @@ Verify MUST reject an unapproved alteration of the active change's recorded runt
 Whenever Verify runs the target module's evals it MUST require coverage of every enforced current spec.
 
 ### FLOW-023
-During evals Verify MUST require genuine fail-first evidence for every enforced change ID that is not already_satisfied.
+During evals Verify for spec and fix changes MUST require genuine fail-first
+evidence for every enforced change ID that is not already_satisfied.
 
 ### FLOW-024
 During impl Verify MUST reject a failing current-module testcase that references a non-quarantined spec.
@@ -124,7 +125,8 @@ Audit Done MUST discard a finding whose spec ID is absent or whose quoted clause
 On re-audit, Audit Done MUST discard findings for spec IDs that had no retained finding in the preceding audit round.
 
 ### FLOW-036
-Audit Done MUST require every enforced ID in the change's Added, Modified or fixes entries to appear in a No findings submission's checked-ID list.
+Audit Done MUST require every enforced ID in the change's Added, Modified,
+fixes or eval_fix entries to appear in a No findings submission's checked-ID list.
 
 ### FLOW-037
 Retained testable audit findings within the round limit MUST return the change to evals.
@@ -273,6 +275,16 @@ attempt ref with P01 before claiming or writing the change.
 ### FLOW-077
 For an unstarted change with no Added, Modified or Removed specs, fixes or
 eval_fix, and regenerate not true, Start MUST set phase to impl.
+
+### FLOW-078
+For an eval_fix change, Verify MUST permit evals-phase edits only in the target
+module's evals zone and the current change file. During impl it MUST permit
+edits only to that change file.
+
+### FLOW-079
+During evals for an eval_fix change, Verify MUST require all target-module
+evals to pass rather than fail first, with every listed eval_fix ID covered by
+at least one referencing testcase.
 
 ## Decisions
 
