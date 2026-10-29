@@ -122,9 +122,14 @@ older entry or turn its historical next-work text into a new instruction.
 The first NEW next lifecycle now has [actual Go CLI evidence](reports/next-0080-block.md)
 for the successful-path portions of R06–R09/R17: genuine fail-first, separate
 bounded fake audit, checked commits, SPEC/archive/provenance and claim release.
-This is partial coverage; run, retry/recovery, remaining kinds and all final gates
+This is partial coverage; recovery, remaining kinds and all final gates
 stay open. Reuse the result without repeating it for each inventory row.
 
 The [bounded NEW run proof](reports/bounded-run-cli.md) adds partial R12/R13/R17
 evidence for successful queue order, --max, later continuation and empty queue.
 Retries/recovery, time/usage limits and remaining obligations remain open.
+
+The [NEW verification-retry proof](reports/verification-retries-0084.md) adds
+partial R12/R17 evidence for phase attempt bounds, retained work and latest
+verification feedback. Saved/blocking recovery, independent continuation,
+resume, nonzero-agent retries, usage/time stops and final gates remain open.

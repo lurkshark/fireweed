@@ -9,52 +9,41 @@ The approved 0076–0078 corrections passed isolated audits, full phase checks,
 fresh build/vet/race/static/history, the NEW doctor smoke and the same checkpoint
 subagent's scoped re-review. The owner-authorized push synchronized main with
 origin at `510cc91`. No pending change or claim remained at that boundary.
-**Applied since review: 0; the 0079–0083 checkpoint passed.** Earlier audit/phase deviations remain recorded;
+**Applied since review: 1 after 0084; the 0079–0083 checkpoint passed.** Earlier audit/phase deviations remain recorded;
 the passing correction does not retroactively validate them. See the
 [correction report](reports/checkpoint-corrections-0076.md) and
 [checkpoint report](reports/checkpoint-0071-0075.md).
 
-## Active slice — NEW verification retries
+## Active slice — saved-attempt recovery through NEW
 
-The authorized single Sol/high audit retry passed. 0080 applied at a11d713 with
-159 full phase cases passing; no pending change or claim remains at that boundary.
-Fresh NEW build source is a11d713e13922087f2172ab5665570a80db1ec0c, CGO disabled
-and vcs.modified=false. The actual NEW next Go fixture passed in 5.73 seconds:
-one genuine Go eval failure became a pass, three checked phase commits applied
-SPEC/archive/provenance, separate fake agents ran exactly three times, and claims
-released with a clean tree. See [the phase and CLI proof](reports/next-0080-block.md).
-The completed disposable fixture was removed after inspection.
+The reviewed 0079–0083 batch pushed to origin/main at 8aff1e4 after separate
+checkpoint PASS and fresh build/vet/race/static/history. Reuse the actual
+[Next lifecycle](reports/next-0080-block.md), [bounded queue](reports/bounded-run-cli.md)
+and [checkpoint](reports/checkpoint-0079-0083.md) evidence.
 
-0082 applied at 58351b2 with 166 full phase passes and an isolated audit pass.
-The actual NEW run --max 1 applied Alpha in 6.35s, a later run applied Beta and
-Gamma in 9.16s, and an empty run added no calls or commits. All exited 0 with
-empty stderr; nine checked phase commits, real Go fail-first/pass, provenance
-and claim cleanup were inspected. The owned fixture was removed. See
-[the bounded-run proof](reports/bounded-run-cli.md).
+0084-verification-retries applied at 667e419: 214 full phase cases pass and a
+valid isolated assertion audit passed RUN-015/021/022. Both capacity-stopped
+workers were resumed by separately approved one-time same Sol/high retries.
+The mistaken initial audit working directory is retained as invalid evidence;
+the fresh correctly isolated audit is the accepted one. No pending change or
+claim remains. See [the retry report](reports/verification-retries-0084.md).
 
-0083 applied at 6ce22e9: the passing audit example now shows No findings on
-one line and a populated Checked IDs field on the next. Native first findings
-returned to evals with audit_rounds 1; a separate author clarification preserved
-the run/round, corrected the assertion, and AST-028-only isolated re-audit passed.
-All 461 full phase cases pass; no pending change or claim remains. See
-[the audit-example record](reports/audit-example-0083.md).
+Fresh NEW at clean 667e419, CGO disabled and vcs.modified=false, passed the actual
+Go next retry fixture in 6.53s. One genuine impl failure was corrected on its
+second attempt, preserving work and exact recorded verification feedback.
+Four fake-agent calls, three phase commits, SPEC/archive/provenance, claim
+release and clean tree were inspected; the fixture was removed. The external
+verifier's over-specific output assertion was corrected against the same
+completed fixture, without a product change or another execution.
 
-The separate subagent checkpoint review returned PASS for 0079–0083. Fresh
-build/vet/race/static/history checks also passed at clean 6ce22e9; history covers
-38 new commits with zero diagnostics. The NEW binary has CGO disabled and
-vcs.modified=false. The standing push and continuation are authorized; see
-[the checkpoint report](reports/checkpoint-0079-0083.md). Full acceptance remains
-open.
-Retries/saved attempts, blocking/independent continuation, resume, time/usage
-stops and remaining kinds follow the runnable queue path. No NEW unattended
-real-agent execution before the bounded fake-agent run passes. Full design and
-final ACCEPTANCE gates remain open; drill deferrals and normal bounds remain.
-The reviewed batch pushed successfully to origin/main at 8aff1e4. The next
-change is 0084-verification-retries: bounded retries after failed verification,
-with retained work and last-output feedback, through the existing NEW next/run
-path. Close this slice with an actual NEW next whose first implementation is
-wrong and second succeeds. Saved attempts/blocking, nonzero-agent retries and
-usage/time stops remain subsequent work.
+Next: exhausted verification work must be saved on an attempt ref, checkout
+restored, and a state-only block committed with claim release. Add only the
+needed lifecycle primitive, return promptly to its runner caller and close
+with an actual NEW next exhaustion fixture. Then projected blocking with
+independent continuation, saved-attempt resume, nonzero-agent retries,
+time/usage stops, remaining kinds and persistent bounds follow. Bounded fake
+Next/Run proof has passed; full design and final ACCEPTANCE gates remain open.
+No new push or drill occurred.
 
 ## Authority and deferred work
 
@@ -87,7 +76,7 @@ keep unchanged. History baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`;
 use explicit nonempty ranges. Set `GOCACHE=/tmp/fireweed-rebuild-cache`.
 
 NEW: `/Users/joel/Workspace/fireweed/bin/fireweed`, built at clean source
-`6ce22e9e9d618e7c5c4451f48b3f1b522ab4cf08`, CGO disabled. Reuse the
+`667e419fc75c337650d4befaf1954a1826e8d21e`, CGO disabled. Reuse the
 [manual lifecycle](reports/manual-lifecycle.md) and corrected
 [doctor smoke](reports/doctor-setup-cli.md) evidence where valid.
 
