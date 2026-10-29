@@ -7,7 +7,7 @@ checked NEW next/run, verification retry and clean saved blocking work. NEW run
 now continues independent work while blocked dependencies wait, retaining exit 1
 and the blocking cause/ref. The full design and final ACCEPTANCE remain open.
 
-**Applied since review: 3 (0089–0091).** The separate Sol/high 0084–0088 checkpoint
+**Applied since review: 4 (0089–0092); next application requires the standing checkpoint.** The separate Sol/high 0084–0088 checkpoint
 passed with build/vet/race/static/history at clean 940ef0e; its explicit new
 history extension passed 37 commits with zero diagnostics. The owner directly
 approved the reviewed push and the attachment's standing subagent-review/push
@@ -15,7 +15,7 @@ process in this chat. The push advanced origin/main from 8aff1e4 to 82ef71d.
 See [the checkpoint](reports/checkpoint-0084-0088.md); its earlier rejected
 invocations never ran. Normal enforcement remains intact.
 
-## Next slice — agent-commit recovery through NEW next
+## Next slice — usage-limit waits and clean budget stops
 
 0089-independent-continuation applied at bf27309: RUN-010/011/016/025/026,
 423a9f7/5edbc1d/bf27309, five genuine failures/212 passes → 217 full phase
@@ -46,12 +46,21 @@ and final tree/claims were clean. The harness's removed-empty-cwd issue was
 repaired before any NEW call; the unblock commit was retained. The retained
 fixture and its tracker are now removed. See [the CLI proof](reports/saved-resume-cli-0091.md).
 
-Current change: 0092-agent-commit-recovery. Its unmet runnable behavior:
-when a phase agent creates a commit, NEW next must undo those commits with a
-soft reset before verification, retaining its work and reporting a warning.
-Use one bounded fake-agent Go scenario and the needed runner/caller composition;
-do not expand to status or general Git maintenance. Usage/time stops and other
-recovery remain open, as do full design and final ACCEPTANCE.
+0092-agent-commit-recovery archived at 96211bd with 231 full phase passes
+and isolated RUN-027/028 audit PASS. Actual NEW next passed in 6.12s: four
+fixture-agent commits were soft-reset away, staged/untracked work survived,
+three checked phases archived Alpha, three phase-tagged P05 warnings appeared,
+and tree/claims were clean. Fixture removed. See
+[the proof](reports/agent-commits-0092.md). No governing pending change or claim.
+
+Next unmet runnable behavior: usage-limit agent exits must wait/retry the same
+attempt, preserve work, and stop cleanly when wait budget is exhausted, with
+resume possible. Supply only needed runner control and then promptly wire CLI
+exit 3 and close an actual NEW scenario. The next application is the fifth:
+perform the standing separate quality/goal-adherence review and required checks;
+PASS authorizes push/continuation, any finding requires a human stop. A checkpoint
+may interrupt the dependency/caller slice, which resumes immediately afterward.
+Time --for, remaining kinds/bounds, full design and final ACCEPTANCE stay open.
 
 ## Authority and deferred work
 
@@ -86,7 +95,7 @@ use explicit nonempty ranges and extend the recorded valid portions.
 GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-523f908868b4460a3179d698a58ab90131e39a67, Go1.27.2 darwin/arm64, CGO disabled,
+96211bd8e2a842933ca0c0157cc7c7f0065847a8, Go1.27.2 darwin/arm64, CGO disabled,
 vcs.modified=false. Reuse valid earlier lifecycle/setup/CLI/checkpoint evidence;
 no fresh final CI/doctor/fresh-checkout/drill/self-hosting claim follows.
 

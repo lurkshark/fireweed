@@ -1,4 +1,4 @@
-# Local checkpoint 0084–0088 — PASS; owner decision pending
+# Checkpoint 0084–0088 — PASS; authorized push completed
 
 The separate Sol/high checkpoint_0084_0088 reviewer returned PASS for
 8aff1e4..940ef0e: no actionable requirement-grounded defect, assertion weakening,

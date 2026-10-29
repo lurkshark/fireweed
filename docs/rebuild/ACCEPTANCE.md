@@ -150,3 +150,8 @@ partial R06/R12/R17 evidence: loading real saved work through start --from-attem
 retained lifecycle state/HEAD, correction and normal checked archive without
 repeating earlier successful phases. The fixture was removed after PASS.
 Agent-commit undo, usage/time stops and remaining final obligations stay open.
+
+The [NEW agent-commit recovery proof](reports/agent-commits-0092.md) adds partial
+R12/R17 evidence: soft-reset phase-agent commits, retained work and visible
+recovery warnings, then normal checked archive. Usage/time stops, remaining kinds/
+bounds and full acceptance remain open.
