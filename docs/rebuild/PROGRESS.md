@@ -17,7 +17,7 @@ actual NEW rejection, build/vet/race/static/history16 commits pass at clean4cf21
 Seven applications reviewed, count reset only at passing gate. See
 [correction gate](reports/checkpoint-corrections-0104-0105.md).
 Authorized correction push succeeded: origin/main dac2d16→5358b5f.
-No governing change or claim.
+0107 recovery in progress; governing run/IDs retained, currently unclaimed audit phase.
 
 0106 now exposes workflow.Release through NEW. Actual nested Go start/release
 retains exact dirty files/runtime/HEAD while dropping only the owned claim;
@@ -53,7 +53,7 @@ drill authority. After PASS, return immediately to app release wiring/NEW proof.
   eval_fix, fresh usage reauthoring and consecutive runner recovery. It is now
   complete. Former P08 runner warning is gone after app caller; existing C01
   embedded-recipe discovery and B02 CHK-055/16-case warnings remain explained.
-- No new phase-write exception. Both0085 scoped exceptions are consumed.
+- Owner explicitly approved scoped0107 recovery: preserve the12-line eval patch, restore only its uncommitted edit, natively release the claim, one-time revert of invalid audit9ec2165, then resume the same run/IDs and persist the real finding before correction/re-audit. Release and revert 4188612 completed; this exception is consumed. Both0085 scoped exceptions remain consumed.
   Historical deviations remain historical, not retroactively valid evidence.
 - Only the contracts drill was authorized and has unresolved independence
   limitations, including dependent-internal reads. No gap fix, repeat or other
