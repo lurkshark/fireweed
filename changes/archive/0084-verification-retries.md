@@ -3,7 +3,7 @@ audit_rounds: 0
 bases:
     RUN-015: 5d5d135e
 module: runner
-phase: impl
+phase: applied
 run: 20261029T032332-d2f9262403cce62e6c8ed149
 ---
 
@@ -82,6 +82,7 @@ change/projected specs/evals/permitted public interfaces only.
 
 - evals 2026-10-29T03:38:08.317166Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=214 failing=5 passing=209
 - audit 2026-10-29T03:41:11.208025Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-29T04:33:37.423529Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=214 failing=0 passing=214
 
 ## Audit
 

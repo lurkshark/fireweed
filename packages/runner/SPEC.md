@@ -67,8 +67,9 @@ call workflow.Done only when verification passes, continuing until applied.
 It MUST return the applied state and the ordered phase invocation results.
 
 ### RUN-015
-When invocation or phase verification fails, Next MUST return an error and
-captured invocation results without advancing that phase.
+When invocation fails, or phase verification still fails after its attempt
+allowance, Next MUST return an error and captured invocation results without
+advancing that phase.
 
 ### RUN-016
 When single-change executions succeed, Run without a positive Max MUST
@@ -92,6 +93,16 @@ execution for every change it processes.
 If single-change execution fails while the calling worktree still holds the
 change, Run MUST return the error with its cause and already-applied results
 retained, leaving later changes unstarted.
+
+### RUN-021
+Next MUST permit at most the configured attempts count of agent invocations
+for a phase after verification failures, defaulting to two when unset. Each
+phase MUST have its own attempt allowance.
+
+### RUN-022
+When phase verification fails and an attempt remains, Next MUST retain the
+earlier work and retry that phase. The retry prompt MUST include the last
+verification output.
 
 ## Decisions
 

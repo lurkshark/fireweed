@@ -66,23 +66,32 @@ func Run(ctx context.Context, request model.NextRequest) (model.NextResult, erro
 		if err != nil {
 			return result, fmt.Errorf("prepare %s context: %w", phase, err)
 		}
-		agent, invokeErr := invoke.Agent(ctx, model.AgentRequest{
-			Snapshot: state.Snapshot, Role: role, Prompt: prompt,
-			Bin: request.Bin, Timeout: request.Timeout,
-		})
-		result.Steps = append(result.Steps, model.StepResult{Phase: phase, Role: role, Agent: agent})
-		if invokeErr != nil {
-			return result, fmt.Errorf("invoke %s agent: %w", phase, invokeErr)
-		}
-		if agent.ExitCode != 0 {
-			return result, fmt.Errorf("%s agent exited with code %d", phase, agent.ExitCode)
-		}
 		step := workflow.Request{
 			Root: state.Snapshot.Root, Change: state.Change.Path, Bin: request.Bin,
 			Agent: configuredCommand(state.Snapshot.Config, role), Timeout: request.Timeout,
 		}
-		if _, err := workflow.Verify(ctx, step); err != nil {
-			return result, fmt.Errorf("verify %s: %w", phase, err)
+		attempts := configuredAttempts(state.Snapshot.Config)
+		feedback := ""
+		for attempt := 0; attempt < attempts; attempt++ {
+			agent, invokeErr := invoke.Agent(ctx, model.AgentRequest{
+				Snapshot: state.Snapshot, Role: role, Prompt: prompt + feedback,
+				Bin: request.Bin, Timeout: request.Timeout,
+			})
+			result.Steps = append(result.Steps, model.StepResult{Phase: phase, Role: role, Agent: agent})
+			if invokeErr != nil {
+				return result, fmt.Errorf("invoke %s agent: %w", phase, invokeErr)
+			}
+			if agent.ExitCode != 0 {
+				return result, fmt.Errorf("%s agent exited with code %d", phase, agent.ExitCode)
+			}
+			verification, verifyErr := workflow.Verify(ctx, step)
+			if verifyErr == nil {
+				break
+			}
+			if attempt+1 == attempts {
+				return result, fmt.Errorf("verify %s: %w", phase, verifyErr)
+			}
+			feedback = verificationFeedback(phase, verification, verifyErr)
 		}
 		done, err := workflow.Done(ctx, step)
 		if err != nil {
@@ -95,6 +104,50 @@ func Run(ctx context.Context, request model.NextRequest) (model.NextResult, erro
 		result.State = state
 	}
 	return result, nil
+}
+
+func configuredAttempts(config map[string]any) int {
+	switch attempts := config["attempts"].(type) {
+	case int:
+		if attempts > 0 {
+			return attempts
+		}
+	case float64:
+		if attempts > 0 && attempts <= float64(int(^uint(0)>>1)) && attempts == float64(int(attempts)) {
+			return int(attempts)
+		}
+	}
+	return 2
+}
+
+func verificationFeedback(phase string, verification workflow.Result, verifyErr error) string {
+	var feedback strings.Builder
+	fmt.Fprintf(&feedback, "\n\n# Previous %s verification failed\n%s\n", phase, verifyErr)
+	for _, diagnostic := range verification.Diagnostics {
+		if diagnostic.Code != "" {
+			fmt.Fprintf(&feedback, "%s: %s\n", diagnostic.Code, diagnostic.Message)
+		} else {
+			fmt.Fprintln(&feedback, diagnostic.Message)
+		}
+	}
+	names := make([]string, 0, len(verification.Reports))
+	for name := range verification.Reports {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		report := verification.Reports[name]
+		fmt.Fprintf(&feedback, "\n# %s verification output\n", name)
+		feedback.WriteString(report.Stdout)
+		if !strings.HasSuffix(report.Stdout, "\n") {
+			feedback.WriteByte('\n')
+		}
+		feedback.WriteString(report.Stderr)
+		if !strings.HasSuffix(report.Stderr, "\n") {
+			feedback.WriteByte('\n')
+		}
+	}
+	return feedback.String()
 }
 
 func requireApproval(root, path string) error {
