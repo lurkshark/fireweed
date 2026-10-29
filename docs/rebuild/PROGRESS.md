@@ -10,28 +10,29 @@ An ordinary fix then proves real fail-first/pass through three checked phases.
 Both fixtures clean/unclaimed and removed. [0102 proofs](reports/regenerate-fixes-cli-0102.md).
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 5 (0099–0103).** Mandatory separate Sol/high quality/goal
-review plus fresh appropriate checks is pending. Last passing0094–0098 review
-was at9949dfe; last authorized push origin/main28ced38→7e0da27.
-[Previous checkpoint](reports/checkpoint-0094-0098.md). No next change or push
-before the current checkpoint passes. No pending main change or claim;
+**Applied since review: 5 (0099–0103), checkpoint BLOCK.** Separate Sol/high
+review at clean75f05f8 found mixed eval_fix/fixes can bypass fail-first. Build,
+vet, full race, static and28-commit history extension pass, but do not override
+that finding. See [checkpoint and correction proposal](reports/checkpoint-0099-0103.md).
+No push or correction has started. Origin/main remains7e0da27; shared-base P07
+is at five. Review count is not reset. No pending governing change or claim;
 applied ledger in [HISTORY](HISTORY.md).
 
-0103 release dependency archived at09175fd:374 full passes, isolated three-ID
-audit PASS,102 own passes. Public API drops only owned named claim by exact CAS,
-preserving dirty work/HEAD/state and rejecting missing/foreign ownership. See
-[0103 report](reports/release-api-0103.md). Its CLI caller is still unsupported;
-actual NEW release proof remains pending. The0102 regenerate/ordinary-fixes
-proofs and earlier CLI evidence remain valid.
+Valid eval-fix/regenerate/ordinary-fix proofs remain valid for their recorded
+inputs; mixed-kind rejection is uncovered.0103 release API passes374 native/
+102 own cases but its app caller/actual NEW proof remain pending. Full design
+and all final gates stay open.
 
-## Current checkpoint and next caller
+## Required owner checkpoint
 
-Review0099–0103 quality/adherence with a separate Sol/high subagent and run fresh
-build/vet/race/static/history on clean source. PASS authorizes push and immediate
-app release wiring/actual NEW proof; any finding requires owner stop. This
-checkpoint interrupts a one-dependency slice, not the full goal. No new drill.
-Remaining management commands, persistent bounds, inventory and final gates
-stay open.
+Approve a push with the finding recorded to free P07, then a scoped correction
+gate: project.Check rejects eval_fix mixed with fixes/spec edits using C07;
+assets explains that cause/action while retaining existing C07 behavior;
+independent audits/full checks and scoped checkpoint re-review follow. Standing
+push/continuation authority requires PASS, so it does not authorize this blocked
+batch. Do not change refs/bounds/counts to bypass this stop or start a sixth
+change. No new drill or phase-write exception is proposed. After a passing
+correction gate, return immediately to app release wiring/actual NEW proof.
 
 ## Authority and deferred work
 
@@ -64,11 +65,11 @@ Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
 recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-31c28d1710be2b59f320bed619797d222dcf8adc, Go1.27.2 darwin/arm64, CGO disabled,
+75f05f8fe58ca40b78a0d1ce4b86f4bdfad7f90b, Go1.27.2 darwin/arm64, CGO disabled,
 vcs.modified=false. This build completed without a warning.
-Last checkpoint build/vet/race/static/history source is9949dfe;0099–0102 native
-full checks and actual CLI proofs pass. No fresh final race/vet/CI/doctor/
-checkout/drill/self-hosting claim follows from these changes.
+Build/vet/race/static/history passed at75f05f8; quality review is BLOCK for the
+recorded fail-first bypass. No final CI/doctor/fresh-checkout/drill/self-hosting
+or overall acceptance claim follows.
 
 Workers and separate assertion auditors use codex exec --ephemeral
 --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"'
