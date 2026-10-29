@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: workflow
+phase: audit
+run: 20261029T173024-225998e74522a3f430076281
 ---
 
 
@@ -22,7 +25,7 @@ remaining design work; do not implement them in this change.
 
 ## Added
 
-### new:maintenance-phase
+### FLOW-077
 For an unstarted change with no Added, Modified or Removed specs, fixes or
 eval_fix, and regenerate not true, Start MUST set phase to impl.
 
@@ -56,3 +59,7 @@ eval_fix/regenerate feature, new diagnostic, command, instrumentation, drill,
 matrix or unrelated cleanup. One new file may contain focused public evals;
 permanent fixtures use bounded deterministic hooks. Own check under5m, full
 under15m. Workers never commit or advance phases; controller owns transitions.
+
+## Provenance
+
+- evals 2026-10-29T17:36:30.115891Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=353 failing=1 passing=352
