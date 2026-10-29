@@ -2,44 +2,33 @@
 
 ## Current handoff — 2026-10-29
 
-NEW now proves manual lifecycle, Go/none/local init and doctor/guidance, bounded
-next/run, verification retry, saved blocking, independent continuation,
-saved-attempt loading, agent-commit undo, and clean usage-budget stop with owned
-resume. The latest actual Go proof passes: Alpha waits/retries/applies, Beta
-retains its claim/work/run/ID at the shared budget, then next completes the same
-Beta run; Gamma stays queued, final tree/claims clean. See
-[0095 proof](reports/usage-stop-cli-0095.md). Full design/ACCEPTANCE remain open.
+NEW now proves manual lifecycle, setup, bounded next/run, retries/blocking,
+independent continuation, saved-attempt loading, agent-commit undo, usage limits
+and total-time stops with owned resume. Latest actual Go proof: run --for2s
+interrupts an agent in2.09s with original claim/run/phase/IDs/work and no commit;
+next completes that same run in5.84s, later queue unchanged, clean/unclaimed.
+See [0097 proof](reports/run-time-cli-0097.md). Full design/ACCEPTANCE remain open.
 
-**Applied since review: 3 (0094–0096).** Separate Sol/high 0089–0093 checkpoint
-passed at clean06a94e9 with build/vet/race/static and40-commit history extension
-(zero history diagnostics). Authorized push advanced origin/main82ef71d→28ced38.
-See [checkpoint](reports/checkpoint-0089-0093.md). No pending change or claim.
+**Applied since review: 4 (0094–0097).** Separate Sol/high0089–0093 checkpoint
+passed at clean06a94e9 with build/vet/race/static/history. Last authorized push
+advanced origin/main82ef71d→28ced38. See [checkpoint](reports/checkpoint-0089-0093.md).
+No pending change or claim. [HISTORY](HISTORY.md) owns the applied ledger.
 
-0094 runner usage control applied at a720cf6: RUN-029–035 and qualifiedRUN-015,
-247 full passes after one native RUN-033 approved-policy assertion correction
-and isolated re-audit PASS. Fresh implementation corrected one attempt-count
-error and passed69 own cases. [Report](reports/usage-limit-runner-0094.md).
-0095 app caller applied at dbda392: APP-076/077/079/083/084/086,186 full passes,
-one scoped naming correction/re-audit, clean exit3/data/reason/guidance and C01
-config exit2. Actual NEW run/next proof passed6.25s/4.62s with eight agent calls
-and six phase commits. Fixture removed. [Report](reports/usage-stop-cli-0095.md).
-Earlier capabilities/evidence and the approved0093 abandon/eval_fix recovery
-remain in [HISTORY](HISTORY.md) and linked reports; do not repeat valid proofs.
+0096 runner time dependency archived at2f6870f with262 passes;0097 app --for
+archived atab7b317 with196 passes after one scoped APP-089 audit assertion
+correction/re-audit. Actual NEW stop/resume proof passed; fixture removed.
+Usage limit and earlier proofs remain valid; do not repeat them.
 
-## Next slice — run --for time limit
+## Next slice — maintenance through NEW
 
-0096-run-time-limit archived at2f6870f: RUN-036–040 plus qualifiedRUN-016/030,
-262 full passes and isolated seven-ID audit PASS;76 own passes in194.04s.
-Incomplete pre-freeze timeout was superseded by complete native evidence.
-Only For/IsTimeStop were added publicly; total deadline, interruption, wait
-preflight and mixed-failure control are private. See
-[runner report](reports/run-time-runner-0096.md). No pending change/claim.
-
-Next: wire app run --for duration parsing and clean time-stop output immediately,
-then build NEW and run the prepared actual Go fixture: stop an agent while
-retaining exact claim/run/phase/IDs/work, then complete the same run through
-next. The time fixture has not run yet; installed NEW is still dbda392.
-Remaining kinds/bounds, command inventory, full design and final gates stay open.
+The design sends maintenance changes (no spec edits/fixes/eval_fix) directly to
+implementation. NEW Start currently defaults every fresh change to evals.
+Establish that missing phase selection, then run actual NEW next on a small Go
+refactor: one implementation agent, no evals/audit phase, full checks and one
+archive commit, retained specs/interfaces/evals and clean claim release.
+This will be the fifth application: separate quality/goal subagent review plus
+appropriate fresh checks is required; PASS authorizes push and continuation.
+Remaining kinds/bounds, full command inventory and final gates stay open.
 
 ## Authority and deferred work
 
@@ -72,10 +61,10 @@ Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
 recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-dbda392145c7c23f41dbb6f645deda048b8c4284, Go1.27.2 darwin/arm64, CGO disabled,
+ab7b3173871fa6552a4aaadb75ef755a7c0c9b60, Go1.27.2 darwin/arm64, CGO disabled,
 vcs.modified=false. Optional stat-cache sandbox write warning did not fail build.
 No new final race/vet/CI/doctor/fresh-checkout/drill/self-hosting claim follows
-from these two changes; use the last checkpoint's exact source/range honestly.
+from this slice; use the last checkpoint's exact source/range honestly.
 
 Workers and separate assertion auditors use codex exec --ephemeral
 --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"'

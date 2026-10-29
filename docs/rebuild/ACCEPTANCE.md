@@ -161,3 +161,9 @@ R13/R17 evidence: same-attempt usage retry, shared wait budget across applied
 changes, exit3 with retained result/state/work, and later same-run completion.
 Actual Go reports prove fail-first/pass; fixture removed. Time --for and all
 unclosed inventory/final gates remain open.
+
+The [NEW time-stop/resume proof](reports/run-time-cli-0097.md) adds partial
+R13/R17 evidence: run --for interrupts an active agent, returns exit3 with
+retained result/state/work, and next completes the same run with actual Go
+fail-first/pass reports. Fixture removed. Remaining kinds/bounds and final gates
+remain open.
