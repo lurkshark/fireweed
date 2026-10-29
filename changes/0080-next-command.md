@@ -1,6 +1,7 @@
 ---
 audit_rounds: 0
 bases: {}
+blocked: frozen APP-078 fixture expects C10 from an inconsistent hook exit/report pair
 module: app
 phase: impl
 run: 20261029T000645-7551044ce491f3dfa364881d
@@ -114,3 +115,17 @@ No findings. Checked IDs: APP-074, APP-075, APP-076, APP-077, APP-078, APP-079.
 The separate Sol/high auditor reviewed only supplied isolated snapshot inputs.
 Complete command-log inspection confirms read-only permitted files, without
 implementation/history access, execution or writes.
+
+## Questions
+
+The implementation passes five of six focused new CLI tests, including the full
+checked lifecycle. APP-078 expects C10 and ALP-002 for missing coverage, but its
+omit-new hook emits a passing ALP-001 report while retaining exit 1 from the
+unreported ALP-002 Go failure. Existing checks correctly return C11 for exit
+and report disagreement before coverage. Returning C10 would falsify the cause.
+
+The proposed scoped correction makes only the omit-new branch exit 0 after its
+passing report, yielding an internally consistent report that truly lacks
+ALP-002 coverage. Preserve all assertions/IDs and the normal genuine fail-first
+branch. Do not modify implementation or other modules to fake C10. Frozen-eval
+recovery requires the blocked-change human checkpoint before any further work.
