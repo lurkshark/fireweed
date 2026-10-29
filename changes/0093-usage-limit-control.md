@@ -1,11 +1,13 @@
 ---
 already_satisfied:
     - RUN-015
-audit_rounds: 0
+audit_pending:
+    - RUN-033
+audit_rounds: 1
 bases:
     RUN-015: 63014c25
 module: runner
-phase: audit
+phase: evals
 run: 20261029T104429-263c67507b7c55993d7c1bdb
 ---
 
@@ -126,6 +128,11 @@ implementation, old worker logs or rebuild-v1 as oracle. No drill or phase-write
 exception. Stop at the fifth-change quality checkpoint after application; do not
 start the app caller before its PASS and authorized push.
 
+## Audit
+
+- RUN-033: "using its approved snapshot" — the resume eval does not assert that the resumed State or agent uses the approved snapshot.
+
 ## Provenance
 
 - evals 2026-10-29T10:58:09.536757Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=246 failing=15 passing=231
+- audit 2026-10-29T11:01:11.642301Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
