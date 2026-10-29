@@ -89,3 +89,10 @@ stale or missing managed guidance and playbook override base metadata. Severity
 remains a property of the diagnostic. Add accurate assets explanations after
 the doctor backend emits these causes and before CLI wiring/checkpoint review;
 D006's existing assignments remain unchanged.
+
+## D008 — Regenerate warning
+
+The regenerate lifecycle feature assigns P10 to the warning that its module
+lacks a passing drill dated after the latest applied implementation Provenance.
+Add its explanation after the workflow emits it and before closing that CLI
+slice; this allocates no unrelated diagnostic or drill authorization.
