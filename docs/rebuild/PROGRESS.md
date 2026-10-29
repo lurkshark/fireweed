@@ -7,7 +7,7 @@ checked NEW next/run, verification retry and clean saved blocking work. NEW run
 now continues independent work while blocked dependencies wait, retaining exit 1
 and the blocking cause/ref. The full design and final ACCEPTANCE remain open.
 
-**Applied since review: 4 (0089–0092); next application requires the standing checkpoint.** The separate Sol/high 0084–0088 checkpoint
+**Applied since review: 5 (0089–0093); standing checkpoint in progress.** The separate Sol/high 0084–0088 checkpoint
 passed with build/vet/race/static/history at clean 940ef0e; its explicit new
 history extension passed 37 commits with zero diagnostics. The owner directly
 approved the reviewed push and the attachment's standing subagent-review/push
@@ -64,13 +64,20 @@ old implementation and logs are not implementation inputs. Prior two-round
 assertion audit reached PASS; abandonment addresses the frozen helper conflict,
 not an outstanding audit finding or a new round-limit exception.
 
-Next: factor the shared applied-result helper into an exact-count form while
-keeping its ordinary three-step wrapper and all assertions. This eval_fix is the
-fifth applied change and requires the standing separate quality/goal review and
-checks before push/continuation. Then re-author bounded usage handling, wire
-app exit 3 promptly and close the actual NEW wait/success/stop/resume scenario.
-No phase-write exception or drill is authorized. Time --for, remaining kinds/
-bounds, the complete design and final ACCEPTANCE stay open.
+The approved fixture-only 0093-applied-result-count is now archived at 5b0e642:
+RUN-016, b8a9260/bd4d862/5b0e642, 231 full phase passes both times, 53 own
+passes, isolated assertion audit PASS. Only the exact-count helper refactor
+changed; ordinary three-step assertions/callers are preserved. See
+[the recovery report](reports/applied-result-count-0093.md).
+
+Next: complete the fifth-change separate quality/goal review and required checks.
+PASS authorizes push/continuation; any finding requires an owner stop. Then
+re-author bounded usage handling using retained contracts/evals, recreate its
+implementation fresh, wire app exit 3 promptly and close the actual NEW wait/
+success/stop/resume scenario. Explicit approval covers consecutive runner
+recovery changes. No pending change or claim; no phase-write exception or drill.
+Time --for, remaining kinds/bounds, the complete design and final ACCEPTANCE
+stay open.
 
 ## Authority and deferred work
 

@@ -6,7 +6,7 @@ they are not current instructions, permissions or readiness claims. Resume from
 [PROGRESS.md](PROGRESS.md). Preserve evidence and checkpoint history; do not
 repeat passed work because an older entry calls it pending.
 
-## Applied changes through 0092
+## Applied changes through 0093
 
 [0079–0083 checkpoint](reports/checkpoint-0079-0083.md) PASS: separate subagent
 review and fresh build/vet/race/static/history at clean 6ce22e9; 38 new history
@@ -19,6 +19,7 @@ commits have zero diagnostics. The proposed push was rejected by automatic
 approval review under the latest explicit owner stop; nothing was pushed and
 further work awaits an owner decision.
 
+- 0093 applied-result-count — eval_fix RUN-016; b8a9260/bd4d862/5b0e642. Both full phases passed 231 cases; 53 own passes and isolated RUN-016 audit PASS. Exact-count helper preserves the ordinary three-step wrapper and every existing assertion/caller. Earlier usage change natively abandoned at b08c4d0 under explicit owner approval after a frozen three-versus-four-step conflict; fresh re-authoring remains pending. [Report](reports/applied-result-count-0093.md).
 - 0092 agent-commit-recovery — RUN-027/028; 0ea029d/8bf710c/96211bd. Two genuine failures/229 passes → 231 full phase passes; isolated audit PASS. Actual NEW Go next proof PASS in 6.12s: four agent commits undone, work retained, three checked phase commits and P05 warnings, clean/unclaimed; fixture removed. [Report](reports/agent-commits-0092.md).
 - 0091 saved-attempt-command — APP-087/088 and already-satisfied APP-009 qualification; 79a5849/7d51927/523f908. Ten genuine failures/168 passes → 178 full phase passes; isolated audit PASS. Actual NEW saved-attempt resume/correction/archive proof PASS in 2.86s, retaining run/phase/IDs/HEAD/ref and later independent work; fixture removed. Harness cwd repair occurred before any NEW call, preserving its existing unblock commit. [Report](reports/saved-resume-cli-0091.md).
 - 0090 saved-attempt-resume — FLOW-073–076; 8cbcac8/d6cb397/9affb4c/2d2c483/da16b68. Eight genuine failures/287 passes → ten failures/287 passes after scoped round-1 correction → 297 full phase passes. FLOW-074/075 findings corrected and isolated re-audit passed; same run/IDs, no exception. StartFromAttempt dependency ready; app flag/actual NEW proof immediately next. [Report](reports/saved-resume-api-0090.md).
