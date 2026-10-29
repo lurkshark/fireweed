@@ -1,0 +1,121 @@
+---
+bases: {}
+module: app
+---
+
+
+
+## Motivation
+
+The design's Driving the state machine and CLI sections require next to drive
+one change through its checked phases. 0079 provides the minimal runner loop,
+but NEW still rejects next. Wire it now and close this vertical slice with an
+actual NEW next invocation in an ordinary Go fixture using separate bounded
+fake worker/auditor scripts. Inspect fail-first, audit, implementation, phase
+commits, SPEC/archive/provenance and claim release. No broad recovery or run
+implementation is a prerequisite for this first observable lifecycle.
+
+## Interface
+
+No public interface change. Compose the existing app.Run and runner.Next APIs.
+Keep parsing, diagnostics and presentation in app internal implementation.
+
+## Added
+
+### new:next-dispatch
+next MUST discover the nearest ancestor fireweed.yaml and invoke runner.Next
+for that project, supplying the actual invoking executable as Bin.
+
+### new:next-options
+next MUST accept --allow-unmerged, passing true only when present. It MUST
+reject extra positional arguments and unsupported options with corrective U01
+and exit 2; --allow-unmerged MUST be rejected for unrelated implemented commands.
+
+### new:next-plain-result
+Plain next MUST identify the applied change or empty queue on stdout after
+successful runner completion.
+
+### new:next-exits
+next MUST return exit 0 for an applied change or empty queue, exit 1 for runner
+execution or lifecycle failure, and exit 2 for usage or configuration-loading
+failure.
+
+### new:next-failure-detail
+next failure diagnostics MUST retain existing cause codes from wrapped
+dependency errors and include a corrective action.
+
+### new:next-json
+next --json MUST emit schema 1 with object data containing change, run, phase
+and empty on success, or null data with code/message diagnostics on failure.
+It MUST leave stderr empty.
+
+## Modified
+
+
+
+## Removed
+
+
+
+## Decisions
+
+
+
+## Rejected alternatives
+
+
+
+## Notes
+
+This closes the current CLI slice, not the full execution surface. Do not
+implement run, attempts/retries/recovery, drills, new options, agent commit undo,
+whole-module completion or speculative cleanup. Existing runtime behavior,
+manual workflow APIs and old assertions remain. No public interface edits or
+new disposable stub should be needed for runtime fail-first: NEW currently
+rejects next. Keep all other unsupported commands explicit errors.
+
+Use existing nearest-project loading, output envelope and CLI helpers. Let
+runner.Next and workflow retain eligibility/approval/claim/P07 enforcement.
+Request Timeout stays unset so existing configured defaults apply. Plain
+failures use stderr; success may retain dependency warnings. For unprefixed
+runner errors use existing P01 precondition cause with specific corrective
+text; do not allocate speculative codes. Inspect wrapped errors to preserve
+an existing cause such as C10 or P07 despite runner phase context.
+
+Black-box evals build/run the actual NEW executable with public interfaces,
+ordinary temporary Git repositories, explicit identities, local hooks and
+bounded separate fake worker/auditor scripts. Reuse existing helpers where
+possible; no bootstrap, auth/network, private imports or observers. Exercise
+one full lifecycle from a nested directory, actual FIREWEED_BIN in hooks/agents,
+checked commit phase state (not assumed subjects), SPEC/archive/provenance,
+claim release, empty queue, normal approval rejection and --allow-unmerged,
+representative usage/config/failure diagnostics and JSON success/failure.
+Keep cases representative and own Verify below five minutes. No fixture
+helper redesign or Cartesian matrix. Run full native phase checks via Done.
+After application build bin/fireweed and run the prepared /tmp CLI smoke.
+
+The coordinator runs controller start/context/done and owns commits. Workers
+never commit or call controller start/done/next/run, edit protected docs or
+phase/counters. Separate auditors receive isolated permitted snapshots and
+review exact unasserted spec clauses only. Normal bounds and checkpoint stops
+remain; no phase-write exception is authorized.
+
+## Approved recovery
+
+The owner approved native abandon/re-author and the one-line omit-new fixture
+correction. Native abandon committed c014190; the earlier history/block and
+attempt 1 remain retained. This is the first correction of the same C11/C10
+fixture issue, with no spec/API expansion or counter/bound/phase-write exception.
+
+During evals restore only the retained next_cli_test.go from
+/tmp/fireweed-0080-retained-recovery and apply
+/tmp/fireweed-0080-coverage-fixture.patch. Preserve every assertion/ID. Before
+freezing, validate the corrected omit-new fixture through existing public
+runner.Next: it must now return C10 with ALP-002, rather than C11. A small
+temporary Go test using the existing fixture helper may perform this diagnostic
+check; remove it before controller verification. No new permanent testcase or
+framework is needed. Retain normal runtime fail-first from the unsupported CLI.
+
+Never read saved/deleted implementation or old implementation logs as an oracle.
+After fresh fail-first and isolated audit, reconstruct app wiring from contracts.
+The coordinator owns native phase advancement and commits.

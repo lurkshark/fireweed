@@ -64,3 +64,13 @@ with 30-second hook/agent limits; state is in
 up after the proof. Library success or the uncommitted candidate's focused CLI
 passes do not establish final CLI acceptance. Bounded run follows that proof;
 all later design/ACCEPTANCE gates and drill deferrals remain open.
+
+## Owner-approved native recovery started
+
+The owner approved native abandon/re-author and the one-line fixture correction.
+Native abandon committed c014190 and reverted the previous phase work; all prior
+history and attempt 1 remain retained. The same scope and issue are reauthored,
+with no counter/bound/phase-write exception. Only retained evals and authored
+spec text are supplied for reuse. Before freezing, a temporary public-API check
+will validate the fixture returns C10/ALP-002; remove that harness before normal
+controller verification. No saved/deleted implementation is an input.
