@@ -10,30 +10,30 @@ The approved 0076–0078 corrections passed isolated audits, full phase checks,
 fresh build/vet/race/static/history, the NEW doctor smoke and the same checkpoint
 subagent's scoped re-review. The owner-authorized push synchronized main with
 origin at `510cc91`. No pending change or claim remained at that boundary.
-**Applied since review: 0.** Earlier audit/phase deviations remain recorded;
+**Applied since review: 1 after 0079.** Earlier audit/phase deviations remain recorded;
 the passing correction does not retroactively validate them. See the
 [correction report](reports/checkpoint-corrections-0076.md) and
 [checkpoint report](reports/checkpoint-0071-0075.md).
 
-## Active slice — approved 0079 recovery
+## Active slice — wire NEW next
 
-The owner approved native abandon/re-author and the scoped final-commit
-assertion correction. Native abandon committed e5059ae, removed the blocked
-change and reverted its phase work. Its block/history and saved attempt 1
-remain retained; no implementation is read from them. A freshly authored
-0079-single-change-execution retains the same scope, API and six specs.
-The evals step restores only permitted retained interfaces/evals, corrects the
-unsupported subject assertion to inspect committed applied phase, then runs
-normal fail-first, isolated audit and implementation. This is the first
-correction of the same recorded issue. **Applied since review: 0.**
-See [the historical blocker and approved recovery](reports/next-0079-block.md).
+The approved native abandon/re-author corrected the single unsupported final
+commit-subject assertion. Reauthored 0079 applied at 1ddea1c: 191 full phase
+cases pass after genuine fail-first and an isolated Sol/high audit. The tree
+is clean and no claim remains. Earlier block/history/attempt 1 stay retained;
+see [the recovery record](reports/next-0079-block.md).
 
-After this minimum runner dependency passes, wire app promptly and prove one
-complete **NEW next** lifecycle in a bounded fake-agent Go fixture. Then prove
-NEW run --max, later continuation and empty queue. Retry/recovery/remaining
-kinds follow that runnable path. No NEW unattended real-agent execution before
-the fake-agent run passes. Final gates and drill deferrals remain open; see
-[PLAN.md](PLAN.md). No new push or controller phase-write exception is approved.
+runner.Next now composes one successful spec-change lifecycle through public
+workflow APIs with scoped audit context, approval precheck and ordered results.
+This library result does not close the CLI slice. Authored 0080-next-command
+returns to app wiring immediately; then build NEW and run the prepared ordinary
+Go fixture using separate bounded fake worker/auditor scripts. Inspect checked
+phase commits, genuine fail-first/pass, SPEC/archive/provenance and claim release.
+
+Then prove NEW run --max, later continuation and empty queue. Retry/recovery and
+remaining kinds follow that runnable path. No NEW unattended real-agent execution
+before the bounded fake-agent run passes. All final gates and drill deferrals
+remain open; no new push or controller phase-write exception is approved.
 
 ## Authority and deferred work
 

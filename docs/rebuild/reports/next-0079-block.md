@@ -1,4 +1,11 @@
-# First next loop — 0079 blocked
+# First next loop — 0079 recovery passed
+
+Current result: reauthored 0079 applied at 1ddea1c with 191 full phase passes.
+The isolated audit passed at 54f7f5c; fail-first evals committed 7ed35d4.
+No claim remains. Runner library evidence is complete; NEW next CLI wiring
+and proof remain pending. Historical evidence follows without retroactive edits.
+
+## Historical block
 
 0079-single-change-execution stopped at the required blocked-change checkpoint.
 It is not applied. Native block commit is `00edbd3`; the checkout is clean and
@@ -68,3 +75,16 @@ left to the controller. Only retained API/types/evals and authored spec text wer
 saved for reuse; no deleted or saved implementation is copied or read. Normal
 fail-first and isolated audit must run again. This is the first correction of
 the same recorded issue, with applied count 0 and no bound/phase-write exception.
+
+## Reauthored phase verification passed
+
+Fresh fail-first 7ed35d4: 191 cases, 12 runtime failures and 179 passes.
+Separate isolated Sol/high assertion audit 54f7f5c: No findings for RUN-010–015;
+complete command-log inspection confirms permitted reads only, and the snapshot
+was removed. Implementation 1ddea1c passes all 191 phase cases. Retained evals
+differ from the former attempt only by the approved committed-phase assertion.
+No saved/deleted implementation was supplied to reconstruction. Native Done
+applied/archive/claim cleanup passed. Actual CLI logs remain under run
+20261028T235723-4038c1c2cfedfafa7aa9c5d5, with honest manual coordinator phase
+provenance. No push follows; the applied-since-review count is 1. Return to app
+wiring and the actual NEW next fixture now.

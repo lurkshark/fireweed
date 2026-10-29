@@ -6,7 +6,8 @@ they are not current instructions, permissions or readiness claims. Resume from
 [PROGRESS.md](PROGRESS.md). Preserve evidence and checkpoint history; do not
 repeat passed work because an older entry calls it pending.
 
-## Applied changes through 0078
+## Applied changes through 0079
+- 0079 single-change-execution — RUN-010–015; 7ed35d4/54f7f5c/1ddea1c. Reauthored under explicit owner approval after native abandon e5059ae; corrected only the unsupported final commit-subject assertion. 12 genuine runtime failures/179 passes → 191 full phase passes; isolated audit no findings. Runner library works; CLI wiring follows. Prior block/attempt retained in the [recovery record](reports/next-0079-block.md).
 - 0078 stable-descendant-timeout-eval — eval_fix RUN-007/009; 88119c5/7b8a843/0f6f7b2. One existing case gets bounded startup/observation windows and output-before-readiness; 178 eval/impl phase passes, focused race pass and isolated audit no findings. No product/interface/spec change.
 - 0077 baseline-stop-assertion — eval_fix CHK-055; 064d9ab/0fd7393/435b176. Added stop-before-canary assertions in existing cases; 298 eval/impl phase passes, isolated audit no findings, no product/interface/spec change. Coordinator provenance is manual; real fixed-profile CLI logs retained. B02: 16 CHK-055 cases is informational; this change adds no cases.
 - 0076 doctor-boundary-cleanup-fixes — CHK-051/055/056/057; e2b5b3b/37fc2e9/995eebb; three runtime failures → 298 phase passes. Native audit input deviation and supplemental CHK-055 assertion gap remain open in the correction report; no correction push.
