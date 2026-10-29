@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: project
+phase: audit
+run: 20261029T200720-a00e0b4d24c4bbfe30563f52
 ---
 
 
@@ -22,7 +25,7 @@ this invalid change structure. No workflow behavior or facade changes.
 
 ## Added
 
-### new:eval-fix-exclusive-kind
+### PRJ-046
 Check MUST report error C07 for a pending change containing eval_fix together
 with fixes or any Added, Modified or Removed spec edits.
 
@@ -60,3 +63,7 @@ C07 explanation follow-up and scoped checkpoint re-review. Own under5m/full
 under15m; do not raise bounds. Five prior applications remain counted; these
 two correction applications are explicitly owner-approved, not a count reset,
 phase exception or ordinary fifth-checkpoint bypass.
+
+## Provenance
+
+- evals 2026-10-29T20:10:30.527748Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=529 failing=3 passing=526
