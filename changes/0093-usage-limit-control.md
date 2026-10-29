@@ -7,7 +7,7 @@ audit_rounds: 2
 bases:
     RUN-015: 63014c25
 module: runner
-phase: evals
+phase: audit
 run: 20261029T104429-263c67507b7c55993d7c1bdb
 ---
 
@@ -138,3 +138,4 @@ start the app caller before its PASS and authorized push.
 - audit 2026-10-29T11:01:11.642301Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 - evals 2026-10-29T11:08:09.568902Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=246 failing=15 passing=231
 - audit 2026-10-29T11:11:25.646866Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- evals 2026-10-29T11:14:48.122982Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=246 failing=15 passing=231

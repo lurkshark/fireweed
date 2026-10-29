@@ -172,7 +172,8 @@ func Test_RUN_030_RUN_031_RUN_033_ShortBudgetResumeOwnedStep(t *testing.T) {
 		t.Fatalf("short-budget stop = %#v, %v", first, err)
 	}
 	state := usageHeld(t, f.root, "next", "evals", first.State.Run, head, first.State.ClaimOID)
-	if state.Change.Added[0].ID != "ALP-002" || !strings.Contains(nextRead(t, f.root, "packages/alpha/evals/partial_test.go"), "USAGE_PARTIAL_WORK") {
+	partialWork := nextRead(t, f.root, "packages/alpha/evals/partial_test.go")
+	if state.Change.Added[0].ID != "ALP-002" || !strings.Contains(partialWork, "USAGE_PARTIAL_WORK") {
 		t.Error("held eval work or assigned ID lost")
 	}
 	approved := state.Snapshot
@@ -197,6 +198,9 @@ func Test_RUN_030_RUN_031_RUN_033_ShortBudgetResumeOwnedStep(t *testing.T) {
 	}
 	if !strings.Contains(nextRead(t, f.root, "changes/archive/0001-next.md"), "ALP-002") {
 		t.Error("resume lost assigned ID")
+	}
+	if got := nextRead(t, f.root, "packages/alpha/evals/partial_test.go"); got != partialWork {
+		t.Errorf("resume changed held partial eval work: got %q, want %q", got, partialWork)
 	}
 	resumedSpec := ""
 	for _, module := range second.State.Snapshot.Modules {
