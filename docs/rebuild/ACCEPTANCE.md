@@ -178,3 +178,8 @@ evidence: corrected evals pass with listed coverage, separate audit includes
 the ID, impl is change-file-only and normal archive releases the claim. Actual
 Go baseline failure/correction and unchanged contracts/implementation are
 recorded. Worker guidance, regenerate and remaining full gates stay open.
+
+The [NEW eval-fix playbook check](reports/eval-fix-playbooks-0100.md) adds partial
+R17/R20/R23 guidance evidence: actual CLI instructions match the corrected
+evals/audit/impl restrictions. The0099 Go proof remains valid. Regenerate and
+remaining inventory/final gates stay open.

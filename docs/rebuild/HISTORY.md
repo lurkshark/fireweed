@@ -6,7 +6,7 @@ they are not current instructions, permissions or readiness claims. Resume from
 [PROGRESS.md](PROGRESS.md). Preserve evidence and checkpoint history; do not
 repeat passed work because an older entry calls it pending.
 
-## Applied changes through 0099
+## Applied changes through 0100
 
 [0079–0083 checkpoint](reports/checkpoint-0079-0083.md) PASS: separate subagent
 review and fresh build/vet/race/static/history at clean 6ce22e9; 38 new history
@@ -21,6 +21,7 @@ further work awaits an owner decision.
 
 [0094–0098 checkpoint](reports/checkpoint-0094-0098.md) PASS: separate Sol/high quality/goal review plus clean9949dfe build/vet/race/static/history;33 new history commits have zero diagnostics. Actual NEW usage/time stops, resume and maintenance proofs pass; fixtures removed. Standing owner authorization covers push and continuation; final gates remain open.
 
+- 0100 eval-fix-playbooks — AST-029/030/031; b2841bf/6361924/f418f88. Three failures/566 passes →569 full passes within15m; isolated three-ID audit PASS,59 own passes. Actual NEW evals/audit/impl playbook JSON commands pass with conditional rules, schema1/string data, no diagnostics/stderr. Reuses0099 lifecycle proof. [Report](reports/eval-fix-playbooks-0100.md).
 - 0099 eval-fix-lifecycle — FLOW-078/079, modified FLOW-036/023 (023 already_satisfied); 35ce303/3e30063d/23ad9de. Six failure events/355 passes →361 full passes; isolated four-ID audit PASS,89 own passes. Actual NEW Go eval-fix proof passes4.74s: wrong baseline test fails, correction passes under evals/audit/no-op impl, three commits, contracts/implementation unchanged, clean/unclaimed; fixture removed. [Report](reports/eval-fix-cli-0099.md).
 - 0098 maintenance-start — FLOW-077; 6548562/c60e32d/d3272a3. One failure/352 passes →353 full native passes; isolated audit PASS. Corrected full own81 passes after private no-op SPEC write guard and eval_fix presence correction. Actual NEW Go maintenance next passes3.26s with only one impl agent/one archive commit, retained contracts, clean/unclaimed; fixture removed. Fifth-change checkpoint now required. [Report](reports/maintenance-cli-0098.md).
 - 0097 run-for-command — APP-089/090, modified APP-084; 79d6ffd/32ede66/0184b69/81cc839/ab7b317. Both native eval rounds10 failures/186 passes →196 impl passes; scoped APP-089 audit correction/re-audit PASS. Actual NEW time-stop/resume proof PASS: exit3 in2.09s, original claim/run/phase/ID/work retained without commit; next archives same run in5.84s, four calls/three commits, later queue unchanged, clean/unclaimed. Fixture removed. [Report](reports/run-time-cli-0097.md).

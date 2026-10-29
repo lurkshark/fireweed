@@ -2,35 +2,35 @@
 
 ## Current handoff — 2026-10-29
 
-NEW now proves manual lifecycle, setup, bounded next/run, retries/blocking,
-independent continuation, saved-attempt loading, agent-commit undo, usage limits
-and total-time stops with owned resume. Latest actual Go proof: run --for2s
-interrupts an agent in2.09s with original claim/run/phase/IDs/work and no commit;
-next completes that same run in5.84s, later queue unchanged, clean/unclaimed.
-See [0097 proof](reports/run-time-cli-0097.md). Full design/ACCEPTANCE remain open.
+NEW proves manual lifecycle and setup, bounded next/run, retries/blocking,
+independent continuation, saved-attempt loading, agent-commit undo, time/usage
+stops with owned resume, maintenance and eval-fix. Latest actual Go proof:
+next corrects a wrong eval under the audited eval-fix path, preserving contracts
+and implementation, with three checked commits and clean claim release.
+See [0099 proof](reports/eval-fix-cli-0099.md). Full acceptance remains open.
 
-**Applied since review: 1 (0099).** Separate Sol/high0094–0098 checkpoint PASS
-at clean9949dfe with build/vet/race/static/history (33 commits, zero history
-diagnostics). [Checkpoint](reports/checkpoint-0094-0098.md). Authorized push
-advanced origin/main28ced38→7e0da27. No pending change or claim; ledger in
-[HISTORY](HISTORY.md). Full design/ACCEPTANCE remain incomplete.
+**Applied since review: 2 (0099–0100).** Separate Sol/high0094–0098 checkpoint
+PASS at clean9949dfe with build/vet/race/static/history. [Checkpoint](reports/checkpoint-0094-0098.md).
+Last authorized push origin/main28ced38→7e0da27. No pending change or claim;
+applied ledger in [HISTORY](HISTORY.md).
 
-0099 eval-fix lifecycle archived at23ad9de with361 full passes, isolated
-four-ID audit PASS and89 own passes. Actual NEW Go next corrected a genuinely
-wrong ALP-001 eval in4.74s, passed evals/audit/no-op impl with three checked
-commits, preserved contracts/implementation and released its claim cleanly.
-Fixture removed. See [0099 proof](reports/eval-fix-cli-0099.md). Maintenance,
-time/usage stop and earlier recovery proofs remain valid.
+0100 eval-fix playbooks archived atf418f88:569 full passes within15m,
+isolated three-ID audit PASS,59 own passes. Actual NEW evals/audit/impl
+playbook JSON commands return the conditional guidance, correct envelope and
+no diagnostics/stderr. See [0100 proof](reports/eval-fix-playbooks-0100.md).
+This closes the two-change eval-fix slice; do not extend the same behavior
+for speculative validation. Earlier CLI proofs remain valid.
 
-## Next slice — eval-fix worker guidance
+## Next slice — regenerate lifecycle
 
-The current embedded impl playbook directs workers to disposable code, while
-eval-fix impl permits only the change file. Add scoped conditional eval-fix
-instructions to evals/audit/impl playbooks: correct evals only, retain listed
-coverage, all module evals pass, audit assertions, impl changes only the change.
-Expose the resulting guidance through actual NEW playbook commands. No new
-backend/API, behavior matrix, drill or unrelated prose cleanup. Then continue
-remaining lifecycle kinds/bounds and final design inventory.
+The design sends regenerate:true straight to impl with disposable files removed,
+uses retained contracts for reconstruction and warns without a sufficiently
+recent passing drill. NEW currently sends regenerate to evals and leaves code
+in place. Establish this missing path through normal workflow changes, return
+to its existing CLI caller and prove a bounded fake-agent Go reconstruction.
+No actual drill is authorized here. Keep warning explanations accurate when
+a justified diagnostic is emitted. Remaining kinds/bounds, full command
+inventory and final gates remain open.
 
 ## Authority and deferred work
 
@@ -63,11 +63,11 @@ Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
 recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-23ad9de2a67c22be063ac860bd48175c74c85ceb, Go1.27.2 darwin/arm64, CGO disabled,
+f418f880a9adc2577ffbb8555147c31a64ab94cc, Go1.27.2 darwin/arm64, CGO disabled,
 vcs.modified=false. This build completed without a warning.
-Last checkpoint build/vet/race/static/history source is9949dfe;0099 native
-full checks and actual proof pass. No fresh final race/vet/CI/doctor/checkout/
-drill/self-hosting claim follows from0099.
+Last checkpoint build/vet/race/static/history source is9949dfe;0099–0100 native
+full checks and actual CLI proofs pass. No fresh final race/vet/CI/doctor/
+checkout/drill/self-hosting claim follows from these changes.
 
 Workers and separate assertion auditors use codex exec --ephemeral
 --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"'
