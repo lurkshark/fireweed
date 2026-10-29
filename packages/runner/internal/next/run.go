@@ -20,25 +20,15 @@ import (
 
 func Run(ctx context.Context, request model.NextRequest) (model.NextResult, error) {
 	var result model.NextResult
-	queue, err := project.Queue(request.Root)
+	queue, err := workflow.Eligible(request.Root)
 	if err != nil {
-		return result, fmt.Errorf("read change queue: %w", err)
+		return result, fmt.Errorf("read eligible changes: %w", err)
 	}
 	if len(queue) == 0 {
 		result.Empty = true
 		return result, nil
 	}
-	var selected *project.Change
-	for i := range queue {
-		blocked, _ := queue[i].Document.Frontmatter["blocked"].(string)
-		if strings.TrimSpace(blocked) == "" {
-			selected = &queue[i]
-			break
-		}
-	}
-	if selected == nil {
-		return result, fmt.Errorf("all queued changes are blocked")
-	}
+	selected := &queue[0]
 	if !request.AllowUnmerged {
 		if err := requireApproval(request.Root, selected.Path); err != nil {
 			return result, err
@@ -97,7 +87,7 @@ func Run(ctx context.Context, request model.NextRequest) (model.NextResult, erro
 					return result, fmt.Errorf("verify %s: %w; block exhausted step: %w", phase, verifyErr, blockErr)
 				}
 				result.State = blocked.State
-				return result, fmt.Errorf("verify %s after exhausted attempts; saved work at %s: %w", phase, blocked.AttemptRef, verifyErr)
+				return result, &BlockedError{Phase: phase, AttemptRef: blocked.AttemptRef, Cause: verifyErr}
 			}
 			feedback = verificationFeedback(phase, verification, verifyErr)
 		}
@@ -113,6 +103,19 @@ func Run(ctx context.Context, request model.NextRequest) (model.NextResult, erro
 	}
 	return result, nil
 }
+
+// BlockedError identifies the verification failure returned after Block succeeds.
+type BlockedError struct {
+	Phase      string
+	AttemptRef string
+	Cause      error
+}
+
+func (e *BlockedError) Error() string {
+	return fmt.Sprintf("verify %s after exhausted attempts; saved work at %s: %v", e.Phase, e.AttemptRef, e.Cause)
+}
+
+func (e *BlockedError) Unwrap() error { return e.Cause }
 
 func configuredAttempts(config map[string]any) int {
 	switch attempts := config["attempts"].(type) {

@@ -2,6 +2,7 @@ package run
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/lurkshark/fireweed/packages/project"
@@ -17,24 +18,34 @@ func Execute(ctx context.Context, request model.RunRequest) (model.RunResult, er
 		AllowUnmerged: request.AllowUnmerged,
 		Timeout:       request.Timeout,
 	}
+	var blockedErr error
 	for {
 		change, err := next.Run(ctx, nextRequest)
 		if err != nil {
-			return result, err
+			var blocked *next.BlockedError
+			if errors.As(err, &blocked) {
+				blockedErr = errors.Join(blockedErr, err)
+				continue
+			}
+			return result, errors.Join(blockedErr, err)
 		}
 		if change.Empty {
-			result.Empty = true
-			return result, nil
+			queue, err := project.Queue(request.Root)
+			if err != nil {
+				return result, errors.Join(blockedErr, fmt.Errorf("read change queue: %w", err))
+			}
+			result.Empty = len(queue) == 0
+			return result, blockedErr
 		}
 		result.Applied = append(result.Applied, change)
 		if request.Max > 0 && len(result.Applied) == request.Max {
 			queue, err := project.Queue(request.Root)
 			if err != nil {
-				return result, fmt.Errorf("read change queue: %w", err)
+				return result, errors.Join(blockedErr, fmt.Errorf("read change queue: %w", err))
 			}
 			result.Empty = len(queue) == 0
 			result.Limited = !result.Empty
-			return result, nil
+			return result, blockedErr
 		}
 	}
 }

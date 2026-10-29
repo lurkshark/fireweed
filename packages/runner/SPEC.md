@@ -45,11 +45,13 @@ InvokeAgent MUST set UsageLimit true exactly when a nonzero command exit has a c
 InvokeAgent MUST return command-launch, timeout or cancellation errors without discarding captured output.
 
 ### RUN-010
-Next MUST return Empty true without invoking agents when the queue is empty.
+Next MUST return Empty true without invoking agents when workflow.Eligible
+returns no changes, including an empty or entirely waiting queue.
 
 ### RUN-011
-For a nonempty queue, Next MUST select its first unblocked change and start it
-through workflow.Start, propagating start failures without invoking an agent.
+When workflow.Eligible returns changes, Next MUST select its first result and
+start it through workflow.Start, propagating start failures without invoking
+an agent.
 
 ### RUN-012
 Unless AllowUnmerged is true, Next MUST reject a selected change absent from
@@ -71,9 +73,8 @@ When agent invocation fails, Next MUST return an error and captured invocation
 results without advancing the phase or releasing its held claim.
 
 ### RUN-016
-When single-change executions succeed, Run without a positive Max MUST
-continue until the queue is empty, returning each applied NextResult in queue
-order.
+Run without a positive Max MUST continue single-change execution until no
+eligible changes remain, returning applied NextResults in execution order.
 
 ### RUN-017
 With a positive Max, Run MUST apply at most Max changes per invocation. A later
@@ -113,6 +114,16 @@ After that blocking succeeds, Next MUST return the blocked lifecycle State and
 ordered captured invocations without changing the run, assigned IDs or current
 phase. Its error MUST retain the last verification cause and identify the saved
 attempt ref.
+
+### RUN-025
+When single-change execution returns an error after successfully saving and
+blocking its change with a clean unclaimed checkout, Run MUST continue processing
+eligible changes. Run MUST exclude that blocked change from Applied.
+
+### RUN-026
+If a change was blocked during Run, Run MUST return an error when eligible work
+is exhausted or Max is reached. That error MUST retain a blocked change's
+verification cause and saved attempt ref.
 
 ## Decisions
 
