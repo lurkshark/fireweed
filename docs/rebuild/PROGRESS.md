@@ -34,8 +34,8 @@ for this bounded scenario, not the whole recovery milestone.
 0090-saved-attempt-resume archived at da16b68 with all 297 cases passing.
 StartFromAttempt is ready; FLOW-074/075 were corrected and re-audited in native
 round 1, with same run/IDs and no exception. See
-[the API report](reports/saved-resume-api-0090.md). Immediately wire
-start --from-attempt <n> promptly, then prove actual NEW restores saved Alpha
+[the API report](reports/saved-resume-api-0090.md). Current change:
+0091-saved-attempt-command wires start --from-attempt <n>, then prove actual NEW restores saved Alpha
 work without new IDs/run/phase or a start commit, lets it be corrected, and
 archives it through the existing lifecycle. Use only the needed workflow
 selection/load dependency and app flag; do not expand to status, agent-commit
