@@ -31,7 +31,7 @@ branch commits, exit1/E01/ref, empty stderr and clean unclaimed checkout were
 inspected. Alpha's spec remained unapplied. This closes independent continuation
 for this bounded scenario, not the whole recovery milestone.
 
-Next: supply the missing saved-attempt loading operation and wire
+Current change: 0090-saved-attempt-resume supplies StartFromAttempt. Then wire
 start --from-attempt <n> promptly, then prove actual NEW restores saved Alpha
 work without new IDs/run/phase or a start commit, lets it be corrected, and
 archives it through the existing lifecycle. Use only the needed workflow
