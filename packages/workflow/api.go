@@ -14,7 +14,10 @@ type Result = model.Result
 type BlockRequest = model.BlockRequest
 type BlockResult = model.BlockResult
 
-func Start(root, change string) (State, error)       { return lifecycle.Start(root, change) }
+func Start(root, change string) (State, error) { return lifecycle.Start(root, change) }
+func StartFromAttempt(root, change string, attempt int) (State, error) {
+	return lifecycle.StartFromAttempt(root, change, attempt)
+}
 func Eligible(root string) ([]project.Change, error) { return lifecycle.Eligible(root) }
 func Current(root, change string) (State, error)     { return lifecycle.Current(root, change) }
 func Verify(ctx context.Context, request Request) (Result, error) {

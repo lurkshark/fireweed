@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: workflow
+phase: audit
+run: 20261029T085817-dd0bc520b24864b5d616184a
 ---
 
 
@@ -23,22 +26,22 @@ first remove blocked and commit the author unblock, as ordinary Start requires.
 
 ## Added
 
-### new:resume-saved-start
+### FLOW-073
 StartFromAttempt MUST resume a committed phase with the same clean-worktree,
 eligibility and claim-ownership preconditions as Start. It MUST preserve the
 existing run, phase and assigned IDs and leave HEAD unchanged.
 
-### new:restore-saved-step-files
+### FLOW-074
 StartFromAttempt MUST restore the saved step's modified, deleted and newly
 added files from refs/fireweed/attempts/<canonical-slug>/<attempt> into the
 working tree without reverting later independent changes.
 
-### new:restore-saved-change-work
+### FLOW-075
 While restoring saved worker-editable body sections for the resumed phase,
 StartFromAttempt MUST preserve the current change's approved author fields,
 runtime state and controller-written provenance.
 
-### new:attempt-lookup-precondition
+### FLOW-076
 StartFromAttempt MUST reject a non-positive attempt number or missing saved
 attempt ref with P01 before claiming or writing the change.
 
@@ -89,3 +92,7 @@ run governing workflow commands, edit protected docs/SPEC/other modules, alter
 claims/counters/runtime, or read bootstrap source/tests, deleted implementation,
 saved rebuild implementations or rebuild-v1. No drill or phase-write exception.
 After application immediately return to the app flag and actual NEW proof.
+
+## Provenance
+
+- evals 2026-10-29T09:10:08.724224Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=295 failing=8 passing=287
