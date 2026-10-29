@@ -1,8 +1,11 @@
 ---
+audit_rounds: 0
 bases: {}
 eval_fix:
     - RUN-016
 module: runner
+phase: audit
+run: 20261029T141235-0e6c1ce6b922f1a559353659
 ---
 
 
@@ -59,3 +62,7 @@ deleted or abandoned implementation/worker logs as oracle, phase-write exception
 or drill. The owner explicitly approved consecutive runner recovery changes.
 After this fifth application, separate quality/goal review and required checks
 must PASS before the authorized push and continuation; findings stop for owner.
+
+## Provenance
+
+- evals 2026-10-29T14:18:35.723119Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=231 failing=0 passing=231

@@ -179,13 +179,17 @@ func runInvocations(t *testing.T, f runFixture) []string {
 }
 
 func assertRunApplied(t *testing.T, f runFixture, applied []runner.NextResult, want ...string) {
+	assertRunAppliedSteps(t, f, applied, 3, want...)
+}
+
+func assertRunAppliedSteps(t *testing.T, f runFixture, applied []runner.NextResult, stepCount int, want ...string) {
 	t.Helper()
 	if len(applied) != len(want) {
 		t.Fatalf("Applied count = %d, want %d: %#v", len(applied), len(want), applied)
 	}
 	for i, name := range want {
 		r := applied[i]
-		if r.Empty || r.State.Phase != "applied" || r.State.Change.Slug != name || r.State.Snapshot.Root != f.root || r.State.Run == "" || len(r.Steps) != 3 {
+		if r.Empty || r.State.Phase != "applied" || r.State.Change.Slug != name || r.State.Snapshot.Root != f.root || r.State.Run == "" || len(r.Steps) != stepCount {
 			t.Errorf("Applied[%d] = %#v", i, r)
 		}
 		archive := runArchive(t, f, indexRunModule(name))
