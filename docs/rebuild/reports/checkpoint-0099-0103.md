@@ -69,3 +69,6 @@ phase-write or drill exception is granted.
 The explicitly authorized push succeeded: origin/main7e0da27→dac2d16, with
 the finding and owner correction-gate approval recorded. Review count remains
 five pending the scoped corrections and passing re-review.
+
+The owner-approved0104–0105 corrections and same reviewer scoped re-review now
+PASS with actual NEW rejection and fresh checks. See [correction gate](checkpoint-corrections-0104-0105.md). The original finding remains historical.

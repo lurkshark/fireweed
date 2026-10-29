@@ -10,19 +10,18 @@ An ordinary fix then proves real fail-first/pass through three checked phases.
 Both fixtures clean/unclaimed and removed. [0102 proofs](reports/regenerate-fixes-cli-0102.md).
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 6 (0099–0104), checkpoint correction gate pending.** Separate Sol/high
-review at clean75f05f8 found mixed eval_fix/fixes can bypass fail-first. Build,
-vet, full race, static and28-commit history extension pass, but do not override
-that finding. See [checkpoint and correction proposal](reports/checkpoint-0099-0103.md).
-Owner explicitly approved pushing this batch with the finding recorded and the
-scoped two-change correction gate. Authorized push advanced origin/main7e0da27→dac2d16 successfully.
-Review count is not reset. No pending governing change or claim;
-applied ledger in [HISTORY](HISTORY.md).
+**Applied since review: 0.** The owner-approved0104–0105 corrections pass:
+central C07 rejects mixed eval_fix with fixes/spec edits; C07 explains the cause
+and separation action. Same scoped Sol/high checkpoint reviewer PASS plus
+actual NEW rejection, build/vet/race/static/history16 commits pass at clean4cf21a1.
+Seven applications reviewed, count reset only at passing gate. See
+[correction gate](reports/checkpoint-corrections-0104-0105.md).
+Authorized correction push pending; no governing change or claim.
 
-Valid eval-fix/regenerate/ordinary-fix proofs remain valid for their recorded
-inputs; 0104 now rejects mixed eval_fix/fixes/spec edits centrally as C07; its scoped re-audit and531 full cases pass. C07 explanation and actual NEW rejection proof remain pending.0103 release API passes374 native/
-102 own cases but its app caller/actual NEW proof remain pending. Full design
-and all final gates stay open.
+**Next:** expose0103 workflow.Release through app release <change>, preserving
+dirty work/runtime state and removing only this worktree's claim. Close with
+actual NEW Go release/retention/missing-claim proof. Return to this caller now;
+remaining management surface and full design/ACCEPTANCE stay incomplete.
 
 ## Approved correction gate
 
@@ -66,10 +65,10 @@ Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
 recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-75f05f8fe58ca40b78a0d1ce4b86f4bdfad7f90b, Go1.27.2 darwin/arm64, CGO disabled,
+4cf21a1014122eb1f4c7b35f3f7d81a480eba4bd, Go1.27.2 darwin/arm64, CGO disabled,
 vcs.modified=false. This build completed without a warning.
-Build/vet/race/static/history passed at75f05f8; quality review is BLOCK for the
-recorded fail-first bypass. No final CI/doctor/fresh-checkout/drill/self-hosting
+Build/vet/race/static/history and scoped quality review passed at4cf21a1;
+actual NEW rejects the recorded invalid mixed-kind fixture before mutation. No final CI/doctor/fresh-checkout/drill/self-hosting
 or overall acceptance claim follows.
 
 Workers and separate assertion auditors use codex exec --ephemeral

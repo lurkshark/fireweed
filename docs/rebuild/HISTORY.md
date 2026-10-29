@@ -6,7 +6,7 @@ they are not current instructions, permissions or readiness claims. Resume from
 [PROGRESS.md](PROGRESS.md). Preserve evidence and checkpoint history; do not
 repeat passed work because an older entry calls it pending.
 
-## Applied changes through 0104
+## Applied changes through 0105
 
 [0079–0083 checkpoint](reports/checkpoint-0079-0083.md) PASS: separate subagent
 review and fresh build/vet/race/static/history at clean 6ce22e9; 38 new history
@@ -23,6 +23,9 @@ further work awaits an owner decision.
 
 [0099–0103 checkpoint](reports/checkpoint-0099-0103.md) BLOCK: mixed eval_fix/fixes bypasses fail-first because kind validation is absent. Clean75f05f8 build/vet/race/static and28-commit history extension pass; no push. Five-application/P07 owner stop remains, with scoped project/C07 explanation correction proposal recorded.
 
+[Approved0104–0105 correction gate](reports/checkpoint-corrections-0104-0105.md) PASS: same scoped Sol/high checkpoint reviewer, actual NEW mixed-kind rejection, fresh build/vet/race/static/history16 commits all pass at clean4cf21a1. Seven applications reviewed; count resets0, push/resume authorized.
+
+- 0105 explain-mixed-eval-fix — AST-033; 2178977/ace9f64/5ac1f3c/9a59aa1/4cf21a1. One runtime failure/591 passes before/after scoped audit correction; restricted re-audit PASS,592 final passes,61 own passes. C07 existing causes/actions retained; actual NEW rejection/explanation proof and scoped checkpoint PASS.
 - 0104 reject-mixed-eval-fix — PRJ-046; 49c71a3/9aff0a7/117689f/8139419/16f61a9. Initial529 cases:3 failures/526 passes; scoped audit found Modified/Removed unasserted, corrected531 cases:5 failures/526 passes, re-audit PASS; final531 passes in11m33s. Own82 passes. Six-line Check rejection, C07 explanation/actual NEW proof pending under approved correction gate; count6.
 - 0103 release-claim — FLOW-084/085/086; 6d4129b/a425660/09175fd. Six stub failure events/368 passes →374 full passes; isolated three-ID audit PASS,102 own passes. Thin Release facade/private exact-CAS implementation preserve work/state/HEAD and reject missing/foreign claims. Library dependency only; mandatory fifth review then app caller/actual NEW proof. [Report](reports/release-api-0103.md).
 - 0102 regenerate-warning-explanation — AST-032; dc6da04/59499c3/31c28d1. One failure/576 passes →577 full passes; isolated audit PASS,60 own passes. Actual NEW Go regenerate start/owned-next/P10 proof passes with deletion/context/warning, one impl agent/commit, retained contracts and clean release. Separate ordinary-fixes next passes5.33s with real fail-first/pass and three commits; both fixtures removed. [Report](reports/regenerate-fixes-cli-0102.md).
