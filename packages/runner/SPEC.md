@@ -125,6 +125,16 @@ If a change was blocked during Run, Run MUST return an error when eligible work
 is exhausted or Max is reached. That error MUST retain a blocked change's
 verification cause and saved attempt ref.
 
+### RUN-027
+When a phase agent creates commits, Next MUST soft-reset HEAD to the held phase
+base after invocation and before verification or returning an invocation failure,
+retaining the step's working-tree and index work.
+
+### RUN-028
+For each such recovery, Next MUST return a P05 warning in State.Diagnostics
+identifying the phase and that work was retained. It MUST preserve these warnings
+across phase advancement and on an invocation-failure return.
+
 ## Decisions
 
 [0075-bounded-agent-invocation] An unset configured timeout defaults to 90 minutes. limit_patterns are

@@ -2,12 +2,14 @@ package next
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/lurkshark/fireweed/packages/assets"
 	"github.com/lurkshark/fireweed/packages/contracts"
@@ -40,6 +42,7 @@ func Run(ctx context.Context, request model.NextRequest) (model.NextResult, erro
 	if err != nil {
 		return result, fmt.Errorf("start %s: %w", selected.Path, err)
 	}
+	var recoveryWarnings []project.Diagnostic
 	for state.Phase != "applied" {
 		phase := state.Phase
 		role := "worker"
@@ -68,6 +71,17 @@ func Run(ctx context.Context, request model.NextRequest) (model.NextResult, erro
 				Bin: request.Bin, Timeout: request.Timeout,
 			})
 			result.Steps = append(result.Steps, model.StepResult{Phase: phase, Role: role, Agent: agent})
+			recovered, recoveryErr := recoverAgentCommits(state.Snapshot.Root, state.PhaseBase)
+			if recoveryErr != nil {
+				return result, errors.Join(fmt.Errorf("recover %s agent commits: %w", phase, recoveryErr), invokeErr)
+			}
+			if recovered {
+				recoveryWarnings = append(recoveryWarnings, project.Diagnostic{
+					Code: "P05", Warning: true,
+					Message: fmt.Sprintf("%s agent created commits; soft-reset HEAD to the held phase base and retained index and worktree work", phase),
+				})
+				result.State = withRecoveryWarnings(state, recoveryWarnings)
+			}
 			if invokeErr != nil {
 				return result, fmt.Errorf("invoke %s agent: %w", phase, invokeErr)
 			}
@@ -86,7 +100,7 @@ func Run(ctx context.Context, request model.NextRequest) (model.NextResult, erro
 				if blockErr != nil {
 					return result, fmt.Errorf("verify %s: %w; block exhausted step: %w", phase, verifyErr, blockErr)
 				}
-				result.State = blocked.State
+				result.State = withRecoveryWarnings(blocked.State, recoveryWarnings)
 				return result, &BlockedError{Phase: phase, AttemptRef: blocked.AttemptRef, Cause: verifyErr}
 			}
 			feedback = verificationFeedback(phase, verification, verifyErr)
@@ -94,14 +108,38 @@ func Run(ctx context.Context, request model.NextRequest) (model.NextResult, erro
 		done, err := workflow.Done(ctx, step)
 		if err != nil {
 			if done.State.Phase != "" {
-				result.State = done.State
+				result.State = withRecoveryWarnings(done.State, recoveryWarnings)
 			}
 			return result, fmt.Errorf("complete %s: %w", phase, err)
 		}
 		state = done.State
-		result.State = state
+		result.State = withRecoveryWarnings(state, recoveryWarnings)
 	}
 	return result, nil
+}
+
+func recoverAgentCommits(root, phaseBase string) (bool, error) {
+	repo, err := gitstore.Inspect(root)
+	if err != nil {
+		return false, err
+	}
+	if repo.Head == phaseBase {
+		return false, nil
+	}
+	reset, err := gitstore.Run(context.Background(), gitstore.Request{
+		Args:    []string{"git", "-C", root, "-c", "core.hooksPath=/dev/null", "reset", "--soft", phaseBase},
+		Timeout: 30 * time.Second,
+		Env:     map[string]string{"GIT_NO_LAZY_FETCH": "1", "GIT_TERMINAL_PROMPT": "0"},
+	})
+	if err != nil {
+		return false, fmt.Errorf("git reset --soft: %w: %s", err, strings.TrimSpace(reset.Stderr))
+	}
+	return true, nil
+}
+
+func withRecoveryWarnings(state workflow.State, warnings []project.Diagnostic) workflow.State {
+	state.Diagnostics = append(state.Diagnostics, warnings...)
+	return state
 }
 
 // BlockedError identifies the verification failure returned after Block succeeds.
