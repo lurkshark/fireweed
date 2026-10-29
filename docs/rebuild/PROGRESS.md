@@ -10,25 +10,28 @@ An ordinary fix then proves real fail-first/pass through three checked phases.
 Both fixtures clean/unclaimed and removed. [0102 proofs](reports/regenerate-fixes-cli-0102.md).
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 4 (0099–0102).** Separate Sol/high0094–0098 checkpoint
-PASS at clean9949dfe with build/vet/race/static/history. [Checkpoint](reports/checkpoint-0094-0098.md).
-Last authorized push origin/main28ced38→7e0da27. No pending main change or claim;
+**Applied since review: 5 (0099–0103).** Mandatory separate Sol/high quality/goal
+review plus fresh appropriate checks is pending. Last passing0094–0098 review
+was at9949dfe; last authorized push origin/main28ced38→7e0da27.
+[Previous checkpoint](reports/checkpoint-0094-0098.md). No next change or push
+before the current checkpoint passes. No pending main change or claim;
 applied ledger in [HISTORY](HISTORY.md).
 
-0102 P10 explanation archived at31c28d1:577 full passes, isolated AST-032
-audit PASS and60 own passes. Actual NEW Go regenerate and ordinary-fixes proofs
-pass; no real drill. This closes the two-change regenerate slice. Earlier
-proofs remain valid; do not repeat them.
+0103 release dependency archived at09175fd:374 full passes, isolated three-ID
+audit PASS,102 own passes. Public API drops only owned named claim by exact CAS,
+preserving dirty work/HEAD/state and rejecting missing/foreign ownership. See
+[0103 report](reports/release-api-0103.md). Its CLI caller is still unsupported;
+actual NEW release proof remains pending. The0102 regenerate/ordinary-fixes
+proofs and earlier CLI evidence remain valid.
 
-## Next slice — release claim command
+## Current checkpoint and next caller
 
-The design's release <change> drops the calling worktree's local claim. NEW's
-CLI still rejects it. Add only the workflow API needed by this caller, preserving
-work/HEAD/change state and rejecting foreign ownership. The fifth application
-will require separate Sol/high quality/goal review plus fresh appropriate checks;
-PASS authorizes push and immediate app wiring/actual NEW release proof. A
-checkpoint may interrupt this one-dependency slice. Remaining management
-commands, persistent bounds, inventory and full final gates stay open.
+Review0099–0103 quality/adherence with a separate Sol/high subagent and run fresh
+build/vet/race/static/history on clean source. PASS authorizes push and immediate
+app release wiring/actual NEW proof; any finding requires owner stop. This
+checkpoint interrupts a one-dependency slice, not the full goal. No new drill.
+Remaining management commands, persistent bounds, inventory and final gates
+stay open.
 
 ## Authority and deferred work
 
