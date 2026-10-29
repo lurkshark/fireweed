@@ -33,3 +33,6 @@ Next re-author runner usage handling from retained contracts/evals, implement
 fresh, wire app exit3 promptly and close an actual NEW Go usage/resume proof.
 The approved recovery covers consecutive runner changes, not a phase exception,
 new drill or bypass of normal bounds. Full design and acceptance remain open.
+
+The authorized push succeeded: origin/main advanced from 82ef71d to 28ced38,
+including the passing batch, recovery/evidence and checkpoint record.

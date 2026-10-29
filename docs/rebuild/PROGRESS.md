@@ -73,8 +73,8 @@ changed; ordinary three-step assertions/callers are preserved. See
 The separate Sol/high 0089–0093 quality/goal review passed at clean 06a94e9.
 Build/vet/race/static and a 40-commit explicit history extension passed with
 zero history diagnostics; unchanged warning explanations remain. See
-[the checkpoint](reports/checkpoint-0089-0093.md). Standing direct authorization
-covers pushing this passing batch to origin and continuing. No new final
+[the checkpoint](reports/checkpoint-0089-0093.md). The authorized push advanced
+origin/main from 82ef71d to 28ced38; continuation is authorized. No new final
 acceptance, CI/doctor, drill or self-hosting claim follows.
 
 Next: re-author bounded usage handling using retained contracts/evals, recreate
