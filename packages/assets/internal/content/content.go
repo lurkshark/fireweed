@@ -85,6 +85,7 @@ var explanations = map[string]string{
 	"P06":   "The change is blocked by unresolved Questions. Review the Questions and resolve them before continuing the change.",
 	"P07":   "The shared-base unapproved-work bound has been reached. Review the shared work and synchronize the shared base after approval before starting more unapproved changes.",
 	"P09":   "An audit submission is incomplete when No findings or the Checked IDs list is missing. Include No findings and a complete Checked IDs list in the audit submission.",
+	"P10":   "Non-blocking regenerate warning: no passing module drill is newer than the module's latest applied implementation. Run a module drill, then review and commit its report.",
 	"P2-01": "Genuine fail-first evidence is missing for an assigned spec ID: its new eval did not fail against the pre-implementation code. Write or correct a test assertion for the specified behavior, rerun the eval before implementing it, and record the failing result.",
 	"Z01":   "A forbidden phase-zone edit changed a file outside the authorized zone. Restore the forbidden edit or move the work to the appropriate authorized phase and zone.",
 }

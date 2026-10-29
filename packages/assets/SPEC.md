@@ -110,6 +110,11 @@ still assert the listed specs.
 The impl playbook MUST instruct eval_fix workers to edit only the current change
 file, leaving implementation unchanged.
 
+### AST-032
+Explain MUST describe P10 as a non-blocking regenerate warning that no passing
+module drill is newer than its latest applied implementation. It MUST advise
+running a module drill and reviewing and committing its report.
+
 ## Decisions
 
 [0014-go-setup-bundle] Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,

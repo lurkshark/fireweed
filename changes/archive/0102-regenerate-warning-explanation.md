@@ -2,7 +2,7 @@
 audit_rounds: 0
 bases: {}
 module: assets
-phase: impl
+phase: applied
 run: 20261029T191501-d2e6014c653fb0ae6a09611b
 ---
 
@@ -61,6 +61,7 @@ it completes the explanation follow-up and authorizes no third continuation.
 
 - evals 2026-10-29T19:17:01.739583Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=577 failing=1 passing=576
 - audit 2026-10-29T19:18:54.631592Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-29T19:24:39.586275Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=577 failing=0 passing=577
 
 ## Audit
 
