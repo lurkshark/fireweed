@@ -111,7 +111,7 @@ func cliHeldState(t *testing.T, root, slug, prefix, head string) workflow.State 
 	if refs := cliGit(t, root, "for-each-ref", "--format=%(refname)", "refs/fireweed/claims"); refs != "refs/fireweed/claims/"+slug {
 		t.Errorf("held claim refs=%q", refs)
 	}
-	change := string(mustReadNextCLI(t, filepath.Join(root, fmt.Sprintf("changes/%04d-%s.md", map[string]int{"next": 1, "beta": 2}[slug], slug))))
+	change := string(mustReadNextCLI(t, filepath.Join(root, fmt.Sprintf("changes/%04d-%s.md", map[string]int{"next": 1, "held-quota-work": 1, "beta": 2}[slug], slug))))
 	if strings.Contains(change, "blocked:") || !strings.Contains(change, "phase: evals") || !strings.Contains(change, "run: "+state.Run) {
 		t.Errorf("held change lost clean state: %q", change)
 	}
@@ -206,6 +206,13 @@ func Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume(t *testing.T) 
 func Test_APP_076_APP_077_NextPlainUsageStop(t *testing.T) {
 	bin := buildAppBinary(t)
 	root, logs := nextCLIProject(t, bin, true, true)
+	if err := os.Rename(filepath.Join(root, "changes/0001-next.md"), filepath.Join(root, "changes/0001-held-quota-work.md")); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"worker.sh", "auditor.sh"} {
+		script := string(mustReadNextCLI(t, filepath.Join(logs, name)))
+		appPut(t, logs, name, strings.ReplaceAll(script, "changes/0001-next.md", "changes/0001-held-quota-work.md"))
+	}
 	cliUsagePolicy(t, root, "0s")
 	nextCLIUsageAgent(t, logs)
 	head := cliGit(t, root, "rev-parse", "HEAD")
@@ -216,8 +223,11 @@ func Test_APP_076_APP_077_NextPlainUsageStop(t *testing.T) {
 	if !strings.Contains(strings.ToLower(out), "next") || !regexp.MustCompile(`(?i)resum|retry|run next`).MatchString(out) {
 		t.Errorf("plain stop lacks change/resume guidance: %q", out)
 	}
+	if !strings.Contains(out, "held-quota-work") {
+		t.Errorf("plain stop lacks held change: %q", out)
+	}
 	cliStopReason(t, out, "5ms", "0s")
-	cliHeldState(t, root, "next", "ALP", head)
+	cliHeldState(t, root, "held-quota-work", "ALP", head)
 }
 
 func Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume(t *testing.T) {
