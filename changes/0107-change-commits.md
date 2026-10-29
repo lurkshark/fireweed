@@ -4,7 +4,7 @@ audit_pending:
 audit_rounds: 1
 bases: {}
 module: workflow
-phase: evals
+phase: audit
 run: 20261029T211014-c172b18434a8e46b0f036ac7
 ---
 
@@ -66,6 +66,7 @@ change after correction checkpoint; return immediately to app commits caller.
 
 - evals 2026-10-29T21:25:43.919794Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=384 failing=3 passing=381
 - audit 2026-10-29T21:50:14.76299Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- evals 2026-10-29T21:54:28.529725Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=384 failing=3 passing=381
 
 ## Audit
 

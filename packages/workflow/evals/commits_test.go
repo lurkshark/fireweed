@@ -60,6 +60,18 @@ func Test_FLOW_087_FLOW_088_CommitsFollowPendingAndArchivePhaseContents(t *testi
 	noPhaseChange := head(t, root)
 	audit := commitPhase(t, root, pendingCommitChange, "evals", "audit", "same message")
 	impl := commitPhase(t, root, pendingCommitChange, "audit", "impl", "same message")
+	git(t, root, "checkout", "-b", "side")
+	unreachable := commitPhase(t, root, pendingCommitChange, "impl", "applied", "same message")
+	git(t, root, "checkout", "main")
+	got, err := workflow.Commits(root, pendingCommitChange)
+	if err != nil {
+		t.Fatalf("Commits after side branch: %v", err)
+	}
+	for _, oid := range got {
+		if oid == unreachable {
+			t.Errorf("Commits included unreachable phase change %s", unreachable)
+		}
+	}
 	for _, selector := range []string{pendingCommitChange, "0001-manual.md", "manual"} {
 		assertCommits(t, root, selector, []string{impl, audit, evals})
 	}
