@@ -52,3 +52,7 @@ The owner subsequently approved directly in this chat and explicitly authorized
 the attachment's subagent-review and push process. This clears the trusted
 approval prerequisite for this passing batch and future fifth-change PASS
 push/continuation; the rejected invocations remain unexecuted historical facts.
+
+The directly authorized push succeeded: origin/main advanced from 8aff1e4 to
+82ef71d, including the passing batch, evidence and direct authorization record.
+The runner caller resumes afterward; no verification or review was repeated.

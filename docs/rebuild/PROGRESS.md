@@ -9,12 +9,12 @@ The approved 0076–0078 corrections passed isolated audits, full phase checks,
 fresh build/vet/race/static/history, the NEW doctor smoke and the same checkpoint
 subagent's scoped re-review. The owner-authorized push synchronized main with
 origin at `510cc91`. No pending change or claim remained at that boundary.
-**Applied since review: 0 after 0084–0088 review PASS; direct push/resume approval received.** Earlier audit/phase deviations remain recorded;
+**Applied since review: 0 after 0084–0088 review PASS; reviewed batch pushed.** Earlier audit/phase deviations remain recorded;
 the passing correction does not retroactively validate them. See the
 [correction report](reports/checkpoint-corrections-0076.md) and
 [checkpoint report](reports/checkpoint-0071-0075.md).
 
-## Active slice — approved push and runner continuation
+## Active slice — independent continuation through NEW run
 
 The reviewed 0079–0083 batch pushed to origin/main at `8aff1e4` after separate
 checkpoint PASS and fresh build/vet/race/static/history. Reuse the actual
@@ -85,13 +85,15 @@ authorization for the subagent review and push process described in the
 attachment.” This clears the push/resume approval block and explicitly
 reauthorizes the standing fifth-change subagent PASS → push/continue process;
 findings still require a human stop. Reuse the passing 0084–0088 review and
-checks, with unchanged product source/NEW build 940ef0e. Push this reviewed
-batch before starting the next change. No active change or claim exists.
+checks, with unchanged product source/NEW build 940ef0e. The reviewed batch
+pushed to origin/main at 82ef71d. No active claim remained at that boundary.
 
-Next is canonical eligibility in Next and continuation in Run after a clean
-saved block, followed by actual NEW run with Alpha blocked, dependent Beta
-waiting and independent Gamma applied. Full design/final ACCEPTANCE remain
-open. No new drill or phase-write exception is authorized.
+Current change: 0089-independent-continuation in runner. Wire canonical
+eligibility into Next and continue Run after a clean saved block, preserving
+the blocking cause/ref in its terminal failure. Close with actual NEW run:
+Alpha blocked, dependent Beta waiting and independent Gamma applied. Full
+design/final ACCEPTANCE remain open. No new drill or phase-write exception is
+authorized.
 
 ## Authority and deferred work
 
