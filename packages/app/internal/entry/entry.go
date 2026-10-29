@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 
 	"github.com/lurkshark/fireweed/packages/assets"
@@ -28,7 +29,6 @@ var pending = map[string]bool{
 	"new-module": true,
 	"list":       true, "status": true,
 	"check-commits": true, "ci": true, "pr-body": true,
-	"run":     true,
 	"release": true, "commits": true, "abandon": true,
 	"drill": true, "gc": true, "migrate": true,
 }
@@ -44,6 +44,8 @@ func Run(args []string, out, errOut io.Writer) int {
 	noAgent := false
 	write := false
 	allowUnmerged := false
+	max := 0
+	maxSet := false
 	withChange := ""
 	positional := make([]string, 0, len(args))
 	for i := 0; i < len(args); i++ {
@@ -62,9 +64,19 @@ func Run(args []string, out, errOut io.Writer) int {
 			write = true
 		} else if arg == "--allow-unmerged" {
 			if allowUnmerged {
-				return cliFailure(2, jsonMode || contains(args, "--json"), out, errOut, "U01", "--allow-unmerged may be specified once. Use next [--allow-unmerged] [--json].")
+				return cliFailure(2, jsonMode || contains(args, "--json"), out, errOut, "U01", "--allow-unmerged may be specified once. Use next or run with --allow-unmerged.")
 			}
 			allowUnmerged = true
+		} else if arg == "--max" {
+			if maxSet || i+1 >= len(args) {
+				return cliFailure(2, jsonMode || contains(args, "--json"), out, errOut, "U01", "--max requires one positive integer. Use run --max N.")
+			}
+			i++
+			value, parseErr := strconv.Atoi(args[i])
+			if parseErr != nil || value <= 0 {
+				return cliFailure(2, jsonMode || contains(args, "--json"), out, errOut, "U01", "--max requires a positive integer. Use run --max N.")
+			}
+			max, maxSet = value, true
 		} else if arg == "--with-change" {
 			if i+1 >= len(args) || strings.HasPrefix(args[i+1], "-") {
 				return cliFailure(2, jsonMode || contains(args, "--json"), out, errOut, "U01", "--with-change requires a change value. Use coverage <module> --with-change <change>.")
@@ -104,8 +116,11 @@ func Run(args []string, out, errOut io.Writer) int {
 	if noAgent && command != "doctor" || write && command != "agents-md" {
 		return fail("U01", "Use --no-agent only with doctor and --write only with agents-md.")
 	}
-	if allowUnmerged && command != "next" {
-		return fail("U01", "--allow-unmerged is only available with next. Use next [--allow-unmerged] [--json].")
+	if allowUnmerged && command != "next" && command != "run" {
+		return fail("U01", "--allow-unmerged is only available with next or run.")
+	}
+	if maxSet && command != "run" {
+		return fail("U01", "--max is only available with run. Use run --max N.")
 	}
 	count := len(positional) - 1
 	var body string
@@ -155,6 +170,11 @@ func Run(args []string, out, errOut io.Writer) int {
 			return fail("U01", "next takes no arguments. Use next [--allow-unmerged] [--json].")
 		}
 		return runNext(allowUnmerged, jsonMode, out, errOut)
+	case "run":
+		if count != 0 {
+			return fail("U01", "run takes no arguments. Use run [--max N] [--allow-unmerged] [--json].")
+		}
+		return runQueue(max, allowUnmerged, jsonMode, out, errOut)
 	case "doctor":
 		if count != 0 {
 			return fail("U01", "doctor takes no arguments. Use doctor [--no-agent] [--json].")

@@ -266,6 +266,39 @@ next --json MUST emit schema 1 with object data containing change, run, phase
 and empty on success, or null data with code/message diagnostics on failure.
 It MUST leave stderr empty.
 
+### APP-080
+run MUST discover the nearest ancestor fireweed.yaml and invoke runner.Run for
+that project with the actual invoking executable as Bin.
+
+### APP-081
+run --max N MUST accept a positive integer and supply it as Max, using zero
+when --max is absent. It MUST reject missing, noninteger or nonpositive values,
+extra positional arguments and unsupported options with corrective U01 and
+exit 2; --max MUST be rejected for unrelated implemented commands.
+
+### APP-082
+run MUST accept --allow-unmerged and supply AllowUnmerged true only when the
+flag is present, using false by default.
+
+### APP-083
+After successful runner completion, plain run MUST identify applied changes
+and their count on stdout, including whether the queue is empty or Max left
+queued work.
+
+### APP-084
+run MUST return exit 0 for successful queue completion, Max termination or an
+empty queue, exit 1 for runner execution or lifecycle failure, and exit 2 for
+usage or configuration-loading failure.
+
+### APP-085
+run failure diagnostics MUST retain existing cause codes from wrapped
+dependency errors and include a corrective action.
+
+### APP-086
+run --json MUST emit schema 1 with object data containing an applied array of
+change/run/phase summaries, empty and limited flags on success, or null data
+with code/message diagnostics on failure. It MUST leave stderr empty.
+
 ## Decisions
 
 [0069-project-initialization] Init accepts codex and claude presets as argv commands; other selections are shell command templates containing {prompt}, stored as strings for one-pass quoted substitution when execution is implemented. Local recipes use recipe.yaml metadata, recipe.md instructions and a files/ project-relative payload; none uses empty language defaults and a generic module scaffold.
