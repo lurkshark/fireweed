@@ -9,12 +9,12 @@ The approved 0076–0078 corrections passed isolated audits, full phase checks,
 fresh build/vet/race/static/history, the NEW doctor smoke and the same checkpoint
 subagent's scoped re-review. The owner-authorized push synchronized main with
 origin at `510cc91`. No pending change or claim remained at that boundary.
-**Applied since review: 5 after 0084–0088; separate checkpoint review is required before continuation.** Earlier audit/phase deviations remain recorded;
+**Applied since review: 0 after local 0084–0088 review PASS; paused for owner decision.** Earlier audit/phase deviations remain recorded;
 the passing correction does not retroactively validate them. See the
 [correction report](reports/checkpoint-corrections-0076.md) and
 [checkpoint report](reports/checkpoint-0071-0075.md).
 
-## Active checkpoint — 0084–0088 review
+## Paused checkpoint — local 0084–0088 review; push rejected
 
 The reviewed 0079–0083 batch pushed to origin/main at `8aff1e4` after separate
 checkpoint PASS and fresh build/vet/race/static/history. Reuse the actual
@@ -57,19 +57,30 @@ CLI capabilities, missing recovery/command behavior and evidence limits. Static
 checking and the new 31-commit history extension passed. Whole-root race/vet and
 final acceptance are not newly claimed. No push after `8aff1e4` occurred.
 
-The active goal continuation resumed work after the completed progress review.
+A goal-continuation wake-up was treated as a resume after the completed progress
+review; the latest explicit owner instruction had required stopping after 0087.
 0088-projected-blocking-eligibility applied at 199f373: FLOW-011/068–072, fresh
 implementation from retained contracts only, 283 full phase passes and isolated
 assertion audit PASS. Start now uses canonical projected eligibility. No pending
 change files or claims remain. See [the report](reports/projected-eligibility-0088.md).
 
-Five applications since the reviewed push at 8aff1e4 now require the standing
-separate subagent checkpoint. Fresh build/vet/race/static/history and that review
-are pending; do not start runner wiring before PASS. PASS authorizes push and
-continuation; findings require a human stop. The earlier progress review did not
-reset the count. After PASS, immediately return to Next/Run and prove independent
-continuation through actual NEW run. Full design/final acceptance remain open;
-no drill or phase-write exception is authorized.
+The separate Sol/high 0084–0088 checkpoint returned PASS at clean 940ef0e.
+Build/vet/race/static/history passed; the explicit history extension covers 37
+commits with zero diagnostics. Relevant race suites reran and unaffected
+packages reused valid cache results. See
+[the local checkpoint](reports/checkpoint-0084-0088.md). Review resets the applied
+count, but does not override the owner's newer explicit stop.
+
+Automatic approval review rejected the proposed origin/main push because the
+latest trusted owner instruction required stopping after 0087 and did not
+authorize resumed external mutation. The invocation never ran. Nothing has
+pushed after 8aff1e4. Stop pending the owner's decision on pushing the concrete
+local batch and resuming work; do not start runner wiring, push or run a drill.
+
+If explicitly resumed, the next step remains canonical eligibility in Next and
+continuation in Run after a clean saved block, followed by actual NEW run with
+Alpha blocked, dependent Beta waiting and independent Gamma applied. Full design
+and final ACCEPTANCE remain open. No phase-write exception is available.
 
 ## Authority and deferred work
 
@@ -102,7 +113,7 @@ keep unchanged. History baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`;
 use explicit nonempty ranges. Set `GOCACHE=/tmp/fireweed-rebuild-cache`.
 
 NEW: `/Users/joel/Workspace/fireweed/bin/fireweed`, built at clean source
-`c7972645f5079fd93c1267fbf5aee4eab7f21f5e`, CGO disabled. Reuse the
+`940ef0ee36765700b4a7fef35f02dd00d97e5acf`, CGO disabled. Reuse the
 [manual lifecycle](reports/manual-lifecycle.md) and corrected
 [doctor smoke](reports/doctor-setup-cli.md) evidence where valid.
 

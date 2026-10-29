@@ -1,6 +1,8 @@
 # Projected eligibility 0088 — archived
 
-The active goal resumed after the owner-requested 0087 archive/progress review.
+A goal-continuation wake-up was treated as a resume after the owner-requested
+0087 archive/progress review. The later push approval rejection and stop are
+recorded in the [local checkpoint](checkpoint-0084-0088.md).
 0088 re-authored the retained author requirements, facade and evals from the
 abandoned eligibility attempt, without reading or copying its implementation.
 A real Sol/high evals worker reused those contracts and added only a compiling
