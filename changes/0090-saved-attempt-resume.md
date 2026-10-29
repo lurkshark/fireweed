@@ -5,7 +5,7 @@ audit_pending:
 audit_rounds: 1
 bases: {}
 module: workflow
-phase: audit
+phase: impl
 run: 20261029T085817-dd0bc520b24864b5d616184a
 ---
 
@@ -98,11 +98,12 @@ After application immediately return to the app flag and actual NEW proof.
 
 ## Audit
 
-- FLOW-074: "added files from refs/fireweed/attempts/<canonical-slug>/<attempt> into the" — with two saved attempts containing different work, no assertion verifies requesting the second restores that attempt's content.
-- FLOW-075: "While restoring saved worker-editable body sections for the resumed phase," — no assertion resumes a saved audit-phase attempt and verifies its Audit body is restored while current author fields, runtime state and provenance remain intact.
+No findings
+Checked IDs: FLOW-074, FLOW-075
 
 ## Provenance
 
 - evals 2026-10-29T09:10:08.724224Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=295 failing=8 passing=287
 - audit 2026-10-29T09:14:20.974825Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 - evals 2026-10-29T09:18:48.448129Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=297 failing=10 passing=287
+- audit 2026-10-29T09:22:57.290214Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
