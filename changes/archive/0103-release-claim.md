@@ -2,7 +2,7 @@
 audit_rounds: 0
 bases: {}
 module: workflow
-phase: impl
+phase: applied
 run: 20261029T193658-a91309a40464314bde9455ee
 ---
 
@@ -80,6 +80,7 @@ do not raise bounds. The broader goal remains incomplete.
 
 - evals 2026-10-29T19:51:18.209266Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=374 failing=6 passing=368
 - audit 2026-10-29T19:52:54.322254Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-29T19:57:02.143423Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=374 failing=0 passing=374
 
 ## Audit
 

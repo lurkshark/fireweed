@@ -303,6 +303,18 @@ A newer passing drill MUST suppress that warning.
 For a held regenerate change in impl, Context MUST supply the regenerate
 playbook in place of the ordinary impl playbook.
 
+### FLOW-084
+Release MUST drop only the named claim owned by the calling worktree while
+preserving its working files, HEAD and recorded change state.
+
+### FLOW-085
+Release MUST reject a missing claim or a claim owned by another worktree with
+P02, leaving refs unchanged.
+
+### FLOW-086
+Release MUST accept the same unambiguous change path, filename and slug
+selectors as Current.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
