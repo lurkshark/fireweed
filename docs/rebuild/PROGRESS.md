@@ -7,7 +7,7 @@ checked NEW next/run, verification retry and clean saved blocking work. NEW run
 now continues independent work while blocked dependencies wait, retaining exit 1
 and the blocking cause/ref. The full design and final ACCEPTANCE remain open.
 
-**Applied since review: 5 (0089–0093); standing checkpoint in progress.** The separate Sol/high 0084–0088 checkpoint
+**Applied since review: 0; separate 0089–0093 checkpoint PASS.** The separate Sol/high 0084–0088 checkpoint
 passed with build/vet/race/static/history at clean 940ef0e; its explicit new
 history extension passed 37 commits with zero diagnostics. The owner directly
 approved the reviewed push and the attachment's standing subagent-review/push
@@ -70,9 +70,14 @@ passes, isolated assertion audit PASS. Only the exact-count helper refactor
 changed; ordinary three-step assertions/callers are preserved. See
 [the recovery report](reports/applied-result-count-0093.md).
 
-Next: complete the fifth-change separate quality/goal review and required checks.
-PASS authorizes push/continuation; any finding requires an owner stop. Then
-re-author bounded usage handling using retained contracts/evals, recreate its
+The separate Sol/high 0089–0093 quality/goal review passed at clean 06a94e9.
+Build/vet/race/static and a 40-commit explicit history extension passed with
+zero history diagnostics; unchanged warning explanations remain. See
+[the checkpoint](reports/checkpoint-0089-0093.md). Standing direct authorization
+covers pushing this passing batch to origin and continuing. No new final
+acceptance, CI/doctor, drill or self-hosting claim follows.
+
+Next: re-author bounded usage handling using retained contracts/evals, recreate
 implementation fresh, wire app exit 3 promptly and close the actual NEW wait/
 success/stop/resume scenario. Explicit approval covers consecutive runner
 recovery changes. No pending change or claim; no phase-write exception or drill.
@@ -112,7 +117,7 @@ use explicit nonempty ranges and extend the recorded valid portions.
 GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-96211bd8e2a842933ca0c0157cc7c7f0065847a8, Go1.27.2 darwin/arm64, CGO disabled,
+06a94e95c3bc4a82d74c7799031cb738eff5b7d2, Go1.27.2 darwin/arm64, CGO disabled,
 vcs.modified=false. Reuse valid earlier lifecycle/setup/CLI/checkpoint evidence;
 no fresh final CI/doctor/fresh-checkout/drill/self-hosting claim follows.
 
