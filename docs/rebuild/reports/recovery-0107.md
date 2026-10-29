@@ -93,3 +93,23 @@ Same run and FLOW-087/088 retained in audit. This second0107 exception is consum
 prior4188612 remains historical. Re-submit exact physical first line with the
 original reachability finding and require evals/round1/pendingFLOW-087 before
 a worker. Invalid mechanical audit commits are not independent quality passes.
+
+## Completed recovery and dependency
+
+Tested single-physical-line submission persisted the real finding ateb6665f:
+phase evals, audit_rounds1, pendingFLOW-087, same run/IDs verified before worker.
+Real fixed Sol/high worker reapplied the exact12-line patch only;102 own passes/
+3 genuine stub failures. Native corrected evalsa7257cd:384 cases3 failing/381
+passing. Isolated FLOW-087-only re-audit PASS (permitted snapshot reads only,
+no code execution/writes/outside access; snapshot removed) persisted2f7cd0e.
+Implementation changed only disposable commits_stub.go behind frozen facade,
+105 named own passes. Final native384 passes in8m20s archiveddf7c125, preserving
+run20261029T211014-c172b18434a8e46b0f036ac7 and audit_rounds1; claim released.
+FLOW-088 assertions stayed unchanged. Both invalid mechanical passes remain
+invalid independent evidence; both0107 exceptions are consumed. No replacement
+change, bound/ref trick, API/eval weakening or bootstrap source/test read.
+
+FLOW-087/088 dependency now resolves pending/archive selectors and lists full
+reachable phase-changing object IDs newest-first by document contents/first
+parent. App caller and actual NEW listing proof are next, not yet established.
+Count2 since passing/pushed5358b5f gate; overall goal/final acceptance incomplete.

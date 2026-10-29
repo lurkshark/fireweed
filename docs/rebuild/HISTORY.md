@@ -6,7 +6,7 @@ they are not current instructions, permissions or readiness claims. Resume from
 [PROGRESS.md](PROGRESS.md). Preserve evidence and checkpoint history; do not
 repeat passed work because an older entry calls it pending.
 
-## Applied changes through 0106
+## Applied changes through 0107
 
 [0079–0083 checkpoint](reports/checkpoint-0079-0083.md) PASS: separate subagent
 review and fresh build/vet/race/static/history at clean 6ce22e9; 38 new history
@@ -25,6 +25,7 @@ further work awaits an owner decision.
 
 [Approved0104–0105 correction gate](reports/checkpoint-corrections-0104-0105.md) PASS: same scoped Sol/high checkpoint reviewer, actual NEW mixed-kind rejection, fresh build/vet/race/static/history16 commits all pass at clean4cf21a1. Seven applications reviewed; count resets0, push/resume authorized.
 
+- 0107 change-commits — FLOW-087/088; valid 0c13958/eb6665f/a7257cd/2f7cd0e/df7c125. Both native eval rounds384 cases3 failures/381 passes →384 final passes; scoped reachability correction/re-audit PASS,105 own passes. Two explicitly approved phase reverts after invalid mechanical audits; tested single-line submission then normal round1. Dependency only, immediate app caller next; count2. [Recovery and evidence](reports/recovery-0107.md).
 - 0106 release-command — APP-091/092/093; 7af0fb5/f817819/39a1d36. Seven failure events/196 passes →203 native and own passes, restricted audit PASS. Actual NEW nested Go start/release retains dirty work/runtime/HEAD while only claim disappears; repeat returns P02. Fixture removed; count1. [Report](reports/release-cli-0106.md).
 - 0105 explain-mixed-eval-fix — AST-033; 2178977/ace9f64/5ac1f3c/9a59aa1/4cf21a1. One runtime failure/591 passes before/after scoped audit correction; restricted re-audit PASS,592 final passes,61 own passes. C07 existing causes/actions retained; actual NEW rejection/explanation proof and scoped checkpoint PASS.
 - 0104 reject-mixed-eval-fix — PRJ-046; 49c71a3/9aff0a7/117689f/8139419/16f61a9. Initial529 cases:3 failures/526 passes; scoped audit found Modified/Removed unasserted, corrected531 cases:5 failures/526 passes, re-audit PASS; final531 passes in11m33s. Own82 passes. Six-line Check rejection, C07 explanation/actual NEW proof pending under approved correction gate; count6.

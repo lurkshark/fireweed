@@ -10,26 +10,27 @@ An ordinary fix then proves real fail-first/pass through three checked phases.
 Both fixtures clean/unclaimed and removed. [0102 proofs](reports/regenerate-fixes-cli-0102.md).
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 1 (0106).** The owner-approved0104–0105 corrections pass:
+**Applied since review: 2 (0106–0107).** The owner-approved0104–0105 corrections pass:
 central C07 rejects mixed eval_fix with fixes/spec edits; C07 explains the cause
 and separation action. Same scoped Sol/high checkpoint reviewer PASS plus
 actual NEW rejection, build/vet/race/static/history16 commits pass at clean4cf21a1.
 Seven applications reviewed, count reset only at passing gate. See
 [correction gate](reports/checkpoint-corrections-0104-0105.md).
 Authorized correction push succeeded: origin/main dac2d16→5358b5f.
-0107 tested recovery in progress: same run/IDs, currently unclaimed audit phase;
-exact single-line finding format proven in isolated fixtures.
+0107 recovered and archiveddf7c125 with384 full/105 own passes; isolated
+FLOW-087 re-audit PASS, original run/IDs and round1 retained. Both0107 phase
+exceptions consumed; invalid mechanical audits remain historical. Tree clean,
+no governing claim. [Recovery](reports/recovery-0107.md).
 
 0106 now exposes workflow.Release through NEW. Actual nested Go start/release
 retains exact dirty files/runtime/HEAD while dropping only the owned claim;
 repeated release returns P02.203 native/own passes and restricted audit PASS;
 fixture removed. [Release proof](reports/release-cli-0106.md).
 
-**Next:** commits <change> lists current-branch phase commits for pending and
-archived changes, using file state rather than messages. Add only the needed
-workflow dependency, immediately wire the app caller and close with an actual
-NEW Go lifecycle/listing proof. This supports the design's later abandon path.
-Remaining management surface and all final acceptance stay open.
+**Next:** immediately expose0107 workflow.Commits through app commits <change>,
+then close the slice with an actual NEW Go lifecycle/listing proof. Pending and
+archived selectors return reachable phase-changing IDs in order, independent
+of commit messages. Remaining management surface and final acceptance stay open.
 
 ## Approved correction gate
 
@@ -89,3 +90,10 @@ coordinator provenance is manual with real CLI logs retained. Do not use native
 automatic audit dispatch after the historical input/phase deviations. Never use
 bootstrap source/tests, rebuild-v1, abandoned/deleted/saved implementation or old
 worker logs as oracles. Regeneration/drill bounds remain unchanged.
+
+Controller audit submission: the proven native finding quote fits exactly one
+physical spec line; describe the full missing assertion after the dash. Full
+multiline and flattened sentences were silently discarded in isolated probes.
+After every Done inspect phase, audit_rounds and pending IDs before dispatch;
+mechanical No findings never substitutes for the separate restricted audit.
+This is pinned-controller process guidance, not a product requirement.
