@@ -175,6 +175,19 @@ func Test_RUN_030_RUN_031_RUN_033_ShortBudgetResumeOwnedStep(t *testing.T) {
 	if state.Change.Added[0].ID != "ALP-002" || !strings.Contains(nextRead(t, f.root, "packages/alpha/evals/partial_test.go"), "USAGE_PARTIAL_WORK") {
 		t.Error("held eval work or assigned ID lost")
 	}
+	approved := state.Snapshot
+	if approved.Root != f.root || approved.Config["limit_wait"] != "5ms" || approved.Config["limit_budget"] != "5ms" || fmt.Sprint(approved.Config["attempts"]) != "1" {
+		t.Errorf("held approved snapshot has wrong fixture policy: root=%q wait=%v budget=%v attempts=%v", approved.Root, approved.Config["limit_wait"], approved.Config["limit_budget"], approved.Config["attempts"])
+	}
+	approvedSpec := ""
+	for _, module := range approved.Modules {
+		if module.Name == "alpha" {
+			approvedSpec = module.Document.Body
+		}
+	}
+	if !strings.Contains(approvedSpec, "### ALP-002") || !strings.Contains(approvedSpec, "Alpha MUST return the new value.") {
+		t.Errorf("held approved snapshot lacks projected alpha spec: %q", approvedSpec)
+	}
 	if got := nextGit(t, f.root, "rev-list", "--count", head+"..HEAD"); got != "0" {
 		t.Errorf("stop committed %s times", got)
 	}
@@ -184,6 +197,15 @@ func Test_RUN_030_RUN_031_RUN_033_ShortBudgetResumeOwnedStep(t *testing.T) {
 	}
 	if !strings.Contains(nextRead(t, f.root, "changes/archive/0001-next.md"), "ALP-002") {
 		t.Error("resume lost assigned ID")
+	}
+	resumedSpec := ""
+	for _, module := range second.State.Snapshot.Modules {
+		if module.Name == "alpha" {
+			resumedSpec = module.Document.Body
+		}
+	}
+	if second.State.Snapshot.Root != approved.Root || second.State.Snapshot.Config["limit_wait"] != approved.Config["limit_wait"] || second.State.Snapshot.Config["limit_budget"] != approved.Config["limit_budget"] || fmt.Sprint(second.State.Snapshot.Config["attempts"]) != fmt.Sprint(approved.Config["attempts"]) || resumedSpec != approvedSpec {
+		t.Errorf("resumed State did not use held approved snapshot: root=%q wait=%v budget=%v attempts=%v projected alpha=%q", second.State.Snapshot.Root, second.State.Snapshot.Config["limit_wait"], second.State.Snapshot.Config["limit_budget"], second.State.Snapshot.Config["attempts"], resumedSpec)
 	}
 }
 
