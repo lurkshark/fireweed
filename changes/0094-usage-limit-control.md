@@ -7,7 +7,7 @@ audit_rounds: 1
 bases:
     RUN-015: 63014c25
 module: runner
-phase: evals
+phase: audit
 run: 20261029T142712-c76b3cdf9fbe34c2581fe5f8
 ---
 
@@ -138,6 +138,7 @@ five-application checkpoints and all other enforcement remain in force.
 
 - evals 2026-10-29T14:37:16.655357Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=246 failing=15 passing=231
 - audit 2026-10-29T14:41:25.791018Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- evals 2026-10-29T14:46:16.140703Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=247 failing=16 passing=231
 
 ## Audit
 

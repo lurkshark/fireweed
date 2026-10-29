@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -35,6 +36,12 @@ fi
 `
 	case "twice":
 		addition = `if [ "$phase" = evals ] && [ "$attempt" -le 2 ]; then
+  printf 'package evals\n// USAGE_PARTIAL_WORK\n' > packages/alpha/evals/partial_test.go
+  printf 'limited evals'; printf 'RATE LIMIT' >&2; exit 9
+fi
+`
+	case "always":
+		addition = `if [ "$phase" = evals ]; then
   printf 'package evals\n// USAGE_PARTIAL_WORK\n' > packages/alpha/evals/partial_test.go
   printf 'limited evals'; printf 'RATE LIMIT' >&2; exit 9
 fi
@@ -210,6 +217,63 @@ func Test_RUN_030_RUN_031_RUN_033_ShortBudgetResumeOwnedStep(t *testing.T) {
 	}
 	if second.State.Snapshot.Root != approved.Root || second.State.Snapshot.Config["limit_wait"] != approved.Config["limit_wait"] || second.State.Snapshot.Config["limit_budget"] != approved.Config["limit_budget"] || fmt.Sprint(second.State.Snapshot.Config["attempts"]) != fmt.Sprint(approved.Config["attempts"]) || resumedSpec != approvedSpec {
 		t.Errorf("resumed State did not use held approved snapshot: root=%q wait=%v budget=%v attempts=%v projected alpha=%q", second.State.Snapshot.Root, second.State.Snapshot.Config["limit_wait"], second.State.Snapshot.Config["limit_budget"], second.State.Snapshot.Config["attempts"], resumedSpec)
+	}
+}
+
+func Test_RUN_033_OwnedResumeUsesApprovedUsageBudget(t *testing.T) {
+	f := newNextFixture(t, true, true, "normal")
+	usagePolicy(t, f.root, "limit_wait: 5ms\nlimit_budget: 5ms\nattempts: 1\n")
+	nextUsageAgent(t, f, "always")
+	head := nextGit(t, f.root, "rev-parse", "HEAD")
+	first, err := f.run(false)
+	if err == nil || !runner.IsUsageStop(err) || len(first.Steps) != 2 {
+		t.Fatalf("first approved-budget stop = %#v, %v", first, err)
+	}
+	for i, step := range first.Steps {
+		if step.Phase != "evals" || !step.Agent.UsageLimit || step.Agent.ExitCode != 9 {
+			t.Errorf("first invocation %d = %#v", i, step)
+		}
+	}
+	held := usageHeld(t, f.root, "next", "evals", first.State.Run, head, first.State.ClaimOID)
+	approved := held.Snapshot
+	if approved.Config["limit_budget"] != "5ms" || held.Change.Added[0].ID != "ALP-002" {
+		t.Fatalf("approved state lost budget or assigned ID: %#v", held)
+	}
+	partialWork := nextRead(t, f.root, "packages/alpha/evals/partial_test.go")
+	if !strings.Contains(partialWork, "USAGE_PARTIAL_WORK") || len(nextInvocations(t, f)) != 2 {
+		t.Fatal("first stop lost partial work or usage invocations")
+	}
+	config := nextRead(t, f.root, "fireweed.yaml")
+	if !strings.Contains(config, "limit_budget: 5ms\n") {
+		t.Fatal("fixture budget missing")
+	}
+	unapproved := strings.Replace(config, "limit_budget: 5ms\n", "limit_budget: 0s\n", 1)
+	nextWrite(t, f.root, "fireweed.yaml", unapproved)
+
+	second, err := f.run(false)
+	if err == nil || !runner.IsUsageStop(err) || len(second.Steps) != 2 {
+		t.Fatalf("resume with approved budget = %#v, %v", second, err)
+	}
+	for i, step := range second.Steps {
+		if step.Phase != "evals" || !step.Agent.UsageLimit || step.Agent.ExitCode != 9 {
+			t.Errorf("resumed invocation %d = %#v", i, step)
+		}
+	}
+	resumed := usageHeld(t, f.root, "next", "evals", held.Run, head, held.ClaimOID)
+	if resumed.Change.Added[0].ID != held.Change.Added[0].ID || second.State.Run != held.Run || second.State.Phase != held.Phase || second.State.Head != head || second.State.ClaimOID != held.ClaimOID || !reflect.DeepEqual(second.State.Snapshot, approved) || !reflect.DeepEqual(resumed.Snapshot, approved) {
+		t.Errorf("resume changed approved State: returned=%#v held=%#v", second.State, resumed)
+	}
+	if got := nextRead(t, f.root, "packages/alpha/evals/partial_test.go"); got != partialWork {
+		t.Errorf("resume changed partial eval work: got %q, want %q", got, partialWork)
+	}
+	if got := nextRead(t, f.root, "fireweed.yaml"); got != unapproved {
+		t.Errorf("resume changed unapproved on-disk policy: %q", got)
+	}
+	if got := len(nextInvocations(t, f)); got != 4 {
+		t.Errorf("total usage invocations = %d, want 4", got)
+	}
+	if got := nextGit(t, f.root, "rev-parse", "HEAD"); got != head {
+		t.Errorf("resume committed: HEAD = %s, want %s", got, head)
 	}
 }
 
