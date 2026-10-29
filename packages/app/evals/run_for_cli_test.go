@@ -270,7 +270,7 @@ func Test_APP_089_RunForInvalidOptionsBeforeMutation(t *testing.T) {
 				t.Errorf("invalid For exit=%d stdout=%q stderr=%q", status, out, stderr)
 			}
 			message := assertFailedJSON(t, out, "U01")
-			if !strings.Contains(message, "run") || !strings.Contains(message, "--for") {
+			if !regexp.MustCompile(`(?i)\brun\s+[^\r\n]{0,120}--for(?:\s+|=)(?:[1-9][0-9]*(?:ns|us|µs|ms|s|m|h)|<?(?:duration|d)>?)(?:\W|$)`).MatchString(message) {
 				t.Errorf("diagnostic lacks valid run --for usage: %q", message)
 			}
 			if got := cliGit(t, f.root, "rev-parse", "HEAD"); got != head {
