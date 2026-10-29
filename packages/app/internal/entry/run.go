@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/lurkshark/fireweed/packages/runner"
 )
@@ -23,7 +24,7 @@ type runData struct {
 	Reason  string       `json:"reason,omitempty"`
 }
 
-func runQueue(max int, allowUnmerged, jsonMode bool, out, errOut io.Writer) int {
+func runQueue(max int, forDuration time.Duration, allowUnmerged, jsonMode bool, out, errOut io.Writer) int {
 	snapshot, err := loadValidatedProject()
 	if err != nil {
 		return cliFailure(2, jsonMode, out, errOut, projectFailureCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry run.", err))
@@ -33,7 +34,7 @@ func runQueue(max int, allowUnmerged, jsonMode bool, out, errOut io.Writer) int 
 		return cliFailure(2, jsonMode, out, errOut, "P01", fmt.Sprintf("Find invoking executable: %v. Run the installed fireweed executable.", err))
 	}
 	result, err := runner.Run(context.Background(), runner.RunRequest{
-		Root: snapshot.Root, Bin: bin, Max: max, AllowUnmerged: allowUnmerged,
+		Root: snapshot.Root, Bin: bin, Max: max, For: forDuration, AllowUnmerged: allowUnmerged,
 	})
 	diagnostics := make([]diagnostic, 0)
 	for _, applied := range result.Applied {
@@ -47,7 +48,7 @@ func runQueue(max int, allowUnmerged, jsonMode bool, out, errOut io.Writer) int 
 		fmt.Fprintf(&plain, "Applied %s\n", state.Change.Path)
 	}
 	fmt.Fprintf(&plain, "Applied %d changes.\n", len(data.Applied))
-	if runner.IsUsageStop(err) {
+	if runner.IsUsageStop(err) || runner.IsTimeStop(err) {
 		data.Reason = err.Error()
 		fmt.Fprintf(&plain, "%s. Run next or run again to resume the held change.\n", data.Reason)
 		return cliResponse(3, jsonMode, out, errOut, data, plain.String(), diagnostics)

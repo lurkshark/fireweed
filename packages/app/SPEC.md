@@ -294,7 +294,7 @@ wait/budget reason with instructions for resuming.
 run MUST return exit0 for successful queue completion, Max termination or an
 empty queue, exit1 for execution or lifecycle failure including any earlier
 blocked change, exit2 for usage or configuration errors, and exit3 for a clean
-usage stop.
+time or usage stop.
 
 ### APP-085
 run failure diagnostics MUST retain existing cause codes from wrapped
@@ -317,6 +317,18 @@ For start, --from-attempt MUST require one positive integer and reject missing,
 noninteger, nonpositive or repeated values with corrective U01 and exit 2 before
 mutation. Its value diagnostics MUST describe valid start usage. Other commands
 MUST reject --from-attempt with U01 and exit 2.
+
+### APP-089
+run --for D MUST require one positive Go duration and pass it as RunRequest.For,
+using zero when absent. It MUST reject missing, malformed, nonpositive or repeated
+values and use by other commands with corrective U01 and exit2 before mutation,
+showing valid run usage.
+
+### APP-090
+On a clean runner time stop, run MUST return exit3 with retained applied summaries
+and a nonempty reason naming the time limit. Plain output MUST include the
+applied count and resume guidance. JSON MUST use the existing schema1 run object
+with reason and empty/limited flags, leaving stderr empty.
 
 ## Decisions
 

@@ -6,6 +6,7 @@ import (
 	"io"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/lurkshark/fireweed/packages/assets"
 	"github.com/lurkshark/fireweed/packages/contracts"
@@ -35,6 +36,9 @@ var pending = map[string]bool{
 
 func Run(args []string, out, errOut io.Writer) int {
 	if isInitRequest(args) {
+		if contains(args, "--for") {
+			return cliFailure(2, contains(args, "--json"), out, errOut, "U01", "--for is only available with run. Use run --for 1h.")
+		}
 		return runInit(args, out, errOut)
 	}
 	jsonMode := false
@@ -46,6 +50,8 @@ func Run(args []string, out, errOut io.Writer) int {
 	allowUnmerged := false
 	max := 0
 	maxSet := false
+	forDuration := time.Duration(0)
+	forSet := false
 	fromAttempt := 0
 	fromAttemptSet := false
 	withChange := ""
@@ -79,6 +85,16 @@ func Run(args []string, out, errOut io.Writer) int {
 				return cliFailure(2, jsonMode || contains(args, "--json"), out, errOut, "U01", "--max requires a positive integer. Use run --max N.")
 			}
 			max, maxSet = value, true
+		} else if arg == "--for" {
+			if forSet || i+1 >= len(args) {
+				return cliFailure(2, jsonMode || contains(args, "--json"), out, errOut, "U01", "--for requires one positive Go duration. Use run --for 1h.")
+			}
+			i++
+			value, parseErr := time.ParseDuration(args[i])
+			if parseErr != nil || value <= 0 {
+				return cliFailure(2, jsonMode || contains(args, "--json"), out, errOut, "U01", "--for requires one positive Go duration. Use run --for 1h.")
+			}
+			forDuration, forSet = value, true
 		} else if arg == "--from-attempt" {
 			if fromAttemptSet || i+1 >= len(args) {
 				return cliFailure(2, jsonMode || contains(args, "--json"), out, errOut, "U01", "--from-attempt requires one positive integer. Use start <change> --from-attempt N.")
@@ -134,6 +150,9 @@ func Run(args []string, out, errOut io.Writer) int {
 	if maxSet && command != "run" {
 		return fail("U01", "--max is only available with run. Use run --max N.")
 	}
+	if forSet && command != "run" {
+		return fail("U01", "--for is only available with run. Use run --for 1h.")
+	}
 	if fromAttemptSet && command != "start" {
 		return fail("U01", "--from-attempt is only available with start. Use start <change> --from-attempt N.")
 	}
@@ -187,9 +206,9 @@ func Run(args []string, out, errOut io.Writer) int {
 		return runNext(allowUnmerged, jsonMode, out, errOut)
 	case "run":
 		if count != 0 {
-			return fail("U01", "run takes no arguments. Use run [--max N] [--allow-unmerged] [--json].")
+			return fail("U01", "run takes no arguments. Use run [--for 1h] [--max N] [--allow-unmerged] [--json].")
 		}
-		return runQueue(max, allowUnmerged, jsonMode, out, errOut)
+		return runQueue(max, forDuration, allowUnmerged, jsonMode, out, errOut)
 	case "doctor":
 		if count != 0 {
 			return fail("U01", "doctor takes no arguments. Use doctor [--no-agent] [--json].")

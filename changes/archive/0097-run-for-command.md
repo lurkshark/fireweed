@@ -5,7 +5,7 @@ audit_rounds: 1
 bases:
     APP-084: 070b95dc
 module: app
-phase: impl
+phase: applied
 run: 20261029T165024-3fef7348df22114b38bedf67
 ---
 
@@ -98,6 +98,7 @@ normal fifth-change checkpoint remains in force.
 - audit 2026-10-29T17:08:27.147018Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 - evals 2026-10-29T17:14:17.00715Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=196 failing=10 passing=186
 - audit 2026-10-29T17:16:52.383873Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-29T17:28:36.911111Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=196 failing=0 passing=196
 
 ## Audit
 
