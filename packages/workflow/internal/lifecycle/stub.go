@@ -342,14 +342,18 @@ func Start(root, target string) (model.State, error) {
 		}
 	}
 	phase := str(ch.Document.Frontmatter["phase"])
+	freshRegenerate := phase == "" && ch.Document.Frontmatter["regenerate"] == true
 	if phase == "" {
 		phase = "evals"
 		_, hasEvalFix := ch.Document.Frontmatter["eval_fix"]
-		if len(ch.Added) == 0 && len(ch.Modified) == 0 && len(ch.Removed) == 0 &&
+		if freshRegenerate || len(ch.Added) == 0 && len(ch.Modified) == 0 && len(ch.Removed) == 0 &&
 			len(list(ch.Document.Frontmatter["fixes"])) == 0 &&
 			!hasEvalFix && ch.Document.Frontmatter["regenerate"] != true {
 			phase = "impl"
 		}
+	}
+	if ch.Document.Frontmatter["regenerate"] == true && !recentPassingDrill(root, ch.Module) {
+		ds = append(ds, diag("P10", "no passing drill newer than the module's latest applied implementation", true))
 	}
 	c := claim{Worktree: root, Change: ch.Slug, Run: run, Phase: phase, PhaseBase: repo.Head, Snapshot: snap}
 	c.Author, c.Sections = author(ch.Document)
@@ -374,6 +378,11 @@ func Start(root, target string) (model.State, error) {
 	}
 	if e = write(root, ch.Path, []byte(rendered)); e != nil {
 		return rollback(e)
+	}
+	if freshRegenerate {
+		if e = removeDisposable(root, snap, ch.Module); e != nil {
+			return rollback(e)
+		}
 	}
 	snap, e = project.Project(root, ch.Slug)
 	if e != nil {
@@ -1031,7 +1040,11 @@ func Context(root, target string, full bool) (string, error) {
 		b.WriteString("\n# SYSTEM.md\n")
 		b.Write(sys)
 	}
-	play, e := assets.Playbook(s.Phase)
+	playbookName := s.Phase
+	if s.Phase == "impl" && s.Change.Document.Frontmatter["regenerate"] == true {
+		playbookName = "regenerate"
+	}
+	play, e := assets.Playbook(playbookName)
 	if e == nil {
 		b.WriteString("\n# Playbook\n")
 		b.WriteString(play)

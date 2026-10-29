@@ -286,6 +286,23 @@ During evals for an eval_fix change, Verify MUST require all target-module
 evals to pass rather than fail first, with every listed eval_fix ID covered by
 at least one referencing testcase.
 
+### FLOW-080
+Start MUST set phase to impl for an unstarted change with regenerate true.
+
+### FLOW-081
+Before returning from successful Start of an unstarted regenerate change,
+Fireweed MUST delete only the target module's files classified as disposable
+by the approved projected zone map, retaining all other files.
+
+### FLOW-082
+For a regenerate change, Start MUST emit warning P10 when the module has no
+passing drill dated after its latest applied change's implementation Provenance.
+A newer passing drill MUST suppress that warning.
+
+### FLOW-083
+For a held regenerate change in impl, Context MUST supply the regenerate
+playbook in place of the ordinary impl playbook.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
