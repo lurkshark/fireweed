@@ -72,10 +72,53 @@ func newNextFixture(t *testing.T, queued, approved bool, workerMode string) next
 	// The scripts are fixture agents. Only the runner may call workflow transitions.
 	nextWrite(t, logDir, "worker.sh", `#!/bin/sh
 phase=$(sed -n 's/^phase: //p' changes/0001-next.md | head -1)
+attempt_file="$1/$phase-attempts"
+attempt=0
+[ ! -f "$attempt_file" ] || attempt=$(cat "$attempt_file")
+attempt=$((attempt + 1))
+printf '%s' "$attempt" > "$attempt_file"
 printf '%s' "$3" > "$1/worker-$phase.prompt"
+printf '%s' "$3" > "$1/worker-$phase-$attempt.prompt"
 printf '%s|%s|%s\n' "$phase" "$PWD" "$FIREWEED_BIN" >> "$1/invocations"
 if [ "$2" = exit ]; then printf 'partial worker output'; printf 'worker failure' >&2; exit 9; fi
 if [ "$2" = noedit ]; then printf 'no edit'; exit 0; fi
+if [ "$2" = retry-both ] && [ "$phase" = evals ] && [ "$attempt" -eq 1 ]; then
+  cat > packages/alpha/evals/next_test.go <<'GO'
+package evals
+import (
+    "testing"
+    "example.invalid/next-fixture/packages/alpha"
+)
+func Test_ALP_002_NewValue(t *testing.T) {
+    if alpha.Value() != "old" { t.Fatalf("ALP-002: got %q", alpha.Value()) }
+}
+GO
+  printf 'package evals\n// RETAINED_EVAL_WORK\n' > packages/alpha/evals/retained_test.go
+  printf 'worker-evals-1'
+  exit 0
+fi
+if [ "$2" = retry-both ] && [ "$phase" = evals ] && [ "$attempt" -eq 2 ]; then
+  if [ -f packages/alpha/evals/retained_test.go ]; then printf 'retained\n' > "$1/evals-retention"; else printf 'lost\n' > "$1/evals-retention"; fi
+fi
+if [ "$phase" = impl ]; then
+  wrong=0
+  case "$2" in
+    retry-impl|retry-both) [ "$attempt" -ne 1 ] || wrong=1 ;;
+    retry-third) [ "$attempt" -ge 3 ] || wrong=1 ;;
+    exhaust-impl) wrong=1 ;;
+  esac
+  if [ "$wrong" -eq 1 ]; then
+    wrong_value=wrong
+    [ "$2" != retry-third ] || wrong_value="wrong-$attempt"
+    printf 'package internal\nfunc Value() string { return "%s" }\n' "$wrong_value" > packages/alpha/internal/value.go
+    printf 'package internal\nconst RetainedWork = "RETAINED_IMPL_WORK"\n' > packages/alpha/internal/retained.go
+    printf 'worker-impl-%s' "$attempt"
+    exit 0
+  fi
+  if [ "$attempt" -gt 1 ]; then
+    if [ -f packages/alpha/internal/retained.go ]; then printf 'retained\n' > "$1/impl-retention"; else printf 'lost\n' > "$1/impl-retention"; fi
+  fi
+fi
 sleep 0.15
 case "$phase" in
   evals)
@@ -134,7 +177,7 @@ timeout: 50ms
 	nextWrite(t, root, ".fireweed/eval.sh", `#!/bin/sh
 go test ./packages/alpha/evals > .fireweed/go-test.log 2>&1
 code=$?
-if [ "$code" -eq 0 ]; then result=''; else result='<failure message="Go eval failed"/>'; fi
+if [ "$code" -eq 0 ]; then result=''; else result='<failure message="Go eval failed"/>'; cat .fireweed/go-test.log; fi
 printf '<testsuite><testcase name="ALP-001" classname="fixture"/><testcase name="ALP-002" classname="fixture">%s</testcase></testsuite>' "$result" > "$2"
 exit "$code"
 `)
@@ -172,6 +215,22 @@ func (f nextFixture) noAgent(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(f.logDir, "invocations")); !os.IsNotExist(err) {
 		t.Errorf("agent invoked: %v", err)
 	}
+}
+
+func nextAttempts(t *testing.T, f nextFixture, attempts int) {
+	t.Helper()
+	nextWrite(t, f.root, "fireweed.yaml", nextRead(t, f.root, "fireweed.yaml")+fmt.Sprintf("attempts: %d\n", attempts))
+	nextCommit(t, f.root, "configure attempts")
+	for _, d := range project.Check(f.root) {
+		if !d.Warning {
+			t.Fatalf("invalid attempts fixture: %#v", d)
+		}
+	}
+}
+
+func nextInvocations(t *testing.T, f nextFixture) []string {
+	t.Helper()
+	return strings.Split(strings.TrimSpace(nextRead(t, f.logDir, "invocations")), "\n")
 }
 
 func Test_RUN_010_EmptyQueue(t *testing.T) {
@@ -368,20 +427,141 @@ func Test_RUN_015_InvocationAndVerificationFailureRetainPhase(t *testing.T) {
 			f := newNextFixture(t, true, true, mode)
 			before := nextGit(t, f.root, "rev-parse", "HEAD")
 			r, err := f.run(false)
-			if err == nil || len(r.Steps) != 1 || r.Steps[0].Phase != "evals" || r.Steps[0].Role != "worker" {
+			wantSteps := 1
+			if mode == "noedit" {
+				wantSteps = 2
+			}
+			if err == nil || len(r.Steps) != wantSteps {
 				t.Errorf("failure = %#v, %v", r, err)
 			}
 			want := "partial worker output"
 			if mode == "noedit" {
 				want = "no edit"
 			}
-			if len(r.Steps) == 1 && (r.Steps[0].Agent.Stdout != want || (mode == "exit" && (r.Steps[0].Agent.ExitCode != 9 || r.Steps[0].Agent.Stderr != "worker failure"))) {
-				t.Errorf("captured invocation = %#v", r.Steps[0])
+			for i, step := range r.Steps {
+				if step.Phase != "evals" || step.Role != "worker" || step.Agent.Stdout != want || (mode == "exit" && (step.Agent.ExitCode != 9 || step.Agent.Stderr != "worker failure")) {
+					t.Errorf("captured invocation %d = %#v", i, step)
+				}
+			}
+			if got := len(nextInvocations(t, f)); got != wantSteps {
+				t.Errorf("agent calls = %d, want %d", got, wantSteps)
 			}
 			state, currentErr := workflow.Current(f.root, "next")
 			if currentErr != nil || state.Phase != "evals" || state.Run == "" || nextGit(t, f.root, "rev-parse", "HEAD") != before {
 				t.Errorf("failure advanced phase: %#v, %v", state, currentErr)
 			}
 		})
+	}
+}
+
+func Test_RUN_021_RUN_022_DefaultRetriesRetainWorkAndFeedbackPerPhase(t *testing.T) {
+	f := newNextFixture(t, true, true, "retry-both")
+	r, err := f.run(false)
+	if err != nil {
+		t.Fatalf("Next after retry = %#v, %v", r, err)
+	}
+	if r.State.Phase != "applied" || len(r.Steps) != 5 {
+		t.Fatalf("retry result = %#v", r)
+	}
+	for i, want := range []struct{ phase, role, output string }{
+		{"evals", "worker", "worker-evals-1"},
+		{"evals", "worker", "worker-evals"},
+		{"audit", "audit", "auditor"},
+		{"impl", "worker", "worker-impl-1"},
+		{"impl", "worker", "worker-impl"},
+	} {
+		step := r.Steps[i]
+		if step.Phase != want.phase || step.Role != want.role || step.Agent.Stdout != want.output || step.Agent.ExitCode != 0 {
+			t.Errorf("step %d = %#v", i, step)
+		}
+	}
+	if got := len(nextInvocations(t, f)); got != 5 {
+		t.Errorf("agent calls = %d, want 5", got)
+	}
+	if got := nextRead(t, f.logDir, "impl-retention"); got != "retained\n" {
+		t.Errorf("work seen by second impl agent = %q", got)
+	}
+	if got := nextRead(t, f.logDir, "evals-retention"); got != "retained\n" {
+		t.Errorf("work seen by second evals agent = %q", got)
+	}
+	for path, marker := range map[string]string{
+		"packages/alpha/evals/retained_test.go": "RETAINED_EVAL_WORK",
+		"packages/alpha/internal/retained.go":   "RETAINED_IMPL_WORK",
+	} {
+		if !strings.Contains(nextRead(t, f.root, path), marker) {
+			t.Errorf("retained work missing from %s", path)
+		}
+	}
+	for _, phase := range []struct{ name, feedback string }{
+		{"evals", "P2-01: no fail-first case for ALP-002"},
+		{"impl", "E01: failed case"},
+	} {
+		prompt := nextRead(t, f.logDir, "worker-"+phase.name+"-2.prompt")
+		if !strings.Contains(prompt, phase.feedback) {
+			t.Errorf("%s retry prompt lacks real verification feedback %q", phase.name, phase.feedback)
+		}
+	}
+	if prompt := nextRead(t, f.logDir, "worker-impl-2.prompt"); !strings.Contains(prompt, "--- FAIL: Test_ALP_002_NewValue") {
+		t.Error("impl retry prompt lacks the Go test failure output")
+	}
+}
+
+func Test_RUN_021_ConfiguredThreeAttempts(t *testing.T) {
+	f := newNextFixture(t, true, true, "retry-third")
+	nextAttempts(t, f, 3)
+	r, err := f.run(false)
+	if err != nil {
+		t.Fatalf("Next with three attempts = %#v, %v", r, err)
+	}
+	if r.State.Phase != "applied" || len(r.Steps) != 5 {
+		t.Fatalf("configured retry result = %#v", r)
+	}
+	for i, want := range []struct{ phase, output string }{
+		{"evals", "worker-evals"}, {"audit", "auditor"},
+		{"impl", "worker-impl-1"}, {"impl", "worker-impl-2"}, {"impl", "worker-impl"},
+	} {
+		if r.Steps[i].Phase != want.phase || r.Steps[i].Agent.Stdout != want.output {
+			t.Errorf("step %d = %#v", i, r.Steps[i])
+		}
+	}
+	if got := len(nextInvocations(t, f)); got != 5 {
+		t.Errorf("agent calls = %d, want 5", got)
+	}
+	if prompt := nextRead(t, f.logDir, "worker-impl-3.prompt"); !strings.Contains(prompt, `got "wrong-2"`) {
+		t.Error("third attempt lacks the second verification's actual Go output")
+	}
+}
+
+func Test_RUN_015_RUN_021_ExhaustionRetainsCauseResultsAndPhase(t *testing.T) {
+	f := newNextFixture(t, true, true, "exhaust-impl")
+	before := nextGit(t, f.root, "rev-parse", "HEAD")
+	r, err := f.run(false)
+	if err == nil || !strings.Contains(err.Error(), "E01: failed case") {
+		t.Errorf("exhaustion cause = %v", err)
+	}
+	if len(r.Steps) != 4 {
+		t.Fatalf("exhaustion steps = %#v", r.Steps)
+	}
+	for i, want := range []struct{ phase, role, output string }{
+		{"evals", "worker", "worker-evals"}, {"audit", "audit", "auditor"},
+		{"impl", "worker", "worker-impl-1"}, {"impl", "worker", "worker-impl-2"},
+	} {
+		step := r.Steps[i]
+		if step.Phase != want.phase || step.Role != want.role || step.Agent.Stdout != want.output || step.Agent.ExitCode != 0 {
+			t.Errorf("captured step %d = %#v", i, step)
+		}
+	}
+	if got := len(nextInvocations(t, f)); got != 4 {
+		t.Errorf("agent calls = %d, want 4", got)
+	}
+	state, currentErr := workflow.Current(f.root, "next")
+	if currentErr != nil || state.Phase != "impl" || r.State.Phase != "impl" || state.Run == "" {
+		t.Errorf("exhaustion advanced phase: result=%#v current=%#v err=%v", r.State, state, currentErr)
+	}
+	if got := nextGit(t, f.root, "rev-list", "--count", before+"..HEAD"); got != "2" {
+		t.Errorf("exhaustion phase commits = %s, want evals and audit only", got)
+	}
+	if !strings.Contains(nextRead(t, f.root, "packages/alpha/internal/retained.go"), "RETAINED_IMPL_WORK") {
+		t.Error("exhaustion discarded earlier work")
 	}
 }

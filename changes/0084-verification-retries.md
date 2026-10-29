@@ -1,7 +1,10 @@
 ---
+audit_rounds: 0
 bases:
     RUN-015: 5d5d135e
 module: runner
+phase: audit
+run: 20261029T032332-d2f9262403cce62e6c8ed149
 ---
 
 
@@ -24,12 +27,12 @@ existing attempts configuration; invocation results remain ordered in Steps.
 
 ## Added
 
-### new:phase-attempt-bound
+### RUN-021
 Next MUST permit at most the configured attempts count of agent invocations
 for a phase after verification failures, defaulting to two when unset. Each
 phase MUST have its own attempt allowance.
 
-### new:verification-feedback
+### RUN-022
 When phase verification fails and an attempt remains, Next MUST retain the
 earlier work and retry that phase. The retry prompt MUST include the last
 verification output.
@@ -74,3 +77,7 @@ Workers never commit or invoke controller lifecycle commands, alter runtime
 state/bounds, edit SPEC/protected docs or other modules. The coordinator reads
 context and owns native phase operations. Separate auditors receive isolated
 change/projected specs/evals/permitted public interfaces only.
+
+## Provenance
+
+- evals 2026-10-29T03:38:08.317166Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=214 failing=5 passing=209
