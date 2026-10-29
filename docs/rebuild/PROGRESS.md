@@ -32,10 +32,15 @@ listing matches all three phase OIDs; empty history/U02 cases pass, read state
 unchanged, clean/unclaimed fixture removed.209 full native passes and scoped
 APP-095 re-audit PASS. [Commits proof](reports/commits-cli-0108.md).
 
-**Next:** abandon <change> drops unapplied work in one commit, retains saved
-attempt refs and frees assigned IDs. Build its minimum workflow API, immediately
-wire app and close with actual NEW proof. These are applications4/5; perform the
-required separate quality/goal checkpoint and appropriate checks after app.
+0109 was natively canceled after an extra frozen lookup assertion contradicted
+existing FLOW-061 (U02). Owner approved native recovery: only its uncommitted
+implementation/notes restored, claim released and phases natively abandoned.
+Public contract and corrected eval retained; discarded private implementation
+excluded. [Recovery](reports/recovery-0109.md). No governing claim at author boundary.
+
+**Next:** fresh0110 abandon dependency, immediate app caller/NEW proof, then
+fifth-application quality/goal review and appropriate checks. Owner explicitly
+authorized consecutive recovery/caller work; count stays3 until application.
 Remaining management surface and final acceptance stay open.
 
 ## Approved correction gate
