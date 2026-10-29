@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: runner
+phase: audit
+run: 20261029T100929-08538f37f6e35ed6a14eea8a
 ---
 
 
@@ -23,12 +26,12 @@ AgentResult stdout/stderr/exit and ordered Steps intact.
 
 ## Added
 
-### new:undo-agent-commits
+### RUN-027
 When a phase agent creates commits, Next MUST soft-reset HEAD to the held phase
 base after invocation and before verification or returning an invocation failure,
 retaining the step's working-tree and index work.
 
-### new:agent-commit-warning
+### RUN-028
 For each such recovery, Next MUST return a P05 warning in State.Diagnostics
 identifying the phase and that work was retained. It MUST preserve these warnings
 across phase advancement and on an invocation-failure return.
@@ -82,3 +85,7 @@ phase-write exception or general workflow-file reorganization.
 After application rebuild NEW and close the declared actual CLI proof before
 starting the next recovery mechanism. This is the fourth application since the
 passing checkpoint if successful; the standing fifth-change review still applies.
+
+## Provenance
+
+- evals 2026-10-29T10:19:32.422623Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=231 failing=2 passing=229

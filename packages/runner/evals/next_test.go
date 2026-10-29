@@ -92,6 +92,25 @@ case "$2/$phase" in
     ;;
 esac
 if [ "$2" = exit ]; then printf 'partial worker output'; printf 'worker failure' >&2; exit 9; fi
+if [ "$2" = commit-exit ]; then
+  cat > packages/alpha/evals/next_test.go <<'GO'
+package evals
+import (
+    "testing"
+    "example.invalid/next-fixture/packages/alpha"
+)
+func Test_ALP_002_NewValue(t *testing.T) {
+    if alpha.Value() != "new" { t.Fatalf("ALP-002: got %q", alpha.Value()) }
+}
+GO
+  git add packages/alpha/evals/next_test.go
+  git commit -q -m 'fixture agent evals commit'
+  printf 'package evals\n// STAGED_FAILURE_WORK\n' > packages/alpha/evals/staged_test.go
+  git add packages/alpha/evals/staged_test.go
+  printf '// TRACKED_FAILURE_WORK\n' >> packages/alpha/evals/next_test.go
+  printf 'package evals\n// UNTRACKED_FAILURE_WORK\n' > packages/alpha/evals/untracked_test.go
+  printf 'partial worker output'; printf 'worker failure' >&2; exit 9
+fi
 if [ "$2" = noedit ]; then printf 'no edit'; exit 0; fi
 if [ "$2" = retry-both ] && [ "$phase" = evals ] && [ "$attempt" -eq 1 ]; then
   cat > packages/alpha/evals/next_test.go <<'GO'
@@ -152,6 +171,21 @@ GO
     ;;
   *) exit 8 ;;
 esac
+if [ "$2" = commit-success ]; then
+  git add -A
+  git commit -q -m "fixture agent $phase first commit"
+  case "$phase" in
+    evals)
+      printf 'package evals\n// SECOND_AGENT_COMMIT\n' > packages/alpha/evals/second_test.go
+      git add packages/alpha/evals/second_test.go
+      git commit -q -m 'fixture agent evals second commit'
+      printf 'package evals\n// STAGED_EVAL_WORK\n' > packages/alpha/evals/staged_test.go
+      git add packages/alpha/evals/staged_test.go
+      printf '// TRACKED_EVAL_WORK\n' >> packages/alpha/evals/next_test.go
+      printf 'package evals\n// UNTRACKED_EVAL_WORK\n' > packages/alpha/evals/untracked_test.go
+      ;;
+  esac
+fi
 printf 'worker-%s' "$phase"
 `)
 	nextWrite(t, logDir, "auditor.sh", `#!/bin/sh
@@ -163,8 +197,15 @@ cat >> changes/0001-next.md <<'AUDIT'
 No findings
 Checked IDs: ALP-002
 AUDIT
+if [ -f "$1/commit-success" ]; then
+  git add changes/0001-next.md
+  git commit -q -m 'fixture agent audit commit'
+fi
 printf 'auditor'
 `)
+	if workerMode == "commit-success" {
+		nextWrite(t, logDir, "commit-success", "enabled\n")
+	}
 	nextWrite(t, root, ".gitignore", ".fireweed/runs/\n.fireweed/go-test.log\n")
 	nextWrite(t, root, "go.mod", "module example.invalid/next-fixture\n\ngo 1.22\n")
 	nextWrite(t, root, "SYSTEM.md", "# Fixture\nSYSTEM_CONTEXT_MARKER\n")
@@ -177,15 +218,22 @@ module_defaults:
   evals: [evals/**]
   disposable: [internal/**]
 hooks:
-  eval: [sh, .fireweed/eval.sh, "{module}", "{report}"]
+  eval: [sh, .fireweed/eval.sh, "{module}", "{report}", %q]
   boundaries: [sh, .fireweed/boundaries.sh]
 agent:
   command: [sh, %q, %q, %q, "{prompt}"]
 audit:
   command: [sh, %q, %q, "{prompt}"]
 timeout: 50ms
-`, worker, logDir, workerMode, auditor, logDir))
+`, logDir, worker, logDir, workerMode, auditor, logDir))
 	nextWrite(t, root, ".fireweed/eval.sh", `#!/bin/sh
+if [ -f packages/alpha/evals/staged_test.go ] && [ ! -f "$3/evals-observed" ]; then
+  git rev-parse HEAD > "$3/evals-reset-head"
+  git diff --cached --name-only > "$3/evals-staged"
+  git diff --name-only > "$3/evals-unstaged"
+  git ls-files --others --exclude-standard > "$3/evals-untracked"
+  touch "$3/evals-observed"
+fi
 go test ./packages/alpha/evals > .fireweed/go-test.log 2>&1
 code=$?
 if [ "$code" -eq 0 ]; then result=''; else result='<failure message="Go eval failed"/>'; cat .fireweed/go-test.log; fi
