@@ -149,4 +149,8 @@ Check MUST report pending queue identity errors with diagnostic C13.
 ### PRJ-045
 Check MUST report invalid pending change module targets with diagnostic C07.
 
+### PRJ-046
+Check MUST report error C07 for a pending change containing eval_fix together
+with fixes or any Added, Modified or Removed spec edits.
+
 ## Decisions

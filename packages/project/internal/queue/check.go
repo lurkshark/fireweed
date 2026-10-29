@@ -51,6 +51,12 @@ func Check(root string) []model.Diagnostic {
 		if !exists || strings.TrimSpace(motivation) == "" {
 			addCode("C07", path, "missing Motivation")
 		}
+		if _, hasEvalFix := change.Document.Frontmatter["eval_fix"]; hasEvalFix {
+			_, hasFixes := change.Document.Frontmatter["fixes"]
+			if hasFixes || len(change.Added) > 0 || len(change.Modified) > 0 || len(change.Removed) > 0 {
+				addCode("C07", path, "eval_fix cannot be combined with fixes or spec edits")
+			}
+		}
 		declared, seen := map[string]bool{}, map[string]bool{}
 		for _, item := range change.Added {
 			if strings.HasPrefix(item.ID, "new:") {
