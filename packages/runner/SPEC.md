@@ -67,9 +67,8 @@ call workflow.Done only when verification passes, continuing until applied.
 It MUST return the applied state and the ordered phase invocation results.
 
 ### RUN-015
-When invocation fails, or phase verification still fails after its attempt
-allowance, Next MUST return an error and captured invocation results without
-advancing that phase.
+When agent invocation fails, Next MUST return an error and captured invocation
+results without advancing the phase or releasing its held claim.
 
 ### RUN-016
 When single-change executions succeed, Run without a positive Max MUST
@@ -103,6 +102,17 @@ phase MUST have its own attempt allowance.
 When phase verification fails and an attempt remains, Next MUST retain the
 earlier work and retry that phase. The retry prompt MUST include the last
 verification output.
+
+### RUN-023
+For exhausted phase verification with the worktree's approved claim and an
+unchanged HEAD, Next MUST save and block the step through the lifecycle,
+leaving a clean unclaimed checkout and a state-only block commit.
+
+### RUN-024
+After that blocking succeeds, Next MUST return the blocked lifecycle State and
+ordered captured invocations without changing the run, assigned IDs or current
+phase. Its error MUST retain the last verification cause and identify the saved
+attempt ref.
 
 ## Decisions
 

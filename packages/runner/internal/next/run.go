@@ -89,7 +89,15 @@ func Run(ctx context.Context, request model.NextRequest) (model.NextResult, erro
 				break
 			}
 			if attempt+1 == attempts {
-				return result, fmt.Errorf("verify %s: %w", phase, verifyErr)
+				blocked, blockErr := workflow.Block(workflow.BlockRequest{
+					Root: state.Snapshot.Root, Change: state.Change.Path,
+					Reason: phase + " verification attempts exhausted",
+				})
+				if blockErr != nil {
+					return result, fmt.Errorf("verify %s: %w; block exhausted step: %w", phase, verifyErr, blockErr)
+				}
+				result.State = blocked.State
+				return result, fmt.Errorf("verify %s after exhausted attempts; saved work at %s: %w", phase, blocked.AttemptRef, verifyErr)
 			}
 			feedback = verificationFeedback(phase, verification, verifyErr)
 		}
