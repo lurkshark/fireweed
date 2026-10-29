@@ -46,7 +46,7 @@ and final tree/claims were clean. The harness's removed-empty-cwd issue was
 repaired before any NEW call; the unblock commit was retained. The retained
 fixture and its tracker are now removed. See [the CLI proof](reports/saved-resume-cli-0091.md).
 
-No governing pending change or claim exists. Next unmet runnable behavior:
+Current change: 0092-agent-commit-recovery. Its unmet runnable behavior:
 when a phase agent creates a commit, NEW next must undo those commits with a
 soft reset before verification, retaining its work and reporting a warning.
 Use one bounded fake-agent Go scenario and the needed runner/caller composition;
