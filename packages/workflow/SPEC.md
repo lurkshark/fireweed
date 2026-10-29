@@ -47,7 +47,9 @@ Start MUST report P04 as a warning when neither the local base nor the shared ba
 Start MUST reject a worktree containing uncommitted changes.
 
 ### FLOW-011
-Start MUST reject a requested change when an earlier unblocked queued change exists.
+Start MUST reject a requested change unless it is the first change returned by
+Eligible. With no requested target, Start MUST start that first eligible
+change. When Eligible returns no change, Start MUST reject with P01.
 
 ### FLOW-012
 Start MUST return the canonical absolute worktree root in State.Snapshot.Root.
@@ -224,6 +226,30 @@ the approved author and already-committed audit content and exclude step work.
 ### FLOW-067
 On successful blocking, Block MUST release the current claim and return the
 blocked State with no held ClaimOID. The resulting working tree MUST be clean.
+
+### FLOW-068
+Eligible MUST return unblocked queued changes not held back by earlier blocked
+changes, in queue order. Empty or entirely waiting queues MUST return an empty
+result without an error.
+
+### FLOW-069
+Eligible MUST omit a later change targeting the same module as an earlier
+blocked change.
+
+### FLOW-070
+Eligible MUST omit a later change whose module depends directly or transitively
+on an earlier blocked change's module.
+
+### FLOW-071
+When a later change has a nonempty Interface section, Eligible MUST omit it if
+an earlier blocked change's module depends directly or transitively on its
+module. With an empty Interface, that dependency change MUST remain eligible
+unless another blocking rule applies.
+
+### FLOW-072
+For each candidate, Eligible MUST apply the blocking rules to the graph
+projected through that candidate, including preceding queued set edits and its
+own set edits.
 
 ## Decisions
 

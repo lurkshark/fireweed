@@ -296,23 +296,14 @@ func Start(root, target string) (model.State, error) {
 	if e = hard(project.Check(root)); e != nil {
 		return model.State{}, e
 	}
-	q, e := project.Queue(root)
+	q, e := Eligible(root)
 	if e != nil {
 		return model.State{}, e
 	}
 	if len(q) == 0 {
-		return model.State{}, errors.New("P01: empty queue")
-	}
-	ch := project.Change{}
-	for _, candidate := range q {
-		if str(candidate.Document.Frontmatter["blocked"]) == "" {
-			ch = candidate
-			break
-		}
-	}
-	if ch.Path == "" {
 		return model.State{}, errors.New("P01: no eligible change")
 	}
+	ch := q[0]
 	if target != "" && target != ch.Slug && target != ch.Path && target != filepath.Base(ch.Path) {
 		return model.State{}, errors.New("P01: change is not eligible queue head")
 	}
