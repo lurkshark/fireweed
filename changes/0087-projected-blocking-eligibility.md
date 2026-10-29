@@ -1,7 +1,10 @@
 ---
+audit_rounds: 0
 bases:
     FLOW-011: b6ee6f47
 module: workflow
+phase: audit
+run: 20261029T062431-4c1534c8cb30c988af955056
 ---
 
 
@@ -26,26 +29,26 @@ in disposable lifecycle code. No app/runner wiring in this dependency change.
 
 ## Added
 
-### new:eligible-queue-order
+### FLOW-068
 Eligible MUST return unblocked queued changes not held back by earlier blocked
 changes, in queue order. Empty or entirely waiting queues MUST return an empty
 result without an error.
 
-### new:same-module-wait
+### FLOW-069
 Eligible MUST omit a later change targeting the same module as an earlier
 blocked change.
 
-### new:dependent-wait
+### FLOW-070
 Eligible MUST omit a later change whose module depends directly or transitively
 on an earlier blocked change's module.
 
-### new:interface-dependency-wait
+### FLOW-071
 When a later change has a nonempty Interface section, Eligible MUST omit it if
 an earlier blocked change's module depends directly or transitively on its
 module. With an empty Interface, that dependency change MUST remain eligible
 unless another blocking rule applies.
 
-### new:projected-blocking-graph
+### FLOW-072
 For each candidate, Eligible MUST apply the blocking rules to the graph
 projected through that candidate, including preceding queued set edits and its
 own set edits.
@@ -97,3 +100,7 @@ below five minutes, full below fifteen. No new phase-write exception or drill.
 Runner wiring and actual CLI continuation immediately follow application;
 status explanations, approval skipping, from-attempt resume, Questions,
 agent-commit undo, usage/time stops and remaining kinds/bounds remain deferred.
+
+## Provenance
+
+- evals 2026-10-29T06:38:26.56226Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=283 failing=13 passing=270
