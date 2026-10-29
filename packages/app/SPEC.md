@@ -251,22 +251,24 @@ reject extra positional arguments and unsupported options with corrective U01
 and exit 2; --allow-unmerged MUST be rejected for unrelated implemented commands.
 
 ### APP-076
-Plain next MUST identify the applied change or empty queue on stdout after
-successful runner completion.
+Plain next MUST identify the applied change or empty queue after successful
+runner completion. On a clean usage stop it MUST name the held change and show
+the wait/budget reason with instructions for resuming it.
 
 ### APP-077
-next MUST return exit 0 for an applied change or empty queue, exit 1 for runner
-execution or lifecycle failure, and exit 2 for usage or configuration-loading
-failure.
+next MUST return exit0 for an applied change or empty queue, exit1 for ordinary
+runner execution or lifecycle failure, exit2 for usage or configuration errors,
+and exit3 for a clean usage stop.
 
 ### APP-078
 next failure diagnostics MUST retain existing cause codes from wrapped
 dependency errors and include a corrective action.
 
 ### APP-079
-next --json MUST emit schema 1 with object data containing change, run, phase
-and empty on success, or null data with code/message diagnostics on failure.
-It MUST leave stderr empty.
+next --json MUST emit schema1 and leave stderr empty. It MUST use object data
+containing change, run, phase and empty on success or a clean usage stop, with
+a nonempty reason reporting completed wait, next wait and budget on a stop.
+On failure it MUST use null data with code/message diagnostics.
 
 ### APP-080
 run MUST discover the nearest ancestor fireweed.yaml and invoke runner.Run for
@@ -284,22 +286,26 @@ flag is present, using false by default.
 
 ### APP-083
 After successful runner completion, plain run MUST identify applied changes
-and their count on stdout, including whether the queue is empty or Max left
-queued work.
+and their count, including whether the queue is empty or Max left queued work.
+On a clean usage stop it MUST retain the applied names/count and show the
+wait/budget reason with instructions for resuming.
 
 ### APP-084
-run MUST return exit 0 for successful queue completion, Max termination or an
-empty queue, exit 1 for runner execution or lifecycle failure, and exit 2 for
-usage or configuration-loading failure.
+run MUST return exit0 for successful queue completion, Max termination or an
+empty queue, exit1 for execution or lifecycle failure including any earlier
+blocked change, exit2 for usage or configuration errors, and exit3 for a clean
+usage stop.
 
 ### APP-085
 run failure diagnostics MUST retain existing cause codes from wrapped
 dependency errors and include a corrective action.
 
 ### APP-086
-run --json MUST emit schema 1 with object data containing an applied array of
-change/run/phase summaries, empty and limited flags on success, or null data
-with code/message diagnostics on failure. It MUST leave stderr empty.
+run --json MUST emit schema1 and leave stderr empty. It MUST use object data
+containing applied change/run/phase summaries, empty and limited on success or
+a clean usage stop, with a nonempty reason reporting completed wait, next wait
+and budget on a stop. On failure it MUST use null data with code/message
+diagnostics.
 
 ### APP-087
 start <change> --from-attempt N MUST discover the project root and invoke
