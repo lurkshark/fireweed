@@ -9,12 +9,12 @@ The approved 0076–0078 corrections passed isolated audits, full phase checks,
 fresh build/vet/race/static/history, the NEW doctor smoke and the same checkpoint
 subagent's scoped re-review. The owner-authorized push synchronized main with
 origin at `510cc91`. No pending change or claim remained at that boundary.
-**Applied since review: 2 after 0084–0085; the 0079–0083 checkpoint passed.** Earlier audit/phase deviations remain recorded;
+**Applied since review: 3 after 0084–0086; the 0079–0083 checkpoint passed.** Earlier audit/phase deviations remain recorded;
 the passing correction does not retroactively validate them. See the
 [correction report](reports/checkpoint-corrections-0076.md) and
 [checkpoint report](reports/checkpoint-0071-0075.md).
 
-## Active slice — NEW next exhaustion and saved work
+## Active slice — independent continuation through NEW run
 
 The reviewed 0079–0083 batch pushed to origin/main at `8aff1e4` after separate
 checkpoint PASS and fresh build/vet/race/static/history. Reuse the actual
@@ -34,13 +34,20 @@ The quote diagnosis, capacity retry and full phase history are in
 [the dependency report](reports/saved-attempt-blocking-0085.md). No pending
 change or claim remains, and no push after `8aff1e4` occurred.
 
-Next change 0086-exhausted-verification-blocking wires runner Next's exhausted
-verification to the new lifecycle Block operation, retaining cause/results. Close with actual NEW next returning 1 and
-inspect its saved attempt ref/work, restored checkout, state-only block and
-claim release. Return directly to this caller; no broad recovery library.
-Then projected blocking/independent continuation, saved-attempt resume,
-nonzero-agent retries, time/usage stops, remaining kinds and persistent bounds
-follow. Full design and all final ACCEPTANCE gates remain open; no new drill.
+0086 applied at c797264 with 213 full phase passes and isolated audit PASS.
+The actual NEW next --json exhaustion fixture exited 1 in 5.61s with its E01
+cause/ref, saved the final failed edits, restored a clean checkout, committed
+only block state and released the claim. SPEC stayed unapplied and no archive
+was created. Four fake calls, three branch commits and the saved commit were
+inspected; fixture removed. See [the CLI proof](reports/exhausted-next-0086.md).
+No governing change/claim remains and no push after `8aff1e4` occurred.
+
+Next: implement projected blocking eligibility in the lifecycle's read/Start
+selection so waiting changes can be skipped; return immediately to runner
+Next/Run and prove independent continuation through actual NEW run. Status
+views, saved-attempt resume, nonzero-agent retries, agent-commit undo, time/usage
+stops, remaining kinds and persistent bounds follow. Full design and all final
+ACCEPTANCE gates remain open; no new drill is authorized.
 
 ## Authority and deferred work
 
@@ -73,7 +80,7 @@ keep unchanged. History baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`;
 use explicit nonempty ranges. Set `GOCACHE=/tmp/fireweed-rebuild-cache`.
 
 NEW: `/Users/joel/Workspace/fireweed/bin/fireweed`, built at clean source
-`667e419fc75c337650d4befaf1954a1826e8d21e`, CGO disabled. Reuse the
+`c7972645f5079fd93c1267fbf5aee4eab7f21f5e`, CGO disabled. Reuse the
 [manual lifecycle](reports/manual-lifecycle.md) and corrected
 [doctor smoke](reports/doctor-setup-cli.md) evidence where valid.
 

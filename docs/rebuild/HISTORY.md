@@ -6,13 +6,14 @@ they are not current instructions, permissions or readiness claims. Resume from
 [PROGRESS.md](PROGRESS.md). Preserve evidence and checkpoint history; do not
 repeat passed work because an older entry calls it pending.
 
-## Applied changes through 0085
+## Applied changes through 0086
 
 [0079–0083 checkpoint](reports/checkpoint-0079-0083.md) PASS: separate subagent
 review and fresh build/vet/race/static/history at clean 6ce22e9; 38 new history
 commits have zero diagnostics. Actual NEW Next and bounded Run fixtures pass.
 The standing policy authorizes push and continuation; final gates remain open.
 
+- 0086 exhausted-verification-blocking — RUN-023/024, narrowed already-satisfied RUN-015; e0b5c8f/3af876d/c797264. Two genuine failures/211 passes → 213 full phase passes; isolated audit no findings. Existing assertions retained with changed terminal-state expectations; ten-line caller handoff. Actual NEW Go next exhaustion proof passes in 5.61s (expected exit 1), saving final work/ref and restoring state-only clean release; [report](reports/exhausted-next-0086.md).
 - 0085 saved-attempt-blocking — FLOW-063–067; initial evals 5b9076e, valid findings 188b41f, corrected evals a7134cf, passing audit 7875cce, impl 526f90e. Two genuine failures/266 passes → 268 full phase passes; 54 own pass. Native round 1/same run/IDs retained through two explicitly approved author revert recoveries; ignored mechanical passes remain invalid. Scoped FLOW-066 correction/re-audit passed. Public lifecycle dependency ready; runner/CLI exhaustion proof follows. [Report](reports/saved-attempt-blocking-0085.md).
 - 0084 verification-retries — RUN-015/021/022; ffa53d0/59d1a85/667e419. Five runtime failures/209 passes → 214 full phase passes; valid isolated audit no findings. Both capacity-stopped workers completed their separately approved single Sol/high retries. Initial mislocated audit is invalid/retained; fresh isolated audit accepted. Actual NEW next retry Go proof passes in 6.53s with retained work/feedback and claim cleanup; [report](reports/verification-retries-0084.md).
 - 0083 audit-passing-example — AST-028; initial evals/findings 2033c79/ee2d097, corrected phases 3aa5475/da2335d/6ce22e9. One runtime failure/460 passes → 461 full phase passes. Native findings round 1 retained through author clarification; isolated AST-028-only re-audit passed. Adds the accepted two-line example only; [report](reports/audit-example-0083.md). Five-application checkpoint review follows.

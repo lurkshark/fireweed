@@ -133,3 +133,9 @@ The [NEW verification-retry proof](reports/verification-retries-0084.md) adds
 partial R12/R17 evidence for phase attempt bounds, retained work and latest
 verification feedback. Saved/blocking recovery, independent continuation,
 resume, nonzero-agent retries, usage/time stops and final gates remain open.
+
+The [NEW next exhaustion proof](reports/exhausted-next-0086.md) adds partial R12
+and R17 evidence: exhausted work/ref retained, phase-base checkout restored,
+state-only block committed, original cause reported and claim released. Saved
+attempt resume, projected waiting/independent continuation and other recovery
+obligations remain open.
