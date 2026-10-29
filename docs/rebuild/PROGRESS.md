@@ -9,26 +9,25 @@ interrupts an agent in2.09s with original claim/run/phase/IDs/work and no commit
 next completes that same run in5.84s, later queue unchanged, clean/unclaimed.
 See [0097 proof](reports/run-time-cli-0097.md). Full design/ACCEPTANCE remain open.
 
-**Applied since review: 4 (0094–0097).** Separate Sol/high0089–0093 checkpoint
-passed at clean06a94e9 with build/vet/race/static/history. Last authorized push
-advanced origin/main82ef71d→28ced38. See [checkpoint](reports/checkpoint-0089-0093.md).
-No pending change or claim. [HISTORY](HISTORY.md) owns the applied ledger.
+**Applied since review: 5 (0094–0098).** Mandatory separate Sol/high quality/goal
+checkpoint plus fresh checks is pending. Last passing review0089–0093 was at
+06a94e9; last authorized push origin/main82ef71d→28ced38. No next change or push
+before this checkpoint passes. [HISTORY](HISTORY.md) owns the applied ledger.
 
-0096 runner time dependency archived at2f6870f with262 passes;0097 app --for
-archived atab7b317 with196 passes after one scoped APP-089 audit assertion
-correction/re-audit. Actual NEW stop/resume proof passed; fixture removed.
-Usage limit and earlier proofs remain valid; do not repeat them.
+0098 maintenance-start archived atd3272a3 with353 full passes and isolated
+FLOW-077 audit PASS. Actual NEW next completed a Go maintenance refactor in3.26s
+with one impl agent/one archive commit, retained SPEC/interface/evals and clean
+claim release. Fixture removed. See [0098 proof](reports/maintenance-cli-0098.md).
+0097 time stop and earlier usage/recovery proofs remain valid.
 
-## Next slice — maintenance through NEW
+## Current checkpoint and next slice
 
-The design sends maintenance changes (no spec edits/fixes/eval_fix) directly to
-implementation. NEW Start currently defaults every fresh change to evals.
-Establish that missing phase selection, then run actual NEW next on a small Go
-refactor: one implementation agent, no evals/audit phase, full checks and one
-archive commit, retained specs/interfaces/evals and clean claim release.
-This will be the fifth application: separate quality/goal subagent review plus
-appropriate fresh checks is required; PASS authorizes push and continuation.
-Remaining kinds/bounds, full command inventory and final gates stay open.
+Review0094–0098 quality and adherence to the full goal using a separate Sol/high
+subagent; run fresh build/vet/race/static/history on the clean reviewed source.
+PASS authorizes push to origin and continuation; any finding requires owner
+stop. No pending governing change or claim. Full design/ACCEPTANCE remain open.
+After PASS, continue remaining lifecycle kinds/bounds through NEW, starting with
+its missing eval_fix semantics. No new drill is authorized by this checkpoint.
 
 ## Authority and deferred work
 
@@ -61,8 +60,8 @@ Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
 recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-ab7b3173871fa6552a4aaadb75ef755a7c0c9b60, Go1.27.2 darwin/arm64, CGO disabled,
-vcs.modified=false. Optional stat-cache sandbox write warning did not fail build.
+d3272a385b1eb63fec5fe14df37a889505a5f3ea, Go1.27.2 darwin/arm64, CGO disabled,
+vcs.modified=false. This build completed without a warning.
 No new final race/vet/CI/doctor/fresh-checkout/drill/self-hosting claim follows
 from this slice; use the last checkpoint's exact source/range honestly.
 

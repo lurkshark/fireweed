@@ -167,3 +167,8 @@ R13/R17 evidence: run --for interrupts an active agent, returns exit3 with
 retained result/state/work, and next completes the same run with actual Go
 fail-first/pass reports. Fixture removed. Remaining kinds/bounds and final gates
 remain open.
+
+The [NEW maintenance proof](reports/maintenance-cli-0098.md) adds partial
+R06/R09/R17/R23 evidence: maintenance starts in impl, runs one agent, passes
+normal Go checks and archives in one commit with retained contracts and claim
+release. Eval-fix/regenerate kinds and other final obligations remain open.
