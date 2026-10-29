@@ -6,7 +6,7 @@ they are not current instructions, permissions or readiness claims. Resume from
 [PROGRESS.md](PROGRESS.md). Preserve evidence and checkpoint history; do not
 repeat passed work because an older entry calls it pending.
 
-## Applied changes through 0090
+## Applied changes through 0091
 
 [0079–0083 checkpoint](reports/checkpoint-0079-0083.md) PASS: separate subagent
 review and fresh build/vet/race/static/history at clean 6ce22e9; 38 new history
@@ -19,6 +19,7 @@ commits have zero diagnostics. The proposed push was rejected by automatic
 approval review under the latest explicit owner stop; nothing was pushed and
 further work awaits an owner decision.
 
+- 0091 saved-attempt-command — APP-087/088 and already-satisfied APP-009 qualification; 79a5849/7d51927/523f908. Ten genuine failures/168 passes → 178 full phase passes; isolated audit PASS. Actual NEW saved-attempt resume/correction/archive proof PASS in 2.86s, retaining run/phase/IDs/HEAD/ref and later independent work; fixture removed. Harness cwd repair occurred before any NEW call, preserving its existing unblock commit. [Report](reports/saved-resume-cli-0091.md).
 - 0090 saved-attempt-resume — FLOW-073–076; 8cbcac8/d6cb397/9affb4c/2d2c483/da16b68. Eight genuine failures/287 passes → ten failures/287 passes after scoped round-1 correction → 297 full phase passes. FLOW-074/075 findings corrected and isolated re-audit passed; same run/IDs, no exception. StartFromAttempt dependency ready; app flag/actual NEW proof immediately next. [Report](reports/saved-resume-api-0090.md).
 - 0089 independent-continuation — RUN-010/011/016/025/026; 423a9f7/5edbc1d/bf27309. Five genuine failures/212 passes → 217 full phase passes; isolated audit PASS, interfaces frozen. Actual NEW Go run proof PASS in 14.46s: Alpha saved/blocked, Beta waiting, Gamma applied; exit 1/E01/ref, seven calls/six commits, clean/unclaimed. Fixture retained for immediate saved-attempt resume proof. [Report](reports/independent-run-0089.md).
 - 0088 projected-blocking-eligibility — FLOW-011/068–072; 49fecf4/d5e477d/199f373. Fresh implementation from retained contracts only; 13 genuine failures/270 passes → 283 full phase passes, isolated audit no findings. Canonical projected selection and Start dependency ready; runner/CLI continuation still pending after fifth checkpoint. [Report](reports/projected-eligibility-0088.md).

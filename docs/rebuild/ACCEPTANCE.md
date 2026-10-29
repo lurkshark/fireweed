@@ -144,3 +144,9 @@ The [NEW independent-continuation proof](reports/independent-run-0089.md) adds
 partial R12/R17 evidence: projected waiting, independent application after a
 clean saved block, and retained exit1/cause/ref despite later successful work.
 Saved-attempt loading and remaining recovery/final obligations remain open.
+
+The [NEW saved-attempt resume proof](reports/saved-resume-cli-0091.md) adds
+partial R06/R12/R17 evidence: loading real saved work through start --from-attempt,
+retained lifecycle state/HEAD, correction and normal checked archive without
+repeating earlier successful phases. The fixture was removed after PASS.
+Agent-commit undo, usage/time stops and remaining final obligations stay open.
