@@ -92,7 +92,7 @@ func hookTimeout(snapshot project.Snapshot) time.Duration {
 	return 2 * time.Minute
 }
 
-func runLifecycle(command string, args []string, jsonMode, quick, full bool, withChange string, out, errOut io.Writer) int {
+func runLifecycle(command string, args []string, jsonMode, quick, full bool, withChange string, fromAttempt int, out, errOut io.Writer) int {
 	fail := func(status int, code, message string) int {
 		return cliFailure(status, jsonMode, out, errOut, code, message)
 	}
@@ -113,7 +113,12 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 	}
 	root := snapshot.Root
 	if command == "start" {
-		state, err := workflow.Start(root, args[0])
+		var state workflow.State
+		if fromAttempt > 0 {
+			state, err = workflow.StartFromAttempt(root, args[0], fromAttempt)
+		} else {
+			state, err = workflow.Start(root, args[0])
+		}
 		ds := reported(state.Diagnostics)
 		if err != nil {
 			return cliResponse(1, jsonMode, out, errOut, nil, "", lifecycleError(err, ds, "Use an eligible queued change and clear conflicting claims, then retry start."))

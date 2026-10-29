@@ -46,6 +46,8 @@ func Run(args []string, out, errOut io.Writer) int {
 	allowUnmerged := false
 	max := 0
 	maxSet := false
+	fromAttempt := 0
+	fromAttemptSet := false
 	withChange := ""
 	positional := make([]string, 0, len(args))
 	for i := 0; i < len(args); i++ {
@@ -77,6 +79,16 @@ func Run(args []string, out, errOut io.Writer) int {
 				return cliFailure(2, jsonMode || contains(args, "--json"), out, errOut, "U01", "--max requires a positive integer. Use run --max N.")
 			}
 			max, maxSet = value, true
+		} else if arg == "--from-attempt" {
+			if fromAttemptSet || i+1 >= len(args) {
+				return cliFailure(2, jsonMode || contains(args, "--json"), out, errOut, "U01", "--from-attempt requires one positive integer. Use start <change> --from-attempt N.")
+			}
+			i++
+			value, parseErr := strconv.Atoi(args[i])
+			if parseErr != nil || value <= 0 {
+				return cliFailure(2, jsonMode || contains(args, "--json"), out, errOut, "U01", "--from-attempt requires one positive integer. Use start <change> --from-attempt N.")
+			}
+			fromAttempt, fromAttemptSet = value, true
 		} else if arg == "--with-change" {
 			if i+1 >= len(args) || strings.HasPrefix(args[i+1], "-") {
 				return cliFailure(2, jsonMode || contains(args, "--json"), out, errOut, "U01", "--with-change requires a change value. Use coverage <module> --with-change <change>.")
@@ -122,6 +134,9 @@ func Run(args []string, out, errOut io.Writer) int {
 	if maxSet && command != "run" {
 		return fail("U01", "--max is only available with run. Use run --max N.")
 	}
+	if fromAttemptSet && command != "start" {
+		return fail("U01", "--from-attempt is only available with start. Use start <change> --from-attempt N.")
+	}
 	count := len(positional) - 1
 	var body string
 	var err error
@@ -164,7 +179,7 @@ func Run(args []string, out, errOut io.Writer) int {
 		}
 		return 0
 	case "start", "verify", "done", "context", "coverage":
-		return runLifecycle(command, positional[1:], jsonMode, quick, full, withChange, out, errOut)
+		return runLifecycle(command, positional[1:], jsonMode, quick, full, withChange, fromAttempt, out, errOut)
 	case "next":
 		if count != 0 {
 			return fail("U01", "next takes no arguments. Use next [--allow-unmerged] [--json].")

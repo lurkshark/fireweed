@@ -5,7 +5,7 @@ audit_rounds: 0
 bases:
     APP-009: e5447502
 module: app
-phase: impl
+phase: applied
 run: 20261029T094008-0aae0a3be7e6e86471f9d8d1
 ---
 
@@ -97,3 +97,4 @@ Checked IDs: APP-009, APP-087, APP-088
 
 - evals 2026-10-29T09:49:29.88999Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=178 failing=10 passing=168
 - audit 2026-10-29T09:51:42.953716Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-29T09:58:17.248825Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=178 failing=0 passing=178

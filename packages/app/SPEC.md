@@ -45,7 +45,9 @@ check MUST invoke project.Check and exit 0 when no error diagnostics remain, or 
 show <module> [ID] MUST return the current module document or selected item, using the whole-queue project projection with --projected.
 
 ### APP-009
-start <change> MUST discover the root, invoke workflow.Start and print first-step workflow.Context with exit 0, assigning IDs, run and phase without committing.
+Without --from-attempt, start <change> MUST discover the root, invoke
+workflow.Start and print first-step workflow.Context with exit 0, assigning IDs,
+run and phase without committing.
 
 ### APP-010
 verify [change] MUST invoke workflow with the actual invoking executable as Bin, returning 0 for success, 1 for failed checks or blocked state and 2 for usage or configuration errors; plain success names the resulting phase.
@@ -298,6 +300,17 @@ dependency errors and include a corrective action.
 run --json MUST emit schema 1 with object data containing an applied array of
 change/run/phase summaries, empty and limited flags on success, or null data
 with code/message diagnostics on failure. It MUST leave stderr empty.
+
+### APP-087
+start <change> --from-attempt N MUST discover the project root and invoke
+workflow.StartFromAttempt with the selected change and N. On success it MUST
+return workflow.Context in the existing plain or JSON start shape with exit 0.
+
+### APP-088
+For start, --from-attempt MUST require one positive integer and reject missing,
+noninteger, nonpositive or repeated values with corrective U01 and exit 2 before
+mutation. Its value diagnostics MUST describe valid start usage. Other commands
+MUST reject --from-attempt with U01 and exit 2.
 
 ## Decisions
 
