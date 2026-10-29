@@ -34,3 +34,6 @@ direct owner authorization covers push to origin/main and continuation; push
 alone resets no count. No new final CI/doctor/fresh-checkout/regeneration/
 self-hosting or full acceptance claim. Continue missing lifecycle kinds/bounds,
 starting with eval_fix. No new drill or phase-write exception is authorized.
+
+Authorized push succeeded: origin/main advanced28ced38→7e0da27, including
+the passing batch and checkpoint record.

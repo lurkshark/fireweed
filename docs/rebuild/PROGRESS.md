@@ -12,7 +12,7 @@ See [0097 proof](reports/run-time-cli-0097.md). Full design/ACCEPTANCE remain op
 **Applied since review: 0.** Separate Sol/high0094–0098 checkpoint PASS at clean
 9949dfe, with fresh build/vet/race/static/history (33 commits, zero history
 diagnostics). See [checkpoint](reports/checkpoint-0094-0098.md). Authorized push
-of this passing batch is next; current origin/main remains28ced38 until success.
+advanced origin/main28ced38→7e0da27 successfully.
 No pending governing change or claim. [HISTORY](HISTORY.md) owns the ledger.
 
 0098 maintenance-start archived atd3272a3 with353 full passes and isolated
@@ -23,7 +23,7 @@ claim release. Fixture removed. See [0098 proof](reports/maintenance-cli-0098.md
 
 ## Next slice — remaining lifecycle kinds and bounds
 
-After the authorized push, continue missing eval_fix semantics through NEW:
+Continue missing eval_fix semantics through NEW:
 correct frozen evals while preserving listed coverage, require all own evals
 pass, keep its phases audited and restrict implementation to the change file.
 Use coherent normal changes and an actual Go CLI fixture. Ordinary fixes,
