@@ -1,9 +1,11 @@
 ---
-audit_rounds: 0
+audit_pending:
+    - APP-089
+audit_rounds: 1
 bases:
     APP-084: 070b95dc
 module: app
-phase: audit
+phase: evals
 run: 20261029T165024-3fef7348df22114b38bedf67
 ---
 
@@ -93,3 +95,8 @@ normal fifth-change checkpoint remains in force.
 ## Provenance
 
 - evals 2026-10-29T17:05:15.902012Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=196 failing=10 passing=186
+- audit 2026-10-29T17:08:27.147018Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+
+## Audit
+
+- APP-089: "showing valid run usage" — checks only run and --for tokens, without usable command syntax or a duration value/placeholder.
