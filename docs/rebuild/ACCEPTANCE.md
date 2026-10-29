@@ -155,3 +155,9 @@ The [NEW agent-commit recovery proof](reports/agent-commits-0092.md) adds partia
 R12/R17 evidence: soft-reset phase-agent commits, retained work and visible
 recovery warnings, then normal checked archive. Usage/time stops, remaining kinds/
 bounds and full acceptance remain open.
+
+The [NEW usage-stop/resume proof](reports/usage-stop-cli-0095.md) adds partial
+R13/R17 evidence: same-attempt usage retry, shared wait budget across applied
+changes, exit3 with retained result/state/work, and later same-run completion.
+Actual Go reports prove fail-first/pass; fixture removed. Time --for and all
+unclosed inventory/final gates remain open.

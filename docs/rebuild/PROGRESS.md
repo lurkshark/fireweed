@@ -2,138 +2,84 @@
 
 ## Current handoff — 2026-10-29
 
-Manual lifecycle, Go/none/local init, doctor/guidance, bounded agent invocation,
-checked NEW next/run, verification retry and clean saved blocking work. NEW run
-now continues independent work while blocked dependencies wait, retaining exit 1
-and the blocking cause/ref. The full design and final ACCEPTANCE remain open.
+NEW now proves manual lifecycle, Go/none/local init and doctor/guidance, bounded
+next/run, verification retry, saved blocking, independent continuation,
+saved-attempt loading, agent-commit undo, and clean usage-budget stop with owned
+resume. The latest actual Go proof passes: Alpha waits/retries/applies, Beta
+retains its claim/work/run/ID at the shared budget, then next completes the same
+Beta run; Gamma stays queued, final tree/claims clean. See
+[0095 proof](reports/usage-stop-cli-0095.md). Full design/ACCEPTANCE remain open.
 
-**Applied since review: 1 (0094); separate 0089–0093 checkpoint PASS.** The separate Sol/high 0084–0088 checkpoint
-passed with build/vet/race/static/history at clean 940ef0e; its explicit new
-history extension passed 37 commits with zero diagnostics. The owner directly
-approved the reviewed push and the attachment's standing subagent-review/push
-process in this chat. The push advanced origin/main from 8aff1e4 to 82ef71d.
-See [the checkpoint](reports/checkpoint-0084-0088.md); its earlier rejected
-invocations never ran. Normal enforcement remains intact.
+**Applied since review: 2 (0094–0095).** Separate Sol/high 0089–0093 checkpoint
+passed at clean06a94e9 with build/vet/race/static and40-commit history extension
+(zero history diagnostics). Authorized push advanced origin/main82ef71d→28ced38.
+See [checkpoint](reports/checkpoint-0089-0093.md). No pending change or claim.
 
-## Next slice — usage-limit waits and clean budget stops
+0094 runner usage control applied at a720cf6: RUN-029–035 and qualifiedRUN-015,
+247 full passes after one native RUN-033 approved-policy assertion correction
+and isolated re-audit PASS. Fresh implementation corrected one attempt-count
+error and passed69 own cases. [Report](reports/usage-limit-runner-0094.md).
+0095 app caller applied at dbda392: APP-076/077/079/083/084/086,186 full passes,
+one scoped naming correction/re-audit, clean exit3/data/reason/guidance and C01
+config exit2. Actual NEW run/next proof passed6.25s/4.62s with eight agent calls
+and six phase commits. Fixture removed. [Report](reports/usage-stop-cli-0095.md).
+Earlier capabilities/evidence and the approved0093 abandon/eval_fix recovery
+remain in [HISTORY](HISTORY.md) and linked reports; do not repeat valid proofs.
 
-0089-independent-continuation applied at bf27309: RUN-010/011/016/025/026,
-423a9f7/5edbc1d/bf27309, five genuine failures/212 passes → 217 full phase
-passes, isolated assertion audit PASS. The pre-audit all-blocked assertion
-migration is recorded without hiding the original conflict. Public interfaces
-and frozen assertions stayed unchanged during impl. No governing pending
-change or claim remains. See [the report](reports/independent-run-0089.md).
+## Next slice — run --for time limit
 
-The actual NEW Go run proof passed in 14.46s: Alpha failed both impl attempts,
-saved wrong-2 and untracked work, restored its phase base and blocked; dependent
-Beta stayed unstarted; Gamma applied/archived. Seven fake-agent calls and six
-branch commits, exit1/E01/ref, empty stderr and clean unclaimed checkout were
-inspected. Alpha's spec remained unapplied. This closes independent continuation
-for this bounded scenario, not the whole recovery milestone.
-
-0090-saved-attempt-resume archived at da16b68 with all 297 cases passing.
-FLOW-074/075 were corrected and scoped re-audited in native round 1, retaining
-run/IDs without exception. See [the API report](reports/saved-resume-api-0090.md).
-0091-saved-attempt-command then archived at 523f908 with all 178 cases passing
-and isolated APP-009/087/088 audit PASS; ordinary start assertions were reused.
-
-The actual NEW resume proof passed in 2.86s. From the existing author unblock,
-start --from-attempt 1 restored Alpha's wrong-2 and saved work without new
-IDs/run/phase or a start commit, returned compact schema1 context, then accepted
-manual correction and archived through NEW done. Beta's queued document and
-Gamma's archive stayed identical. Ref/OID remained unchanged, no new agents ran,
-and final tree/claims were clean. The harness's removed-empty-cwd issue was
-repaired before any NEW call; the unblock commit was retained. The retained
-fixture and its tracker are now removed. See [the CLI proof](reports/saved-resume-cli-0091.md).
-
-0092-agent-commit-recovery archived at 96211bd with 231 full phase passes
-and isolated RUN-027/028 audit PASS. Actual NEW next passed in 6.12s: four
-fixture-agent commits were soft-reset away, staged/untracked work survived,
-three checked phases archived Alpha, three phase-tagged P05 warnings appeared,
-and tree/claims were clean. Fixture removed. See
-[the proof](reports/agent-commits-0092.md). No governing pending change or claim.
-
-0093-usage-limit-control did not apply. Its bounded implementation check had
-67 passes and one frozen assertion conflict: the ordinary applied-result helper
-required three invocations but the usage retry correctly retained four. The
-owner approved scoped discard/native abandonment, a fixture-only RUN-016
-`eval_fix`, then re-authoring with fresh implementation, including consecutive
-runner recovery changes. Native abandonment b08c4d0 released the claim and
-removed the uncommitted implementation. Only requirements/evals were retained;
-old implementation and logs are not implementation inputs. Prior two-round
-assertion audit reached PASS; abandonment addresses the frozen helper conflict,
-not an outstanding audit finding or a new round-limit exception.
-
-The approved fixture-only 0093-applied-result-count is now archived at 5b0e642:
-RUN-016, b8a9260/bd4d862/5b0e642, 231 full phase passes both times, 53 own
-passes, isolated assertion audit PASS. Only the exact-count helper refactor
-changed; ordinary three-step assertions/callers are preserved. See
-[the recovery report](reports/applied-result-count-0093.md).
-
-The separate Sol/high 0089–0093 quality/goal review passed at clean 06a94e9.
-Build/vet/race/static and a 40-commit explicit history extension passed with
-zero history diagnostics; unchanged warning explanations remain. See
-[the checkpoint](reports/checkpoint-0089-0093.md). The authorized push advanced
-origin/main from 82ef71d to 28ced38; continuation is authorized. No new final
-acceptance, CI/doctor, drill or self-hosting claim follows.
-
-0094-usage-limit-control archived at a720cf6: RUN-029–035 and qualified RUN-015,
-247 full phase passes after one native RUN-033 snapshot-policy correction and
-isolated scoped re-audit PASS. Fresh implementation corrected an attempt-count
-error and passed69 own cases. Existing evals/interfaces stayed frozen. See
-[the runner report](reports/usage-limit-runner-0094.md). P08 for three consecutive
-runner applications is covered by explicit approved recovery; next targets app.
-No pending change/claim; installed NEW remains checkpoint source06a94e9.
-
-Next: wire app clean usage exit3, retained JSON/plain results and resume guidance,
-map invalid usage policy to config exit2, then build NEW and run the prepared
-actual Go wait/success/shared-budget-stop/owned-resume proof. The fixture must
-retain earlier Alpha application and Beta claim/work/run/ID, then resume Beta
-without touching Gamma. No phase-write exception or new drill. Time --for,
-remaining kinds/bounds, the complete design and final ACCEPTANCE remain open.
+The design's --for6h option is still absent. Add only needed runner total-time
+control and caller parsing/classification, then close an actual NEW Go scenario:
+bounded run stops cleanly with exit3 while preserving held work/run/IDs, and a
+later invocation resumes. Include the design's usage-wait/time-limit interaction
+without waiting a full configured interval. Return to app as soon as the needed
+library API works. No unused general scheduler, extra process instrumentation,
+real-agent run/drill or speculative cleanup. Remaining kinds/bounds, command
+inventory, full design and every final acceptance gate stay open.
 
 ## Authority and deferred work
 
-- After five applied changes since review, obtain a separate subagent quality/
-  goal-adherence checkpoint. PASS authorizes pushing to origin and continuing;
-  any finding requires a human stop. Current direct approval explicitly covers
-  this process. Blocked-change stops, third-consecutive module/behavior
-  checkpoints, phase audit bounds and shared-base P07 remain enforced. Pushes
-  alone do not reset review counts; no ref/bound/count evasion is permitted.
-- Owner removed numeric spec-count caps for every change kind. Keep coherent
-  single-module changes, atomic specs and normal checks/audits. Completed global
-  spec splits and D006 existing-path migration need no rewrite. Add diagnostic
-  explanations only for justified emitted paths.
-- Do not reorganize workflow stub.go without a demonstrated feature need.
-- The only authorized contracts drill has unresolved independence limitations,
-  including dependent-internal reads. Strict regeneration acceptance remains
-  unverified; no gap fix, repeat or other-module drill is authorized. See
-  [the drill report](reports/contracts-drill.md).
-- Prior phase/audit deviations remain historical, not retroactively validated.
-  Both approved 0085 phase-write recovery exceptions are consumed. No new
-  exception exists. See [0085](reports/saved-attempt-blocking-0085.md),
-  [the progress assessment](reports/progress-review-after-0087.md), and
-  [HISTORY](HISTORY.md) for archived counts, recoveries and earlier authority.
+- Fifth application since review requires a separate subagent quality/goal
+  checkpoint plus appropriate checks. PASS authorizes push to origin and resume;
+  any finding requires owner stop. Direct trusted approval explicitly covers
+  this process. Blocked-change stops, consecutive module/behavior checks,
+  native audit rounds and shared-base P07 remain enforced. Push alone resets
+  no count; never change refs/bounds/specs/evals/counts to evade review.
+- The owner approved scoped0093 discard/native abandon, fixture-only RUN-016
+  eval_fix, fresh usage reauthoring and consecutive runner recovery. It is now
+  complete. Former P08 runner warning is gone after app caller; existing C01
+  embedded-recipe discovery and B02 CHK-055/16-case warnings remain explained.
+- No new phase-write exception. Both0085 scoped exceptions are consumed.
+  Historical deviations remain historical, not retroactively valid evidence.
+- Only the contracts drill was authorized and has unresolved independence
+  limitations, including dependent-internal reads. No gap fix, repeat or other
+  module drill is authorized. See [drill](reports/contracts-drill.md).
+- No workflow stub.go reorganization without demonstrated feature need.
+  No numeric affected-spec cap; keep coherent single-module changes, atomic
+  requirements and normal enforcement. Completed global splits/D006 migration
+  need no rewrite. Add diagnostic explanations only for justified emitted paths.
 
 ## Fixed execution context
 
 Controller: /Users/joel/Workspace/fireweed/.fireweed/bin/fireweed-bootstrap,
-0.1.0 source 7f925190878e38fc38f30d16bb1cf47aca098cf7, SHA-256
-f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f; keep
-unchanged. Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85;
-use explicit nonempty ranges and extend the recorded valid portions.
-GOCACHE=/tmp/fireweed-rebuild-cache.
+0.1.0 source7f925190878e38fc38f30d16bb1cf47aca098cf7, SHA-256
+f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f; unchanged.
+Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
+recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-06a94e95c3bc4a82d74c7799031cb738eff5b7d2, Go1.27.2 darwin/arm64, CGO disabled,
-vcs.modified=false. Reuse valid earlier lifecycle/setup/CLI/checkpoint evidence;
-no fresh final CI/doctor/fresh-checkout/drill/self-hosting claim follows.
+dbda392145c7c23f41dbb6f645deda048b8c4284, Go1.27.2 darwin/arm64, CGO disabled,
+vcs.modified=false. Optional stat-cache sandbox write warning did not fail build.
+No new final race/vet/CI/doctor/fresh-checkout/drill/self-hosting claim follows
+from these two changes; use the last checkpoint's exact source/range honestly.
 
-Real workers and separate assertion auditors use codex exec --ephemeral
+Workers and separate assertion auditors use codex exec --ephemeral
 --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"'
--s workspace-write {prompt}. Coordinate native start/context/done; workers
-never commit. Auditors run in isolated snapshots with change, projected specs,
-evals and permitted public interfaces/rules, never implementation, SYSTEM,
-history or outside files; inspect complete command logs. Record coordinator
-native advancement honestly as manual and retain actual CLI logs. Do not use
-native automatic audit dispatch after the documented input/phase deviations.
+-s workspace-write {prompt}. Context before every step; workers never commit.
+Auditors run in isolated snapshots with change/projected specs/evals/public
+interfaces/rules, no SYSTEM/implementation/history/outside access or code
+execution/writes. Inspect complete command logs and remove snapshots. Native
+coordinator provenance is manual with real CLI logs retained. Do not use native
+automatic audit dispatch after the historical input/phase deviations. Never use
+bootstrap source/tests, rebuild-v1, abandoned/deleted/saved implementation or old
+worker logs as oracles. Regeneration/drill bounds remain unchanged.
