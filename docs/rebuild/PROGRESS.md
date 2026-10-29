@@ -14,7 +14,7 @@ the passing correction does not retroactively validate them. See the
 [correction report](reports/checkpoint-corrections-0076.md) and
 [checkpoint report](reports/checkpoint-0071-0075.md).
 
-## Active slice — bounded NEW run
+## Active slice — NEW verification retries
 
 The authorized single Sol/high audit retry passed. 0080 applied at a11d713 with
 159 full phase cases passing; no pending change or claim remains at that boundary.
@@ -49,7 +49,12 @@ Retries/saved attempts, blocking/independent continuation, resume, time/usage
 stops and remaining kinds follow the runnable queue path. No NEW unattended
 real-agent execution before the bounded fake-agent run passes. Full design and
 final ACCEPTANCE gates remain open; drill deferrals and normal bounds remain.
-The reviewed checkpoint push is the next authorized operation.
+The reviewed batch pushed successfully to origin/main at 8aff1e4. The next
+change is 0084-verification-retries: bounded retries after failed verification,
+with retained work and last-output feedback, through the existing NEW next/run
+path. Close this slice with an actual NEW next whose first implementation is
+wrong and second succeeds. Saved attempts/blocking, nonzero-agent retries and
+usage/time stops remain subsequent work.
 
 ## Authority and deferred work
 
