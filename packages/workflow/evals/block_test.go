@@ -3,9 +3,11 @@ package evals_test
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
 
@@ -33,6 +35,32 @@ func readFile(t *testing.T, root, name string) string {
 		t.Fatal(err)
 	}
 	return string(b)
+}
+
+func assertBlockDocumentOnlyAddsReason(t *testing.T, approved, blocked, reason string) {
+	t.Helper()
+	before, err := contracts.ParseDocument(approved)
+	if err != nil {
+		t.Fatalf("parse approved change: %v", err)
+	}
+	after, err := contracts.ParseDocument(blocked)
+	if err != nil {
+		t.Fatalf("parse blocked change: %v", err)
+	}
+	if _, exists := before.Frontmatter["blocked"]; exists {
+		t.Fatal("fixture change was already blocked")
+	}
+	want := make(map[string]any, len(before.Frontmatter)+1)
+	for key, value := range before.Frontmatter {
+		want[key] = value
+	}
+	want["blocked"] = reason
+	if !reflect.DeepEqual(after.Frontmatter, want) {
+		t.Errorf("block changed approved frontmatter: got %#v, want %#v", after.Frontmatter, want)
+	}
+	if strings.TrimSpace(after.Body) != strings.TrimSpace(before.Body) {
+		t.Errorf("block changed approved Markdown body: got %q, want %q", after.Body, before.Body)
+	}
 }
 
 func assertBlockReleased(t *testing.T, root string, r workflow.BlockResult, reason string) {
@@ -121,6 +149,7 @@ func Test_FLOW_063_FLOW_064_FLOW_065_FLOW_066_FLOW_067_BlockSavesHeldEvalsWorkAn
 	if !strings.Contains(blocked, "### ALP-003") || !strings.Contains(blocked, started.Run) || !strings.Contains(blocked, "phase: evals") || !strings.Contains(blocked, "blocked: "+reason) || !strings.Contains(blocked, "Users need a revised alpha value.") {
 		t.Errorf("block commit lost assigned/author state: %s", blocked)
 	}
+	assertBlockDocumentOnlyAddsReason(t, approved, blocked, reason)
 	if got := readFile(t, root, "packages/alpha/evals/current_test.go"); got != "original eval\n" {
 		t.Errorf("tracked checkout not restored: %q", got)
 	}
@@ -167,6 +196,7 @@ func Test_FLOW_066_BlockImplPreservesCommittedEvalsAndAudit(t *testing.T) {
 	if got := readFile(t, root, "changes/0001-manual.md"); !strings.Contains(got, "No findings; checked ALP-001") || !strings.Contains(got, "blocked: implementation attempts exhausted") {
 		t.Errorf("impl block lost committed audit state: %s", got)
 	}
+	assertBlockDocumentOnlyAddsReason(t, committedChange, readFile(t, root, "changes/0001-manual.md"), "implementation attempts exhausted")
 	if got := readFile(t, root, "packages/alpha/evals/committed_test.go"); got != "committed eval\n" {
 		t.Errorf("impl block lost committed eval: %q", got)
 	}
