@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: assets
+phase: audit
+run: 20261029T181904-9eb88dd4f65008635fa9f934
 ---
 
 
@@ -23,15 +26,15 @@ audit scope/convergence/example and worker no-commit instructions.
 
 ## Added
 
-### new:eval-fix-evals-guidance
+### AST-029
 The evals playbook MUST instruct eval_fix workers to correct only evals, retain
 coverage of listed IDs and require all module evals to pass instead of fail first.
 
-### new:eval-fix-audit-guidance
+### AST-030
 The audit playbook MUST instruct eval_fix auditors to check that corrected tests
 still assert the listed specs.
 
-### new:eval-fix-impl-guidance
+### AST-031
 The impl playbook MUST instruct eval_fix workers to edit only the current change
 file, leaving implementation unchanged.
 
@@ -65,3 +68,7 @@ isolated audit, clean NEW build and actual CLI guidance check. Own under5m,
 full under15m; do not raise bounds. This is the second consecutive eval-fix
 behavior change and completes its guidance follow-up; no third continuation
 is authorized by this change.
+
+## Provenance
+
+- evals 2026-10-29T18:22:15.264704Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=569 failing=3 passing=566
