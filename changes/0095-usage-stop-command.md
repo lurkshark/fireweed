@@ -10,7 +10,7 @@ bases:
     APP-084: 357a4318
     APP-086: def1e432
 module: app
-phase: audit
+phase: impl
 run: 20261029T150558-9c8afdd02cdb5e6f83345c7e
 ---
 
@@ -123,7 +123,9 @@ normal checkpoint/P07 policy continues (one applied since review before this).
 - evals 2026-10-29T15:22:41.433517Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=186 failing=7 passing=179
 - audit 2026-10-29T15:26:02.700575Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 - evals 2026-10-29T15:31:27.566944Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=186 failing=7 passing=179
+- audit 2026-10-29T15:34:17.862576Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 
 ## Audit
 
-- APP-076: "name the held change" — the plain-stop case checks only next, also present in the required wait reason, rather than a distinct change identifier.
+No findings
+Checked IDs: APP-076
