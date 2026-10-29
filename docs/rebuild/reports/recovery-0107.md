@@ -75,3 +75,21 @@ Owner-authorized phase exception consumed by revert 41886128290babe59320719d5054
 invalid audit9ec2165. Run20261029T211014-c172b18434a8e46b0f036ac7 and FLOW-087/088
 retained in committed audit phase. Resume and full-clause submission next; require
 phase evals/audit_rounds1/pendingFLOW-087 before any correction worker.
+
+## Tested second recovery — 2026-10-29
+
+Full raw-sentence submission again became mechanical impl/round0 atb2616c9;
+post-Done guard caught it before a worker. Owner authorized isolated diagnosis.
+Three disposable CLI probes found raw multiline and flattened full-sentence
+quotes discarded; an exact physical-line quote persisted evals/round1/pendingID.
+No configured audit command invoked; no bootstrap source/tests read. Main stayed
+unchanged, all diagnostic fixtures/claims removed. Evidence:
+/tmp/fireweed-0107-audit-diagnosis{,-commands}.json. Initial fixture hook syntax
+was corrected before lifecycle work; deterministic probes prove mechanics only.
+
+Owner then explicitly answered "Approve tested 0107 recovery". Native release
+and one NEW scoped phase-write exception reverted onlyb2616c9 as f58bef7ebc5a3781bc61d331f85adfd0fd0dced6.
+Same run and FLOW-087/088 retained in audit. This second0107 exception is consumed;
+prior4188612 remains historical. Re-submit exact physical first line with the
+original reachability finding and require evals/round1/pendingFLOW-087 before
+a worker. Invalid mechanical audit commits are not independent quality passes.
