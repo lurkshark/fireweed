@@ -9,7 +9,7 @@ The approved 0076–0078 corrections passed isolated audits, full phase checks,
 fresh build/vet/race/static/history, the NEW doctor smoke and the same checkpoint
 subagent's scoped re-review. The owner-authorized push synchronized main with
 origin at `510cc91`. No pending change or claim remained at that boundary.
-**Applied since review: 4 after 0079–0082.** Earlier audit/phase deviations remain recorded;
+**Applied since review: 5 after 0079–0083; checkpoint review pending.** Earlier audit/phase deviations remain recorded;
 the passing correction does not retroactively validate them. See the
 [correction report](reports/checkpoint-corrections-0076.md) and
 [checkpoint report](reports/checkpoint-0071-0075.md).
@@ -32,16 +32,18 @@ empty stderr; nine checked phase commits, real Go fail-first/pass, provenance
 and claim cleanup were inspected. The owned fixture was removed. See
 [the bounded-run proof](reports/bounded-run-cli.md).
 
-0083-audit-passing-example addresses the observed P09 smoke mismatch: the audit
-playbook does not show the separate-line passing submission the product expects.
-Add only that accepted example so the runnable path can guide real agents.
-Its first isolated audit found the list clause incompletely asserted. Native
-findings commit ee2d097 returned to evals with audit_rounds 1; after native
-release, a separate author clarification makes the intended two-line field/list
-example explicit. Preserve the round count and re-review AST-028 only. This
-is the fifth pending application in the batch; obtain the standing subagent
-checkpoint review after it applies, before any next change or push.
+0083 applied at 6ce22e9: the passing audit example now shows No findings on
+one line and a populated Checked IDs field on the next. Native first findings
+returned to evals with audit_rounds 1; a separate author clarification preserved
+the run/round, corrected the assertion, and AST-028-only isolated re-audit passed.
+All 461 full phase cases pass; no pending change or claim remains. See
+[the audit-example record](reports/audit-example-0083.md).
 
+Five changes have applied since review. The standing separate subagent
+checkpoint review and fresh build/vet/race/static/history checks are underway;
+do not author another change or push before PASS. The NEW binary was built at
+clean 6ce22e9 with CGO disabled and vcs.modified=false. Full acceptance remains
+open.
 Retries/saved attempts, blocking/independent continuation, resume, time/usage
 stops and remaining kinds follow the runnable queue path. No NEW unattended
 real-agent execution before the bounded fake-agent run passes. Full design and
@@ -79,7 +81,7 @@ keep unchanged. History baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`;
 use explicit nonempty ranges. Set `GOCACHE=/tmp/fireweed-rebuild-cache`.
 
 NEW: `/Users/joel/Workspace/fireweed/bin/fireweed`, built at clean source
-`58351b2d4f024cd3b8c5aec9be72685430cf4a3f`, CGO disabled. Reuse the
+`6ce22e9e9d618e7c5c4451f48b3f1b522ab4cf08`, CGO disabled. Reuse the
 [manual lifecycle](reports/manual-lifecycle.md) and corrected
 [doctor smoke](reports/doctor-setup-cli.md) evidence where valid.
 

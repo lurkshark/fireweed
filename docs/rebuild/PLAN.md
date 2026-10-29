@@ -9,7 +9,7 @@ live state and authorizations. [SYSTEM.md](../../SYSTEM.md) owns guardrails;
 ## Current route to a usable product
 
 The manual lifecycle passed. Init/doctor and bounded agent invocation now exist;
-NEW next completes one checked change; bounded run does not yet exist. The approved checkpoint corrections and scoped re-review passed and pushed.
+NEW next completes one checked change, and bounded run passes its actual Go queue fixture. The approved checkpoint corrections and scoped re-review passed and pushed.
 Build the next CLI outcome,
 using the existing lifecycle and invocation primitive.
 
@@ -23,8 +23,8 @@ using the existing lifecycle and invocation primitive.
 | Remaining lifecycle kinds and bounds | The same CLI path handles fixes, eval_fix, maintenance/regenerate and enforces audit/approval bounds for manual and unattended use. | Relevant NEW scenarios, including ordinary approval rejection without --allow-unmerged, plus linked-worktree claims and persisted bounds. Reuse existing assertions where valid. |
 | Remaining surface and delivery | Complete design commands/options and all final gates. | ACCEPTANCE inventory and completion gates; one focused design review, scoped fixes and valid evidence. |
 
-The first two execution slices are the immediate implementation focus after the
-completed corrections. Later rows retain Milestone 2 and final obligations;
+The one-change and bounded-queue execution slices have passed. Recoverable
+execution is the next focus after the five-change checkpoint. Later rows retain Milestone 2 and final obligations;
 they are not prerequisites for wiring the first usable next/run path. No NEW
 unattended real-agent execution before the bounded fake-agent run passes.
 
