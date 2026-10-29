@@ -36,7 +36,8 @@ release and clean tree were inspected; the fixture was removed. The external
 verifier's over-specific output assertion was corrected against the same
 completed fixture, without a product change or another execution.
 
-Next: exhausted verification work must be saved on an attempt ref, checkout
+Next change 0085-saved-attempt-blocking: exhausted verification work must be
+saved on an attempt ref, checkout
 restored, and a state-only block committed with claim release. Add only the
 needed lifecycle primitive, return promptly to its runner caller and close
 with an actual NEW next exhaustion fixture. Then projected blocking with
