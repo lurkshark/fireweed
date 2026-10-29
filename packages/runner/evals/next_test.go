@@ -80,6 +80,17 @@ printf '%s' "$attempt" > "$attempt_file"
 printf '%s' "$3" > "$1/worker-$phase.prompt"
 printf '%s' "$3" > "$1/worker-$phase-$attempt.prompt"
 printf '%s|%s|%s\n' "$phase" "$PWD" "$FIREWEED_BIN" >> "$1/invocations"
+case "$2/$phase" in
+  noedit/evals|exhaust-impl/impl)
+    if [ "$attempt" -eq 1 ]; then
+      git rev-parse HEAD > "$1/$phase-phase-head"
+      git for-each-ref --format='%(refname)' refs/fireweed/claims > "$1/$phase-claim"
+      cp changes/0001-next.md "$1/$phase-held-change"
+    else
+      git rev-parse HEAD > "$1/$phase-final-head"
+    fi
+    ;;
+esac
 if [ "$2" = exit ]; then printf 'partial worker output'; printf 'worker failure' >&2; exit 9; fi
 if [ "$2" = noedit ]; then printf 'no edit'; exit 0; fi
 if [ "$2" = retry-both ] && [ "$phase" = evals ] && [ "$attempt" -eq 1 ]; then
@@ -421,36 +432,105 @@ func Test_RUN_013_RUN_014_CompleteSpecChange(t *testing.T) {
 	}
 }
 
-func Test_RUN_015_InvocationAndVerificationFailureRetainPhase(t *testing.T) {
-	for _, mode := range []string{"exit", "noedit"} {
-		t.Run(mode, func(t *testing.T) {
-			f := newNextFixture(t, true, true, mode)
-			before := nextGit(t, f.root, "rev-parse", "HEAD")
-			r, err := f.run(false)
-			wantSteps := 1
-			if mode == "noedit" {
-				wantSteps = 2
-			}
-			if err == nil || len(r.Steps) != wantSteps {
-				t.Errorf("failure = %#v, %v", r, err)
-			}
-			want := "partial worker output"
-			if mode == "noedit" {
-				want = "no edit"
-			}
-			for i, step := range r.Steps {
-				if step.Phase != "evals" || step.Role != "worker" || step.Agent.Stdout != want || (mode == "exit" && (step.Agent.ExitCode != 9 || step.Agent.Stderr != "worker failure")) {
-					t.Errorf("captured invocation %d = %#v", i, step)
-				}
-			}
-			if got := len(nextInvocations(t, f)); got != wantSteps {
-				t.Errorf("agent calls = %d, want %d", got, wantSteps)
-			}
-			state, currentErr := workflow.Current(f.root, "next")
-			if currentErr != nil || state.Phase != "evals" || state.Run == "" || nextGit(t, f.root, "rev-parse", "HEAD") != before {
-				t.Errorf("failure advanced phase: %#v, %v", state, currentErr)
-			}
-		})
+func Test_RUN_015_InvocationFailureRetainsHeldPhase(t *testing.T) {
+	f := newNextFixture(t, true, true, "exit")
+	before := nextGit(t, f.root, "rev-parse", "HEAD")
+	r, err := f.run(false)
+	if err == nil || len(r.Steps) != 1 {
+		t.Errorf("invocation failure: error=%v steps=%d, want 1", err, len(r.Steps))
+	}
+	for i, step := range r.Steps {
+		if step.Phase != "evals" || step.Role != "worker" || step.Agent.Stdout != "partial worker output" || step.Agent.ExitCode != 9 || step.Agent.Stderr != "worker failure" {
+			t.Errorf("captured invocation %d = %#v", i, step)
+		}
+	}
+	if got := len(nextInvocations(t, f)); got != 1 {
+		t.Errorf("agent calls = %d, want 1", got)
+	}
+	state, currentErr := workflow.Current(f.root, "next")
+	if currentErr != nil || state.Phase != "evals" || state.Run == "" || r.State.Phase != "evals" || r.State.Run != state.Run || nextGit(t, f.root, "rev-parse", "HEAD") != before {
+		t.Errorf("invocation failure advanced phase: currentErr=%v currentPhase=%q resultPhase=%q runPreserved=%t", currentErr, state.Phase, r.State.Phase, r.State.Run == state.Run)
+	}
+	if claim := nextGit(t, f.root, "for-each-ref", "--format=%(refname)", "refs/fireweed/claims"); claim != "refs/fireweed/claims/next" || state.ClaimOID == "" {
+		t.Errorf("invocation failure lost claim: ref=%q claimOIDPresent=%t", claim, state.ClaimOID != "")
+	}
+}
+
+func nextAssertExhaustedBlock(t *testing.T, f nextFixture, r runner.NextResult, err error, phase, before string, wantPhaseCommits int) string {
+	t.Helper()
+	phaseHead := strings.TrimSpace(nextRead(t, f.logDir, phase+"-phase-head"))
+	if finalHead := strings.TrimSpace(nextRead(t, f.logDir, phase+"-final-head")); finalHead != phaseHead {
+		t.Errorf("fixture %s HEAD changed across attempts: first=%s final=%s", phase, phaseHead, finalHead)
+	}
+	if claim := strings.TrimSpace(nextRead(t, f.logDir, phase+"-claim")); claim != "refs/fireweed/claims/next" {
+		t.Errorf("fixture lacked held claim at %s: %q", phase, claim)
+	}
+	if got := nextGit(t, f.root, "rev-list", "--count", before+".."+phaseHead); got != fmt.Sprint(wantPhaseCommits) {
+		t.Errorf("fixture %s phase commits = %s, want %d", phase, got, wantPhaseCommits)
+	}
+	held := nextRead(t, f.logDir, phase+"-held-change")
+	if !strings.Contains(held, "phase: "+phase) || !strings.Contains(held, "run: "+r.State.Run) || !strings.Contains(held, "### ALP-002") {
+		t.Error("fixture held phase lacked expected phase, run or assigned ID")
+	}
+	if parents := strings.Fields(nextGit(t, f.root, "rev-list", "--parents", "-n", "1", "HEAD")); len(parents) != 2 || parents[1] != phaseHead {
+		t.Errorf("block commit parents = %d, want held %s HEAD", len(parents)-1, phase)
+	}
+	if paths := nextGit(t, f.root, "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"); paths != nextChange {
+		t.Errorf("block commit paths = %q, want state only", paths)
+	}
+	if status := nextGit(t, f.root, "status", "--porcelain", "-uall"); status != "" {
+		t.Errorf("blocked checkout dirty: %q", status)
+	}
+	if claim := nextGit(t, f.root, "for-each-ref", "--format=%(refname)", "refs/fireweed/claims"); claim != "" {
+		t.Errorf("blocked claim retained: %q", claim)
+	}
+	if _, currentErr := workflow.Current(f.root, "next"); currentErr == nil {
+		t.Error("blocked change still held")
+	}
+	blocked := nextRead(t, f.root, nextChange)
+	if !strings.Contains(blocked, "phase: "+phase) || !strings.Contains(blocked, "run: "+r.State.Run) || !strings.Contains(blocked, "### ALP-002") || !strings.Contains(blocked, "blocked:") {
+		t.Error("block document lost phase, run, assigned ID or reason")
+	}
+	reason, _ := r.State.Change.Document.Frontmatter["blocked"].(string)
+	if r.State.Phase != phase || r.State.Run == "" || len(r.State.Change.Added) != 1 || r.State.Change.Added[0].ID != "ALP-002" || r.State.ClaimOID != "" || r.State.Head != nextGit(t, f.root, "rev-parse", "HEAD") || r.State.Snapshot.Root != f.root || strings.TrimSpace(reason) == "" {
+		t.Errorf("returned block state: phase=%q runPresent=%t assignedID=%t claimReleased=%t headMatches=%t snapshotMatches=%t blocked=%q", r.State.Phase, r.State.Run != "", len(r.State.Change.Added) == 1 && r.State.Change.Added[0].ID == "ALP-002", r.State.ClaimOID == "", r.State.Head == nextGit(t, f.root, "rev-parse", "HEAD"), r.State.Snapshot.Root == f.root, reason)
+	}
+	ref := "refs/fireweed/attempts/next/1"
+	if err == nil || !strings.Contains(err.Error(), ref) {
+		t.Errorf("exhaustion error does not identify %s: %v", ref, err)
+	}
+	if oid := nextGit(t, f.root, "for-each-ref", "--format=%(objectname)", ref); oid == "" {
+		t.Errorf("saved attempt ref absent: %s", ref)
+		return ""
+	} else if kind := nextGit(t, f.root, "cat-file", "-t", oid); kind != "commit" {
+		t.Errorf("attempt ref kind = %q, want commit", kind)
+	}
+	return ref
+}
+
+func Test_RUN_023_RUN_024_DefaultEvalsExhaustionBlocks(t *testing.T) {
+	f := newNextFixture(t, true, true, "noedit")
+	before := nextGit(t, f.root, "rev-parse", "HEAD")
+	r, err := f.run(false)
+	if err == nil || !strings.Contains(err.Error(), "P2-01: no fail-first case for ALP-002") {
+		t.Errorf("evals exhaustion cause = %v", err)
+	}
+	if len(r.Steps) != 2 {
+		t.Errorf("evals exhaustion steps = %d, want 2", len(r.Steps))
+	}
+	for i, step := range r.Steps {
+		if step.Phase != "evals" || step.Role != "worker" || step.Agent.Stdout != "no edit" || step.Agent.ExitCode != 0 || step.Agent.Stderr != "" {
+			t.Errorf("captured invocation %d = %#v", i, step)
+		}
+	}
+	if got := len(nextInvocations(t, f)); got != 2 {
+		t.Errorf("agent calls = %d, want 2", got)
+	}
+	ref := nextAssertExhaustedBlock(t, f, r, err, "evals", before, 0)
+	if ref != "" {
+		if saved := nextGit(t, f.root, "show", ref+":"+nextChange); !strings.Contains(saved, "phase: evals") || !strings.Contains(saved, "### ALP-002") || strings.Contains(saved, "blocked:") {
+			t.Error("saved evals attempt lost held unblocked change")
+		}
 	}
 }
 
@@ -532,7 +612,7 @@ func Test_RUN_021_ConfiguredThreeAttempts(t *testing.T) {
 	}
 }
 
-func Test_RUN_015_RUN_021_ExhaustionRetainsCauseResultsAndPhase(t *testing.T) {
+func Test_RUN_023_RUN_024_ImplExhaustionSavesWorkAndBlocks(t *testing.T) {
 	f := newNextFixture(t, true, true, "exhaust-impl")
 	before := nextGit(t, f.root, "rev-parse", "HEAD")
 	r, err := f.run(false)
@@ -540,28 +620,33 @@ func Test_RUN_015_RUN_021_ExhaustionRetainsCauseResultsAndPhase(t *testing.T) {
 		t.Errorf("exhaustion cause = %v", err)
 	}
 	if len(r.Steps) != 4 {
-		t.Fatalf("exhaustion steps = %#v", r.Steps)
+		t.Fatalf("exhaustion steps = %d, want 4", len(r.Steps))
 	}
 	for i, want := range []struct{ phase, role, output string }{
 		{"evals", "worker", "worker-evals"}, {"audit", "audit", "auditor"},
 		{"impl", "worker", "worker-impl-1"}, {"impl", "worker", "worker-impl-2"},
 	} {
 		step := r.Steps[i]
-		if step.Phase != want.phase || step.Role != want.role || step.Agent.Stdout != want.output || step.Agent.ExitCode != 0 {
+		if step.Phase != want.phase || step.Role != want.role || step.Agent.Stdout != want.output || step.Agent.Stderr != "" || step.Agent.ExitCode != 0 {
 			t.Errorf("captured step %d = %#v", i, step)
 		}
 	}
 	if got := len(nextInvocations(t, f)); got != 4 {
 		t.Errorf("agent calls = %d, want 4", got)
 	}
-	state, currentErr := workflow.Current(f.root, "next")
-	if currentErr != nil || state.Phase != "impl" || r.State.Phase != "impl" || state.Run == "" {
-		t.Errorf("exhaustion advanced phase: result=%#v current=%#v err=%v", r.State, state, currentErr)
+	ref := nextAssertExhaustedBlock(t, f, r, err, "impl", before, 2)
+	if ref != "" {
+		if got := nextGit(t, f.root, "show", ref+":packages/alpha/internal/value.go"); !strings.Contains(got, `return "wrong"`) {
+			t.Errorf("saved implementation value = %q", got)
+		}
+		if got := nextGit(t, f.root, "show", ref+":packages/alpha/internal/retained.go"); !strings.Contains(got, "RETAINED_IMPL_WORK") {
+			t.Errorf("saved retained work = %q", got)
+		}
 	}
-	if got := nextGit(t, f.root, "rev-list", "--count", before+"..HEAD"); got != "2" {
-		t.Errorf("exhaustion phase commits = %s, want evals and audit only", got)
+	if got := nextRead(t, f.root, "packages/alpha/internal/value.go"); !strings.Contains(got, `return "old"`) {
+		t.Errorf("restored implementation value = %q", got)
 	}
-	if !strings.Contains(nextRead(t, f.root, "packages/alpha/internal/retained.go"), "RETAINED_IMPL_WORK") {
-		t.Error("exhaustion discarded earlier work")
+	if _, statErr := os.Stat(filepath.Join(f.root, "packages/alpha/internal/retained.go")); !os.IsNotExist(statErr) {
+		t.Errorf("retained work remains in checkout: %v", statErr)
 	}
 }

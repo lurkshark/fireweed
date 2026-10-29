@@ -1,9 +1,12 @@
 ---
 already_satisfied:
     - RUN-015
+audit_rounds: 0
 bases:
     RUN-015: b44edba6
 module: runner
+phase: audit
+run: 20261029T055120-7a331d675361e12d225d4c11
 ---
 
 
@@ -27,12 +30,12 @@ verification cause. Preserve app's wrapped-cause classification and output.
 
 ## Added
 
-### new:exhausted-step-block
+### RUN-023
 For exhausted phase verification with the worktree's approved claim and an
 unchanged HEAD, Next MUST save and block the step through the lifecycle,
 leaving a clean unclaimed checkout and a state-only block commit.
 
-### new:blocked-next-result
+### RUN-024
 After that blocking succeeds, Next MUST return the blocked lifecycle State and
 ordered captured invocations without changing the run, assigned IDs or current
 phase. Its error MUST retain the last verification cause and identify the saved
@@ -82,3 +85,7 @@ Use public APIs, temporary Git identities, bounded hooks/fake agents; no special
 instrumentation, bootstrap/deleted-code/saved-attempt oracle or broad refactor.
 Own Verify below five minutes, full below fifteen. Separate isolated assertion
 audits remain required. No further phase-write exception is authorized.
+
+## Provenance
+
+- evals 2026-10-29T06:03:45.650988Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=213 failing=2 passing=211
