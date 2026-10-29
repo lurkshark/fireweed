@@ -42,8 +42,8 @@ was created. Four fake calls, three branch commits and the saved commit were
 inspected; fixture removed. See [the CLI proof](reports/exhausted-next-0086.md).
 No governing change/claim remains and no push after `8aff1e4` occurred.
 
-Next: implement projected blocking eligibility in the lifecycle's read/Start
-selection so waiting changes can be skipped; return immediately to runner
+Next change 0087-projected-blocking-eligibility adds canonical lifecycle
+eligibility/Start selection so waiting changes can be skipped; return immediately to runner
 Next/Run and prove independent continuation through actual NEW run. Status
 views, saved-attempt resume, nonzero-agent retries, agent-commit undo, time/usage
 stops, remaining kinds and persistent bounds follow. Full design and all final
