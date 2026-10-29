@@ -32,3 +32,15 @@ type Result struct {
 	Reports     map[string]checks.Report
 	Diagnostics []project.Diagnostic
 }
+
+type BlockRequest struct {
+	Root   string
+	Change string
+	Reason string
+}
+
+type BlockResult struct {
+	State      State
+	AttemptRef string
+	AttemptOID string
+}

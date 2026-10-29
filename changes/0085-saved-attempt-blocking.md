@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: workflow
+phase: audit
+run: 20261029T043714-a528702cc3674dd30fe43e62
 ---
 
 
@@ -25,26 +28,26 @@ thin and all behavior disposable. No existing signatures change.
 
 ## Added
 
-### new:block-ownership
+### FLOW-063
 Block MUST require the calling worktree's current claim with unchanged approved
 metadata and phase. It MUST reject a changed HEAD rather than blocking a stale
 phase base.
 
-### new:save-step-attempt
+### FLOW-064
 Block MUST save the held step's tracked and untracked work as a commit at the
 next unused positive refs/fireweed/attempts/<slug>/<n>, preserving prior attempt
 refs. BlockResult MUST identify that ref and its commit OID.
 
-### new:restore-step-checkout
+### FLOW-065
 After saving the attempt, Block MUST restore the step's tracked files, untracked
 files and index to the phase base, removing the step's edits from the checkout.
 
-### new:block-state-commit
+### FLOW-066
 Block MUST commit only the held change's assigned IDs, run, current phase and
 requested blocked reason over the phase base. The block commit MUST preserve
 the approved author and already-committed audit content and exclude step work.
 
-### new:release-blocked-claim
+### FLOW-067
 On successful blocking, Block MUST release the current claim and return the
 blocked State with no held ClaimOID. The resulting working tree MUST be clean.
 
@@ -85,3 +88,7 @@ Workers never commit in this checkout, invoke controller lifecycle operations,
 change phase/counters/refs in this checkout, or edit protected docs/SPEC/other
 modules. Only the controller owns governing commits and phase advancement.
 Separate auditors receive isolated change/projected specs/evals/interfaces.
+
+## Provenance
+
+- evals 2026-10-29T05:08:52.313761Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=268 failing=2 passing=266
