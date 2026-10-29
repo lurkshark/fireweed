@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: runner
+phase: audit
+run: 20261029T020109-5ec3f2b5c9478ce3dff394f1
 ---
 
 
@@ -24,25 +27,25 @@ reuse the existing single-change execution path rather than duplicating it.
 
 ## Added
 
-### new:run-queue
+### RUN-016
 When single-change executions succeed, Run without a positive Max MUST
 continue until the queue is empty, returning each applied NextResult in queue
 order.
 
-### new:run-limit
+### RUN-017
 With a positive Max, Run MUST apply at most Max changes per invocation. A later
 Run invocation MUST continue the remaining queue without reapplying archived
 changes.
 
-### new:run-result
+### RUN-018
 On successful return, Run MUST set Empty when no queued changes remain and set
 Limited exactly when a positive Max stopped it with queued work remaining.
 
-### new:run-forward
+### RUN-019
 Run MUST supply its Root, Bin, AllowUnmerged and Timeout to single-change
 execution for every change it processes.
 
-### new:run-held-failure
+### RUN-020
 If single-change execution fails while the calling worktree still holds the
 change, Run MUST return the error with its cause and already-applied results
 retained, leaving later changes unstarted.
@@ -95,3 +98,7 @@ interfaces and other modules freeze in impl. Workers never commit or call
 controller start/done/next/run, edit phase/counters or protected docs. Coordinator
 uses native phase advancement and separate isolated Sol/high auditors. No new
 phase-write, bound, drill or push exception is authorized.
+
+## Provenance
+
+- evals 2026-10-29T02:10:13.23853Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=204 failing=7 passing=197

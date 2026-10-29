@@ -40,3 +40,17 @@ type NextResult struct {
 	Empty bool
 	Steps []StepResult
 }
+
+type RunRequest struct {
+	Root          string
+	Bin           string
+	AllowUnmerged bool
+	Timeout       time.Duration
+	Max           int
+}
+
+type RunResult struct {
+	Applied []NextResult
+	Empty   bool
+	Limited bool
+}
