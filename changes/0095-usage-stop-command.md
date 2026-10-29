@@ -1,4 +1,5 @@
 ---
+audit_rounds: 0
 bases:
     APP-076: 3733d712
     APP-077: 41f0abad
@@ -7,6 +8,8 @@ bases:
     APP-084: 357a4318
     APP-086: def1e432
 module: app
+phase: audit
+run: 20261029T150558-9c8afdd02cdb5e6f83345c7e
 ---
 
 
@@ -112,3 +115,7 @@ No bootstrap source/tests, rebuild-v1, deleted/abandoned implementation, old
 worker logs or saved attempts as oracles. No phase exception, delegation or
 drill. After archive, build NEW and run the prepared actual usage CLI fixture;
 normal checkpoint/P07 policy continues (one applied since review before this).
+
+## Provenance
+
+- evals 2026-10-29T15:22:41.433517Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=186 failing=7 passing=179
