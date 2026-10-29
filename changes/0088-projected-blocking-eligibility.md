@@ -3,7 +3,7 @@ audit_rounds: 0
 bases:
     FLOW-011: b6ee6f47
 module: workflow
-phase: audit
+phase: impl
 run: 20261029T073350-ddfa1c11d1b445d5ea90d50a
 ---
 
@@ -106,6 +106,12 @@ Reuse only the retained author requirements, public facade and public evals;
 recreate the implementation fresh. The next applied change reaches the fifth
 change checkpoint; do not wire runner before that required review.
 
+## Audit
+
+No findings
+Checked IDs: FLOW-011, FLOW-068, FLOW-069, FLOW-070, FLOW-071, FLOW-072
+
 ## Provenance
 
 - evals 2026-10-29T07:39:51.283538Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=283 failing=13 passing=270
+- audit 2026-10-29T07:41:57.956006Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
