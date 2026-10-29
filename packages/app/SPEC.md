@@ -330,6 +330,22 @@ and a nonempty reason naming the time limit. Plain output MUST include the
 applied count and resume guidance. JSON MUST use the existing schema1 run object
 with reason and empty/limited flags, leaving stderr empty.
 
+### APP-091
+release <change> MUST discover the nearest project root and invoke
+workflow.Release for the named change. On success it MUST print confirmation
+with exit0, preserving work, runtime state and HEAD while dropping only the
+owned claim.
+
+### APP-092
+release MUST return exit1 with the workflow cause code and corrective action
+when claim release fails, including missing or foreign claims. It MUST return
+exit2 with a corrective diagnostic for usage or project configuration errors.
+
+### APP-093
+release --json MUST emit schema1 with confirmation string data and empty
+diagnostics on success, or null data with code/message diagnostics on failure.
+It MUST leave stderr empty.
+
 ## Decisions
 
 [0069-project-initialization] Init accepts codex and claude presets as argv commands; other selections are shell command templates containing {prompt}, stored as strings for one-pass quoted substitution when execution is implemented. Local recipes use recipe.yaml metadata, recipe.md instructions and a files/ project-relative payload; none uses empty language defaults and a generic module scaffold.

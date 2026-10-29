@@ -96,7 +96,7 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 	fail := func(status int, code, message string) int {
 		return cliFailure(status, jsonMode, out, errOut, code, message)
 	}
-	if command == "start" || command == "context" {
+	if command == "start" || command == "context" || command == "release" {
 		if len(args) != 1 {
 			return fail(2, "U01", "Use "+command+" <change> with exactly one change.")
 		}
@@ -134,6 +134,13 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 		if err != nil {
 			return cliResponse(1, jsonMode, out, errOut, nil, "", lifecycleError(err, nil, "Use a change held by this worktree and retry context."))
 		}
+		return cliResponse(0, jsonMode, out, errOut, body, body, nil)
+	}
+	if command == "release" {
+		if err := workflow.Release(root, args[0]); err != nil {
+			return cliResponse(1, jsonMode, out, errOut, nil, "", lifecycleError(err, nil, "Use a change claimed by this worktree and retry release."))
+		}
+		body := fmt.Sprintf("Released %s\n", args[0])
 		return cliResponse(0, jsonMode, out, errOut, body, body, nil)
 	}
 	bin, err := os.Executable()
