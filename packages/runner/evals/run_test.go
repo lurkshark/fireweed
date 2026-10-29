@@ -22,6 +22,15 @@ var runModules = []struct{ name, prefix string }{{"alpha", "ALP"}, {"beta", "BET
 
 func newRunFixture(t *testing.T, queued int, unmerged, failBeta bool) runFixture {
 	t.Helper()
+	mode := "normal"
+	if failBeta {
+		mode = "fail-beta"
+	}
+	return newRunFixtureMode(t, queued, unmerged, mode)
+}
+
+func newRunFixtureMode(t *testing.T, queued int, unmerged bool, mode string) runFixture {
+	t.Helper()
 	root, err := filepath.EvalSymlinks(t.TempDir())
 	if err != nil {
 		t.Fatal(err)
@@ -30,14 +39,11 @@ func newRunFixture(t *testing.T, queued int, unmerged, failBeta bool) runFixture
 	if err != nil {
 		t.Fatal(err)
 	}
-	mode := "normal"
-	if failBeta {
-		mode = "fail-beta"
-	}
 	nextWrite(t, agents, "worker.sh", `#!/bin/sh
 held=''
 for file in changes/*.md; do
   [ -f "$file" ] || continue
+  [ -z "$(sed -n 's/^blocked: //p' "$file" | head -1)" ] || continue
   case "$(sed -n 's/^phase: //p' "$file" | head -1)" in evals|impl) held="$file"; break;; esac
 done
 [ -n "$held" ] || { echo 'no held change' >&2; exit 30; }
@@ -46,6 +52,7 @@ module=$(sed -n 's/^module: //p' "$held" | head -1)
 case "$module" in alpha) prefix=ALP;; beta) prefix=BET;; gamma) prefix=GAM;; *) exit 31;; esac
 printf '%s|%s|%s|%s\n' "$module" "$phase" "$PWD" "$FIREWEED_BIN" >> "$1/invocations"
 if [ "$2" = fail-beta ] && [ "$module" = beta ] && [ "$phase" = evals ]; then echo 'held beta failure' >&2; exit 17; fi
+if [ "$2" = exhaust-alpha ] && [ "$module" = alpha ] && [ "$phase" = evals ]; then printf 'alpha-no-edit'; exit 0; fi
 sleep 0.12
 case "$phase" in
   evals)
@@ -74,6 +81,7 @@ printf '%s-%s' "$module" "$phase"
 held=''
 for file in changes/*.md; do
   [ -f "$file" ] || continue
+  [ -z "$(sed -n 's/^blocked: //p' "$file" | head -1)" ] || continue
   if [ "$(sed -n 's/^phase: //p' "$file" | head -1)" = audit ]; then held="$file"; break; fi
 done
 [ -n "$held" ] || { echo 'no held audit' >&2; exit 33; }
@@ -228,6 +236,54 @@ func assertRunAgentLog(t *testing.T, f runFixture, want ...string) {
 	}
 }
 
+func runBlockedDependencyFixture(t *testing.T) runFixture {
+	t.Helper()
+	f := newRunFixtureMode(t, 3, false, "exhaust-alpha")
+	spec := nextRead(t, f.root, "packages/beta/SPEC.md")
+	nextWrite(t, f.root, "packages/beta/SPEC.md", strings.Replace(spec, "depends_on: []", "depends_on: [alpha]", 1))
+	nextCommit(t, f.root, "beta depends on alpha")
+	for _, d := range project.Check(f.root) {
+		if !d.Warning {
+			t.Fatalf("invalid dependent queue: %#v", d)
+		}
+	}
+	return f
+}
+
+func assertRunBlockedAlpha(t *testing.T, f runFixture, err error) {
+	t.Helper()
+	const cause = "P2-01: no fail-first case for ALP-002"
+	const ref = "refs/fireweed/attempts/alpha/1"
+	if err == nil || !strings.Contains(err.Error(), cause) || !strings.Contains(err.Error(), ref) {
+		t.Errorf("Run blocking error = %v, want verification cause and %s", err, ref)
+	}
+	if saved := nextGit(t, f.root, "for-each-ref", "--format=%(objectname)", ref); saved == "" {
+		t.Errorf("missing saved attempt %s", ref)
+	} else if kind := nextGit(t, f.root, "cat-file", "-t", saved); kind != "commit" {
+		t.Errorf("attempt ref holds %q", kind)
+	}
+	if blocked := nextRead(t, f.root, "changes/0001-alpha.md"); !strings.Contains(blocked, "blocked:") || !strings.Contains(blocked, "phase: evals") || !strings.Contains(blocked, "### ALP-002") {
+		t.Errorf("alpha block state = %q", blocked)
+	}
+	if claim := nextGit(t, f.root, "for-each-ref", "--format=%(refname)", "refs/fireweed/claims"); claim != "" {
+		t.Errorf("blocked run retained claim %q", claim)
+	}
+	if status := nextGit(t, f.root, "status", "--porcelain", "-uall"); status != "" {
+		t.Errorf("blocked run left dirty checkout %q", status)
+	}
+}
+
+func assertRunBetaWaiting(t *testing.T, f runFixture) {
+	t.Helper()
+	beta := nextRead(t, f.root, "changes/0002-beta.md")
+	if strings.Contains(beta, "run:") || strings.Contains(beta, "phase:") || strings.Contains(beta, "blocked:") {
+		t.Errorf("dependent beta was started: %q", beta)
+	}
+	if _, err := os.Stat(filepath.Join(f.root, "changes/archive/0002-beta.md")); !os.IsNotExist(err) {
+		t.Errorf("dependent beta archived: %v", err)
+	}
+}
+
 func Test_RUN_016_UnlimitedQueueOrder(t *testing.T) {
 	f := newRunFixture(t, 3, false, false)
 	r, err := runner.Run(context.Background(), f.request(0, false))
@@ -340,5 +396,40 @@ func Test_RUN_020_HeldFailureRetainsEarlierResults(t *testing.T) {
 	got := runInvocations(t, f)
 	if len(got) != 4 || got[3] != "beta|evals|"+f.root+"|/fixture/run-bin" {
 		t.Errorf("failure invocation order = %#v", got)
+	}
+}
+
+func Test_RUN_016_RUN_025_RUN_026_BlockThenApplyIndependent(t *testing.T) {
+	f := runBlockedDependencyFixture(t)
+	r, err := runner.Run(context.Background(), f.request(0, false))
+	assertRunBlockedAlpha(t, f, err)
+	assertRunApplied(t, f, r.Applied, "gamma")
+	assertRunBetaWaiting(t, f)
+	if q, queueErr := project.Queue(f.root); queueErr != nil || len(q) != 2 || q[0].Slug != "alpha" || q[1].Slug != "beta" {
+		t.Errorf("remaining queue = %#v, %v", q, queueErr)
+	}
+	if got := runInvocations(t, f); len(got) != 5 || got[0] != "alpha|evals|"+f.root+"|/fixture/run-bin" || got[1] != got[0] || got[2] != "gamma|evals|"+f.root+"|/fixture/run-bin" || got[3] != "gamma|audit|"+f.root+"|/fixture/run-bin" || got[4] != "gamma|impl|"+f.root+"|/fixture/run-bin" {
+		t.Errorf("blocked continuation agent calls = %#v", got)
+	}
+}
+
+func Test_RUN_025_RUN_026_PositiveMaxRetainsBlock(t *testing.T) {
+	f := runBlockedDependencyFixture(t)
+	nextWrite(t, f.root, "changes/0004-later.md", "---\nmodule: gamma\nbases: {}\n---\n\n## Motivation\nLater independent work.\n\n## Interface\n\n## Added\n\n### new:later\nGamma MUST return another value.\n\n## Modified\n\n## Removed\n\n## Decisions\n")
+	nextCommit(t, f.root, "later independent work")
+	for _, d := range project.Check(f.root) {
+		if !d.Warning {
+			t.Fatalf("invalid Max fixture: %#v", d)
+		}
+	}
+	r, err := runner.Run(context.Background(), f.request(1, false))
+	assertRunBlockedAlpha(t, f, err)
+	assertRunApplied(t, f, r.Applied, "gamma")
+	assertRunBetaWaiting(t, f)
+	if later := nextRead(t, f.root, "changes/0004-later.md"); strings.Contains(later, "run:") || strings.Contains(later, "phase:") {
+		t.Errorf("Max started later work: %q", later)
+	}
+	if got := runInvocations(t, f); len(got) != 5 {
+		t.Errorf("Max agent calls = %#v, want exhausted alpha then one applied gamma", got)
 	}
 }

@@ -254,6 +254,21 @@ func Test_RUN_010_EmptyQueue(t *testing.T) {
 	f.noAgent(t)
 }
 
+func Test_RUN_010_AllBlockedQueue(t *testing.T) {
+	f := newNextFixture(t, true, true, "normal")
+	change := nextRead(t, f.root, nextChange)
+	nextWrite(t, f.root, nextChange, strings.Replace(change, "module: alpha\n", "module: alpha\nblocked: human review\n", 1))
+	nextCommit(t, f.root, "block queue")
+	r, err := f.run(false)
+	if err != nil || !r.Empty || len(r.Steps) != 0 {
+		t.Errorf("all-blocked Next = %#v, %v", r, err)
+	}
+	if refs := nextGit(t, f.root, "for-each-ref", "refs/fireweed/claims"); refs != "" {
+		t.Errorf("all-blocked queue claimed change: %s", refs)
+	}
+	f.noAgent(t)
+}
+
 func Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents(t *testing.T) {
 	t.Run("unmerged", func(t *testing.T) {
 		f := newNextFixture(t, true, false, "normal")
@@ -292,19 +307,6 @@ func Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents(t *testing.T) {
 		if currentErr != nil || state.Change.Slug != "next" || state.Phase != "evals" {
 			t.Errorf("selected change = %#v, %v", state, currentErr)
 		}
-	})
-	t.Run("all_blocked", func(t *testing.T) {
-		f := newNextFixture(t, true, true, "normal")
-		change := nextRead(t, f.root, nextChange)
-		nextWrite(t, f.root, nextChange, strings.Replace(change, "module: alpha\n", "module: alpha\nblocked: human review\n", 1))
-		nextCommit(t, f.root, "block queue")
-		if _, err := f.run(false); err == nil {
-			t.Error("all-blocked queue accepted")
-		}
-		if refs := nextGit(t, f.root, "for-each-ref", "refs/fireweed/claims"); refs != "" {
-			t.Errorf("all-blocked queue claimed change: %s", refs)
-		}
-		f.noAgent(t)
 	})
 	t.Run("unapproved_archive_bound", func(t *testing.T) {
 		f := newNextFixture(t, true, true, "normal")
@@ -349,6 +351,50 @@ func Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents(t *testing.T) {
 			t.Errorf("allowed start = %#v, %v", state, currentErr)
 		}
 	})
+}
+
+func Test_RUN_011_WaitingHeadSelectsIndependent(t *testing.T) {
+	f := runBlockedDependencyFixture(t)
+	request := runner.NextRequest{Root: f.root, Bin: "/fixture/run-bin", Timeout: 20 * time.Second}
+	blocked, blockErr := runner.Next(context.Background(), request)
+	if blockErr == nil || !strings.Contains(blockErr.Error(), "P2-01: no fail-first case for ALP-002") || blocked.State.Change.Slug != "alpha" || blocked.State.Phase != "evals" {
+		t.Fatalf("fixture alpha did not block: %#v, %v", blocked, blockErr)
+	}
+	eligible, err := workflow.Eligible(f.root)
+	if err != nil || len(eligible) != 1 || eligible[0].Slug != "gamma" {
+		t.Fatalf("fixture eligible queue = %#v, %v", eligible, err)
+	}
+	result, err := runner.Next(context.Background(), request)
+	if err != nil || result.Empty || result.State.Change.Slug != "gamma" || result.State.Phase != "applied" {
+		t.Errorf("Next past waiting beta = %#v, %v", result, err)
+	}
+	assertRunBetaWaiting(t, f)
+}
+
+func Test_RUN_010_EntirelyWaitingQueue(t *testing.T) {
+	f := runBlockedDependencyFixture(t)
+	request := runner.NextRequest{Root: f.root, Bin: "/fixture/run-bin", Timeout: 20 * time.Second}
+	blocked, blockErr := runner.Next(context.Background(), request)
+	if blockErr == nil || !strings.Contains(blockErr.Error(), "P2-01: no fail-first case for ALP-002") || blocked.State.Change.Slug != "alpha" || blocked.State.Phase != "evals" {
+		t.Fatalf("fixture alpha did not block: %#v, %v", blocked, blockErr)
+	}
+	if err := os.Remove(filepath.Join(f.root, "changes/0003-gamma.md")); err != nil {
+		t.Fatal(err)
+	}
+	nextCommit(t, f.root, "leave only waiting beta")
+	before := nextGit(t, f.root, "rev-parse", "HEAD")
+	invocations := runInvocations(t, f)
+	eligible, err := workflow.Eligible(f.root)
+	if err != nil || len(eligible) != 0 {
+		t.Fatalf("fixture entirely waiting queue = %#v, %v", eligible, err)
+	}
+	empty, err := runner.Next(context.Background(), request)
+	if err != nil || !empty.Empty || len(empty.Steps) != 0 {
+		t.Errorf("Next with entirely waiting queue = %#v, %v", empty, err)
+	}
+	if nextGit(t, f.root, "rev-parse", "HEAD") != before || strings.Join(runInvocations(t, f), "\n") != strings.Join(invocations, "\n") {
+		t.Error("entirely waiting Next changed HEAD or invoked an agent")
+	}
 }
 
 func Test_RUN_013_RUN_014_CompleteSpecChange(t *testing.T) {

@@ -1,9 +1,12 @@
 ---
+audit_rounds: 0
 bases:
     RUN-010: 8c04a67a
     RUN-011: a39d0f24
     RUN-016: 2d6deeca
 module: runner
+phase: audit
+run: 20261029T082745-ee6d49740ab2b5b8d2e2120f
 ---
 
 
@@ -27,12 +30,12 @@ RunResult.Applied continues to contain only applied changes.
 
 ## Added
 
-### new:continue-after-clean-block
+### RUN-025
 When single-change execution returns an error after successfully saving and
 blocking its change with a clean unclaimed checkout, Run MUST continue processing
 eligible changes. Run MUST exclude that blocked change from Applied.
 
-### new:blocked-run-error
+### RUN-026
 If a change was blocked during Run, Run MUST return an error when eligible work
 is exhausted or Max is reached. That error MUST retain a blocked change's
 verification cause and saved attempt ref.
@@ -90,3 +93,7 @@ commands, change refs/counters/runtime, edit SPEC/protected files/other modules,
 or read bootstrap source/tests, deleted code, saved implementations or rebuild-v1.
 Use the fixed Sol/high workers and isolated assertion auditor; no drill or new
 phase-write exception. Actual NEW Go-fixture proof follows application.
+
+## Provenance
+
+- evals 2026-10-29T08:40:13.802173Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=217 failing=5 passing=212
