@@ -9,12 +9,12 @@ The approved 0076–0078 corrections passed isolated audits, full phase checks,
 fresh build/vet/race/static/history, the NEW doctor smoke and the same checkpoint
 subagent's scoped re-review. The owner-authorized push synchronized main with
 origin at `510cc91`. No pending change or claim remained at that boundary.
-**Applied since review: 3 after 0084–0086; the 0079–0083 checkpoint passed.** Earlier audit/phase deviations remain recorded;
+**Applied since review: 4 after 0084–0087; stopped at the owner-requested review.** Earlier audit/phase deviations remain recorded;
 the passing correction does not retroactively validate them. See the
 [correction report](reports/checkpoint-corrections-0076.md) and
 [checkpoint report](reports/checkpoint-0071-0075.md).
 
-## Active slice — independent continuation through NEW run
+## Paused checkpoint — progress review after fixture correction
 
 The reviewed 0079–0083 batch pushed to origin/main at `8aff1e4` after separate
 checkpoint PASS and fresh build/vet/race/static/history. Reuse the actual
@@ -42,27 +42,26 @@ was created. Four fake calls, three branch commits and the saved commit were
 inspected; fixture removed. See [the CLI proof](reports/exhausted-next-0086.md).
 No governing change/claim remains and no push after `8aff1e4` occurred.
 
-0087-projected-blocking-eligibility passed its own 70 cases and isolated
-assertion audit, but full verification exposed a legacy runner fixture that
-assumes same-module work can start behind a blocked change. The owner approved
-an ordered recovery. Only its two uncommitted implementation edits were
-discarded; native abandon 3d65370 removed that change without rewriting history.
-Its author requirements, public interface and evals remain retained; no real
-implementation was retained for reuse.
+0087-projected-blocking-eligibility was natively abandoned at 3d65370 after
+its full gate exposed an incompatible legacy runner fixture. Only retained
+requirements/interface/evals are available for reuse; no discarded implementation
+may be used as an oracle. The owner-approved runner eval_fix then archived as
+0087-independent-blocked-fixture at 931c17f, with all 213 cases passing in both
+full phases and a valid isolated RUN-011 audit. Product behavior, interfaces,
+specs, assertions and coverage IDs are preserved. No pending files or claims
+remain. See [the correction](reports/independent-blocked-fixture-0087.md).
 
-Current change: 0087-independent-blocked-fixture, a normal runner eval_fix for
-RUN-011. It moves the prior blocked fixture to an independent module, preserving
-all assertions and IDs. The candidate passed under both legacy and new Start
-selection in an owned diagnostic copy, which was removed. No product/interface/
-spec change is authorized in this correction.
+**Stopped as explicitly requested after this archive.** The
+[current-progress review](reports/progress-review-after-0087.md) records working
+CLI capabilities, missing recovery/command behavior and evidence limits. Static
+checking and the new 31-commit history extension passed. Whole-root race/vet and
+final acceptance are not newly claimed. No push after `8aff1e4` occurred.
 
-**Latest owner checkpoint: stop immediately after this eval_fix completes and
-archives, then generate a current-progress review.** Do not re-author
-eligibility, start another change or push after that archive. This checkpoint
-overrides automatic continuation until the owner resumes work. Independent NEW
-run continuation remains unimplemented; retained eligibility contracts can be
-re-authored with a fresh implementation after review. Full design and all final
-ACCEPTANCE gates remain open; no new drill or phase-write exception exists.
+Do not re-author eligibility, start another change, push or run a drill until
+the owner resumes work. The four-change counter is not reset by generating this
+review. After resumption, the immediate outcome remains projected eligibility
+and independent continuation through actual NEW run; full design and all final
+ACCEPTANCE gates stay open. No phase-write exception is available.
 
 ## Authority and deferred work
 
