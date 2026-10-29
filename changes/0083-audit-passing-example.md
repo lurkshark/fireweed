@@ -4,7 +4,7 @@ audit_pending:
 audit_rounds: 1
 bases: {}
 module: assets
-phase: evals
+phase: audit
 run: 20261029T024648-f67119a09cc3fbd11b3cf937
 ---
 
@@ -67,6 +67,7 @@ a sixth change or evade P07. No new drill or phase-write exception is authorized
 
 - evals 2026-10-29T02:50:02.521195Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=461 failing=1 passing=460
 - audit 2026-10-29T02:59:02.911427Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- evals 2026-10-29T03:02:57.465506Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=461 failing=1 passing=460
 
 ## Audit
 
