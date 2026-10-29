@@ -22,7 +22,9 @@ var playbooks = map[string]string{
 	"author-change": `# Author change
 Read the design, SYSTEM.md and the module spec before writing a change. Give its Motivation a user-visible need or a clause of the design or SYSTEM.md; a probe showing a theoretical failure is insufficient. State each observable behavior at the module interface and keep the change focused. If a requirement costs more than it is worth, narrow or remove the spec and use already_satisfied for behavior the current implementation already meets. Do not commit during a worker step.`,
 	"evals": `# Write evals
-Read the change, projected spec and public interface. Add tests for every assigned added, modified or fixed spec ID in the evals zone. Exercise observable behavior through the public interface. Run the tests against the current implementation and record genuine fail-first evidence: at least one test for each ID must fail, unless the change marks it already_satisfied. Keep implementation out of this step and do not commit.`,
+Read the change, projected spec and public interface. Add tests for every assigned added, modified or fixed spec ID in the evals zone. Exercise observable behavior through the public interface. Run the tests against the current implementation and record genuine fail-first evidence: at least one test for each ID must fail, unless the change marks it already_satisfied. Keep implementation out of this step and do not commit.
+
+For eval_fix, correct only evals, retain coverage of listed IDs, and require all module evals to pass; fail-first is not required.`,
 	"audit": `# Audit evals
 Read the change, spec and evals only. Report only exact spec clauses with no test assertion; do not raise findings about helpers, fixtures, observers, unnamed edge cases or conventions. Quote each missing clause verbatim and name its spec ID. Re-audits must limit findings to IDs from the prior findings; passed IDs stay passed. If there are no findings, say so and list checked IDs. Edit only the change's Audit section and do not commit.
 
@@ -33,9 +35,13 @@ For a passing audit, use this example format:
 No findings
 Checked IDs: AST-009, AST-010
 
-Replace these illustrative IDs with the actual checked IDs.`,
+Replace these illustrative IDs with the actual checked IDs.
+
+For eval_fix, check that corrected tests still assert the listed specs.`,
 	"impl": `# Implement
-Read the change, projected spec, public interface and evals. Implement only the assigned behavior in the module's disposable code. Keep the public interface, evals, specs and protected files unchanged. Run fireweed verify to check the work; fireweed owns phase commits, so do not commit.`,
+Read the change, projected spec, public interface and evals. Implement only the assigned behavior in the module's disposable code. Keep the public interface, evals, specs and protected files unchanged. Run fireweed verify to check the work; fireweed owns phase commits, so do not commit.
+
+For eval_fix, edit only the current change file and leave implementation unchanged.`,
 	"regenerate": `# Regenerate
 Read the module spec, Decisions, public interface and evals. Rebuild disposable implementation files from those sources after the controller removes the old files. Run the module's evals and dependent evals through fireweed verify. Do not consult deleted code, prior implementations or history, and do not commit.`,
 }

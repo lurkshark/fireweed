@@ -98,6 +98,18 @@ The audit playbook MUST show a passing ## Audit example with No findings on one
 line and Checked IDs: plus at least two illustrative IDs on the next line. It
 MUST instruct the auditor to replace those with the actual checked IDs.
 
+### AST-029
+The evals playbook MUST instruct eval_fix workers to correct only evals, retain
+coverage of listed IDs and require all module evals to pass instead of fail first.
+
+### AST-030
+The audit playbook MUST instruct eval_fix auditors to check that corrected tests
+still assert the listed specs.
+
+### AST-031
+The impl playbook MUST instruct eval_fix workers to edit only the current change
+file, leaving implementation unchanged.
+
 ## Decisions
 
 [0014-go-setup-bundle] Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,
