@@ -10,7 +10,7 @@ An ordinary fix then proves real fail-first/pass through three checked phases.
 Both fixtures clean/unclaimed and removed. [0102 proofs](reports/regenerate-fixes-cli-0102.md).
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 5 (0099–0103), checkpoint BLOCK.** Separate Sol/high
+**Applied since review: 6 (0099–0104), checkpoint correction gate pending.** Separate Sol/high
 review at clean75f05f8 found mixed eval_fix/fixes can bypass fail-first. Build,
 vet, full race, static and28-commit history extension pass, but do not override
 that finding. See [checkpoint and correction proposal](reports/checkpoint-0099-0103.md).
@@ -20,7 +20,7 @@ Review count is not reset. No pending governing change or claim;
 applied ledger in [HISTORY](HISTORY.md).
 
 Valid eval-fix/regenerate/ordinary-fix proofs remain valid for their recorded
-inputs; mixed-kind rejection is uncovered.0103 release API passes374 native/
+inputs; 0104 now rejects mixed eval_fix/fixes/spec edits centrally as C07; its scoped re-audit and531 full cases pass. C07 explanation and actual NEW rejection proof remain pending.0103 release API passes374 native/
 102 own cases but its app caller/actual NEW proof remain pending. Full design
 and all final gates stay open.
 
