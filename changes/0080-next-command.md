@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: app
+phase: audit
+run: 20261029T000645-7551044ce491f3dfa364881d
 ---
 
 
@@ -22,29 +25,29 @@ Keep parsing, diagnostics and presentation in app internal implementation.
 
 ## Added
 
-### new:next-dispatch
+### APP-074
 next MUST discover the nearest ancestor fireweed.yaml and invoke runner.Next
 for that project, supplying the actual invoking executable as Bin.
 
-### new:next-options
+### APP-075
 next MUST accept --allow-unmerged, passing true only when present. It MUST
 reject extra positional arguments and unsupported options with corrective U01
 and exit 2; --allow-unmerged MUST be rejected for unrelated implemented commands.
 
-### new:next-plain-result
+### APP-076
 Plain next MUST identify the applied change or empty queue on stdout after
 successful runner completion.
 
-### new:next-exits
+### APP-077
 next MUST return exit 0 for an applied change or empty queue, exit 1 for runner
 execution or lifecycle failure, and exit 2 for usage or configuration-loading
 failure.
 
-### new:next-failure-detail
+### APP-078
 next failure diagnostics MUST retain existing cause codes from wrapped
 dependency errors and include a corrective action.
 
-### new:next-json
+### APP-079
 next --json MUST emit schema 1 with object data containing change, run, phase
 and empty on success, or null data with code/message diagnostics on failure.
 It MUST leave stderr empty.
@@ -99,3 +102,7 @@ never commit or call controller start/done/next/run, edit protected docs or
 phase/counters. Separate auditors receive isolated permitted snapshots and
 review exact unasserted spec clauses only. Normal bounds and checkpoint stops
 remain; no phase-write exception is authorized.
+
+## Provenance
+
+- evals 2026-10-29T00:13:50.625193Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=159 failing=6 passing=153
