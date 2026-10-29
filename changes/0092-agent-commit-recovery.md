@@ -2,7 +2,7 @@
 audit_rounds: 0
 bases: {}
 module: runner
-phase: audit
+phase: impl
 run: 20261029T100929-08538f37f6e35ed6a14eea8a
 ---
 
@@ -86,6 +86,12 @@ After application rebuild NEW and close the declared actual CLI proof before
 starting the next recovery mechanism. This is the fourth application since the
 passing checkpoint if successful; the standing fifth-change review still applies.
 
+## Audit
+
+No findings
+Checked IDs: RUN-027, RUN-028
+
 ## Provenance
 
 - evals 2026-10-29T10:19:32.422623Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=231 failing=2 passing=229
+- audit 2026-10-29T10:22:18.507642Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
