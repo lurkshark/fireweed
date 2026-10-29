@@ -34,7 +34,11 @@ and claim cleanup were inspected. The owned fixture was removed. See
 
 0083-audit-passing-example addresses the observed P09 smoke mismatch: the audit
 playbook does not show the separate-line passing submission the product expects.
-Add only that accepted example so the runnable path can guide real agents. This
+Add only that accepted example so the runnable path can guide real agents.
+Its first isolated audit found the list clause incompletely asserted. Native
+findings commit ee2d097 returned to evals with audit_rounds 1; after native
+release, a separate author clarification makes the intended two-line field/list
+example explicit. Preserve the round count and re-review AST-028 only. This
 is the fifth pending application in the batch; obtain the standing subagent
 checkpoint review after it applies, before any next change or push.
 

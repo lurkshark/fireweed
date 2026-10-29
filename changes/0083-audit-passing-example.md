@@ -28,9 +28,9 @@ the existing Playbook API; retain all previous audit-scope and re-audit guidance
 ## Added
 
 ### AST-028
-The audit playbook MUST show a passing ## Audit example with No findings and
-Checked IDs: followed by a list of IDs on separate lines, instructing the auditor
-to use the actual checked IDs.
+The audit playbook MUST show a passing ## Audit example with No findings on one
+line and Checked IDs: plus at least two illustrative IDs on the next line. It
+MUST instruct the auditor to replace those with the actual checked IDs.
 
 ## Modified
 
@@ -71,3 +71,18 @@ a sixth change or evade P07. No new drill or phase-write exception is authorized
 ## Audit
 
 - AST-028: "followed by a list of IDs on separate lines" — the checked-ID list clause is not fully asserted.
+
+## Author clarification after first finding
+
+The original wording was ambiguous about whether the IDs themselves should be
+on separate lines. The intended supported example separates No findings from
+the Checked IDs field and keeps the whole list on the latter line, as already
+used in the passing NEW next/run fixtures. The first eval overconstrained an
+empty Checked IDs label plus a bulleted list and asserted only one ID. Clarify
+the same required passing example and correct its eval during the native
+findings-to-evals round. No required guidance, ID or other behavior is removed.
+
+Native audit findings commit ee2d097 returned to evals; native release provided
+this clean author boundary. Preserve audit_rounds: 1, audit_pending AST-028, run
+and phase exactly as maintained by the controller. Re-review only AST-028. No
+replacement change, phase-write exception or bound reset is involved.
