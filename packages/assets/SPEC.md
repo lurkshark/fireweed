@@ -115,6 +115,10 @@ Explain MUST describe P10 as a non-blocking regenerate warning that no passing
 module drill is newer than its latest applied implementation. It MUST advise
 running a module drill and reviewing and committing its report.
 
+### AST-033
+Explain MUST describe C07 as including eval_fix combined with fixes or spec
+edits. It MUST advise separating eval-fix work from fix or spec changes.
+
 ## Decisions
 
 [0014-go-setup-bundle] Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,
