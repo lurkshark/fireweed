@@ -59,3 +59,9 @@ conditional on PASS, and any finding requires owner stop. An explicitly approved
 push with this finding recorded would free P07 for the scoped two-change
 correction gate; push alone resets no review count. No bound/ref/count change,
 phase exception, new drill or broad schema-hardening program is proposed.
+
+Owner explicitly approved: "Approve push and correction gate". The recorded
+batch/finding may now be pushed, followed by the two scoped corrections, native
+audits/full checks and scoped checkpoint re-review. Corrections are not yet
+implemented; review remains BLOCK until re-review passes. No general bound,
+phase-write or drill exception is granted.

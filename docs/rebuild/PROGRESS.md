@@ -14,8 +14,9 @@ Full design/ACCEPTANCE remain incomplete.
 review at clean75f05f8 found mixed eval_fix/fixes can bypass fail-first. Build,
 vet, full race, static and28-commit history extension pass, but do not override
 that finding. See [checkpoint and correction proposal](reports/checkpoint-0099-0103.md).
-No push or correction has started. Origin/main remains7e0da27; shared-base P07
-is at five. Review count is not reset. No pending governing change or claim;
+Owner explicitly approved pushing this batch with the finding recorded and the
+scoped two-change correction gate. Push is next; origin/main remains7e0da27
+until success. Review count is not reset. No pending governing change or claim;
 applied ledger in [HISTORY](HISTORY.md).
 
 Valid eval-fix/regenerate/ordinary-fix proofs remain valid for their recorded
@@ -23,16 +24,16 @@ inputs; mixed-kind rejection is uncovered.0103 release API passes374 native/
 102 own cases but its app caller/actual NEW proof remain pending. Full design
 and all final gates stay open.
 
-## Required owner checkpoint
+## Approved correction gate
 
-Approve a push with the finding recorded to free P07, then a scoped correction
-gate: project.Check rejects eval_fix mixed with fixes/spec edits using C07;
-assets explains that cause/action while retaining existing C07 behavior;
-independent audits/full checks and scoped checkpoint re-review follow. Standing
-push/continuation authority requires PASS, so it does not authorize this blocked
-batch. Do not change refs/bounds/counts to bypass this stop or start a sixth
-change. No new drill or phase-write exception is proposed. After a passing
-correction gate, return immediately to app release wiring/actual NEW proof.
+Direct owner reply: "Approve push and correction gate". Push the recorded batch
+and finding to free shared-base P07, then make exactly the scoped project mixed-
+kind validation and C07 explanation changes with independent audits/full checks.
+Use the same checkpoint reviewer for a scoped re-review. Push corrections and
+continue only on PASS; retain the five prior applications until the gate passes.
+This approval covers those correction applications beyond the normal five-
+change checkpoint. It changes no refs artificially, bounds, phase ownership or
+drill authority. After PASS, return immediately to app release wiring/NEW proof.
 
 ## Authority and deferred work
 
