@@ -9,7 +9,7 @@ The approved 0076–0078 corrections passed isolated audits, full phase checks,
 fresh build/vet/race/static/history, the NEW doctor smoke and the same checkpoint
 subagent's scoped re-review. The owner-authorized push synchronized main with
 origin at `510cc91`. No pending change or claim remained at that boundary.
-**Applied since review: 5 after 0079–0083; checkpoint review pending.** Earlier audit/phase deviations remain recorded;
+**Applied since review: 0; the 0079–0083 checkpoint passed.** Earlier audit/phase deviations remain recorded;
 the passing correction does not retroactively validate them. See the
 [correction report](reports/checkpoint-corrections-0076.md) and
 [checkpoint report](reports/checkpoint-0071-0075.md).
@@ -39,16 +39,17 @@ the run/round, corrected the assertion, and AST-028-only isolated re-audit passe
 All 461 full phase cases pass; no pending change or claim remains. See
 [the audit-example record](reports/audit-example-0083.md).
 
-Five changes have applied since review. The standing separate subagent
-checkpoint review and fresh build/vet/race/static/history checks are underway;
-do not author another change or push before PASS. The NEW binary was built at
-clean 6ce22e9 with CGO disabled and vcs.modified=false. Full acceptance remains
+The separate subagent checkpoint review returned PASS for 0079–0083. Fresh
+build/vet/race/static/history checks also passed at clean 6ce22e9; history covers
+38 new commits with zero diagnostics. The NEW binary has CGO disabled and
+vcs.modified=false. The standing push and continuation are authorized; see
+[the checkpoint report](reports/checkpoint-0079-0083.md). Full acceptance remains
 open.
 Retries/saved attempts, blocking/independent continuation, resume, time/usage
 stops and remaining kinds follow the runnable queue path. No NEW unattended
 real-agent execution before the bounded fake-agent run passes. Full design and
 final ACCEPTANCE gates remain open; drill deferrals and normal bounds remain.
-No new push occurred.
+The reviewed checkpoint push is the next authorized operation.
 
 ## Authority and deferred work
 

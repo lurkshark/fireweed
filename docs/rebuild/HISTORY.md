@@ -7,6 +7,12 @@ they are not current instructions, permissions or readiness claims. Resume from
 repeat passed work because an older entry calls it pending.
 
 ## Applied changes through 0083
+
+[0079–0083 checkpoint](reports/checkpoint-0079-0083.md) PASS: separate subagent
+review and fresh build/vet/race/static/history at clean 6ce22e9; 38 new history
+commits have zero diagnostics. Actual NEW Next and bounded Run fixtures pass.
+The standing policy authorizes push and continuation; final gates remain open.
+
 - 0083 audit-passing-example — AST-028; initial evals/findings 2033c79/ee2d097, corrected phases 3aa5475/da2335d/6ce22e9. One runtime failure/460 passes → 461 full phase passes. Native findings round 1 retained through author clarification; isolated AST-028-only re-audit passed. Adds the accepted two-line example only; [report](reports/audit-example-0083.md). Five-application checkpoint review follows.
 - 0082 run-command — APP-080–086; 0e17dae/8220c66/58351b2. Seven runtime failures/159 passes → 166 full phase passes; isolated Sol/high audit no findings. The diagnostic fixture was corrected/validated before freezing. Actual NEW Go queue --max/continuation/empty smoke passes with nine phase commits and claim cleanup; [report](reports/bounded-run-cli.md).
 - 0081 bounded-queue-execution — RUN-016–020; 4c8c330/b788753/6bdfb43. Seven runtime failures/197 passes → 204 full phase passes; isolated Sol/high audit no findings. Small independent Go queue, Max/continuation, Empty/Limited, request forwarding and held-error progress are covered; app wiring and actual NEW run proof follow.
