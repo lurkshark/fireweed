@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: workflow
+phase: audit
+run: 20261029T233903-c9fd8b6bf7425b01233b2e82
 ---
 
 
@@ -23,31 +26,31 @@ no new public model or process primitive.
 
 ## Added
 
-### new:abandon-effects
+### FLOW-089
 Abandon MUST undo the unapplied change's phase-commit effects identified by Commits and delete its pending change file in one commit, returning that commit's full object ID.
 
-### new:abandon-clean-tree
+### FLOW-090
 Abandon MUST reject a dirty working tree with P01 before changing files, HEAD or refs.
 
-### new:abandon-claim-ownership
+### FLOW-091
 Abandon MUST allow an unclaimed change or a claim owned by the calling worktree.
 It MUST reject a foreign claim with P02 before changing files, HEAD or refs.
 On success it MUST release the selected owned claim.
 
-### new:abandon-applied-eligibility
+### FLOW-092
 Abandon MUST reject an applied archived change with P01.
 After git revert returns that change to the pending queue, Abandon MUST allow dropping it under the same preconditions.
 
-### new:abandon-attempts
+### FLOW-093
 Abandon MUST retain saved attempt refs unchanged.
 
-### new:abandon-no-phase-assignment
+### FLOW-094
 The Abandon commit MUST not assign a new phase value.
 
-### new:abandon-id-reuse
+### FLOW-095
 After successful Abandon, its assigned but unapplied spec IDs MUST be available for subsequent Start allocation.
 
-### new:abandon-selectors
+### FLOW-096
 Abandon MUST accept the same unambiguous repository-relative path, filename and slug selectors as Commits, rejecting missing or ambiguous selectors with U02.
 
 ## Modified
@@ -80,3 +83,7 @@ matrices, per-spec convention instrumentation, other-module/protected edits,
 new process primitives or unrelated workflow reorganization. Workers never
 commit or advance phases. Interface/evals freeze before impl, separate restricted
 audit and native full checks; own under5m/full under15m with unchanged bounds.
+
+## Provenance
+
+- evals 2026-10-29T23:42:51.29465Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=402 failing=12 passing=390
