@@ -251,6 +251,25 @@ For each candidate, Eligible MUST apply the blocking rules to the graph
 projected through that candidate, including preceding queued set edits and its
 own set edits.
 
+### FLOW-073
+StartFromAttempt MUST resume a committed phase with the same clean-worktree,
+eligibility and claim-ownership preconditions as Start. It MUST preserve the
+existing run, phase and assigned IDs and leave HEAD unchanged.
+
+### FLOW-074
+StartFromAttempt MUST restore the saved step's modified, deleted and newly
+added files from refs/fireweed/attempts/<canonical-slug>/<attempt> into the
+working tree without reverting later independent changes.
+
+### FLOW-075
+While restoring saved worker-editable body sections for the resumed phase,
+StartFromAttempt MUST preserve the current change's approved author fields,
+runtime state and controller-written provenance.
+
+### FLOW-076
+StartFromAttempt MUST reject a non-positive attempt number or missing saved
+attempt ref with P01 before claiming or writing the change.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.

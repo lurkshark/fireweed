@@ -5,7 +5,7 @@ audit_pending:
 audit_rounds: 1
 bases: {}
 module: workflow
-phase: impl
+phase: applied
 run: 20261029T085817-dd0bc520b24864b5d616184a
 ---
 
@@ -107,3 +107,4 @@ Checked IDs: FLOW-074, FLOW-075
 - audit 2026-10-29T09:14:20.974825Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 - evals 2026-10-29T09:18:48.448129Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=297 failing=10 passing=287
 - audit 2026-10-29T09:22:57.290214Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-29T09:35:04.363256Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=297 failing=0 passing=297
