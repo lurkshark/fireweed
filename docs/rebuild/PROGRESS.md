@@ -9,27 +9,28 @@ interrupts an agent in2.09s with original claim/run/phase/IDs/work and no commit
 next completes that same run in5.84s, later queue unchanged, clean/unclaimed.
 See [0097 proof](reports/run-time-cli-0097.md). Full design/ACCEPTANCE remain open.
 
-**Applied since review: 0.** Separate Sol/high0094–0098 checkpoint PASS at clean
-9949dfe, with fresh build/vet/race/static/history (33 commits, zero history
-diagnostics). See [checkpoint](reports/checkpoint-0094-0098.md). Authorized push
-advanced origin/main28ced38→7e0da27 successfully.
-No pending governing change or claim. [HISTORY](HISTORY.md) owns the ledger.
+**Applied since review: 1 (0099).** Separate Sol/high0094–0098 checkpoint PASS
+at clean9949dfe with build/vet/race/static/history (33 commits, zero history
+diagnostics). [Checkpoint](reports/checkpoint-0094-0098.md). Authorized push
+advanced origin/main28ced38→7e0da27. No pending change or claim; ledger in
+[HISTORY](HISTORY.md). Full design/ACCEPTANCE remain incomplete.
 
-0098 maintenance-start archived atd3272a3 with353 full passes and isolated
-FLOW-077 audit PASS. Actual NEW next completed a Go maintenance refactor in3.26s
-with one impl agent/one archive commit, retained SPEC/interface/evals and clean
-claim release. Fixture removed. See [0098 proof](reports/maintenance-cli-0098.md).
-0097 time stop and earlier usage/recovery proofs remain valid.
+0099 eval-fix lifecycle archived at23ad9de with361 full passes, isolated
+four-ID audit PASS and89 own passes. Actual NEW Go next corrected a genuinely
+wrong ALP-001 eval in4.74s, passed evals/audit/no-op impl with three checked
+commits, preserved contracts/implementation and released its claim cleanly.
+Fixture removed. See [0099 proof](reports/eval-fix-cli-0099.md). Maintenance,
+time/usage stop and earlier recovery proofs remain valid.
 
-## Next slice — remaining lifecycle kinds and bounds
+## Next slice — eval-fix worker guidance
 
-Continue missing eval_fix semantics through NEW:
-correct frozen evals while preserving listed coverage, require all own evals
-pass, keep its phases audited and restrict implementation to the change file.
-Use coherent normal changes and an actual Go CLI fixture. Ordinary fixes,
-regenerate, persistent approval/audit bounds and command inventory/final gates
-remain to be closed. No new drill is authorized by the checkpoint. Full goal
-remains incomplete; the passing review authorizes continuation.
+The current embedded impl playbook directs workers to disposable code, while
+eval-fix impl permits only the change file. Add scoped conditional eval-fix
+instructions to evals/audit/impl playbooks: correct evals only, retain listed
+coverage, all module evals pass, audit assertions, impl changes only the change.
+Expose the resulting guidance through actual NEW playbook commands. No new
+backend/API, behavior matrix, drill or unrelated prose cleanup. Then continue
+remaining lifecycle kinds/bounds and final design inventory.
 
 ## Authority and deferred work
 
@@ -62,10 +63,11 @@ Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
 recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-9949dfe5c26e306ab00dece696f3bc32f44ff747, Go1.27.2 darwin/arm64, CGO disabled,
+23ad9de2a67c22be063ac860bd48175c74c85ceb, Go1.27.2 darwin/arm64, CGO disabled,
 vcs.modified=false. This build completed without a warning.
-Fresh build/vet/race/static/history passed at this checkpoint source. No new
-final CI/doctor/fresh-checkout/drill/self-hosting claim follows.
+Last checkpoint build/vet/race/static/history source is9949dfe;0099 native
+full checks and actual proof pass. No fresh final race/vet/CI/doctor/checkout/
+drill/self-hosting claim follows from0099.
 
 Workers and separate assertion auditors use codex exec --ephemeral
 --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"'

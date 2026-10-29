@@ -172,3 +172,9 @@ The [NEW maintenance proof](reports/maintenance-cli-0098.md) adds partial
 R06/R09/R17/R23 evidence: maintenance starts in impl, runs one agent, passes
 normal Go checks and archives in one commit with retained contracts and claim
 release. Eval-fix/regenerate kinds and other final obligations remain open.
+
+The [NEW eval-fix proof](reports/eval-fix-cli-0099.md) adds partial R08/R09/R17/R23
+evidence: corrected evals pass with listed coverage, separate audit includes
+the ID, impl is change-file-only and normal archive releases the claim. Actual
+Go baseline failure/correction and unchanged contracts/implementation are
+recorded. Worker guidance, regenerate and remaining full gates stay open.
