@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: app
+phase: audit
+run: 20261029T220850-60043a84e502eabe52e89654
 ---
 
 
@@ -21,18 +24,18 @@ CLI diagnostics and envelope helpers; keep selection/history in workflow.
 
 ## Added
 
-### new:commits-command
+### APP-094
 commits <change> MUST discover the nearest project root and invoke
 workflow.Commits. Plain success MUST print the returned object IDs one per line
 in returned order with exit0, returning empty output when the list is empty.
 
-### new:commits-failures
+### APP-095
 commits MUST return exit2 with corrective U01 for usage errors, U02 for selector
 errors, and the existing cause code for project configuration errors. Other
 workflow failures MUST return exit1 retaining their cause code and a corrective
 action.
 
-### new:commits-json
+### APP-096
 commits --json MUST emit schema1 with an array of returned object IDs, including
 an empty array for no commits, and empty diagnostics on success. On failure it
 MUST emit null data with code/message diagnostics. It MUST leave stderr empty.
@@ -63,3 +66,7 @@ restricted independent audit/archive and the actual NEW proof. Fixed Sol/high;
 own under5m/full under15m, no raised bounds. This is the commits slice's second
 change and the third application since passing checkpoint; no third behavior
 continuation is authorized by this change.
+
+## Provenance
+
+- evals 2026-10-29T22:22:11.348073Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=209 failing=5 passing=204
