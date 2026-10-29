@@ -1,9 +1,12 @@
 ---
 already_satisfied:
     - APP-009
+audit_rounds: 0
 bases:
     APP-009: e5447502
 module: app
+phase: audit
+run: 20261029T094008-0aae0a3be7e6e86471f9d8d1
 ---
 
 
@@ -25,12 +28,12 @@ code, retaining existing start text/JSON and diagnostic conventions.
 
 ## Added
 
-### new:start-from-attempt-command
+### APP-087
 start <change> --from-attempt N MUST discover the project root and invoke
 workflow.StartFromAttempt with the selected change and N. On success it MUST
 return workflow.Context in the existing plain or JSON start shape with exit 0.
 
-### new:attempt-option-validation
+### APP-088
 For start, --from-attempt MUST require one positive integer and reject missing,
 noninteger, nonpositive or repeated values with corrective U01 and exit 2 before
 mutation. Its value diagnostics MUST describe valid start usage. Other commands
@@ -84,3 +87,7 @@ status/recovery-library expansion or unrelated cleanup.
 
 After application rebuild NEW and run the prepared saved-resume proof against
 the retained Go fixture. Remove that fixture after successful correction/archive.
+
+## Provenance
+
+- evals 2026-10-29T09:49:29.88999Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=178 failing=10 passing=168
