@@ -93,6 +93,11 @@ Explain MUST describe the cause and a corrective action for P01 (operational pre
 ### AST-027
 Explain MUST describe the cause and a corrective action for C14 (doctor hook/canary setup, detection or recovery failures), C15 (agent probe failures or usage limits, and the shared-auditor-command warning) and C16 (missing/stale managed guidance or playbook embedded_base metadata).
 
+### AST-028
+The audit playbook MUST show a passing ## Audit example with No findings on one
+line and Checked IDs: plus at least two illustrative IDs on the next line. It
+MUST instruct the auditor to replace those with the actual checked IDs.
+
 ## Decisions
 
 [0014-go-setup-bundle] Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,
