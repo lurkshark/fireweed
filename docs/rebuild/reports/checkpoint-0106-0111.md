@@ -38,3 +38,5 @@ PASS. Next observable gap is new-module scaffolding through NEW; keep normal
 change/audit/verification/checkpoint rules. Remaining full inventory, final
 CI/doctor/fresh-checkout, authorized real regeneration, reference comparison,
 isolated self-hosting and delivery gates stay open.
+
+Authorized push succeeded: origin/main5358b5f→e5287d5.

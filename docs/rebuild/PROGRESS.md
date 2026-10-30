@@ -13,9 +13,10 @@ Full design/ACCEPTANCE remain incomplete.
 0110–0111 PASS at clean3118387; fresh build/vet/race/static/history44 commits
 pass. Canceled0109 is not an application; approved recoveries and two fixture
 setup corrections are disclosed. [Checkpoint](reports/checkpoint-0106-0111.md).
-Count resets only at this passing gate. Origin push is authorized and next.
+Count resets only at this passing gate. Authorized origin push completed
+5358b5f→e5287d5.
 
-**Next:** push the passing checkpoint, then complete new-module scaffolding
+**Next:** complete new-module scaffolding
 through NEW, returning promptly from any dependency to its app caller/actual
 CLI proof. Remaining management commands and all final acceptance gates stay
 open. Normal five-change, blocked and consecutive-module/behavior stops apply.
