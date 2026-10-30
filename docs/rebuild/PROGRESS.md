@@ -23,10 +23,10 @@ bounded runtime; no budget increase. [Evidence](reports/new-module-cli-0112.md).
 This is the second consecutive app application after0111; checkpoint before a
 third app change remains required.
 
-**Next:** check-commits vertical slice. Existing checks API has no history
-operation and H01–H04 explanations are absent. Add only the required checks
-history dependency, accurate explanations and immediate app caller/actual NEW
-explicit-range proof. Remaining status/management/recipes and final acceptance
+**Next:** check-commits vertical slice. Its recorded before/after zones require
+a revision snapshot; project currently loads only working-tree files. Add minimal
+project.LoadAt, then checks history, H01–H04 explanations and immediate app
+caller/actual NEW explicit-range proof. No whole-library expansion. Remaining status/management/recipes and final acceptance
 stay open. No new drill or phase-write authority.
 
 ## Approved correction gate
