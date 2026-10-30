@@ -375,6 +375,25 @@ abandon --json MUST emit schema1 with confirmation string data and empty diagnos
 On failure it MUST emit null data with code/message diagnostics.
 It MUST leave stderr empty.
 
+### APP-100
+new-module <name> --prefix <P> MUST discover the nearest project root and create the named module from .fireweed/templates/module in a new directory matched by the configured module globs.
+It MUST use that project-owned copy rather than replace it with embedded templates.
+
+### APP-101
+Module creation MUST render template contents using name, prefix, package, module_dir and go_module substitutions, removing a terminal .tmpl suffix from output filenames.
+The resulting SPEC.md MUST declare the requested module name and prefix and be loadable as part of the project graph.
+
+### APP-102
+new-module MUST reject an existing module name, existing ID prefix or occupied destination before writing module files, preserving the existing module and destination contents.
+
+### APP-103
+new-module MUST return exit2 with corrective U01 for invalid arguments and options, the existing cause code for project errors, C03 for missing or malformed templates, and P01 for conflicting module identity or destination.
+It MUST reject requests before writing module files when these errors are present.
+
+### APP-104
+Successful new-module MUST return exit0 and print the repository-relative module directory.
+With --json it MUST emit schema1 string data equal to that directory and empty diagnostics; failures MUST emit null data and code/message diagnostics with empty stderr.
+
 ## Decisions
 
 [0069-project-initialization] Init accepts codex and claude presets as argv commands; other selections are shell command templates containing {prompt}, stored as strings for one-pass quoted substitution when execution is implemented. Local recipes use recipe.yaml metadata, recipe.md instructions and a files/ project-relative payload; none uses empty language defaults and a generic module scaffold.
@@ -382,3 +401,9 @@ It MUST leave stderr empty.
 [0074-doctor-setup-commands] Doctor CLI leaves request Timeout unset, using the backend's existing defaults;
 no new timeout flag is introduced. Successful doctor JSON checks use fields name,
 module, passed and detail, with diagnostics in the outer envelope.
+
+[0112-new-module-command] Creation uses the first configured module glob ending in a single wildcard
+component under a literal parent, placing the requested name in that component;
+a configuration with no such destination is reported as C01 before writing.
+The package substitution replaces name hyphens with underscores; go_module is
+read from go.mod when present and is otherwise empty.

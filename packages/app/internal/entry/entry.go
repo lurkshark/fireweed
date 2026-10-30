@@ -27,10 +27,9 @@ type envelope struct {
 }
 
 var pending = map[string]bool{
-	"new-module": true,
-	"list":       true, "status": true,
+	"list": true, "status": true,
 	"check-commits": true, "ci": true, "pr-body": true,
-	"drill":   true, "gc": true, "migrate": true,
+	"drill": true, "gc": true, "migrate": true,
 }
 
 func Run(args []string, out, errOut io.Writer) int {
@@ -39,6 +38,9 @@ func Run(args []string, out, errOut io.Writer) int {
 			return cliFailure(2, contains(args, "--json"), out, errOut, "U01", "--for is only available with run. Use run --for 1h.")
 		}
 		return runInit(args, out, errOut)
+	}
+	if isNewModuleRequest(args) {
+		return runNewModule(args, out, errOut)
 	}
 	jsonMode := false
 	projected := false
