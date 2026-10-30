@@ -92,3 +92,11 @@ and normal allocation, preserved public assertions with a fresh eval worker,
 independent isolated audit, fresh impl worker/full checks and actual NEW proof.
 Count remains0 until that caller applies. Stop with the caller local at count1;
 no push, drill, altered bounds/counts or further phase exception is authorized.
+
+## Resolution
+
+The approved replacement completed and archived at74e2818 after normal fail-first,
+one persisted APP-121 finding/scoped correction/re-audit PASS and253 final passes.
+Actual clean-built NEW status fixture and main-checkout read both pass. Full
+phase/proof evidence is in [status CLI](status-cli-0122.md). Both exceptions are
+consumed; no further recovery is pending. Caller stays local at count1 as approved.

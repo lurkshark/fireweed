@@ -4,57 +4,41 @@
 
 NEW proves manual lifecycle/setup, bounded next/run and recovery/resume,
 agent-commit undo, time/usage stops, maintenance/eval-fix/ordinary-fix/regenerate,
-and release/commits/abandon, CI and list. Existing actual CLI evidence is linked
-in HISTORY and the [prior gate](reports/checkpoint-0112-0116.md); preserve it.
-Full design/ACCEPTANCE remains incomplete.
+release/commits/abandon, CI, list and now status. Reuse the linked HISTORY and
+reports; full design/ACCEPTANCE remains incomplete.
 
-**Applied since review: 0; 0117–0121 pushed; 0122 native recovery underway.**
-Owner approved native cancel/re-author after the same-run start refused the dirty
-tree. The second one-time exception cleaned only the named public inputs after
-preserving them. Native abandon000984d succeeded; tree clean/unclaimed.
-Both exceptions are consumed. Old run20261030T163917-0fc34507bd1994f10aea0b08
-had no valid phase commit/audit/implementation. Its native check recorded253
-cases (3 genuine failures/250 passes) before sandbox Git commit denial.
-[Checkpoint/history](reports/status-cli-0122-checkpoint.md).
+**Applied since review: 1; status caller complete and local. Stop as approved.**
+[0122 status CLI](reports/status-cli-0122.md) applied APP-118–126 at74e2818:
+253 final native passes, one independent APP-121 assertion finding/correction
+and scoped re-audit PASS, fresh implementation, clean CGO0 build and app vet.
+Actual NEW disposable proof passed all waiting rules, costs/B01–B03/P08,
+quarantines/opt-outs, drift, phase counts and retained read state; fixture removed.
+Main NEW status --json passed8 modules/empty queue/unapproved1/no diagnostics.
+All native work is archived, the tree is unclaimed and no rebuild change remains
+pending. No technical block remains; this is the explicitly agreed local stop.
 
-Re-author the same public contract with normal allocation and a fresh run;
-fresh eval worker may restore preserved public assertions. Complete isolated
-Sol/high audit, fresh impl worker, native full checks, clean build and actual NEW
-status proof, then stop with the caller local at count1. No push, drill,
-additional product change, manual phase/ref/count edits or standing exception.
+The [0122 recovery history](reports/status-cli-0122-checkpoint.md) preserves the
+old missing phase commit and native dirty-tree refusal. Owner-approved native
+cancel/re-author succeeded with public assertions preserved, a fresh run and
+normal allocation. Both one-time document exceptions are consumed. No canceled
+implementation, fabricated claim/ref, altered bound/count or audit reset was used.
 
-Prior safe boundary:
-All native work is archived/unclaimed at clean source79f7113. Current batch:
-[ci](reports/ci-cli-0117.md), [list](reports/list-cli-0118.md),
-[costs](reports/verification-costs-0119.md),
-[status data](reports/status-data-0120.md),
-[warning explanations](reports/status-warning-explanations-0121.md).
-Corrected0120 passed457 native cases/fresh isolated audit after owner-approved
-native cancel/re-author with the public one-token phase correction; no canceled
-implementation or old worker-log reuse, manual phase/ref/counter reset or drill.
-0121 passed712 native cases/fresh audit and actual clean-built NEW Explain
-B01/B02/B03/P08 proof. P08 is the newly emitted status-warning companion, added
-in the same explanation change with no extra application or bound change.
+The prior [0117–0121 gate](reports/checkpoint-0117-0121.md) passed separate Sol/high
+quality/goal review plus build/vet/race/static/history at79f7113; origin/main7c5e90e
+was actually verified after its authorized push. Review reset count0 then; this
+caller is application1. Existing C01/C18/B02 warnings retain their explanations.
+The build's nonfatal module stat-cache metadata warning is recorded in0122;
+zero warnings is not a gate. New app source means that prior race gate is not a
+final-source/full-acceptance claim.
 
-Fresh CGO0 build/vet/race/static/history and separate fixed Sol/high quality/goal
-review all PASS. History extends929e32b..79f7113 across48 commits with no
-diagnostics. [Current gate](reports/checkpoint-0117-0121.md). Authorized push1ca04f3→7c5e90e completed; actual origin/main OID was verified.
-App status is now the immediate approved caller. Review count reset0 after
-this passing review, never from a push alone. Existing C01/C18/B02 warnings and the build's nonfatal
-module stat-cache warning retain recorded explanations; zero warnings is not a gate.
+Owner approved native cancel/re-author, fresh workers/isolated audit/full checks
+and actual NEW proof, then stopping with the caller local. This is complete;
+no further push, drill, additional change or phase exception is authorized by
+that slice. On an agreed continuation, remaining surface includes pr-body,
+drill/gc/migrate, remaining show/check options, recipes/versioning/packaging and
+all unclosed ACCEPTANCE gates. Drill restrictions below remain in force.
 
-Owner: "Approve recovery and revised slice", for
-`/tmp/fireweed-0120-frozen-phase-checkpoint.md`. The native0120 recovery and
-warning explanations are complete. After the mandatory fifth review/checks
-PASS, push under existing explicit authorization, immediately return to app
-status and actual NEW proof, then stop with that caller local (first application
-after review). Stop on any finding/block. No phase exception, drill, publication,
-history rewrite, direct ref edit or altered bounds is authorized. Status CLI
-and its NEW proof are still unimplemented; 0122 is now stopped at the commit-denial
-checkpoint above. Library checks do not close that slice.
-Remaining commands/recipes/delivery/final gates and drill restrictions stay open.
-
-## Approved correction gate
+## Approved correction gate — completed historical scope
 
 Direct owner reply: "Approve push and correction gate". Push the recorded batch
 and finding to free shared-base P07, then make exactly the scoped project mixed-
@@ -96,13 +80,13 @@ Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
 recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-79f71130cde2777686c0681142fdd2a89e062ca4, Go1.27.2 darwin/arm64, CGO disabled,
+74e281838830e4a33e57ff919988ee39cca50595, Go1.27.2 darwin/arm64, CGO disabled,
 vcs.modified=false. Build passed with the known nonfatal module-cache metadata
 warning, recorded in the current checkpoint report; no source fix/rebuild needed.
-Build/vet/race/static/history and independent quality review passed at79f7113;
-actual NEW CI/list proofs remain valid and the four-warning Explain proof passed;
-actual NEW rejects the recorded invalid mixed-kind fixture before mutation. No final CI/doctor/fresh-checkout/drill/self-hosting
-or overall acceptance claim follows.
+Build/app vet/native253 passes, independent scoped audit and actual NEW status
+proof passed at74e2818. Prior build/vet/race/static/history/quality review at79f7113
+and actual CI/list/Explain/mixed-kind proofs remain historical evidence; no final
+CI/doctor/fresh-checkout/drill/self-hosting or overall acceptance claim follows.
 
 Workers and separate assertion auditors use codex exec --ephemeral
 --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"'

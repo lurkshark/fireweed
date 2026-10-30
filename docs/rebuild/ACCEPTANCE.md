@@ -207,3 +207,10 @@ evidence: queue order, runtime phase/defaults, authored blocked reason/audit rou
 held-state read after public start, empty output/JSON and retained read state.
 The fixture is removed. Status waiting/cost/drift and remaining whole-goal gates
 remain open; no new lifecycle, drill or full-acceptance claim.
+
+The [NEW status proof](reports/status-cli-0122.md) adds partial R17/R24/R25/R27/R29
+evidence: all waiting rules, module/quarantine/opt-out state, approval/phase/drift
+counts, recorded costs and B01–B03/P08, plus retained read state in plain/JSON.
+Its cost maintenance actually ran; two history records/failed drill were authored
+metadata, not regeneration evidence. The fixture was removed, and main status
+also passed. PR-body, other remaining inventory and whole-goal gates stay open.

@@ -577,6 +577,14 @@ before another change. Four changes were applied since the explicit review at
   extension PASS. Review count0; authorized push next, then immediate app status
   and NEW proof/local stop. [Gate](reports/checkpoint-0117-0121.md).
 
+
+- 0122 APP-118–126 [status CLI](reports/status-cli-0122.md) applied at74e2818:
+  253 native passes, one persisted assertion correction/scoped re-audit PASS,
+  fresh implementation and actual NEW waiting/cost/warning/drift proof PASS.
+  Approved native cancel/re-author resolved the prior missing-commit/refused-resume
+  checkpoint with public assertions preserved and both exceptions consumed.
+  Count1 since review; clean/unclaimed, caller local and stopped as approved.
+
 ## Historical reference inspection record — superseded by D004
 
 These entries describe the retired controller and original preparation. They supply historical provenance only, not startup instructions or current readiness. PROGRESS.md records the installed stage-2 controller, completed setup and baseline.
