@@ -7,7 +7,7 @@ bases:
     APP-008: a90726f5
     APP-025: cb2c30f2
 module: app
-phase: impl
+phase: applied
 run: 20261030T231146-e5304d598617e8a0a182fbc5
 ---
 
@@ -86,6 +86,7 @@ Stop after this caller completes, as the owner explicitly reaffirmed.
 
 - evals 2026-10-30T23:17:29.438907Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=282 failing=18 passing=264
 - audit 2026-10-30T23:18:54.542019Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-30T23:25:31.690301Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=282 failing=0 passing=282
 
 ## Audit
 

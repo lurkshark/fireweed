@@ -42,6 +42,7 @@ func Run(args []string, out, errOut io.Writer) int {
 	}
 	jsonMode := false
 	projected := false
+	history := false
 	quick := false
 	full := false
 	noAgent := false
@@ -62,6 +63,8 @@ func Run(args []string, out, errOut io.Writer) int {
 			jsonMode = true
 		} else if arg == "--projected" {
 			projected = true
+		} else if arg == "--history" {
+			history = true
 		} else if arg == "--quick" {
 			quick = true
 		} else if arg == "--full" {
@@ -139,6 +142,12 @@ func Run(args []string, out, errOut io.Writer) int {
 	command := positional[0]
 	if projected && command != "show" {
 		return fail("U01", "--projected is only available with show.")
+	}
+	if history && command != "show" {
+		return fail("U01", "--history is only available with show. Use show <module> [ID] --history.")
+	}
+	if history && projected {
+		return fail("U01", "--history cannot be combined with --projected. Use show <module> [ID] --history or --projected.")
 	}
 	if quick && command != "verify" || full && command != "context" || withChange != "" && command != "coverage" {
 		return fail("U01", "Use --quick only with verify, --full only with context, and --with-change only with coverage.")
@@ -311,7 +320,10 @@ func Run(args []string, out, errOut io.Writer) int {
 		return 0
 	case "show":
 		if count < 1 || count > 2 {
-			return fail("U01", "show requires a module and optional item ID. Use show <module> [ID] [--projected].")
+			return fail("U01", "show requires a module and optional item ID. Use show <module> [ID] [--projected|--history].")
+		}
+		if history {
+			return runShowHistory(positional[1:], jsonMode, out, errOut)
 		}
 		snapshot, err := loadValidatedProject()
 		if err != nil {

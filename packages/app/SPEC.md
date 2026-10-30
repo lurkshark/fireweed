@@ -42,7 +42,7 @@ stamp <change> MUST discover the root, invoke project.Stamp and print confirmati
 check MUST invoke project.Check and exit 0 when no error diagnostics remain, or exit 1 with all diagnostics when static checks fail.
 
 ### APP-008
-show <module> [ID] MUST return the current module document or selected item, using the whole-queue project projection with --projected.
+Without --history, show <module> [ID] MUST return the current module document or selected item, using the whole-queue project projection with --projected.
 
 ### APP-009
 Without --from-attempt, start <change> MUST discover the root, invoke
@@ -95,7 +95,7 @@ check MUST return exit 2 for usage or configuration errors with code/message dia
 check --json MUST return schema 1 with string summary data on success, null data on failure and the reported diagnostics.
 
 ### APP-025
-show --json MUST return identical text as schema-1 string data with empty diagnostics and exit 0 on success.
+Without --history, show --json MUST return identical text as schema-1 string data with empty diagnostics and exit 0 on success.
 
 ### APP-026
 show MUST return exit 2 with code/message diagnostics for unknown or ambiguous module or item, invalid arguments or configuration errors.
@@ -508,6 +508,24 @@ Unresolvable ranges MUST return exit1 with P01, the range resolution cause and c
 ### APP-131
 JSON pr-body failures MUST emit null data with cause-code/message diagnostics and empty stderr.
 
+### APP-132
+show <module> [ID] --history MUST discover the nearest project root, call project.SpecHistory with the optional ID filter and return its entries in order with exit0.
+Plain output MUST include each archive path, module, matching IDs, implementation date, Motivation, added and removed Decisions and complete Provenance.
+Empty history MUST print an explicit no-history message with exit0.
+
+### APP-133
+Successful show --history --json MUST emit schema1 with ordered array data, empty diagnostics and empty stderr.
+Each row MUST contain path, module, ids, motivation, decisions, removed_decisions, provenance and implementation_date, the latter an RFC3339 timestamp or an empty string when undated.
+Empty history MUST use an empty array.
+
+### APP-134
+--history MUST be accepted only with show and MUST reject combination with --projected, using exit2 and a corrective U01 diagnostic for either misuse.
+
+### APP-135
+History MUST return exit2 for lookup failures with U02 naming the rejected module or ID, or for missing or malformed project configuration with C01.
+Other project.SpecHistory failures MUST return exit1 retaining their cause code and corrective guidance.
+Failure output MUST contain code/message diagnostics: JSON uses null data and empty stderr; plain output uses empty stdout and stderr diagnostics.
+
 ## Decisions
 
 [0069-project-initialization] Init accepts codex and claude presets as argv commands; other selections are shell command templates containing {prompt}, stored as strings for one-pass quoted substitution when execution is implemented. Local recipes use recipe.yaml metadata, recipe.md instructions and a files/ project-relative payload; none uses empty language defaults and a generic module scaffold.
@@ -521,3 +539,6 @@ component under a literal parent, placing the requested name in that component;
 a configuration with no such destination is reported as C01 before writing.
 The package substitution replaces name hyphens with underscores; go_module is
 read from go.mod when present and is otherwise empty.
+
+[0127-show-history-command] History JSON uses lowercase keys and preserves project query section strings;
+plain output labels each section and identifies undated entries explicitly.
