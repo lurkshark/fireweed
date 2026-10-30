@@ -9,25 +9,27 @@ retains a real saved attempt, restores phase work/deletes pending change in one
 commit, releases its claim and frees ALP-002 for Start reuse; fixture removed.
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 1 (0117); consecutive-app checkpoint.** Separate fixed
-Sol/high quality/goal review of0112–0116 PASS at929e32b; fresh build/vet/full race/
-static/history39 commits pass. Authorized push origin e5287d5→1ca04f3 completed.
-[Passing gate](reports/checkpoint-0112-0116.md). Count reset only at that gate.
+**Applied since review: 1 (0117); 0118 blocked at audit.** Prior fixed Sol/high
+quality/goal review of0112–0116 PASS and fresh checks passed at929e32b; authorized
+origin push e5287d5→1ca04f3 completed. [Gate](reports/checkpoint-0112-0116.md).
+0117 CI remains local with247 native passes/actual NEW Go proof PASS.
 
-0116 check-commits and0117 ci are now two consecutive app applications.0117 has247
-native passes at2a63214, one persisted scoped assertion correction/re-audit PASS,
-clean/unclaimed archive and actual NEW three-module Go CI/canary/skip/failing-
-Gamma proof PASS, fixture removed. [CI evidence](reports/ci-cli-0117.md). CI is
-local; no push since its implementation. The prior history/template CLI proofs
-remain valid; see the five linked checkpoint reports rather than repeating them.
+Owner approved the one-change list continuation;0118 reached native fail-first
+250 cases3 expected failures/247 passes, but did not apply. Independent restricted
+audit found missing APP-115 plain empty-reason assertion and APP-116 P01 fallback
+assertion with no established public uncoded input/error-injection point. The
+coordinator classified the latter as currently untestable. Controller natively
+blocked/released inaf7d26b, phaseaudit, audit_rounds0, same original run/IDs;
+both findings are Questions. Tree clean/unclaimed. [Audit checkpoint](reports/list-audit-0118.md).
 
-**Approved one-change continuation.** Owner answered "Approve list continuation"
-to /tmp/fireweed-list-continuation-checkpoint.md. This authorizes the third
-consecutive app application only: list through project.Queue, independent audit,
-native full verification and an actual NEW read proof. Count remains1 until it
-applies, then2; no reset, push, phase-write exception or new drill authority.
-Stop afterward before another consecutive app change unless separately authorized.
-Full design/ACCEPTANCE remains incomplete.
+**Required stop.** SYSTEM.md39/42 requires a human decision for untestable findings
+and blocked changes. No implementation, archive, actual NEW list proof, new push
+or additional drill occurred. Count remains1, not2. Proposal for owner review:
+/tmp/fireweed-0118-audit-checkpoint.md. Resolve only the generic fallback contract,
+then proposed native abandon/re-author from preserved public inputs with the
+carried plain-output assertion and fresh workers/audit/verification/read proof.
+No recovery, replacement change, phase exception, bound/ref/count adjustment or
+further scope is authorized yet. Full design/ACCEPTANCE remains incomplete.
 
 ## Approved correction gate
 

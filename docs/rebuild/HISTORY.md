@@ -540,6 +540,11 @@ before another change. Four changes were applied since the explicit review at
   [proof PASS](reports/ci-cli-0117.md) at2a63214. Count1; local/unclaimed. Stop before
   third consecutive app change after0116/0117 under SYSTEM.md42.
 
+- 0118 APP-114–117 is [blocked at audit](reports/list-audit-0118.md):250 native
+  cases3 expected failures/247 passes, independent plain-reason/fallback gaps,
+  native untestable-clause Questions/block/release ataf7d26b, round0. No application
+  or implementation; count remains1. Owner contract/recovery decision required.
+
 ## Historical reference inspection record — superseded by D004
 
 These entries describe the retired controller and original preparation. They supply historical provenance only, not startup instructions or current readiness. PROGRESS.md records the installed stage-2 controller, completed setup and baseline.
