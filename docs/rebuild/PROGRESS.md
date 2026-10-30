@@ -8,18 +8,19 @@ and release/commits/abandon, CI and list. Existing actual CLI evidence is linked
 in HISTORY and the [prior gate](reports/checkpoint-0112-0116.md); preserve it.
 Full design/ACCEPTANCE remains incomplete.
 
-**Applied since review: 0; 0117–0121 pushed; 0122 stopped on commit denial.**
-The app status eval verification passed253 cases (3 genuine failures/250 passes),
-but native Done advanced the document to audit before git add failed on sandbox
-.git/index.lock permission. No eval commit or independent audit exists; no
-implementation ran. Same run20261030T163917-0fc34507bd1994f10aea0b08,
-APP-118–126, audit_rounds0. Owned claim natively released, evals/public inputs
-preserved; pending phase remains audit and its two eval files are uncommitted.
-[Recovery checkpoint](reports/status-cli-0122-checkpoint.md) proposes a new
-one-time exception restoring only the saved claimed evals document, native
-same-run resume and write-capable Done, then normal audit/impl/NEW proof and
-local stop. Awaiting owner decision; no manual phase/ref/count rewrite, push
-or drill. Existing approval explicitly grants no phase exception.
+**Applied since review: 0; 0117–0121 pushed; 0122 native resume refused.**
+Owner approved the [scoped recovery](reports/status-cli-0122-checkpoint.md).
+Its one-time document restoration was applied exactly; both eval files remain
+unchanged. Same run20261030T163917-0fc34507bd1994f10aea0b08, APP-118–126,
+audit_rounds0, now phase evals. The exception is consumed. Native start with
+write-capable execution returned `P01: working tree must be clean` (exit1).
+No claim exists. The approved plan explicitly required stopping on refusal;
+no further Done/audit/implementation/push/drill or manual claim/ref write ran.
+Public inputs remain preserved and uncommitted. The prior native eval check
+recorded253 cases (3 genuine failures/250 passes), but its commit failed on
+sandbox .git/index.lock permission. No valid eval commit or independent audit
+exists; no status implementation or NEW proof exists. Another owner decision
+is required to resolve the dirty public inputs; no further recovery is assumed.
 
 Prior safe boundary:
 All native work is archived/unclaimed at clean source79f7113. Current batch:

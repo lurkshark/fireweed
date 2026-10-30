@@ -53,3 +53,26 @@ standing phase-write exception. It does not assert the native resume will pass.
 Evidence: /tmp/fireweed-0122-{evals-done,evals-done2,convention-worker,
 release-after-denial}.log; /tmp/fireweed-0122-evals-convention-focused.json;
 /tmp/fireweed-0122-commit-recovery/native-document-diff.txt.
+
+## Approved recovery result — stopped at native resume
+
+Owner answered "Approve scoped recovery". The one-time document restoration
+was applied exactly to the saved claimed evals document. Both eval files were
+checked against their saved public inputs and remain unchanged. Same run
+20261030T163917-0fc34507bd1994f10aea0b08, APP-118–126, audit_rounds0.
+The uncommitted audit transition/provenance is removed; phase is now evals.
+This exception is consumed and authorizes no further manual phase write.
+
+Native start, invoked with write-capable execution, returned exit1:
+`P01: working tree must be clean`. No claim was created, no phase commit exists,
+and all two eval edits plus the same-run evals document remain uncommitted.
+The approved proposal explicitly says to stop if native resume refuses; work
+stopped there. No further Done, audit, implementation, push, drill, claim/ref
+write or discarded input followed. Resume log:
+`/tmp/fireweed-0122-approved-resume.log`.
+
+The next owner decision must address the dirty uncommitted public inputs before
+native start. The existing approval does not authorize discarding/re-authoring
+them, manually manufacturing a claim or committing a worker phase. An isolated
+CLI-only diagnosis could establish a supported recovery path without touching
+main; it has not been run or authorized at this checkpoint. Full goal incomplete.
