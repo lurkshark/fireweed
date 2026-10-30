@@ -9,7 +9,7 @@ retains a real saved attempt, restores phase work/deletes pending change in one
 commit, releases its claim and frees ALP-002 for Start reuse; fixture removed.
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 2 (0117/0118); approved recovery complete, stopped.**
+**Applied since review: 2 (0117/0118); status slice approved.**
 Prior fixed Sol/high quality/goal review of0112–0116 PASS and fresh checks passed
 at929e32b; authorized origin push e5287d5→1ca04f3 completed. [Gate](reports/checkpoint-0112-0116.md).
 0117 CI remains local with247 native passes and actual NEW Go proof PASS.
@@ -33,14 +33,15 @@ incomplete; next queue-management surface is status (waiting reasons, module
 state/cost/drift and budgets), with PR/maintenance/recipes/delivery/final gates
 still open. Resume scope must be agreed before more work.
 
-Goal continuation revalidated the clean tree/no claims and native status:
-unapproved2 and P08 remain. The next concrete prerequisite is missing workflow
-cost recording/B01–B03 and a public status model with projected waiting reasons;
-the public interfaces currently expose neither. A bounded proposal at
-`/tmp/fireweed-status-continuation-checkpoint.md` requests two workflow changes
-then immediate app status wiring/NEW proof, reaching the mandatory fifth-change
-review. This is pending owner approval; no new change has been authored and
-the existing stop remains in force.
+Owner: "Approve status slice and fifth review". This supersedes the completed
+recovery's stop only for `/tmp/fireweed-status-continuation-checkpoint.md`:
+workflow cost recording/B01–B03, workflow status data with projected waiting
+reasons, then immediate app status wiring/actual NEW proof. Three applications
+reach the fifth-change quality/goal subagent review and appropriate fresh checks;
+push only on PASS, then stop and report. Stop earlier on any block. No phase
+exception, drill, deferred gap fix or bound/count/ref change. Native status
+confirmed unapproved2/P08 before this slice. No change is authored yet; next is
+workflow cost recording, preserving the held approved graph and existing reports.
 
 ## Approved correction gate
 
