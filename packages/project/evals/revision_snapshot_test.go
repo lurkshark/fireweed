@@ -45,6 +45,7 @@ module_defaults:
 `)
 	put(t, root, "packages/alpha/SPEC.md", "---\nname: alpha\nid_prefix: ALP\ndepends_on: []\nevals: []\n---\n# Alpha\n\n## Specs\n\n### ALP-001\nHistorical alpha behavior.\n")
 	put(t, root, "packages/beta/SPEC.md", "---\nname: beta\nid_prefix: BET\ndepends_on: [alpha]\n---\n# Beta\n\n## Specs\n\n### BET-001\nHistorical beta behavior.\n")
+	put(t, root, "extras/gamma/SPEC.md", "---\nname: gamma\nid_prefix: GAM\ndepends_on: []\n---\n# Gamma\n\n## Specs\n\n### GAM-001\nHistorical gamma behavior.\n")
 	recorded := revisionCommit(t, root, "record original project")
 
 	put(t, root, "fireweed.yaml", "version: 2\nmodules: [\"components/*\"]\nmodule_defaults:\n  evals: [later/**]\n")
@@ -66,6 +67,17 @@ func Test_PRJ_047_LoadAtRecordedConfigGlobsAndDocuments(t *testing.T) {
 	}
 	if got.Config["version"] != 1 || !reflect.DeepEqual(got.Config["modules"], []any{"packages/*"}) {
 		t.Errorf("recorded configuration = %#v", got.Config)
+	}
+	wantDefaults := map[string]any{
+		"protected":   []any{"guard/**"},
+		"evals":       []any{"evals/**"},
+		"interface":   []any{"api.go"},
+		"append_only": []any{"ledger/**"},
+		"preserve":    []any{"data/**"},
+		"disposable":  []any{"internal/**"},
+	}
+	if !reflect.DeepEqual(got.Config["module_defaults"], wantDefaults) {
+		t.Errorf("recorded module_defaults = %#v; want %#v", got.Config["module_defaults"], wantDefaults)
 	}
 	byName := make(map[string]project.Module)
 	for _, module := range got.Modules {
