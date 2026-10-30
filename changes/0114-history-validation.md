@@ -1,8 +1,10 @@
 ---
-audit_rounds: 0
+audit_pending:
+    - CHK-070
+audit_rounds: 1
 bases: {}
 module: checks
-phase: audit
+phase: evals
 run: 20261030T025913-b1814486063e4bf2bf4245fa
 ---
 
@@ -103,3 +105,9 @@ app caller remain required before observable CLI completion.
 ## Provenance
 
 - evals 2026-10-30T03:45:47.55804Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=524 failing=20 passing=504
+- audit 2026-10-30T03:49:56.277895Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+
+## Audit
+
+- CHK-070: "History MUST list full commit IDs selected by the supplied Git revision range in oldest-first topological order." — Missing a branching-range assertion of parent-before-child ordering; the current order assertion is linear and the merge test selects only one commit.
+- CHK-070: "For an empty range it MUST use the merge base of HEAD and the locally resolved configured base through HEAD." — Missing a default-range assertion with a different configured local base and divergent history that distinguishes configured-base selection from hard-coded main.
