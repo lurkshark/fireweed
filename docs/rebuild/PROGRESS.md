@@ -16,9 +16,11 @@ setup corrections are disclosed. [Checkpoint](reports/checkpoint-0106-0111.md).
 Count resets only at this passing gate. Authorized origin push completed
 5358b5f→e5287d5.
 
-**Next:** complete new-module scaffolding
-through NEW, returning promptly from any dependency to its app caller/actual
-CLI proof. Remaining management commands and all final acceptance gates stay
+**Current:**0112 new-module app slice authored from the design: use project-owned
+templates and current public project/contracts helpers, then actual NEW init
+--no-app/new-module/modules/check/duplicate proof. No public API change. This is
+the second consecutive app application after0111; a third needs its normal
+checkpoint. Count0 until application. Remaining management commands and all final acceptance gates stay
 open. Normal five-change, blocked and consecutive-module/behavior stops apply.
 
 ## Approved correction gate
