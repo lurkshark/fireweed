@@ -6,7 +6,7 @@ audit_pending:
 audit_rounds: 1
 bases: {}
 module: app
-phase: audit
+phase: impl
 run: 20261030T052903-ef4ffe0df0609b399b924ab5
 ---
 
@@ -87,9 +87,9 @@ application; then the third-consecutive-app checkpoint applies before more app.
 - evals 2026-10-30T05:40:28.316939Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=247 failing=4 passing=243
 - audit 2026-10-30T05:43:52.005422Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 - evals 2026-10-30T05:51:30.610617Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=247 failing=4 passing=243
+- audit 2026-10-30T05:53:13.900578Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 
 ## Audit
 
-- APP-109: "ci [range] MUST discover the nearest project root and run static project checks plus history checks on the supplied range, or the configured local-base range when omitted." — No assertion distinguishes the closest project from an available ancestor project.
-- APP-111: "ci MUST run doctor canaries by default with agent probes disabled." — Setup logging and absence of agent probes do not assert the doctor canary outcomes.
-- APP-112: "Deterministic check failures MUST return exit1 retaining their cause codes and corrective guidance." — No default-CI assertion checks the exit status, cause code and guidance for a doctor canary failure.
+No findings
+Checked IDs: APP-109, APP-111, APP-112
