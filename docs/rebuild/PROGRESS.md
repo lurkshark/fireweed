@@ -9,7 +9,7 @@ retains a real saved attempt, restores phase work/deletes pending change in one
 commit, releases its claim and frees ALP-002 for Start reuse; fixture removed.
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 3 (0112–0114); continuation approved.** Separate Sol/high quality/goal review of0106–0108,
+**Applied since review: 4 (0112–0115); caller/fifth review approved.** Separate Sol/high quality/goal review of0106–0108,
 0110–0111 PASS at clean3118387; fresh build/vet/race/static/history44 commits
 pass. Canceled0109 is not an application; approved recoveries and two fixture
 setup corrections are disclosed. [Checkpoint](reports/checkpoint-0106-0111.md).
@@ -37,10 +37,16 @@ unchanged recorded inputs now return clean reports. Archive04a65d7 clean/unclaim
 **Approved continuation:** owner answered "Approve continuation and fifth review"
 to /tmp/fireweed-history-continuation-checkpoint.md. This explicitly authorizes
 the two remaining consecutive history changes: H01–H04 explanations, then the
-immediate check-commits caller/actual NEW proof. Count remains3; applications4/5
+immediate check-commits caller/actual NEW proof. 0115 has applied; count4, caller application5
 require normal independent audits/full verification, then separate fifth-change
 quality/goal review and fresh checks. Push only on PASS, stop on any finding/block.
 No phase-write exception or added drill authority. Remaining full acceptance open.
+
+0115 now explains H01–H04 with680 full passes atf98b3b3, two persisted scoped
+audit corrections and final AST-036/037 re-audit PASS. Same run/IDs/round2,
+clean/unclaimed archive; no phase exception. [Evidence](reports/history-explanations-0115.md).
+Immediate next: approved app check-commits caller/actual NEW proof, then fifth
+quality/goal review and fresh checks; no push before PASS.
 
 ## Approved correction gate
 
