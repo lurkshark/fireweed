@@ -38,23 +38,9 @@ func Load(root string) (model.Snapshot, error) {
 	if err != nil {
 		return model.Snapshot{}, fmt.Errorf("read fireweed.yaml: %w", err)
 	}
-	var config map[string]any
-	if err := yaml.Unmarshal(data, &config); err != nil {
-		return model.Snapshot{}, fmt.Errorf("parse fireweed.yaml: %w", err)
-	}
-	if config == nil {
-		return model.Snapshot{}, fmt.Errorf("fireweed.yaml must be a mapping")
-	}
-	patterns, err := stringList(config["modules"], "fireweed.yaml modules")
+	config, patterns, defaults, err := parseConfig(data)
 	if err != nil {
 		return model.Snapshot{}, err
-	}
-	defaults := map[string]any{}
-	if value, ok := config["module_defaults"]; ok {
-		defaults, ok = value.(map[string]any)
-		if !ok {
-			return model.Snapshot{}, fmt.Errorf("fireweed.yaml module_defaults must be a mapping")
-		}
 	}
 
 	snapshot := model.Snapshot{Root: root, Config: config}
@@ -80,39 +66,69 @@ func Load(root string) (model.Snapshot, error) {
 		if err != nil {
 			return loadCause("C03", fmt.Errorf("read %s/SPEC.md: %w", rel, err))
 		}
-		doc, err := contracts.ParseDocument(string(data))
+		module, err := parseModule(data, defaults, rel)
 		if err != nil {
-			return loadCause("C03", fmt.Errorf("parse %s/SPEC.md: %w", rel, err))
+			return err
 		}
-		name, ok := doc.Frontmatter["name"].(string)
-		if !ok {
-			return loadCause("C12", fmt.Errorf("%s/SPEC.md name must be a string", rel))
-		}
-		prefix, ok := doc.Frontmatter["id_prefix"].(string)
-		if !ok {
-			return loadCause("C12", fmt.Errorf("%s/SPEC.md id_prefix must be a string", rel))
-		}
-		var dependencies []string
-		if value, ok := doc.Frontmatter["depends_on"]; ok {
-			dependencies, err = stringList(value, rel+"/SPEC.md depends_on")
-			if err != nil {
-				return loadCause("C12", err)
-			}
-		}
-		zones, err := moduleZones(doc.Frontmatter, defaults, rel)
-		if err != nil {
-			return loadCause("C12", err)
-		}
-		snapshot.Modules = append(snapshot.Modules, model.Module{
-			Name: name, IDPrefix: prefix, Dir: rel, DependsOn: dependencies,
-			Zones: zones, Document: doc,
-		})
+		snapshot.Modules = append(snapshot.Modules, module)
 		return nil
 	})
 	if err != nil {
 		return model.Snapshot{}, err
 	}
 	return snapshot, nil
+}
+
+func parseConfig(data []byte) (map[string]any, []string, map[string]any, error) {
+	var config map[string]any
+	if err := yaml.Unmarshal(data, &config); err != nil {
+		return nil, nil, nil, fmt.Errorf("parse fireweed.yaml: %w", err)
+	}
+	if config == nil {
+		return nil, nil, nil, fmt.Errorf("fireweed.yaml must be a mapping")
+	}
+	patterns, err := stringList(config["modules"], "fireweed.yaml modules")
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	defaults := map[string]any{}
+	if value, ok := config["module_defaults"]; ok {
+		defaults, ok = value.(map[string]any)
+		if !ok {
+			return nil, nil, nil, fmt.Errorf("fireweed.yaml module_defaults must be a mapping")
+		}
+	}
+	return config, patterns, defaults, nil
+}
+
+func parseModule(data []byte, defaults map[string]any, rel string) (model.Module, error) {
+	doc, err := contracts.ParseDocument(string(data))
+	if err != nil {
+		return model.Module{}, loadCause("C03", fmt.Errorf("parse %s/SPEC.md: %w", rel, err))
+	}
+	name, ok := doc.Frontmatter["name"].(string)
+	if !ok {
+		return model.Module{}, loadCause("C12", fmt.Errorf("%s/SPEC.md name must be a string", rel))
+	}
+	prefix, ok := doc.Frontmatter["id_prefix"].(string)
+	if !ok {
+		return model.Module{}, loadCause("C12", fmt.Errorf("%s/SPEC.md id_prefix must be a string", rel))
+	}
+	var dependencies []string
+	if value, ok := doc.Frontmatter["depends_on"]; ok {
+		dependencies, err = stringList(value, rel+"/SPEC.md depends_on")
+		if err != nil {
+			return model.Module{}, loadCause("C12", err)
+		}
+	}
+	zones, err := moduleZones(doc.Frontmatter, defaults, rel)
+	if err != nil {
+		return model.Module{}, loadCause("C12", err)
+	}
+	return model.Module{
+		Name: name, IDPrefix: prefix, Dir: rel, DependsOn: dependencies,
+		Zones: zones, Document: doc,
+	}, nil
 }
 
 func matchesModule(patterns []string, dir string) bool {

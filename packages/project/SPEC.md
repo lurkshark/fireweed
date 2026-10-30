@@ -153,4 +153,16 @@ Check MUST report invalid pending change module targets with diagnostic C07.
 Check MUST report error C07 for a pending change containing eval_fix together
 with fixes or any Added, Modified or Removed spec edits.
 
+### PRJ-047
+LoadAt MUST return the selected Git revision's project configuration and modules, using its recorded fireweed.yaml module globs and module SPEC.md documents rather than working-tree contents.
+
+### PRJ-048
+LoadAt MUST apply the selected revision's module_defaults to omitted zone fields while preserving explicitly empty module zone lists.
+
+### PRJ-049
+LoadAt MUST set Snapshot.Root to the canonical repository root and Module.Dir to each module's repository-relative directory.
+
+### PRJ-050
+LoadAt MUST return an error when the revision cannot be resolved, its recorded fireweed.yaml is missing or malformed, or a matched recorded module directory lacks a readable SPEC.md.
+
 ## Decisions
