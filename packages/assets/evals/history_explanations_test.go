@@ -44,7 +44,7 @@ func Test_AST_036_H03Explanation(t *testing.T) {
 	}
 	requirePattern(t, explanation, `(?i)(restore|reinstate)[^.\n]*original[^.\n]*path`, "restore the original path")
 	requirePattern(t, explanation, `(?i)(restore|reinstate)[^.\n]*original[^.\n]*content`, "restore the original content")
-	requirePattern(t, explanation, `(?i)(add|create)[^.\n]*(new file[^.\n]*new (data|content)|new (data|content)[^.\n]*new file)`, "add a new file for new data")
+	requirePattern(t, explanation, `(?i)(?:^|[.!?]\s+)(?:add|create) (?:a )?new file for new (?:data|content)(?:[.!?]|$)`, "add a new file for new data")
 }
 
 func Test_AST_037_H04Explanation(t *testing.T) {
@@ -54,7 +54,7 @@ func Test_AST_037_H04Explanation(t *testing.T) {
 	}
 
 	requirePattern(t, explanation, `(?i)modif[^.\n]*archiv[^.\n]*change file|archiv[^.\n]*change file[^.\n]*modif`, "modification of an archived change file")
-	requirePattern(t, explanation, `(?i)(allow|permitt|valid|legitimat|may)[^.\n]*delet[^.\n]*archiv(e|ed)[ -]+(change[ -]+)?file[^.\n]*revert|delet[^.\n]*archiv(e|ed)[ -]+(change[ -]+)?file[^.\n]*(allow|permitt|valid|legitimat|may)[^.\n]*revert|archiv(e|ed)[ -]+(change[ -]+)?file[^.\n]*(allow|permitt|valid|legitimat|may)[^.\n]*delet[^.\n]*revert`, "archived file deletion allowed for a revert")
+	requirePattern(t, explanation, `(?i)(?:^|[.!?]\s+)(?:deleting|deletion of) (?:an? |the )?archived (?:change )?file (?:is|remains) (?:allowed|permitted) for (?:a )?revert(?:[.!?]|$)`, "archived file deletion allowed for a revert")
 	requirePattern(t, explanation, `(?i)(restore|revert)[^.\n]*archiv`, "restore the archive")
 	requirePattern(t, explanation, `(?i)(author|create|open|add)[^.\n]*follow.up[^.\n]*pending change`, "author follow-up work as a pending change")
 }
