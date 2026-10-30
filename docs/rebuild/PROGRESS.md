@@ -28,9 +28,12 @@ with594 full passes, one scoped PRJ-047 assertion correction/re-audit, original
 run/IDs/round1 retained, clean/unclaimed archiveea83a82. No CLI completion claim.
 [Dependency](reports/revision-snapshot-0113.md).
 
-**Next:** checks history for check-commits, now that revision loading is usable;
-then H01–H04 explanations and immediate app caller/actual NEW explicit-range
-proof. No whole-library expansion; normal checkpoints remain enforced. Remaining status/management/recipes and final acceptance
+**Current:**0114 checks History authored to consume recorded snapshots and enforce
+H01–H04/content-based phase and squash rules. It is the second consecutive
+history-slice dependency. After its application, honor the checkpoint before a
+third consecutive history change; remaining scoped work is H01–H04 explanations
+and immediate app caller/actual NEW explicit-range proof. Count2 until application.
+No whole-library expansion or new drill authority. Remaining status/management/recipes and final acceptance
 stay open. No new drill or phase-write authority.
 
 ## Approved correction gate
