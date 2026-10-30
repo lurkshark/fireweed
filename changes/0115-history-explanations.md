@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: assets
+phase: audit
+run: 20261030T044031-868ada5b81566b0bb0c4bb59
 ---
 
 
@@ -20,19 +23,19 @@ No API/model changes. Extend the existing Explain lookup under assets/internal.
 
 ## Added
 
-### new:history-protected-explanation
+### AST-034
 Explain MUST describe H01 as a worker phase commit changing a protected path or project playbook override.
 It MUST advise restoring that edit and separating human-owned setup or override work into an author commit outside worker phases.
 
-### new:history-interface-explanation
+### AST-035
 Explain MUST describe H02 as an impl-to-applied commit changing evals or interface files.
 It MUST advise making those edits in the evals step before implementation and reworking the affected phase history before rerunning history checks.
 
-### new:history-append-explanation
+### AST-036
 Explain MUST describe H03 as modifying, deleting or renaming an existing append-only path.
 It MUST advise restoring the original path/content and adding a new file for new data.
 
-### new:history-archive-explanation
+### AST-037
 Explain MUST describe H04 as modifying an archived change file, while allowing archived-file deletion for a revert.
 It MUST advise restoring the archive and authoring follow-up work as a pending change.
 
@@ -62,3 +65,7 @@ separate isolated assertion auditor, controller-owned phases/commits/archive.
 Own under5m/full under15m with unchanged bounds; no matrices, instrumentation or
 extra confidence probes. No bootstrap source/tests, rebuild-v1, deleted/abandoned/
 saved implementation or old worker-log oracles. Return immediately to app caller.
+
+## Provenance
+
+- evals 2026-10-30T04:44:21.63502Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=680 failing=4 passing=676
