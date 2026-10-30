@@ -135,6 +135,22 @@ It MUST advise restoring the original path/content and adding a new file for new
 Explain MUST describe H04 as modifying an archived change file, while allowing archived-file deletion for a revert.
 It MUST advise restoring the archive and authoring follow-up work as a pending change.
 
+### AST-038
+Explain MUST describe B01 as a budget warning when summed JUnit testcase seconds for evaluated modules exceed budgets.verify_time, whose default is 15m.
+It MUST advise reviewing expensive or redundant eval work while preserving required assertions.
+
+### AST-039
+Explain MUST describe B02 as a budget warning when a spec's testcase count exceeds budgets.cases_per_spec, whose default is 15.
+It MUST advise consolidating redundant cases while preserving required behavioral assertions.
+
+### AST-040
+Explain MUST describe B03 as a budget warning when eval lines divided by disposable lines exceed budgets.eval_ratio, whose default is 4, including positive eval lines with zero disposable lines.
+It MUST advise simplifying redundant eval or fixture code while preserving required assertions.
+
+### AST-041
+Explain MUST describe P08 as a warning when at least three consecutive applied changes target the same module.
+It MUST advise reviewing that sequence's scope with the project owner before continuing.
+
 ## Decisions
 
 [0014-go-setup-bundle] Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,

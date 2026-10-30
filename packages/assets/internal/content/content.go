@@ -54,6 +54,9 @@ func Playbook(name string) (string, error) {
 }
 
 var explanations = map[string]string{
+	"B01":   "Budget warning: summed JUnit testcase seconds for evaluated modules exceed budgets.verify_time (default 15m). Review expensive or redundant eval work while preserving required assertions.",
+	"B02":   "Budget warning: a spec's testcase count exceeds budgets.cases_per_spec (default 15). Consolidate redundant cases while preserving required behavioral assertions.",
+	"B03":   "Budget warning: eval lines divided by disposable lines exceed budgets.eval_ratio (default 4); positive eval lines with zero disposable lines also trigger this warning. Simplify redundant eval or fixture code while preserving required assertions.",
 	"C01":   "The project configuration is invalid: fireweed.yaml is missing or has an invalid required setting. Edit the configuration file to correct the reported field, then run fireweed check again.",
 	"C02":   "The module graph is invalid because of an empty module name, a duplicate module name, an empty module prefix, a duplicate module prefix, or a dependency that names an unknown module or creates a cycle. Correct module names and prefixes in SPEC.md so they are nonempty and unique. Correct the module dependency in SPEC.md so it names an existing module and the graph is acyclic.",
 	"C03":   "A document or spec item is unreadable or malformed. Repair the document syntax or restore the missing file, then check it again.",
@@ -88,6 +91,7 @@ var explanations = map[string]string{
 	"P05":   "A change base is stale or mismatches the intended state. Refresh the base through the approved workflow, or restore the intended state through that workflow.",
 	"P06":   "The change is blocked by unresolved Questions. Review the Questions and resolve them before continuing the change.",
 	"P07":   "The shared-base unapproved-work bound has been reached. Review the shared work and synchronize the shared base after approval before starting more unapproved changes.",
+	"P08":   "Warning: at least three consecutive applied changes target the same module. Review the sequence's scope with the project owner before continuing.",
 	"P09":   "An audit submission is incomplete when No findings or the Checked IDs list is missing. Include No findings and a complete Checked IDs list in the audit submission.",
 	"P10":   "Non-blocking regenerate warning: no passing module drill is newer than the module's latest applied implementation. Run a module drill, then review and commit its report.",
 	"P2-01": "Genuine fail-first evidence is missing for an assigned spec ID: its new eval did not fail against the pre-implementation code. Write or correct a test assertion for the specified behavior, rerun the eval before implementing it, and record the failing result.",

@@ -2,7 +2,7 @@
 audit_rounds: 0
 bases: {}
 module: assets
-phase: impl
+phase: applied
 run: 20261030T160730-90595c2d8e254ac14a11cde0
 ---
 
@@ -78,6 +78,7 @@ fifth-change checks; no extra lifecycle or drill.
 
 - evals 2026-10-30T16:17:40.540092Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=712 failing=4 passing=708
 - audit 2026-10-30T16:20:06.725633Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-30T16:25:21.842079Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=712 failing=0 passing=712
 
 ## Audit
 
