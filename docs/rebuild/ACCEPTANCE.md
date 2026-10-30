@@ -196,3 +196,8 @@ The [NEW release proof](reports/release-cli-0106.md) and
 evidence: owned claim removal with retained work, and current-branch phase-ID
 listing after a real Go lifecycle. Unknown/empty cases and unchanged read state
 are recorded. Abandon, remaining management commands and final gates stay open.
+
+The [NEW CI proof](reports/ci-cli-0117.md) adds partial R15/R17/R18 evidence:
+default deterministic Go checks/canaries, --no-doctor and third-module failure
+despite verify_dependents:none, no agent probes. Fixture removed; this is not
+final main-project CI, fresh-checkout or full acceptance evidence.

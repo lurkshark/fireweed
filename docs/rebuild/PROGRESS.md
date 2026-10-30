@@ -9,26 +9,28 @@ retains a real saved attempt, restores phase work/deletes pending change in one
 commit, releases its claim and frees ALP-002 for Start reuse; fixture removed.
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 0; checkpoint0112–0116 PASS.** Separate fixed Sol/high
-quality/goal review found no concrete finding at clean929e32b. Fresh CGO0 build,
-vet, full race, static and explicit history39 commits pass; warnings are explained.
-[Checkpoint](reports/checkpoint-0112-0116.md). Authorized origin push completed e5287d5→1ca04f3; the
-full independent CLI/design ACCEPTANCE remains incomplete.
+**Applied since review: 1 (0117); consecutive-app checkpoint.** Separate fixed
+Sol/high quality/goal review of0112–0116 PASS at929e32b; fresh build/vet/full race/
+static/history39 commits pass. Authorized push origin e5287d5→1ca04f3 completed.
+[Passing gate](reports/checkpoint-0112-0116.md). Count reset only at that gate.
 
-0112 creates project-owned template modules through NEW;0113 loads recorded
-revision snapshots;0114 checks recorded history H01–H04/ranges/squashes;
-0115 accurately explains those codes;0116 wires check-commits. Actual NEW Go
-history/squash/H04 proof PASS with files/HEAD/refs retained and fixture removed.
-See the five reports linked from the checkpoint for counts, phases, scoped audit
-corrections and prefreeze fixture repairs. No phase-write exception or bound/ref/
-count evasion. The explicitly approved consecutive history slice is complete.
+0116 check-commits and0117 ci are now two consecutive app applications.0117 has247
+native passes at2a63214, one persisted scoped assertion correction/re-audit PASS,
+clean/unclaimed archive and actual NEW three-module Go CI/canary/skip/failing-
+Gamma proof PASS, fixture removed. [CI evidence](reports/ci-cli-0117.md). CI is
+local; no push since its implementation. The prior history/template CLI proofs
+remain valid; see the five linked checkpoint reports rather than repeating them.
 
-Next observable slice: expose ci [range] [--no-doctor] through existing public
-static/history/coverage/boundary/doctor interfaces, with actual NEW deterministic
-Go proof. No new dependency library or broad inventory/drill work is required.
-Only0116 is the latest consecutive app application; normal consecutive-module
-checkpoint applies before a third. Five-change policy resumes from0 after this
-passing review; push alone would not reset the count.
+**Required stop before another app change.** SYSTEM.md42 requires stopping
+"before a third consecutive change to the same module/behavior, subject to existing
+explicit human authorization." The approved history continuation covered0115/0116,
+not an additional consecutive app caller. No ref/bound/count adjustment or phase
+exception is proposed. Concrete next proposal: /tmp/fireweed-list-continuation-checkpoint.md.
+Expose list through existing project.Queue as the next small queue-management
+caller, then normal independent audit/full verification and an actual NEW read
+proof. Resume only after owner authorization for this third consecutive app change.
+No third change authored. Full design/ACCEPTANCE remains incomplete, including
+remaining management/PR/drill/recipe/distribution surface and final gates.
 
 ## Approved correction gate
 
@@ -72,10 +74,11 @@ Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
 recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-929e32b9ad13b490920201f09464b912241257b4, Go1.27.2 darwin/arm64, CGO disabled,
-vcs.modified=false. The successful build emitted a nonfatal sandbox denial for Go module-cache
-metadata outside writable roots; binary source/clean state inspected.
+2a63214028a43681556999b7487f5f267ef60a55, Go1.27.2 darwin/arm64, CGO disabled,
+vcs.modified=false. This clean build passed without a warning. The prior checkpoint build
+nonfatal cache-metadata warning remains recorded in its report.
 Build/vet/race/static/history and independent quality review passed at929e32b;
+0117 subsequently passed its required native app verification and actual NEW CI proof;
 actual NEW rejects the recorded invalid mixed-kind fixture before mutation. No final CI/doctor/fresh-checkout/drill/self-hosting
 or overall acceptance claim follows.
 

@@ -535,6 +535,11 @@ before another change. Four changes were applied since the explicit review at
   separate Sol/high quality/goal review, fresh build/vet/race/static/history39
   commits and actual NEW history proof. Count resets0; authorized push/resume next.
 
+- 0117 APP-109–113 composes ci:247 native passes, one scoped assertion correction/
+  re-audit PASS, focused19.869s and actual NEW three-module Go canary/skip/E01
+  [proof PASS](reports/ci-cli-0117.md) at2a63214. Count1; local/unclaimed. Stop before
+  third consecutive app change after0116/0117 under SYSTEM.md42.
+
 ## Historical reference inspection record — superseded by D004
 
 These entries describe the retired controller and original preparation. They supply historical provenance only, not startup instructions or current readiness. PROGRESS.md records the installed stage-2 controller, completed setup and baseline.
