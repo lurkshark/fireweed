@@ -30,8 +30,8 @@ Separate fixed Sol/high subagent `/root/checkpoint_0117_0121` returned PASS: no
 concrete quality/goal finding after inspecting current source/net diff, design
 clauses and linked evidence. It changed no files/refs or ran duplicate checks.
 Its race/history conditions are now satisfied. The full fifth gate is PASS;
-review count resets0 on that review, not from a push alone. Push is authorized
-and pending; no app authoring until that completes. Then immediately app status,
+review count resets0 on that review, not from a push alone. Authorized push1ca04f3→7c5e90e13958d6618558c06760ca20abb1e7fb09 completed;
+actual origin/main was verified by ls-remote, tree synchronized. Immediately app status,
 actual NEW proof, and stop with the caller local as application1 after review.
 This is not whole-goal completion. Full design/ACCEPTANCE,
 final fresh-checkout/CI/doctor/reference/drill/self-hosting/delivery remain open.

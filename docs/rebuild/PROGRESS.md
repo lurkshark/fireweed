@@ -8,7 +8,7 @@ and release/commits/abandon, CI and list. Existing actual CLI evidence is linked
 in HISTORY and the [prior gate](reports/checkpoint-0112-0116.md); preserve it.
 Full design/ACCEPTANCE remains incomplete.
 
-**Applied since review: 0 after passing 0117–0121 review; push pending.**
+**Applied since review: 0; passing 0117–0121 batch pushed. App status next.**
 All native work is archived/unclaimed at clean source79f7113. Current batch:
 [ci](reports/ci-cli-0117.md), [list](reports/list-cli-0118.md),
 [costs](reports/verification-costs-0119.md),
@@ -23,8 +23,8 @@ in the same explanation change with no extra application or bound change.
 
 Fresh CGO0 build/vet/race/static/history and separate fixed Sol/high quality/goal
 review all PASS. History extends929e32b..79f7113 across48 commits with no
-diagnostics. [Current gate](reports/checkpoint-0117-0121.md). Push is authorized
-and next; app authoring waits for its completion. Review count reset0 after
+diagnostics. [Current gate](reports/checkpoint-0117-0121.md). Authorized push1ca04f3→7c5e90e completed; actual origin/main OID was verified.
+App status is now the immediate approved caller. Review count reset0 after
 this passing review, never from a push alone. Existing C01/C18/B02 warnings and the build's nonfatal
 module stat-cache warning retain recorded explanations; zero warnings is not a gate.
 
