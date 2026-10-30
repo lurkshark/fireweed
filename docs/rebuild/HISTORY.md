@@ -8,6 +8,8 @@ repeat passed work because an older entry calls it pending.
 
 ## Applied changes through 0111
 
+[0106–0111 checkpoint](reports/checkpoint-0106-0111.md) PASS: separate Sol/high quality/goal review and clean3118387 build/vet/race/static/history44 commits. Actual NEW release/commits/abandon proofs pass; documented recoveries and fixture setup corrections retain honest evidence. Five applications reviewed; count resets0. Push/resume authorized, final gates remain open.
+
 [0079–0083 checkpoint](reports/checkpoint-0079-0083.md) PASS: separate subagent
 review and fresh build/vet/race/static/history at clean 6ce22e9; 38 new history
 commits have zero diagnostics. Actual NEW Next and bounded Run fixtures pass.

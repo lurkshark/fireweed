@@ -1,56 +1,24 @@
 # Rebuild progress
 
-## Current handoff — 2026-10-29
+## Current handoff — 2026-10-30
 
-NEW proves manual lifecycle/setup, bounded next/run, recovery/resume, agent-
-commit undo, time/usage stops and valid maintenance/eval-fix/ordinary-fix/
-regenerate paths. Latest actual Go proofs: regenerate start deletes disposable
-code and shows P10/context; owned next reconstructs and archives in one commit.
-An ordinary fix then proves real fail-first/pass through three checked phases.
-Both fixtures clean/unclaimed and removed. [0102 proofs](reports/regenerate-fixes-cli-0102.md).
+NEW proves manual lifecycle/setup, bounded next/run and recovery/resume,
+agent-commit undo, time/usage stops, maintenance/eval-fix/ordinary-fix/regenerate,
+and release/commits/abandon. Latest [actual Go abandon proof](reports/abandon-cli-0111.md)
+retains a real saved attempt, restores phase work/deletes pending change in one
+commit, releases its claim and frees ALP-002 for Start reuse; fixture removed.
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 5 (0106–0108, 0110–0111); checkpoint pending.** The owner-approved0104–0105 corrections pass:
-central C07 rejects mixed eval_fix with fixes/spec edits; C07 explains the cause
-and separation action. Same scoped Sol/high checkpoint reviewer PASS plus
-actual NEW rejection, build/vet/race/static/history16 commits pass at clean4cf21a1.
-Seven applications reviewed, count reset only at passing gate. See
-[correction gate](reports/checkpoint-corrections-0104-0105.md).
-Authorized correction push succeeded: origin/main dac2d16→5358b5f.
-0107 recovered and archiveddf7c125 with384 full/105 own passes; isolated
-FLOW-087 re-audit PASS, original run/IDs and round1 retained. Both0107 phase
-exceptions consumed; invalid mechanical audits remain historical. Tree clean,
-no governing claim. [Recovery](reports/recovery-0107.md).
+**Applied since review: 0.** Separate Sol/high quality/goal review of0106–0108,
+0110–0111 PASS at clean3118387; fresh build/vet/race/static/history44 commits
+pass. Canceled0109 is not an application; approved recoveries and two fixture
+setup corrections are disclosed. [Checkpoint](reports/checkpoint-0106-0111.md).
+Count resets only at this passing gate. Origin push is authorized and next.
 
-0106 now exposes workflow.Release through NEW. Actual nested Go start/release
-retains exact dirty files/runtime/HEAD while dropping only the owned claim;
-repeated release returns P02.203 native/own passes and restricted audit PASS;
-fixture removed. [Release proof](reports/release-cli-0106.md).
-
-0108 exposes workflow.Commits through NEW. Actual Go next then plain/JSON
-listing matches all three phase OIDs; empty history/U02 cases pass, read state
-unchanged, clean/unclaimed fixture removed.209 full native passes and scoped
-APP-095 re-audit PASS. [Commits proof](reports/commits-cli-0108.md).
-
-0109 was natively canceled after an extra frozen lookup assertion contradicted
-existing FLOW-061 (U02). Owner approved native recovery: only its uncommitted
-implementation/notes restored, claim released and phases natively abandoned.
-Public contract and corrected eval retained; discarded private implementation
-excluded. [Recovery](reports/recovery-0109.md). No governing claim at author boundary.
-
-0110 now archives the fresh abandon dependency with402 full passes and restricted
-audit PASS, without discarded0109 private inputs. Tree clean/unclaimed atb1b450f.
-
-0111 exposes abandon through NEW with217 full passes and scoped APP-097 re-audit
-PASS. Actual Go exhaustion → abandon → ID reuse proof passes: phase work undone,
-pending doc removed in one commit, real attempt retained, claim released, ALP-002
-reused. Two fixture-only setup corrections recorded; fixture removed.
-[Slice evidence](reports/abandon-cli-0111.md).
-
-**Next:** mandatory fifth-application separate Sol/high quality/goal review plus
-fresh build/vet/race/static and explicit history extension. Stop on any finding;
-PASS authorizes origin push and continued remaining management surface. Remaining
-full design/ACCEPTANCE gates stay open.
+**Next:** push the passing checkpoint, then complete new-module scaffolding
+through NEW, returning promptly from any dependency to its app caller/actual
+CLI proof. Remaining management commands and all final acceptance gates stay
+open. Normal five-change, blocked and consecutive-module/behavior stops apply.
 
 ## Approved correction gate
 
@@ -94,9 +62,9 @@ Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
 recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-f82019a4f8368a639231d8075f917be398bb7957, Go1.27.2 darwin/arm64, CGO disabled,
+3118387c606b0af2746d42f66ed81ef0d8f69e39, Go1.27.2 darwin/arm64, CGO disabled,
 vcs.modified=false. This build completed without a warning.
-Build/vet/race/static/history and scoped quality review passed at4cf21a1;
+Build/vet/race/static/history and independent quality review passed at3118387;
 actual NEW rejects the recorded invalid mixed-kind fixture before mutation. No final CI/doctor/fresh-checkout/drill/self-hosting
 or overall acceptance claim follows.
 
