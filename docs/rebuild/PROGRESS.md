@@ -7,7 +7,13 @@ agent-commit undo, time/usage stops, maintenance/eval-fix/ordinary-fix/regenerat
 release/commits/abandon, CI, list and now status. Reuse the linked HISTORY and
 reports; full design/ACCEPTANCE remains incomplete.
 
-**Applied since review: 1; approved PR-body slice now active.**
+**Applied since review: 2; workflow PR-body report archived; B04 Explain next.**
+[0123 report](reports/pr-body-report-0123.md) applied FLOW-114–125 atb370909:
+475 native passes, independent isolated audit PASS round0, frozen contracts
+retained. A scoped implementation correction followed an intentional precommit
+interruption; replacement full Done passed, no block or exception. No claim or
+pending change remains. Backend emits B04; Explain and the immediate app/NEW
+proof are still required to close the approved slice.
 Owner answered "Approve PR-body slice" for
 `/tmp/fireweed-pr-body-continuation-checkpoint.md`: workflow explicit-range report,
 then emitted B04 explanation, then thin app caller and actual NEW proof. Three

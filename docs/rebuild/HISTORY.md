@@ -585,6 +585,12 @@ before another change. Four changes were applied since the explicit review at
   checkpoint with public assertions preserved and both exceptions consumed.
   Count1 since review; clean/unclaimed, caller local and stopped as approved.
 
+
+- 0123 FLOW-114–125 [PR-body report](reports/pr-body-report-0123.md) applied
+  atb370909:475 native passes, isolated independent audit PASS round0 and scoped
+  implementation corrections with frozen contracts. Count2; B04 Explain then
+  immediate app/actual NEW proof remain; no push or CLI/full-goal completion claim.
+
 ## Historical reference inspection record — superseded by D004
 
 These entries describe the retired controller and original preparation. They supply historical provenance only, not startup instructions or current readiness. PROGRESS.md records the installed stage-2 controller, completed setup and baseline.
