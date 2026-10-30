@@ -6,7 +6,7 @@ they are not current instructions, permissions or readiness claims. Resume from
 [PROGRESS.md](PROGRESS.md). Preserve evidence and checkpoint history; do not
 repeat passed work because an older entry calls it pending.
 
-## Applied changes through 0110
+## Applied changes through 0111
 
 [0079–0083 checkpoint](reports/checkpoint-0079-0083.md) PASS: separate subagent
 review and fresh build/vet/race/static/history at clean 6ce22e9; 38 new history
@@ -25,6 +25,7 @@ further work awaits an owner decision.
 
 [Approved0104–0105 correction gate](reports/checkpoint-corrections-0104-0105.md) PASS: same scoped Sol/high checkpoint reviewer, actual NEW mixed-kind rejection, fresh build/vet/race/static/history16 commits all pass at clean4cf21a1. Seven applications reviewed; count resets0, push/resume authorized.
 
+- 0111 abandon-command — APP-097–099;8a8997e/10ac6dd/98241c6/0c734ac/f82019a.217 cases7 failures/210 passes →217 full passes; nearest-root assertion correction and scoped re-audit PASS,8 focused passes. Actual NEW Go exhaustion/abandon/attempt retention/ID reuse PASS; fixture removed, count5 checkpoint pending. [Report](reports/abandon-cli-0111.md).
 - Canceled0109 abandon-change — native abandon a4f515f, owner-approved wrong-new-eval recovery. No application; Current FLOW-061 remains U02, public obligations/assertions retained with corrected extra prefix; discarded private implementation excluded. Fresh0110 and caller next; count3. [Recovery](reports/recovery-0109.md).
 - 0110 abandon-unapplied — FLOW-089–096; ae0e7fb/4b19899/b1b450f.402 cases12 failures/390 passes →402 full passes; independent restricted audit PASS,12 focused impl passes. Fresh implementation excludes canceled0109 private inputs; count4, immediate app caller next. [Recovery](reports/recovery-0109.md).
 - 0108 commits-command — APP-094/095/096; cbea8fb/d8401ff/1ee7853/890c3e2/6143176. Both native eval rounds209 cases5 failures/204 passes →209 full passes; APP-095 code-assertion correction/scoped re-audit PASS,6 focused impl passes. Actual NEW Go lifecycle/ordered phase listing/empty history/U02 proof PASS, read state unchanged and fixture removed; count3. [Report](reports/commits-cli-0108.md).

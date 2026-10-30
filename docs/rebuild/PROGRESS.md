@@ -10,7 +10,7 @@ An ordinary fix then proves real fail-first/pass through three checked phases.
 Both fixtures clean/unclaimed and removed. [0102 proofs](reports/regenerate-fixes-cli-0102.md).
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 4 (0106–0108, 0110).** The owner-approved0104–0105 corrections pass:
+**Applied since review: 5 (0106–0108, 0110–0111); checkpoint pending.** The owner-approved0104–0105 corrections pass:
 central C07 rejects mixed eval_fix with fixes/spec edits; C07 explains the cause
 and separation action. Same scoped Sol/high checkpoint reviewer PASS plus
 actual NEW rejection, build/vet/race/static/history16 commits pass at clean4cf21a1.
@@ -41,10 +41,16 @@ excluded. [Recovery](reports/recovery-0109.md). No governing claim at author bou
 0110 now archives the fresh abandon dependency with402 full passes and restricted
 audit PASS, without discarded0109 private inputs. Tree clean/unclaimed atb1b450f.
 
-**Next:** immediate abandon app caller/NEW proof, then
-fifth-application quality/goal review and appropriate checks. Owner explicitly
-authorized consecutive recovery/caller work; the caller becomes application5.
-Remaining management surface and final acceptance stay open.
+0111 exposes abandon through NEW with217 full passes and scoped APP-097 re-audit
+PASS. Actual Go exhaustion → abandon → ID reuse proof passes: phase work undone,
+pending doc removed in one commit, real attempt retained, claim released, ALP-002
+reused. Two fixture-only setup corrections recorded; fixture removed.
+[Slice evidence](reports/abandon-cli-0111.md).
+
+**Next:** mandatory fifth-application separate Sol/high quality/goal review plus
+fresh build/vet/race/static and explicit history extension. Stop on any finding;
+PASS authorizes origin push and continued remaining management surface. Remaining
+full design/ACCEPTANCE gates stay open.
 
 ## Approved correction gate
 
@@ -88,7 +94,7 @@ Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
 recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-6143176f793d965f0670f15a9f19afb0c066705f, Go1.27.2 darwin/arm64, CGO disabled,
+f82019a4f8368a639231d8075f917be398bb7957, Go1.27.2 darwin/arm64, CGO disabled,
 vcs.modified=false. This build completed without a warning.
 Build/vet/race/static/history and scoped quality review passed at4cf21a1;
 actual NEW rejects the recorded invalid mixed-kind fixture before mutation. No final CI/doctor/fresh-checkout/drill/self-hosting
