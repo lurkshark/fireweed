@@ -9,19 +9,25 @@ retains a real saved attempt, restores phase work/deletes pending change in one
 commit, releases its claim and frees ALP-002 for Start reuse; fixture removed.
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 0.** Separate Sol/high quality/goal review of0106–0108,
+**Applied since review: 1 (0112).** Separate Sol/high quality/goal review of0106–0108,
 0110–0111 PASS at clean3118387; fresh build/vet/race/static/history44 commits
 pass. Canceled0109 is not an application; approved recoveries and two fixture
 setup corrections are disclosed. [Checkpoint](reports/checkpoint-0106-0111.md).
 Count resets only at this passing gate. Authorized origin push completed
 5358b5f→e5287d5.
 
-**Current:**0112 new-module app slice authored from the design: use project-owned
-templates and current public project/contracts helpers, then actual NEW init
---no-app/new-module/modules/check/duplicate proof. No public API change. This is
-the second consecutive app application after0111; a third needs its normal
-checkpoint. Count0 until application. Remaining management commands and all final acceptance gates stay
-open. Normal five-change, blocked and consecutive-module/behavior stops apply.
+0112 now creates modules from project-owned templates through NEW:236 full passes,
+restricted audit PASS, actual Go template/substitution/discovery/check/duplicate
+proof PASS, fixture removed. New case-budget warnings17/19 are recorded with
+bounded runtime; no budget increase. [Evidence](reports/new-module-cli-0112.md).
+This is the second consecutive app application after0111; checkpoint before a
+third app change remains required.
+
+**Next:** check-commits vertical slice. Existing checks API has no history
+operation and H01–H04 explanations are absent. Add only the required checks
+history dependency, accurate explanations and immediate app caller/actual NEW
+explicit-range proof. Remaining status/management/recipes and final acceptance
+stay open. No new drill or phase-write authority.
 
 ## Approved correction gate
 
@@ -65,7 +71,7 @@ Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
 recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-3118387c606b0af2746d42f66ed81ef0d8f69e39, Go1.27.2 darwin/arm64, CGO disabled,
+e9db0078a521228687cb175a5e33f2707e0b47a3, Go1.27.2 darwin/arm64, CGO disabled,
 vcs.modified=false. This build completed without a warning.
 Build/vet/race/static/history and independent quality review passed at3118387;
 actual NEW rejects the recorded invalid mixed-kind fixture before mutation. No final CI/doctor/fresh-checkout/drill/self-hosting

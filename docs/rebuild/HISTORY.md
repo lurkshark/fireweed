@@ -6,7 +6,7 @@ they are not current instructions, permissions or readiness claims. Resume from
 [PROGRESS.md](PROGRESS.md). Preserve evidence and checkpoint history; do not
 repeat passed work because an older entry calls it pending.
 
-## Applied changes through 0111
+## Applied changes through 0112
 
 [0106–0111 checkpoint](reports/checkpoint-0106-0111.md) PASS: separate Sol/high quality/goal review and clean3118387 build/vet/race/static/history44 commits. Actual NEW release/commits/abandon proofs pass; documented recoveries and fixture setup corrections retain honest evidence. Five applications reviewed; count resets0. Push/resume authorized, final gates remain open.
 
@@ -27,6 +27,7 @@ further work awaits an owner decision.
 
 [Approved0104–0105 correction gate](reports/checkpoint-corrections-0104-0105.md) PASS: same scoped Sol/high checkpoint reviewer, actual NEW mixed-kind rejection, fresh build/vet/race/static/history16 commits all pass at clean4cf21a1. Seven applications reviewed; count resets0, push/resume authorized.
 
+- 0112 new-module-command — APP-100–104;7051733/1bb72b8/e9db007.236 cases12 failures/224 passes →236 full passes; isolated audit PASS,19 focused passes. Actual NEW project-owned template creation/discovery/check/duplicate preservation and Go compilation PASS, fixture removed. Count1; B0217/19 warnings recorded with bounded runtime. [Report](reports/new-module-cli-0112.md).
 - 0111 abandon-command — APP-097–099;8a8997e/10ac6dd/98241c6/0c734ac/f82019a.217 cases7 failures/210 passes →217 full passes; nearest-root assertion correction and scoped re-audit PASS,8 focused passes. Actual NEW Go exhaustion/abandon/attempt retention/ID reuse PASS; fixture removed, count5 checkpoint pending. [Report](reports/abandon-cli-0111.md).
 - Canceled0109 abandon-change — native abandon a4f515f, owner-approved wrong-new-eval recovery. No application; Current FLOW-061 remains U02, public obligations/assertions retained with corrected extra prefix; discarded private implementation excluded. Fresh0110 and caller next; count3. [Recovery](reports/recovery-0109.md).
 - 0110 abandon-unapplied — FLOW-089–096; ae0e7fb/4b19899/b1b450f.402 cases12 failures/390 passes →402 full passes; independent restricted audit PASS,12 focused impl passes. Fresh implementation excludes canceled0109 private inputs; count4, immediate app caller next. [Recovery](reports/recovery-0109.md).
