@@ -8,7 +8,7 @@ and release/commits/abandon, CI and list. Existing actual CLI evidence is linked
 in HISTORY and the [prior gate](reports/checkpoint-0112-0116.md); preserve it.
 Full design/ACCEPTANCE remains incomplete.
 
-**Applied since review: 5 (0117–0121); mandatory review/checks pending.**
+**Applied since review: 0 after passing 0117–0121 review; push pending.**
 All native work is archived/unclaimed at clean source79f7113. Current batch:
 [ci](reports/ci-cli-0117.md), [list](reports/list-cli-0118.md),
 [costs](reports/verification-costs-0119.md),
@@ -21,11 +21,11 @@ implementation or old worker-log reuse, manual phase/ref/counter reset or drill.
 B01/B02/B03/P08 proof. P08 is the newly emitted status-warning companion, added
 in the same explanation change with no extra application or bound change.
 
-Fresh CGO0 build, vet and controller static check passed. Race and explicit-range
-history are running; separate Sol/high quality/goal review is pending.
-[Current gate](reports/checkpoint-0117-0121.md). No new product authoring or push
-before the full gate passes. Count remains5 until the passing review, never
-reset by a push alone. Existing C01/C18/B02 warnings and the build's nonfatal
+Fresh CGO0 build/vet/race/static/history and separate fixed Sol/high quality/goal
+review all PASS. History extends929e32b..79f7113 across48 commits with no
+diagnostics. [Current gate](reports/checkpoint-0117-0121.md). Push is authorized
+and next; app authoring waits for its completion. Review count reset0 after
+this passing review, never from a push alone. Existing C01/C18/B02 warnings and the build's nonfatal
 module stat-cache warning retain recorded explanations; zero warnings is not a gate.
 
 Owner: "Approve recovery and revised slice", for
@@ -83,8 +83,8 @@ NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
 79f71130cde2777686c0681142fdd2a89e062ca4, Go1.27.2 darwin/arm64, CGO disabled,
 vcs.modified=false. Build passed with the known nonfatal module-cache metadata
 warning, recorded in the current checkpoint report; no source fix/rebuild needed.
-Build/vet/race/static/history and independent quality review passed at929e32b;
-0117/0118 subsequently passed required native app verification and actual NEW CI/list proofs;
+Build/vet/race/static/history and independent quality review passed at79f7113;
+actual NEW CI/list proofs remain valid and the four-warning Explain proof passed;
 actual NEW rejects the recorded invalid mixed-kind fixture before mutation. No final CI/doctor/fresh-checkout/drill/self-hosting
 or overall acceptance claim follows.
 

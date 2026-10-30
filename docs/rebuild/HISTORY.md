@@ -572,6 +572,10 @@ before another change. Four changes were applied since the explicit review at
   applied at79f7113:712 native passes, isolated audit PASS round0 and actual NEW
   four-code Explain proof PASS. Count5; separate quality/goal review/fresh checks
   pending before push and immediate app status/NEW proof. No final-goal claim.
+- Fifth gate0117–0121 PASS at79f7113: fixed Sol/high quality/goal subagent PASS,
+  clean CGO0 build/actual Explain, vet/race/static and48-commit explicit history
+  extension PASS. Review count0; authorized push next, then immediate app status
+  and NEW proof/local stop. [Gate](reports/checkpoint-0117-0121.md).
 
 ## Historical reference inspection record — superseded by D004
 

@@ -1,4 +1,4 @@
-# Checkpoint 0117–0121 — review/checks pending
+# Checkpoint 0117–0121 — PASS
 
 Five applications since the passing 0112–0116 review: ci, list, recorded costs,
 status read model and status-warning explanations. Source under review is clean
@@ -18,13 +18,20 @@ and C18 repeated shared clauses retain the prior recorded explanation. The
 build's nonfatal module stat-cache metadata warning is recorded in the warning
 report; inspected binary metadata matches source/CGO0/vcs.modified=false.
 
-Race and explicit-range controller history are running. History range:
+Fresh go test -race ./... passed: app304.362s, assets17.322s, checks248.336s,
+gitstore7.617s, project4.461s, runner230.419s and workflow155.053s; unchanged
+contracts used valid cached results. Explicit-range controller history passed48
+commits with no diagnostics or squash entries. History range:
 929e32b9ad13b490920201f09464b912241257b4..79f71130cde2777686c0681142fdd2a89e062ca4,
 extending the last valid source range rather than an empty default range.
 Logs: `/tmp/fireweed-checkpoint-0117-0121-{build,vet,race,check,history}.log`.
 
-Separate fixed Sol/high quality/goal review is pending. No gate PASS or push is
-claimed. Stop on a finding or failed check; push only when the full gate passes.
-Then immediately author app status, prove actual NEW behavior, and stop with
-that caller local as the first application after review. Full design/ACCEPTANCE,
+Separate fixed Sol/high subagent `/root/checkpoint_0117_0121` returned PASS: no
+concrete quality/goal finding after inspecting current source/net diff, design
+clauses and linked evidence. It changed no files/refs or ran duplicate checks.
+Its race/history conditions are now satisfied. The full fifth gate is PASS;
+review count resets0 on that review, not from a push alone. Push is authorized
+and pending; no app authoring until that completes. Then immediately app status,
+actual NEW proof, and stop with the caller local as application1 after review.
+This is not whole-goal completion. Full design/ACCEPTANCE,
 final fresh-checkout/CI/doctor/reference/drill/self-hosting/delivery remain open.
