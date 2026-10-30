@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: checks
+phase: audit
+run: 20261030T025913-b1814486063e4bf2bf4245fa
 ---
 
 
@@ -28,36 +31,36 @@ operational failures are errors rather than clean reports.
 
 ## Added
 
-### new:history-range
+### CHK-070
 History MUST list full commit IDs selected by the supplied Git revision range in oldest-first topological order.
 For an empty range it MUST use the merge base of HEAD and the locally resolved configured base through HEAD.
 
-### new:history-phase
+### CHK-071
 History MUST identify worker commits from new phase assignments in change-file contents across pending/archive moves, rather than commit subjects.
 Deleting a change document without assigning a phase MUST not by itself classify the commit as a worker commit.
 
-### new:history-protected
+### CHK-072
 History MUST report H01 when a worker commit changes a protected path or a project playbook override.
 
-### new:history-implementation
+### CHK-073
 History MUST report H02 when an impl-to-applied phase commit changes evals or interface zones.
 
-### new:history-append-only
+### CHK-074
 History MUST report H03 when any commit modifies, deletes or renames an existing append_only path, including merge-resolution changes identified by combined Git diffs.
 
-### new:history-archive
+### CHK-075
 History MUST report H04 when a commit modifies an existing file under changes/archive.
 Deleting an archived change file MUST remain allowed by H04.
 
-### new:history-squash
+### CHK-076
 History MUST recognize each new applied phase whose parents lack an impl phase as squashed, listing its commit and change without a warning.
 H01 and H02 MUST not apply to those squashed commits.
 H03 and H04 MUST still apply.
 
-### new:history-attribution
+### CHK-077
 History MUST return each rule finding as a Diagnostic with its H01–H04 code, repository-relative Path and full commit ID in Message, using the recorded before/after zone maps and the worker change's projected set values.
 
-### new:history-errors
+### CHK-078
 History MUST return an error when a revision range or required recorded project/change document cannot be read or parsed.
 
 ## Modified
@@ -96,3 +99,7 @@ files/other modules, raise limits or add instrumentation. Own under5m/full under
 only representative cases/spec near15. No extra doctor probes, drills, CI or
 PR-body implementation in this dependency. Accurate H01–H04 explanations and
 app caller remain required before observable CLI completion.
+
+## Provenance
+
+- evals 2026-10-30T03:45:47.55804Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=524 failing=20 passing=504

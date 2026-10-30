@@ -17,6 +17,8 @@ type ZoneRequest = model.ZoneRequest
 type DoctorRequest = model.DoctorRequest
 type DoctorCheck = model.DoctorCheck
 type DoctorReport = model.DoctorReport
+type HistoryReport = model.HistoryReport
+type SquashedChange = model.SquashedChange
 
 func ParseJUnit(data []byte, specs []contracts.Item) (Report, error) {
 	return engine.ParseJUnit(data, specs)
@@ -39,4 +41,7 @@ func Boundaries(ctx context.Context, request BoundaryRequest) ([]project.Diagnos
 func Zones(request ZoneRequest) []project.Diagnostic { return engine.Zones(request) }
 func Doctor(ctx context.Context, request DoctorRequest) DoctorReport {
 	return engine.Doctor(ctx, request)
+}
+func History(root, revisionRange string) (HistoryReport, error) {
+	return engine.History(root, revisionRange)
 }

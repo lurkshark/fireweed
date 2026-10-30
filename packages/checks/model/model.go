@@ -64,3 +64,14 @@ type DoctorReport struct {
 	Checks      []DoctorCheck
 	Diagnostics []project.Diagnostic
 }
+
+type HistoryReport struct {
+	Commits     []string
+	Squashed    []SquashedChange
+	Diagnostics []project.Diagnostic
+}
+
+type SquashedChange struct {
+	Commit string
+	Change string
+}
