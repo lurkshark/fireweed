@@ -2,7 +2,7 @@
 audit_rounds: 0
 bases: {}
 module: app
-phase: impl
+phase: applied
 run: 20261030T063511-92982ff89d0d2ea4ed17a021
 ---
 
@@ -82,6 +82,7 @@ one-change consecutive-app scope. No further recovery on block without owner.
 
 - evals 2026-10-30T06:41:28.560667Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=250 failing=3 passing=247
 - audit 2026-10-30T06:42:52.240685Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-30T06:50:05.486115Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=250 failing=0 passing=250
 
 ## Audit
 

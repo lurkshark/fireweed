@@ -432,6 +432,23 @@ Successful ci --json MUST emit schema1 confirmation-string data and collected di
 Failures MUST emit null data with code/message diagnostics.
 It MUST leave stderr empty.
 
+### APP-114
+list MUST discover the nearest project root and list project.Queue entries in returned order.
+Plain success MUST return exit0 and identify every queued change by slug, path and module, with empty output for an empty queue.
+
+### APP-115
+Each listed entry MUST report its phase, using queued when the phase is absent.
+It MUST report the blocked reason and audit rounds, using an empty reason and zero rounds when absent.
+
+### APP-116
+Usage and project configuration errors MUST return exit2 with corrective guidance, using U01 for usage and the existing cause code for configuration.
+Queue failures MUST return exit1 with their existing cause code and corrective guidance.
+
+### APP-117
+Successful list --json MUST emit schema1 ordered-array data with slug, path, module, phase, blocked and audit_rounds fields, including an empty array for an empty queue, and empty diagnostics.
+Failures MUST emit null data with code/message diagnostics.
+It MUST leave stderr empty.
+
 ## Decisions
 
 [0069-project-initialization] Init accepts codex and claude presets as argv commands; other selections are shell command templates containing {prompt}, stored as strings for one-pass quoted substitution when execution is implemented. Local recipes use recipe.yaml metadata, recipe.md instructions and a files/ project-relative payload; none uses empty language defaults and a generic module scaffold.

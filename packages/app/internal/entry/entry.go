@@ -27,7 +27,7 @@ type envelope struct {
 }
 
 var pending = map[string]bool{
-	"list": true, "status": true,
+	"status":  true,
 	"pr-body": true,
 	"drill":   true, "gc": true, "migrate": true,
 }
@@ -210,6 +210,11 @@ func Run(args []string, out, errOut io.Writer) int {
 		return runCheckCommits(positional[1:], jsonMode, out, errOut)
 	case "ci":
 		return runCI(positional[1:], noDoctor, jsonMode, out, errOut)
+	case "list":
+		if count != 0 {
+			return fail("U01", fmt.Sprintf("list takes no arguments; unexpected argument %q. Use list [--json].", positional[1]))
+		}
+		return runList(jsonMode, out, errOut)
 	case "next":
 		if count != 0 {
 			return fail("U01", "next takes no arguments. Use next [--allow-unmerged] [--json].")
