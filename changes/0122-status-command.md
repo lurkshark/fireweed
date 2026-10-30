@@ -4,7 +4,7 @@ audit_pending:
 audit_rounds: 1
 bases: {}
 module: app
-phase: evals
+phase: audit
 run: 20261030T171150-8d03756934b1f245e4cc8ad6
 ---
 
@@ -116,6 +116,7 @@ actual NEW status proof and stop local at count1; no push or drill.
 
 - evals 2026-10-30T17:17:22.342304Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=253 failing=3 passing=250
 - audit 2026-10-30T17:19:05.206718Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- evals 2026-10-30T17:24:53.398573Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=253 failing=3 passing=250
 
 ## Audit
 

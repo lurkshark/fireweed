@@ -319,6 +319,29 @@ func Test_APP_118_APP_119_APP_120_APP_121_APP_122_APP_123_APP_124_APP_125_Status
 			}
 		}
 	}
+	// Cost rows distinguish measurements from module, queue and quarantine metadata.
+	costRows := map[string]int{}
+	for _, line := range strings.Split(plain, "\n") {
+		fields := strings.Fields(line)
+		if len(fields) < 2 {
+			continue
+		}
+		label := strings.TrimSuffix(strings.ToLower(fields[0]), ":")
+		if label == "cost" || label == "metric" {
+			costRows[strings.TrimSuffix(fields[1], ":")]++
+		}
+	}
+	if len(costRows) != len(report.Costs) {
+		t.Errorf("plain status cost rows=%v; want one per recorded cost, with none for unmeasured gamma", costRows)
+	}
+	for _, cost := range report.Costs {
+		if costRows[cost.Module] != 1 {
+			t.Errorf("plain status cost rows for %s=%d; want 1", cost.Module, costRows[cost.Module])
+		}
+	}
+	if costRows["gamma"] != 0 {
+		t.Errorf("plain status fabricated gamma cost row: %v", costRows)
+	}
 	for _, d := range report.Diagnostics {
 		if !strings.Contains(plain+stderr, d.Code) || !strings.Contains(plain+stderr, d.Message) {
 			t.Errorf("plain status missing diagnostic %+v in stdout=%q stderr=%q", d, plain, stderr)
