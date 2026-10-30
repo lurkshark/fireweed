@@ -1,0 +1,77 @@
+---
+already_satisfied:
+    - APP-008
+    - APP-025
+bases:
+    APP-008: a90726f5
+    APP-025: cb2c30f2
+module: app
+---
+
+
+
+## Motivation
+
+The design Specs/Spec history and CLI inventory require show <module> [ID]
+--history to explain specs from archived changes. The project query now works;
+wire it immediately through NEW with plain/schema1 JSON and actual proof, then
+stop with this caller local at application1 after the passing0122–0126 review.
+The owner explicitly approved this continuation and fifth-review/push sequence.
+
+## Interface
+
+No public interface or dependency changes. Add only app internal option parsing,
+a thin project.SpecHistory caller and rendering. Preserve current/projected show
+behavior. Qualify APP-008 and APP-025 to their existing non-history scope, reusing
+all existing assertions as already_satisfied. Evals may extend only the existing
+APP-001 blind PATH-recorder loop with history plain/JSON calls, preserving its
+assertions and adding no second convention observer. No eval-phase behavior stub
+is needed: --history is currently rejected as unsupported.
+
+## Added
+
+### new:history-plain
+show <module> [ID] --history MUST discover the nearest project root, call project.SpecHistory with the optional ID filter and return its entries in order with exit0.
+Plain output MUST include each archive path, module, matching IDs, implementation date, Motivation, added and removed Decisions and complete Provenance.
+Empty history MUST print an explicit no-history message with exit0.
+
+### new:history-json
+Successful show --history --json MUST emit schema1 with ordered array data, empty diagnostics and empty stderr.
+Each row MUST contain path, module, ids, motivation, decisions, removed_decisions, provenance and implementation_date keys; dates MUST be RFC3339 timestamps or an empty string when undated.
+Empty history MUST use an empty array.
+
+### new:history-options
+--history MUST be accepted only with show and MUST reject combination with --projected, using exit2 and a corrective U01 diagnostic for either misuse.
+
+### new:history-errors
+History lookup failures MUST return exit2 with U02 naming the rejected module or ID; missing or malformed project configuration MUST return exit2 with C01.
+Other project.SpecHistory failures MUST return exit1 retaining their cause code and corrective guidance.
+JSON failures MUST emit null data with code/message diagnostics and empty stderr; plain failures MUST leave stdout empty and print diagnostics on stderr.
+
+## Modified
+
+### APP-008
+Without --history, show <module> [ID] MUST return the current module document or selected item, using the whole-queue project projection with --projected.
+
+### APP-025
+Without --history, show --json MUST return identical text as schema-1 string data with empty diagnostics and exit 0 on success.
+
+## Removed
+
+
+
+## Decisions
+
+History JSON uses lowercase keys and preserves project query section strings;
+plain output labels each section and identifies undated entries explicitly.
+
+## Notes
+
+Owner-approved immediate caller after fifth gate PASS and verified origin push
+5610268. Independent exact Sol/high workers and isolated restricted assertion
+auditor; max2 persisted rounds/re-audit only prior finding IDs. Own Verify <5m,
+full <15m; representative fixtures, no extra instrumentation. Frozen contracts,
+no protected/other-module edits, no worker commits/phase/claim/ref writes.
+After normal archive, clean-build NEW and prove actual history output in one
+disposable authored-archive fixture; record results and stop local at count1.
+No second push, phase exception, drill, GC or further dependency is authorized.
