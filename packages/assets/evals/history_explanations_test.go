@@ -28,7 +28,8 @@ func Test_AST_035_H02Explanation(t *testing.T) {
 
 	requirePattern(t, explanation, `(?i)impl.to.applied[^.\n]*commit[^.\n]*(chang|edit|touch)[^.\n]*eval`, "impl-to-applied commit changing evals")
 	requirePattern(t, explanation, `(?i)impl.to.applied[^.\n]*commit[^.\n]*(chang|edit|touch)[^.\n]*interface file`, "impl-to-applied commit changing interface files")
-	requirePattern(t, explanation, `(?i)(make|move|put|do)[^.\n]*(eval|interface)[^.\n]*edit[^.\n]*evals step[^.\n]*before[^.\n]*implementation`, "make eval or interface edits in the evals step before implementation")
+	requirePattern(t, explanation, `(?i)(make|move|put|do)[^.\n]*(eval[^.\n]*edit|edit[^.\n]*eval)[^.\n]*evals step[^.\n]*before[^.\n]*implementation`, "make eval edits in the evals step before implementation")
+	requirePattern(t, explanation, `(?i)(make|move|put|do)[^.\n]*(interface[^.\n]*edit|edit[^.\n]*interface)[^.\n]*evals step[^.\n]*before[^.\n]*implementation`, "make interface edits in the evals step before implementation")
 	requirePattern(t, explanation, `(?i)(rework|repair|rewrite|correct)[^.\n]*phase history[^.\n]*before[^.\n]*(rerun|repeat)[^.\n]*history check`, "rework phase history before rerunning history checks")
 }
 
@@ -43,7 +44,7 @@ func Test_AST_036_H03Explanation(t *testing.T) {
 	}
 	requirePattern(t, explanation, `(?i)(restore|reinstate)[^.\n]*original[^.\n]*path`, "restore the original path")
 	requirePattern(t, explanation, `(?i)(restore|reinstate)[^.\n]*original[^.\n]*content`, "restore the original content")
-	requirePattern(t, explanation, `(?i)(add|create)[^.\n]*new file[^.\n]*(new data|new content|instead)`, "add a new file for new data")
+	requirePattern(t, explanation, `(?i)(add|create)[^.\n]*(new file[^.\n]*new (data|content)|new (data|content)[^.\n]*new file)`, "add a new file for new data")
 }
 
 func Test_AST_037_H04Explanation(t *testing.T) {
@@ -53,7 +54,7 @@ func Test_AST_037_H04Explanation(t *testing.T) {
 	}
 
 	requirePattern(t, explanation, `(?i)modif[^.\n]*archiv[^.\n]*change file|archiv[^.\n]*change file[^.\n]*modif`, "modification of an archived change file")
-	requirePattern(t, explanation, `(?i)(allow|permitt|valid|legitimat|may)[^.\n]*delet[^.\n]*archiv[^.\n]*revert|delet[^.\n]*archiv[^.\n]*(allow|permitt|valid|legitimat|may)[^.\n]*revert|archiv[^.\n]*(allow|permitt|valid|legitimat|may)[^.\n]*delet[^.\n]*revert`, "archive deletion allowed for a revert")
+	requirePattern(t, explanation, `(?i)(allow|permitt|valid|legitimat|may)[^.\n]*delet[^.\n]*archiv(e|ed)[ -]+(change[ -]+)?file[^.\n]*revert|delet[^.\n]*archiv(e|ed)[ -]+(change[ -]+)?file[^.\n]*(allow|permitt|valid|legitimat|may)[^.\n]*revert|archiv(e|ed)[ -]+(change[ -]+)?file[^.\n]*(allow|permitt|valid|legitimat|may)[^.\n]*delet[^.\n]*revert`, "archived file deletion allowed for a revert")
 	requirePattern(t, explanation, `(?i)(restore|revert)[^.\n]*archiv`, "restore the archive")
 	requirePattern(t, explanation, `(?i)(author|create|open|add)[^.\n]*follow.up[^.\n]*pending change`, "author follow-up work as a pending change")
 }
