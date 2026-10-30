@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: assets
+phase: audit
+run: 20261030T211428-96189dec27f20aa3301189a4
 ---
 
 
@@ -19,7 +22,7 @@ No API/model changes. Use existing Explain(code) and one internal explanation.
 
 ## Added
 
-### new:pr-body-artifact-warning
+### AST-042
 Explain MUST describe B04 as a warning for binary files or files larger than 256 KB newly added to a disposable zone, reported by pr-body.
 It MUST advise reviewing these opaque additions and removing or replacing unnecessary generated or vendored artifacts.
 
@@ -43,3 +46,7 @@ case is sufficient; no extra diagnostic allocation, hooks/observers/calibration,
 phase exception or unrelated work. Own Verify under5m/full under15m. Native
 controller owns commits/application; workers never commit. Return immediately to
 app after this explanation; passing library checks do not close the CLI slice.
+
+## Provenance
+
+- evals 2026-10-30T21:16:38.301612Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=731 failing=1 passing=730
