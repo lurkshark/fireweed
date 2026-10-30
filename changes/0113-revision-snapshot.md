@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: project
+phase: audit
+run: 20261030T015320-239465605405eafd1c3fdef6
 ---
 
 
@@ -24,16 +27,16 @@ under project/internal; no new models, dependencies or process primitives.
 
 ## Added
 
-### new:recorded-project
+### PRJ-047
 LoadAt MUST return the selected Git revision's project configuration and modules, using its recorded fireweed.yaml module globs and module SPEC.md documents rather than working-tree contents.
 
-### new:recorded-defaults
+### PRJ-048
 LoadAt MUST apply the selected revision's module_defaults to omitted zone fields while preserving explicitly empty module zone lists.
 
-### new:revision-paths
+### PRJ-049
 LoadAt MUST set Snapshot.Root to the canonical repository root and Module.Dir to each module's repository-relative directory.
 
-### new:revision-errors
+### PRJ-050
 LoadAt MUST return an error when the revision cannot be resolved, its recorded fireweed.yaml is missing or malformed, or a matched recorded module directory lacks a readable SPEC.md.
 
 ## Modified
@@ -65,3 +68,7 @@ full under15m and cases/spec near15, unchanged bounds. No bootstrap source/tests
 rebuild-v1, deleted/abandoned/saved implementation or old worker-log oracles.
 Applied count1 after passing/pushed gate; this dependency chain returns to the
 check-commits CLI proof as soon as needed interfaces work. No new drill authority.
+
+## Provenance
+
+- evals 2026-10-30T02:09:46.890494Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=594 failing=8 passing=586
