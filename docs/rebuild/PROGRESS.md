@@ -4,62 +4,39 @@
 
 NEW proves manual lifecycle/setup, bounded next/run and recovery/resume,
 agent-commit undo, time/usage stops, maintenance/eval-fix/ordinary-fix/regenerate,
-and release/commits/abandon. Latest [actual Go abandon proof](reports/abandon-cli-0111.md)
-retains a real saved attempt, restores phase work/deletes pending change in one
-commit, releases its claim and frees ALP-002 for Start reuse; fixture removed.
-Full design/ACCEPTANCE remain incomplete.
+and release/commits/abandon, CI and list. Existing actual CLI evidence is linked
+in HISTORY and the [prior gate](reports/checkpoint-0112-0116.md); preserve it.
+Full design/ACCEPTANCE remains incomplete.
 
-**Applied since review: 4 (0117–0120); status data ready, explanations next.**
-Prior fixed Sol/high quality/goal review of0112–0116 PASS and fresh checks passed
-at929e32b; authorized origin push e5287d5→1ca04f3 completed. [Gate](reports/checkpoint-0112-0116.md).
-0117 CI remains local with247 native passes and actual NEW Go proof PASS.
+**Applied since review: 5 (0117–0121); mandatory review/checks pending.**
+All native work is archived/unclaimed at clean source79f7113. Current batch:
+[ci](reports/ci-cli-0117.md), [list](reports/list-cli-0118.md),
+[costs](reports/verification-costs-0119.md),
+[status data](reports/status-data-0120.md),
+[warning explanations](reports/status-warning-explanations-0121.md).
+Corrected0120 passed457 native cases/fresh isolated audit after owner-approved
+native cancel/re-author with the public one-token phase correction; no canceled
+implementation or old worker-log reuse, manual phase/ref/counter reset or drill.
+0121 passed712 native cases/fresh audit and actual clean-built NEW Explain
+B01/B02/B03/P08 proof. P08 is the newly emitted status-warning companion, added
+in the same explanation change with no extra application or bound change.
 
-Corrected0118-list-queue-command now exposes list through project.Queue. Native
-250 passes at clean a47a7fd, fresh restricted independent audit PASS, fresh
-implementation worker and actual NEW queued/held/empty read proof PASS; fixture
-removed. [List evidence](reports/list-cli-0118.md). Original eval-only0118-list-command
-was natively blocked for the unassertable fallback and plain-output gap, then
-owner-approved native abandon78705e1 removed it. The corrected contract resolves
-only the fallback condition; fresh public evals carry the empty-reason assertion.
-No saved implementation existed or was reused. Original findings remain historical.
+Fresh CGO0 build, vet and controller static check passed. Race and explicit-range
+history are running; separate Sol/high quality/goal review is pending.
+[Current gate](reports/checkpoint-0117-0121.md). No new product authoring or push
+before the full gate passes. Count remains5 until the passing review, never
+reset by a push alone. Existing C01/C18/B02 warnings and the build's nonfatal
+module stat-cache warning retain recorded explanations; zero warnings is not a gate.
 
-0119 FLOW-097–100 applied at00a4a30: recorded Verify/Done cost snapshots,
-B01–B03 warnings and public Costs reader;450 native passes and isolated audit
-PASS. [Evidence](reports/verification-costs-0119.md). A scoped implementation
-review correction added root protected-pattern precedence before application;
-interrupted verification is not passing evidence. Main tree clean/unclaimed.
-Corrected0120-status-report FLOW-101–113 applied at14f2c44 with457 native passes,
-fresh isolated full audit PASS round0 and fresh independent implementation;
-tree clean/unclaimed. [Evidence](reports/status-data-0120.md). Owner-approved
-native abandoncee4dbc canceled the former wrong frozen assertion; only public
-inputs were retained, carrying the one-token phase correction/prior fixes.
-No implementation reuse or phase exception. Next: one scoped assets explanation
-change at count5, then quality/goal review/checks. No NEW status command/proof
-or new push yet; return immediately to that caller after the passing gate.
-
-Owner: "Approve status slice and fifth review". This supersedes the completed
-recovery's stop only for `/tmp/fireweed-status-continuation-checkpoint.md`:
-workflow cost recording/B01–B03, workflow status data with projected waiting
-reasons, then immediate app status wiring/actual NEW proof. Three applications
-reach the fifth-change quality/goal subagent review and appropriate fresh checks;
-push only on PASS, then stop and report. Stop earlier on any block. No phase
-exception, drill, deferred gap fix or bound/count/ref change. Native status
-confirmed unapproved2/P08 before this slice. Cost recording is complete;0120
-has completed its native recovery. The reviewable public correction and
-native recovery proposal are in `/tmp/fireweed-0120-frozen-phase-checkpoint.md`;
-owner now replied "Approve recovery and revised slice". Discard only the two
-uncommitted0120 implementation files, natively abandon/re-author with the exact
-public evals→impl assertion correction, and use fresh workers without discarded
-implementation/log reuse. Corrected workflow status becomes count4; scoped
-B01–B03 Explain becomes count5. Mandatory separate Sol/high quality/goal review
-and appropriate checks follow; stop on findings and push only on PASS. Then
-return immediately to app status/actual NEW proof and stop with that caller
-local (first application after review). No phase exception, drill, direct ref
-edit or bound/count evasion is authorized. B01–B03 Explain remains open until
-that scoped assets change; newly emitted P08 also lacks Explain and belongs in
-the same status-warning explanation change. No new application/count/bound is
-added for that companion. No passing gate/push before resolution. Full design/ACCEPTANCE,
-remaining commands/recipes/delivery/final gates and drill restrictions remain.
+Owner: "Approve recovery and revised slice", for
+`/tmp/fireweed-0120-frozen-phase-checkpoint.md`. The native0120 recovery and
+warning explanations are complete. After the mandatory fifth review/checks
+PASS, push under existing explicit authorization, immediately return to app
+status and actual NEW proof, then stop with that caller local (first application
+after review). Stop on any finding/block. No phase exception, drill, publication,
+history rewrite, direct ref edit or altered bounds is authorized. Status CLI
+and its NEW proof are still unimplemented; library checks do not close that slice.
+Remaining commands/recipes/delivery/final gates and drill restrictions stay open.
 
 ## Approved correction gate
 
@@ -103,9 +80,9 @@ Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
 recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-a47a7fd96ce08a777a341405a1f091d1d5b46c70, Go1.27.2 darwin/arm64, CGO disabled,
-vcs.modified=false. This clean build passed without a warning. The prior checkpoint build
-nonfatal cache-metadata warning remains recorded in its report.
+79f71130cde2777686c0681142fdd2a89e062ca4, Go1.27.2 darwin/arm64, CGO disabled,
+vcs.modified=false. Build passed with the known nonfatal module-cache metadata
+warning, recorded in the current checkpoint report; no source fix/rebuild needed.
 Build/vet/race/static/history and independent quality review passed at929e32b;
 0117/0118 subsequently passed required native app verification and actual NEW CI/list proofs;
 actual NEW rejects the recorded invalid mixed-kind fixture before mutation. No final CI/doctor/fresh-checkout/drill/self-hosting

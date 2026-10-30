@@ -568,6 +568,11 @@ before another change. Four changes were applied since the explicit review at
   earlier checkpoint; exact public phase correction/prior assertions retained.
   Count4; status warnings Explain next, then fifth gate and app/NEW proof.
 
+- 0121 AST-038–041 [status-warning explanations](reports/status-warning-explanations-0121.md)
+  applied at79f7113:712 native passes, isolated audit PASS round0 and actual NEW
+  four-code Explain proof PASS. Count5; separate quality/goal review/fresh checks
+  pending before push and immediate app status/NEW proof. No final-goal claim.
+
 ## Historical reference inspection record — superseded by D004
 
 These entries describe the retired controller and original preparation. They supply historical provenance only, not startup instructions or current readiness. PROGRESS.md records the installed stage-2 controller, completed setup and baseline.
