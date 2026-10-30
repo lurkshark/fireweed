@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: app
+phase: audit
+run: 20261030T063511-92982ff89d0d2ea4ed17a021
 ---
 
 
@@ -23,19 +26,19 @@ project lookup with internal CLI result types and existing envelope/error helper
 
 ## Added
 
-### new:list-command
+### APP-114
 list MUST discover the nearest project root and list project.Queue entries in returned order.
 Plain success MUST return exit0 and identify every queued change by slug, path and module, with empty output for an empty queue.
 
-### new:list-state
+### APP-115
 Each listed entry MUST report its phase, using queued when the phase is absent.
 It MUST report the blocked reason and audit rounds, using an empty reason and zero rounds when absent.
 
-### new:list-errors
+### APP-116
 Usage and project configuration errors MUST return exit2 with corrective guidance, using U01 for usage and the existing cause code for configuration.
 Queue failures MUST return exit1 with their existing cause code and corrective guidance.
 
-### new:list-json
+### APP-117
 Successful list --json MUST emit schema1 ordered-array data with slug, path, module, phase, blocked and audit_rounds fields, including an empty array for an empty queue, and empty diagnostics.
 Failures MUST emit null data with code/message diagnostics.
 It MUST leave stderr empty.
@@ -74,3 +77,7 @@ worker logs, deleted/abandoned/saved implementation oracles. Actual NEW read pro
 uses public author/start/release in a disposable fixture; no repeated lifecycle
 or drill. Count stays1 until a real application, then2; stop afterward under the
 one-change consecutive-app scope. No further recovery on block without owner.
+
+## Provenance
+
+- evals 2026-10-30T06:41:28.560667Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=250 failing=3 passing=247
