@@ -9,7 +9,7 @@ retains a real saved attempt, restores phase work/deletes pending change in one
 commit, releases its claim and frees ALP-002 for Start reuse; fixture removed.
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 1 (0112).** Separate Sol/high quality/goal review of0106–0108,
+**Applied since review: 2 (0112–0113).** Separate Sol/high quality/goal review of0106–0108,
 0110–0111 PASS at clean3118387; fresh build/vet/race/static/history44 commits
 pass. Canceled0109 is not an application; approved recoveries and two fixture
 setup corrections are disclosed. [Checkpoint](reports/checkpoint-0106-0111.md).
@@ -23,10 +23,14 @@ bounded runtime; no budget increase. [Evidence](reports/new-module-cli-0112.md).
 This is the second consecutive app application after0111; checkpoint before a
 third app change remains required.
 
-**Next:** check-commits vertical slice. Its recorded before/after zones require
-a revision snapshot; project currently loads only working-tree files. Add minimal
-project.LoadAt, then checks history, H01–H04 explanations and immediate app
-caller/actual NEW explicit-range proof. No whole-library expansion. Remaining status/management/recipes and final acceptance
+0113 now supplies project.LoadAt from recorded Git objects/config/globs/documents,
+with594 full passes, one scoped PRJ-047 assertion correction/re-audit, original
+run/IDs/round1 retained, clean/unclaimed archiveea83a82. No CLI completion claim.
+[Dependency](reports/revision-snapshot-0113.md).
+
+**Next:** checks history for check-commits, now that revision loading is usable;
+then H01–H04 explanations and immediate app caller/actual NEW explicit-range
+proof. No whole-library expansion; normal checkpoints remain enforced. Remaining status/management/recipes and final acceptance
 stay open. No new drill or phase-write authority.
 
 ## Approved correction gate
