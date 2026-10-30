@@ -163,7 +163,7 @@ func Test_APP_003_InvalidRequests(t *testing.T) {
 }
 
 func Test_APP_014_UnimplementedCommands(t *testing.T) {
-	for _, command := range []string{"pr-body", "gc"} {
+	for _, command := range []string{"drill", "gc"} {
 		t.Run(command, func(t *testing.T) {
 			if !strings.Contains(assets.Help(), command) {
 				t.Fatalf("%q is not listed by help", command)
@@ -177,9 +177,9 @@ func Test_APP_014_UnimplementedCommands(t *testing.T) {
 			}
 		})
 	}
-	status, stdout, stderr := run("pr-body", "--json")
+	status, stdout, stderr := run("drill", "--json")
 	if status == 0 || stderr != "" {
-		t.Errorf("JSON pr-body status=%d stderr=%q; want nonzero and empty stderr", status, stderr)
+		t.Errorf("JSON drill status=%d stderr=%q; want nonzero and empty stderr", status, stderr)
 	}
 	if message := assertFailedJSON(t, stdout, "U01"); !regexp.MustCompile(`(?i)unimplemented|not implemented|under construction`).MatchString(message) {
 		t.Errorf("JSON diagnostic %q must explicitly report unimplemented", message)
@@ -274,7 +274,7 @@ func Test_APP_001_ReadCommandsDoNotInvokeGitHooksOrAgents(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Setenv("FIREWEED_REAL_GIT", realGit)
-	for _, args := range [][]string{{"status"}, {"status", "--json"}} {
+	for _, args := range [][]string{{"status"}, {"status", "--json"}, {"pr-body", "HEAD..HEAD"}, {"pr-body", "HEAD..HEAD", "--json"}} {
 		runAppBinary(t, bin, nested, args...)
 	}
 	calls, err := os.ReadFile(logPath)

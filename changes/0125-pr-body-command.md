@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: app
+phase: audit
+run: 20261030T212434-ee77b78de5c493a4956c9b00
 ---
 
 
@@ -22,24 +25,24 @@ place of the requested committed endpoint. Preserve coded report causes.
 
 ## Added
 
-### new:pr-body-command
+### APP-127
 pr-body MUST discover the nearest project root and expose workflow.PRBody for the supplied explicit range.
 Requested endpoint data MUST remain authoritative when later HEAD or working-tree metadata differs.
 
-### new:pr-body-plain
+### APP-128
 Plain pr-body MUST print the report Body and show every returned diagnostic code and message.
 Successful reports MUST return exit0, including empty selections and warning-only reports.
 
-### new:pr-body-json
+### APP-129
 Successful pr-body --json MUST emit schema1 with string data equal to the report Body and retained diagnostic codes, messages, warning status and path when present.
 It MUST leave stderr empty.
 
-### new:pr-body-errors
+### APP-130
 Missing or extra ranges and invalid options MUST return exit2 with U01 and corrective guidance.
 Project discovery or endpoint configuration-loading failures MUST return exit2 with the existing cause code or C01 and corrective guidance.
 Unresolvable ranges MUST return exit1 with P01, the range resolution cause and corrective guidance.
 
-### new:pr-body-json-errors
+### APP-131
 JSON pr-body failures MUST emit null data with cause-code/message diagnostics and empty stderr.
 
 ## Modified
@@ -75,3 +78,7 @@ review content, warning paths/flags, ordinary/exact-threshold/root-protected
 artifact exclusions and invalid range. Source data are authored fixture inputs,
 not a repeated real lifecycle or drill. Stop after proof, clean/unclaimed/local;
 no push, extra application or phase exception.
+
+## Provenance
+
+- evals 2026-10-30T21:34:53.433987Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=262 failing=8 passing=254
