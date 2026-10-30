@@ -14,6 +14,7 @@ type Result = model.Result
 type ModuleCost = model.ModuleCost
 type CostSnapshot = model.CostSnapshot
 type StatusReport = model.StatusReport
+type PRBodyReport = model.PRBodyReport
 type StatusEntry = model.StatusEntry
 type Quarantine = model.Quarantine
 type BoundaryOptOut = model.BoundaryOptOut
@@ -43,3 +44,6 @@ func Context(root, change string, full bool) (string, error) {
 }
 func Costs(root string) ([]CostSnapshot, error) { return lifecycle.Costs(root) }
 func Status(root string) (StatusReport, error)  { return lifecycle.Status(root) }
+func PRBody(root, revisionRange string) (PRBodyReport, error) {
+	return lifecycle.PRBody(root, revisionRange)
+}

@@ -62,6 +62,11 @@ type StatusReport struct {
 	Diagnostics     []project.Diagnostic
 }
 
+type PRBodyReport struct {
+	Body        string
+	Diagnostics []project.Diagnostic
+}
+
 type StatusEntry struct {
 	Slug        string
 	Path        string
