@@ -7,7 +7,7 @@ agent-commit undo, time/usage stops, maintenance/eval-fix/ordinary-fix/regenerat
 release/commits/abandon, CI, list, status, PR-body and archive-backed show history.
 The complete design and ACCEPTANCE remain incomplete. Reuse HISTORY/reports.
 
-**Applied since review: 1; approved recovery/caller complete — STOP local.**
+**Applied since review: 1; caller complete — owner authorized commit and push.**
 Owner answered "Approve scoped recovery; stop after completion" for
 [0127 checkpoint](reports/show-history-0127-checkpoint.md). The exact one-time
 runtime-document restoration exception was consumed, native abandon12d67bc
@@ -21,13 +21,17 @@ preserved current/projected behavior and existing assertions. Authored archive
 inputs proved implementation-date order, metadata, filtering, empty views and
 errors; read state retained, no hooks/agents, fixture/state removed. Archive and
 claim release complete; no pending/blocked rebuild change or active claim remains.
-No further product work or push is authorized in this slice.
+Owner subsequently instructed "commit and push", explicitly authorizing delivery
+of the completed caller/evidence to origin. No further product work or review-count
+reset is authorized. The completion stop remains in force.
 
 The [0122–0126 fifth gate](reports/checkpoint-0122-0126.md) PASS reviewed source
 8cd9c0e: separate Sol/high quality/goal review, build/vet/race/static and explicit
 36-commit history extension79f7113..8cd9c0e. Review reset count0; this caller is1.
 Authorized push7c5e90e→5610268fb73e91af0805c20a4714e15c9d9e59f1 completed and
-actual origin/main OID verified. No push since; push alone resets no count.
+actual origin/main OID verified. That was the prior reviewed push; the later explicit
+caller-push authorization above supersedes the local-only delivery stop. Push
+alone resets no count.
 
 Known nonfatal Go module stat-cache write warning and existing C01/C18/B02
 warnings retain explanations. Corrected0127 author check has no new C17. Latest
