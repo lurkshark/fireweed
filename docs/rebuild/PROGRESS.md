@@ -8,7 +8,20 @@ and release/commits/abandon, CI and list. Existing actual CLI evidence is linked
 in HISTORY and the [prior gate](reports/checkpoint-0112-0116.md); preserve it.
 Full design/ACCEPTANCE remains incomplete.
 
-**Applied since review: 0; passing 0117–0121 batch pushed. App status next.**
+**Applied since review: 0; 0117–0121 pushed; 0122 stopped on commit denial.**
+The app status eval verification passed253 cases (3 genuine failures/250 passes),
+but native Done advanced the document to audit before git add failed on sandbox
+.git/index.lock permission. No eval commit or independent audit exists; no
+implementation ran. Same run20261030T163917-0fc34507bd1994f10aea0b08,
+APP-118–126, audit_rounds0. Owned claim natively released, evals/public inputs
+preserved; pending phase remains audit and its two eval files are uncommitted.
+[Recovery checkpoint](reports/status-cli-0122-checkpoint.md) proposes a new
+one-time exception restoring only the saved claimed evals document, native
+same-run resume and write-capable Done, then normal audit/impl/NEW proof and
+local stop. Awaiting owner decision; no manual phase/ref/count rewrite, push
+or drill. Existing approval explicitly grants no phase exception.
+
+Prior safe boundary:
 All native work is archived/unclaimed at clean source79f7113. Current batch:
 [ci](reports/ci-cli-0117.md), [list](reports/list-cli-0118.md),
 [costs](reports/verification-costs-0119.md),
@@ -35,7 +48,8 @@ PASS, push under existing explicit authorization, immediately return to app
 status and actual NEW proof, then stop with that caller local (first application
 after review). Stop on any finding/block. No phase exception, drill, publication,
 history rewrite, direct ref edit or altered bounds is authorized. Status CLI
-and its NEW proof are still unimplemented; library checks do not close that slice.
+and its NEW proof are still unimplemented; 0122 is now stopped at the commit-denial
+checkpoint above. Library checks do not close that slice.
 Remaining commands/recipes/delivery/final gates and drill restrictions stay open.
 
 ## Approved correction gate
