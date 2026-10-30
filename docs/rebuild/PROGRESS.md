@@ -9,7 +9,7 @@ retains a real saved attempt, restores phase work/deletes pending change in one
 commit, releases its claim and frees ALP-002 for Start reuse; fixture removed.
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 3 (0117–0119); 0120 frozen-eval checkpoint.**
+**Applied since review: 3 (0117–0119); scoped 0120 recovery approved.**
 Prior fixed Sol/high quality/goal review of0112–0116 PASS and fresh checks passed
 at929e32b; authorized origin push e5287d5→1ca04f3 completed. [Gate](reports/checkpoint-0112-0116.md).
 0117 CI remains local with247 native passes and actual NEW Go proof PASS.
@@ -35,7 +35,7 @@ although its maintenance Start records impl. The worker stopped rather than
 misreporting phase or editing frozen evals. [Checkpoint](reports/status-data-0120-checkpoint.md).
 Its own claim was natively released; only two implementation files remain
 uncommitted, phase/run/IDs/round unchanged. No archive/full impl Done, app caller,
-NEW status proof, fifth review or push. Stop as required; no recovery approved.
+NEW status proof, fifth review or push ran before the checkpoint.
 
 Owner: "Approve status slice and fifth review". This supersedes the completed
 recovery's stop only for `/tmp/fireweed-status-continuation-checkpoint.md`:
@@ -47,11 +47,16 @@ exception, drill, deferred gap fix or bound/count/ref change. Native status
 confirmed unapproved2/P08 before this slice. Cost recording is complete;0120
 is pending at the wrong frozen assertion. The reviewable public correction and
 native recovery proposal are in `/tmp/fireweed-0120-frozen-phase-checkpoint.md`;
-the proposed revised continuation adds scoped B01–B03 Explain before the fifth
-review, then returns to the app caller after PASS and stops with that caller
-local. That revised scope needs owner approval. B01–B03 Explain entries remain missing assets
-integration obligation, outside these three applications: do not claim a passing
-fifth-change gate or push while it remains unresolved. Full design/ACCEPTANCE,
+owner now replied "Approve recovery and revised slice". Discard only the two
+uncommitted0120 implementation files, natively abandon/re-author with the exact
+public evals→impl assertion correction, and use fresh workers without discarded
+implementation/log reuse. Corrected workflow status becomes count4; scoped
+B01–B03 Explain becomes count5. Mandatory separate Sol/high quality/goal review
+and appropriate checks follow; stop on findings and push only on PASS. Then
+return immediately to app status/actual NEW proof and stop with that caller
+local (first application after review). No phase exception, drill, direct ref
+edit or bound/count evasion is authorized. B01–B03 Explain remains open until
+that scoped assets change; no passing gate/push before resolution. Full design/ACCEPTANCE,
 remaining commands/recipes/delivery/final gates and drill restrictions remain.
 
 ## Approved correction gate
