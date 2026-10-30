@@ -9,30 +9,29 @@ retains a real saved attempt, restores phase work/deletes pending change in one
 commit, releases its claim and frees ALP-002 for Start reuse; fixture removed.
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 1 (0117); approved 0118 recovery in progress.** Prior fixed Sol/high
-quality/goal review of0112–0116 PASS and fresh checks passed at929e32b; authorized
-origin push e5287d5→1ca04f3 completed. [Gate](reports/checkpoint-0112-0116.md).
-0117 CI remains local with247 native passes/actual NEW Go proof PASS.
+**Applied since review: 2 (0117/0118); approved recovery complete, stopped.**
+Prior fixed Sol/high quality/goal review of0112–0116 PASS and fresh checks passed
+at929e32b; authorized origin push e5287d5→1ca04f3 completed. [Gate](reports/checkpoint-0112-0116.md).
+0117 CI remains local with247 native passes and actual NEW Go proof PASS.
 
-Owner approved the one-change list continuation;0118 reached native fail-first
-250 cases3 expected failures/247 passes, but did not apply. Independent restricted
-audit found missing APP-115 plain empty-reason assertion and APP-116 P01 fallback
-assertion with no established public uncoded input/error-injection point. The
-coordinator classified the latter as currently untestable. Controller natively
-blocked/released inaf7d26b, phaseaudit, audit_rounds0, same original run/IDs;
-both findings became Questions. Native abandon78705e1 has now removed that
-unapplied attempt and its phase work, freeing never-applied IDs; no implementation
-was written or reused. Corrected0118-list-queue-command is authored next. [Audit checkpoint](reports/list-audit-0118.md).
+Corrected0118-list-queue-command now exposes list through project.Queue. Native
+250 passes at clean a47a7fd, fresh restricted independent audit PASS, fresh
+implementation worker and actual NEW queued/held/empty read proof PASS; fixture
+removed. [List evidence](reports/list-cli-0118.md). Original eval-only0118-list-command
+was natively blocked for the unassertable fallback and plain-output gap, then
+owner-approved native abandon78705e1 removed it. The corrected contract resolves
+only the fallback condition; fresh public evals carry the empty-reason assertion.
+No saved implementation existed or was reused. Original findings remain historical.
 
-**Approved scoped recovery.** Owner answered "Approve scoped recovery" to
-/tmp/fireweed-0118-audit-checkpoint.md. Resolve only APP-116's currently unassertable
-P01 conditional, natively abandon/re-author from preserved public inputs, carry
-the APP-115 plain-output assertion into fresh evals, then fresh independent audit,
-implementation, full native verification/archive and actual NEW proof. No saved
-implementation exists. Count stays1 until application, then2; stop afterward.
-No push, phase-write exception, extra command/library work or drill authority.
-The original findings remain historical; this approval resolves the contract
-defect rather than waiving assertions or resetting an unresolved bound.
+**Stopped as approved.** The scoped recovery authorized this single consecutive
+app application and its proof, then a stop. There are three consecutive applied
+app changes (0116/0117/0118); further consecutive work requires owner authority
+under SYSTEM.md42. No fourth change is authored. Count remains2, with no reset,
+new push, phase exception, further command/library work or drill. Main tree clean,
+no pending/blocked rebuild changes or claims. Full design/ACCEPTANCE remains
+incomplete; next queue-management surface is status (waiting reasons, module
+state/cost/drift and budgets), with PR/maintenance/recipes/delivery/final gates
+still open. Resume scope must be agreed before more work.
 
 ## Approved correction gate
 
@@ -76,11 +75,11 @@ Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
 recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-2a63214028a43681556999b7487f5f267ef60a55, Go1.27.2 darwin/arm64, CGO disabled,
+a47a7fd96ce08a777a341405a1f091d1d5b46c70, Go1.27.2 darwin/arm64, CGO disabled,
 vcs.modified=false. This clean build passed without a warning. The prior checkpoint build
 nonfatal cache-metadata warning remains recorded in its report.
 Build/vet/race/static/history and independent quality review passed at929e32b;
-0117 subsequently passed its required native app verification and actual NEW CI proof;
+0117/0118 subsequently passed required native app verification and actual NEW CI/list proofs;
 actual NEW rejects the recorded invalid mixed-kind fixture before mutation. No final CI/doctor/fresh-checkout/drill/self-hosting
 or overall acceptance claim follows.
 

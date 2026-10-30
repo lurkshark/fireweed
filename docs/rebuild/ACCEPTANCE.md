@@ -201,3 +201,9 @@ The [NEW CI proof](reports/ci-cli-0117.md) adds partial R15/R17/R18 evidence:
 default deterministic Go checks/canaries, --no-doctor and third-module failure
 despite verify_dependents:none, no agent probes. Fixture removed; this is not
 final main-project CI, fresh-checkout or full acceptance evidence.
+
+The [NEW list proof](reports/list-cli-0118.md) adds partial R17 reading-surface
+evidence: queue order, runtime phase/defaults, authored blocked reason/audit rounds,
+held-state read after public start, empty output/JSON and retained read state.
+The fixture is removed. Status waiting/cost/drift and remaining whole-goal gates
+remain open; no new lifecycle, drill or full-acceptance claim.

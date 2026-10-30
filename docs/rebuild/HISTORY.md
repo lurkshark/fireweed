@@ -545,6 +545,12 @@ before another change. Four changes were applied since the explicit review at
   native untestable-clause Questions/block/release ataf7d26b, round0. No application
   or implementation; count remains1. Owner contract/recovery decision required.
 
+- Corrected0118 APP-114–117 [list CLI](reports/list-cli-0118.md) applied ata47a7fd:
+  250 native passes, fresh isolated audit PASS and actual NEW queued/held/empty
+  read proof PASS. Native cancellation resolved the old contract checkpoint, with
+  public assertions retained and no implementation reuse. Count2; stopped as
+  approved, clean/unclaimed, no new push or full-goal completion.
+
 ## Historical reference inspection record — superseded by D004
 
 These entries describe the retired controller and original preparation. They supply historical provenance only, not startup instructions or current readiness. PROGRESS.md records the installed stage-2 controller, completed setup and baseline.

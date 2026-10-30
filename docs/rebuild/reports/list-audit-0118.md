@@ -40,3 +40,8 @@ Owner approved the scoped native recovery. Controller abandon78705e18d5ae9a23ad3
 removed the blocked file and unapplied eval/block work; no direct phase/ref writes
 or implementation existed. Change number0118 is reused for corrected list-queue-command.
 Count remains1; fresh contract/evals/audit/implementation/verification/proof follow.
+
+Recovery complete: corrected0118-list-queue-command applied ata47a7fd with250
+native passes, fresh restricted audit PASS and actual NEW read proof PASS.
+[Final evidence](list-cli-0118.md). Old findings are historical; the old attempt
+never applied. Count is2 after the replacement's real application; no new push.
