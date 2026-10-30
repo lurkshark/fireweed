@@ -1,8 +1,12 @@
 ---
-audit_rounds: 0
+audit_pending:
+    - AST-035
+    - AST-036
+    - AST-037
+audit_rounds: 1
 bases: {}
 module: assets
-phase: audit
+phase: evals
 run: 20261030T044031-868ada5b81566b0bb0c4bb59
 ---
 
@@ -69,3 +73,10 @@ saved implementation or old worker-log oracles. Return immediately to app caller
 ## Provenance
 
 - evals 2026-10-30T04:44:21.63502Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=680 failing=4 passing=676
+- audit 2026-10-30T04:46:40.559502Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+
+## Audit
+
+- AST-035: "It MUST advise making those edits in the evals step before implementation and reworking the affected phase history before rerunning history checks." — The advice assertion accepts either eval or interface edits, not both named edit types.
+- AST-036: "It MUST advise restoring the original path/content and adding a new file for new data." — The new-file assertion accepts instead without requiring the new file to be for new data.
+- AST-037: "Explain MUST describe H04 as modifying an archived change file, while allowing archived-file deletion for a revert." — The deletion assertion does not require the archived file qualifier, so archive-directory deletion could satisfy it.
