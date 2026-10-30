@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: app
+phase: audit
+run: 20261030T052903-ef4ffe0df0609b399b924ab5
 ---
 
 
@@ -22,24 +25,24 @@ app/internal/entry; preserve the existing command behavior and helpers.
 
 ## Added
 
-### new:ci-static-history
+### APP-109
 ci [range] MUST discover the nearest project root and run static project checks plus history checks on the supplied range, or the configured local-base range when omitted.
 Static or history errors MUST prevent a successful CI result.
 
-### new:ci-coverage-boundaries
+### APP-110
 ci MUST run evals for every discovered module and require passing coverage of its current specs, regardless of verify_dependents.
 The configured boundary checks MUST also pass for CI to succeed.
 
-### new:ci-doctor
+### APP-111
 ci MUST run doctor canaries by default with agent probes disabled.
 With --no-doctor it MUST skip the doctor canaries while retaining the other deterministic checks.
 
-### new:ci-results
+### APP-112
 Successful ci MUST return exit0 with a confirmation.
 Usage and project configuration errors MUST return exit2 with corrective guidance, using U01 for usage and the existing cause code for configuration.
 Deterministic check failures MUST return exit1 retaining their cause codes and corrective guidance.
 
-### new:ci-json
+### APP-113
 Successful ci --json MUST emit schema1 confirmation-string data and collected diagnostics, including warnings.
 Failures MUST emit null data with code/message diagnostics.
 It MUST leave stderr empty.
@@ -74,3 +77,7 @@ Close through clean-built NEW with a disposable actual Go fixture, explicit
 nonempty history range, all-module coverage/boundaries and doctor-canary evidence;
 reuse valid completed evidence instead of repeating a lifecycle. Count1 after
 application; then the third-consecutive-app checkpoint applies before more app.
+
+## Provenance
+
+- evals 2026-10-30T05:40:28.316939Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=247 failing=4 passing=243
