@@ -591,6 +591,11 @@ before another change. Four changes were applied since the explicit review at
   implementation corrections with frozen contracts. Count2; B04 Explain then
   immediate app/actual NEW proof remain; no push or CLI/full-goal completion claim.
 
+- 0124 AST-042 [B04 Explain](reports/pr-body-artifact-explanation-0124.md)
+  applied at8ee0534:731 native passes, isolated audit PASS round0, one new map
+  entry and no unrelated changes. Count3; immediate app/NEW proof then local
+  count4 stop, no push or complete-goal claim.
+
 ## Historical reference inspection record — superseded by D004
 
 These entries describe the retired controller and original preparation. They supply historical provenance only, not startup instructions or current readiness. PROGRESS.md records the installed stage-2 controller, completed setup and baseline.

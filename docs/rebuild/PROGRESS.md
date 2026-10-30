@@ -7,13 +7,17 @@ agent-commit undo, time/usage stops, maintenance/eval-fix/ordinary-fix/regenerat
 release/commits/abandon, CI, list and now status. Reuse the linked HISTORY and
 reports; full design/ACCEPTANCE remains incomplete.
 
-**Applied since review: 2; workflow PR-body report archived; B04 Explain next.**
+**Applied since review: 3; PR-body report/B04 Explain archived; app caller next.**
+[0124 B04 Explain](reports/pr-body-artifact-explanation-0124.md) applied AST-042
+at8ee0534 with731 native passes and independent audit PASS round0. Only one
+explanation entry changed. No pending change/claim remains. Complete the immediate
+app caller and actual NEW proof, then stop local at count4; no push or drill.
 [0123 report](reports/pr-body-report-0123.md) applied FLOW-114–125 atb370909:
 475 native passes, independent isolated audit PASS round0, frozen contracts
 retained. A scoped implementation correction followed an intentional precommit
 interruption; replacement full Done passed, no block or exception. No claim or
-pending change remains. Backend emits B04; Explain and the immediate app/NEW
-proof are still required to close the approved slice.
+pending change remains. Backend and B04 Explain are now complete; the immediate app/NEW
+proof is still required to close the approved slice.
 Owner answered "Approve PR-body slice" for
 `/tmp/fireweed-pr-body-continuation-checkpoint.md`: workflow explicit-range report,
 then emitted B04 explanation, then thin app caller and actual NEW proof. Three
@@ -28,8 +32,8 @@ and scoped re-audit PASS, fresh implementation, clean CGO0 build and app vet.
 Actual NEW disposable proof passed all waiting rules, costs/B01–B03/P08,
 quarantines/opt-outs, drift, phase counts and retained read state; fixture removed.
 Main NEW status --json passed8 modules/empty queue/unapproved1/no diagnostics.
-All native work is archived, the tree is unclaimed and no rebuild change remains
-pending. No technical block remains; this is the explicitly agreed local stop.
+At that prior0122 boundary all work was archived/unclaimed and the local stop
+was honored. The explicit PR-body continuation above supersedes that stop.
 
 The [0122 recovery history](reports/status-cli-0122-checkpoint.md) preserves the
 old missing phase commit and native dirty-tree refusal. Owner-approved native
