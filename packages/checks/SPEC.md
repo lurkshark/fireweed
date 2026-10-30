@@ -222,8 +222,45 @@ Doctor MUST emit a C16 warning when the AGENTS.md managed block is missing or di
 ### CHK-069
 Doctor MUST emit a C16 warning when a project playbook override's embedded_base is missing or differs from the SHA-256 of its current embedded playbook; a matching base MUST avoid that warning.
 
+### CHK-070
+History MUST list full commit IDs selected by the supplied Git revision range in oldest-first topological order.
+For an empty range it MUST use the merge base of HEAD and the locally resolved configured base through HEAD.
+
+### CHK-071
+History MUST identify worker commits from new phase assignments in change-file contents across pending/archive moves, rather than commit subjects.
+Deleting a change document without assigning a phase MUST not by itself classify the commit as a worker commit.
+
+### CHK-072
+History MUST report H01 when a worker commit changes a protected path or a project playbook override.
+
+### CHK-073
+History MUST report H02 when an impl-to-applied phase commit changes evals or interface zones.
+
+### CHK-074
+History MUST report H03 when any commit modifies, deletes or renames an existing append_only path, including merge-resolution changes identified by combined Git diffs.
+
+### CHK-075
+History MUST report H04 when a commit modifies an existing file under changes/archive.
+Deleting an archived change file MUST remain allowed by H04.
+
+### CHK-076
+History MUST recognize each new applied phase whose parents lack an impl phase as squashed, listing its commit and change without a warning.
+H01 and H02 MUST not apply to those squashed commits.
+H03 and H04 MUST still apply.
+
+### CHK-077
+History MUST return each rule finding as a Diagnostic with its H01–H04 code, repository-relative Path and full commit ID in Message, using the recorded before/after zone maps and the worker change's projected set values.
+
+### CHK-078
+History MUST return an error when a revision range or required recorded project/change document cannot be read or parsed.
+
 ## Decisions
 
 [0071-doctor-probes] Doctor requests the literal reply FIREWEED_DOCTOR_OK; limit_patterns match
 case-insensitive literal substrings. Project playbook overrides use frontmatter
 embedded_base containing the hexadecimal SHA-256 of the embedded playbook text.
+
+[0114-history-validation] A merge merely retaining a phase value already held by a parent is not a new
+phase assignment; combined merge diffs still enforce append-only files.
+Squashed entries identify the change's repository-relative after-path; ordinary
+non-merge phase transitions compare the sole parent.
