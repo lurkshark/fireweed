@@ -2,7 +2,7 @@
 audit_rounds: 0
 bases: {}
 module: app
-phase: impl
+phase: applied
 run: 20261030T212434-ee77b78de5c493a4956c9b00
 ---
 
@@ -83,6 +83,7 @@ no push, extra application or phase exception.
 
 - evals 2026-10-30T21:34:53.433987Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=262 failing=8 passing=254
 - audit 2026-10-30T21:36:28.925467Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-30T21:43:03.643148Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=262 failing=0 passing=262
 
 ## Audit
 

@@ -27,8 +27,7 @@ type envelope struct {
 }
 
 var pending = map[string]bool{
-	"pr-body": true,
-	"drill":   true, "gc": true, "migrate": true,
+	"drill": true, "gc": true, "migrate": true,
 }
 
 func Run(args []string, out, errOut io.Writer) int {
@@ -219,6 +218,8 @@ func Run(args []string, out, errOut io.Writer) int {
 			return fail("U01", fmt.Sprintf("status takes no arguments; unexpected argument %q. Use status [--json].", positional[1]))
 		}
 		return runStatus(jsonMode, out, errOut)
+	case "pr-body":
+		return runPRBody(positional[1:], jsonMode, out, errOut)
 	case "next":
 		if count != 0 {
 			return fail("U01", "next takes no arguments. Use next [--allow-unmerged] [--json].")

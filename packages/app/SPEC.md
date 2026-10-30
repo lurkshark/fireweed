@@ -488,6 +488,26 @@ Usage and project configuration errors MUST return exit2 with corrective guidanc
 Status failures MUST return exit1 with corrective guidance, retaining assigned cause codes and using P01 for an unavailable base ref.
 JSON failures MUST use null data with code/message diagnostics and empty stderr.
 
+### APP-127
+pr-body MUST discover the nearest project root and expose workflow.PRBody for the supplied explicit range.
+Requested endpoint data MUST remain authoritative when later HEAD or working-tree metadata differs.
+
+### APP-128
+Plain pr-body MUST print the report Body and show every returned diagnostic code and message.
+Successful reports MUST return exit0, including empty selections and warning-only reports.
+
+### APP-129
+Successful pr-body --json MUST emit schema1 with string data equal to the report Body and retained diagnostic codes, messages, warning status and path when present.
+It MUST leave stderr empty.
+
+### APP-130
+Missing or extra ranges and invalid options MUST return exit2 with U01 and corrective guidance.
+Project discovery or endpoint configuration-loading failures MUST return exit2 with the existing cause code or C01 and corrective guidance.
+Unresolvable ranges MUST return exit1 with P01, the range resolution cause and corrective guidance.
+
+### APP-131
+JSON pr-body failures MUST emit null data with cause-code/message diagnostics and empty stderr.
+
 ## Decisions
 
 [0069-project-initialization] Init accepts codex and claude presets as argv commands; other selections are shell command templates containing {prompt}, stored as strings for one-pass quoted substitution when execution is implemented. Local recipes use recipe.yaml metadata, recipe.md instructions and a files/ project-relative payload; none uses empty language defaults and a generic module scaffold.
