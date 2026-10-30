@@ -2,7 +2,7 @@
 audit_rounds: 0
 bases: {}
 module: workflow
-phase: audit
+phase: impl
 run: 20261030T154521-0db634e7ec89d16c9fcc03e6
 ---
 
@@ -130,3 +130,9 @@ review plus the existing single app PATH-shim eval, extended by the caller.
 ## Provenance
 
 - evals 2026-10-30T15:49:34.22515Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=457 failing=7 passing=450
+- audit 2026-10-30T15:51:05.823881Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+
+## Audit
+
+No findings
+Checked IDs: FLOW-101, FLOW-102, FLOW-103, FLOW-104, FLOW-105, FLOW-106, FLOW-107, FLOW-108, FLOW-109, FLOW-110, FLOW-111, FLOW-112, FLOW-113
