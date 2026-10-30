@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: app
+phase: audit
+run: 20261030T013002-9857da7756618210344049b4
 ---
 
 
@@ -23,22 +26,22 @@ existing initialization template/destination helpers where appropriate.
 
 ## Added
 
-### new:module-template
+### APP-100
 new-module <name> --prefix <P> MUST discover the nearest project root and create the named module from .fireweed/templates/module in a new directory matched by the configured module globs.
 It MUST use that project-owned copy rather than replace it with embedded templates.
 
-### new:module-render
+### APP-101
 Module creation MUST render template contents using name, prefix, package, module_dir and go_module substitutions, removing a terminal .tmpl suffix from output filenames.
 The resulting SPEC.md MUST declare the requested module name and prefix and be loadable as part of the project graph.
 
-### new:module-conflicts
+### APP-102
 new-module MUST reject an existing module name, existing ID prefix or occupied destination before writing module files, preserving the existing module and destination contents.
 
-### new:module-diagnostics
+### APP-103
 new-module MUST return exit2 with corrective U01 for invalid arguments and options, the existing cause code for project errors, C03 for missing or malformed templates, and P01 for conflicting module identity or destination.
 It MUST reject requests before writing module files when these errors are present.
 
-### new:module-output
+### APP-104
 Successful new-module MUST return exit0 and print the repository-relative module directory.
 With --json it MUST emit schema1 string data equal to that directory and empty diagnostics; failures MUST emit null data and code/message diagnostics with empty stderr.
 
@@ -73,3 +76,7 @@ proof. Own under5m/full under15m with unchanged bounds. No bootstrap source/test
 rebuild-v1, deleted/abandoned/saved implementation or old worker-log oracles.
 This is the second consecutive app application after0111; before a third app
 change require the normal checkpoint unless separately authorized.
+
+## Provenance
+
+- evals 2026-10-30T01:38:38.959698Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=236 failing=12 passing=224
