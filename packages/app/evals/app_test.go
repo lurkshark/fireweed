@@ -163,7 +163,7 @@ func Test_APP_003_InvalidRequests(t *testing.T) {
 }
 
 func Test_APP_014_UnimplementedCommands(t *testing.T) {
-	for _, command := range []string{"status", "gc"} {
+	for _, command := range []string{"pr-body", "gc"} {
 		t.Run(command, func(t *testing.T) {
 			if !strings.Contains(assets.Help(), command) {
 				t.Fatalf("%q is not listed by help", command)
@@ -177,9 +177,9 @@ func Test_APP_014_UnimplementedCommands(t *testing.T) {
 			}
 		})
 	}
-	status, stdout, stderr := run("status", "--json")
+	status, stdout, stderr := run("pr-body", "--json")
 	if status == 0 || stderr != "" {
-		t.Errorf("JSON status=%d stderr=%q; want nonzero and empty stderr", status, stderr)
+		t.Errorf("JSON pr-body status=%d stderr=%q; want nonzero and empty stderr", status, stderr)
 	}
 	if message := assertFailedJSON(t, stdout, "U01"); !regexp.MustCompile(`(?i)unimplemented|not implemented|under construction`).MatchString(message) {
 		t.Errorf("JSON diagnostic %q must explicitly report unimplemented", message)
@@ -255,6 +255,37 @@ func Test_APP_001_ReadCommandsDoNotInvokeGitHooksOrAgents(t *testing.T) {
 		t.Errorf("read commands invoked external tools: %s", calls)
 	} else if !os.IsNotExist(err) {
 		t.Fatal(err)
+	}
+	// Set up the repository with real Git before recording status reads.
+	gitPath := filepath.Join(binDir, "git")
+	if err := os.Remove(gitPath); err != nil {
+		t.Fatal(err)
+	}
+	realGit, err := exec.LookPath("git")
+	if err != nil {
+		t.Fatal(err)
+	}
+	cliGit(t, root, "init", "-q", "-b", "main")
+	cliCommit(t, root, "read command fixture")
+	// Status may read Git. This recorder forwards every invocation without
+	// inspecting its arguments; the existing hook and agent sentinels remain.
+	gitRecorder := []byte("#!/bin/sh\nprintf '%s\\n' \"$0 $*\" >> \"$FIREWEED_RECORDER\"\nexec \"$FIREWEED_REAL_GIT\" \"$@\"\n")
+	if err := os.WriteFile(filepath.Join(binDir, "git"), gitRecorder, 0700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("FIREWEED_REAL_GIT", realGit)
+	for _, args := range [][]string{{"status"}, {"status", "--json"}} {
+		runAppBinary(t, bin, nested, args...)
+	}
+	calls, err := os.ReadFile(logPath)
+	if err != nil && !os.IsNotExist(err) {
+		t.Fatal(err)
+	}
+	for _, line := range strings.Split(string(calls), "\n") {
+		if strings.Contains(line, "/hook ") || strings.Contains(line, "/codex ") ||
+			strings.Contains(" "+line+" ", " fetch ") || strings.Contains(" "+line+" ", " push ") {
+			t.Errorf("status read invoked hook, agent, fetch or push: %q", line)
+		}
 	}
 }
 
