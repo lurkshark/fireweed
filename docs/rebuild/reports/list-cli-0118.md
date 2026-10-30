@@ -22,7 +22,7 @@ Fresh restricted Sol/high audit PASS on all four IDs, audit_rounds0, run
 public change/projectedSPEC/evals/interfaces inside the snapshot; no implementation,
 SYSTEM/history/outside/code/tests/writes. Snapshot removed. Fresh implementation
 worker used current code/frozen evals; no saved inputs/implementation or old logs.
-It changed only entry dispatcher and49-line list composition, retaining frozen
+It changed only the entry dispatcher and internal list implementation, retaining frozen
 interfaces/evals. No manual phase/ref/bound writes, new error path/API or allocation.
 
 Clean NEW sourcea47a7fd96ce08a777a341405a1f091d1d5b46c70, Go1.27.2 darwin/arm64,
