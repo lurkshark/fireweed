@@ -582,6 +582,11 @@ func Verify(ctx context.Context, req model.Request) (model.Result, error) {
 		rep, err := checks.Evaluate(ctx, checks.HookRequest{Snapshot: c.Snapshot, Module: name, Bin: req.Bin, Timeout: req.Timeout})
 		r.Reports[name] = rep
 		saveReport(s, c.Phase, name, rep)
+		cost, costErr := measureModuleCost(c.Snapshot, name, rep)
+		if costErr != nil {
+			return r, costErr
+		}
+		r.Costs = append(r.Costs, cost)
 		if err != nil {
 			if first == nil {
 				first = err
@@ -643,6 +648,11 @@ func Verify(ctx context.Context, req model.Request) (model.Result, error) {
 		if err = hard(ds); err != nil && first == nil {
 			first = err
 		}
+	}
+	warnings := costWarnings(r.Costs, c.Snapshot.Config)
+	r.Diagnostics = append(r.Diagnostics, warnings...)
+	if err := saveCosts(s, c.Phase, r.Costs, warnings); err != nil {
+		return r, err
 	}
 	return r, first
 }

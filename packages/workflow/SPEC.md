@@ -353,6 +353,28 @@ After successful Abandon, its assigned but unapplied spec IDs MUST be available 
 ### FLOW-096
 Abandon MUST accept the same unambiguous repository-relative path, filename and slug selectors as Commits, rejecting missing or ambiguous selectors with U02.
 
+### FLOW-097
+Each Verify that evaluates modules, including through Done, MUST retain a cost snapshot under its existing run/phase directory and return those module costs in Result.Costs.
+The snapshot MUST identify the run, phase and UTC recording time, replacing the previous cost snapshot for that run/phase.
+
+### FLOW-098
+Each evaluated module's cost MUST report its name, summed JUnit testcase seconds and number of matching testcases per spec ID, counting each testcase once per matching ID.
+It MUST report eval and disposable line counts for regular files selected by the held approved projected zone map, counting an unterminated final line and excluding higher-priority zones.
+
+### FLOW-099
+Verify and Done MUST return warnings B01 for total evaluated-module seconds above budgets.verify_time (default15m), B02 for each spec's testcase count above budgets.cases_per_spec (default15), and B03 for each module's eval/disposable line ratio above budgets.eval_ratio (default4).
+Warnings MUST identify measurement and limit without affecting verification success or failure.
+Positive eval lines with zero disposable lines MUST exceed the ratio limit.
+
+### FLOW-100
+Costs MUST return the retained run/phase cost snapshots in recording-time order with their module values and budget diagnostics, or an empty slice when none exist.
+The retained values MUST reflect the evaluated state even if source files or budget settings later change.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
+
+[0119-verification-costs] Cost snapshots use .fireweed/runs/<run>/<phase>/costs.json beside existing module
+reports; repeated verification in that phase replaces its snapshot, as it does
+the module reports. Each regular file's line count is newline count plus one
+when nonempty content lacks a trailing newline.
