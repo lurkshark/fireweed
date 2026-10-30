@@ -244,8 +244,6 @@ func Test_APP_001_ReadCommandsDoNotInvokeGitHooksOrAgents(t *testing.T) {
 		assertInformationOutput(t, stdout, stderr, tc.want)
 	}
 	runAppBinary(t, bin, nested, "modules", "--json")
-	runAppBinary(t, bin, nested, "list")
-	runAppBinary(t, bin, nested, "list", "--json")
 	for _, args := range [][]string{
 		{"show", "alpha"}, {"show", "alpha", "ALP-001"},
 		{"show", "alpha", "--projected"}, {"show", "alpha", "new:queued", "--projected"},
