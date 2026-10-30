@@ -9,7 +9,7 @@ retains a real saved attempt, restores phase work/deletes pending change in one
 commit, releases its claim and frees ALP-002 for Start reuse; fixture removed.
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 3 (0117–0119); scoped 0120 recovery approved.**
+**Applied since review: 4 (0117–0120); status data ready, explanations next.**
 Prior fixed Sol/high quality/goal review of0112–0116 PASS and fresh checks passed
 at929e32b; authorized origin push e5287d5→1ca04f3 completed. [Gate](reports/checkpoint-0112-0116.md).
 0117 CI remains local with247 native passes and actual NEW Go proof PASS.
@@ -28,18 +28,14 @@ B01–B03 warnings and public Costs reader;450 native passes and isolated audit
 PASS. [Evidence](reports/verification-costs-0119.md). A scoped implementation
 review correction added root protected-pattern precedence before application;
 interrupted verification is not passing evidence. Main tree clean/unclaimed.
-Former0120-status-snapshot reached impl after457 native cases (7 intended failures/450
-passes), one persisted FLOW-113 correction and restricted re-audit PASS. Fresh
-implementation passes6/7 focused cases: FLOW-101's frozen fixture expects evals
-although its maintenance Start records impl. The worker stopped rather than
-misreporting phase or editing frozen evals. [Checkpoint](reports/status-data-0120-checkpoint.md).
-Its own claim was natively released. After owner approval, only its two
-uncommitted implementation files were discarded, then native abandoncee4dbc
-removed its unapplied phase work and pending file. No implementation was saved
-or reused. Corrected0120-status-report is now authored from the same public
-contract and exact one-token phase correction, preserving prior assertion fixes;
-fresh workers/audit/full verification follow. Count stays3 until application.
-No app caller/NEW status proof, fifth review or push has run.
+Corrected0120-status-report FLOW-101–113 applied at14f2c44 with457 native passes,
+fresh isolated full audit PASS round0 and fresh independent implementation;
+tree clean/unclaimed. [Evidence](reports/status-data-0120.md). Owner-approved
+native abandoncee4dbc canceled the former wrong frozen assertion; only public
+inputs were retained, carrying the one-token phase correction/prior fixes.
+No implementation reuse or phase exception. Next: one scoped assets explanation
+change at count5, then quality/goal review/checks. No NEW status command/proof
+or new push yet; return immediately to that caller after the passing gate.
 
 Owner: "Approve status slice and fifth review". This supersedes the completed
 recovery's stop only for `/tmp/fireweed-status-continuation-checkpoint.md`:
@@ -49,7 +45,7 @@ reach the fifth-change quality/goal subagent review and appropriate fresh checks
 push only on PASS, then stop and report. Stop earlier on any block. No phase
 exception, drill, deferred gap fix or bound/count/ref change. Native status
 confirmed unapproved2/P08 before this slice. Cost recording is complete;0120
-is pending at the wrong frozen assertion. The reviewable public correction and
+has completed its native recovery. The reviewable public correction and
 native recovery proposal are in `/tmp/fireweed-0120-frozen-phase-checkpoint.md`;
 owner now replied "Approve recovery and revised slice". Discard only the two
 uncommitted0120 implementation files, natively abandon/re-author with the exact
@@ -60,7 +56,9 @@ and appropriate checks follow; stop on findings and push only on PASS. Then
 return immediately to app status/actual NEW proof and stop with that caller
 local (first application after review). No phase exception, drill, direct ref
 edit or bound/count evasion is authorized. B01–B03 Explain remains open until
-that scoped assets change; no passing gate/push before resolution. Full design/ACCEPTANCE,
+that scoped assets change; newly emitted P08 also lacks Explain and belongs in
+the same status-warning explanation change. No new application/count/bound is
+added for that companion. No passing gate/push before resolution. Full design/ACCEPTANCE,
 remaining commands/recipes/delivery/final gates and drill restrictions remain.
 
 ## Approved correction gate

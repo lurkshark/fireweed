@@ -562,6 +562,12 @@ before another change. Four changes were applied since the explicit review at
   expectation stops application. Native owned claim released, two implementation
   files retained uncommitted. Count3; owner recovery decision pending, no push.
 
+- Corrected0120 FLOW-101–113 [status read model](reports/status-data-0120.md)
+  applied at14f2c44:457 native passes, fresh isolated audit PASS round0 and fresh
+  implementation without canceled-code reuse. Native abandoncee4dbc resolved the
+  earlier checkpoint; exact public phase correction/prior assertions retained.
+  Count4; status warnings Explain next, then fifth gate and app/NEW proof.
+
 ## Historical reference inspection record — superseded by D004
 
 These entries describe the retired controller and original preparation. They supply historical provenance only, not startup instructions or current readiness. PROGRESS.md records the installed stage-2 controller, completed setup and baseline.
