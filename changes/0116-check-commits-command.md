@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: app
+phase: audit
+run: 20261030T050448-e34550cc4bb01812c7db3097
 ---
 
 
@@ -22,18 +25,18 @@ and existing CLI envelope/error helpers under app/internal/entry.
 
 ## Added
 
-### new:history-command
+### APP-105
 check-commits [range] MUST discover the nearest project root and call checks.History with the supplied range, or an empty range when omitted to use the configured local base.
 Plain success MUST return exit0, report the number of checked commits, and list each squashed change with its full commit object ID and change path.
 
-### new:history-violations
+### APP-106
 check-commits MUST return exit1 for history-rule violations and report every returned H01–H04 diagnostic with its affected path, full commit object ID and corrective action.
 
-### new:history-errors
+### APP-107
 check-commits MUST return exit2 with corrective U01 for invalid arguments/options and the existing cause code for project configuration errors.
 Operational history failures MUST return exit1 with their existing cause code, or P01 when uncoded, and a corrective action.
 
-### new:history-json
+### APP-108
 Successful check-commits --json MUST emit schema1 object data with commits in returned order and squashed entries containing commit and change, using empty arrays when appropriate and empty diagnostics.
 Failures MUST emit null data with code/message diagnostics.
 It MUST leave stderr empty.
@@ -67,3 +70,7 @@ rebuild-v1, saved/deleted/abandoned implementation or old worker logs as oracles
 Close through clean-built NEW with one actual Go lifecycle/explicit nonempty
 range, squash listing and H04 violation; then mandatory separate quality/goal
 review/checks, push only PASS. No new drill authority or phase-write exception.
+
+## Provenance
+
+- evals 2026-10-30T05:14:08.486798Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=243 failing=6 passing=237
