@@ -394,6 +394,22 @@ It MUST reject requests before writing module files when these errors are presen
 Successful new-module MUST return exit0 and print the repository-relative module directory.
 With --json it MUST emit schema1 string data equal to that directory and empty diagnostics; failures MUST emit null data and code/message diagnostics with empty stderr.
 
+### APP-105
+check-commits [range] MUST discover the nearest project root and call checks.History with the supplied range, or an empty range when omitted to use the configured local base.
+Plain success MUST return exit0, report the number of checked commits, and list each squashed change with its full commit object ID and change path.
+
+### APP-106
+check-commits MUST return exit1 for history-rule violations and report every returned H01–H04 diagnostic with its affected path, full commit object ID and corrective action.
+
+### APP-107
+check-commits MUST return exit2 with corrective U01 for invalid arguments/options and the existing cause code for project configuration errors.
+Operational history failures MUST return exit1 with their existing cause code, or P01 when uncoded, and a corrective action.
+
+### APP-108
+Successful check-commits --json MUST emit schema1 object data with commits in returned order and squashed entries containing commit and change, using empty arrays when appropriate and empty diagnostics.
+Failures MUST emit null data with code/message diagnostics.
+It MUST leave stderr empty.
+
 ## Decisions
 
 [0069-project-initialization] Init accepts codex and claude presets as argv commands; other selections are shell command templates containing {prompt}, stored as strings for one-pass quoted substitution when execution is implemented. Local recipes use recipe.yaml metadata, recipe.md instructions and a files/ project-relative payload; none uses empty language defaults and a generic module scaffold.
