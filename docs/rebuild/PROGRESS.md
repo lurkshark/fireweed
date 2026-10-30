@@ -21,16 +21,13 @@ Gamma proof PASS, fixture removed. [CI evidence](reports/ci-cli-0117.md). CI is
 local; no push since its implementation. The prior history/template CLI proofs
 remain valid; see the five linked checkpoint reports rather than repeating them.
 
-**Required stop before another app change.** SYSTEM.md42 requires stopping
-"before a third consecutive change to the same module/behavior, subject to existing
-explicit human authorization." The approved history continuation covered0115/0116,
-not an additional consecutive app caller. No ref/bound/count adjustment or phase
-exception is proposed. Concrete next proposal: /tmp/fireweed-list-continuation-checkpoint.md.
-Expose list through existing project.Queue as the next small queue-management
-caller, then normal independent audit/full verification and an actual NEW read
-proof. Resume only after owner authorization for this third consecutive app change.
-No third change authored. Full design/ACCEPTANCE remains incomplete, including
-remaining management/PR/drill/recipe/distribution surface and final gates.
+**Approved one-change continuation.** Owner answered "Approve list continuation"
+to /tmp/fireweed-list-continuation-checkpoint.md. This authorizes the third
+consecutive app application only: list through project.Queue, independent audit,
+native full verification and an actual NEW read proof. Count remains1 until it
+applies, then2; no reset, push, phase-write exception or new drill authority.
+Stop afterward before another consecutive app change unless separately authorized.
+Full design/ACCEPTANCE remains incomplete.
 
 ## Approved correction gate
 
