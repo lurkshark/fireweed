@@ -10,7 +10,7 @@ An ordinary fix then proves real fail-first/pass through three checked phases.
 Both fixtures clean/unclaimed and removed. [0102 proofs](reports/regenerate-fixes-cli-0102.md).
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 3 (0106–0108).** The owner-approved0104–0105 corrections pass:
+**Applied since review: 4 (0106–0108, 0110).** The owner-approved0104–0105 corrections pass:
 central C07 rejects mixed eval_fix with fixes/spec edits; C07 explains the cause
 and separation action. Same scoped Sol/high checkpoint reviewer PASS plus
 actual NEW rejection, build/vet/race/static/history16 commits pass at clean4cf21a1.
@@ -38,9 +38,12 @@ implementation/notes restored, claim released and phases natively abandoned.
 Public contract and corrected eval retained; discarded private implementation
 excluded. [Recovery](reports/recovery-0109.md). No governing claim at author boundary.
 
-**Next:** fresh0110 abandon dependency, immediate app caller/NEW proof, then
+0110 now archives the fresh abandon dependency with402 full passes and restricted
+audit PASS, without discarded0109 private inputs. Tree clean/unclaimed atb1b450f.
+
+**Next:** immediate abandon app caller/NEW proof, then
 fifth-application quality/goal review and appropriate checks. Owner explicitly
-authorized consecutive recovery/caller work; count stays3 until application.
+authorized consecutive recovery/caller work; the caller becomes application5.
 Remaining management surface and final acceptance stay open.
 
 ## Approved correction gate
