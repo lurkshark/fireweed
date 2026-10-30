@@ -1,111 +1,74 @@
 # Rebuild progress
 
-## Current handoff — 2026-10-30
+Current handoff only. Keep this file short: state, next work, standing rules.
+Per-change evidence lives in each archived change's Provenance
+(`changes/archive/`); older reports and the former HISTORY.md ledger are in Git
+history (last present at `c536833`).
 
-NEW proves manual lifecycle/setup, bounded next/run and recovery/resume,
-agent-commit undo, time/usage stops, maintenance/eval-fix/ordinary-fix/regenerate,
-release/commits/abandon, CI, list, status, PR-body and archive-backed show history.
-The complete design and ACCEPTANCE remain incomplete. Reuse HISTORY/reports.
+## State — 2026-10-30
 
-**Applied since review: 1; caller complete — owner authorized commit and push.**
-Owner answered "Approve scoped recovery; stop after completion" for
-[0127 checkpoint](reports/show-history-0127-checkpoint.md). The exact one-time
-runtime-document restoration exception was consumed, native abandon12d67bc
-completed, and the same behavior-preserving contract was re-authored with normal
-allocation/fresh run. No discarded implementation existed or was reused.
+126 changes applied (0001–0127; 0109 was abandoned). No pending, blocked or
+claimed change. `main` matches `origin/main` at `c536833`.
 
-[0127 app/NEW proof](reports/show-history-cli-0127.md) applied APP-132–135
-at909a1b1 with282 native passes; isolated independent audit PASS round0, clean
-CGO0 build/app vet and actual8-command NEW proof passed. APP-008/025 qualifiers
-preserved current/projected behavior and existing assertions. Authored archive
-inputs proved implementation-date order, metadata, filtering, empty views and
-errors; read state retained, no hooks/agents, fixture/state removed. Archive and
-claim release complete; no pending/blocked rebuild change or active claim remains.
-Owner subsequently instructed "commit and push", explicitly authorizing delivery
-of the completed caller/evidence to origin. No further product work or review-count
-reset is authorized. The completion stop remains in force.
+**Working through NEW (`bin/fireweed`), each proven by an actual CLI run:**
 
-The [0122–0126 fifth gate](reports/checkpoint-0122-0126.md) PASS reviewed source
-8cd9c0e: separate Sol/high quality/goal review, build/vet/race/static and explicit
-36-commit history extension79f7113..8cd9c0e. Review reset count0; this caller is1.
-Authorized push7c5e90e→5610268fb73e91af0805c20a4714e15c9d9e59f1 completed and
-actual origin/main OID verified. That was the prior reviewed push; the later explicit
-caller-push authorization above supersedes the local-only delivery stop. Push
-alone resets no count.
+- Setup: `init` (Go recipe), `doctor`, `new-module`, `new-change`, `stamp`.
+- Lifecycle: `start`, `verify [--quick]`, `done`, `context`; spec, fix,
+  eval_fix, maintenance and regenerate kinds; audit rounds; approval and P07.
+- Unattended: `next`, `run [--max] [--for]`, retries, saved attempts and
+  `--from-attempt`, projected blocking with independent continuation,
+  agent-commit undo, usage/time stops with exit 3.
+- Management: `release`, `commits`, `abandon`.
+- Reading and checks: `list`, `status`, `modules`, `show [ID] [--projected]
+  [--history]`, `explain`, `playbook`, `check`, `coverage`, `check-commits`,
+  `ci [--no-doctor]`, `pr-body`, `agents-md`, `version`.
 
-Known nonfatal Go module stat-cache write warning and existing C01/C18/B02
-warnings retain explanations. Corrected0127 author check has no new C17. Latest
-NEW is clean909a1b1, Go1.27.2 darwin/arm64 CGO0/vcs.modified=false. Prior gate
-race/history results are historical, not final-source/full-acceptance claims.
+**Not built yet:**
 
-Remaining surface includes drill/gc/migrate, show--stale/check--fix, recipes/
-versioning/packaging and every unclosed ACCEPTANCE gate, including final fresh
-checkout/CI/doctor/full-original-history, real regeneration, isolated self-hosting
-and delivery. Only the original contracts drill was authorized and its
-independence gaps remain unresolved. All recovery phase exceptions are consumed.
-Resume only an agreed continuation; stop here as explicitly requested.
+- Commands: `drill`, `gc`, `migrate`, `show --stale`, `check --fix`.
+- Recipes: `typescript-pnpm`, `python-uv`, `none`, local-path recipes.
+- `fireweed:` version-range enforcement and file-format migration.
+- Packaging (goreleaser, installer, Homebrew config).
+- Every ACCEPTANCE completion gate: fresh-checkout Go checks, controller
+  CI over the full baseline range, reference smoke, real drills of every
+  disposable module, isolated self-hosting, delivery.
 
-## Approved correction gate — completed historical scope
+## Next
 
-Direct owner reply: "Approve push and correction gate". Push the recorded batch
-and finding to free shared-base P07, then make exactly the scoped project mixed-
-kind validation and C07 explanation changes with independent audits/full checks.
-Use the same checkpoint reviewer for a scoped re-review. Push corrections and
-continue only on PASS; retain the five prior applications until the gate passes.
-This approval covers those correction applications beyond the normal five-
-change checkpoint. It changes no refs artificially, bounds, phase ownership or
-drill authority. After PASS, return immediately to app release wiring/NEW proof.
+Product work is paused until the owner agrees the next slice. Suggested order:
 
-## Authority and deferred work
+1. Typed diagnostics: replace the 14 places in `packages/app/internal/entry`
+   that recover codes by matching error text. The contracts drill gap
+   (CON-011/012) is this problem.
+2. `drill` in NEW, then real drills of mid-graph modules (`project`, `checks`)
+   with strict input isolation.
+3. Remaining commands, recipes, versioning and packaging, then the final gates.
 
-- Fifth application since review requires a separate subagent quality/goal
-  checkpoint plus appropriate checks. PASS authorizes push to origin and resume;
-  any finding requires owner stop. Direct trusted approval explicitly covers
-  this process. Blocked-change stops, consecutive module/behavior checks,
-  native audit rounds and shared-base P07 remain enforced. Push alone resets
-  no count; never change refs/bounds/specs/evals/counts to evade review.
-- The owner approved scoped0093 discard/native abandon, fixture-only RUN-016
-  eval_fix, fresh usage reauthoring and consecutive runner recovery. It is now
-  complete. Former P08 runner warning is gone after app caller; existing C01
-  embedded-recipe discovery and B02 CHK-055/16-case warnings remain explained.
-- Owner explicitly approved scoped0107 recovery: preserve the12-line eval patch, restore only its uncommitted edit, natively release the claim, one-time revert of invalid audit9ec2165, then resume the same run/IDs and persist the real finding before correction/re-audit. Release and revert 4188612 completed; this exception is consumed. Both0085 scoped exceptions remain consumed. A separately approved tested0107 recovery now released/reverted onlyb2616c9 as f58bef7; that second0107 exception is also consumed. See [recovery](reports/recovery-0107.md).
-  Historical deviations remain historical, not retroactively valid evidence.
-- Only the contracts drill was authorized and has unresolved independence
-  limitations, including dependent-internal reads. No gap fix, repeat or other
-  module drill is authorized. See [drill](reports/contracts-drill.md).
-- No workflow stub.go reorganization without demonstrated feature need.
-  No numeric affected-spec cap; keep coherent single-module changes, atomic
-  requirements and normal enforcement. Completed global splits/D006 migration
-  need no rewrite. Add diagnostic explanations only for justified emitted paths.
+## Standing rules
+
+- Stop on any blocked change. There is no applied-change count or checkpoint
+  review (owner, 2026-10-30). Audit rounds and shared-base P07 still apply.
+- Push only on explicit owner instruction.
+- Drills: only the contracts drill has run. Its native result passed (373
+  cases), but the agent searched other modules' `internal/` code, so it does
+  not meet the independence gate. Rebuilt code is on
+  `refs/fireweed/drills/contracts/20261028T103005.180922000`. No further drill
+  or gap fix without owner agreement.
+- Known warnings with explanations: C01 (embedded recipe discovery), C18,
+  B02 (CHK-055 has 16 cases), and Go's nonfatal module stat-cache write warning.
+  Zero warnings is not a gate.
 
 ## Fixed execution context
 
-Controller: /Users/joel/Workspace/fireweed/.fireweed/bin/fireweed-bootstrap,
-0.1.0 source7f925190878e38fc38f30d16bb1cf47aca098cf7, SHA-256
-f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f; unchanged.
-Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
-recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
-
-NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-909a1b1a4531787ba778d6dccf3e33fcc8b7030f, Go1.27.2 darwin/arm64 CGO0,
-vcs.modified=false. Build/app vet/native282 passes, independent audit and actual
-NEW history proof passed. See the current0127 report for exact phases/limitations.
-Known nonfatal module stat-cache write warning is retained; no repeat needed.
-
-Workers and separate assertion auditors use codex exec --ephemeral
---ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"'
--s workspace-write {prompt}. Context before every step; workers never commit.
-Auditors run in isolated snapshots with change/projected specs/evals/public
-interfaces/rules, no SYSTEM/implementation/history/outside access or code
-execution/writes. Inspect complete command logs and remove snapshots. Native
-coordinator provenance is manual with real CLI logs retained. Do not use native
-automatic audit dispatch after the historical input/phase deviations. Never use
-bootstrap source/tests, rebuild-v1, abandoned/deleted/saved implementation or old
-worker logs as oracles. Regeneration/drill bounds remain unchanged.
-
-Controller audit submission: the proven native finding quote fits exactly one
-physical spec line; describe the full missing assertion after the dash. Full
-multiline and flattened sentences were silently discarded in isolated probes.
-After every Done inspect phase, audit_rounds and pending IDs before dispatch;
-mechanical No findings never substitutes for the separate restricted audit.
-This is pinned-controller process guidance, not a product requirement.
+- Controller: `.fireweed/bin/fireweed-bootstrap` 0.1.0, source
+  `7f925190878e38fc38f30d16bb1cf47aca098cf7`, SHA-256
+  `f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f`. Do not
+  repin or rebuild.
+- History baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`. Always pass an
+  explicit range; the default range on `main` can be empty.
+- `GOCACHE=/tmp/fireweed-rebuild-cache`.
+- Workers, auditors and regeneration: `codex exec --ephemeral
+  --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"'
+  -s workspace-write {prompt}`.
+- Audits run through the controller's audit step with the configured
+  `audit.command`.

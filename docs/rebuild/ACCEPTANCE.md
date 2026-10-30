@@ -1,23 +1,10 @@
-# Acceptance and traceability
+# Acceptance
 
-Revised 2026-10-28. Full acceptance remains **unverified**; partial evidence is reusable. R01–R29 are planning labels, not another spec layer. Map design behaviors to atomic specs through changes as each slice needs them, following authorized work in PROGRESS.md.
-
-The authoritative design snapshot is [fireweed-design-v1.md](../../fireweed-design-v1.md) in this repository; its historical origin and checksums are recorded in [HISTORY.md](HISTORY.md#historical-reference-inspection-record--superseded-by-d004).
-
-GOAL.md/PLAN.md sequence runnable CLI slices; these rows describe eventual coverage, not implementation order. PROGRESS.md records the current slice, pinned controller and checkpoint authority. Prior evidence is preserved in HISTORY.md; historical pending-work statements do not restart completed work.
-
-At safe author boundaries link rows to assigned IDs and durable eval/archive/report evidence. Shared evidence can satisfy overlapping rows; do not duplicate specs, tests or reports for each label. Record relevant exceptions and discrepancies briefly.
-
-**Scope.** The design defines obligations; SYSTEM.md bounds their implementation and verification, including supported environments, process-group cancellation, eval cost and audit scope. Conventions use review and one app PATH-shim test, even where several rows mention them. Inventory examples add no requirements or unnamed edge cases. R22–R25 cover bounded effort, R26–R28 usability and R29 merge strategies; overlapping obligations need evidence once.
-
-D006's planned existing-path migration is complete through 0068. Keep diagnostics
-and explain accurate as justified features add real paths; unused allocations
-wait for those features. Workflow file reorganization is not a prerequisite.
-Neither statement waives eventual design obligations.
-
-A slice closes with observable NEW CLI evidence under PLAN; passing module evals
-alone does not prove it. Reuse that evidence across relevant rows rather than
-adding a separate acceptance campaign for every inventory entry.
+The full inventory of design obligations and the gates that end the rebuild.
+R01–R29 are planning labels, not another spec layer. The design defines the
+obligations; SYSTEM.md bounds how they are implemented and verified. Evidence is
+the archived changes, their evals and actual NEW runs; link it here only when a
+gate closes. Current status is in [PROGRESS.md](PROGRESS.md).
 
 ## Requirement inventory
 
@@ -94,136 +81,5 @@ Use one design/inventory review, then check fixes against affected requirements.
 6. **Reference comparison (smoke):** one equivalent fixture lifecycle run with both binaries, comparing exit codes, JSON envelope shape and resulting commits/refs. Record intentional differences briefly. Reference bugs do not define acceptance, and per-edge-case equivalence is not required.
 7. **Real regeneration:** successful controller-driven drills for every rebuilt disposable module, dependency-first. Real agents reconstruct from retained specs/Decisions/interfaces/evals and permitted dependency interfaces, without old implementation/history, saved attempts, old binaries or bootstrap. Own/transitive dependent evals pass without preserved-contract edits. Commit reviewed reports/retain refs and clean scratch worktrees. Repeat only drills invalidated by relevant changes or unresolved failures. Gaps require human agreement before authored fixes; agent suggestions alone authorize none. Missing real-agent access blocks this gate.
 8. **Self-hosting:** in an isolated clone/fixture, the NEW binary governs a small real spec change and a real drill, with checked fail-first/audit/impl commits, archive/provenance, CI and scratch cleanup. Keep the original repository governed by the pinned bootstrap throughout acceptance.
-9. **Delivery:** README build/test/use instructions, locally validated distribution/installer checksum behavior, clean committed target tree, restartable evidence record and independent product executable. No product runtime read/import/command requires bootstrap. Report exact checks/commits/reports and limitations. Push only under explicit owner authorization recorded in PROGRESS; do not publish or tag.
+9. **Delivery:** README build/test/use instructions, locally validated distribution/installer checksum behavior, clean committed target tree, restartable evidence record and independent product executable. No product runtime read/import/command requires bootstrap. Report exact checks/commits/reports and limitations. Push only on explicit owner instruction; do not publish or tag.
 
-## Evidence record shape
-
-Link evidence produced when work runs; never prefill successes. This optional guide needs no separate report if change/progress records already supply the facts.
-
-```text
-Requirement(s) / assigned spec IDs:
-Change/archive and phase commits:
-Eval/report link; actual fail/pass counts and command/result:
-Discrepancy, limitation or unrun work, if any:
-Status: unverified | in progress | verified | blocked
-```
-
-Bulky logs may remain ignored. Commit concise findings/references once, without hash manifests or testcase inventories. Audit, platform, regeneration and self-hosting claims must match what ran.
-
-## Evidence navigation
-
-[PROGRESS.md](PROGRESS.md) records current capability status and the next slice.
-[HISTORY.md](HISTORY.md) preserves the former progress ledger, historical partial
-requirement mappings and reference inspection record. Linked reports and change
-archives carry detailed phase/checkpoint evidence. Keep results once and link
-them here when they establish coverage; do not infer current readiness from an
-older entry or turn its historical next-work text into a new instruction.
-
-The first NEW next lifecycle now has [actual Go CLI evidence](reports/next-0080-block.md)
-for the successful-path portions of R06–R09/R17: genuine fail-first, separate
-bounded fake audit, checked commits, SPEC/archive/provenance and claim release.
-This is partial coverage; recovery, remaining kinds and all final gates
-stay open. Reuse the result without repeating it for each inventory row.
-
-The [bounded NEW run proof](reports/bounded-run-cli.md) adds partial R12/R13/R17
-evidence for successful queue order, --max, later continuation and empty queue.
-Retries/recovery, time/usage limits and remaining obligations remain open.
-
-The [NEW verification-retry proof](reports/verification-retries-0084.md) adds
-partial R12/R17 evidence for phase attempt bounds, retained work and latest
-verification feedback. Saved/blocking recovery, independent continuation,
-resume, nonzero-agent retries, usage/time stops and final gates remain open.
-
-The [NEW next exhaustion proof](reports/exhausted-next-0086.md) adds partial R12
-and R17 evidence: exhausted work/ref retained, phase-base checkout restored,
-state-only block committed, original cause reported and claim released. Saved
-attempt resume, projected waiting/independent continuation and other recovery
-obligations remain open.
-
-The [NEW independent-continuation proof](reports/independent-run-0089.md) adds
-partial R12/R17 evidence: projected waiting, independent application after a
-clean saved block, and retained exit1/cause/ref despite later successful work.
-Saved-attempt loading and remaining recovery/final obligations remain open.
-
-The [NEW saved-attempt resume proof](reports/saved-resume-cli-0091.md) adds
-partial R06/R12/R17 evidence: loading real saved work through start --from-attempt,
-retained lifecycle state/HEAD, correction and normal checked archive without
-repeating earlier successful phases. The fixture was removed after PASS.
-Agent-commit undo, usage/time stops and remaining final obligations stay open.
-
-The [NEW agent-commit recovery proof](reports/agent-commits-0092.md) adds partial
-R12/R17 evidence: soft-reset phase-agent commits, retained work and visible
-recovery warnings, then normal checked archive. Usage/time stops, remaining kinds/
-bounds and full acceptance remain open.
-
-The [NEW usage-stop/resume proof](reports/usage-stop-cli-0095.md) adds partial
-R13/R17 evidence: same-attempt usage retry, shared wait budget across applied
-changes, exit3 with retained result/state/work, and later same-run completion.
-Actual Go reports prove fail-first/pass; fixture removed. Time --for and all
-unclosed inventory/final gates remain open.
-
-The [NEW time-stop/resume proof](reports/run-time-cli-0097.md) adds partial
-R13/R17 evidence: run --for interrupts an active agent, returns exit3 with
-retained result/state/work, and next completes the same run with actual Go
-fail-first/pass reports. Fixture removed. Remaining kinds/bounds and final gates
-remain open.
-
-The [NEW maintenance proof](reports/maintenance-cli-0098.md) adds partial
-R06/R09/R17/R23 evidence: maintenance starts in impl, runs one agent, passes
-normal Go checks and archives in one commit with retained contracts and claim
-release. Eval-fix/regenerate kinds and other final obligations remain open.
-
-The [NEW eval-fix proof](reports/eval-fix-cli-0099.md) adds partial R08/R09/R17/R23
-evidence: corrected evals pass with listed coverage, separate audit includes
-the ID, impl is change-file-only and normal archive releases the claim. Actual
-Go baseline failure/correction and unchanged contracts/implementation are
-recorded. Worker guidance, regenerate and remaining full gates stay open.
-
-The [NEW eval-fix playbook check](reports/eval-fix-playbooks-0100.md) adds partial
-R17/R20/R23 guidance evidence: actual CLI instructions match the corrected
-evals/audit/impl restrictions. The0099 Go proof remains valid. Regenerate and
-remaining inventory/final gates stay open.
-
-The [NEW regenerate and ordinary-fixes proofs](reports/regenerate-fixes-cli-0102.md)
-add partial R06/R08/R09/R16/R17/R23/R29 evidence: regenerate starts with
-disposable deletion/context/P10 and completes owned next; an ordinary fix
-retains contracts/evals and proves a real Go failure before implementation.
-Both archive cleanly and release claims. No actual drill or self-hosting claim;
-persistent bounds, management surface and final gates remain open.
-
-The [NEW release proof](reports/release-cli-0106.md) and
-[commits proof](reports/commits-cli-0108.md) add partial lifecycle/ref-management
-evidence: owned claim removal with retained work, and current-branch phase-ID
-listing after a real Go lifecycle. Unknown/empty cases and unchanged read state
-are recorded. Abandon, remaining management commands and final gates stay open.
-
-The [NEW CI proof](reports/ci-cli-0117.md) adds partial R15/R17/R18 evidence:
-default deterministic Go checks/canaries, --no-doctor and third-module failure
-despite verify_dependents:none, no agent probes. Fixture removed; this is not
-final main-project CI, fresh-checkout or full acceptance evidence.
-
-The [NEW list proof](reports/list-cli-0118.md) adds partial R17 reading-surface
-evidence: queue order, runtime phase/defaults, authored blocked reason/audit rounds,
-held-state read after public start, empty output/JSON and retained read state.
-The fixture is removed. Status waiting/cost/drift and remaining whole-goal gates
-remain open; no new lifecycle, drill or full-acceptance claim.
-
-The [NEW status proof](reports/status-cli-0122.md) adds partial R17/R24/R25/R27/R29
-evidence: all waiting rules, module/quarantine/opt-out state, approval/phase/drift
-counts, recorded costs and B01–B03/P08, plus retained read state in plain/JSON.
-Its cost maintenance actually ran; two history records/failed drill were authored
-metadata, not regeneration evidence. The fixture was removed, and main status
-also passed. PR-body, other remaining inventory and whole-goal gates stay open.
-
-The [NEW PR-body proof](reports/pr-body-cli-0125.md) adds partial R17/R18/R24/R25
-reporting evidence: endpoint-based full/partial range review context, file/edit
-categories, review/audit/Decision/exception information, saved budget warnings,
-B04 binary/large additions with threshold/root-protection exclusions and coded
-range errors. Its historical/cost records are authored inputs, not executed
-lifecycle/drill evidence. Fixture removed; final gates remain open.
-
-The [NEW show-history proof](reports/show-history-cli-0127.md) adds partial R05/R17
-evidence: archive-backed filtered/module-wide history, implementation-date order,
-review metadata, empty views and coded errors. Its archives were authored public
-inputs, not executed lifecycle/drill evidence. Fixture removed; full gates remain
-open. Caller local at application1 after the passing0122–0126 review.
