@@ -7,13 +7,22 @@ agent-commit undo, time/usage stops, maintenance/eval-fix/ordinary-fix/regenerat
 release/commits/abandon, CI, list, status and PR-body. Reuse HISTORY/reports;
 the complete design and ACCEPTANCE remain incomplete.
 
-**Applied since review: 0; immediate app show --history caller authorized.**
+**Applied since review: 0; approved scoped history-caller recovery active.**
 Owner answered "Approve history continuation and review gate" for
 /tmp/fireweed-show-history-continuation-checkpoint.md: project history query
 as application5, mandatory separate Sol/high quality/goal review and fresh checks,
 push only on PASS, then immediate app show --history/actual NEW proof and a local
 stop at count1. Any finding/block or required dependency expansion stops. No
 phase exception, drill, GC against main refs or second push is authorized.
+
+Owner then answered "Approve scoped recovery; stop after completion" for
+[0127 clause checkpoint](reports/show-history-0127-checkpoint.md). The unfrozen
+caller was paused for two authored specs exceeding the three-clause limit.
+Its public inputs were preserved, exact owner-approved runtime-document and
+two eval restorations completed, and native abandon12d67bc left a clean tree.
+That one-time phase-write exception is consumed. Re-author the same corrected
+contract with a fresh normal run, fresh workers/isolated audit/full checks/NEW
+proof, then stop local at count1. No further push/drill/dependency expansion.
 
 [0126 query](reports/spec-history-query-0126.md) applied PRJ-051–056 at8cd9c0e
 with681 native passes and independent round0 audit PASS.
