@@ -370,6 +370,51 @@ Positive eval lines with zero disposable lines MUST exceed the ratio limit.
 Costs MUST return the retained run/phase cost snapshots in recording-time order with their module values and budget diagnostics, or an empty slice when none exist.
 The retained values MUST reflect the evaluated state even if source files or budget settings later change.
 
+### FLOW-101
+Status MUST return every project.Queue entry in queue order with slug, path, module, phase, blocked reason and audit rounds.
+Absent phase, reason and rounds MUST appear as queued, empty string and zero respectively.
+
+### FLOW-102
+For an unblocked queued change targeting an earlier blocked change's module, Status MUST name that earlier change in WaitingOn with WaitingRule same_module.
+
+### FLOW-103
+For an unblocked queued change whose module depends directly or transitively on an earlier blocked change's module, Status MUST name that earlier change with WaitingRule depends_on_blocked.
+
+### FLOW-104
+For an unblocked queued change with a nonempty Interface section, Status MUST name an earlier blocked change with WaitingRule interface_dependency when that blocked module depends directly or transitively on the candidate's module.
+An empty Interface MUST not trigger this rule.
+
+### FLOW-105
+Status MUST determine waiting reasons using the graph projected through each candidate, including preceding and candidate set edits.
+Blocked entries and unblocked entries unaffected by the blocking rules MUST have empty WaitingOn and WaitingRule.
+
+### FLOW-106
+Status MUST expose the discovered modules with their declared identities, dependency graph and resolved zones.
+
+### FLOW-107
+Status MUST list every currently quarantined spec with its module, ID and quarantine reason.
+
+### FLOW-108
+Status MUST list every module with boundaries_opt_out and its authored reason.
+
+### FLOW-109
+Status MUST report each module's count of applied archived changes whose implementation Provenance date is later than its latest drill report date.
+With no drill report, it MUST count all that module's applied archived changes, including zero when there are none.
+
+### FLOW-110
+Status MUST count applied changes archived on HEAD whose change file is absent from the locally known configured remote/base ref, falling back to the local base when the remote ref is absent.
+The base and remote MUST use the existing configured/default base-ref resolution.
+
+### FLOW-111
+Status MUST warn with P08 when the three or more most recently applied changes consecutively target one module, identifying the module and consecutive count.
+
+### FLOW-112
+Status MUST report the number of phase-changing commits reachable from HEAD for each applied archived change, matching Commits for that change.
+
+### FLOW-113
+Status MUST expose the latest retained ModuleCost for every module with recorded costs, together with the saved budget diagnostics associated with those selected measurements.
+Modules without a cost record MUST not receive a fabricated measurement.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
@@ -378,3 +423,11 @@ The retained values MUST reflect the evaluated state even if source files or bud
 reports; repeated verification in that phase replaces its snapshot, as it does
 the module reports. Each regular file's line count is newline count plus one
 when nonempty content lacks a trailing newline.
+
+[0120-status-report] When several earlier changes hold one entry, report the first in queue order,
+with same-module, dependent and interface-dependency precedence. Applied order
+uses implementation Provenance dates, newest first with archive path as the
+tie-breaker; a drill report date counts regardless of result. Budget diagnostics
+from selected snapshots are returned once each, rather than recomputed from
+later settings or source edits. PhaseCommits keys are archived change filenames
+without .md.

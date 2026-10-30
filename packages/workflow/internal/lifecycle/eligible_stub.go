@@ -26,6 +26,19 @@ func dependsOn(graph map[string][]string, module, dependency string) bool {
 	return visit(module)
 }
 
+func blockingRule(graph map[string][]string, candidate, earlier string, interfaceChanged bool) string {
+	if candidate == earlier {
+		return "same_module"
+	}
+	if dependsOn(graph, candidate, earlier) {
+		return "depends_on_blocked"
+	}
+	if interfaceChanged && dependsOn(graph, earlier, candidate) {
+		return "interface_dependency"
+	}
+	return ""
+}
+
 func Eligible(root string) ([]project.Change, error) {
 	queue, err := project.Queue(root)
 	if err != nil {
@@ -50,8 +63,7 @@ func Eligible(root string) ([]project.Change, error) {
 		interfaceChanged := strings.TrimSpace(section) != ""
 		waiting := false
 		for _, earlier := range blocked {
-			if candidate.Module == earlier || dependsOn(graph, candidate.Module, earlier) ||
-				interfaceChanged && dependsOn(graph, earlier, candidate.Module) {
+			if blockingRule(graph, candidate.Module, earlier, interfaceChanged) != "" {
 				waiting = true
 				break
 			}

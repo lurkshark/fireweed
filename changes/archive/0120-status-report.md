@@ -2,7 +2,7 @@
 audit_rounds: 0
 bases: {}
 module: workflow
-phase: impl
+phase: applied
 run: 20261030T154521-0db634e7ec89d16c9fcc03e6
 ---
 
@@ -131,6 +131,7 @@ review plus the existing single app PATH-shim eval, extended by the caller.
 
 - evals 2026-10-30T15:49:34.22515Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=457 failing=7 passing=450
 - audit 2026-10-30T15:51:05.823881Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-30T16:05:31.102929Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=457 failing=0 passing=457
 
 ## Audit
 
