@@ -4,57 +4,40 @@
 
 NEW proves manual lifecycle/setup, bounded next/run and recovery/resume,
 agent-commit undo, time/usage stops, maintenance/eval-fix/ordinary-fix/regenerate,
-release/commits/abandon, CI, list and now status. Reuse the linked HISTORY and
-reports; full design/ACCEPTANCE remains incomplete.
+release/commits/abandon, CI, list, status and now PR-body. Reuse HISTORY/reports;
+the complete design and ACCEPTANCE remain incomplete.
 
-**Applied since review: 3; PR-body report/B04 Explain archived; app caller next.**
-[0124 B04 Explain](reports/pr-body-artifact-explanation-0124.md) applied AST-042
-at8ee0534 with731 native passes and independent audit PASS round0. Only one
-explanation entry changed. No pending change/claim remains. Complete the immediate
-app caller and actual NEW proof, then stop local at count4; no push or drill.
-[0123 report](reports/pr-body-report-0123.md) applied FLOW-114–125 atb370909:
-475 native passes, independent isolated audit PASS round0, frozen contracts
-retained. A scoped implementation correction followed an intentional precommit
-interruption; replacement full Done passed, no block or exception. No claim or
-pending change remains. Backend and B04 Explain are now complete; the immediate app/NEW
-proof is still required to close the approved slice.
+**Applied since review: 4; approved PR-body slice complete and local. Stop.**
+[0123 workflow report](reports/pr-body-report-0123.md) applied FLOW-114–125
+atb370909 with475 native passes; [0124 B04 Explain](reports/pr-body-artifact-explanation-0124.md)
+applied AST-042 at8ee0534 with731 passes; [0125 app/NEW proof](reports/pr-body-cli-0125.md)
+applied APP-127–131 at5da87d4 with262 passes. All independent isolated audits
+passed round0. Frozen contracts remained intact. Native phases archived and
+released claims; no pending or blocked rebuild change remains.
+
+Clean CGO0 build and changed-module vet passed. Actual NEW PR-body plain/JSON
+full/partial-range proof passed endpoint authority, review context, saved costs/
+B01–B04, artifact threshold/root-protection exclusions and invalid-range handling.
+Fixture metadata/costs were authored inputs, not real lifecycle/drill evidence.
+Reads retained state, no hooks/agents ran, fixture removed. Standalone NEW B04
+Explain JSON also passed. Build's nonfatal module stat-cache write warning and
+existing C01/C18/B02 warnings retain recorded explanations; zero warnings is not
+a gate. No final-source race/fresh-checkout/CI/doctor/full-history or overall
+acceptance claim follows.
+
 Owner answered "Approve PR-body slice" for
-`/tmp/fireweed-pr-body-continuation-checkpoint.md`: workflow explicit-range report,
-then emitted B04 explanation, then thin app caller and actual NEW proof. Three
-applications reach count4; stop with the caller local, no push, drill or phase
-exception. Stop on a native block or further dependency change rather than
-expanding this slice. Fresh fixed Sol/high workers/isolated audits, normal native
-checks and unchanged bounds apply. The prior status stop is superseded only by
-this explicit continuation.
-[0122 status CLI](reports/status-cli-0122.md) applied APP-118–126 at74e2818:
-253 final native passes, one independent APP-121 assertion finding/correction
-and scoped re-audit PASS, fresh implementation, clean CGO0 build and app vet.
-Actual NEW disposable proof passed all waiting rules, costs/B01–B03/P08,
-quarantines/opt-outs, drift, phase counts and retained read state; fixture removed.
-Main NEW status --json passed8 modules/empty queue/unapproved1/no diagnostics.
-At that prior0122 boundary all work was archived/unclaimed and the local stop
-was honored. The explicit PR-body continuation above supersedes that stop.
+`/tmp/fireweed-pr-body-continuation-checkpoint.md`: three changes starting at1,
+stopping local at4 after actual NEW proof, with no push, drill or phase exception.
+That scope is complete. The passing0117–0121 review at79f7113 reset count0;
+status0122 was1 and these changes advanced it to4. Origin/main was last actually
+verified at7c5e90e after its prior authorized push. No later push or count reset.
+No technical block remains; this is the agreed stop, before the fifth gate.
 
-The [0122 recovery history](reports/status-cli-0122-checkpoint.md) preserves the
-old missing phase commit and native dirty-tree refusal. Owner-approved native
-cancel/re-author succeeded with public assertions preserved, a fresh run and
-normal allocation. Both one-time document exceptions are consumed. No canceled
-implementation, fabricated claim/ref, altered bound/count or audit reset was used.
-
-The prior [0117–0121 gate](reports/checkpoint-0117-0121.md) passed separate Sol/high
-quality/goal review plus build/vet/race/static/history at79f7113; origin/main7c5e90e
-was actually verified after its authorized push. Review reset count0 then; this
-caller is application1. Existing C01/C18/B02 warnings retain their explanations.
-The build's nonfatal module stat-cache metadata warning is recorded in0122;
-zero warnings is not a gate. New app source means that prior race gate is not a
-final-source/full-acceptance claim.
-
-Owner approved native cancel/re-author, fresh workers/isolated audit/full checks
-and actual NEW proof, then stopping with the caller local. This is complete;
-no further push, drill or phase exception is authorized by
-that slice. The newly approved PR-body continuation above is active; other remaining surface includes
-drill/gc/migrate, remaining show/check options, recipes/versioning/packaging and
-all unclosed ACCEPTANCE gates. Drill restrictions below remain in force.
+Remaining surface includes drill/gc/migrate, remaining show/check options,
+recipes/versioning/packaging and all unclosed ACCEPTANCE gates. Resume only an
+agreed continuation; existing drill restrictions and fifth-change review/check/
+push-only-on-PASS rules remain in force. Both0122 document-recovery exceptions
+and all earlier exceptions are consumed, not standing authority.
 
 ## Approved correction gate — completed historical scope
 
@@ -98,13 +81,13 @@ Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
 recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-74e281838830e4a33e57ff919988ee39cca50595, Go1.27.2 darwin/arm64, CGO disabled,
+5da87d4102f4a6fc487ebd69e82e15a1e317041d, Go1.27.2 darwin/arm64, CGO disabled,
 vcs.modified=false. Build passed with the known nonfatal module-cache metadata
 warning, recorded in the current checkpoint report; no source fix/rebuild needed.
-Build/app vet/native253 passes, independent scoped audit and actual NEW status
-proof passed at74e2818. Prior build/vet/race/static/history/quality review at79f7113
-and actual CI/list/Explain/mixed-kind proofs remain historical evidence; no final
-CI/doctor/fresh-checkout/drill/self-hosting or overall acceptance claim follows.
+Build/changed-module vet/native262 app passes, independent audit and actual
+NEW PR-body/Explain proof passed at5da87d4. Prior status/CI/list/Explain and
+build/vet/race/static/history/quality-review results remain historical reusable
+evidence, not final-source or complete-acceptance claims.
 
 Workers and separate assertion auditors use codex exec --ephemeral
 --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"'

@@ -40,3 +40,7 @@ do not close this slice.
 
 Count2 since review. Next exactly B04 Explain, then immediate app PR-body and
 actual clean-built NEW proof, stopping local at count4. No push or drill.
+
+The immediate [0125 app caller and actual NEW proof](pr-body-cli-0125.md) now
+pass at5da87d4. The three-change slice stops local at count4 as approved; no push
+or complete-goal claim follows.

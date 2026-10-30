@@ -23,3 +23,7 @@ Logs/results: /tmp/fireweed-0124-{evals,impl}-focused.json and matching
 proof was repeated; the approved final caller build/proof will exercise it.
 Count3 since review, clean/unclaimed. Next immediate app PR-body and actual NEW
 proof, then stop with caller local at count4, no push/drill. Full goal incomplete.
+
+The immediate [0125 app caller and actual NEW proof](pr-body-cli-0125.md) now
+pass at5da87d4. The three-change slice stops local at count4 as approved; no push
+or complete-goal claim follows.

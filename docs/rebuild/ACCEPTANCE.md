@@ -214,3 +214,10 @@ counts, recorded costs and B01–B03/P08, plus retained read state in plain/JSON
 Its cost maintenance actually ran; two history records/failed drill were authored
 metadata, not regeneration evidence. The fixture was removed, and main status
 also passed. PR-body, other remaining inventory and whole-goal gates stay open.
+
+The [NEW PR-body proof](reports/pr-body-cli-0125.md) adds partial R17/R18/R24/R25
+reporting evidence: endpoint-based full/partial range review context, file/edit
+categories, review/audit/Decision/exception information, saved budget warnings,
+B04 binary/large additions with threshold/root-protection exclusions and coded
+range errors. Its historical/cost records are authored inputs, not executed
+lifecycle/drill evidence. Fixture removed; final gates remain open.

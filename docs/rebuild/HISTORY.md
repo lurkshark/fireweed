@@ -596,6 +596,12 @@ before another change. Four changes were applied since the explicit review at
   entry and no unrelated changes. Count3; immediate app/NEW proof then local
   count4 stop, no push or complete-goal claim.
 
+- 0125 APP-127–131 [PR-body CLI/NEW proof](reports/pr-body-cli-0125.md) applied
+  at5da87d4:262 native passes, isolated audit PASS round0, clean build/changed-
+  module vet and actual plain/JSON full/partial-endpoint/B01–B04/P01 proof PASS.
+  Standalone B04 Explain passes; fixture removed. The three-change slice stops
+  clean/unclaimed/local at count4, no push or complete-goal claim.
+
 ## Historical reference inspection record — superseded by D004
 
 These entries describe the retired controller and original preparation. They supply historical provenance only, not startup instructions or current readiness. PROGRESS.md records the installed stage-2 controller, completed setup and baseline.
