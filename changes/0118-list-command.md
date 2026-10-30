@@ -1,6 +1,7 @@
 ---
 audit_rounds: 0
 bases: {}
+blocked: audit findings require human decision
 module: app
 phase: audit
 run: 20261030T060815-0e02e7a568d50ef3aa0273c2
@@ -76,3 +77,8 @@ lifecycle evidence, perform no repeat lifecycle or drill. Stop on any block.
 ## Provenance
 
 - evals 2026-10-30T06:21:29.802091Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=250 failing=3 passing=247
+
+## Questions
+
+- APP-115: "It MUST report the blocked reason and audit rounds, using an empty reason and zero rounds when absent." — No assertion checks that plain output reports an empty reason for an unblocked entry.
+- [untestable] APP-116: "Queue failures MUST return exit1 with their existing cause code, or P01 when uncoded, and corrective guidance." — Coded Queue failures are asserted, but no permitted public input producing an uncoded Queue failure has been identified. The public API has no error-injection point, so the P01 fallback cannot currently be asserted without an unsupported fault mechanism or scope change; owner contract decision is required.
