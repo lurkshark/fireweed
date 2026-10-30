@@ -30,7 +30,6 @@ var pending = map[string]bool{
 	"new-module": true,
 	"list":       true, "status": true,
 	"check-commits": true, "ci": true, "pr-body": true,
-	"abandon": true,
 	"drill":   true, "gc": true, "migrate": true,
 }
 
@@ -197,7 +196,7 @@ func Run(args []string, out, errOut io.Writer) int {
 			printModules(out, modules)
 		}
 		return 0
-	case "start", "verify", "done", "context", "coverage", "release", "commits":
+	case "start", "verify", "done", "context", "coverage", "release", "commits", "abandon":
 		return runLifecycle(command, positional[1:], jsonMode, quick, full, withChange, fromAttempt, out, errOut)
 	case "next":
 		if count != 0 {

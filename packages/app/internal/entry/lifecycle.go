@@ -96,7 +96,7 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 	fail := func(status int, code, message string) int {
 		return cliFailure(status, jsonMode, out, errOut, code, message)
 	}
-	if command == "start" || command == "context" || command == "release" || command == "commits" {
+	if command == "start" || command == "context" || command == "release" || command == "commits" || command == "abandon" {
 		if len(args) != 1 {
 			return fail(2, "U01", "Use "+command+" <change> with exactly one change.")
 		}
@@ -161,6 +161,19 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 			plain = strings.Join(ids, "\n") + "\n"
 		}
 		return cliResponse(0, jsonMode, out, errOut, ids, plain, nil)
+	}
+	if command == "abandon" {
+		oid, err := workflow.Abandon(root, args[0])
+		if err != nil {
+			ds := lifecycleError(err, nil, "Use an eligible pending change in a clean Git project, resolve any conflicting claim, then retry abandon.")
+			status := 1
+			if ds[0].Code == "U02" {
+				status = 2
+			}
+			return cliResponse(status, jsonMode, out, errOut, nil, "", ds)
+		}
+		body := fmt.Sprintf("Abandoned %s in %s\n", args[0], oid)
+		return cliResponse(0, jsonMode, out, errOut, body, body, nil)
 	}
 	bin, err := os.Executable()
 	if err != nil {
