@@ -290,6 +290,13 @@ func Test_FLOW_113_StatusLatestRecordedCostsAndSavedWarnings(t *testing.T) {
 			t.Errorf("latest %s cost = %#v, want %#v", c.Module, c, latest[c.Module])
 		}
 	}
+	for _, module := range []string{"alpha", "beta"} {
+		want := latest[module]
+		got, ok := costFor(r.Costs, module)
+		if !ok || !reflect.DeepEqual(got, want) {
+			t.Errorf("recorded %s cost = %#v (present %t), want %#v", module, got, ok, want)
+		}
+	}
 	if _, ok := costFor(r.Costs, "gamma"); ok {
 		t.Errorf("unmeasured gamma has cost: %#v", r.Costs)
 	}
