@@ -152,17 +152,77 @@ func Test_CHK_070_HistoryExplicitRangeOrderAndFullOIDs(t *testing.T) {
 	expectHistoryFindings(t, got)
 }
 
+func Test_CHK_070_HistoryBranchingRangeTopologicalOrder(t *testing.T) {
+	f := newHistoryFixture(t)
+	f.git("branch", "side")
+	f.put("notes/main-one.txt", "main one\n")
+	mainOne := f.commit("main first")
+	f.put("notes/main-two.txt", "main two\n")
+	mainTwo := f.commit("main second")
+	f.git("checkout", "-q", "side")
+	f.put("notes/side-one.txt", "side one\n")
+	sideOne := f.commit("side first")
+	f.put("notes/side-two.txt", "side two\n")
+	sideTwo := f.commit("side second")
+	f.git("checkout", "-q", "main")
+	f.git("merge", "--no-ff", "-m", "merge side", "side")
+	merge := f.git("rev-parse", "HEAD")
+
+	got := f.report(f.base + ".." + merge)
+	want := map[string]bool{mainOne: true, mainTwo: true, sideOne: true, sideTwo: true, merge: true}
+	if len(got.Commits) != len(want) {
+		t.Errorf("branching commits = %#v; want exactly five commits", got.Commits)
+	}
+	positions := make(map[string]int)
+	for i, commit := range got.Commits {
+		if !want[commit] {
+			t.Errorf("unexpected commit %s in %#v", commit, got.Commits)
+		}
+		if _, duplicate := positions[commit]; duplicate {
+			t.Errorf("duplicate commit %s in %#v", commit, got.Commits)
+		}
+		positions[commit] = i
+	}
+	for commit := range want {
+		if _, present := positions[commit]; !present {
+			t.Errorf("missing commit %s in %#v", commit, got.Commits)
+		}
+	}
+	for _, edge := range [][2]string{{mainOne, mainTwo}, {sideOne, sideTwo}, {mainTwo, merge}, {sideTwo, merge}} {
+		parent, hasParent := positions[edge[0]]
+		child, hasChild := positions[edge[1]]
+		if hasParent && hasChild && parent >= child {
+			t.Errorf("parent %s must precede child %s in %#v", edge[0], edge[1], got.Commits)
+		}
+	}
+	expectHistoryFindings(t, got)
+}
+
 func Test_CHK_070_HistoryDefaultRangeUsesLocalConfiguredBase(t *testing.T) {
 	f := newHistoryFixture(t)
+	f.put("fireweed.yaml", strings.Replace(historyConfig, "base: main", "base: review-base", 1))
+	f.commit("configure review base")
+	f.git("branch", "review-base")
+	f.put("notes/common.txt", "common\n")
+	common := f.commit("common after review base")
 	f.git("branch", "feature")
 	f.git("checkout", "-q", "feature")
 	f.put("notes/one.txt", "one")
 	one := f.commit("first")
 	f.put("notes/two.txt", "two")
 	two := f.commit("second")
+	f.git("checkout", "-q", "review-base")
+	f.put("notes/review-only.txt", "review only\n")
+	reviewOnly := f.commit("review base advances independently")
+	f.git("checkout", "-q", "feature")
 	got := f.report("")
-	if !reflect.DeepEqual(got.Commits, []string{one, two}) {
-		t.Errorf("default commits = %#v; want [%s %s]", got.Commits, one, two)
+	if !reflect.DeepEqual(got.Commits, []string{common, one, two}) {
+		t.Errorf("default commits = %#v; want [%s %s %s]", got.Commits, common, one, two)
+	}
+	for _, commit := range got.Commits {
+		if commit == reviewOnly {
+			t.Errorf("default commits include configured-base-only commit %s", reviewOnly)
+		}
 	}
 }
 
