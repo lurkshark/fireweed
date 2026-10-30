@@ -2,7 +2,7 @@
 audit_rounds: 0
 bases: {}
 module: workflow
-phase: audit
+phase: impl
 run: 20261030T201956-3cf0390131e30297a8468ed5
 ---
 
@@ -111,3 +111,9 @@ Explain and immediate app caller/NEW proof remain in the approved count4 slice.
 ## Provenance
 
 - evals 2026-10-30T20:47:51.995456Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=475 failing=15 passing=460
+- audit 2026-10-30T20:49:13.58751Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+
+## Audit
+
+No findings
+Checked IDs: FLOW-114, FLOW-115, FLOW-116, FLOW-117, FLOW-118, FLOW-119, FLOW-120, FLOW-121, FLOW-122, FLOW-123, FLOW-124, FLOW-125
