@@ -4,7 +4,7 @@ audit_pending:
 audit_rounds: 1
 bases: {}
 module: app
-phase: evals
+phase: audit
 run: 20261030T001135-22be6a3923abe0974c22c059
 ---
 
@@ -73,6 +73,7 @@ changes; push and continue only on PASS under standing owner authorization.
 
 - evals 2026-10-30T00:19:29.697432Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=217 failing=7 passing=210
 - audit 2026-10-30T00:21:07.660677Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- evals 2026-10-30T00:26:54.145893Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=217 failing=7 passing=210
 
 ## Audit
 

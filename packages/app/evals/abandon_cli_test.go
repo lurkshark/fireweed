@@ -44,6 +44,24 @@ func Test_APP_097_APP_099_AbandonNestedRootPlainAndJSON(t *testing.T) {
 			root := lifecycleCLIProject(t, bin, false)
 			cliGit(t, root, "config", "user.name", "Fixture")
 			cliGit(t, root, "config", "user.email", "fixture@example.invalid")
+			var outerRoot, outerPending, outerBody, outerHead string
+			if !tc.owned {
+				outerRoot = lifecycleCLIProject(t, bin, false)
+				outerPending = filepath.Join(outerRoot, "changes/0001-manual.md")
+				body, err := os.ReadFile(outerPending)
+				if err != nil {
+					t.Fatal(err)
+				}
+				outerBody = strings.Replace(string(body), "Users need an additional value.", "Outer project must retain this pending change.", 1)
+				appPut(t, outerRoot, "changes/0001-manual.md", outerBody)
+				cliCommit(t, outerRoot, "distinguish enclosing project")
+				outerHead = cliGit(t, outerRoot, "rev-parse", "HEAD")
+				innerRoot := filepath.Join(outerRoot, "inner-project")
+				if err := os.Rename(root, innerRoot); err != nil {
+					t.Fatal(err)
+				}
+				root = innerRoot
+			}
 			if tc.owned {
 				appPut(t, root, ".fireweed/emit-new", "yes\n")
 				cliCommit(t, root, "fixture projected eval")
@@ -94,6 +112,14 @@ func Test_APP_097_APP_099_AbandonNestedRootPlainAndJSON(t *testing.T) {
 			}
 			if claim := cliGit(t, root, "for-each-ref", "--format=%(objectname)", "refs/fireweed/claims/manual"); claim != "" {
 				t.Errorf("abandon retained owned claim: %s", claim)
+			}
+			if outerRoot != "" {
+				if got := cliGit(t, outerRoot, "rev-parse", "HEAD"); got != outerHead {
+					t.Errorf("abandon moved enclosing project HEAD: %s -> %s", outerHead, got)
+				}
+				if body, err := os.ReadFile(outerPending); err != nil || string(body) != outerBody {
+					t.Errorf("abandon changed enclosing pending change: %q, %v", body, err)
+				}
 			}
 		})
 	}
