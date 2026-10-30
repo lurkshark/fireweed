@@ -551,6 +551,11 @@ before another change. Four changes were applied since the explicit review at
   public assertions retained and no implementation reuse. Count2; stopped as
   approved, clean/unclaimed, no new push or full-goal completion.
 
+- 0119 FLOW-097–100 [verification costs](reports/verification-costs-0119.md)
+  applied at00a4a30:450 native passes, fresh isolated audit PASS round0, public
+  cost snapshots/B01–B03. Count3; next approved workflow status then app/NEW
+  proof. B-code Explain integration is open; no push or status-slice PASS claim.
+
 ## Historical reference inspection record — superseded by D004
 
 These entries describe the retired controller and original preparation. They supply historical provenance only, not startup instructions or current readiness. PROGRESS.md records the installed stage-2 controller, completed setup and baseline.

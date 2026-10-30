@@ -1,6 +1,6 @@
 # Rebuild progress
 
-## Current handoff — 2026-10-29
+## Current handoff — 2026-10-30
 
 NEW proves manual lifecycle/setup, bounded next/run and recovery/resume,
 agent-commit undo, time/usage stops, maintenance/eval-fix/ordinary-fix/regenerate,
@@ -9,7 +9,7 @@ retains a real saved attempt, restores phase work/deletes pending change in one
 commit, releases its claim and frees ALP-002 for Start reuse; fixture removed.
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 2 (0117/0118); status slice approved.**
+**Applied since review: 3 (0117–0119); status slice in progress.**
 Prior fixed Sol/high quality/goal review of0112–0116 PASS and fresh checks passed
 at929e32b; authorized origin push e5287d5→1ca04f3 completed. [Gate](reports/checkpoint-0112-0116.md).
 0117 CI remains local with247 native passes and actual NEW Go proof PASS.
@@ -23,15 +23,13 @@ owner-approved native abandon78705e1 removed it. The corrected contract resolves
 only the fallback condition; fresh public evals carry the empty-reason assertion.
 No saved implementation existed or was reused. Original findings remain historical.
 
-**Stopped as approved.** The scoped recovery authorized this single consecutive
-app application and its proof, then a stop. There are three consecutive applied
-app changes (0116/0117/0118); further consecutive work requires owner authority
-under SYSTEM.md42. No fourth change is authored. Count remains2, with no reset,
-new push, phase exception, further command/library work or drill. Main tree clean,
-no pending/blocked rebuild changes or claims. Full design/ACCEPTANCE remains
-incomplete; next queue-management surface is status (waiting reasons, module
-state/cost/drift and budgets), with PR/maintenance/recipes/delivery/final gates
-still open. Resume scope must be agreed before more work.
+0119 FLOW-097–100 applied at00a4a30: recorded Verify/Done cost snapshots,
+B01–B03 warnings and public Costs reader;450 native passes and isolated audit
+PASS. [Evidence](reports/verification-costs-0119.md). A scoped implementation
+review correction added root protected-pattern precedence before application;
+interrupted verification is not passing evidence. Main tree clean/unclaimed.
+The next approved dependency is workflow status data, then immediate app status
+wiring/NEW proof. This slice is not closed by library verification.
 
 Owner: "Approve status slice and fifth review". This supersedes the completed
 recovery's stop only for `/tmp/fireweed-status-continuation-checkpoint.md`:
@@ -40,8 +38,11 @@ reasons, then immediate app status wiring/actual NEW proof. Three applications
 reach the fifth-change quality/goal subagent review and appropriate fresh checks;
 push only on PASS, then stop and report. Stop earlier on any block. No phase
 exception, drill, deferred gap fix or bound/count/ref change. Native status
-confirmed unapproved2/P08 before this slice. No change is authored yet; next is
-workflow cost recording, preserving the held approved graph and existing reports.
+confirmed unapproved2/P08 before this slice. Cost recording is complete; no second
+change is authored yet. B01–B03 Explain entries are a known missing assets
+integration obligation, outside these three applications: do not claim a passing
+fifth-change gate or push while it remains unresolved. Full design/ACCEPTANCE,
+remaining commands/recipes/delivery/final gates and drill restrictions remain.
 
 ## Approved correction gate
 
