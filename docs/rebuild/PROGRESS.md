@@ -9,7 +9,7 @@ retains a real saved attempt, restores phase work/deletes pending change in one
 commit, releases its claim and frees ALP-002 for Start reuse; fixture removed.
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 1 (0117); 0118 blocked at audit.** Prior fixed Sol/high
+**Applied since review: 1 (0117); approved 0118 recovery in progress.** Prior fixed Sol/high
 quality/goal review of0112–0116 PASS and fresh checks passed at929e32b; authorized
 origin push e5287d5→1ca04f3 completed. [Gate](reports/checkpoint-0112-0116.md).
 0117 CI remains local with247 native passes/actual NEW Go proof PASS.
@@ -20,7 +20,9 @@ audit found missing APP-115 plain empty-reason assertion and APP-116 P01 fallbac
 assertion with no established public uncoded input/error-injection point. The
 coordinator classified the latter as currently untestable. Controller natively
 blocked/released inaf7d26b, phaseaudit, audit_rounds0, same original run/IDs;
-both findings are Questions. Tree clean/unclaimed. [Audit checkpoint](reports/list-audit-0118.md).
+both findings became Questions. Native abandon78705e1 has now removed that
+unapplied attempt and its phase work, freeing never-applied IDs; no implementation
+was written or reused. Corrected0118-list-queue-command is authored next. [Audit checkpoint](reports/list-audit-0118.md).
 
 **Approved scoped recovery.** Owner answered "Approve scoped recovery" to
 /tmp/fireweed-0118-audit-checkpoint.md. Resolve only APP-116's currently unassertable

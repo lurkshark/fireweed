@@ -35,3 +35,8 @@ path-correction-worker.log,evals-focused.json,evals-done.log,audit-worker.log,
 block-done.log}. The existing APP-10317/APP-10419 warnings remain explained.
 The new C18 repeated JSON-failure sentence is shared envelope behavior, like
 existing shared-stderr wording; no convention spec or broad rewrite is proposed.
+
+Owner approved the scoped native recovery. Controller abandon78705e18d5ae9a23ad3044a82f243b20651e4464
+removed the blocked file and unapplied eval/block work; no direct phase/ref writes
+or implementation existed. Change number0118 is reused for corrected list-queue-command.
+Count remains1; fresh contract/evals/audit/implementation/verification/proof follow.
