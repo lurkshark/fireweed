@@ -326,6 +326,33 @@ Commits MUST resolve pending or archived changes by repository-relative path,
 filename or unambiguous slug. It MUST reject missing or ambiguous selectors
 with U02.
 
+### FLOW-089
+Abandon MUST undo the unapplied change's phase-commit effects identified by Commits and delete its pending change file in one commit, returning that commit's full object ID.
+
+### FLOW-090
+Abandon MUST reject a dirty working tree with P01 before changing files, HEAD or refs.
+
+### FLOW-091
+Abandon MUST allow an unclaimed change or a claim owned by the calling worktree.
+It MUST reject a foreign claim with P02 before changing files, HEAD or refs.
+On success it MUST release the selected owned claim.
+
+### FLOW-092
+Abandon MUST reject an applied archived change with P01.
+After git revert returns that change to the pending queue, Abandon MUST allow dropping it under the same preconditions.
+
+### FLOW-093
+Abandon MUST retain saved attempt refs unchanged.
+
+### FLOW-094
+The Abandon commit MUST not assign a new phase value.
+
+### FLOW-095
+After successful Abandon, its assigned but unapplied spec IDs MUST be available for subsequent Start allocation.
+
+### FLOW-096
+Abandon MUST accept the same unambiguous repository-relative path, filename and slug selectors as Commits, rejecting missing or ambiguous selectors with U02.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
