@@ -7,7 +7,15 @@ agent-commit undo, time/usage stops, maintenance/eval-fix/ordinary-fix/regenerat
 release/commits/abandon, CI, list and now status. Reuse the linked HISTORY and
 reports; full design/ACCEPTANCE remains incomplete.
 
-**Applied since review: 1; status caller complete and local. Stop as approved.**
+**Applied since review: 1; approved PR-body slice now active.**
+Owner answered "Approve PR-body slice" for
+`/tmp/fireweed-pr-body-continuation-checkpoint.md`: workflow explicit-range report,
+then emitted B04 explanation, then thin app caller and actual NEW proof. Three
+applications reach count4; stop with the caller local, no push, drill or phase
+exception. Stop on a native block or further dependency change rather than
+expanding this slice. Fresh fixed Sol/high workers/isolated audits, normal native
+checks and unchanged bounds apply. The prior status stop is superseded only by
+this explicit continuation.
 [0122 status CLI](reports/status-cli-0122.md) applied APP-118–126 at74e2818:
 253 final native passes, one independent APP-121 assertion finding/correction
 and scoped re-audit PASS, fresh implementation, clean CGO0 build and app vet.
@@ -33,8 +41,8 @@ final-source/full-acceptance claim.
 
 Owner approved native cancel/re-author, fresh workers/isolated audit/full checks
 and actual NEW proof, then stopping with the caller local. This is complete;
-no further push, drill, additional change or phase exception is authorized by
-that slice. On an agreed continuation, remaining surface includes pr-body,
+no further push, drill or phase exception is authorized by
+that slice. The newly approved PR-body continuation above is active; other remaining surface includes
 drill/gc/migrate, remaining show/check options, recipes/versioning/packaging and
 all unclosed ACCEPTANCE gates. Drill restrictions below remain in force.
 
