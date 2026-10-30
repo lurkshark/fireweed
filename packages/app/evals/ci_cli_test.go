@@ -24,7 +24,11 @@ func TestMain(m *testing.M) {
 
 func ciCLIFixture(t *testing.T) (root, nested, base string) {
 	t.Helper()
-	root = t.TempDir()
+	outer := t.TempDir()
+	appPut(t, outer, "fireweed.yaml", appFixtureConfig)
+	appPut(t, outer, "packages/ancestor/SPEC.md", "---\nname: ancestor\nid_prefix: ANC\ndepends_on: []\n---\n# Ancestor\n\n## Specs\n\n### ANC-001\nThe ancestor MUST pass.\n")
+	appPut(t, outer, "packages/ancestor/api.go", "package ancestor\n")
+	root = filepath.Join(outer, "inner")
 	log := filepath.Join(root, ".fireweed", "hooks.log")
 	config := strings.Replace(appFixtureConfig, "base: main", "base: review-base", 1) + `verify_dependents: none
 protected: [locked/**]
@@ -98,7 +102,7 @@ func ciCLIDiagnostics(t *testing.T, output string) []struct {
 	return diagnostics
 }
 
-func ciCLIFailure(t *testing.T, nested, code string, status int, args ...string) {
+func ciCLIFailure(t *testing.T, nested, code string, status int, args ...string) string {
 	t.Helper()
 	got, output, stderr := runSavedAttemptApp(t, nested, args...)
 	if got != status || stderr != "" {
@@ -117,6 +121,7 @@ func ciCLIFailure(t *testing.T, nested, code string, status int, args ...string)
 	if !found {
 		t.Errorf("CI failure lacks %s diagnostic: %s", code, output)
 	}
+	return output
 }
 
 func Test_APP_109_APP_110_APP_112_APP_113_CIHistoryAndAllModules(t *testing.T) {
@@ -187,7 +192,7 @@ func Test_APP_109_APP_112_APP_113_CIStaticUsageAndConfiguration(t *testing.T) {
 	ciCLIFailure(t, nested, "C01", 2, "ci", "--no-doctor", "--json")
 }
 
-func Test_APP_111_APP_113_CIDoctorCanariesNoAgentAndSkip(t *testing.T) {
+func Test_APP_111_APP_112_APP_113_CIDoctorCanariesNoAgentAndSkip(t *testing.T) {
 	t.Setenv("FIREWEED_APP_EVAL_CLI", "1")
 	bin, err := os.Executable()
 	if err != nil {
@@ -212,6 +217,19 @@ func Test_APP_111_APP_113_CIDoctorCanariesNoAgentAndSkip(t *testing.T) {
 	}
 	if got := doctorCLIFile(t, log); !strings.Contains(got, "setup:") || !strings.Contains(got, bin) || strings.Contains(got, "worker:") || strings.Contains(got, "audit:") {
 		t.Errorf("CI doctor did not run canaries with NoAgent: %q", got)
+	}
+	doctorCLIConfig(t, root, func(config map[string]any) {
+		config["hooks"].(map[string]any)["boundaries"] = "sh -c 'exit 0'"
+	})
+	canaryOutput := ciCLIFailure(t, nested, "C14", 1, "ci", "--json")
+	foundMissedCanary := false
+	for _, d := range ciCLIDiagnostics(t, canaryOutput) {
+		if d.Code == "C14" && (strings.Contains(d.Message, "undeclared") || strings.Contains(d.Message, "internal_eval")) {
+			foundMissedCanary = true
+		}
+	}
+	if !foundMissedCanary {
+		t.Errorf("default CI did not report a missed boundary canary: %s", canaryOutput)
 	}
 	appPut(t, root, ".fireweed/setup.sh", "#!/bin/sh\necho named-ci-canary-failure >&2\nexit 17\n")
 	before := doctorCLIFile(t, log)
