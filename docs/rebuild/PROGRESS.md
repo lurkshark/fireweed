@@ -9,7 +9,7 @@ retains a real saved attempt, restores phase work/deletes pending change in one
 commit, releases its claim and frees ALP-002 for Start reuse; fixture removed.
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 2 (0112–0113).** Separate Sol/high quality/goal review of0106–0108,
+**Applied since review: 3 (0112–0114); consecutive-history checkpoint.** Separate Sol/high quality/goal review of0106–0108,
 0110–0111 PASS at clean3118387; fresh build/vet/race/static/history44 commits
 pass. Canceled0109 is not an application; approved recoveries and two fixture
 setup corrections are disclosed. [Checkpoint](reports/checkpoint-0106-0111.md).
@@ -28,13 +28,20 @@ with594 full passes, one scoped PRJ-047 assertion correction/re-audit, original
 run/IDs/round1 retained, clean/unclaimed archiveea83a82. No CLI completion claim.
 [Dependency](reports/revision-snapshot-0113.md).
 
-**Current:**0114 checks History authored to consume recorded snapshots and enforce
-H01–H04/content-based phase and squash rules. It is the second consecutive
-history-slice dependency. After its application, honor the checkpoint before a
-third consecutive history change; remaining scoped work is H01–H04 explanations
-and immediate app caller/actual NEW explicit-range proof. Count2 until application.
-No whole-library expansion or new drill authority. Remaining status/management/recipes and final acceptance
-stay open. No new drill or phase-write authority.
+0114 now supplies recorded history H01–H04/squash checking with525 full passes,
+scoped CHK-070 range correction/re-audit PASS,21 focused passes. Review/public
+API repros corrected queued-phase and legitimate SPEC-application handling;
+unchanged recorded inputs now return clean reports. Archive04a65d7 clean/unclaimed.
+[Dependency evidence](reports/history-checks-0114.md).
+
+**Checkpoint:**0113/0114 complete two consecutive history dependencies. SYSTEM.md42
+requires owner review before a third consecutive behavior change. Proposed next
+scope is exactly H01–H04 explanations, immediate check-commits caller/actual NEW
+range proof, then mandatory fifth-application subagent quality/goal review and
+checks, push only on PASS. Proposal: /tmp/fireweed-history-continuation-checkpoint.md.
+Count stays3; no new push, phase-write exception or CLI completion claim. Remaining
+status/management/recipes and all final acceptance gates stay open. No new drill
+authority. Stop pending owner decision.
 
 ## Approved correction gate
 

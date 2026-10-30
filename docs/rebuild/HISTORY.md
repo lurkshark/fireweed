@@ -6,7 +6,7 @@ they are not current instructions, permissions or readiness claims. Resume from
 [PROGRESS.md](PROGRESS.md). Preserve evidence and checkpoint history; do not
 repeat passed work because an older entry calls it pending.
 
-## Applied changes through 0113
+## Applied changes through 0114
 
 [0106–0111 checkpoint](reports/checkpoint-0106-0111.md) PASS: separate Sol/high quality/goal review and clean3118387 build/vet/race/static/history44 commits. Actual NEW release/commits/abandon proofs pass; documented recoveries and fixture setup corrections retain honest evidence. Five applications reviewed; count resets0. Push/resume authorized, final gates remain open.
 
@@ -27,6 +27,7 @@ further work awaits an owner decision.
 
 [Approved0104–0105 correction gate](reports/checkpoint-corrections-0104-0105.md) PASS: same scoped Sol/high checkpoint reviewer, actual NEW mixed-kind rejection, fresh build/vet/race/static/history16 commits all pass at clean4cf21a1. Seven applications reviewed; count resets0, push/resume authorized.
 
+- 0114 history-validation — CHK-070–078;edfeee9/ba4aeb1/76e2ef5/628dd1b/04a65d7.524 cases20 failures/504 passes → corrected525 cases21 failures/504 passes →525 full passes; scoped CHK-070 re-audit PASS,21 focused passes. Public normal-history repros pass after scoped implementation corrections; full728s, count3 and required consecutive-history owner checkpoint. [Report](reports/history-checks-0114.md).
 - 0113 revision-snapshot — PRJ-047–050;0d0af05/114ca12/8e14446/eed7cc4/ea83a82.594 cases8 failures/586 passes in both eval rounds →594 full passes; scoped defaults/exclusion correction and PRJ-047-only re-audit PASS,8 focused new/6 existing Load events pass. Full impl755s, no new checkout/ref; count2. Immediate history consumer next. [Report](reports/revision-snapshot-0113.md).
 - 0112 new-module-command — APP-100–104;7051733/1bb72b8/e9db007.236 cases12 failures/224 passes →236 full passes; isolated audit PASS,19 focused passes. Actual NEW project-owned template creation/discovery/check/duplicate preservation and Go compilation PASS, fixture removed. Count1; B0217/19 warnings recorded with bounded runtime. [Report](reports/new-module-cli-0112.md).
 - 0111 abandon-command — APP-097–099;8a8997e/10ac6dd/98241c6/0c734ac/f82019a.217 cases7 failures/210 passes →217 full passes; nearest-root assertion correction and scoped re-audit PASS,8 focused passes. Actual NEW Go exhaustion/abandon/attempt retention/ID reuse PASS; fixture removed, count5 checkpoint pending. [Report](reports/abandon-cli-0111.md).
