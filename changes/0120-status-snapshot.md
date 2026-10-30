@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: workflow
+phase: audit
+run: 20261030T144326-24f855074c2173810865ffc2
 ---
 
 
@@ -29,48 +32,48 @@ same_module, depends_on_blocked or interface_dependency. No other public edits.
 
 ## Added
 
-### new:status-queue
+### FLOW-101
 Status MUST return every project.Queue entry in queue order with slug, path, module, phase, blocked reason and audit rounds.
 Absent phase, reason and rounds MUST appear as queued, empty string and zero respectively.
 
-### new:status-wait-same-module
+### FLOW-102
 For an unblocked queued change targeting an earlier blocked change's module, Status MUST name that earlier change in WaitingOn with WaitingRule same_module.
 
-### new:status-wait-dependent
+### FLOW-103
 For an unblocked queued change whose module depends directly or transitively on an earlier blocked change's module, Status MUST name that earlier change with WaitingRule depends_on_blocked.
 
-### new:status-wait-interface
+### FLOW-104
 For an unblocked queued change with a nonempty Interface section, Status MUST name an earlier blocked change with WaitingRule interface_dependency when that blocked module depends directly or transitively on the candidate's module.
 An empty Interface MUST not trigger this rule.
 
-### new:status-wait-projection
+### FLOW-105
 Status MUST determine waiting reasons using the graph projected through each candidate, including preceding and candidate set edits.
 Blocked entries and unblocked entries unaffected by the blocking rules MUST have empty WaitingOn and WaitingRule.
 
-### new:status-modules
+### FLOW-106
 Status MUST expose the discovered modules with their declared identities, dependency graph and resolved zones.
 
-### new:status-quarantines
+### FLOW-107
 Status MUST list every currently quarantined spec with its module, ID and quarantine reason.
 
-### new:status-boundary-opt-outs
+### FLOW-108
 Status MUST list every module with boundaries_opt_out and its authored reason.
 
-### new:status-drill-drift
+### FLOW-109
 Status MUST report each module's count of applied archived changes whose implementation Provenance date is later than its latest drill report date.
 With no drill report, it MUST count all that module's applied archived changes, including zero when there are none.
 
-### new:status-unapproved
+### FLOW-110
 Status MUST count applied changes archived on HEAD whose change file is absent from the locally known configured remote/base ref, falling back to the local base when the remote ref is absent.
 The base and remote MUST use the existing configured/default base-ref resolution.
 
-### new:status-repeated-module
+### FLOW-111
 Status MUST warn with P08 when the three or more most recently applied changes consecutively target one module, identifying the module and consecutive count.
 
-### new:status-phase-counts
+### FLOW-112
 Status MUST report the number of phase-changing commits reachable from HEAD for each applied archived change, matching Commits for that change.
 
-### new:status-recorded-costs
+### FLOW-113
 Status MUST expose the latest retained ModuleCost for every module with recorded costs, together with the saved budget diagnostics associated with those selected measurements.
 Modules without a cost record MUST not receive a fabricated measurement.
 
@@ -89,7 +92,8 @@ with same-module, dependent and interface-dependency precedence. Applied order
 uses implementation Provenance dates, newest first with archive path as the
 tie-breaker; a drill report date counts regardless of result. Budget diagnostics
 from selected snapshots are returned once each, rather than recomputed from
-later settings or source edits.
+later settings or source edits. PhaseCommits keys are archived change filenames
+without .md.
 
 ## Rejected alternatives
 
@@ -111,3 +115,7 @@ full under15m; no process instrumentation or increased timeouts. Read convention
 remain review plus the single app PATH-shim eval, extended only by the caller.
 No bootstrap source/tests, rebuild-v1, deleted/saved/abandoned implementation,
 old worker logs, protected edits, other-module implementation or drill gap fixes.
+
+## Provenance
+
+- evals 2026-10-30T15:02:18.346522Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=457 failing=7 passing=450
