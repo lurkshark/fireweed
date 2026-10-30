@@ -1,6 +1,10 @@
 package model
 
-import "github.com/lurkshark/fireweed/packages/contracts"
+import (
+	"time"
+
+	"github.com/lurkshark/fireweed/packages/contracts"
+)
 
 // Snapshot is the project data read from a repository root.
 type Snapshot struct {
@@ -29,6 +33,18 @@ type Change struct {
 	Added    []contracts.Item
 	Modified []contracts.Item
 	Removed  []contracts.Item
+}
+
+// SpecHistoryEntry describes one archived change affecting selected specs.
+type SpecHistoryEntry struct {
+	Path               string
+	Module             string
+	IDs                []string
+	Motivation         string
+	Decisions          string
+	RemovedDecisions   string
+	Provenance         string
+	ImplementationDate time.Time
 }
 
 // Diagnostic reports a static authoring check.

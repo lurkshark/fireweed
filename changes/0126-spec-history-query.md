@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: project
+phase: audit
+run: 20261030T214954-ce905353e72b33c260a183b8
 ---
 
 
@@ -25,27 +28,27 @@ An evals-only new compiling stub may return a plain not-implemented error.
 
 ## Added
 
-### new:history-selection
+### PRJ-051
 For a nonempty ID, SpecHistory MUST return the target module's archived changes whose Added or Modified items name that ID, including tag-only modifications.
 Pending changes and archives belonging to other modules or unrelated spec IDs MUST not appear in that selection.
 
-### new:history-entries
+### PRJ-052
 Every history entry MUST identify its archive path and module, the matching IDs, its Motivation, added and removed Decisions, and its complete Provenance section.
 
-### new:history-date-order
+### PRJ-053
 SpecHistory MUST order entries by their latest valid implementation Provenance timestamp, newest first, with missing or invalid implementation dates after dated entries.
 Equal-date or undated entries MUST use archive-path lexical order as a total-order fallback.
 
-### new:history-module-view
+### PRJ-054
 With an empty ID filter, SpecHistory MUST return each target-module archive containing Added or Modified spec edits once, with its unique affected IDs in lexical order.
 A module with no matching archives MUST return an empty slice.
 
-### new:history-lookup
+### PRJ-055
 An unknown module or an ID absent from both current module Specs and matching archive edits MUST return U02 with the rejected name.
 A current ID with no matching archive edits MUST return an empty slice.
 An ID in matching archive edits MUST remain queryable when it no longer exists in current Specs.
 
-### new:history-input-errors
+### PRJ-056
 Missing or malformed fireweed.yaml MUST produce a C01 error.
 Malformed archived change documents or malformed Added/Modified item syntax MUST produce a C03 error identifying the archive path.
 
@@ -80,3 +83,7 @@ and explicit nonempty controller history extension79f7113..reviewed source.
 Any finding/block stops for owner. Push only on PASS and verify remote OID; review
 resets count, not push. Then immediately app show --history/NEW proof and stop
 with caller local at count1. No phase exception, drill, GC or further push.
+
+## Provenance
+
+- evals 2026-10-30T22:08:15.168784Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=681 failing=11 passing=670

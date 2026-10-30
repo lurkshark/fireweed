@@ -2,6 +2,7 @@ package project
 
 import (
 	"github.com/lurkshark/fireweed/packages/project/internal/fixture"
+	"github.com/lurkshark/fireweed/packages/project/internal/history"
 	"github.com/lurkshark/fireweed/packages/project/internal/queue"
 	"github.com/lurkshark/fireweed/packages/project/model"
 )
@@ -9,6 +10,7 @@ import (
 type Snapshot = model.Snapshot
 type Module = model.Module
 type Change = model.Change
+type SpecHistoryEntry = model.SpecHistoryEntry
 type Diagnostic = model.Diagnostic
 
 func Load(root string) (Snapshot, error) { return fixture.Load(root) }
@@ -28,3 +30,7 @@ func Project(root, through string) (Snapshot, error) { return queue.Project(root
 func Stamp(root, change string) error { return queue.Stamp(root, change) }
 
 func Check(root string) []Diagnostic { return queue.Check(root) }
+
+func SpecHistory(root, module, id string) ([]SpecHistoryEntry, error) {
+	return history.SpecHistory(root, module, id)
+}
