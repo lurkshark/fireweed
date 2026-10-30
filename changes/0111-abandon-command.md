@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: app
+phase: audit
+run: 20261030T001135-22be6a3923abe0974c22c059
 ---
 
 
@@ -22,15 +25,15 @@ diagnostic and envelope helpers. Keep selection/reversal/claim behavior in workf
 
 ## Added
 
-### new:abandon-success
+### APP-097
 abandon <change> MUST discover the nearest project root and invoke workflow.Abandon for the named change.
 Plain success MUST print confirmation naming the change and returned full commit object ID with exit0.
 
-### new:abandon-failure
+### APP-098
 abandon MUST return exit2 with corrective U01 for usage errors, U02 for selector errors, and the existing cause code for project configuration errors.
 Other workflow failures MUST return exit1 retaining their cause code and a corrective action.
 
-### new:abandon-json
+### APP-099
 abandon --json MUST emit schema1 with confirmation string data and empty diagnostics on success.
 On failure it MUST emit null data with code/message diagnostics.
 It MUST leave stderr empty.
@@ -63,3 +66,7 @@ then implementation and full native verification. Workers never commit or
 advance phases. Own under5m/full under15m, no raised bounds. Actual NEW proof
 and mandatory separate fifth quality/goal review/checks precede further product
 changes; push and continue only on PASS under standing owner authorization.
+
+## Provenance
+
+- evals 2026-10-30T00:19:29.697432Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=217 failing=7 passing=210
