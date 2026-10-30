@@ -22,14 +22,15 @@ coordinator classified the latter as currently untestable. Controller natively
 blocked/released inaf7d26b, phaseaudit, audit_rounds0, same original run/IDs;
 both findings are Questions. Tree clean/unclaimed. [Audit checkpoint](reports/list-audit-0118.md).
 
-**Required stop.** SYSTEM.md39/42 requires a human decision for untestable findings
-and blocked changes. No implementation, archive, actual NEW list proof, new push
-or additional drill occurred. Count remains1, not2. Proposal for owner review:
-/tmp/fireweed-0118-audit-checkpoint.md. Resolve only the generic fallback contract,
-then proposed native abandon/re-author from preserved public inputs with the
-carried plain-output assertion and fresh workers/audit/verification/read proof.
-No recovery, replacement change, phase exception, bound/ref/count adjustment or
-further scope is authorized yet. Full design/ACCEPTANCE remains incomplete.
+**Approved scoped recovery.** Owner answered "Approve scoped recovery" to
+/tmp/fireweed-0118-audit-checkpoint.md. Resolve only APP-116's currently unassertable
+P01 conditional, natively abandon/re-author from preserved public inputs, carry
+the APP-115 plain-output assertion into fresh evals, then fresh independent audit,
+implementation, full native verification/archive and actual NEW proof. No saved
+implementation exists. Count stays1 until application, then2; stop afterward.
+No push, phase-write exception, extra command/library work or drill authority.
+The original findings remain historical; this approval resolves the contract
+defect rather than waiving assertions or resetting an unresolved bound.
 
 ## Approved correction gate
 
