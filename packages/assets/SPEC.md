@@ -119,6 +119,22 @@ running a module drill and reviewing and committing its report.
 Explain MUST describe C07 as including eval_fix combined with fixes or spec
 edits. It MUST advise separating eval-fix work from fix or spec changes.
 
+### AST-034
+Explain MUST describe H01 as a worker phase commit changing a protected path or project playbook override.
+It MUST advise restoring that edit and separating human-owned setup or override work into an author commit outside worker phases.
+
+### AST-035
+Explain MUST describe H02 as an impl-to-applied commit changing evals or interface files.
+It MUST advise making those edits in the evals step before implementation and reworking the affected phase history before rerunning history checks.
+
+### AST-036
+Explain MUST describe H03 as modifying, deleting or renaming an existing append-only path.
+It MUST advise restoring the original path/content and adding a new file for new data.
+
+### AST-037
+Explain MUST describe H04 as modifying an archived change file, while allowing archived-file deletion for a revert.
+It MUST advise restoring the archive and authoring follow-up work as a pending change.
+
 ## Decisions
 
 [0014-go-setup-bundle] Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,
