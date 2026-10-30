@@ -556,6 +556,12 @@ before another change. Four changes were applied since the explicit review at
   cost snapshots/B01–B03. Count3; next approved workflow status then app/NEW
   proof. B-code Explain integration is open; no push or status-slice PASS claim.
 
+- 0120 FLOW-101–113 [implementation checkpoint](reports/status-data-0120-checkpoint.md):
+  457 native cases7 intended failures/450 passes, one persisted FLOW-113 assertion
+  correction/re-audit PASS round1; fresh implementation6/7, wrong frozen phase
+  expectation stops application. Native owned claim released, two implementation
+  files retained uncommitted. Count3; owner recovery decision pending, no push.
+
 ## Historical reference inspection record — superseded by D004
 
 These entries describe the retired controller and original preparation. They supply historical provenance only, not startup instructions or current readiness. PROGRESS.md records the installed stage-2 controller, completed setup and baseline.

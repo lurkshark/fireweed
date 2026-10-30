@@ -9,7 +9,7 @@ retains a real saved attempt, restores phase work/deletes pending change in one
 commit, releases its claim and frees ALP-002 for Start reuse; fixture removed.
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 3 (0117–0119); status slice in progress.**
+**Applied since review: 3 (0117–0119); 0120 frozen-eval checkpoint.**
 Prior fixed Sol/high quality/goal review of0112–0116 PASS and fresh checks passed
 at929e32b; authorized origin push e5287d5→1ca04f3 completed. [Gate](reports/checkpoint-0112-0116.md).
 0117 CI remains local with247 native passes and actual NEW Go proof PASS.
@@ -28,8 +28,14 @@ B01–B03 warnings and public Costs reader;450 native passes and isolated audit
 PASS. [Evidence](reports/verification-costs-0119.md). A scoped implementation
 review correction added root protected-pattern precedence before application;
 interrupted verification is not passing evidence. Main tree clean/unclaimed.
-The next approved dependency is workflow status data, then immediate app status
-wiring/NEW proof. This slice is not closed by library verification.
+0120 status data reached impl after457 native cases (7 intended failures/450
+passes), one persisted FLOW-113 correction and restricted re-audit PASS. Fresh
+implementation passes6/7 focused cases: FLOW-101's frozen fixture expects evals
+although its maintenance Start records impl. The worker stopped rather than
+misreporting phase or editing frozen evals. [Checkpoint](reports/status-data-0120-checkpoint.md).
+Its own claim was natively released; only two implementation files remain
+uncommitted, phase/run/IDs/round unchanged. No archive/full impl Done, app caller,
+NEW status proof, fifth review or push. Stop as required; no recovery approved.
 
 Owner: "Approve status slice and fifth review". This supersedes the completed
 recovery's stop only for `/tmp/fireweed-status-continuation-checkpoint.md`:
@@ -38,8 +44,12 @@ reasons, then immediate app status wiring/actual NEW proof. Three applications
 reach the fifth-change quality/goal subagent review and appropriate fresh checks;
 push only on PASS, then stop and report. Stop earlier on any block. No phase
 exception, drill, deferred gap fix or bound/count/ref change. Native status
-confirmed unapproved2/P08 before this slice. Cost recording is complete; no second
-change is authored yet. B01–B03 Explain entries are a known missing assets
+confirmed unapproved2/P08 before this slice. Cost recording is complete;0120
+is pending at the wrong frozen assertion. The reviewable public correction and
+native recovery proposal are in `/tmp/fireweed-0120-frozen-phase-checkpoint.md`;
+the proposed revised continuation adds scoped B01–B03 Explain before the fifth
+review, then returns to the app caller after PASS and stops with that caller
+local. That revised scope needs owner approval. B01–B03 Explain entries remain missing assets
 integration obligation, outside these three applications: do not claim a passing
 fifth-change gate or push while it remains unresolved. Full design/ACCEPTANCE,
 remaining commands/recipes/delivery/final gates and drill restrictions remain.
