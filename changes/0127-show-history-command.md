@@ -2,10 +2,13 @@
 already_satisfied:
     - APP-008
     - APP-025
+audit_rounds: 0
 bases:
     APP-008: a90726f5
     APP-025: cb2c30f2
 module: app
+phase: audit
+run: 20261030T231146-e5304d598617e8a0a182fbc5
 ---
 
 
@@ -30,20 +33,20 @@ is needed: --history is currently rejected as unsupported.
 
 ## Added
 
-### new:history-plain
+### APP-132
 show <module> [ID] --history MUST discover the nearest project root, call project.SpecHistory with the optional ID filter and return its entries in order with exit0.
 Plain output MUST include each archive path, module, matching IDs, implementation date, Motivation, added and removed Decisions and complete Provenance.
 Empty history MUST print an explicit no-history message with exit0.
 
-### new:history-json
+### APP-133
 Successful show --history --json MUST emit schema1 with ordered array data, empty diagnostics and empty stderr.
 Each row MUST contain path, module, ids, motivation, decisions, removed_decisions, provenance and implementation_date, the latter an RFC3339 timestamp or an empty string when undated.
 Empty history MUST use an empty array.
 
-### new:history-options
+### APP-134
 --history MUST be accepted only with show and MUST reject combination with --projected, using exit2 and a corrective U01 diagnostic for either misuse.
 
-### new:history-errors
+### APP-135
 History MUST return exit2 for lookup failures with U02 naming the rejected module or ID, or for missing or malformed project configuration with C01.
 Other project.SpecHistory failures MUST return exit1 retaining their cause code and corrective guidance.
 Failure output MUST contain code/message diagnostics: JSON uses null data and empty stderr; plain output uses empty stdout and stderr diagnostics.
@@ -78,3 +81,7 @@ Owner-approved native cancellation/re-authoring corrected only clause wording;
 the exact runtime-document restoration exception is consumed. No further phase
 exception, second push, drill, GC or dependency expansion is authorized.
 Stop after this caller completes, as the owner explicitly reaffirmed.
+
+## Provenance
+
+- evals 2026-10-30T23:17:29.438907Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=282 failing=18 passing=264
