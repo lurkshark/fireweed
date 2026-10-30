@@ -33,6 +33,15 @@ incomplete; next queue-management surface is status (waiting reasons, module
 state/cost/drift and budgets), with PR/maintenance/recipes/delivery/final gates
 still open. Resume scope must be agreed before more work.
 
+Goal continuation revalidated the clean tree/no claims and native status:
+unapproved2 and P08 remain. The next concrete prerequisite is missing workflow
+cost recording/B01–B03 and a public status model with projected waiting reasons;
+the public interfaces currently expose neither. A bounded proposal at
+`/tmp/fireweed-status-continuation-checkpoint.md` requests two workflow changes
+then immediate app status wiring/NEW proof, reaching the mandatory fifth-change
+review. This is pending owner approval; no new change has been authored and
+the existing stop remains in force.
+
 ## Approved correction gate
 
 Direct owner reply: "Approve push and correction gate". Push the recorded batch
