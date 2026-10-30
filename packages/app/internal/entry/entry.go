@@ -28,8 +28,8 @@ type envelope struct {
 
 var pending = map[string]bool{
 	"list": true, "status": true,
-	"ci": true, "pr-body": true,
-	"drill": true, "gc": true, "migrate": true,
+	"pr-body": true,
+	"drill":   true, "gc": true, "migrate": true,
 }
 
 func Run(args []string, out, errOut io.Writer) int {
@@ -47,6 +47,7 @@ func Run(args []string, out, errOut io.Writer) int {
 	quick := false
 	full := false
 	noAgent := false
+	noDoctor := false
 	write := false
 	allowUnmerged := false
 	max := 0
@@ -69,6 +70,8 @@ func Run(args []string, out, errOut io.Writer) int {
 			full = true
 		} else if arg == "--no-agent" {
 			noAgent = true
+		} else if arg == "--no-doctor" {
+			noDoctor = true
 		} else if arg == "--write" {
 			write = true
 		} else if arg == "--allow-unmerged" {
@@ -145,6 +148,9 @@ func Run(args []string, out, errOut io.Writer) int {
 	if noAgent && command != "doctor" || write && command != "agents-md" {
 		return fail("U01", "Use --no-agent only with doctor and --write only with agents-md.")
 	}
+	if noDoctor && command != "ci" {
+		return fail("U01", "--no-doctor is only available with ci. Use ci [range] [--no-doctor].")
+	}
 	if allowUnmerged && command != "next" && command != "run" {
 		return fail("U01", "--allow-unmerged is only available with next or run.")
 	}
@@ -202,6 +208,8 @@ func Run(args []string, out, errOut io.Writer) int {
 		return runLifecycle(command, positional[1:], jsonMode, quick, full, withChange, fromAttempt, out, errOut)
 	case "check-commits":
 		return runCheckCommits(positional[1:], jsonMode, out, errOut)
+	case "ci":
+		return runCI(positional[1:], noDoctor, jsonMode, out, errOut)
 	case "next":
 		if count != 0 {
 			return fail("U01", "next takes no arguments. Use next [--allow-unmerged] [--json].")

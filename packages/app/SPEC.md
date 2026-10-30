@@ -410,6 +410,28 @@ Successful check-commits --json MUST emit schema1 object data with commits in re
 Failures MUST emit null data with code/message diagnostics.
 It MUST leave stderr empty.
 
+### APP-109
+ci [range] MUST discover the nearest project root and run static project checks plus history checks on the supplied range, or the configured local-base range when omitted.
+Static or history errors MUST prevent a successful CI result.
+
+### APP-110
+ci MUST run evals for every discovered module and require passing coverage of its current specs, regardless of verify_dependents.
+The configured boundary checks MUST also pass for CI to succeed.
+
+### APP-111
+ci MUST run doctor canaries by default with agent probes disabled.
+With --no-doctor it MUST skip the doctor canaries while retaining the other deterministic checks.
+
+### APP-112
+Successful ci MUST return exit0 with a confirmation.
+Usage and project configuration errors MUST return exit2 with corrective guidance, using U01 for usage and the existing cause code for configuration.
+Deterministic check failures MUST return exit1 retaining their cause codes and corrective guidance.
+
+### APP-113
+Successful ci --json MUST emit schema1 confirmation-string data and collected diagnostics, including warnings.
+Failures MUST emit null data with code/message diagnostics.
+It MUST leave stderr empty.
+
 ## Decisions
 
 [0069-project-initialization] Init accepts codex and claude presets as argv commands; other selections are shell command templates containing {prompt}, stored as strings for one-pass quoted substitution when execution is implemented. Local recipes use recipe.yaml metadata, recipe.md instructions and a files/ project-relative payload; none uses empty language defaults and a generic module scaffold.

@@ -6,7 +6,7 @@ audit_pending:
 audit_rounds: 1
 bases: {}
 module: app
-phase: impl
+phase: applied
 run: 20261030T052903-ef4ffe0df0609b399b924ab5
 ---
 
@@ -88,6 +88,7 @@ application; then the third-consecutive-app checkpoint applies before more app.
 - audit 2026-10-30T05:43:52.005422Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 - evals 2026-10-30T05:51:30.610617Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=247 failing=4 passing=243
 - audit 2026-10-30T05:53:13.900578Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-30T06:03:23.516197Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=247 failing=0 passing=247
 
 ## Audit
 
