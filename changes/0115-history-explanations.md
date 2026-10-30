@@ -5,7 +5,7 @@ audit_pending:
 audit_rounds: 2
 bases: {}
 module: assets
-phase: audit
+phase: impl
 run: 20261030T044031-868ada5b81566b0bb0c4bb59
 ---
 
@@ -76,8 +76,9 @@ saved implementation or old worker-log oracles. Return immediately to app caller
 - evals 2026-10-30T04:50:03.682258Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=680 failing=4 passing=676
 - audit 2026-10-30T04:52:46.385283Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 - evals 2026-10-30T04:55:32.837924Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=680 failing=4 passing=676
+- audit 2026-10-30T04:58:39.413317Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
 
 ## Audit
 
-- AST-036: "It MUST advise restoring the original path/content and adding a new file for new data." — The assertion accepts a new file without new data, so the required affirmative for-new-data relationship is not asserted.
-- AST-037: "Explain MUST describe H04 as modifying an archived change file, while allowing archived-file deletion for a revert." — The permission assertion accepts may not be deleted, so affirmative archived-file deletion permission for a revert is not asserted.
+No findings
+Checked IDs: AST-036, AST-037
