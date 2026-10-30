@@ -7,7 +7,7 @@ agent-commit undo, time/usage stops, maintenance/eval-fix/ordinary-fix/regenerat
 release/commits/abandon, CI, list, status and now PR-body. Reuse HISTORY/reports;
 the complete design and ACCEPTANCE remain incomplete.
 
-**Applied since review: 4; approved show-history continuation now active.**
+**Applied since review: 5; mandatory quality/goal review gate active.**
 Owner answered "Approve history continuation and review gate" for
 `/tmp/fireweed-show-history-continuation-checkpoint.md`: project history query
 as application5, mandatory separate Sol/high quality/goal review and fresh checks,
@@ -15,6 +15,10 @@ push only on PASS, then immediate app show --history/actual NEW proof and a loca
 stop at count1 after that passing review. Any finding/block or required dependency
 expansion stops. No phase exception, drill or GC against main refs is authorized.
 This explicit continuation supersedes the prior PR-body count4 stop.
+[0126 project history query](reports/spec-history-query-0126.md) applied PRJ-051–056
+at8cd9c0e with681 native passes and independent round0 audit PASS. Tree is clean,
+archived/unclaimed. Product authoring pauses for the fifth gate over0122–0126;
+no push or CLI history proof has occurred yet.
 [0123 workflow report](reports/pr-body-report-0123.md) applied FLOW-114–125
 atb370909 with475 native passes; [0124 B04 Explain](reports/pr-body-artifact-explanation-0124.md)
 applied AST-042 at8ee0534 with731 passes; [0125 app/NEW proof](reports/pr-body-cli-0125.md)
