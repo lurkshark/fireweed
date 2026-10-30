@@ -32,3 +32,8 @@ this reviewed batch to origin, verify its OID, then immediately wire app
 show --history and actual NEW proof, stopping with that caller local at1.
 Push alone resets no count. No final fresh-checkout/CI/doctor, regeneration,
 self-hosting, delivery or whole-design/ACCEPTANCE completion is claimed.
+
+Authorized push7c5e90e→5610268fb73e91af0805c20a4714e15c9d9e59f1 completed.
+Actual origin/main was verified via ls-remote at that exact OID. Fresh race
+seconds: app333.685/assets21.764/checks259.523/project9.425/runner249.293/
+workflow198.171; unchanged contracts/gitstore valid cached results.

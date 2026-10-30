@@ -4,55 +4,41 @@
 
 NEW proves manual lifecycle/setup, bounded next/run and recovery/resume,
 agent-commit undo, time/usage stops, maintenance/eval-fix/ordinary-fix/regenerate,
-release/commits/abandon, CI, list, status and now PR-body. Reuse HISTORY/reports;
+release/commits/abandon, CI, list, status and PR-body. Reuse HISTORY/reports;
 the complete design and ACCEPTANCE remain incomplete.
 
-**Applied since review: 0; fifth quality/goal gate PASS, approved push next.**
+**Applied since review: 0; immediate app show --history caller authorized.**
 Owner answered "Approve history continuation and review gate" for
-`/tmp/fireweed-show-history-continuation-checkpoint.md`: project history query
+/tmp/fireweed-show-history-continuation-checkpoint.md: project history query
 as application5, mandatory separate Sol/high quality/goal review and fresh checks,
 push only on PASS, then immediate app show --history/actual NEW proof and a local
-stop at count1 after that passing review. Any finding/block or required dependency
-expansion stops. No phase exception, drill or GC against main refs is authorized.
-This explicit continuation supersedes the prior PR-body count4 stop.
-[0126 project history query](reports/spec-history-query-0126.md) applied PRJ-051–056
-at8cd9c0e with681 native passes and independent round0 audit PASS. Tree is clean,
-archived/unclaimed. Product authoring pauses for the fifth gate over0122–0126;
-[0122–0126 fifth gate](reports/checkpoint-0122-0126.md) now PASS: separate
-Sol/high review, clean build/vet/race/static and36-commit explicit history extension
-passed. Count resets0 from that review. Approved push then immediate app caller/
-NEW proof remain; no CLI history proof has occurred yet.
-[0123 workflow report](reports/pr-body-report-0123.md) applied FLOW-114–125
-atb370909 with475 native passes; [0124 B04 Explain](reports/pr-body-artifact-explanation-0124.md)
-applied AST-042 at8ee0534 with731 passes; [0125 app/NEW proof](reports/pr-body-cli-0125.md)
-applied APP-127–131 at5da87d4 with262 passes. All independent isolated audits
-passed round0. Frozen contracts remained intact. Native phases archived and
-released claims; no pending or blocked rebuild change remains.
+stop at count1. Any finding/block or required dependency expansion stops. No
+phase exception, drill, GC against main refs or second push is authorized.
 
-Clean CGO0 build and changed-module vet passed. Actual NEW PR-body plain/JSON
-full/partial-range proof passed endpoint authority, review context, saved costs/
-B01–B04, artifact threshold/root-protection exclusions and invalid-range handling.
-Fixture metadata/costs were authored inputs, not real lifecycle/drill evidence.
-Reads retained state, no hooks/agents ran, fixture removed. Standalone NEW B04
-Explain JSON also passed. Build's nonfatal module stat-cache write warning and
-existing C01/C18/B02 warnings retain recorded explanations; zero warnings is not
-a gate. No final-source race/fresh-checkout/CI/doctor/full-history or overall
-acceptance claim follows.
+[0126 query](reports/spec-history-query-0126.md) applied PRJ-051–056 at8cd9c0e
+with681 native passes and independent round0 audit PASS.
+[0122–0126 fifth gate](reports/checkpoint-0122-0126.md) PASS: separate Sol/high
+quality/goal review, clean CGO0 build/vet/race/static and explicit36-commit history
+extension79f7113..8cd9c0e. Count resets0 from review, never push alone. Authorized
+push7c5e90e→5610268fb73e91af0805c20a4714e15c9d9e59f1 completed and actual
+origin/main OID verified. Tree clean/archived/unclaimed before caller authoring.
 
-Owner answered "Approve PR-body slice" for
-`/tmp/fireweed-pr-body-continuation-checkpoint.md`: three changes starting at1,
-stopping local at4 after actual NEW proof, with no push, drill or phase exception.
-That scope is complete. The passing0117–0121 review at79f7113 reset count0;
-status0122 was1 and these changes advanced it to4. Origin/main was last actually
-verified at7c5e90e after its prior authorized push. No later push or count reset.
-The prior agreed count4 stop was honored; the explicit history continuation
-above now authorizes the fifth application and its review gate.
+Next observable exit is NEW show <module> [ID] --history in plain/schema1 JSON,
+through the existing project.SpecHistory query, with independent assertion audit,
+full native checks and actual disposable-fixture proof. No further dependency
+change is needed or authorized. Stop with the caller local at count1. Library
+checks do not close that CLI slice; no CLI history proof has occurred yet.
+
+Known nonfatal build module stat-cache write warning and existing C01/C18/B02
+warnings retain recorded explanations. Latest clean binary identifies evidence
+HEAD6402f2e, Go1.27.2 darwin/arm64 CGO0/vcs.modified=false; source8cd9c0e. No
+final fresh-checkout/CI/doctor/full-original-history, real regeneration, isolated
+self-hosting, delivery or whole-goal acceptance claim follows.
 
 Remaining surface includes drill/gc/migrate, remaining show/check options,
-recipes/versioning/packaging and all unclosed ACCEPTANCE gates. Resume only an
-agreed continuation; existing drill restrictions and fifth-change review/check/
-push-only-on-PASS rules remain in force. Both0122 document-recovery exceptions
-and all earlier exceptions are consumed, not standing authority.
+recipes/versioning/packaging and all unclosed ACCEPTANCE gates. Only the original
+contracts drill was authorized, with unresolved independence gaps. Both0122
+document-recovery exceptions and all earlier exceptions are consumed.
 
 ## Approved correction gate — completed historical scope
 
