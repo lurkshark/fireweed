@@ -30,6 +30,23 @@ type Request struct {
 type Result struct {
 	State       State
 	Reports     map[string]checks.Report
+	Costs       []ModuleCost
+	Diagnostics []project.Diagnostic
+}
+
+type ModuleCost struct {
+	Module          string
+	Seconds         float64
+	CasesPerSpec    map[string]int
+	EvalLines       int
+	DisposableLines int
+}
+
+type CostSnapshot struct {
+	Run         string
+	Phase       string
+	RecordedAt  time.Time
+	Modules     []ModuleCost
 	Diagnostics []project.Diagnostic
 }
 

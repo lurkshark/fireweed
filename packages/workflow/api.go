@@ -11,6 +11,8 @@ import (
 type State = model.State
 type Request = model.Request
 type Result = model.Result
+type ModuleCost = model.ModuleCost
+type CostSnapshot = model.CostSnapshot
 type BlockRequest = model.BlockRequest
 type BlockResult = model.BlockResult
 
@@ -35,3 +37,4 @@ func Block(request BlockRequest) (BlockResult, error) {
 func Context(root, change string, full bool) (string, error) {
 	return lifecycle.Context(root, change, full)
 }
+func Costs(root string) ([]CostSnapshot, error) { return lifecycle.Costs(root) }

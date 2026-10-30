@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: workflow
+phase: audit
+run: 20261030T141017-5d9748d32d502cd139e64639
 ---
 
 
@@ -26,20 +29,20 @@ next status change; it does not evaluate hooks.
 
 ## Added
 
-### new:verification-cost-record
+### FLOW-097
 Each Verify that evaluates modules, including through Done, MUST retain a cost snapshot under its existing run/phase directory and return those module costs in Result.Costs.
 The snapshot MUST identify the run, phase and UTC recording time, replacing the previous cost snapshot for that run/phase.
 
-### new:verification-cost-values
+### FLOW-098
 Each evaluated module's cost MUST report its name, summed JUnit testcase seconds and number of matching testcases per spec ID, counting each testcase once per matching ID.
 It MUST report eval and disposable line counts for regular files selected by the held approved projected zone map, counting an unterminated final line and excluding higher-priority zones.
 
-### new:verification-budget-warnings
+### FLOW-099
 Verify and Done MUST return warnings B01 for total evaluated-module seconds above budgets.verify_time (default15m), B02 for each spec's testcase count above budgets.cases_per_spec (default15), and B03 for each module's eval/disposable line ratio above budgets.eval_ratio (default4).
 Warnings MUST identify measurement and limit without affecting verification success or failure.
 Positive eval lines with zero disposable lines MUST exceed the ratio limit.
 
-### new:recorded-cost-reader
+### FLOW-100
 Costs MUST return the retained run/phase cost snapshots in recording-time order with their module values and budget diagnostics, or an empty slice when none exist.
 The retained values MUST reflect the evaluated state even if source files or budget settings later change.
 
@@ -76,3 +79,7 @@ tests, bootstrap source/tests, rebuild-v1, deleted/saved implementation oracles.
 Missing B01–B03 explain entries are a known remaining integration obligation;
 this single-module change cannot edit assets. Do not claim the full status
 slice or fifth-review PASS while that obligation remains unresolved.
+
+## Provenance
+
+- evals 2026-10-30T14:25:35.399359Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=450 failing=6 passing=444
