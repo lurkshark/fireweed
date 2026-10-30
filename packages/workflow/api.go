@@ -13,6 +13,10 @@ type Request = model.Request
 type Result = model.Result
 type ModuleCost = model.ModuleCost
 type CostSnapshot = model.CostSnapshot
+type StatusReport = model.StatusReport
+type StatusEntry = model.StatusEntry
+type Quarantine = model.Quarantine
+type BoundaryOptOut = model.BoundaryOptOut
 type BlockRequest = model.BlockRequest
 type BlockResult = model.BlockResult
 
@@ -38,3 +42,4 @@ func Context(root, change string, full bool) (string, error) {
 	return lifecycle.Context(root, change, full)
 }
 func Costs(root string) ([]CostSnapshot, error) { return lifecycle.Costs(root) }
+func Status(root string) (StatusReport, error)  { return lifecycle.Status(root) }

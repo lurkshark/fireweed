@@ -50,6 +50,40 @@ type CostSnapshot struct {
 	Diagnostics []project.Diagnostic
 }
 
+type StatusReport struct {
+	Modules         []project.Module
+	Queue           []StatusEntry
+	Quarantines     []Quarantine
+	BoundaryOptOuts []BoundaryOptOut
+	DriftSinceDrill map[string]int
+	Unapproved      int
+	PhaseCommits    map[string]int
+	Costs           []ModuleCost
+	Diagnostics     []project.Diagnostic
+}
+
+type StatusEntry struct {
+	Slug        string
+	Path        string
+	Module      string
+	Phase       string
+	Blocked     string
+	WaitingOn   string
+	WaitingRule string
+	AuditRounds int
+}
+
+type Quarantine struct {
+	Module string
+	ID     string
+	Reason string
+}
+
+type BoundaryOptOut struct {
+	Module string
+	Reason string
+}
+
 type BlockRequest struct {
 	Root   string
 	Change string
