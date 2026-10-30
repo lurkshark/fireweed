@@ -531,6 +531,10 @@ before another change. Four changes were applied since the explicit review at
   PASS atbd4fba5; actual NEW real-Go history/squash/H04 proof PASS, fixture removed.
   [Evidence](reports/check-commits-cli-0116.md). Count5; quality/goal gate required.
 
+- Checkpoint0112–0116 [PASS](reports/checkpoint-0112-0116.md) at929e32b:
+  separate Sol/high quality/goal review, fresh build/vet/race/static/history39
+  commits and actual NEW history proof. Count resets0; authorized push/resume next.
+
 ## Historical reference inspection record — superseded by D004
 
 These entries describe the retired controller and original preparation. They supply historical provenance only, not startup instructions or current readiness. PROGRESS.md records the installed stage-2 controller, completed setup and baseline.

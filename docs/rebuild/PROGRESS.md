@@ -1,6 +1,6 @@
 # Rebuild progress
 
-## Current handoff — 2026-10-30
+## Current handoff — 2026-10-29
 
 NEW proves manual lifecycle/setup, bounded next/run and recovery/resume,
 agent-commit undo, time/usage stops, maintenance/eval-fix/ordinary-fix/regenerate,
@@ -9,46 +9,26 @@ retains a real saved attempt, restores phase work/deletes pending change in one
 commit, releases its claim and frees ALP-002 for Start reuse; fixture removed.
 Full design/ACCEPTANCE remain incomplete.
 
-**Applied since review: 5 (0112–0116); fifth review/checks pending.** Separate Sol/high quality/goal review of0106–0108,
-0110–0111 PASS at clean3118387; fresh build/vet/race/static/history44 commits
-pass. Canceled0109 is not an application; approved recoveries and two fixture
-setup corrections are disclosed. [Checkpoint](reports/checkpoint-0106-0111.md).
-Count resets only at this passing gate. Authorized origin push completed
-5358b5f→e5287d5.
+**Applied since review: 0; checkpoint0112–0116 PASS.** Separate fixed Sol/high
+quality/goal review found no concrete finding at clean929e32b. Fresh CGO0 build,
+vet, full race, static and explicit history39 commits pass; warnings are explained.
+[Checkpoint](reports/checkpoint-0112-0116.md). Approved origin push is next; the
+full independent CLI/design ACCEPTANCE remains incomplete.
 
-0112 now creates modules from project-owned templates through NEW:236 full passes,
-restricted audit PASS, actual Go template/substitution/discovery/check/duplicate
-proof PASS, fixture removed. New case-budget warnings17/19 are recorded with
-bounded runtime; no budget increase. [Evidence](reports/new-module-cli-0112.md).
-This is the second consecutive app application after0111; checkpoint before a
-third app change remains required.
+0112 creates project-owned template modules through NEW;0113 loads recorded
+revision snapshots;0114 checks recorded history H01–H04/ranges/squashes;
+0115 accurately explains those codes;0116 wires check-commits. Actual NEW Go
+history/squash/H04 proof PASS with files/HEAD/refs retained and fixture removed.
+See the five reports linked from the checkpoint for counts, phases, scoped audit
+corrections and prefreeze fixture repairs. No phase-write exception or bound/ref/
+count evasion. The explicitly approved consecutive history slice is complete.
 
-0113 now supplies project.LoadAt from recorded Git objects/config/globs/documents,
-with594 full passes, one scoped PRJ-047 assertion correction/re-audit, original
-run/IDs/round1 retained, clean/unclaimed archiveea83a82. No CLI completion claim.
-[Dependency](reports/revision-snapshot-0113.md).
-
-0114 now supplies recorded history H01–H04/squash checking with525 full passes,
-scoped CHK-070 range correction/re-audit PASS,21 focused passes. Review/public
-API repros corrected queued-phase and legitimate SPEC-application handling;
-unchanged recorded inputs now return clean reports. Archive04a65d7 clean/unclaimed.
-[Dependency evidence](reports/history-checks-0114.md).
-
-**Approved continuation:** owner answered "Approve continuation and fifth review"
-to /tmp/fireweed-history-continuation-checkpoint.md. This explicitly authorizes
-the two remaining consecutive history changes: H01–H04 explanations, then the
-immediate check-commits caller/actual NEW proof. 0115/0116 have applied; count5, mandatory fifth review/checks
-require normal independent audits/full verification, then separate fifth-change
-quality/goal review and fresh checks. Push only on PASS, stop on any finding/block.
-No phase-write exception or added drill authority. Remaining full acceptance open.
-
-0115 now explains H01–H04 with680 full passes atf98b3b3, two persisted scoped
-audit corrections and final AST-036/037 re-audit PASS. Same run/IDs/round2,
-clean/unclaimed archive; no phase exception. [Evidence](reports/history-explanations-0115.md).
-0116 now exposes check-commits,243 native passes atbd4fba5 and isolated audit PASS.
-Actual clean-built NEW Go history/squash/H04 proof PASS; fixture removed.
-[CLI evidence](reports/check-commits-cli-0116.md). Immediate next: mandatory separate
-quality/goal review and fresh build/vet/race/static/history; no push before PASS.
+Next observable slice: expose ci [range] [--no-doctor] through existing public
+static/history/coverage/boundary/doctor interfaces, with actual NEW deterministic
+Go proof. No new dependency library or broad inventory/drill work is required.
+Only0116 is the latest consecutive app application; normal consecutive-module
+checkpoint applies before a third. Five-change policy resumes from0 after this
+passing review; push alone would not reset the count.
 
 ## Approved correction gate
 
@@ -92,9 +72,10 @@ Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
 recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-bd4fba5dfffd3634f0e8cd3c7a639eca1e1e630e, Go1.27.2 darwin/arm64, CGO disabled,
-vcs.modified=false. This build completed without a warning.
-Build/vet/race/static/history and independent quality review passed at3118387;
+929e32b9ad13b490920201f09464b912241257b4, Go1.27.2 darwin/arm64, CGO disabled,
+vcs.modified=false. The successful build emitted a nonfatal sandbox denial for Go module-cache
+metadata outside writable roots; binary source/clean state inspected.
+Build/vet/race/static/history and independent quality review passed at929e32b;
 actual NEW rejects the recorded invalid mixed-kind fixture before mutation. No final CI/doctor/fresh-checkout/drill/self-hosting
 or overall acceptance claim follows.
 
