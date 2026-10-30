@@ -165,4 +165,33 @@ LoadAt MUST set Snapshot.Root to the canonical repository root and Module.Dir to
 ### PRJ-050
 LoadAt MUST return an error when the revision cannot be resolved, its recorded fireweed.yaml is missing or malformed, or a matched recorded module directory lacks a readable SPEC.md.
 
+### PRJ-051
+For a nonempty ID, SpecHistory MUST return the target module's archived changes whose Added or Modified items name that ID, including tag-only modifications.
+Pending changes and archives belonging to other modules or unrelated spec IDs MUST not appear in that selection.
+
+### PRJ-052
+Every history entry MUST identify its archive path and module, the matching IDs, its Motivation, added and removed Decisions, and its complete Provenance section.
+
+### PRJ-053
+SpecHistory MUST order entries by their latest valid implementation Provenance timestamp, newest first, with missing or invalid implementation dates after dated entries.
+Equal-date or undated entries MUST use archive-path lexical order as a total-order fallback.
+
+### PRJ-054
+With an empty ID filter, SpecHistory MUST return each target-module archive containing Added or Modified spec edits once, with its unique affected IDs in lexical order.
+A module with no matching archives MUST return an empty slice.
+
+### PRJ-055
+An unknown module or an ID absent from both current module Specs and matching archive edits MUST return U02 with the rejected name.
+A current ID with no matching archive edits MUST return an empty slice.
+An ID in matching archive edits MUST remain queryable when it no longer exists in current Specs.
+
+### PRJ-056
+Missing or malformed fireweed.yaml MUST produce a C01 error.
+Malformed archived change documents or malformed Added/Modified item syntax MUST produce a C03 error identifying the archive path.
+
 ## Decisions
+
+[0126-spec-history-query] History reads the project's current archive files, as the archive-backed show
+view; it does not infer chronology from commit ancestry or filenames. Entry
+metadata are Markdown section contents without their level-two heading; a
+nonempty ID filter returns that matching ID in each entry's IDs field.
