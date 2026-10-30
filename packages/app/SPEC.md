@@ -449,6 +449,45 @@ Successful list --json MUST emit schema1 ordered-array data with slug, path, mod
 Failures MUST emit null data with code/message diagnostics.
 It MUST leave stderr empty.
 
+### APP-118
+status MUST discover the nearest project root and expose workflow.Status for it.
+Successful status MUST return exit0, including empty queues and warning-only reports.
+
+### APP-119
+Plain status MUST identify every queued entry in returned order by slug, path and module, with its phase, blocked reason, audit rounds, waiting change and blocking rule.
+It MUST report an empty queue explicitly when there are no entries.
+
+### APP-120
+Plain status MUST identify discovered module names, prefixes, directories, dependencies and resolved zones.
+It MUST report quarantines with module/ID/reason, boundary opt-outs with module/reason, each module's drift, the unapproved count and each archived change's phase-commit count from the returned report.
+
+### APP-121
+Plain status MUST show every returned module cost with its JUnit seconds, testcase counts per spec, eval lines and disposable lines.
+Modules without a recorded cost MUST not receive a fabricated measurement.
+
+### APP-122
+Successful status --json MUST emit schema1 object data containing modules, queue, quarantines, boundary_opt_outs, drift_since_drill, unapproved, phase_commits and metrics.
+Empty array/map containers MUST appear as arrays/maps rather than null.
+It MUST leave stderr empty.
+
+### APP-123
+JSON module rows MUST use the existing name, id_prefix, dir, depends_on and zones shape.
+Queue rows MUST use slug, path, module, phase, blocked, audit_rounds, waiting_on and waiting_rule.
+Quarantine and opt-out rows MUST use module/id/reason and module/reason fields respectively.
+
+### APP-124
+JSON metrics MUST use module, seconds, cases_per_spec, eval_lines and disposable_lines fields.
+The cases_per_spec, drift_since_drill and phase_commits maps MUST retain their returned identifier/count associations.
+
+### APP-125
+status MUST retain the returned diagnostic codes and messages, including budget and P08 warnings.
+JSON diagnostics MUST retain path when present and warning status; plain output MUST show each diagnostic code and message.
+
+### APP-126
+Usage and project configuration errors MUST return exit2 with corrective guidance, using U01 for usage and the existing configuration cause code.
+Status failures MUST return exit1 with corrective guidance, retaining assigned cause codes and using P01 for an unavailable base ref.
+JSON failures MUST use null data with code/message diagnostics and empty stderr.
+
 ## Decisions
 
 [0069-project-initialization] Init accepts codex and claude presets as argv commands; other selections are shell command templates containing {prompt}, stored as strings for one-pass quoted substitution when execution is implemented. Local recipes use recipe.yaml metadata, recipe.md instructions and a files/ project-relative payload; none uses empty language defaults and a generic module scaffold.
