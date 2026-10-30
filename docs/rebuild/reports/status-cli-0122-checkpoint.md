@@ -76,3 +76,19 @@ native start. The existing approval does not authorize discarding/re-authoring
 them, manually manufacturing a claim or committing a worker phase. An isolated
 CLI-only diagnosis could establish a supported recovery path without touching
 main; it has not been run or authorized at this checkpoint. Full goal incomplete.
+
+## Approved native cancellation — replacement pending
+
+Owner approved /tmp/fireweed-0122-native-reauthor-checkpoint.md. The second
+one-time exception restored only the uncommitted change to its committed author
+version; only the two named eval edits were restored/removed after byte-for-byte
+preservation. This exception is consumed. Native abandon succeeded as
+000984d76e36e187606117a41a88f6d471d40bbb, with a clean, unclaimed tree.
+No implementation existed or was saved/discarded/reused. The old run never had
+a valid phase commit or audit, and its missing-persistence history remains here.
+
+The approved replacement uses the identical public contract, fresh native run
+and normal allocation, preserved public assertions with a fresh eval worker,
+independent isolated audit, fresh impl worker/full checks and actual NEW proof.
+Count remains0 until that caller applies. Stop with the caller local at count1;
+no push, drill, altered bounds/counts or further phase exception is authorized.

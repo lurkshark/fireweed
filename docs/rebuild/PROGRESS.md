@@ -8,19 +8,20 @@ and release/commits/abandon, CI and list. Existing actual CLI evidence is linked
 in HISTORY and the [prior gate](reports/checkpoint-0112-0116.md); preserve it.
 Full design/ACCEPTANCE remains incomplete.
 
-**Applied since review: 0; 0117–0121 pushed; 0122 native resume refused.**
-Owner approved the [scoped recovery](reports/status-cli-0122-checkpoint.md).
-Its one-time document restoration was applied exactly; both eval files remain
-unchanged. Same run20261030T163917-0fc34507bd1994f10aea0b08, APP-118–126,
-audit_rounds0, now phase evals. The exception is consumed. Native start with
-write-capable execution returned `P01: working tree must be clean` (exit1).
-No claim exists. The approved plan explicitly required stopping on refusal;
-no further Done/audit/implementation/push/drill or manual claim/ref write ran.
-Public inputs remain preserved and uncommitted. The prior native eval check
-recorded253 cases (3 genuine failures/250 passes), but its commit failed on
-sandbox .git/index.lock permission. No valid eval commit or independent audit
-exists; no status implementation or NEW proof exists. Another owner decision
-is required to resolve the dirty public inputs; no further recovery is assumed.
+**Applied since review: 0; 0117–0121 pushed; 0122 native recovery underway.**
+Owner approved native cancel/re-author after the same-run start refused the dirty
+tree. The second one-time exception cleaned only the named public inputs after
+preserving them. Native abandon000984d succeeded; tree clean/unclaimed.
+Both exceptions are consumed. Old run20261030T163917-0fc34507bd1994f10aea0b08
+had no valid phase commit/audit/implementation. Its native check recorded253
+cases (3 genuine failures/250 passes) before sandbox Git commit denial.
+[Checkpoint/history](reports/status-cli-0122-checkpoint.md).
+
+Re-author the same public contract with normal allocation and a fresh run;
+fresh eval worker may restore preserved public assertions. Complete isolated
+Sol/high audit, fresh impl worker, native full checks, clean build and actual NEW
+status proof, then stop with the caller local at count1. No push, drill,
+additional product change, manual phase/ref/count edits or standing exception.
 
 Prior safe boundary:
 All native work is archived/unclaimed at clean source79f7113. Current batch:
