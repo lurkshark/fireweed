@@ -221,3 +221,9 @@ categories, review/audit/Decision/exception information, saved budget warnings,
 B04 binary/large additions with threshold/root-protection exclusions and coded
 range errors. Its historical/cost records are authored inputs, not executed
 lifecycle/drill evidence. Fixture removed; final gates remain open.
+
+The [NEW show-history proof](reports/show-history-cli-0127.md) adds partial R05/R17
+evidence: archive-backed filtered/module-wide history, implementation-date order,
+review metadata, empty views and coded errors. Its archives were authored public
+inputs, not executed lifecycle/drill evidence. Fixture removed; full gates remain
+open. Caller local at application1 after the passing0122–0126 review.

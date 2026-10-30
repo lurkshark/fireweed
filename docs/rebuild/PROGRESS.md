@@ -4,50 +4,42 @@
 
 NEW proves manual lifecycle/setup, bounded next/run and recovery/resume,
 agent-commit undo, time/usage stops, maintenance/eval-fix/ordinary-fix/regenerate,
-release/commits/abandon, CI, list, status and PR-body. Reuse HISTORY/reports;
-the complete design and ACCEPTANCE remain incomplete.
+release/commits/abandon, CI, list, status, PR-body and archive-backed show history.
+The complete design and ACCEPTANCE remain incomplete. Reuse HISTORY/reports.
 
-**Applied since review: 0; approved scoped history-caller recovery active.**
-Owner answered "Approve history continuation and review gate" for
-/tmp/fireweed-show-history-continuation-checkpoint.md: project history query
-as application5, mandatory separate Sol/high quality/goal review and fresh checks,
-push only on PASS, then immediate app show --history/actual NEW proof and a local
-stop at count1. Any finding/block or required dependency expansion stops. No
-phase exception, drill, GC against main refs or second push is authorized.
+**Applied since review: 1; approved recovery/caller complete — STOP local.**
+Owner answered "Approve scoped recovery; stop after completion" for
+[0127 checkpoint](reports/show-history-0127-checkpoint.md). The exact one-time
+runtime-document restoration exception was consumed, native abandon12d67bc
+completed, and the same behavior-preserving contract was re-authored with normal
+allocation/fresh run. No discarded implementation existed or was reused.
 
-Owner then answered "Approve scoped recovery; stop after completion" for
-[0127 clause checkpoint](reports/show-history-0127-checkpoint.md). The unfrozen
-caller was paused for two authored specs exceeding the three-clause limit.
-Its public inputs were preserved, exact owner-approved runtime-document and
-two eval restorations completed, and native abandon12d67bc left a clean tree.
-That one-time phase-write exception is consumed. Re-author the same corrected
-contract with a fresh normal run, fresh workers/isolated audit/full checks/NEW
-proof, then stop local at count1. No further push/drill/dependency expansion.
+[0127 app/NEW proof](reports/show-history-cli-0127.md) applied APP-132–135
+at909a1b1 with282 native passes; isolated independent audit PASS round0, clean
+CGO0 build/app vet and actual8-command NEW proof passed. APP-008/025 qualifiers
+preserved current/projected behavior and existing assertions. Authored archive
+inputs proved implementation-date order, metadata, filtering, empty views and
+errors; read state retained, no hooks/agents, fixture/state removed. Archive and
+claim release complete; no pending/blocked rebuild change or active claim remains.
+No further product work or push is authorized in this slice.
 
-[0126 query](reports/spec-history-query-0126.md) applied PRJ-051–056 at8cd9c0e
-with681 native passes and independent round0 audit PASS.
-[0122–0126 fifth gate](reports/checkpoint-0122-0126.md) PASS: separate Sol/high
-quality/goal review, clean CGO0 build/vet/race/static and explicit36-commit history
-extension79f7113..8cd9c0e. Count resets0 from review, never push alone. Authorized
-push7c5e90e→5610268fb73e91af0805c20a4714e15c9d9e59f1 completed and actual
-origin/main OID verified. Tree clean/archived/unclaimed before caller authoring.
+The [0122–0126 fifth gate](reports/checkpoint-0122-0126.md) PASS reviewed source
+8cd9c0e: separate Sol/high quality/goal review, build/vet/race/static and explicit
+36-commit history extension79f7113..8cd9c0e. Review reset count0; this caller is1.
+Authorized push7c5e90e→5610268fb73e91af0805c20a4714e15c9d9e59f1 completed and
+actual origin/main OID verified. No push since; push alone resets no count.
 
-Next observable exit is NEW show <module> [ID] --history in plain/schema1 JSON,
-through the existing project.SpecHistory query, with independent assertion audit,
-full native checks and actual disposable-fixture proof. No further dependency
-change is needed or authorized. Stop with the caller local at count1. Library
-checks do not close that CLI slice; no CLI history proof has occurred yet.
+Known nonfatal Go module stat-cache write warning and existing C01/C18/B02
+warnings retain explanations. Corrected0127 author check has no new C17. Latest
+NEW is clean909a1b1, Go1.27.2 darwin/arm64 CGO0/vcs.modified=false. Prior gate
+race/history results are historical, not final-source/full-acceptance claims.
 
-Known nonfatal build module stat-cache write warning and existing C01/C18/B02
-warnings retain recorded explanations. Latest clean binary identifies evidence
-HEAD6402f2e, Go1.27.2 darwin/arm64 CGO0/vcs.modified=false; source8cd9c0e. No
-final fresh-checkout/CI/doctor/full-original-history, real regeneration, isolated
-self-hosting, delivery or whole-goal acceptance claim follows.
-
-Remaining surface includes drill/gc/migrate, remaining show/check options,
-recipes/versioning/packaging and all unclosed ACCEPTANCE gates. Only the original
-contracts drill was authorized, with unresolved independence gaps. Both0122
-document-recovery exceptions and all earlier exceptions are consumed.
+Remaining surface includes drill/gc/migrate, show--stale/check--fix, recipes/
+versioning/packaging and every unclosed ACCEPTANCE gate, including final fresh
+checkout/CI/doctor/full-original-history, real regeneration, isolated self-hosting
+and delivery. Only the original contracts drill was authorized and its
+independence gaps remain unresolved. All recovery phase exceptions are consumed.
+Resume only an agreed continuation; stop here as explicitly requested.
 
 ## Approved correction gate — completed historical scope
 
@@ -91,13 +83,10 @@ Original history baseline be35552b706aa3000ff8f11306d129ff1d701b85; extend
 recorded valid explicit nonempty ranges. GOCACHE=/tmp/fireweed-rebuild-cache.
 
 NEW: /Users/joel/Workspace/fireweed/bin/fireweed, built at clean
-5da87d4102f4a6fc487ebd69e82e15a1e317041d, Go1.27.2 darwin/arm64, CGO disabled,
-vcs.modified=false. Build passed with the known nonfatal module-cache metadata
-warning, recorded in the current checkpoint report; no source fix/rebuild needed.
-Build/changed-module vet/native262 app passes, independent audit and actual
-NEW PR-body/Explain proof passed at5da87d4. Prior status/CI/list/Explain and
-build/vet/race/static/history/quality-review results remain historical reusable
-evidence, not final-source or complete-acceptance claims.
+909a1b1a4531787ba778d6dccf3e33fcc8b7030f, Go1.27.2 darwin/arm64 CGO0,
+vcs.modified=false. Build/app vet/native282 passes, independent audit and actual
+NEW history proof passed. See the current0127 report for exact phases/limitations.
+Known nonfatal module stat-cache write warning is retained; no repeat needed.
 
 Workers and separate assertion auditors use codex exec --ephemeral
 --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"'

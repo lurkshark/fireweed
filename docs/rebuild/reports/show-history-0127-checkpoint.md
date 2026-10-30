@@ -60,3 +60,7 @@ from preserved public inputs, then native abandon committed
 is consumed. No implementation existed or was reused; no further push occurred.
 Re-author the same behavior-preserving corrected public contract with normal
 allocation/fresh run, then fresh workers/audit/full checks/NEW proof and stop.
+
+Replacement completed: [0127 CLI proof](show-history-cli-0127.md),282 native
+passes, independent round0 PASS and actual NEW proof. Caller remains local at1;
+owner-requested stop honored. No further phase exception or push.
