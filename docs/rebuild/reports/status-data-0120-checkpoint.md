@@ -33,7 +33,12 @@ and the exact proposed one-token evals→impl correction are retained in
 `/tmp/fireweed-0120-frozen-phase-checkpoint.md` proposes native cancellation and
 fresh re-authoring, with no discarded implementation reuse or phase exception.
 It also offers the necessary B01–B03 Explain change before the fifth review,
-then immediate app status/NEW proof after PASS. No recovery is approved yet.
+then immediate app status/NEW proof after PASS. The owner subsequently approved
+"recovery and revised slice". Only the two uncommitted implementation files
+were discarded; native abandon `cee4dbc79aefae47af6aa9f7e3c776982954c90d`
+canceled the old attempt. Fresh0120-status-report is authored from the retained
+public contract/evals with the exact one-token correction; no implementation
+was saved/reused. Historical findings/counters remain recorded here.
 
 Logs remain under `/tmp/fireweed-0120-`: evals-worker, evals-refinement-worker,
 evals-done, audit-worker, audit-done, evals-round1-worker, evals-round1-done,

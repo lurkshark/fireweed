@@ -28,14 +28,18 @@ B01–B03 warnings and public Costs reader;450 native passes and isolated audit
 PASS. [Evidence](reports/verification-costs-0119.md). A scoped implementation
 review correction added root protected-pattern precedence before application;
 interrupted verification is not passing evidence. Main tree clean/unclaimed.
-0120 status data reached impl after457 native cases (7 intended failures/450
+Former0120-status-snapshot reached impl after457 native cases (7 intended failures/450
 passes), one persisted FLOW-113 correction and restricted re-audit PASS. Fresh
 implementation passes6/7 focused cases: FLOW-101's frozen fixture expects evals
 although its maintenance Start records impl. The worker stopped rather than
 misreporting phase or editing frozen evals. [Checkpoint](reports/status-data-0120-checkpoint.md).
-Its own claim was natively released; only two implementation files remain
-uncommitted, phase/run/IDs/round unchanged. No archive/full impl Done, app caller,
-NEW status proof, fifth review or push ran before the checkpoint.
+Its own claim was natively released. After owner approval, only its two
+uncommitted implementation files were discarded, then native abandoncee4dbc
+removed its unapplied phase work and pending file. No implementation was saved
+or reused. Corrected0120-status-report is now authored from the same public
+contract and exact one-token phase correction, preserving prior assertion fixes;
+fresh workers/audit/full verification follow. Count stays3 until application.
+No app caller/NEW status proof, fifth review or push has run.
 
 Owner: "Approve status slice and fifth review". This supersedes the completed
 recovery's stop only for `/tmp/fireweed-status-continuation-checkpoint.md`:
