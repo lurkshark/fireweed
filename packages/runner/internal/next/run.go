@@ -283,7 +283,7 @@ func requireApproval(root, path string) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("change %s requires approval on the local or shared base", path)
+	return &approvalRequiredError{path: path}
 }
 
 func configuredCommand(config map[string]any, role string) string {

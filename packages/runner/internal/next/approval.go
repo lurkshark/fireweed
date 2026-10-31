@@ -1,8 +1,19 @@
 package next
 
-import "strings"
+import (
+	"errors"
+	"fmt"
+)
 
-// IsApprovalRequired is a deliberately incorrect eval-phase placeholder.
+type approvalRequiredError struct {
+	path string
+}
+
+func (e *approvalRequiredError) Error() string {
+	return fmt.Sprintf("change %s requires approval on the local or shared base", e.path)
+}
+
 func IsApprovalRequired(err error) bool {
-	return err != nil && !strings.Contains(err.Error(), "requires approval")
+	var approval *approvalRequiredError
+	return errors.As(err, &approval)
 }
