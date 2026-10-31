@@ -7,12 +7,12 @@ history (last present at `c536833`).
 
 ## State — 2026-10-30
 
-126 changes applied (0001–0127; 0109 was abandoned). Change 0128 is blocked in
-implementation after both attempts failed CON-016; 0129–0133 remain queued and
-wait on its module. No claim remains. Its evals and independent audit passed,
-but the eval-phase ErrorCode stub lives in frozen api.go rather than delegating
-to disposable implementation. The queue run stopped under the checkpoint rule.
-The full eval-phase check took about 16 minutes, above the 15-minute target.
+126 changes applied (0001–0127; 0109 was abandoned). The owner explicitly
+approved running all queued changes on 2026-10-30. Before resuming blocked 0128,
+the author repaired its ErrorCode facade to delegate to a disposable stub;
+CON-016 still fails as expected and all frozen eval assertions are unchanged.
+Its existing run, phase and audit evidence are retained. Caller migrations stay
+in 0129, 0132 and 0133. No claim was held during this author repair.
 The owner authorized the controller upgrade to 0.1.1 on 2026-10-30; version,
 executable hash and clean source revision
 were verified after installation. Controller `check` passed with the existing
@@ -44,12 +44,8 @@ The owner authorized pushing this controller repin to `origin/main` on 2026-10-3
 
 ## Next
 
-Owner decision required before continuing: authorize repair of 0128's eval-phase
-interface wiring so ErrorCode delegates to disposable code, preserving its eval
-assertions and leaving caller migrations to 0129, 0132 and 0133. Do not reset the
-blocked change or its attempts without that decision. See its Questions.
-
-After resolving 0128, finish the existing queue before choosing another slice.
+Resume 0128 implementation, then finish the existing approved queue through
+0133. Stop on any new block under the checkpoint rule.
 The queue completes typed diagnostics and addresses the contracts drill gap
 (CON-011/012). Suggested later order:
 
