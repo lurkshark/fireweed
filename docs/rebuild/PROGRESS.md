@@ -44,17 +44,24 @@ and an independent audit with no findings. Rebuilt NEW's actual evals, impl
 and regenerate playbook outputs confirmed the Decisions/Notes guidance and
 examples while preserving the stub handoff instructions.
 
-0138 was blocked in audit at `8072bfa`; implementation has not started. Its
-evals committed at `617d190` with full fail-first evidence (378 cases, 14
-failing). The independent auditor reported no findings but omitted RUN-048 and
-RUN-027 from its checked IDs. Its second submission added RUN-048 but still
-omitted RUN-027, exhausting the configured two audit attempts. Partial Audit
-work is saved at `refs/fireweed/attempts/0138-isolated-audit-workspaces/1`.
-The owner authorized a fresh independent audit on 2026-10-31. This separate
-author commit clears blocked and makes the seven-ID checklist explicit in
-Notes, including the already_satisfied RUN-027 and RUN-048. Normal bounds,
-requirements and independent review remain unchanged. No EC gate is claimed
-passed and no controller promotion occurred.
+0138 passed audit at `62485a1` with all seven IDs checked, after the owner-
+authorized audit restart and one findings round. Its corrected evals committed
+at `359eb86` with fail-first evidence (380 cases, 16 failing). Implementation
+is now blocked at `98cc19a`: three legacy queue tests share a frozen helper
+that still requires audit cwd to equal the held checkout, contradicting the
+new audit isolation. Both implementation attempts failed on that assertion;
+the focused new workspace tests pass. The implementation is saved at
+`refs/fireweed/attempts/0138-isolated-audit-workspaces/2`; attempt 1 retains the
+earlier partial audit. No worker eval edit was retained.
+
+Stop for an owner recovery decision. SYSTEM requires eval_fix for frozen evals,
+but a later same-module change waits behind blocked 0138. A prepared helper
+patch retains module/phase/Bin checks and held worker cwd, while asserting a
+separate, cleaned-up audit cwd. Proposed one-time exception: independently
+review that patch, commit it as an author correction with no live claim, then
+resume saved implementation attempt 2 under bootstrap. Keep IDs, run, audit
+rounds, configured bounds and product requirements unchanged. The checkout is
+clean and unclaimed; EC1–EC6 remain pending and no promotion occurred.
 
 The current controller remains bootstrap 0.1.1 at the verified pin below.
 The owner authorized pushing current main to origin/main on 2026-10-30,
@@ -82,11 +89,10 @@ integration at dae9b28.
 
 ## Next
 
-1. Resume bootstrap's 0138 independent audit as authorized, explicitly checking
-   RUN-013, RUN-027 and RUN-045–049. Complete implementation only after the
-   controller accepts the audit; keep normal bounds and verification and stop
-   at any new block. 0132–0137 are complete, including the JUnit retry-feedback
-   CLI slice and worker guidance.
+1. Stop for the owner's 0138 frozen-eval recovery decision. Do not change the
+   frozen helper or resume the saved implementation without that decision.
+   0132–0137 are complete, including the JUnit retry-feedback CLI slice and
+   worker guidance. Normal verification and acceptance gates remain required.
 2. Prove ACCEPTANCE EC1–EC5: focused core review, fresh-checkout checks,
    reference smoke and isolated real-worker self-hosting without a drill.
 3. Perform EC6's separate controller pin/instruction handoff and record its
