@@ -6,7 +6,6 @@ audit_rounds: 0
 bases:
     RUN-013: a6739afb
     RUN-027: 84080c43
-blocked: 'audit attempts exhausted: P03: audit missing checked ID RUN-027'
 module: runner
 phase: audit
 run: 20261031T085104-0a74a70a942f28f9dee76ea3
@@ -78,6 +77,13 @@ the auditor in the checkout containing it.
 A linked worktree: it exposes the source repository's Git objects and refs.
 
 ## Notes
+
+The owner authorized a fresh independent audit on 2026-10-31 after incomplete
+checked-ID submissions exhausted the prior audit attempts. Check all seven
+changed IDs: RUN-013, RUN-027, RUN-045, RUN-046, RUN-047, RUN-048 and RUN-049.
+already_satisfied exempts fail-first evidence, not audit review. After checking
+their assertions, a passing Audit response lists all seven in Checked IDs;
+otherwise report clause findings normally. Existing bounds remain unchanged.
 
 RUN-027 is narrowed to preserve existing worker recovery, and permitted partial
 audit-work retention already exists; those two IDs are already_satisfied. The

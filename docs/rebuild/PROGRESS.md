@@ -44,16 +44,17 @@ and an independent audit with no findings. Rebuilt NEW's actual evals, impl
 and regenerate playbook outputs confirmed the Decisions/Notes guidance and
 examples while preserving the stub handoff instructions.
 
-0138 is blocked in audit at `8072bfa`; implementation has not started. Its
+0138 was blocked in audit at `8072bfa`; implementation has not started. Its
 evals committed at `617d190` with full fail-first evidence (378 cases, 14
 failing). The independent auditor reported no findings but omitted RUN-048 and
 RUN-027 from its checked IDs. Its second submission added RUN-048 but still
 omitted RUN-027, exhausting the configured two audit attempts. Partial Audit
 work is saved at `refs/fireweed/attempts/0138-isolated-audit-workspaces/1`.
-Stop for an owner checkpoint. Proposed continuation: a fresh independent audit
-explicitly checking all seven changed IDs, including the already_satisfied
-RUN-027 and RUN-048, under the unchanged bounds. The run returned clean and
-unclaimed; no EC gate is claimed passed and no controller promotion occurred.
+The owner authorized a fresh independent audit on 2026-10-31. This separate
+author commit clears blocked and makes the seven-ID checklist explicit in
+Notes, including the already_satisfied RUN-027 and RUN-048. Normal bounds,
+requirements and independent review remain unchanged. No EC gate is claimed
+passed and no controller promotion occurred.
 
 The current controller remains bootstrap 0.1.1 at the verified pin below.
 The owner authorized pushing current main to origin/main on 2026-10-30,
@@ -81,11 +82,11 @@ integration at dae9b28.
 
 ## Next
 
-1. Stop for the owner's 0138 blocked-audit checkpoint. If continuation is
-   authorized, clear blocked in a separate author commit and resume bootstrap's
-   independent audit with all seven IDs explicitly required: RUN-013, RUN-027,
-   RUN-045–049. Keep normal bounds and verification. 0132–0137 are complete,
-   including the JUnit retry-feedback CLI slice and worker guidance.
+1. Resume bootstrap's 0138 independent audit as authorized, explicitly checking
+   RUN-013, RUN-027 and RUN-045–049. Complete implementation only after the
+   controller accepts the audit; keep normal bounds and verification and stop
+   at any new block. 0132–0137 are complete, including the JUnit retry-feedback
+   CLI slice and worker guidance.
 2. Prove ACCEPTANCE EC1–EC5: focused core review, fresh-checkout checks,
    reference smoke and isolated real-worker self-hosting without a drill.
 3. Perform EC6's separate controller pin/instruction handoff and record its
