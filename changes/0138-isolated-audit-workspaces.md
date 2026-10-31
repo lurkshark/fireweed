@@ -1,11 +1,14 @@
 ---
 already_satisfied:
     - RUN-027
-    - new:audit-work-preservation
+    - RUN-048
+audit_rounds: 0
 bases:
     RUN-013: a6739afb
     RUN-027: 84080c43
 module: runner
+phase: audit
+run: 20261031T085104-0a74a70a942f28f9dee76ea3
 ---
 
 
@@ -30,23 +33,23 @@ checkout as audit cwd must be updated to assert the restricted workspace.
 
 ## Added
 
-### new:audit-input-workspace
+### RUN-045
 Next MUST run every automatic audit invocation in a fresh temporary workspace containing only the current change, projected module SPEC.md and module eval files at project-relative paths, plus independent Git metadata.
 It MUST omit the held checkout's other files, including implementation, interfaces, hooks and configuration.
 
-### new:audit-git-isolation
+### RUN-046
 The audit workspace's Git metadata MUST contain none of the held repository's history, refs or saved attempts.
 Audit-agent commits within this workspace MUST remain absent from the held checkout's history and refs.
 
-### new:audit-submission-scope
+### RUN-047
 Next MUST accept only edits to the Audit section of the copied current change.
 Edits elsewhere in that change, edits to copied specs or evals, or added or deleted files outside Git metadata MUST reject the submission without copying any workspace edits to the held checkout.
 
-### new:audit-work-preservation
+### RUN-048
 When audit workspace edits are permitted, Next MUST copy its Audit section back before retrying or returning, including agent failures and time or usage stops.
 Copying audit work MUST not itself advance a phase or replace other held change contents.
 
-### new:audit-workspace-cleanup
+### RUN-049
 Next MUST remove every temporary audit workspace after invocation, including after invalid submissions, agent failures and time or usage stops.
 
 ## Modified
@@ -97,3 +100,7 @@ Use public APIs, temporary fixture repositories and bounded fake auditors to
 inspect cwd, supplied files, source-history absence, accepted/rejected edits,
 partial Audit retention and cleanup. Reuse representative cases and existing
 fixtures; no process instrumentation, real-agent evals or bootstrap source.
+
+## Provenance
+
+- evals 2026-10-31T09:09:45.579501Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=378 failing=14 passing=364

@@ -191,6 +191,7 @@ printf 'worker-%s' "$phase"
 	nextWrite(t, logDir, "auditor.sh", `#!/bin/sh
 printf '%s' "$2" > "$1/audit.prompt"
 printf 'audit|%s|%s\n' "$PWD" "$FIREWEED_BIN" >> "$1/invocations"
+printf '%s' "$PWD" > "$1/audit.cwd"
 cat >> changes/0001-next.md <<'AUDIT'
 
 ## Audit
@@ -199,7 +200,7 @@ Checked IDs: ALP-002
 AUDIT
 if [ -f "$1/commit-success" ]; then
   git add changes/0001-next.md
-  git commit -q -m 'fixture agent audit commit'
+  git -c user.name=Fixture -c user.email=fixture@example.invalid commit -q -m 'fixture agent audit commit'
 fi
 printf 'auditor'
 `)
@@ -465,7 +466,7 @@ func Test_RUN_013_RUN_014_CompleteSpecChange(t *testing.T) {
 		}
 	}
 	lines := strings.Split(strings.TrimSpace(nextRead(t, f.logDir, "invocations")), "\n")
-	if len(lines) != 3 || lines[0] != "evals|"+f.root+"|/fixture/next-bin" || lines[1] != "audit|"+f.root+"|/fixture/next-bin" || lines[2] != "impl|"+f.root+"|/fixture/next-bin" {
+	if len(lines) != 3 || lines[0] != "evals|"+f.root+"|/fixture/next-bin" || !strings.HasPrefix(lines[1], "audit|") || !strings.HasSuffix(lines[1], "|/fixture/next-bin") || lines[2] != "impl|"+f.root+"|/fixture/next-bin" {
 		t.Errorf("invocations = %#v", lines)
 	}
 	for _, phase := range []string{"evals", "impl"} {

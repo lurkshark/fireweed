@@ -44,7 +44,17 @@ func Test_RUN_027_RUN_028_RecoversAgentCommitsAcrossLifecycle(t *testing.T) {
 			t.Errorf("step %d = %#v", i, step)
 		}
 	}
-	assertRecoveryWarnings(t, r.State.Diagnostics, "evals", "audit", "impl")
+	for _, phase := range []string{"evals", "impl"} {
+		found := false
+		for _, diagnostic := range r.State.Diagnostics {
+			if diagnostic.Code == "P05" && diagnostic.Warning && strings.Contains(strings.ToLower(diagnostic.Message), phase) && strings.Contains(strings.ToLower(diagnostic.Message), "retain") {
+				found = true
+			}
+		}
+		if !found {
+			t.Errorf("missing %s worker recovery warning: %#v", phase, r.State.Diagnostics)
+		}
+	}
 	if got := strings.TrimSpace(nextRead(t, f.logDir, "evals-reset-head")); got != base {
 		t.Errorf("evals verification HEAD = %s, want held base %s", got, base)
 	}

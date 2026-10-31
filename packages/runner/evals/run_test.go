@@ -412,7 +412,7 @@ func Test_RUN_016_RUN_025_RUN_026_BlockThenApplyIndependent(t *testing.T) {
 	if q, queueErr := project.Queue(f.root); queueErr != nil || len(q) != 2 || q[0].Slug != "alpha" || q[1].Slug != "beta" {
 		t.Errorf("remaining queue = %#v, %v", q, queueErr)
 	}
-	if got := runInvocations(t, f); len(got) != 5 || got[0] != "alpha|evals|"+f.root+"|/fixture/run-bin" || got[1] != got[0] || got[2] != "gamma|evals|"+f.root+"|/fixture/run-bin" || got[3] != "gamma|audit|"+f.root+"|/fixture/run-bin" || got[4] != "gamma|impl|"+f.root+"|/fixture/run-bin" {
+	if got := runInvocations(t, f); len(got) != 5 || got[0] != "alpha|evals|"+f.root+"|/fixture/run-bin" || got[1] != got[0] || got[2] != "gamma|evals|"+f.root+"|/fixture/run-bin" || !strings.HasPrefix(got[3], "gamma|audit|") || !strings.HasSuffix(got[3], "|/fixture/run-bin") || got[4] != "gamma|impl|"+f.root+"|/fixture/run-bin" {
 		t.Errorf("blocked continuation agent calls = %#v", got)
 	}
 }
