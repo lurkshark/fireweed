@@ -75,7 +75,14 @@ byte-for-byte comparison with saved attempt 2. The checkout is unclaimed; the
 original identity, run, audit round and saved code are unchanged. The app
 eval_fix applied at `4c794a6` with all 282 app cases passing and an independent
 audit reporting no findings for APP-074, APP-076 and APP-077. It changed no
-product behavior or public interface.
+product behavior or public interface. Full verification of the restored attempt then
+found eight further app failures, reproduced by a complete app eval run; all
+are obsolete audit-cwd assertions in the run, time-resume and usage-resume
+helpers. The batched normal eval_fix `0138-audit-resume-cli-evals` is authored
+before the original using the same supported ordering. Only this checkout's
+claim was released, and its two restored files matched saved attempt 2 exactly
+before returning to HEAD. Complete this app prerequisite, then restore the
+original attempt and return to full verification and the gates.
 
 The current controller remains bootstrap 0.1.1 at the verified pin below.
 The owner authorized pushing current main to origin/main on 2026-10-30,
@@ -103,7 +110,8 @@ integration at dae9b28.
 
 ## Next
 
-1. Restore 0138-isolated-audit-workspaces implementation attempt 2 and complete
+1. Complete 0138-audit-resume-cli-evals, then restore
+   0138-isolated-audit-workspaces implementation attempt 2 and complete
    full bootstrap verification with the corrected runner and app evals. Stop
    at any new block. 0132–0137 and the app prerequisite eval_fix are complete;
    acceptance gates remain required.
