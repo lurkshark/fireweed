@@ -11,12 +11,13 @@ history (last present at `c536833`).
 approved running all queued changes on 2026-10-30. The author repaired 0128's
 ErrorCode facade to delegate to disposable code, preserving its frozen evals;
 resumed implementation and full controller verification passed.
-0129 passed evals and independent audit, then blocked after both implementation
-attempts failed Test_APP_065_APP_066_APP_067_DoctorFailures. A focused run
-confirmed C05 and the duplicate-ID message are correct, but diagnostic Path is
-fireweed.yaml instead of SPEC.md: Load now detects malformed items earlier,
-while project.Check labels every load failure fireweed.yaml. No claim remains;
-0130–0133 wait on project. The owner approved the scoped recovery below.
+0129 passed evals and independent audit. After the owner approved its first
+recovery, the worker fixed module SPEC.md diagnostic paths and the focused
+doctor regression passed. Both resumed implementation attempts then failed
+Test_APP_109_APP_112_APP_113_CIStaticUsageAndConfiguration. A focused run
+confirmed C05/status 1 are correct, but the earlier Load failure routes CI to
+advice the existing corrective-guidance assertion rejects. No claim remains;
+0130–0133 still wait on project. The new block stopped the queue.
 Queued predicates 0130/0131 state the facade/stub wiring requirement before
 their evals phases.
 The owner authorized the controller upgrade to 0.1.1 on 2026-10-30; version,
@@ -50,9 +51,13 @@ The owner authorized pushing this controller repin to `origin/main` on 2026-10-3
 
 ## Next
 
-Owner approved resuming 0129 with the project-local diagnostic-path correction
-on 2026-10-30, preserving frozen evals and existing run/phase, then continuing
-0130–0133. The new recovery guidance is in 0129 Notes. Stop on any new block.
+Owner checkpoint requested for 0129's remaining CI guidance mismatch. Proposed
+project-local recovery: retain the typed parse code, cause and module SPEC.md
+path while adding corrective guidance to the module parse-error wrapper (for
+example, Use valid, unique spec item headings). Preserve frozen evals, the
+existing run/phase and audit evidence; run both focused doctor and CI regressions
+before returning to full controller checks, then continue 0130–0133. Do not
+clear the new block without the owner's decision.
 The queue completes typed diagnostics and addresses the contracts drill gap
 (CON-011/012). Suggested later order:
 
