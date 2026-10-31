@@ -457,6 +457,12 @@ Each such file MUST produce a B04 warning in Diagnostics and the Markdown body; 
 An empty or unresolvable range MUST return an error with P01 and the rejected range or resolution cause.
 A valid empty range MUST return a report rather than an error.
 
+### FLOW-126
+PRBody MUST return an error for which IsEndpointConfigError reports true when the project at the range endpoint fails to load.
+
+### FLOW-127
+IsEndpointConfigError MUST report false when PRBody fails because the range cannot be resolved.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.

@@ -40,7 +40,7 @@ func PRBody(root, revisionRange string) (model.PRBodyReport, error) {
 	}
 	endpoint, err := project.LoadAt(root, resolved[1])
 	if err != nil {
-		return model.PRBodyReport{}, fmt.Errorf("load endpoint project at %s: %w", resolved[1], err)
+		return model.PRBodyReport{}, &endpointConfigError{cause: fmt.Errorf("load endpoint project at %s: %w", resolved[1], err)}
 	}
 	root = endpoint.Root
 	out, err := commitsGit(root, "rev-list", resolved[0]+".."+resolved[1])
