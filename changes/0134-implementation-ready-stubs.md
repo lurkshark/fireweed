@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: assets
+phase: audit
+run: 20261031T062030-68cfd267818300f8f79129e6
 ---
 
 
@@ -22,11 +25,11 @@ and BuiltinRecipe("go").Instructions, including the bundled Go recipe file.
 
 ## Added
 
-### new:eval-stub-handoff
+### AST-043
 The evals playbook MUST instruct workers to keep temporary stub behavior replaceable during implementation without editing frozen interface files.
 It MUST require workers to identify the implementation-writable files for missing behavior before completing evals.
 
-### new:go-stub-handoff-example
+### AST-044
 Go recipe instructions MUST show a retained api.go function delegating to a temporary stub in a new internal/ file.
 The example MUST explain that implementation replaces the disposable stub while leaving the retained facade unchanged.
 
@@ -55,3 +58,7 @@ concrete Go example in the bundled Go recipe. Preserve eval_fix instructions
 and existing Go setup/graph guidance. Existing worker context already includes
 the matching playbook, so no workflow/context changes or new commands are needed.
 Keep this change within assets; it does not change phase-zone enforcement.
+
+## Provenance
+
+- evals 2026-10-31T06:36:38.996305Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=789 failing=4 passing=785
