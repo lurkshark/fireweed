@@ -7,7 +7,8 @@ history (last present at `c536833`).
 
 ## State — 2026-10-31
 
-136 changes applied (0001–0137; 0109 was abandoned). All six typed-diagnostic
+137 changes applied (0001–0137 plus 0138-audit-cwd-cli-evals; 0109 was abandoned).
+All six typed-diagnostic
 changes (0128–0133) have passing implementation Provenance; spec changes passed
 independent audits and maintenance preserved frozen evals/interfaces. 0132
 resumed from saved attempt 1 after the owner's interruption and continuation.
@@ -71,7 +72,10 @@ held-cwd expectation failed. Its normal prerequisite eval_fix is authored as
 design's supported number-then-slug ordering. The original claim was released
 and only its two restored implementation files were returned to HEAD after
 byte-for-byte comparison with saved attempt 2. The checkout is unclaimed; the
-original identity, run, audit round and saved code are unchanged.
+original identity, run, audit round and saved code are unchanged. The app
+eval_fix applied at `4c794a6` with all 282 app cases passing and an independent
+audit reporting no findings for APP-074, APP-076 and APP-077. It changed no
+product behavior or public interface.
 
 The current controller remains bootstrap 0.1.1 at the verified pin below.
 The owner authorized pushing current main to origin/main on 2026-10-30,
@@ -99,9 +103,9 @@ integration at dae9b28.
 
 ## Next
 
-1. Apply 0138-audit-cwd-cli-evals through normal bootstrap eval_fix phases,
-   then restore 0138-isolated-audit-workspaces implementation attempt 2 and
-   complete full verification. Stop at any new block. 0132–0137 are complete;
+1. Restore 0138-isolated-audit-workspaces implementation attempt 2 and complete
+   full bootstrap verification with the corrected runner and app evals. Stop
+   at any new block. 0132–0137 and the app prerequisite eval_fix are complete;
    acceptance gates remain required.
 2. Prove ACCEPTANCE EC1–EC5: focused core review, fresh-checkout checks,
    reference smoke and isolated real-worker self-hosting without a drill.
