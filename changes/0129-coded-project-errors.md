@@ -1,5 +1,11 @@
 ---
 audit_rounds: 0
+blocked: |-
+    impl attempts exhausted: P02: failing eval for APP-065: Test_APP_065_APP_066_APP_067_DoctorFailures
+    B02: APP-103: 17 cases
+    B02: APP-104: 19 cases
+    B02: APP-103: 17 cases
+    B02: APP-104: 19 cases
 module: project
 phase: impl
 run: 20261031T033337-304bd319d25e3df24a16e023
