@@ -1,6 +1,7 @@
 ---
 audit_rounds: 1
 bases: {}
+blocked: impl verification attempts exhausted
 module: runner
 phase: impl
 run: 20261031T220623-e826454d4fd1bcfca2375a01
