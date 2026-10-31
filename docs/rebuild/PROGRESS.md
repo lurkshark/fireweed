@@ -7,15 +7,16 @@ history (last present at `c536833`).
 
 ## State — 2026-10-30
 
-130 changes applied (0001–0131; 0109 was abandoned). The owner explicitly
-approved the queue and the 0128/0129 recoveries on 2026-10-30. Typed contracts
-and project errors plus runner/workflow predicates passed controller checks.
-The NEW CLI smoke confirmed doctor C05 with a module SPEC.md path, Stamp C08
-for invalid bases, and U02 for a missing change.
-0132's worker passed its checks suite and quick verification. Clearing the goal
-interrupted full verification; the controller saved attempt 1 and released its
-claim. The owner requested continuation on 2026-10-30. Resume that attempt,
-then run the remaining approved maintenance change 0133.
+132 changes applied (0001–0133; 0109 was abandoned). The approved queue is
+empty, with no active claim. All six typed-diagnostic changes (0128–0133) have
+passing implementation Provenance; spec changes passed independent audits and
+maintenance preserved frozen evals/interfaces. 0132 resumed from saved attempt 1
+after the owner's interruption and continuation request.
+NEW was rebuilt after 0133. Actual CLI smoke checks confirmed an empty queue,
+doctor C05 with a module SPEC.md path, Stamp C08 for invalid bases, U02 for a
+missing change, and preserved C12 behavior for doctor/agents-md. The 0133
+in-step review caught and resolved the direct project-load classification
+regression before application. Per-change evidence remains in the archives.
 The owner authorized the controller upgrade to 0.1.1 on 2026-10-30; version,
 executable hash and clean source revision
 were verified after installation. Controller `check` passed with the existing
@@ -47,9 +48,10 @@ The owner authorized pushing this controller repin to `origin/main` on 2026-10-3
 
 ## Next
 
-Resume 0132 from saved attempt 1, then run approved 0133. Stop on any new block.
-The queue completes typed diagnostics and addresses the contracts drill gap
-(CON-011/012). Suggested later order:
+The queued work is complete. Choose the next slice with the owner; do not
+start further drills or gap fixes without agreement. The completed queue
+addresses the contracts diagnostic drill gap (CON-011/012).
+Suggested later order:
 
 1. `drill` in NEW, then real drills of mid-graph modules (`project`, `checks`)
    with strict input isolation.
@@ -69,7 +71,7 @@ The queue completes typed diagnostics and addresses the contracts drill gap
   `refs/fireweed/drills/contracts/20261028T103005.180922000`. No further drill
   or gap fix without owner agreement.
 - Known warnings with explanations: C01 (embedded recipe discovery), C18,
-  B02 (CHK-055 has 16 cases), and Go's nonfatal module stat-cache write warning.
+  B02 (APP-103/104 and CHK-055 case counts), and Go's nonfatal module stat-cache write warning.
   Zero warnings is not a gate.
 
 ## Fixed execution context
