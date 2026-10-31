@@ -93,10 +93,11 @@ func moduleSpecs(module project.Module) ([]contracts.Item, error) {
 	}
 	items, err := contracts.ParseItems(section)
 	if err != nil {
-		if strings.HasPrefix(err.Error(), "duplicate item ID:") {
-			return nil, fmt.Errorf("C05: %w", err)
+		code, _, ok := contracts.ErrorCode(err)
+		if !ok {
+			return nil, fmt.Errorf("parse module specs: %w", err)
 		}
-		return nil, fmt.Errorf("C03: %w", err)
+		return nil, fmt.Errorf("%s: %w", code, err)
 	}
 	return items, nil
 }

@@ -25,6 +25,12 @@ type junitCase struct {
 	Skipped   *struct{} `xml:"skipped"`
 }
 
+type unmappedCaseError struct{ name string }
+
+func (e unmappedCaseError) Error() string {
+	return fmt.Sprintf("testcase %q has no known spec ID", e.name)
+}
+
 func ParseJUnit(data []byte, specs []contracts.Item) (model.Report, error) {
 	var root junitSuite
 	if err := xml.Unmarshal(data, &root); err != nil {
@@ -82,7 +88,7 @@ func ParseJUnit(data []byte, specs []contracts.Item) (model.Report, error) {
 				}
 			}
 			if len(c.IDs) == 0 {
-				return fmt.Errorf("C11: testcase %q has no known spec ID", c.Name)
+				return fmt.Errorf("C11: %w", contracts.CodedError{Code: "C11", Subject: c.Name, Cause: unmappedCaseError{name: c.Name}})
 			}
 			report.Cases = append(report.Cases, c)
 			report.Seconds += c.Seconds

@@ -1,7 +1,7 @@
 ---
 audit_rounds: 0
 module: checks
-phase: impl
+phase: applied
 run: 20261031T051728-4c77d614f4f71278961437a0
 ---
 
@@ -37,3 +37,9 @@ No interface changes.
 
 
 ## Rejected alternatives
+
+
+
+## Provenance
+
+- impl 2026-10-31T05:46:41.778799Z agent=manual fireweed=0.1.1 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=606 failing=0 passing=606

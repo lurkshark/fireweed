@@ -665,10 +665,12 @@ func (d *doctorState) probeEval(s project.Snapshot, v doctorVariant, name string
 			}
 		}
 	case "missing_id":
-		if e != nil && strings.Contains(e.Error(), "C11") && strings.Contains(strings.ToLower(e.Error()), "no known spec id") {
+		code, _, coded := contracts.ErrorCode(e)
+		var unmapped unmappedCaseError
+		if coded && code == "C11" && errors.As(e, &unmapped) {
 			for _, body := range files {
 				for _, token := range canaryCaseToken.FindAllString(renderDoctorText(body, d.values(0)), -1) {
-					if strings.Contains(e.Error(), token) {
+					if strings.Contains(unmapped.name, token) {
 						detected = true
 					}
 				}
