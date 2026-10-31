@@ -7,7 +7,7 @@ history (last present at `c536833`).
 
 ## State — 2026-10-31
 
-137 changes applied (0001–0137 plus 0138-audit-cwd-cli-evals; 0109 was abandoned).
+138 changes applied (0001–0137 plus both app audit-cwd eval fixes; 0109 was abandoned).
 All six typed-diagnostic
 changes (0128–0133) have passing implementation Provenance; spec changes passed
 independent audits and maintenance preserved frozen evals/interfaces. 0132
@@ -81,8 +81,9 @@ are obsolete audit-cwd assertions in the run, time-resume and usage-resume
 helpers. The batched normal eval_fix `0138-audit-resume-cli-evals` is authored
 before the original using the same supported ordering. Only this checkout's
 claim was released, and its two restored files matched saved attempt 2 exactly
-before returning to HEAD. Complete this app prerequisite, then restore the
-original attempt and return to full verification and the gates.
+before returning to HEAD. The batched eval_fix applied at `20a8117` with all 282 app cases passing and
+an independent audit reporting no findings for all eleven listed IDs. Restore
+the original attempt and return to full verification and the gates.
 
 The current controller remains bootstrap 0.1.1 at the verified pin below.
 The owner authorized pushing current main to origin/main on 2026-10-30,
@@ -110,8 +111,7 @@ integration at dae9b28.
 
 ## Next
 
-1. Complete 0138-audit-resume-cli-evals, then restore
-   0138-isolated-audit-workspaces implementation attempt 2 and complete
+1. Restore 0138-isolated-audit-workspaces implementation attempt 2 and complete
    full bootstrap verification with the corrected runner and app evals. Stop
    at any new block. 0132–0137 and the app prerequisite eval_fix are complete;
    acceptance gates remain required.
