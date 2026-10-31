@@ -1,127 +1,59 @@
 # Rebuild progress
 
-Current handoff only. Keep this file short: state, next work, standing rules.
-Per-change evidence lives in each archived change's Provenance
-(`changes/archive/`); older reports and the former HISTORY.md ledger are in Git
-history (last present at `c536833`).
+Current handoff only. Per-change evidence remains in archived Provenance
+(`changes/archive/`); do not create report inventories or hash manifests.
 
 ## State — 2026-10-31
 
-138 changes applied (0001–0137 plus both app audit-cwd eval fixes; 0109 was abandoned).
-All six typed-diagnostic
-changes (0128–0133) have passing implementation Provenance; spec changes passed
-independent audits and maintenance preserved frozen evals/interfaces. 0132
-resumed from saved attempt 1 after the owner's interruption and continuation.
-NEW was rebuilt after 0133; actual CLI smokes confirmed an empty queue, doctor
-C05 with a module SPEC.md path, Stamp C08, missing-change U02 and preserved C12
-behavior for doctor/agents-md. The 0133 in-step review resolved a direct project-
-load classification regression before application. Evidence remains archived.
-
-The owner selected early Go core-loop cutover, with 0134–0137 required. The
-author commits from codex/stub-handoff-guidance are now integrated on main,
-including 0138's restricted audit-workspace fix and the revised milestone plan.
-Integration followed completion of the primary run with a clean unclaimed
-checkout. 0134 applied at `b42370c` after one corrected audit finding, with
-passing implementation Provenance (789 cases). NEW was rebuilt and its actual
-`playbook evals` output confirmed the replaceable-stub guidance.
-
-0135 applied at `4308d9c` with passing implementation Provenance (610 cases)
-and an independent audit with no findings. On 2026-10-31 the owner authorized
-resuming the lead's interruption block from saved attempt 1 and correcting the
-older whole-Case equality test before freeze. The configured real worker made
-that one-line correction; bootstrap's manual `done` verified/committed evals.
-Bootstrap `next` required releasing this checkout's own claim before reclaiming
-the committed audit phase; no foreign claim, IDs, run, bounds or requirements
-changed.
-
-0136 applied at `8aef907` after one corrected audit finding, with passing
-implementation Provenance (364 cases). Rebuilt `bin/fireweed next` completed
-an audit-enabled deterministic retry fixture: its saved prompt contains the
-dependent module's JUnit-only assertion, a 4,096-code-point failure excerpt and
-a 4,225-code-point section including the heading. Inspectable fixture:
+0131–0138 are applied on main, with their archived evidence preserved.
+0134 (`b42370c`) supplies replaceable-stub guidance; 0135 (`4308d9c`)
+retains JUnit failure text; 0136 (`8aef907`) puts bounded own/dependent
+assertions into retry feedback; 0137 (`6b26ab7`) distinguishes Decisions
+from process Notes. Actual rebuilt NEW invocations confirmed the guidance and
+an audit-enabled retry fixture confirmed the JUnit-only dependent assertion
+and the 4,096-code-point excerpt bound. Retry fixture evidence remains at
 `/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-0136-smoke-agyg5ph1`.
-0137 applied at `6b26ab7`, with passing implementation Provenance (803 cases)
-and an independent audit with no findings. Rebuilt NEW's actual evals, impl
-and regenerate playbook outputs confirmed the Decisions/Notes guidance and
-examples while preserving the stub handoff instructions.
 
-0138 passed audit at `62485a1` with all seven IDs checked, after the owner-
-authorized audit restart and one findings round. Its corrected evals committed
-at `359eb86` with fail-first evidence (380 cases, 16 failing). Implementation
-is now blocked at `98cc19a`: three legacy queue tests share a frozen helper
-that still requires audit cwd to equal the held checkout, contradicting the
-new audit isolation. Both implementation attempts failed on that assertion;
-the focused new workspace tests pass. The implementation is saved at
-`refs/fireweed/attempts/0138-isolated-audit-workspaces/2`; attempt 1 retains the
-earlier partial audit. No worker eval edit was retained.
+0138 applied at `f92f97a` after full bootstrap verification: 380 cases, zero
+failures. Its independent audit checked RUN-013, RUN-027 and RUN-045–049.
+The owner authorized interruption recovery and a one-time independently audited
+runner helper author correction; saved implementation attempt 2 was restored
+without changing IDs, run, audit round or configured bounds. The real configured
+workers supplied the implementation; final manual bootstrap done owns its
+verification, application and archive. Recovery details remain in its Notes.
 
-The owner authorized the proposed one-time recovery exception on 2026-10-31.
-A restricted independent review of the helper patch reported No findings for
-RUN-016–019; its only edit was the review change's Audit section. This author
-commit corrects the helper and clears blocked while unclaimed, preserving
-module/phase/Bin checks and held worker cwd while requiring a separate,
-cleaned-up audit cwd. Resume saved implementation attempt 2 under bootstrap.
-IDs, run, audit rounds, configured bounds and product requirements remain
-unchanged. EC1–EC6 remain pending and no promotion occurred.
+Two normal app eval_fix prerequisites removed demonstrated obsolete audit-cwd
+assumptions while preserving CLI assertions: `0138-audit-cwd-cli-evals` applied
+at `4c794a6` and batched `0138-audit-resume-cli-evals` at `20a8117`. Each passed
+all 282 app cases and an independent audit. No product requirements or public
+interfaces changed. The final runner verification passed with both corrections.
 
-After that recovery, bootstrap quick verification passed all 98 runner cases.
-Full done then found the same obsolete audit-cwd assumption in the app's
-APP-074/076/077 next CLI test. The focused CLI invocation succeeded; only the
-held-cwd expectation failed. Its normal prerequisite eval_fix is authored as
-`0138-audit-cwd-cli-evals`, before `0138-isolated-audit-workspaces` using the
-design's supported number-then-slug ordering. The original claim was released
-and only its two restored implementation files were returned to HEAD after
-byte-for-byte comparison with saved attempt 2. The checkout is unclaimed; the
-original identity, run, audit round and saved code are unchanged. The app
-eval_fix applied at `4c794a6` with all 282 app cases passing and an independent
-audit reporting no findings for APP-074, APP-076 and APP-077. It changed no
-product behavior or public interface. Full verification of the restored attempt then
-found eight further app failures, reproduced by a complete app eval run; all
-are obsolete audit-cwd assertions in the run, time-resume and usage-resume
-helpers. The batched normal eval_fix `0138-audit-resume-cli-evals` is authored
-before the original using the same supported ordering. Only this checkout's
-claim was released, and its two restored files matched saved attempt 2 exactly
-before returning to HEAD. The batched eval_fix applied at `20a8117` with all 282 app cases passing and
-an independent audit reporting no findings for all eleven listed IDs. Restore
-the original attempt and return to full verification and the gates.
+EC1 is proven: all prerequisites applied, execution checkout clean, queue empty,
+no shared claims or active controller/worker processes. EC2's focused core
+review is complete with no unresolved core findings: current public evals and
+implementation cover fail-first, immutable metadata/zones, restricted audit
+inputs and Audit-only import/cleanup, approval/P07, saved attempts, worker-commit
+recovery and clean time/usage stops. The retry fixture above proves the
+0135/0136 feedback slice. Product runtime source has no bootstrap or rebuild-v1
+reference. Intentional controller differences remain in DECISIONS D005/D010.
 
-The current controller remains bootstrap 0.1.1 at the verified pin below.
-The owner authorized pushing current main to origin/main on 2026-10-30,
-including the completed diagnostic queue and the core-cutover authoring
-integration at dae9b28.
-
-**Working through NEW (`bin/fireweed`), each proven by an actual CLI run:**
-
-- Setup: `init` (Go recipe), `doctor`, `new-module`, `new-change`, `stamp`.
-- Lifecycle: `start`, `verify [--quick]`, `done`, `context`; spec, fix,
-  eval_fix, maintenance and regenerate kinds; audit rounds; approval and P07.
-- Unattended: `next`, `run [--max] [--for]`, retries, saved attempts and
-  `--from-attempt`, projected blocking with independent continuation,
-  agent-commit undo, usage/time stops with exit 3.
-- Management: `release`, `commits`, `abandon`.
-- Reading and checks: `list`, `status`, `modules`, `show [ID] [--projected]
-  [--history]`, `explain`, `playbook`, `check`, `coverage`, `check-commits`,
-  `ci [--no-doctor]`, `pr-body`, `agents-md`, `version`.
-
-**Deferred beyond early cutover:**
-
-- Real drills/regeneration validation; gc/migrate and stale/fix conveniences.
-- Additional recipes, version-range/file-format migration, C17–C19 warnings.
-- Packaging and the remaining full-product acceptance/delivery obligations.
+The controller remains bootstrap at the pin below. EC3–EC6 are pending; no
+promotion occurred. The owner authorized only the earlier push through the
+core-cutover authoring integration at `dae9b28`; subsequent work remains local.
 
 ## Next
 
-1. Restore 0138-isolated-audit-workspaces implementation attempt 2 and complete
-   full bootstrap verification with the corrected runner and app evals. Stop
-   at any new block. 0132–0137 and the app prerequisite eval_fix are complete;
-   acceptance gates remain required.
-2. Prove ACCEPTANCE EC1–EC5: focused core review, fresh-checkout checks,
-   reference smoke and isolated real-worker self-hosting without a drill.
-3. Perform EC6's separate controller pin/instruction handoff and record its
-   source/hash and actual gate evidence here. Until then use bootstrap.
+1. Use this clean candidate for EC3: build, ordinary/race Go tests, vet, and
+   both controller/NEW check, doctor --no-agent, explicit-range history and CI.
+2. Pass EC4's one deterministic reference comparison and EC5's isolated real-
+   worker NEW lifecycle, restricted audit, archive, CI and cleanup. No drill.
+3. Only then perform EC6's separate NEW controller pin and protected instruction/
+   setup/PATH handoff; record source/hash and concise gate results here.
 
-Gate status: EC1–EC6 pending. Further prerequisite changes need a demonstrated
-core failure or unmet core clause; no speculative cleanup or deferred features.
+Full product completion remains open: real drills/regeneration validation,
+gc/migrate and stale/fix conveniences, additional recipes, version/file-format
+migration, remaining C17–C19 warnings, packaging and later full-completion gates.
+No real drill or regeneration work is authorized by this milestone.
 
 ## Standing rules
 
@@ -158,6 +90,6 @@ core failure or unmet core clause; no speculative cleanup or deferred features.
   the change, projected spec and evals, plus empty Git metadata. Manual isolated
   audit workspaces are no longer required.
 
-After EC6, replace the current-controller entry with the verified NEW path,
-source commit and binary hash, retain bootstrap's recovery pin, and record
-which evidence closed each EC gate. Do not prefill promotion evidence.
+After EC3–EC5 pass, EC6 replaces the current-controller entry with the verified
+NEW path, source commit and executable hash, retains bootstrap's recovery pin,
+and records actual gate results. Never prefill promotion evidence.
