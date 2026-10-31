@@ -48,6 +48,9 @@ Product work is paused until the owner agrees the next slice. Suggested order:
 
 - Stop on any blocked change. There is no applied-change count or checkpoint
   review (owner, 2026-10-30). Audit rounds and shared-base P07 still apply.
+- Never record the unapproved count or its limit here. Before starting work,
+  read the live count from controller `status --json` (`unapproved`) and the
+  limit from `authoring.max_unapproved` in fireweed.yaml.
 - Push only on explicit owner instruction.
 - Drills: only the contracts drill has run. Its native result passed (373
   cases), but the agent searched other modules' `internal/` code, so it does

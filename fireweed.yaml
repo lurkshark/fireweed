@@ -57,7 +57,7 @@ audit:
         - workspace-write
         - '{prompt}'
 authoring:
-    max_unapproved: 5
+    max_unapproved: 10
 attempts: 2
 timeout: 90m
 verify_dependents: direct
