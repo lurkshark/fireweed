@@ -63,6 +63,16 @@ cleaned-up audit cwd. Resume saved implementation attempt 2 under bootstrap.
 IDs, run, audit rounds, configured bounds and product requirements remain
 unchanged. EC1–EC6 remain pending and no promotion occurred.
 
+After that recovery, bootstrap quick verification passed all 98 runner cases.
+Full done then found the same obsolete audit-cwd assumption in the app's
+APP-074/076/077 next CLI test. The focused CLI invocation succeeded; only the
+held-cwd expectation failed. Its normal prerequisite eval_fix is authored as
+`0138-audit-cwd-cli-evals`, before `0138-isolated-audit-workspaces` using the
+design's supported number-then-slug ordering. The original claim was released
+and only its two restored implementation files were returned to HEAD after
+byte-for-byte comparison with saved attempt 2. The checkout is unclaimed; the
+original identity, run, audit round and saved code are unchanged.
+
 The current controller remains bootstrap 0.1.1 at the verified pin below.
 The owner authorized pushing current main to origin/main on 2026-10-30,
 including the completed diagnostic queue and the core-cutover authoring
@@ -89,10 +99,10 @@ integration at dae9b28.
 
 ## Next
 
-1. Resume 0138 implementation attempt 2 with bootstrap as authorized and run
-   normal verification against the independently reviewed helper correction.
-   Stop at any new block. 0132–0137 are complete, including the JUnit retry-
-   feedback CLI slice and worker guidance. Acceptance gates remain required.
+1. Apply 0138-audit-cwd-cli-evals through normal bootstrap eval_fix phases,
+   then restore 0138-isolated-audit-workspaces implementation attempt 2 and
+   complete full verification. Stop at any new block. 0132–0137 are complete;
+   acceptance gates remain required.
 2. Prove ACCEPTANCE EC1–EC5: focused core review, fresh-checkout checks,
    reference smoke and isolated real-worker self-hosting without a drill.
 3. Perform EC6's separate controller pin/instruction handoff and record its
