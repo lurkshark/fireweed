@@ -7,7 +7,7 @@ history (last present at `c536833`).
 
 ## State — 2026-10-31
 
-133 changes applied (0001–0134; 0109 was abandoned). All six typed-diagnostic
+134 changes applied (0001–0135; 0109 was abandoned). All six typed-diagnostic
 changes (0128–0133) have passing implementation Provenance; spec changes passed
 independent audits and maintenance preserved frozen evals/interfaces. 0132
 resumed from saved attempt 1 after the owner's interruption and continuation.
@@ -24,18 +24,15 @@ checkout. 0134 applied at `b42370c` after one corrected audit finding, with
 passing implementation Provenance (789 cases). NEW was rebuilt and its actual
 `playbook evals` output confirmed the replaceable-stub guidance.
 
-0135 was blocked in evals at `5d33222`: the lead interrupted verification to
-address an existing whole-Case equality assertion that would conflict with the
-new Failure field. Bootstrap treats interruption as a saved-attempt block,
-rather than retaining a live claim. Its untouched worker evals/interface work
-is saved at `refs/fireweed/attempts/0135-junit-failure-details/1`. The proposed
-correction is to exclude only the newly added field from the older equality
-assertion while preserving its existing field assertions and the new Failure
-evals. The owner authorized resuming saved attempt 1 and that correction on
-2026-10-31. This author commit clears the interruption block before bootstrap
-restores the work; normal phase checks and bounds remain required.
-0136–0138 remain queued. No EC gate is claimed passed and no controller
-promotion has occurred.
+0135 applied at `4308d9c` with passing implementation Provenance (610 cases)
+and an independent audit with no findings. On 2026-10-31 the owner authorized
+resuming the lead's interruption block from saved attempt 1 and correcting the
+older whole-Case equality test before freeze. The configured real worker made
+that one-line correction; bootstrap's manual `done` verified/committed evals.
+Bootstrap `next` required releasing this checkout's own claim before reclaiming
+the committed audit phase; no foreign claim, IDs, run, bounds or requirements
+changed. 0136–0138 remain queued. The run returned clean and unclaimed; no EC
+gate is claimed passed and no controller promotion has occurred.
 
 The current controller remains bootstrap 0.1.1 at the verified pin below.
 The owner authorized pushing current main to origin/main on 2026-10-30,
@@ -63,10 +60,9 @@ integration at dae9b28.
 
 ## Next
 
-1. Resume 0135 saved attempt 1 with bootstrap as authorized, correct the eval
-   expectation before freeze using the configured worker, and retain normal
-   phase checks and bounds. Then complete 0136–0138; stop at any new block.
-   0132–0134 are complete.
+1. Complete 0136–0138 with bootstrap and normal phase checks; stop at any new
+   block. 0132–0135 are complete. 0136 closes 0135's JUnit retry-feedback slice
+   with an actual NEW invocation and inspectable bounded fake-worker prompt.
 2. Prove ACCEPTANCE EC1–EC5: focused core review, fresh-checkout checks,
    reference smoke and isolated real-worker self-hosting without a drill.
 3. Perform EC6's separate controller pin/instruction handoff and record its

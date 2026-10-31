@@ -71,3 +71,10 @@ regeneration validation and the remaining product surface. Complete 0134–0138
 and ACCEPTANCE EC1–EC5 under bootstrap, then perform EC6 as a separate controller
 pin/handoff. Full design obligations and full-completion gates remain open;
 this milestone changes sequencing, not product scope or enforcement.
+
+## D010 — Held-change continuation
+
+NEW `next` resumes this worktree's held change directly. The pinned bootstrap
+instead rejects that live claim with P01; handing a manually advanced phase to
+its unattended loop requires releasing the owning checkout's claim first.
+This controller difference adds no product requirement.
