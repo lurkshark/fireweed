@@ -1,81 +1,76 @@
 # Rebuild progress
 
 Current handoff only. Per-change evidence remains in archived Provenance
-(`changes/archive/`); do not create report inventories or hash manifests.
+(`changes/archive/`); no separate report inventories or hash manifests.
 
 ## State — 2026-10-31
 
-0131–0138 are applied on main, with their archived evidence preserved.
-0134 (`b42370c`) supplies replaceable-stub guidance; 0135 (`4308d9c`)
-retains JUnit failure text; 0136 (`8aef907`) puts bounded own/dependent
-assertions into retry feedback; 0137 (`6b26ab7`) distinguishes Decisions
-from process Notes. Actual rebuilt NEW invocations confirmed the guidance and
-an audit-enabled retry fixture confirmed the JUnit-only dependent assertion
-and the 4,096-code-point excerpt bound. Retry fixture evidence remains at
+0131–0138 are applied, with earlier archived evidence intact. 0134 supplies
+replaceable-stub guidance; 0135 retains JUnit failures; 0136 supplies bounded
+own/dependent retry assertions; 0137 separates Decisions from process Notes;
+0138 isolates audit inputs, validates Audit-only edits and cleans up workspaces.
+Actual NEW invocations confirmed the guidance and bounded retry feedback.
+0138 applied at `f92f97a` with all 380 full cases passing after the owner's
+recorded recovery exception. Details remain in its archived Notes.
+
+The two normal app eval fixes (`4c794a6`, `20a8117`) removed demonstrated
+obsolete audit-cwd assertions, each with all 282 cases passing and separate
+no-findings audits. No public interface or product requirement changed.
+EC5 then demonstrated a valid Audit insertion rejection; normal fix 0139
+applied at `f79a7be` with genuine fail-first, an independent no-findings audit
+for RUN-047/048 and all 381 full cases passing.
+
+EC3 NEW doctor exposed valid nested-template rejection. Normal fix 0140 applied
+at `9822408`: one corrected audit round for baseline rendering, no findings on
+re-audit for CHK-053, and all 630 full cases passing. Protected Go templates,
+setup and canary configuration are unchanged. The affected review confirms
+recursive template rendering and preserved malformed-input/canary checks.
+
+EC1 is complete: prerequisites and demonstrated follow-ups applied, clean main,
+empty queue, no shared claims or active controller/worker processes. EC2's
+focused review and affected fixes are complete, with no unresolved core finding:
+fail-first, immutable metadata/zones, independent Audit input/history isolation,
+Audit-only import/cleanup, approval/P07, saved attempts, worker-commit recovery
+and bounded time/usage stops remain enabled. The 0135/0136 retry slice was
+proved by the retained NEW CLI fixture at
 `/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-0136-smoke-agyg5ph1`.
+NEW has no product runtime bootstrap dependency.
 
-0138 applied at `f92f97a` after full bootstrap verification: 380 cases, zero
-failures. Its independent audit checked RUN-013, RUN-027 and RUN-045–049.
-The owner authorized interruption recovery and a one-time independently audited
-runner helper author correction; saved implementation attempt 2 was restored
-without changing IDs, run, audit round or configured bounds. The real configured
-workers supplied the implementation; final manual bootstrap done owns its
-verification, application and archive. Recovery details remain in its Notes.
+The preceding clean `66f0c67` candidate passed build, ordinary/race Go tests,
+vet and both controllers' check and explicit 934-commit history checks.
+Bootstrap doctor passed; NEW's doctor failure is now fixed by 0140. EC3 must
+finish on the corrected candidate, including both doctor/CI runs.
+EC4's comparison passed with three lifecycle commits, matching held refs,
+restricted audit inputs and cleanup. Its ordinary lifecycle code is unchanged
+by 0140; reuse that evidence. Intentional differences are in DECISIONS
+D005/D010/D011. Reference fixture:
+`/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-ec4-t1_zlt95`.
 
-Two normal app eval_fix prerequisites removed demonstrated obsolete audit-cwd
-assumptions while preserving CLI assertions: `0138-audit-cwd-cli-evals` applied
-at `4c794a6` and batched `0138-audit-resume-cli-evals` at `20a8117`. Each passed
-all 282 app cases and an independent audit. No product requirements or public
-interfaces changed. The final runner verification passed with both corrections.
+The real NEW lifecycle in the retained EC5 clone passed fail-first (`cafd070`),
+restricted audit (`a2b9e66`) and application/archive (`e2c0b25`). The observed
+workspace contained only change/spec/evals, could not read the held commit and
+was removed. Clone is clean and unclaimed:
+`/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-ec5-qgu1qc4l/candidate`.
+Its CI proof was pending the doctor fix. Complete the gate with the corrected
+candidate before pinning any main controller.
 
-EC1 is complete, including demonstrated follow-up fix 0139. All changes are
-applied, the checkout is clean, queue empty and no shared claim or active
-controller/worker remains. EC2's focused review covered fail-first, immutable
-metadata/zones, restricted Audit inputs and Audit-only import/cleanup,
-approval/P07, saved attempts, worker-commit recovery and clean time/usage stops.
-The retry fixture proves the 0135/0136 feedback slice. Product runtime source
-has no bootstrap or rebuild-v1 reference.
-
-The first candidate passed ordinary and race Go suites and the reference
-lifecycle comparison, then EC5 exposed a valid Audit insertion rejection.
-0139 fixed that concrete core failure at `f79a7be`: genuine fail-first evidence,
-independent no-findings audit for RUN-047/048, and 381 passing full cases.
-The affected review confirms exact non-Audit byte preservation while accepting
-a first Audit section before Provenance. No core finding remains unresolved.
-Per-change evidence and the stopped, unclaimed first EC5 clone are in 0139's
-archive. Intentional comparison differences are in DECISIONS D005/D010/D011.
-
-The corrected `66f0c67` candidate built and passed ordinary/race Go tests and
-vet, plus the affected Audit-insertion and reference lifecycle smokes. Both
-controllers passed check; explicit full-range history checks remain running.
-A real NEW spec lifecycle in the retained EC5 clone passed fail-first, restricted
-audit, full implementation verification and archive (`cafd070` / `a2b9e66` /
-`e2c0b25`). The observed audit input contained only
-change/spec/evals, could not read the held commit, and was removed. Its checkout
-is clean and unclaimed; CI remains pending.
-
-EC3 NEW doctor exposed a separate concrete core defect: valid project-owned
-nested module template directories are rejected with C14. Bootstrap doctor
-passes the unchanged Go setup. Normal fix `0140-doctor-module-templates` is
-queued for CHK-053, without changing templates or weakening checks. The C16
-managed-block warning reflects the current bootstrap guidance and is addressed
-by EC6's planned instruction alignment. Return to the affected gates after 0140.
-The controller remains bootstrap. EC3–EC6 are not complete; no promotion or
-new push occurred.
+The controller remains bootstrap at the pin below. EC3, EC5 and EC6 are not
+complete; no promotion occurred. Only the earlier push through `dae9b28` was
+owner-authorized; later work remains local.
 
 ## Next
 
-1. Complete 0140 through the normal lifecycle, then use its clean candidate
-   for EC3: build, ordinary/race Go tests, vet, and
-   both controller/NEW check, doctor --no-agent, explicit-range history and CI.
-2. Pass EC4's one deterministic reference comparison and EC5's isolated real-
-   worker NEW lifecycle, restricted audit, archive, CI and cleanup. No drill.
-3. Only then perform EC6's separate NEW controller pin and protected instruction/
-   setup/PATH handoff; record source/hash and concise gate results here.
+1. Build the corrected clean candidate and run actual NEW doctor first.
+2. Complete exact-candidate EC3 Go checks and both controller/NEW checks,
+   doctor --no-agent, explicit-baseline history and CI with doctor enabled.
+3. Complete EC5 on the corrected candidate with an explicit separate NEW pin,
+   real configured workers/auditor, archive, CI and cleanup. No drill.
+4. Only after EC1–EC5 pass and all claims/runs return, perform EC6's protected
+   controller pin/instruction/setup/PATH handoff and record actual results.
 
 Full product completion remains open: real drills/regeneration validation,
 gc/migrate and stale/fix conveniences, additional recipes, version/file-format
-migration, remaining C17–C19 warnings, packaging and later full-completion gates.
+migration, remaining warnings, packaging and later full-completion gates.
 No real drill or regeneration work is authorized by this milestone.
 
 ## Standing rules
@@ -113,6 +108,6 @@ No real drill or regeneration work is authorized by this milestone.
   the change, projected spec and evals, plus empty Git metadata. Manual isolated
   audit workspaces are no longer required.
 
-After EC3–EC5 pass, EC6 replaces the current-controller entry with the verified
-NEW path, source commit and executable hash, retains bootstrap's recovery pin,
-and records actual gate results. Never prefill promotion evidence.
+After EC3–EC5 pass, EC6 records the verified NEW path, source commit and
+executable hash, retains bootstrap's recovery pin, and records actual handoff
+smokes. Never prefill promotion evidence.
