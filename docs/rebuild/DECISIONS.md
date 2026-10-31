@@ -10,8 +10,9 @@ The first run is preserved on `rebuild-v1`; `main` restarted from the setup
 baseline. The owner then accepted three design revisions, all reflected in
 fireweed-design-v1.md and tracked in ACCEPTANCE: usability (R26–R28), any merge
 strategy (R29) and bounded effort (R22–R25). The rebuild uses the tested
-bootstrap 0.1.0 as its pinned controller, never as an implementation oracle,
-and proves behavior in vertical slices through NEW.
+bootstrap as its pinned controller (currently 0.1.1; exact source and executable
+hashes are in PROGRESS.md), never as an implementation oracle, and proves
+behavior in vertical slices through NEW.
 
 ## D005 — Initial product diagnostic allocation
 

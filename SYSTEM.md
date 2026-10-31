@@ -12,7 +12,7 @@ Module path: github.com/lurkshark/fireweed. Thin api.go facades and public contr
 
 ## Controller and product
 
-The stage-2 controller is /Users/joel/Workspace/fireweed/.fireweed/bin/fireweed-bootstrap. Initial setup pins the tested 0.1.0 executable from bootstrap HANDOFF.md and records verification and the history baseline in PROGRESS.md. On resume, reuse that setup and baseline; do not reinstall or restart completed milestones. The independently built subject is /Users/joel/Workspace/fireweed/bin/fireweed. Invoke explicit paths. FIREWEED_BIN names the executable invoking each hook: the controller for rebuild checks, and NEW in product fixtures. Doctor and drill worktrees use protected Go hooks and graph metadata, including randomly named modules.
+The stage-2 controller is /Users/joel/Workspace/fireweed/.fireweed/bin/fireweed-bootstrap. The pinned executable is the tested 0.1.1 build from bootstrap HANDOFF.md; PROGRESS.md records its source revision, executable hash, verification and the history baseline. On resume, reuse that setup and baseline; repin only on explicit owner instruction and do not restart completed milestones. The independently built subject is /Users/joel/Workspace/fireweed/bin/fireweed. Invoke explicit paths. FIREWEED_BIN names the executable invoking each hook: the controller for rebuild checks, and NEW in product fixtures. Doctor and drill worktrees use protected Go hooks and graph metadata, including randomly named modules.
 
 ## Agent configuration
 
@@ -24,7 +24,7 @@ The goal authorizes local authoring and commits, including execution on main; it
 
 ## Scope guardrails
 
-Added after the 2026-10-26 restart; tightened 2026-10-27. These rules override broader readings of GOAL.md, PLAN.md and ACCEPTANCE.md. Bootstrap 0.1.0 supplies the revised audit, eval_fix and unapproved-work bounds. PROGRESS.md records verified setup, current state and the next slice; archived changes hold per-change evidence in their Provenance. LESSONS.md is bounded historical input.
+Added after the 2026-10-26 restart; tightened 2026-10-27. These rules override broader readings of GOAL.md, PLAN.md and ACCEPTANCE.md. Bootstrap 0.1.1 supplies the revised audit, eval_fix and unapproved-work bounds, including whitespace-normalized audit quotes, visible rejection diagnostics and restricted automatic auditor inputs. PROGRESS.md records verified setup, current state and the next slice; archived changes hold per-change evidence in their Provenance. LESSONS.md is bounded historical input.
 
 - **Priority.** First prove one manual lifecycle through NEW, building only needed dependencies and wiring app promptly. Then complete init/doctor, bounded next/run and the remaining surface. GOAL.md and PLAN.md define exits; module order does not require finishing whole libraries first. Resume the agreed next slice from PROGRESS.md. Before authoring, name the CLI scenario and missing behavior in the existing Motivation; return from a dependency to its caller as soon as usable, and close the slice with an actual NEW invocation and inspectable result. Additional work needs an unmet design/spec clause, demonstrated failure or explicit human request; theoretical probes, stylistic discomfort and agent suggestions alone are insufficient.
 - **Reference branch.** Use LESSONS.md as bounded history. Never consult `rebuild-v1`, bootstrap source/tests or deleted code as implementation oracles; old spec IDs have no authority. Regeneration also excludes old binaries and saved attempts.

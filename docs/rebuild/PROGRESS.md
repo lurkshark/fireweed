@@ -7,8 +7,11 @@ history (last present at `c536833`).
 
 ## State — 2026-10-30
 
-126 changes applied (0001–0127; 0109 was abandoned). No pending, blocked or
-claimed change. `main` matches `origin/main` at `c536833`.
+126 changes applied (0001–0127; 0109 was abandoned). Changes 0128–0133 are
+queued. No active, blocked or claimed change. The owner authorized the controller
+upgrade to 0.1.1 on 2026-10-30; version, executable hash and clean source revision
+were verified after installation. Controller `check` passed with the existing
+C01/C18 warnings.
 
 **Working through NEW (`bin/fireweed`), each proven by an actual CLI run:**
 
@@ -63,10 +66,10 @@ Product work is paused until the owner agrees the next slice. Suggested order:
 
 ## Fixed execution context
 
-- Controller: `.fireweed/bin/fireweed-bootstrap` 0.1.0, source
-  `7f925190878e38fc38f30d16bb1cf47aca098cf7`, SHA-256
-  `f1516b5686435c23b54b71c5ac554aba6859b5454f072e0c5eb031dfd6f0fd4f`. Do not
-  repin or rebuild.
+- Controller: `.fireweed/bin/fireweed-bootstrap` 0.1.1, source
+  `78242c8251ff5c2ed7007502dc759c414dca5d75`, SHA-256
+  `ba14dfa072bfa72756d41e1fa0b13fec0df654a7ee629e654cbeb954df8d4683`. Repin
+  or rebuild only on explicit owner instruction.
 - History baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`. Always pass an
   explicit range; the default range on `main` can be empty.
 - `GOCACHE=/tmp/fireweed-rebuild-cache`.
@@ -74,4 +77,6 @@ Product work is paused until the owner agrees the next slice. Suggested order:
   --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"'
   -s workspace-write {prompt}`.
 - Audits run through the controller's audit step with the configured
-  `audit.command`.
+  `audit.command`. Automatic audits use a temporary workspace containing only
+  the change, projected spec and evals, plus empty Git metadata. Manual isolated
+  audit workspaces are no longer required.
