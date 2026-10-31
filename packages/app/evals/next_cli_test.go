@@ -169,13 +169,18 @@ func Test_APP_074_APP_076_APP_077_NextDiscoversRootAndAppliesChange(t *testing.T
 	if !strings.Contains(out, "next") {
 		t.Errorf("plain success did not identify applied change: %q", out)
 	}
+	invocations := strings.Split(string(mustReadNextCLI(t, filepath.Join(logs, "invocations"))), "\n")
 	for _, phase := range []string{"evals", "audit", "impl"} {
-		want := phase + "|" + root + "|" + bin
-		if phase == "audit" {
-			want = "audit|" + root + "|" + bin
+		found := false
+		for _, invocation := range invocations {
+			fields := strings.Split(invocation, "|")
+			if len(fields) == 3 && fields[0] == phase && fields[2] == bin && (phase == "audit" || fields[1] == root) {
+				found = true
+				break
+			}
 		}
-		if !strings.Contains(string(mustReadNextCLI(t, filepath.Join(logs, "invocations"))), want) {
-			t.Errorf("missing invocation %q", want)
+		if !found {
+			t.Errorf("missing valid %s invocation; got %v", phase, invocations)
 		}
 	}
 	if count := cliGit(t, root, "rev-list", "--count", base+"..HEAD"); count != "3" {

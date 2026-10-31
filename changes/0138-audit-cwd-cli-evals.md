@@ -1,10 +1,13 @@
 ---
+audit_rounds: 0
 bases: {}
 eval_fix:
     - APP-074
     - APP-076
     - APP-077
 module: app
+phase: audit
+run: 20261031T152840-e99af1cbd492b35bdb19ba2f
 ---
 
 
@@ -59,3 +62,7 @@ This change was created with new-change and then author-ordered before
 The design explicitly allows tied numbers and orders them by slug. Original
 0138 retains its identity, run, audit round and saved implementation attempt 2;
 no refs, configured bounds or product requirements are reset.
+
+## Provenance
+
+- evals 2026-10-31T15:38:16.143912Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=282 failing=0 passing=282
