@@ -3,6 +3,8 @@ package evals_test
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
+	"fmt"
 	"reflect"
 	"strings"
 	"testing"
@@ -243,4 +245,117 @@ func Test_CON_014_ResolveZone(t *testing.T) {
 			}
 		})
 	}
+}
+
+func Test_CON_016_ErrorCode(t *testing.T) {
+	cause := errors.New("cause text")
+	inner := contracts.CodedError{Code: "C03", Subject: "inner", Cause: cause}
+	outer := contracts.CodedError{Code: "C05", Subject: "outer", Cause: inner}
+	noCause := contracts.CodedError{Code: "C07", Subject: "standalone"}
+	for _, tc := range []struct {
+		name, code, subject string
+		err                 error
+		ok                  bool
+	}{
+		{"direct", "C03", "inner", inner, true},
+		{"wrapped", "C03", "inner", fmt.Errorf("context: %w", &inner), true},
+		{"first_in_chain", "C05", "outer", fmt.Errorf("context: %w", &outer), true},
+		{"no_cause", "C07", "standalone", noCause, true},
+		{"plain", "", "", fmt.Errorf("context: %w", cause), false},
+		{"nil", "", "", nil, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			code, subject, ok := contracts.ErrorCode(tc.err)
+			if code != tc.code || subject != tc.subject || ok != tc.ok {
+				t.Errorf("ErrorCode(%v) = (%q, %q, %v); want (%q, %q, %v)", tc.err, code, subject, ok, tc.code, tc.subject, tc.ok)
+			}
+		})
+	}
+	if inner.Error() != cause.Error() || !errors.Is(inner, cause) {
+		t.Errorf("CodedError did not preserve and wrap its cause: %v", inner)
+	}
+}
+
+func Test_CON_017_ParseItemsDuplicateCode(t *testing.T) {
+	for _, tc := range []struct{ name, id string }{
+		{"assigned", "CON-001"},
+		{"handle", "new:alpha-2"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			id := tc.id
+			_, err := contracts.ParseItems("### " + id + "\nFirst\n### " + id + "\nSecond\n")
+			if err == nil {
+				t.Fatal("ParseItems accepted duplicate heading")
+			}
+			if !hasCodedError(err) {
+				t.Fatalf("duplicate error has no CodedError: %T: %v", err, err)
+			}
+			if code, subject, ok := contracts.ErrorCode(err); !ok || code != "C05" || subject != id {
+				t.Errorf("ErrorCode = (%q, %q, %v); want (C05, %q, true)", code, subject, ok, id)
+			}
+			if want := "duplicate item ID: " + id; err.Error() != want {
+				t.Errorf("duplicate message = %q; want %q", err, want)
+			}
+		})
+	}
+}
+
+func Test_CON_018_ParseItemsMalformedCode(t *testing.T) {
+	for _, tc := range []struct{ name, heading string }{
+		{"unclosed_tag", "### CON-001 [draft"},
+		{"invalid_handle", "### new:Alpha"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			heading := tc.heading
+			_, err := contracts.ParseItems(heading + "\nBody\n")
+			if err == nil {
+				t.Fatal("ParseItems accepted malformed heading")
+			}
+			if !hasCodedError(err) {
+				t.Fatalf("malformed heading error has no CodedError: %T: %v", err, err)
+			}
+			if code, _, ok := contracts.ErrorCode(err); !ok || code != "C03" {
+				t.Errorf("ErrorCode = (%q, _, %v); want (C03, _, true)", code, ok)
+			}
+			if want := fmt.Sprintf("malformed item heading: %q", heading); err.Error() != want {
+				t.Errorf("malformed heading message = %q; want %q", err, want)
+			}
+		})
+	}
+}
+
+func Test_CON_019_ParseDocumentFrontmatterCode(t *testing.T) {
+	for _, tc := range []struct {
+		name, source, message string
+	}{
+		{"missing", "# Body\n", "missing YAML frontmatter"},
+		{"unterminated", "---\nname: contracts\nbody\n", "unterminated YAML frontmatter"},
+		{"invalid_yaml", "---\nname: [broken\n---\nbody\n", "invalid YAML frontmatter:"},
+		{"non_mapping", "---\n- first\n---\nbody\n", "invalid YAML frontmatter:"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := contracts.ParseDocument(tc.source)
+			if err == nil {
+				t.Fatal("ParseDocument accepted invalid frontmatter")
+			}
+			if !hasCodedError(err) {
+				t.Fatalf("frontmatter error has no CodedError: %T: %v", err, err)
+			}
+			if code, _, ok := contracts.ErrorCode(err); !ok || code != "C03" {
+				t.Errorf("ErrorCode = (%q, _, %v); want (C03, _, true)", code, ok)
+			}
+			if !strings.HasPrefix(err.Error(), tc.message) {
+				t.Errorf("frontmatter message = %q; want prefix %q", err, tc.message)
+			}
+		})
+	}
+}
+
+func hasCodedError(err error) bool {
+	var pointer *contracts.CodedError
+	if errors.As(err, &pointer) {
+		return true
+	}
+	var value contracts.CodedError
+	return errors.As(err, &value)
 }

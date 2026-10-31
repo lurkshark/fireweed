@@ -13,6 +13,22 @@ type Item struct {
 	Body string
 }
 
+// CodedError carries a stable diagnostic code while preserving the cause's text.
+type CodedError struct {
+	Code    string
+	Subject string
+	Cause   error
+}
+
+func (e CodedError) Error() string {
+	if e.Cause != nil {
+		return e.Cause.Error()
+	}
+	return e.Code
+}
+
+func (e CodedError) Unwrap() error { return e.Cause }
+
 // Zones holds module-relative path patterns for each editable zone.
 type Zones struct {
 	Protected  []string

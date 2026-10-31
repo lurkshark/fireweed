@@ -8,6 +8,10 @@ import (
 type Document = model.Document
 type Item = model.Item
 type Zones = model.Zones
+type CodedError = model.CodedError
+
+// ErrorCode returns the first coded diagnostic in an error chain.
+func ErrorCode(err error) (code, subject string, ok bool) { return "", "", false }
 
 func ParseDocument(source string) (Document, error) { return primitives.ParseDocument(source) }
 func RenderDocument(doc Document) (string, error)   { return primitives.RenderDocument(doc) }
