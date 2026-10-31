@@ -78,3 +78,11 @@ NEW `next` resumes this worktree's held change directly. The pinned bootstrap
 instead rejects that live claim with P01; handing a manually advanced phase to
 its unattended loop requires releasing the owning checkout's claim first.
 This controller difference adds no product requirement.
+
+## D011 — Reference lifecycle output and audit metadata
+
+The reference smoke returns string data for bootstrap next --json; NEW returns
+the change/run/phase/empty object required by APP-079. Both use the schema-1
+envelope and complete the same three lifecycle commits and held ref shape.
+NEW's independent audit metadata has an input-only initial commit, while
+bootstrap uses empty metadata; neither exposes held history or saved attempts.

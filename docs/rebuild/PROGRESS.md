@@ -28,35 +28,31 @@ at `4c794a6` and batched `0138-audit-resume-cli-evals` at `20a8117`. Each passed
 all 282 app cases and an independent audit. No product requirements or public
 interfaces changed. The final runner verification passed with both corrections.
 
-Prerequisite EC1 was proven at `ff54e38`: all prerequisites applied, execution checkout clean, queue empty,
-no shared claims or active controller/worker processes. EC2's initial focused core
-review covered: current public evals and
-implementation cover fail-first, immutable metadata/zones, restricted audit
-inputs and Audit-only import/cleanup, approval/P07, saved attempts, worker-commit
-recovery and clean time/usage stops. The retry fixture above proves the
-0135/0136 feedback slice. Product runtime source has no bootstrap or rebuild-v1
-reference. Intentional controller differences remain in DECISIONS D005/D010.
+EC1 is complete, including demonstrated follow-up fix 0139. All changes are
+applied, the checkout is clean, queue empty and no shared claim or active
+controller/worker remains. EC2's focused review covered fail-first, immutable
+metadata/zones, restricted Audit inputs and Audit-only import/cleanup,
+approval/P07, saved attempts, worker-commit recovery and clean time/usage stops.
+The retry fixture proves the 0135/0136 feedback slice. Product runtime source
+has no bootstrap or rebuild-v1 reference.
 
-The clean `ff54e38` candidate built and passed ordinary `go test ./...`.
-EC4's two fixture lifecycles completed with exit 0, three phase commits,
-matching held refs, restricted inputs and audit cleanup. Bootstrap returns
-string next JSON data; NEW's object follows APP-079 (record at handoff).
+The first candidate passed ordinary and race Go suites and the reference
+lifecycle comparison, then EC5 exposed a valid Audit insertion rejection.
+0139 fixed that concrete core failure at `f79a7be`: genuine fail-first evidence,
+independent no-findings audit for RUN-047/048, and 381 passing full cases.
+The affected review confirms exact non-Audit byte preservation while accepting
+a first Audit section before Provenance. No core finding remains unresolved.
+Per-change evidence and the stopped, unclaimed first EC5 clone are in 0139's
+archive. Intentional comparison differences are in DECISIONS D005/D010/D011.
 
-EC5's real NEW run reached CUT-001 fail-first evidence, then rejected
-the audit submission. A focused exact-candidate CLI reproduction confirms a
-valid first Audit section inserted before Provenance is rejected despite every
-original byte remaining intact. Normal runner fix `0139-audit-section-import`
-is queued for RUN-047/048. The stopped fixture's NEW-owned claim was released;
-retain `/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-ec5-y5nxlf50/candidate`
-for inspection. No change is blocked. Return to affected gates after the fix.
-The controller remains bootstrap at the pin below. EC3–EC6 are not complete;
-no promotion occurred. The owner authorized only the earlier push through the
-core-cutover authoring integration at `dae9b28`; subsequent work remains local.
+The controller remains bootstrap at the pin below. EC3–EC6 remain pending for
+the corrected candidate. No promotion occurred. The owner authorized only the
+earlier push through the core-cutover authoring integration at `dae9b28`;
+subsequent work remains local.
 
 ## Next
 
-1. Complete 0139 through the normal fail-first/audit/implementation loop.
-   Then use the corrected clean candidate for EC3: build, ordinary/race Go tests, vet, and
+1. Use the corrected clean candidate for EC3: build, ordinary/race Go tests, vet, and
    both controller/NEW check, doctor --no-agent, explicit-range history and CI.
 2. Pass EC4's one deterministic reference comparison and EC5's isolated real-
    worker NEW lifecycle, restricted audit, archive, CI and cleanup. No drill.
