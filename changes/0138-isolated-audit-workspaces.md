@@ -9,6 +9,7 @@ audit_rounds: 1
 bases:
     RUN-013: a6739afb
     RUN-027: 84080c43
+blocked: 'impl attempts exhausted: P02: failing eval for RUN-016: Test_RUN_016_UnlimitedQueueOrder'
 module: runner
 phase: impl
 run: 20261031T085104-0a74a70a942f28f9dee76ea3
