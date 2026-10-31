@@ -12,6 +12,7 @@ queued. No active, blocked or claimed change. The owner authorized the controlle
 upgrade to 0.1.1 on 2026-10-30; version, executable hash and clean source revision
 were verified after installation. Controller `check` passed with the existing
 C01/C18 warnings.
+The owner authorized pushing this controller repin to `origin/main` on 2026-10-30.
 
 **Working through NEW (`bin/fireweed`), each proven by an actual CLI run:**
 
