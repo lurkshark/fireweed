@@ -1,6 +1,7 @@
 # Acceptance
 
-The full inventory of design obligations and the gates that end the rebuild.
+The full inventory of design obligations, the early core-cutover gates, and
+the later gates that end the rebuild.
 R01–R29 are planning labels, not another spec layer. The design defines the
 obligations; SYSTEM.md bounds how they are implemented and verified. Evidence is
 the archived changes, their evals and actual NEW runs; link it here only when a
@@ -40,9 +41,10 @@ gate closes. Current status is in [PROGRESS.md](PROGRESS.md).
 | R28 | Doctor; stale changes; Decisions (usability revision) / checks, project, app | `doctor` runs the agent and audit commands with a fixed-reply prompt, reports failures with output and limit-pattern matches as usage limits, `--no-agent` skips it and `ci` never runs it. `show --stale` diffs each stale spec from its stamped text (or shows current text and hash when not found); `check --fix` stamps only missing bases. `check` warns C19 when module Decisions exceed `spec_limits.max_decision_words`. |
 | R29 | Merge strategies; drills (merge-strategy revision) / checks, runner, app | `check-commits` recognizes a squashed change commit (sets `applied` when the parent did not have the change at `impl`), skips H01/H02 for it, reports it as squashed in JSON without a warning, and still applies H03/H04, including several changes in one squash. Drill drift and the regenerate warning compare implementation Provenance dates with the drill report date, so they work after squash and rebase merges. |
 
-## Required command inventory
+## Required command inventory for full completion
 
-Exercise NEW beyond public function tests: every design command and documented option, read-command JSON, and representative invalid-input and exit behavior. Combine related checks in existing fixtures; no Cartesian product of commands, options, errors, recipes or platforms is required unless the design specifies the interaction. Old-controller syntax adds no requirements.
+The early milestone uses the scoped command list below. Full completion must
+exercise NEW beyond public function tests: every design command and documented option, read-command JSON, and representative invalid-input and exit behavior. Combine related checks in existing fixtures; no Cartesian product of commands, options, errors, recipes or platforms is required unless the design specifies the interaction. Old-controller syntax adds no requirements.
 
 ```text
 help, version
@@ -69,17 +71,96 @@ drill <module>
 gc, migrate, agents-md --write
 ```
 
-## Completion gates
+## Early Go core-loop cutover — EC1–EC6
 
-Use one design/inventory review, then check fixes against affected requirements. Reuse valid evidence under SYSTEM's rules; required phase checks still run. All gates must pass; passing gates end verification unless later changes invalidate evidence. Rebuild-planning edits alone do not require product tests/drills.
+The owner selected this milestone on 2026-10-30. It permits promotion before
+real drills/regeneration, remaining recipes, gc/migrate, show --stale/check --fix,
+version-range/file-format migration, C17–C19 warning completeness and packaging.
+Those obligations remain open for full completion. Existing deterministic Go
+evals still run, including fixture tests of already-built deferred behavior.
+No real drill or regeneration run is authorized by this milestone.
+
+The adoption scope is Go/current-format authoring and normal changes: init and
+doctor; new-module/new-change/stamp/check; context/start/verify/done; spec, fix,
+eval_fix and maintenance; next/run with existing max/time/usage bounds; approval,
+independent audits, saved attempts and blocked recovery; release/commits/abandon;
+list/status/modules/show, coverage, check-commits, CI and PR body. Approval/P07,
+phase zones, frozen evals/interfaces, fail-first, audit rounds and history rules
+remain mandatory. Permanent fixtures may supply negative and bounded-limit
+proof; there is no new Cartesian product of scenarios to run.
+
+EC labels are execution gates, not product specs. All are pending until their
+evidence is recorded. A focused review can discover a further concrete core
+blocker; author a scoped change for that failure and recheck affected evidence.
+Do not turn the review into speculative hardening or deferred feature work.
+
+1. **EC1 — Complete prerequisites.** Finish the preceding 0132/0133 diagnostic
+   queue, integrate this branch's authored files onto current main while its run
+   is stopped, then apply 0134–0138 through bootstrap with normal lifecycle
+   evidence. All five are required, including the guidance improvements.
+   Resolve every blocked cutover change; require a clean execution checkout and
+   no shared claims before handoff. A brief gap between claims in a live run
+   is not an integration/promotion window.
+2. **EC2 — Focused core review.** Review the scoped commands and safeguards once
+   against the design, current specs and existing CLI/public evals. Check fail-first,
+   immutable metadata/zones, independent audit input isolation and Audit-only
+   import, approval/P07, saved-attempt recovery, agent commit recovery and
+   clean time/usage stops. Confirm 0135/0136 carry JUnit-only dependent assertions
+   into bounded retry feedback. Record concrete unresolved findings and known
+   intentional bootstrap/NEW differences briefly, then review only affected
+   fixes. This planning change does not claim that review is complete.
+3. **EC3 — Fresh-checkout checks.** At the exact candidate commit, build NEW and
+   pass `go test ./...`, `go test -race ./...` and `go vet ./...` using
+   GOCACHE=/tmp/fireweed-rebuild-cache. Run controller and NEW `check`,
+   `doctor --no-agent`, `check-commits <baseline>..HEAD` and `ci <baseline>..HEAD`
+   over a recorded explicit nonempty range using PROGRESS's history baseline.
+   CI includes hook doctor checks; the real-worker gate proves agent access.
+   Resolve errors and explain warnings without treating zero warnings as a gate.
+   These checks must use clean candidate trees, not another worker's live files.
+4. **EC4 — One reference lifecycle smoke.** Run an equivalent ordinary spec-change
+   fixture through bootstrap and NEW. Compare exit codes, JSON envelope shape,
+   phase/commit outcomes and resulting ref shape, allowing generated IDs/times
+   and commit hashes to differ. Reuse existing deterministic hook/fake-agent
+   fixtures. Record intentional differences in DECISIONS; reference bugs do not
+   define acceptance. Per-edge-case equivalence is not required.
+5. **EC5 — Real-worker self-hosting without a drill.** In an isolated clone of
+   the candidate, configure instructions, setup and worker PATH explicitly for
+   NEW and make NEW govern one small real spec change through failing evals,
+   a separate restricted audit, implementation, full verification and archive.
+   Use the configured Codex model/effort and normal approval; inspect phase
+   commits, Provenance, NEW CI and temporary-audit cleanup. Pin executable paths
+   and identify the binary actually invoked so bootstrap cannot supply a false
+   pass. Retain inspectable clone evidence until the concise handoff is recorded.
+   Missing real-worker/auditor access blocks this gate. No drill is required.
+6. **EC6 — Promote separately from the subject.** Only after EC1–EC5 pass and
+   every repository run has returned with no shared claims, install a verified
+   copy of NEW as the pinned controller (intended path
+   `/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed`). Keep mutable
+   `bin/fireweed` as the product subject and retain the existing bootstrap
+   executable as an explicit recovery option. In one protected author handoff
+   commit, align AGENTS.md, SYSTEM.md, PROGRESS, recipe/setup instructions and
+   worker PATH; ensure scratch hooks copy the invoking controller. Record the
+   NEW source commit, binary hash, gate results and deferred scope in PROGRESS.
+   Verify the pin and smoke-check `status --json`, `check` and
+   `doctor --no-agent` with it. No claim may be resumed by a different controller,
+   and no automatic fallback may mix them. This is core cutover, not a release
+   or a declaration that the full design is complete.
+
+Reuse valid gate evidence; repeat only what later changes invalidate. Keep
+per-change evidence in archived Provenance and concise gate outcomes in
+PROGRESS. No separate report files, case inventories or hash manifests.
+
+## Full-completion gates (after early cutover)
+
+Use one design/inventory review, then check fixes against affected requirements. Reuse valid evidence under SYSTEM's rules; required phase checks still run. Every gate below must pass for full product completion; EC1–EC6 separately authorize early cutover. Passing applicable gates ends verification unless later changes invalidate evidence. Rebuild-planning edits alone do not require product tests/drills.
 
 1. **Traceability:** map design requirements to specs, referencing evals and archives; SYSTEM conventions use prescribed review/eval evidence. Verify every R row within that scope. Legitimate already_satisfied changes reuse existing assertions; review, quarantine or maintenance cannot waive design obligations. No extra spec layer or testcase inventory is required.
-2. **Process:** bootstrap-managed fail-first/audit/impl/archive commits for behavioral work; immutable evals/interfaces during impl; separate protected setup/author commits; no pending/blocked rebuild changes or active claims.
+2. **Process:** the recorded controller owns fail-first/audit/impl/archive commits (bootstrap before EC6, pinned NEW after it) for behavioral work; immutable evals/interfaces during impl; separate protected setup/author commits; no pending/blocked rebuild changes or active claims.
 3. **Go:** with `GOCACHE=/tmp/fireweed-rebuild-cache`, a fresh checkout builds the new binary and passes `go test ./...`, `go test -race ./...`, `go vet ./...`. Permanent tests run with local fixtures/fake agents and without bootstrap/agent authentication. Cross-compilation is not platform runtime testing; report limits accurately.
-4. **Bootstrap checks:** controller `check`, `doctor`, `check-commits <setup-sha>..HEAD`, and `ci <setup-sha>..HEAD` with doctor enabled. Use the recorded stage-2 baseline; record the exact nonempty range and link per-module coverage. Resolve errors. For warnings, make a scoped correction or record the reason/limitation; zero warnings is not a separate gate. An empty default range proves no history.
+4. **Controller checks:** the recorded controller runs `check`, `doctor`, `check-commits <setup-sha>..HEAD`, and `ci <setup-sha>..HEAD` with doctor enabled. Use the recorded stage-2 baseline; record the exact nonempty range and link per-module coverage. Resolve errors. For warnings, make a scoped correction or record the reason/limitation; zero warnings is not a separate gate. An empty default range proves no history.
 5. **Product checks:** NEW binary in fresh repositories performs init/doctor, author/stamp/check, documented base approval, start/failing-evals/audit/impl/done, coverage/history/PR/CI. Exercise fixes, eval_fix, maintenance, blocked recovery and regenerate. Normal unattended approval rejection is tested without --allow-unmerged. Pin subject paths so bootstrap cannot be used accidentally.
 6. **Reference comparison (smoke):** one equivalent fixture lifecycle run with both binaries, comparing exit codes, JSON envelope shape and resulting commits/refs. Record intentional differences briefly. Reference bugs do not define acceptance, and per-edge-case equivalence is not required.
 7. **Real regeneration:** successful controller-driven drills for every rebuilt disposable module, dependency-first. Real agents reconstruct from retained specs/Decisions/interfaces/evals and permitted dependency interfaces, without old implementation/history, saved attempts, old binaries or bootstrap. Own/transitive dependent evals pass without preserved-contract edits. Commit reviewed reports/retain refs and clean scratch worktrees. Repeat only drills invalidated by relevant changes or unresolved failures. Gaps require human agreement before authored fixes; agent suggestions alone authorize none. Missing real-agent access blocks this gate.
-8. **Self-hosting:** in an isolated clone/fixture, the NEW binary governs a small real spec change and a real drill, with checked fail-first/audit/impl commits, archive/provenance, CI and scratch cleanup. Keep the original repository governed by the pinned bootstrap throughout acceptance.
+8. **Self-hosting:** in an isolated clone/fixture, the NEW binary governs a small real spec change and a real drill, with checked fail-first/audit/impl commits, archive/provenance, CI and scratch cleanup. Keep the original repository governed by its recorded controller; EC6 may already have promoted NEW. The real-drill portion remains required for full completion, separately from the earlier core self-hosting proof.
 9. **Delivery:** README build/test/use instructions, locally validated distribution/installer checksum behavior, clean committed target tree, restartable evidence record and independent product executable. No product runtime read/import/command requires bootstrap. Report exact checks/commits/reports and limitations. Push only on explicit owner instruction; do not publish or tag.
 

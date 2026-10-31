@@ -7,21 +7,21 @@ history (last present at `c536833`).
 
 ## State — 2026-10-30
 
-128 changes applied (0001–0129; 0109 was abandoned). The owner explicitly
-approved running all queued changes on 2026-10-30. Approved recoveries repaired
-0128's ErrorCode facade and 0129's module diagnostic path/corrective guidance
-while preserving frozen evals. 0129 passed its own evals, independent audit,
-focused doctor/CI regressions, full app suite and full controller verification.
-An actual NEW CLI smoke confirmed doctor C05 with the module SPEC.md path,
-Stamp C08 for invalid bases, and U02 for a missing change. Changes 0130–0133
-remain approved and eligible. No claim remains.
-Queued predicates 0130/0131 state the facade/stub wiring requirement before
-their evals phases.
-The owner authorized the controller upgrade to 0.1.1 on 2026-10-30; version,
-executable hash and clean source revision
-were verified after installation. Controller `check` passed with the existing
-C01/C18 warnings.
-The owner authorized pushing this controller repin to `origin/main` on 2026-10-30.
+Owner selected early Go core-loop cutover, with 0134–0137 required rather than
+optional. This author branch, codex/stub-handoff-guidance, contains those queued
+changes plus 0138's restricted audit-workspace fix. No EC gate is claimed passed
+and no controller promotion has occurred.
+
+At the primary-checkout inspection, main had applied through 0131 (0109 was
+abandoned), resumed 0132 after an interrupted full check, and still had 0133
+queued. Re-read its live run/queue/claims before integration. This branch forks
+from 0131's audit commit; its copied pending 0131 phase is stale and must not be
+executed as the primary checkout's current state. Integrate only the author
+commits onto current main after its run returns clean and unclaimed.
+
+The current controller remains bootstrap 0.1.1 at the pin below. Prior approval
+to push the 2026-10-30 bootstrap repin is historical, not authorization to push
+this branch or the future NEW promotion.
 
 **Working through NEW (`bin/fireweed`), each proven by an actual CLI run:**
 
@@ -36,25 +36,24 @@ The owner authorized pushing this controller repin to `origin/main` on 2026-10-3
   [--history]`, `explain`, `playbook`, `check`, `coverage`, `check-commits`,
   `ci [--no-doctor]`, `pr-body`, `agents-md`, `version`.
 
-**Not built yet:**
+**Deferred beyond early cutover:**
 
-- Commands: `drill`, `gc`, `migrate`, `show --stale`, `check --fix`.
-- Recipes: `typescript-pnpm`, `python-uv`, `none`, local-path recipes.
-- `fireweed:` version-range enforcement and file-format migration.
-- Packaging (goreleaser, installer, Homebrew config).
-- Every ACCEPTANCE completion gate: fresh-checkout Go checks, controller
-  CI over the full baseline range, reference smoke, real drills of every
-  disposable module, isolated self-hosting, delivery.
+- Real drills/regeneration validation; gc/migrate and stale/fix conveniences.
+- Additional recipes, version-range/file-format migration, C17–C19 warnings.
+- Packaging and the remaining full-product acceptance/delivery obligations.
 
 ## Next
 
-Run approved changes 0130–0133 through the controller. Stop on any new block.
-The queue completes typed diagnostics and addresses the contracts drill gap
-(CON-011/012). Suggested later order:
+1. Let the primary run finish its existing queue; stop at any new block.
+2. At an idle clean integration point, apply this branch's author commits and
+   complete 0134–0138 with bootstrap and normal phase checks.
+3. Prove ACCEPTANCE EC1–EC5: focused core review, fresh-checkout checks,
+   reference smoke and isolated real-worker self-hosting without a drill.
+4. Perform EC6's separate controller pin/instruction handoff and record its
+   source/hash and actual gate evidence here. Until then use bootstrap.
 
-1. `drill` in NEW, then real drills of mid-graph modules (`project`, `checks`)
-   with strict input isolation.
-2. Remaining commands, recipes, versioning and packaging, then the final gates.
+Gate status: EC1–EC6 pending. Further prerequisite changes need a demonstrated
+core failure or unmet core clause; no speculative cleanup or deferred features.
 
 ## Standing rules
 
@@ -75,10 +74,11 @@ The queue completes typed diagnostics and addresses the contracts drill gap
 
 ## Fixed execution context
 
-- Controller: `.fireweed/bin/fireweed-bootstrap` 0.1.1, source
+- Current controller (pre-EC6): `.fireweed/bin/fireweed-bootstrap` 0.1.1, source
   `78242c8251ff5c2ed7007502dc759c414dca5d75`, SHA-256
   `ba14dfa072bfa72756d41e1fa0b13fec0df654a7ee629e654cbeb954df8d4683`. Repin
-  or rebuild only on explicit owner instruction.
+  or rebuild only on explicit owner instruction. EC6 will record a separate NEW
+  controller pin; mutable bin/fireweed is never that pin.
 - History baseline: `be35552b706aa3000ff8f11306d129ff1d701b85`. Always pass an
   explicit range; the default range on `main` can be empty.
 - `GOCACHE=/tmp/fireweed-rebuild-cache`.
@@ -89,3 +89,7 @@ The queue completes typed diagnostics and addresses the contracts drill gap
   `audit.command`. Automatic audits use a temporary workspace containing only
   the change, projected spec and evals, plus empty Git metadata. Manual isolated
   audit workspaces are no longer required.
+
+After EC6, replace the current-controller entry with the verified NEW path,
+source commit and binary hash, retain bootstrap's recovery pin, and record
+which evidence closed each EC gate. Do not prefill promotion evidence.
