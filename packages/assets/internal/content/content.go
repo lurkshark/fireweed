@@ -26,7 +26,11 @@ Read the change, projected spec and public interface. Add tests for every assign
 
 Keep temporary stub behavior in disposable files that remain implementation-writable. Implementation must be able to replace each stub without editing frozen interface files. Before completing evals, identify the implementation-writable files for each missing behavior; create a disposable stub file if needed.
 
-For eval_fix, correct only evals, retain coverage of listed IDs, and require all module evals to pass; fail-first is not required.`,
+For eval_fix, correct only evals, retain coverage of listed IDs, and require all module evals to pass; fail-first is not required.
+
+Decisions contain only previously unspecified behavioral choices. Write one or two sentences per choice in Decisions. Put verification, debugging and recovery records in Notes.
+Decision: When a lookup matches more than one item, return an ambiguity error.
+Note: Verification passed after rerunning the module tests.`,
 	"audit": `# Audit evals
 Read the change, spec and evals only. Report only exact spec clauses with no test assertion; do not raise findings about helpers, fixtures, observers, unnamed edge cases or conventions. Quote each missing clause verbatim and name its spec ID. Re-audits must limit findings to IDs from the prior findings; passed IDs stay passed. If there are no findings, say so and list checked IDs. Edit only the change's Audit section and do not commit.
 
@@ -43,9 +47,17 @@ For eval_fix, check that corrected tests still assert the listed specs.`,
 	"impl": `# Implement
 Read the change, projected spec, public interface and evals. Implement only the assigned behavior in the module's disposable code. Keep the public interface, evals, specs and protected files unchanged. Run fireweed verify to check the work; fireweed owns phase commits, so do not commit.
 
-For eval_fix, edit only the current change file and leave implementation unchanged.`,
+For eval_fix, edit only the current change file and leave implementation unchanged.
+
+Decisions contain only previously unspecified behavioral choices. Write one or two sentences per choice in Decisions. Put verification, debugging and recovery records in Notes.
+Decision: When a lookup matches more than one item, return an ambiguity error.
+Note: Verification passed after rerunning the module tests.`,
 	"regenerate": `# Regenerate
-Read the module spec, Decisions, public interface and evals. Rebuild disposable implementation files from those sources after the controller removes the old files. Run the module's evals and dependent evals through fireweed verify. Do not consult deleted code, prior implementations or history, and do not commit.`,
+Read the module spec, Decisions, public interface and evals. Rebuild disposable implementation files from those sources after the controller removes the old files. Run the module's evals and dependent evals through fireweed verify. Do not consult deleted code, prior implementations or history, and do not commit.
+
+Decisions contain only previously unspecified behavioral choices. Write one or two sentences per choice in Decisions. Put verification, debugging and recovery records in Notes.
+Decision: When a lookup matches more than one item, return an ambiguity error.
+Note: Verification passed after rerunning the module tests.`,
 }
 
 func Playbook(name string) (string, error) {

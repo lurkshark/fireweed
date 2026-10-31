@@ -163,6 +163,12 @@ It MUST require workers to identify the implementation-writable files for missin
 Go recipe instructions MUST show a retained api.go function delegating to a temporary stub in a new internal/ file.
 The example MUST explain that implementation replaces the disposable stub while leaving the retained facade unchanged.
 
+### AST-045
+The evals, impl and regenerate playbooks MUST instruct workers to record only previously unspecified behavioral choices in Decisions, using one or two sentences per choice, and to put verification, debugging and recovery records in Notes.
+
+### AST-046
+Each of those playbooks MUST include short illustrative examples classifying a lasting behavioral choice as a Decision and a verification or recovery event as a Note.
+
 ## Decisions
 
 [0014-go-setup-bundle] Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,

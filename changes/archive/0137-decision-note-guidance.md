@@ -2,7 +2,7 @@
 audit_rounds: 0
 bases: {}
 module: assets
-phase: impl
+phase: applied
 run: 20261031T083123-6495f160d6d93790bae33f68
 ---
 
@@ -66,3 +66,4 @@ Checked IDs: AST-045, AST-046
 
 - evals 2026-10-31T08:34:34.744176Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=803 failing=8 passing=795
 - audit 2026-10-31T08:35:28.468573Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=5cb9f9dac24b0b6bb1b970edd4fab4406d2b4d0435ddefc3ef59a2cfdd267f18 tests=0 failing=0 passing=0
+- impl 2026-10-31T08:50:14.816948Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=803 failing=0 passing=803
