@@ -1,5 +1,11 @@
 ---
 audit_rounds: 0
+blocked: |-
+    impl attempts exhausted: P02: failing eval for APP-109: Test_APP_109_APP_112_APP_113_CIStaticUsageAndConfiguration
+    B02: APP-103: 17 cases
+    B02: APP-104: 19 cases
+    B02: APP-103: 17 cases
+    B02: APP-104: 19 cases
 module: project
 phase: impl
 run: 20261031T033337-304bd319d25e3df24a16e023
