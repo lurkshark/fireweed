@@ -366,6 +366,59 @@ func Test_CHK_050_CHK_051_CHK_052_CHK_053_CHK_055_CHK_056_CHK_057_CHK_058_CHK_05
 	assertScratchRemoved(t, f)
 }
 
+func Test_CHK_053_NestedModuleTemplatesRenderForBothCanaries(t *testing.T) {
+	f := localDoctorFixture(t)
+	f.put("go.mod", "module example.test/doctorfixture\n\ngo 1.23\n")
+	fields := "{{name}}|{{prefix}}|{{package}}|{{go_module}}|{{module_dir}}|{{other_dir}}\n"
+	f.put(".fireweed/templates/module/evals/nested.txt.tmpl", "eval|"+fields)
+	f.put(".fireweed/templates/module/internal/nested.txt", "internal|"+fields)
+	eval := string(mustRead(t, filepath.Join(f.root, ".fireweed/eval.sh")))
+	check := fmt.Sprintf(`case "$1" in
+  doctor*)
+    prefix=$(sed -n 's/^id_prefix: //p' "$2/SPEC.md" | head -1)
+    other=
+    for spec in packages/*/SPEC.md; do
+      dir=${spec%%/SPEC.md}
+      case "$dir" in packages/alpha|"$2") ;; *) other=$dir ;; esac
+    done
+    expected="$1|$prefix|$1|example.test/doctorfixture|$2|$other"
+    test -n "$other" &&
+      test "$(cat "$2/evals/nested.txt")" = "eval|$expected" &&
+      test "$(cat "$2/internal/nested.txt")" = "internal|$expected" &&
+      test ! -e "$2/evals/nested.txt.tmpl" || exit 17
+    printf 'rendered:%%s\n' "$1" >> %q
+    ;;
+esac
+`, f.log)
+	f.put(".fireweed/eval.sh", strings.Replace(eval, "#!/bin/sh\n", "#!/bin/sh\n"+check, 1))
+	f.commit()
+	before := worktrees(f)
+	report := checks.Doctor(context.Background(), f.request(true))
+	if doctorErrors(report) {
+		t.Errorf("nested template probes failed: %s", doctorText(report))
+	}
+	for _, name := range []string{"baseline", "undeclared", "internal_eval", "failing_eval", "missing_id", "recovery"} {
+		if !hasDoctorCheck(report, name, true) {
+			t.Errorf("missing passing %s probe: %s", name, doctorText(report))
+		}
+	}
+	modules := map[string]bool{}
+	for _, line := range strings.Split(doctorLog(f), "\n") {
+		if strings.HasPrefix(line, "rendered:") {
+			modules[strings.TrimPrefix(line, "rendered:")] = true
+		}
+	}
+	if len(modules) != 2 {
+		t.Errorf("expected both throwaway modules to pass nested template checks, got %v: %s", modules, doctorText(report))
+	}
+	if got := worktrees(f); got != before {
+		t.Errorf("scratch registration leaked: before %q after %q", before, got)
+	}
+	if strings.Contains(doctorLog(f), "setup:") {
+		assertScratchRemoved(t, f)
+	}
+}
+
 func Test_CHK_051_CHK_052_SetupFailureStopsAndCleans(t *testing.T) {
 	f := localDoctorFixture(t)
 	f.put(".fireweed/setup.sh", fmt.Sprintf("#!/bin/sh\nprintf 'setup:%%s\\n' \"$PWD\" >> %q\necho failed setup >&2\nexit 17\n", f.log))

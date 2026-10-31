@@ -1,8 +1,11 @@
 ---
+audit_rounds: 0
 bases: {}
 fixes:
     - CHK-053
 module: checks
+phase: audit
+run: 20261031T173236-b24f73fe1d5d8a504a84f2be
 ---
 
 
@@ -65,3 +68,7 @@ fail-first cafd070, restricted audit a2b9e66 and applied e2c0b25. Its real audit
 workspace contained only change/spec/evals with independent Git metadata and
 was removed; the clone is clean and unclaimed. Its CI gate remains pending
 because of this doctor failure. Return to the affected gates after this fix.
+
+## Provenance
+
+- evals 2026-10-31T17:42:19.822978Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=630 failing=1 passing=629
