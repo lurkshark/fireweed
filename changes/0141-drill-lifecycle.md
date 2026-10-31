@@ -11,7 +11,7 @@ audit_pending:
 audit_rounds: 1
 bases: {}
 module: runner
-phase: evals
+phase: audit
 run: 20261031T220623-e826454d4fd1bcfca2375a01
 ---
 
@@ -109,6 +109,7 @@ product surface, hardening campaign or speculative prerequisite is authorized.
 ## Provenance
 - evals 2026-10-31T22:27:25.744814Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=124 failing=25 passing=99
 - audit 2026-10-31T22:29:55.525964Z agent=manual fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- evals 2026-10-31T22:50:05.029594Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=128 failing=29 passing=99
 ## Audit
 
 - RUN-051: "Drill MUST create a detached scratch worktree at the invoking HEAD under the common Git directory's fireweed/worktrees directory and run the configured setup hook there with FIREWEED_BIN set to request Bin." — The setup assertion checks its path and detached state, but never checks the scratch HEAD against the invoking HEAD.
