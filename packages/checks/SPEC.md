@@ -254,6 +254,13 @@ History MUST return each rule finding as a Diagnostic with its H01–H04 code, r
 ### CHK-078
 History MUST return an error when a revision range or required recorded project/change document cannot be read or parsed.
 
+### CHK-079
+ParseJUnit MUST retain the message attributes and text bodies of JUnit failure and error elements in each affected Case.Failure, including message-only and body-only diagnostics.
+A testcase without such text MUST have an empty Failure.
+
+### CHK-080
+Evaluate MUST retain parsed Case.Failure strings in its returned Report.Cases, including when failing testcases make the eval hook exit nonzero.
+
 ## Decisions
 
 [0071-doctor-probes] Doctor requests the literal reply FIREWEED_DOCTOR_OK; limit_patterns match

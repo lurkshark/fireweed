@@ -17,12 +17,28 @@ type junitSuite struct {
 }
 
 type junitCase struct {
-	Name      string    `xml:"name,attr"`
-	Classname string    `xml:"classname,attr"`
-	Seconds   float64   `xml:"time,attr"`
-	Failure   *struct{} `xml:"failure"`
-	Error     *struct{} `xml:"error"`
-	Skipped   *struct{} `xml:"skipped"`
+	Name      string            `xml:"name,attr"`
+	Classname string            `xml:"classname,attr"`
+	Seconds   float64           `xml:"time,attr"`
+	Failure   []junitDiagnostic `xml:"failure"`
+	Error     []junitDiagnostic `xml:"error"`
+	Skipped   *struct{}         `xml:"skipped"`
+}
+
+type junitDiagnostic struct {
+	Message string `xml:"message,attr"`
+	Body    string `xml:",chardata"`
+}
+
+func (d junitDiagnostic) text() string {
+	parts := make([]string, 0, 2)
+	if message := strings.TrimSpace(d.Message); message != "" {
+		parts = append(parts, message)
+	}
+	if body := strings.TrimSpace(d.Body); body != "" {
+		parts = append(parts, body)
+	}
+	return strings.Join(parts, "\n")
 }
 
 type unmappedCaseError struct{ name string }
@@ -57,11 +73,18 @@ func ParseJUnit(data []byte, specs []contracts.Item) (model.Report, error) {
 	visit = func(suite junitSuite) error {
 		for _, raw := range suite.Cases {
 			c := model.Case{Name: raw.Name, Classname: raw.Classname, Seconds: raw.Seconds, Result: "pass"}
-			if raw.Failure != nil || raw.Error != nil {
+			if len(raw.Failure) > 0 || len(raw.Error) > 0 {
 				c.Result = "fail"
 			} else if raw.Skipped != nil {
 				c.Result = "skip"
 			}
+			var details []string
+			for _, diagnostic := range append(raw.Failure, raw.Error...) {
+				if detail := diagnostic.text(); detail != "" {
+					details = append(details, detail)
+				}
+			}
+			c.Failure = strings.Join(details, "\n")
 			for _, spec := range specs {
 				if contracts.MatchesID(spec.ID, c.Name, c.Classname) {
 					c.IDs = append(c.IDs, spec.ID)
