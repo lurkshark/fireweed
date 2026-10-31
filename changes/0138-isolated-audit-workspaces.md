@@ -2,12 +2,15 @@
 already_satisfied:
     - RUN-027
     - RUN-048
-audit_rounds: 0
+audit_pending:
+    - RUN-013
+    - RUN-048
+audit_rounds: 1
 bases:
     RUN-013: a6739afb
     RUN-027: 84080c43
 module: runner
-phase: audit
+phase: evals
 run: 20261031T085104-0a74a70a942f28f9dee76ea3
 ---
 
@@ -111,3 +114,9 @@ fixtures; no process instrumentation, real-agent evals or bootstrap source.
 ## Provenance
 
 - evals 2026-10-31T09:09:45.579501Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=378 failing=14 passing=364
+- audit 2026-10-31T11:22:12.762795Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=5cb9f9dac24b0b6bb1b970edd4fab4406d2b4d0435ddefc3ef59a2cfdd267f18 tests=0 failing=0 passing=0
+
+## Audit
+
+- RUN-013: "For each phase, Next MUST invoke the worker role for evals and impl from the held checkout and the audit role from its restricted input workspace, using approved agent configuration and request Bin and Timeout." — No assertion distinguishes approved agent configuration from later unapproved changes to the held checkout's agent settings.
+- RUN-048: "When audit workspace edits are permitted, Next MUST copy its Audit section back before retrying or returning, including agent failures and time or usage stops." — No assertion checks that a permitted Audit edit reaches the held change before an audit verification retry.
