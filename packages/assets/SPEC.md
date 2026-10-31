@@ -155,6 +155,14 @@ It MUST advise reviewing that sequence's scope with the project owner before con
 Explain MUST describe B04 as a warning for binary files or files larger than 256 KB newly added to a disposable zone, reported by pr-body.
 It MUST advise reviewing these opaque additions and removing or replacing unnecessary generated or vendored artifacts.
 
+### AST-043
+The evals playbook MUST instruct workers to keep temporary stub behavior replaceable during implementation without editing frozen interface files.
+It MUST require workers to identify the implementation-writable files for missing behavior before completing evals.
+
+### AST-044
+Go recipe instructions MUST show a retained api.go function delegating to a temporary stub in a new internal/ file.
+The example MUST explain that implementation replaces the disposable stub while leaving the retained facade unchanged.
+
 ## Decisions
 
 [0014-go-setup-bundle] Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,

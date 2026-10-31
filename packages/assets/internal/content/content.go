@@ -24,6 +24,8 @@ Read the design, SYSTEM.md and the module spec before writing a change. Give its
 	"evals": `# Write evals
 Read the change, projected spec and public interface. Add tests for every assigned added, modified or fixed spec ID in the evals zone. Exercise observable behavior through the public interface. Run the tests against the current implementation and record genuine fail-first evidence: at least one test for each ID must fail, unless the change marks it already_satisfied. Keep implementation out of this step and do not commit.
 
+Keep temporary stub behavior in disposable files that remain implementation-writable. Implementation must be able to replace each stub without editing frozen interface files. Before completing evals, identify the implementation-writable files for each missing behavior; create a disposable stub file if needed.
+
 For eval_fix, correct only evals, retain coverage of listed IDs, and require all module evals to pass; fail-first is not required.`,
 	"audit": `# Audit evals
 Read the change, spec and evals only. Report only exact spec clauses with no test assertion; do not raise findings about helpers, fixtures, observers, unnamed edge cases or conventions. Quote each missing clause verbatim and name its spec ID. Re-audits must limit findings to IDs from the prior findings; passed IDs stay passed. If there are no findings, say so and list checked IDs. Edit only the change's Audit section and do not commit.
