@@ -97,5 +97,5 @@ func resolve(changes []model.Change, target string) (int, error) {
 			return i, nil
 		}
 	}
-	return -1, fmt.Errorf("pending change %q not found", target)
+	return -1, contracts.CodedError{Code: "U02", Subject: target, Cause: fmt.Errorf("pending change %q not found", target)}
 }

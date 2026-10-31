@@ -19,7 +19,7 @@ func Check(root string) []model.Diagnostic {
 	}
 	snapshot, err := fixture.Load(root)
 	if err != nil {
-		addCode(fixture.LoadCode(err), "fireweed.yaml", err.Error())
+		addCode(fixture.LoadCode(err), fixture.LoadPath(err), err.Error())
 		return diagnostics
 	}
 	if err := fixture.ValidateGraph(snapshot.Modules); err != nil {

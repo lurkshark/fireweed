@@ -16,6 +16,7 @@ import (
 
 type loadFailure struct {
 	code string
+	path string
 	err  error
 }
 
@@ -32,6 +33,28 @@ func LoadCode(err error) string {
 }
 
 func loadCause(code string, err error) error { return &loadFailure{code: code, err: err} }
+
+// LoadPath identifies the document responsible for a Load failure.
+func LoadPath(err error) string {
+	var failure *loadFailure
+	if errors.As(err, &failure) && failure.path != "" {
+		return failure.path
+	}
+	return "fireweed.yaml"
+}
+
+func moduleCause(rel string, err error) error {
+	code, _, ok := contracts.ErrorCode(err)
+	if !ok {
+		code = "C03"
+	}
+	path := rel + "/SPEC.md"
+	return &loadFailure{
+		code: code,
+		path: path,
+		err:  fmt.Errorf("parse %s: %w. Use valid frontmatter and unique spec item headings, then retry", path, err),
+	}
+}
 
 func Load(root string) (model.Snapshot, error) {
 	data, err := os.ReadFile(filepath.Join(root, "fireweed.yaml"))
@@ -64,7 +87,7 @@ func Load(root string) (model.Snapshot, error) {
 		}
 		data, err := os.ReadFile(filepath.Join(path, "SPEC.md"))
 		if err != nil {
-			return loadCause("C03", fmt.Errorf("read %s/SPEC.md: %w", rel, err))
+			return &loadFailure{code: "C03", path: rel + "/SPEC.md", err: fmt.Errorf("read %s/SPEC.md: %w", rel, err)}
 		}
 		module, err := parseModule(data, defaults, rel)
 		if err != nil {
@@ -104,7 +127,11 @@ func parseConfig(data []byte) (map[string]any, []string, map[string]any, error) 
 func parseModule(data []byte, defaults map[string]any, rel string) (model.Module, error) {
 	doc, err := contracts.ParseDocument(string(data))
 	if err != nil {
-		return model.Module{}, loadCause("C03", fmt.Errorf("parse %s/SPEC.md: %w", rel, err))
+		return model.Module{}, moduleCause(rel, err)
+	}
+	section, _ := contracts.Section(doc.Body, "Specs")
+	if _, err := contracts.ParseItems(section); err != nil {
+		return model.Module{}, moduleCause(rel, err)
 	}
 	name, ok := doc.Frontmatter["name"].(string)
 	if !ok {

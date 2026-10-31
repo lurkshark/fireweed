@@ -238,7 +238,7 @@ func Stamp(root, target string) error {
 	if raw, exists := change.Document.Frontmatter["bases"]; exists {
 		current, ok := raw.(map[string]any)
 		if !ok {
-			return fmt.Errorf("%s bases must be a mapping", change.Path)
+			return contracts.CodedError{Code: "C08", Subject: change.Path, Cause: fmt.Errorf("%s bases must be a mapping", change.Path)}
 		}
 		for key, value := range current {
 			bases[key] = value

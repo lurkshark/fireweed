@@ -2,7 +2,8 @@ package queue
 
 import (
 	"errors"
-	"strings"
+
+	"github.com/lurkshark/fireweed/packages/contracts"
 )
 
 // causeFailure keeps a rejection's static cause without changing its message.
@@ -25,8 +26,8 @@ func errorCode(err error, fallback string) string {
 }
 
 func itemErrorCode(err error) string {
-	if strings.HasPrefix(err.Error(), "duplicate item ID: ") {
-		return "C05"
+	if code, _, ok := contracts.ErrorCode(err); ok {
+		return code
 	}
 	return "C03"
 }

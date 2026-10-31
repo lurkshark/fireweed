@@ -189,6 +189,15 @@ An ID in matching archive edits MUST remain queryable when it no longer exists i
 Missing or malformed fireweed.yaml MUST produce a C01 error.
 Malformed archived change documents or malformed Added/Modified item syntax MUST produce a C03 error identifying the archive path.
 
+### PRJ-057
+Stamp MUST return an error whose contracts ErrorCode is C08 when the change's bases frontmatter is not a mapping.
+
+### PRJ-058
+Stamp MUST return an error whose contracts ErrorCode is U02, with the requested change as subject, when no pending change matches it.
+
+### PRJ-059
+Load MUST return an error preserving the contracts ErrorCode C03 or C05 when a module SPEC.md fails to parse.
+
 ## Decisions
 
 [0126-spec-history-query] History reads the project's current archive files, as the archive-backed show
