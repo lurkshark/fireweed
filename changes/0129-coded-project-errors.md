@@ -1,6 +1,11 @@
 ---
+audit_rounds: 0
 module: project
+phase: audit
+run: 20261031T033337-304bd319d25e3df24a16e023
 ---
+
+
 
 ## Motivation
 
@@ -18,24 +23,36 @@ return errors that carry a contracts CodedError in their chain.
 
 ## Added
 
-### new:stamp-bases-code
+### PRJ-057
 Stamp MUST return an error whose contracts ErrorCode is C08 when the change's bases frontmatter is not a mapping.
 
-### new:missing-change-code
+### PRJ-058
 Stamp MUST return an error whose contracts ErrorCode is U02, with the requested change as subject, when no pending change matches it.
 
-### new:spec-parse-code
+### PRJ-059
 Load MUST return an error preserving the contracts ErrorCode C03 or C05 when a module SPEC.md fails to parse.
 
 ## Modified
 
+
+
 ## Removed
+
+
 
 ## Decisions
 
+
+
 ## Rejected alternatives
+
+
 
 ## Notes
 
 Implementation should also replace the message-prefix check in
 internal/queue/cause.go with contracts.ErrorCode.
+
+## Provenance
+
+- evals 2026-10-31T03:35:14.896424Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=709 failing=7 passing=702
