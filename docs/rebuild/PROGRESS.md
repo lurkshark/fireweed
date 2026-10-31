@@ -7,16 +7,15 @@ history (last present at `c536833`).
 
 ## State — 2026-10-30
 
-128 changes applied (0001–0129; 0109 was abandoned). The owner explicitly
-approved running all queued changes on 2026-10-30. Approved recoveries repaired
-0128's ErrorCode facade and 0129's module diagnostic path/corrective guidance
-while preserving frozen evals. 0129 passed its own evals, independent audit,
-focused doctor/CI regressions, full app suite and full controller verification.
-An actual NEW CLI smoke confirmed doctor C05 with the module SPEC.md path,
-Stamp C08 for invalid bases, and U02 for a missing change. Changes 0130–0133
-remain approved and eligible. No claim remains.
-Queued predicates 0130/0131 state the facade/stub wiring requirement before
-their evals phases.
+130 changes applied (0001–0131; 0109 was abandoned). The owner explicitly
+approved the queue and the 0128/0129 recoveries on 2026-10-30. Typed contracts
+and project errors plus runner/workflow predicates passed controller checks.
+The NEW CLI smoke confirmed doctor C05 with a module SPEC.md path, Stamp C08
+for invalid bases, and U02 for a missing change.
+0132's worker passed its checks suite and quick verification. Clearing the goal
+interrupted full verification; the controller saved attempt 1 and released its
+claim. The owner requested continuation on 2026-10-30. Resume that attempt,
+then run the remaining approved maintenance change 0133.
 The owner authorized the controller upgrade to 0.1.1 on 2026-10-30; version,
 executable hash and clean source revision
 were verified after installation. Controller `check` passed with the existing
@@ -48,7 +47,7 @@ The owner authorized pushing this controller repin to `origin/main` on 2026-10-3
 
 ## Next
 
-Run approved changes 0130–0133 through the controller. Stop on any new block.
+Resume 0132 from saved attempt 1, then run approved 0133. Stop on any new block.
 The queue completes typed diagnostics and addresses the contracts drill gap
 (CON-011/012). Suggested later order:
 
