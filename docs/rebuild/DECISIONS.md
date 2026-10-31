@@ -10,9 +10,9 @@ The first run is preserved on `rebuild-v1`; `main` restarted from the setup
 baseline. The owner then accepted three design revisions, all reflected in
 fireweed-design-v1.md and tracked in ACCEPTANCE: usability (R26–R28), any merge
 strategy (R29) and bounded effort (R22–R25). The rebuild uses the tested
-bootstrap as its pinned controller (currently 0.1.1; exact source and executable
-hashes are in PROGRESS.md), never as an implementation oracle, and proves
-behavior in vertical slices through NEW.
+bootstrap as its pre-cutover controller (0.1.1), never as an implementation
+oracle, and proves behavior in vertical slices through NEW. PROGRESS.md records
+the current controller and the retained bootstrap recovery pin after EC6.
 
 ## D005 — Initial product diagnostic allocation
 
@@ -27,7 +27,7 @@ product authority. Other code mappings remain to be authored with their behavior
 
 Codes identify a stable cause. Their prefix does not determine severity; the
 diagnostic carries its warning status. Assignments below apply to the NEW
-product. The pinned controller is unchanged.
+product. This allocation did not itself change the controller pin.
 
 | Range | Area and fixed assignments |
 | --- | --- |

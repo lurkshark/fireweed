@@ -10,8 +10,13 @@ cross-module dependencies and eval imports through public interfaces.
 Canaries use the controller's version-1 canaries.yaml contract, with Go module
 and random module-name substitutions. Templates use {{name}}, {{package}} and
 {{prefix}}. The setup hook copies the invoking controller into scratch trees
-and exposes it as .fireweed/bin/fireweed. Launch workers with that directory on
-PATH. Product fixtures must set FIREWEED_BIN to the NEW product executable.
+and exposes it as a regular, independent .fireweed/bin/fireweed copy. Launch
+workers with the current tree's .fireweed/bin first on PATH. Main uses the
+verified NEW pin recorded in docs/rebuild/PROGRESS.md; mutable bin/fireweed is
+the subject, and fireweed-bootstrap is retained only for explicit recovery.
+FIREWEED_BIN always names the invoking controller, including in scratch hooks.
+Product fixtures explicitly select the NEW product executable. Never fall back
+automatically or switch controllers while a run or claim is active.
 
 Go and Git are required. The controller and setup remain protected. Run doctor
 after a coherent setup commit; no package downloads or bootstrap source reads

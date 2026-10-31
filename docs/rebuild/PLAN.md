@@ -51,8 +51,8 @@ still need their own owner authorization.
 
 | Stage | Workflow controller | Product under test |
 | --- | --- | --- |
-| Current / EC1–EC5 | .fireweed/bin/fireweed-bootstrap, existing 0.1.1 pin | bin/fireweed |
-| After EC6 | separately pinned NEW at the path recorded in PROGRESS | bin/fireweed |
+| Completed EC1–EC5 | .fireweed/bin/fireweed-bootstrap, retained 0.1.1 recovery pin | bin/fireweed |
+| Current / EC6 complete | separately pinned NEW at the path recorded in PROGRESS | bin/fireweed |
 
 Use explicit paths and GOCACHE=/tmp/fireweed-rebuild-cache. Worker commands
 named fireweed and FIREWEED_BIN must resolve to the selected controller;
