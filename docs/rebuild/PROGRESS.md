@@ -7,7 +7,7 @@ history (last present at `c536833`).
 
 ## State — 2026-10-31
 
-134 changes applied (0001–0135; 0109 was abandoned). All six typed-diagnostic
+135 changes applied (0001–0136; 0109 was abandoned). All six typed-diagnostic
 changes (0128–0133) have passing implementation Provenance; spec changes passed
 independent audits and maintenance preserved frozen evals/interfaces. 0132
 resumed from saved attempt 1 after the owner's interruption and continuation.
@@ -31,8 +31,16 @@ older whole-Case equality test before freeze. The configured real worker made
 that one-line correction; bootstrap's manual `done` verified/committed evals.
 Bootstrap `next` required releasing this checkout's own claim before reclaiming
 the committed audit phase; no foreign claim, IDs, run, bounds or requirements
-changed. 0136–0138 remain queued. The run returned clean and unclaimed; no EC
-gate is claimed passed and no controller promotion has occurred.
+changed.
+
+0136 applied at `8aef907` after one corrected audit finding, with passing
+implementation Provenance (364 cases). Rebuilt `bin/fireweed next` completed
+an audit-enabled deterministic retry fixture: its saved prompt contains the
+dependent module's JUnit-only assertion, a 4,096-code-point failure excerpt and
+a 4,225-code-point section including the heading. Inspectable fixture:
+`/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-0136-smoke-agyg5ph1`.
+0137–0138 remain queued. The run returned clean and unclaimed; no EC gate is
+claimed passed and no controller promotion has occurred.
 
 The current controller remains bootstrap 0.1.1 at the verified pin below.
 The owner authorized pushing current main to origin/main on 2026-10-30,
@@ -60,9 +68,8 @@ integration at dae9b28.
 
 ## Next
 
-1. Complete 0136–0138 with bootstrap and normal phase checks; stop at any new
-   block. 0132–0135 are complete. 0136 closes 0135's JUnit retry-feedback slice
-   with an actual NEW invocation and inspectable bounded fake-worker prompt.
+1. Complete 0137–0138 with bootstrap and normal phase checks; stop at any new
+   block. 0132–0136 are complete, including the JUnit retry-feedback CLI slice.
 2. Prove ACCEPTANCE EC1–EC5: focused core review, fresh-checkout checks,
    reference smoke and isolated real-worker self-hosting without a drill.
 3. Perform EC6's separate controller pin/instruction handoff and record its
