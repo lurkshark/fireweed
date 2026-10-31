@@ -1,6 +1,12 @@
 ---
+audit_rounds: 0
+blocked: interrupted; resume with --from-attempt after removing blocked
 module: checks
+phase: impl
+run: 20261031T051728-4c77d614f4f71278961437a0
 ---
+
+
 
 ## Motivation
 
@@ -17,10 +23,18 @@ No interface changes.
 
 ## Added
 
+
+
 ## Modified
+
+
 
 ## Removed
 
+
+
 ## Decisions
+
+
 
 ## Rejected alternatives
