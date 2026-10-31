@@ -56,4 +56,18 @@ ResolveZone MUST choose the first matching zone in order protected, SPEC.md, eva
 ### CON-015
 ParseItems MUST reject empty handles and handles containing characters other than lowercase letters, digits and hyphens.
 
+### CON-016
+ErrorCode MUST return the code and subject of the first CodedError in an error chain, including one wrapped with %w, and MUST report not ok when the chain has none.
+
+### CON-017
+ParseItems MUST return a CodedError with code C05 and the duplicated ID or handle as subject when a Specs section repeats an item heading.
+
+### CON-018
+ParseItems MUST return a CodedError with code C03 when an item heading is malformed.
+
+### CON-019
+ParseDocument MUST return a CodedError with code C03 when frontmatter is missing, unterminated, invalid YAML or not a mapping.
+
 ## Decisions
+
+[0128-coded-parse-errors] CodedError exposes an optional Cause error. Error returns the cause's text when present and the code otherwise; Unwrap returns Cause.

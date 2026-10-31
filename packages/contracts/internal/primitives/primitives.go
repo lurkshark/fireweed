@@ -15,23 +15,23 @@ import (
 func ParseDocument(source string) (model.Document, error) {
 	first, next := lineAt(source, 0)
 	if first != "---" || next == len(source) && !strings.HasSuffix(source, "\n") {
-		return model.Document{}, errors.New("missing YAML frontmatter")
+		return model.Document{}, model.CodedError{Code: "C03", Cause: errors.New("missing YAML frontmatter")}
 	}
 	for pos := next; pos < len(source); {
 		line, after := lineAt(source, pos)
 		if line == "---" {
 			var frontmatter map[string]any
 			if err := yaml.Unmarshal([]byte(source[next:pos]), &frontmatter); err != nil {
-				return model.Document{}, fmt.Errorf("invalid YAML frontmatter: %w", err)
+				return model.Document{}, model.CodedError{Code: "C03", Cause: fmt.Errorf("invalid YAML frontmatter: %w", err)}
 			}
 			if frontmatter == nil {
-				return model.Document{}, errors.New("YAML frontmatter must be a mapping")
+				return model.Document{}, model.CodedError{Code: "C03", Cause: errors.New("YAML frontmatter must be a mapping")}
 			}
 			return model.Document{Frontmatter: frontmatter, Body: source[after:]}, nil
 		}
 		pos = after
 	}
-	return model.Document{}, errors.New("unterminated YAML frontmatter")
+	return model.Document{}, model.CodedError{Code: "C03", Cause: errors.New("unterminated YAML frontmatter")}
 }
 
 func RenderDocument(doc model.Document) (string, error) {
@@ -106,10 +106,10 @@ func ParseItems(section string) ([]model.Item, error) {
 		if strings.HasPrefix(line, "###") && !strings.HasPrefix(line, "####") {
 			parts := itemHeading.FindStringSubmatch(line)
 			if parts == nil {
-				return nil, fmt.Errorf("malformed item heading: %q", line)
+				return nil, model.CodedError{Code: "C03", Subject: line, Cause: fmt.Errorf("malformed item heading: %q", line)}
 			}
 			if seen[parts[1]] {
-				return nil, fmt.Errorf("duplicate item ID: %s", parts[1])
+				return nil, model.CodedError{Code: "C05", Subject: parts[1], Cause: fmt.Errorf("duplicate item ID: %s", parts[1])}
 			}
 			seen[parts[1]] = true
 			if len(items) > 0 {
