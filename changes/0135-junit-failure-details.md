@@ -1,6 +1,10 @@
 ---
+audit_rounds: 0
 bases: {}
+blocked: interrupted; resume with --from-attempt after removing blocked
 module: checks
+phase: evals
+run: 20261031T065710-5addb41e87d5cd80494011f0
 ---
 
 
@@ -24,11 +28,11 @@ Implementation belongs under internal/; the evals step adds the retained field.
 
 ## Added
 
-### new:junit-diagnostic-text
+### CHK-079
 ParseJUnit MUST retain the message attributes and text bodies of JUnit failure and error elements in each affected Case.Failure, including message-only and body-only diagnostics.
 A testcase without such text MUST have an empty Failure.
 
-### new:eval-report-failure-details
+### CHK-080
 Evaluate MUST retain parsed Case.Failure strings in its returned Report.Cases, including when failing testcases make the eval hook exit nonzero.
 
 ## Modified
