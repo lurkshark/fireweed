@@ -1,95 +1,97 @@
 # Rebuild plan
 
-[PROGRESS.md](PROGRESS.md) records the current controller and handoff.
-[ACCEPTANCE.md](ACCEPTANCE.md) separates early-cutover evidence from full product
-completion. The owner selected early Go core-loop cutover on 2026-10-30.
+The design remains product authority; SYSTEM.md governs execution.
+[PROGRESS.md](PROGRESS.md) holds current state, evidence and the controller pin;
+[ACCEPTANCE.md](ACCEPTANCE.md) holds milestone and full-completion gates;
+[GOAL.md](GOAL.md) is the restart prompt. Keep execution order here rather than
+repeating completed queues or gate criteria in several documents.
 
-## Milestone 1 — Finish the cutover prerequisites
+## Completed — Early Go core-loop cutover
 
-1. Completed: 0132 and 0133 finished on main with passing implementation
-   Provenance. Preserve that evidence and their archived lifecycle state.
-2. Completed: the author commits from codex/stub-handoff-guidance were integrated
-   onto current main after its run returned clean and unclaimed. The branch's
-   older lifecycle snapshot was not restored.
-3. Execute 0134–0138 with bootstrap and all ordinary phase checks:
-   - 0134: implementation-ready stub guidance and Go example.
-   - 0135 then 0136: retain JUnit failure text and supply bounded retry details.
-   - 0137: worker Decisions/Notes guidance and examples.
-   - 0138: isolated audit input workspaces, validated Audit-only import and
-     cleanup, including partial work on failure/limit exits.
-4. Return to the core-readiness gates. Add further changes only for a concrete
-   failing core scenario or an unmet core design/spec clause discovered there.
-   The current focused inspection identified audit workspace isolation as the
-   additional implementation blocker; it did not establish the gates as passed.
+EC1–EC6 passed, including 0131–0138, demonstrated follow-up fixes, real-worker
+self-hosting and the separate NEW controller handoff at `c1de8f4`. Preserve
+archived Provenance and reuse the valid evidence recorded in PROGRESS. Bootstrap
+is an explicit recovery option only; the early-cutover queue is closed.
 
-All of 0134–0138 are prerequisites, including the guidance improvements. A
-blocked change still stops the run for an owner checkpoint.
+## Current milestone — Drill support and one independent contracts drill
 
-## Milestone 2 — Prove and promote the core loop
+Owner-selected on 2026-10-31. Implement the design's drill workflow and prove
+one independent contracts rebuild in an isolated clone. Acceptance DR1–DR4
+bounds completion. This starts the real-regeneration work in full gates 7/8;
+it does not complete either gate for every module or the full product.
 
-Pass EC1–EC5 in ACCEPTANCE: scoped core review, fresh-checkout Go and CLI checks,
-one controller/NEW comparison smoke, and NEW governing a real change in an
-isolated clone with real workers and a restricted auditor. Reuse permanent
-fixtures for negative paths and bounded recovery/limit behavior.
+1. **Review the slice once.** Trace the design's Regeneration section and R16
+   to current runner/app specs and existing public evals. NEW currently has no
+   drill API and its CLI marks drill unimplemented. Reuse existing setup,
+   hooks, zone maps, process bounds and regeneration guidance. Add a lower-level
+   prerequisite only for a concrete missing behavior needed by this slice.
+2. **Implement through the pinned controller.** Author coherent changes for
+   the runner drill lifecycle and app command, returning to the CLI as soon as
+   prerequisites are usable. Keep normal fail-first, restricted independent
+   audit, phase-zone checks, approval/P07, attempts and audit rounds. Permanent
+   evals use deterministic fixtures/fake agents for report/ref outcomes,
+   cleanup, failures and bounded stops; no real model access in Go tests.
+3. **Close the CLI slice.** Build a clean candidate and pass DR2's checks.
+   Exercise an actual candidate drill invocation with deterministic fixtures,
+   including its output/exit behavior. Identify the executable being tested.
+   Main's pinned controller continues to govern implementation changes.
+4. **Run one real contracts drill in an isolated clone.** Before invoking an
+   agent, inspect scratch setup and reconstruction inputs for independence.
+   The rebuild worker receives only retained spec/Decisions/interfaces/evals
+   and allowed dependency interfaces; contracts has no dependencies. Keep
+   dependent implementations available to the verifier outside the rebuilding
+   worker's inputs. Exclude old implementation/history, saved attempts, old
+   binaries and bootstrap as reconstruction inputs. If that separation is not
+   established, stop before spending the real run.
+5. **Review and close.** Use the configured model/effort, check own and all
+   transitive dependent evals, inspect the native report and retained ref, and
+   verify unchanged retained files plus scratch cleanup. Retain the isolated
+   clone until its concise handoff is recorded. Stop on a blocked change,
+   failed independence/access, or any gap/contradicted Decision needing owner
+   agreement. Do not author gap fixes or launch another module's drill.
 
-Then perform EC6 in a separate author commit: pin NEW separately from the
-mutable subject, align controller instructions/setup/PATH, record source/hash
-and remaining limitations, and smoke-check status/check/doctor with
-the promoted controller before subsequent core-loop changes. Keep bootstrap available for explicit recovery.
-No active run or shared claim may cross the handoff.
+Scope ends after this contracts proof and its reviewed evidence. No main pin
+promotion, main contracts-code replacement, real regenerate change, additional
+module drill, deferred command/recipe/version/packaging work or push is included.
 
-## Milestone 3 — Deferred product completion
+## Controller and candidate
 
-After early cutover, resume the full design and full-completion gates. Deferred
-work includes real drills/regeneration validation; gc/migrate, show --stale and
-check --fix; remaining recipes; version-range/file-format migration; C17–C19
-warning completeness; packaging and final distribution. These remain required
-for full completion and do not block the scoped core milestone. Real drills
-still need their own owner authorization.
+Use the unchanged `/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed` pin
+from PROGRESS for all main workflow commands. Keep `.fireweed/bin` first on
+worker PATH and `GOCACHE=/tmp/fireweed-rebuild-cache`; FIREWEED_BIN names the
+actual invoker. Worker builds of mutable `bin/fireweed` never replace the pin.
 
-## Controller and subject
-
-| Stage | Workflow controller | Product under test |
-| --- | --- | --- |
-| Completed EC1–EC5 | .fireweed/bin/fireweed-bootstrap, retained 0.1.1 recovery pin | bin/fireweed |
-| Current / EC6 complete | separately pinned NEW at the path recorded in PROGRESS | bin/fireweed |
-
-Use explicit paths and GOCACHE=/tmp/fireweed-rebuild-cache. Worker commands
-named fireweed and FIREWEED_BIN must resolve to the selected controller;
-product fixtures explicitly use the subject binary. A worker build of the
-subject must not replace the pinned controller. Never repin or fall back during
-a live claim. After a cutover failure, stop and recover explicitly with the
-owning controller before considering a controller change.
-
-## Choosing and closing a change
-
-- Motivation names the CLI scenario, user-visible need and design/SYSTEM basis.
-- Target one module; batch coherent work and keep every spec atomic. Return
-  from a dependency to its caller as soon as the interface is usable.
-- Close each slice with an actual NEW invocation and inspectable result.
-- Use eval_fix for wrong frozen evals, normal changes for behavior. Keep explain
-  accurate for emitted codes; do not allocate speculative diagnostics.
+The new drill command is tested through an explicitly identified candidate
+executable in the isolated clone. Record its source/hash, configure clone and
+scratch instructions/setup/PATH consistently, and ensure hooks copy that
+invoking candidate. This fixture selection does not repin main. Never silently
+fall back to bootstrap or resume another controller's live claim.
 
 ## Per-change loop
 
-1. Author: read SYSTEM, projected specs, relevant design clauses and the active
-   controller's author-change playbook. Use new: handles, stamp, check and review
-   show --projected, then commit only the authored change separately.
+1. Author: read SYSTEM, projected specs, relevant design clauses and the pinned
+   controller's author-change playbook. Motivation names the CLI scenario and
+   design/SYSTEM basis. Use new: handles, stamp, check and show --projected;
+   commit the authored change separately with no active run/claim.
 2. Controller start, then context before each worker step.
 3. Evals: black-box tests, described interfaces and allowed new disposable stubs.
-   Every Added/Modified/fixes ID needs a genuine failure unless already_satisfied.
-   Iterate with verify --quick; done runs full checks.
+   Every Added/Modified/fixes ID needs genuine failure unless already_satisfied.
+   Iterate with verify --quick; done runs full checks. Use eval_fix for wrong
+   frozen evals, preserving coverage and behavioral obligations.
 4. Independent audit: only unasserted spec clauses, restricted inputs, re-audits
-   limited to prior finding IDs, and at most two configured findings rounds.
-5. Implementation: allowed files only. The controller's done verifies, applies,
-   archives and commits. Workers never commit.
-6. Update PROGRESS only when state, next work or standing rules change.
+   limited to prior finding IDs, and at most the configured findings rounds.
+5. Implementation: allowed files only. Controller done verifies, applies,
+   archives and commits. Workers never commit. Stop on every blocked change;
+   never alter refs, bounds or requirements to avoid a checkpoint.
+6. Record current state in PROGRESS and per-change evidence in archived
+   Provenance. The native drill report is required product evidence; create no
+   supplemental reports, testcase inventories or hash manifests.
 
-## Evidence and limits
+## Later full completion
 
-Permanent evals use public APIs, temporary repositories, explicit fixture Git
-identities, local hooks and bounded fake agents. Real-agent self-hosting is a
-separate acceptance run. Neither requires a real drill for early cutover.
-Record concise gate outcomes in PROGRESS and intentional comparison differences
-in DECISIONS. Preserve existing evidence; rerun only what changed or remains
-unproven. Do not create separate per-case reports or hash inventories.
+The full requirement inventory and all nine gates remain in ACCEPTANCE. Later
+owner-selected slices cover the remaining modules' independent drills, real
+regenerate validation, gc/migrate and stale/fix conveniences, recipes,
+version/file-format migration, warning completeness and delivery. Reuse valid
+cutover evidence; rerun checks only when relevant changes or unresolved failures
+invalidate it, in addition to required controller phase checks.

@@ -1,6 +1,6 @@
 # Lessons from the first rebuild run
 
-The first run (2026-10-21 to 2026-10-26) is preserved on the `rebuild-v1` branch. Its DECISIONS.md entries are cited as v1-Dnnn. These are the findings worth keeping. Treat them as bounded historical input for design-derived authoring, not as extra specs. References to "the bootstrap" below describe the retired 0.4.0 controller used by that run; they are not findings against the fresh 0.1.0 candidate. Do not consult the old branch or implementation as an oracle.
+The first run (2026-10-21 to 2026-10-26) is preserved on the `rebuild-v1` branch. Its DECISIONS.md entries are cited as v1-Dnnn. Treat these findings as bounded historical input for design-derived authoring, not as extra specs. References to "the bootstrap" below describe the retired 0.4.0 controller used by that run; they are not findings against the current NEW pin. PROGRESS records current execution state. Do not consult the old branch or implementation as an oracle.
 
 ## Design findings
 
@@ -26,8 +26,8 @@ The first run (2026-10-21 to 2026-10-26) is preserved on the `rebuild-v1` branch
 - `git status` may rewrite the index; use `git --no-optional-locks status`. Don't copy the index to avoid writes, because a copied index changes Git's racy-timestamp detection (v1-D039).
 - Packed refs that differ only in case collide on case-insensitive filesystems (v1-D038).
 - `go test` has a default 10-minute timeout per package. Keep suites well under it rather than raising it (v1-D035).
-- `FIREWEED_BIN` in a hook must name the binary that ran the hook, never the controller.
-- The first run rejected its default Codex model (v1-D003). Current stage-2 selection is Codex `gpt-6-sol` with high reasoning effort per GOAL.md. A later read-only Sol probe passed at low effort; current setup/probe evidence belongs in PROGRESS.md and linked reports. Do not infer current availability or unfinished startup work from this historical observation.
+- `FIREWEED_BIN` names the executable invoking the hook: the pinned controller for workflow checks or the explicitly selected subject for product fixtures. Scratch setup must copy that invoker.
+- The first run rejected its default Codex model (v1-D003). Use the exact current model/effort in GOAL.md; historical probes do not establish current access or justify substitution.
 - Public facades that share types with their own `internal/` code need a retained `model/` subpackage to avoid import cycles (v1-D004).
 
 ## What went wrong
@@ -37,5 +37,5 @@ The first run (2026-10-21 to 2026-10-26) is preserved on the `rebuild-v1` branch
 - **Non-converging audits.** Audits critiqued the test instrumentation, and one change looped through evals and audit five times. Now: audit scope limited to unasserted spec clauses, at most two rounds, then block for a human.
 - **Specs as essays.** Specs averaged about 110 words and 6 clauses, plus about 13,000 words of Decisions that workers re-read every step. Now: at most 3 clauses and about 80 words per spec.
 - **Decisions as a lab notebook.** Workers wrote test-instrumentation and recovery notes into Decisions, which fireweed appends to SPEC.md: about 13,000 words that every later worker re-read and regeneration would follow. Now: Decisions are one or two sentences of product behavior, stale ones are dropped through Removed decisions, and process notes go elsewhere.
-- **Evidence ceremony.** Hash manifests, inventory proofs and a 218 KB progress log. Now: one line per applied change.
+- **Evidence ceremony.** Hash manifests, inventory proofs and a 218 KB progress log. Now: archived Provenance, required native drill reports/refs and concise current state in PROGRESS; no supplemental inventories.
 - **No human checkpoint.** The agent authored and applied its own changes for five days. The stage-2 run added five-change checkpoint reviews; on 2026-10-30 the owner replaced them with a stop on any blocked change, the product's P07 unapproved-work bound and owner-agreed slices.

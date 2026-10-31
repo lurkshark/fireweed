@@ -71,28 +71,14 @@ drill <module>
 gc, migrate, agents-md --write
 ```
 
-## Early Go core-loop cutover — EC1–EC6
+## Completed early Go core-loop cutover — EC1–EC6
 
-The owner selected this milestone on 2026-10-30. It permits promotion before
-real drills/regeneration, remaining recipes, gc/migrate, show --stale/check --fix,
-version-range/file-format migration, C17–C19 warning completeness and packaging.
-Those obligations remain open for full completion. Existing deterministic Go
-evals still run, including fixture tests of already-built deferred behavior.
-No real drill or regeneration run is authorized by this milestone.
-
-The adoption scope is Go/current-format authoring and normal changes: init and
-doctor; new-module/new-change/stamp/check; context/start/verify/done; spec, fix,
-eval_fix and maintenance; next/run with existing max/time/usage bounds; approval,
-independent audits, saved attempts and blocked recovery; release/commits/abandon;
-list/status/modules/show, coverage, check-commits, CI and PR body. Approval/P07,
-phase zones, frozen evals/interfaces, fail-first, audit rounds and history rules
-remain mandatory. Permanent fixtures may supply negative and bounded-limit
-proof; there is no new Cartesian product of scenarios to run.
-
-EC labels are execution gates, not product specs. All are pending until their
-evidence is recorded. A focused review can discover a further concrete core
-blocker; author a scoped change for that failure and recheck affected evidence.
-Do not turn the review into speculative hardening or deferred feature work.
+Selected on 2026-10-30 and completed on 2026-10-31. The historical criteria below
+are preserved; PROGRESS records their passing evidence and the EC6 handoff.
+This authorized Go/current-format core-loop adoption before the deferred product
+surface, without relaxing approval/P07, zones, fail-first, audits or bounds.
+It included no real drill/regeneration proof. Reuse its evidence unless relevant
+changes invalidate it; these criteria are not a queue to execute again.
 
 1. **EC1 — Complete prerequisites.** Finish the preceding 0132/0133 diagnostic
    queue, integrate this branch's authored files onto current main while its run
@@ -108,7 +94,7 @@ Do not turn the review into speculative hardening or deferred feature work.
    clean time/usage stops. Confirm 0135/0136 carry JUnit-only dependent assertions
    into bounded retry feedback. Record concrete unresolved findings and known
    intentional bootstrap/NEW differences briefly, then review only affected
-   fixes. This planning change does not claim that review is complete.
+   fixes.
 3. **EC3 — Fresh-checkout checks.** At the exact candidate commit, build NEW and
    pass `go test ./...`, `go test -race ./...` and `go vet ./...` using
    GOCACHE=/tmp/fireweed-rebuild-cache. Run controller and NEW `check`,
@@ -146,9 +132,51 @@ Do not turn the review into speculative hardening or deferred feature work.
    and no automatic fallback may mix them. This is core cutover, not a release
    or a declaration that the full design is complete.
 
-Reuse valid gate evidence; repeat only what later changes invalidate. Keep
-per-change evidence in archived Provenance and concise gate outcomes in
-PROGRESS. No separate report files, case inventories or hash manifests.
+## Current milestone — Drill support and contracts proof (DR1–DR4)
+
+Owner-selected on 2026-10-31; pending until actual evidence is recorded. These
+execution gates derive from the design's Regeneration section and R16. PLAN
+orders the work; SYSTEM's bounds and owner checkpoints apply throughout.
+
+1. **DR1 — Complete the drill slice.** Implement runner orchestration and the
+   app's native `drill <module>` command through the unchanged main NEW pin.
+   Cover scratch setup, approved-zone disposable deletion, retained reconstruction
+   inputs, own/all-transitive-dependent evals, contradicted Decisions and targeted
+   gaps, the design's native report fields/sections, retained rebuilt-code ref
+   and cleanup. Use normal fail-first and restricted independent audit, frozen
+   evals/interfaces and approval/retry/round enforcement. Permanent public evals
+   use deterministic hooks/fake agents for success, failure and bounded stops.
+2. **DR2 — Verify the candidate.** In a clean checkout, build the exact candidate
+   and pass Go tests, race tests and vet with the prescribed GOCACHE. Required
+   phase checks and actual candidate CLI fixtures pass, including output/exit
+   behavior and representative failure/cleanup cases. Run NEW `check`,
+   `doctor --no-agent`, explicit-baseline `check-commits` and `ci` with hook doctor enabled;
+   reuse unaffected valid evidence and explain warnings. Record the candidate
+   source/hash and explicit nonempty history range, without changing main's pin.
+3. **DR3 — One independent real contracts drill.** In an isolated candidate
+   clone, explicitly select the tested NEW executable and align instructions,
+   scratch setup and worker PATH. Inspect independence before the real call:
+   the reconstruction worker gets retained spec/Decisions/interfaces/evals and
+   permitted dependency interfaces only; contracts has no dependencies. Exclude
+   old implementation/history, other modules' internals, saved attempts, old
+   binaries and bootstrap as reconstruction inputs. Keep verification's dependent
+   implementations outside the rebuilding worker's inputs. Use the configured
+   real Codex model/effort and existing bounds. Own and every transitive dependent
+   module's evals pass without retained-contract/eval edits. Missing access or
+   independence is a stop, never a substitute proof.
+4. **DR4 — Review and retain evidence.** Review the native
+   `.fireweed/drills/contracts.md` report, including own/dependent cases,
+   contradicted Decisions and gaps; retain its `refs/fireweed/drills/contracts/<date>`
+   rebuilt-code ref. Stop for the owner on any blocked change or gap/contradicted
+   Decision needing agreement; no automatic gap fixes or additional module drills.
+   Commit the reviewed report as protected author evidence with no active run/claim,
+   verify cleanup and unchanged main pin, and retain the inspectable clone location
+   plus concise results in PROGRESS. No supplemental reports or hash inventories.
+
+No main controller promotion, main contracts implementation replacement, real
+regenerate change or other deferred product work is included. Passing DR1–DR4
+advances full gates 7/8; all-module drill coverage and full product completion
+remain open. Reuse the EC5 real spec-change evidence where still valid.
 
 ## Full-completion gates (after early cutover)
 

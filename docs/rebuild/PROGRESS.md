@@ -7,28 +7,24 @@ Current handoff only. Per-change evidence remains in archived Provenance
 
 **EC1–EC6 passed; the early Go core-loop cutover is complete.** EC6 installed
 the separate NEW pin, aligned protected instructions/setup and passed all
-required pin/status/check/doctor smokes. Full product completion remains open.
-Main was clean at the tested candidate before this author handoff, with an empty
-queue, no shared claims and all acceptance controllers/workers returned.
+required pin/status/check/doctor smokes at handoff commit `c1de8f4`.
+Full product completion remains open.
+
+The owner selected the next bounded milestone on 2026-10-31: implement drill
+support and prove one independent contracts drill in an isolated clone, with
+main's NEW pin unchanged. PLAN orders execution, ACCEPTANCE DR1–DR4 defines
+completion, and GOAL is the restart prompt. All DR gates are pending;
+implementation and the real proof have not started. This update is planning only.
+Main was clean and the pinned controller's queue empty before these author edits,
+with no shared claims or live controller/worker processes.
 Only the earlier push through `dae9b28` was owner-authorized; later work is local.
 
-0131–0138 are applied with their archived evidence preserved. 0134 supplies
-replaceable-stub guidance; 0135 retains JUnit failures; 0136 supplies bounded
-own/dependent retry assertions; 0137 separates Decisions from process Notes;
-0138 isolates audit inputs, validates Audit-only edits and cleans up workspaces.
-0138's owner-authorized recovery exception is recorded in its archived Notes.
-Actual NEW invocations confirmed the guidance and bounded retry feedback; the
-retry fixture remains inspectable at
-`/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-0136-smoke-agyg5ph1`.
+0131–0138, the two app audit-cwd eval fixes, and demonstrated follow-ups 0139
+(Audit insertion) and 0140 (nested doctor templates) are applied. Their phase
+checks/audits and 0138's owner-authorized recovery exception remain in archived
+Provenance/Notes. Preserve these archives; the completed queue is not restart work.
 
-Two normal app eval fixes (`4c794a6`, `20a8117`) removed obsolete audit-cwd
-assertions without changing public behavior. Acceptance exposed two core
-failures, fixed through ordinary fail-first/audit/application lifecycles:
-0139 (`f79a7be`) accepts a valid first Audit insertion before Provenance;
-0140 (`9822408`) renders nested doctor templates and preserves canary checks.
-Their independent audits and full passing results remain in the archives.
-
-## Gate results
+## Completed cutover evidence
 
 - **EC1:** all prerequisites and demonstrated follow-ups applied; clean main,
   empty queue and no shared claims before handoff.
@@ -36,6 +32,8 @@ Their independent audits and full passing results remain in the archives.
   finding: fail-first, immutable metadata/zones, independent audit inputs/history,
   Audit-only import/cleanup, approval/P07, saved attempts, worker-commit recovery
   and bounded time/usage stops. NEW has no runtime bootstrap dependency.
+  Actual retry CLI fixture:
+  `/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-0136-smoke-agyg5ph1`.
 - **EC3:** clean candidate `281ae9498c0fa20b44dc525494427ff123331ab3` passed
   build, `go test ./...`, `go test -race ./...` and `go vet ./...` with the
   specified GOCACHE. Both bootstrap and NEW passed `check`, `doctor --no-agent`,
@@ -84,14 +82,15 @@ Their independent audits and full passing results remain in the archives.
   copies that executable atomically into scratch `.fireweed/bin/fireweed`.
 - Use `GOCACHE=/tmp/fireweed-rebuild-cache`. History baseline remains
   `be35552b706aa3000ff8f11306d129ff1d701b85`; always pass an explicit range.
-- Workers and auditors: `codex exec --ephemeral --ignore-user-config
-  -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`.
+- GOAL records the exact worker/auditor/drill argv; no model/effort substitution.
   Audits use the configured controller audit step and temporary input-only
-  workspace; no manual isolation or model/effort substitution.
+  workspace. Reconstruction inputs must separately meet DR3 independence.
 
 ## Standing rules and remaining scope
 
-- Stop on any blocked change. Audit rounds and shared-base P07 still apply.
+- Stop on any blocked change, failed independence/access or drill gap/contradicted
+  Decision needing owner agreement. No automatic gap fixes or extra module drills.
+  Audit rounds and shared-base P07 still apply.
   Never record the unapproved count or its limit here; read live controller
   `status --json` and `authoring.max_unapproved` before starting work.
 - Push only on explicit owner instruction. Protected author edits stay separate
@@ -99,19 +98,22 @@ Their independent audits and full passing results remain in the archives.
 - Known warnings: bootstrap C01 identifies embedded recipe specs outside the
   module graph; C18 flags repeated generic requirement sentences. B02 reports
   existing APP-103/104 and CHK-055 case counts. Go's module stat-cache write
-  warning is nonfatal. NEW's pre-handoff C16 managed-guidance warning is addressed
-  by aligning AGENTS in this handoff. Zero warnings is not a gate.
+  warning is nonfatal. NEW's C16 guidance warning was resolved by EC6.
+  Zero warnings is not a gate.
 - The earlier contracts drill's native result passed, but the agent searched
   other modules' internal code, so it does not meet independence. Its retained
-  ref is `refs/fireweed/drills/contracts/20261028T103005.180922000`; no new real
-  drill or regeneration was run for this milestone.
-- Full product completion remains open: real drills/regeneration validation,
+  ref is `refs/fireweed/drills/contracts/20261028T103005.180922000`. It was a
+  bootstrap run and cannot substitute for DR3's independent NEW proof.
+- Beyond the current contracts proof, full completion still needs remaining
+  modules' independent drills, actual regenerate validation,
   gc/migrate and stale/fix conveniences, additional recipes, version/file-format
   migration, remaining warnings, packaging and every later full-completion gate.
-  No real drill/regeneration or deferred product work is authorized here.
+  No additional real module drill, main contracts replacement, real regenerate
+  change, main controller promotion or deferred product work is included here.
 
 ## Next
 
-This milestone is complete. Use the recorded NEW pin for subsequent authorized
-core-loop work. Await owner scope for later product completion; no further
-drill/regeneration, deferred feature work or push is authorized by this goal.
+Start with PLAN's focused drill review and author the needed runner/app slice
+through the unchanged NEW pin. Complete DR1/DR2 before the one isolated real
+contracts proof. Stop at the first owner checkpoint and record any unresolved
+gap without authoring its fix. No push is authorized.

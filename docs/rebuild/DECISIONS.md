@@ -17,10 +17,10 @@ the current controller and the retained bootstrap recovery pin after EC6.
 ## D005 — Initial product diagnostic allocation
 
 The design requires stable codes and explanations but does not assign a meaning
-to P2-01. Newly authored AST-003 assigns it to missing genuine fail-first evidence.
-The controller's operational `explain P2-01` instead describes a forbidden-zone
-edit. Keep the authored product meaning and record this intentional difference
-in the later controller/product smoke; controller code assignments are not
+to P2-01. AST-003 assigns it to missing genuine fail-first evidence.
+The bootstrap's operational `explain P2-01` instead describes a forbidden-zone
+edit. The completed controller/product smoke records this intentional difference;
+the authored product meaning remains authoritative. Bootstrap code assignments are not
 product authority. Other code mappings remain to be authored with their behavior.
 
 ## D006 — Diagnostic allocation (human review 3)
@@ -49,28 +49,27 @@ Specs or Decisions are edited by hand.
 
 ## D007 — Doctor diagnostics
 
-The Milestone 2 doctor feature uses the previously reserved C14–C16 slots:
+Doctor uses the previously reserved C14–C16 slots:
 C14 for doctor hook/canary setup, detection and recovery failures; C15 for agent
 probe failures or usage limits, and the shared-auditor-command warning; C16 for
 stale or missing managed guidance and playbook override base metadata. Severity
-remains a property of the diagnostic. Add accurate assets explanations after
-the doctor backend emits these causes and before CLI wiring;
-D006's existing assignments remain unchanged.
+remains a property of the diagnostic. D006's existing assignments remain unchanged.
 
 ## D008 — Regenerate warning
 
 The regenerate lifecycle feature assigns P10 to the warning that its module
 lacks a passing drill dated after the latest applied implementation Provenance.
-Add its explanation after the workflow emits it and before closing that CLI
-slice; this allocates no unrelated diagnostic or drill authorization.
+This allocation grants no drill authorization; the current scope is in PLAN
+and PROGRESS.
 
 ## D009 — Early core-loop cutover milestone (owner, 2026-10-30)
 
 The owner selected an early Go/current-format core-loop cutover before drills,
-regeneration validation and the remaining product surface. Complete 0134–0138
-and ACCEPTANCE EC1–EC5 under bootstrap, then perform EC6 as a separate controller
-pin/handoff. Full design obligations and full-completion gates remain open;
-this milestone changes sequencing, not product scope or enforcement.
+regeneration validation and the remaining product surface. It required 0134–0138
+and ACCEPTANCE EC1–EC5 under bootstrap, then EC6 as a separate controller
+pin/handoff; PROGRESS records completion. Full design obligations and
+full-completion gates remain open; this changed sequencing, not product scope
+or enforcement.
 
 ## D010 — Held-change continuation
 
