@@ -63,3 +63,11 @@ The regenerate lifecycle feature assigns P10 to the warning that its module
 lacks a passing drill dated after the latest applied implementation Provenance.
 Add its explanation after the workflow emits it and before closing that CLI
 slice; this allocates no unrelated diagnostic or drill authorization.
+
+## D009 — Early core-loop cutover milestone (owner, 2026-10-30)
+
+The owner selected an early Go/current-format core-loop cutover before drills,
+regeneration validation and the remaining product surface. Complete 0134–0138
+and ACCEPTANCE EC1–EC5 under bootstrap, then perform EC6 as a separate controller
+pin/handoff. Full design obligations and full-completion gates remain open;
+this milestone changes sequencing, not product scope or enforcement.

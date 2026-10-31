@@ -1,69 +1,95 @@
 # Rebuild plan
 
-How the agent works. [PROGRESS.md](PROGRESS.md) holds live state, [SYSTEM.md](../../SYSTEM.md)
-the guardrails, [ACCEPTANCE.md](ACCEPTANCE.md) the full inventory and final gates.
+[PROGRESS.md](PROGRESS.md) records the current controller and handoff.
+[ACCEPTANCE.md](ACCEPTANCE.md) separates early-cutover evidence from full product
+completion. The owner selected early Go core-loop cutover on 2026-10-30.
 
-## Route
+## Milestone 1 — Finish the cutover prerequisites
 
-The manual lifecycle, setup, `next`, bounded `run`, recovery, all change kinds
-and most of the reading surface are done (see PROGRESS). What remains:
+1. Completed: 0132 and 0133 finished on main with passing implementation
+   Provenance. Preserve that evidence and their archived lifecycle state.
+2. Completed: the author commits from codex/stub-handoff-guidance were integrated
+   onto current main after its run returned clean and unclaimed. The branch's
+   older lifecycle snapshot was not restored.
+3. Execute 0134–0138 with bootstrap and all ordinary phase checks:
+   - 0134: implementation-ready stub guidance and Go example.
+   - 0135 then 0136: retain JUnit failure text and supply bounded retry details.
+   - 0137: worker Decisions/Notes guidance and examples.
+   - 0138: isolated audit input workspaces, validated Audit-only import and
+     cleanup, including partial work on failure/limit exits.
+4. Return to the core-readiness gates. Add further changes only for a concrete
+   failing core scenario or an unmet core design/spec clause discovered there.
+   The current focused inspection identified audit workspace isolation as the
+   additional implementation blocker; it did not establish the gates as passed.
 
-1. Remaining commands and options: `drill`, `gc`, `migrate`, `show --stale`,
-   `check --fix`.
-2. Recipes, version-range enforcement, format migration and packaging.
-3. Final gates: real drills of every disposable module, isolated self-hosting,
-   reference smoke, fresh-checkout checks and delivery.
+All of 0134–0138 are prerequisites, including the guidance improvements. A
+blocked change still stops the run for an owner checkpoint.
+
+## Milestone 2 — Prove and promote the core loop
+
+Pass EC1–EC5 in ACCEPTANCE: scoped core review, fresh-checkout Go and CLI checks,
+one controller/NEW comparison smoke, and NEW governing a real change in an
+isolated clone with real workers and a restricted auditor. Reuse permanent
+fixtures for negative paths and bounded recovery/limit behavior.
+
+Then perform EC6 in a separate author commit: pin NEW separately from the
+mutable subject, align controller instructions/setup/PATH, record source/hash
+and remaining limitations, and smoke-check status/check/doctor with
+the promoted controller before subsequent core-loop changes. Keep bootstrap available for explicit recovery.
+No active run or shared claim may cross the handoff.
+
+## Milestone 3 — Deferred product completion
+
+After early cutover, resume the full design and full-completion gates. Deferred
+work includes real drills/regeneration validation; gc/migrate, show --stale and
+check --fix; remaining recipes; version-range/file-format migration; C17–C19
+warning completeness; packaging and final distribution. These remain required
+for full completion and do not block the scoped core milestone. Real drills
+still need their own owner authorization.
+
+## Controller and subject
+
+| Stage | Workflow controller | Product under test |
+| --- | --- | --- |
+| Current / EC1–EC5 | .fireweed/bin/fireweed-bootstrap, existing 0.1.1 pin | bin/fireweed |
+| After EC6 | separately pinned NEW at the path recorded in PROGRESS | bin/fireweed |
+
+Use explicit paths and GOCACHE=/tmp/fireweed-rebuild-cache. Worker commands
+named fireweed and FIREWEED_BIN must resolve to the selected controller;
+product fixtures explicitly use the subject binary. A worker build of the
+subject must not replace the pinned controller. Never repin or fall back during
+a live claim. After a cutover failure, stop and recover explicitly with the
+owning controller before considering a controller change.
 
 ## Choosing and closing a change
 
-- Name the CLI scenario and missing behavior in the change Motivation. Target
-  one module; batch related work in it with no cap on spec count, but keep each
-  spec atomic and the change reviewable.
-- A dependency can land as its own change, but return to its caller as soon as
-  the interface works.
-- Every slice ends with an actual NEW command and an inspectable result. Prefer
-  a permanent app eval that drives NEW over a one-off manual run.
-- Fix frozen evals with `eval_fix` and behavior with normal changes. Keep
-  `explain` accurate for codes actually emitted; don't pre-allocate diagnostics.
-
-## Controller and product
-
-| Role | Path | Use |
-| --- | --- | --- |
-| Pinned bootstrap controller | `.fireweed/bin/fireweed-bootstrap` | Claims, checks, commits, application and archives in this checkout |
-| NEW | `bin/fireweed`, built with `go build -o bin/fireweed .` | Product fixtures and isolated self-hosting |
-
-Worker commands named `fireweed` resolve to the controller; product fixtures
-select NEW. `FIREWEED_BIN` names the binary that invoked a hook. Never
-substitute the controller for product acceptance. The controller governs this
-checkout until acceptance; NEW self-hosts only in an isolated clone.
+- Motivation names the CLI scenario, user-visible need and design/SYSTEM basis.
+- Target one module; batch coherent work and keep every spec atomic. Return
+  from a dependency to its caller as soon as the interface is usable.
+- Close each slice with an actual NEW invocation and inspectable result.
+- Use eval_fix for wrong frozen evals, normal changes for behavior. Keep explain
+  accurate for emitted codes; do not allocate speculative diagnostics.
 
 ## Per-change loop
 
-1. As author: read SYSTEM, the projected specs, the relevant design clauses and
-   `playbook author-change`. Run `new-change`, write Added specs with `new:`
-   handles (or Modified/Removed/`fixes`), `stamp`, `check`, and commit the
-   authored change separately.
-2. Controller `start <slug>`, then `context <slug>` before each worker step.
-3. Evals step: permanent black-box evals, the described interface and allowed
-   stubs. Every Added/Modified/fixes ID needs a genuinely failing case unless
-   `already_satisfied`. Iterate with `verify --quick`; `done` runs full checks.
-4. Audit step: the controller's audit step. Findings are exact
-   spec clauses no test asserts. Re-audits cover only IDs with prior findings;
-   at most two findings rounds, then the change blocks for the owner.
-5. Implementation step: only allowed files. `done` applies, archives and
-   commits.
-6. Update PROGRESS only if state, next work or standing rules changed.
+1. Author: read SYSTEM, projected specs, relevant design clauses and the active
+   controller's author-change playbook. Use new: handles, stamp, check and review
+   show --projected, then commit only the authored change separately.
+2. Controller start, then context before each worker step.
+3. Evals: black-box tests, described interfaces and allowed new disposable stubs.
+   Every Added/Modified/fixes ID needs a genuine failure unless already_satisfied.
+   Iterate with verify --quick; done runs full checks.
+4. Independent audit: only unasserted spec clauses, restricted inputs, re-audits
+   limited to prior finding IDs, and at most two configured findings rounds.
+5. Implementation: allowed files only. The controller's done verifies, applies,
+   archives and commits. Workers never commit.
+6. Update PROGRESS only when state, next work or standing rules change.
 
-## Verification and regeneration
+## Evidence and limits
 
-Permanent evals use public APIs, temporary repositories, explicit Git
-identities, local hooks and bounded fake agents, with no bootstrap, agent login
-or network. Fake-agent runs prove orchestration, not regeneration.
-
-Drills need owner authorization. Reconstruction gets retained contracts, evals
-and permitted dependency interfaces only. Keep reports and refs, clean scratch
-worktrees, and get owner agreement before any gap-driven change.
-
-The single controller/NEW smoke compares exit codes, JSON envelope shape and
-resulting commits/refs. Record intentional differences in DECISIONS.
+Permanent evals use public APIs, temporary repositories, explicit fixture Git
+identities, local hooks and bounded fake agents. Real-agent self-hosting is a
+separate acceptance run. Neither requires a real drill for early cutover.
+Record concise gate outcomes in PROGRESS and intentional comparison differences
+in DECISIONS. Preserve existing evidence; rerun only what changed or remains
+unproven. Do not create separate per-case reports or hash inventories.
