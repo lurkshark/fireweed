@@ -1,6 +1,11 @@
 ---
+audit_rounds: 0
 module: runner
+phase: audit
+run: 20261031T042130-ae9b6df7b92e26d7b3aed83c
 ---
+
+
 
 ## Motivation
 
@@ -20,16 +25,28 @@ it without editing the frozen interface (the wiring repair from 0128).
 
 ## Added
 
-### new:approval-required
+### RUN-041
 Next MUST return an error for which IsApprovalRequired reports true when the selected change file is on neither the local nor the shared base and AllowUnmerged is false.
 
-### new:approval-other-errors
+### RUN-042
 IsApprovalRequired MUST report false for Next errors caused by anything other than a missing approval.
 
 ## Modified
 
+
+
 ## Removed
+
+
 
 ## Decisions
 
+
+
 ## Rejected alternatives
+
+
+
+## Provenance
+
+- evals 2026-10-31T04:36:40.355209Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=362 failing=4 passing=358

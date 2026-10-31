@@ -33,6 +33,10 @@ func IsUsageStop(err error) bool {
 	return next.IsUsageStop(err)
 }
 
+func IsApprovalRequired(err error) bool {
+	return next.IsApprovalRequired(err)
+}
+
 func IsTimeStop(err error) bool {
 	return run.IsTimeStop(err)
 }
