@@ -5,9 +5,9 @@ Per-change evidence lives in each archived change's Provenance
 (`changes/archive/`); older reports and the former HISTORY.md ledger are in Git
 history (last present at `c536833`).
 
-## State — 2026-10-30
+## State — 2026-10-31
 
-132 changes applied (0001–0133; 0109 was abandoned). All six typed-diagnostic
+133 changes applied (0001–0134; 0109 was abandoned). All six typed-diagnostic
 changes (0128–0133) have passing implementation Provenance; spec changes passed
 independent audits and maintenance preserved frozen evals/interfaces. 0132
 resumed from saved attempt 1 after the owner's interruption and continuation.
@@ -20,8 +20,21 @@ The owner selected early Go core-loop cutover, with 0134–0137 required. The
 author commits from codex/stub-handoff-guidance are now integrated on main,
 including 0138's restricted audit-workspace fix and the revised milestone plan.
 Integration followed completion of the primary run with a clean unclaimed
-checkout. Changes 0134–0138 are queued; no EC gate is claimed passed and no
-controller promotion has occurred.
+checkout. 0134 applied at `b42370c` after one corrected audit finding, with
+passing implementation Provenance (789 cases). NEW was rebuilt and its actual
+`playbook evals` output confirmed the replaceable-stub guidance.
+
+0135 is blocked in evals at `5d33222`: the lead interrupted verification to
+address an existing whole-Case equality assertion that would conflict with the
+new Failure field. Bootstrap treats interruption as a saved-attempt block,
+rather than retaining a live claim. Its untouched worker evals/interface work
+is saved at `refs/fireweed/attempts/0135-junit-failure-details/1`. The proposed
+correction is to exclude only the newly added field from the older equality
+assertion while preserving its existing field assertions and the new Failure
+evals. No correction or resume has been performed; owner checkpoint required.
+0136–0138 remain queued and waiting. The execution checkout is clean, the run
+has returned and there are no shared claims. No EC gate is claimed passed and
+no controller promotion has occurred.
 
 The current controller remains bootstrap 0.1.1 at the verified pin below.
 The owner authorized pushing current main to origin/main on 2026-10-30,
@@ -49,8 +62,11 @@ integration at dae9b28.
 
 ## Next
 
-1. Complete queued changes 0134–0138 with bootstrap and normal phase checks;
-   stop at any new block. The preceding 0132/0133 queue is complete.
+1. Stop for the owner's 0135 blocked-change checkpoint. If continuation is
+   authorized, remove its blocked field in an author commit, resume saved
+   attempt 1 with bootstrap, correct the eval expectation before freeze using
+   the configured worker, and retain normal phase checks and bounds. Then
+   complete 0136–0138. 0132–0134 are complete.
 2. Prove ACCEPTANCE EC1–EC5: focused core review, fresh-checkout checks,
    reference smoke and isolated real-worker self-hosting without a drill.
 3. Perform EC6's separate controller pin/instruction handoff and record its
