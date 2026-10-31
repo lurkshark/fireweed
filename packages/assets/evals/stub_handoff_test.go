@@ -16,6 +16,22 @@ func Test_AST_043_EvalsStubHandoff(t *testing.T) {
 	requirePattern(t, playbook, `(?i)temporar(y|ily)|stub`, "temporary stub behavior")
 	requirePattern(t, playbook, `(?i)\b(replace|rewrite|remove|discard|delete)\w*\b[^.\n]*(stub|temporar)|\b(stub|temporar)\w*\b[^.\n]*\b(replace|rewrite|remove|discard|delete)\w*\b`, "temporary behavior can be replaced during implementation")
 	requirePattern(t, playbook, `(?i)\b(implement|implementation)\b[^.\n]*\b(frozen|retained|interface)\b|\b(frozen|retained|interface)\b[^.\n]*\b(implement|implementation)\b`, "implementation does not require editing frozen interface files")
+	// The handoff must connect replaceable stub behavior with preserving the
+	// interface, rather than merely mention those ideas in unrelated advice.
+	stub := regexp.MustCompile(`(?i)\b(stub|temporar)\w*\b`)
+	replacement := regexp.MustCompile(`(?i)\b(replace|rewrite|remove|discard|delete)\w*\b`)
+	implementation := regexp.MustCompile(`(?i)\bimplement(ation)?\b`)
+	interfacePreserved := regexp.MustCompile(`(?is)\bwithout\s+(?:edit|chang)\w*[^.]{0,100}\b(?:interface|facade|api[.]go)\b|\b(?:interface|facade|api[.]go)\b[^.]{0,100}\b(?:unchanged|untouched|unmodified|alone)\b`)
+	handoffFound := false
+	for _, paragraph := range strings.Split(playbook, "\n\n") {
+		if stub.MatchString(paragraph) && replacement.MatchString(paragraph) && implementation.MatchString(paragraph) && interfacePreserved.MatchString(paragraph) {
+			handoffFound = true
+			break
+		}
+	}
+	if !handoffFound {
+		t.Error("AST-043: playbook must explain that implementation replaces temporary stub behavior without editing frozen interface files")
+	}
 	requirePattern(t, playbook, `(?i)\b(identify|name|list|record)\b[^.\n]*\b(implementation.writable|writable|disposable)\b[^.\n]*\bfiles?\b`, "identify implementation-writable files")
 	requirePattern(t, playbook, `(?i)\b(missing|unimplemented|remaining)\b[^.\n]*\b(behavior|functionality)\b`, "identify files for missing behavior")
 	requirePattern(t, playbook, `(?i)\b(before|prior to)\b[^.\n]*\b(complet|finish|end)\w*\b[^.\n]*\bevals?\b|\b(complet|finish|end)\w*\b[^.\n]*\bevals?\b[^.\n]*\b(before|prior to)\b`, "identify writable files before completing evals")
