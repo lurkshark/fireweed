@@ -260,6 +260,32 @@ func Test_FLOW_122_FLOW_123_PRBodyEndpointExceptionsAndRetainedCosts(t *testing.
 	})
 }
 
+func Test_FLOW_126_PRBodyEndpointConfigError(t *testing.T) {
+	root := fixture(t, "", "", "", "", "")
+	base := head(t, root)
+	write(t, root, "fireweed.yaml", "[invalid endpoint configuration\n")
+	commit(t, root, "invalid endpoint configuration")
+
+	_, err := workflow.PRBody(root, base+".."+head(t, root))
+	if err == nil {
+		t.Fatal("PRBody accepted malformed endpoint configuration")
+	}
+	if !workflow.IsEndpointConfigError(err) {
+		t.Errorf("IsEndpointConfigError(%v) = false, want true", err)
+	}
+}
+
+func Test_FLOW_127_PRBodyUnresolvableRangeIsNotEndpointConfigError(t *testing.T) {
+	root := fixture(t, "", "", "", "", "")
+	_, err := workflow.PRBody(root, head(t, root)+"..not-a-commit")
+	if err == nil {
+		t.Fatal("PRBody accepted an unresolvable range")
+	}
+	if workflow.IsEndpointConfigError(err) {
+		t.Errorf("IsEndpointConfigError(%v) = true, want false", err)
+	}
+}
+
 func Test_FLOW_124_FLOW_125_PRBodyDisposableArtifactBoundaryAndRanges(t *testing.T) {
 	root := fixture(t, "", "", "", "", "")
 	base := head(t, root)

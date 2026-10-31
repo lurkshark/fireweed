@@ -1,6 +1,11 @@
 ---
+audit_rounds: 0
 module: workflow
+phase: audit
+run: 20261031T044908-d2a4d72ed9377bd1b5108881
 ---
+
+
 
 ## Motivation
 
@@ -19,16 +24,28 @@ it without editing the frozen interface (the wiring repair from 0128).
 
 ## Added
 
-### new:endpoint-config-error
+### FLOW-126
 PRBody MUST return an error for which IsEndpointConfigError reports true when the project at the range endpoint fails to load.
 
-### new:endpoint-other-errors
+### FLOW-127
 IsEndpointConfigError MUST report false when PRBody fails because the range cannot be resolved.
 
 ## Modified
 
+
+
 ## Removed
+
+
 
 ## Decisions
 
+
+
 ## Rejected alternatives
+
+
+
+## Provenance
+
+- evals 2026-10-31T05:02:54.54355Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=510 failing=2 passing=508

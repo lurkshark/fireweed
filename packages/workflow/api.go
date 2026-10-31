@@ -47,3 +47,4 @@ func Status(root string) (StatusReport, error)  { return lifecycle.Status(root) 
 func PRBody(root, revisionRange string) (PRBodyReport, error) {
 	return lifecycle.PRBody(root, revisionRange)
 }
+func IsEndpointConfigError(err error) bool { return lifecycle.IsEndpointConfigError(err) }
