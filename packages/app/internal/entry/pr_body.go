@@ -3,8 +3,8 @@ package entry
 import (
 	"fmt"
 	"io"
-	"strings"
 
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
 
@@ -19,7 +19,7 @@ func runPRBody(args []string, jsonMode bool, out, errOut io.Writer) int {
 	report, err := workflow.PRBody(root, args[0])
 	diagnostics := reported(report.Diagnostics)
 	if err != nil {
-		endpointConfig := strings.HasPrefix(err.Error(), "load endpoint project at ")
+		endpointConfig := workflow.IsEndpointConfigError(err)
 		action := "Use a resolvable commit range, then retry pr-body."
 		if endpointConfig {
 			action = "Correct fireweed.yaml and module declarations at the selected endpoint, then retry pr-body."
@@ -31,11 +31,8 @@ func runPRBody(args []string, jsonMode bool, out, errOut io.Writer) int {
 			last := len(diagnostics) - 1
 			if diagnostics[last].Code == "P01" {
 				diagnostics[last].Code = "C01"
-				for _, part := range strings.SplitAfter(err.Error(), ": ") {
-					if assigned := diagnosticPrefix.FindStringSubmatch(part); assigned != nil {
-						diagnostics[last].Code = assigned[1]
-						break
-					}
+				if code, _, ok := contracts.ErrorCode(err); ok {
+					diagnostics[last].Code = code
 				}
 			}
 		}

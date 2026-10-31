@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 
 	"github.com/lurkshark/fireweed/packages/checks"
 	"github.com/lurkshark/fireweed/packages/contracts"
@@ -51,9 +50,6 @@ func runCI(args []string, noDoctor, jsonMode bool, out, errOut io.Writer) int {
 	history, err := checks.History(snapshot.Root, revisionRange)
 	if err != nil {
 		code := projectFailureCode(err, "P01")
-		if strings.HasPrefix(err.Error(), "parse ") && strings.Contains(err.Error(), "/SPEC.md:") {
-			code = "C03"
-		}
 		addError(fmt.Errorf("%s: %w", code, err), "Use a valid Git revision range and repair recorded documents, then retry ci.")
 	} else {
 		add(history.Diagnostics)
@@ -71,8 +67,8 @@ func runCI(args []string, noDoctor, jsonMode bool, out, errOut io.Writer) int {
 		specs, parseErr := contracts.ParseItems(section)
 		if parseErr != nil {
 			code := "C03"
-			if strings.HasPrefix(parseErr.Error(), "duplicate item ID:") {
-				code = "C05"
+			if assigned, _, ok := contracts.ErrorCode(parseErr); ok {
+				code = assigned
 			}
 			addError(fmt.Errorf("%s: %w", code, parseErr), "Use valid "+module.Name+" Specs, then retry ci.")
 			continue

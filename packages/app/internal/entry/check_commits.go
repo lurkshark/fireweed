@@ -34,11 +34,6 @@ func runCheckCommits(args []string, jsonMode bool, out, errOut io.Writer) int {
 	report, err := checks.History(snapshot.Root, revisionRange)
 	if err != nil {
 		code := projectFailureCode(err, "P01")
-		// A recorded malformed SPEC is absent from the current worktree's Check
-		// diagnostics, so retain its document-syntax cause here.
-		if strings.HasPrefix(err.Error(), "parse ") && strings.Contains(err.Error(), "/SPEC.md:") {
-			code = "C03"
-		}
 		return cliFailure(1, jsonMode, out, errOut, code, fmt.Sprintf("%v. Use a valid Git revision range and repair the recorded project documents, then retry check-commits.", err))
 	}
 	if len(report.Diagnostics) != 0 {

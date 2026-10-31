@@ -277,9 +277,6 @@ func Run(args []string, out, errOut io.Writer) int {
 		}
 		if err := project.Stamp(snapshot.Root, positional[1]); err != nil {
 			code := projectFailureCode(err, "P01")
-			if strings.Contains(err.Error(), " bases must be a mapping") {
-				code = "C08"
-			}
 			return failStatus(1, code, err.Error())
 		}
 		body = fmt.Sprintf("Stamped %s\n", positional[1])
@@ -357,13 +354,14 @@ func Run(args []string, out, errOut io.Writer) int {
 			section, _ := contracts.Section(found.Document.Body, "Specs")
 			items, err := contracts.ParseItems(section)
 			if err != nil {
-				if strings.HasPrefix(err.Error(), "duplicate item ID: ") {
-					if strings.HasPrefix(err.Error(), "duplicate item ID: new:") {
-						return fail("U02", err.Error())
-					}
-					return fail("C05", err.Error())
+				code, subject, coded := contracts.ErrorCode(err)
+				if coded && code == "C05" && strings.HasPrefix(subject, "new:") {
+					code = "U02"
 				}
-				return fail("C03", err.Error())
+				if !coded {
+					code = "C03"
+				}
+				return fail(code, err.Error())
 			}
 			for _, item := range items {
 				if item.ID == positional[2] {

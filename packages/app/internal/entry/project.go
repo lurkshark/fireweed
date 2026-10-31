@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project"
 )
 
@@ -37,27 +38,32 @@ func loadValidatedProject() (project.Snapshot, error) {
 		return project.Snapshot{}, err
 	}
 	if err := project.ValidateGraph(snapshot.Modules); err != nil {
-		return project.Snapshot{}, err
+		return project.Snapshot{}, contracts.CodedError{Code: "C02", Cause: err}
 	}
 	return snapshot, nil
 }
 
-// Match the returned failure itself. Check can report several independent
-// problems, so its first diagnostic does not necessarily describe this error.
 func projectFailureCode(err error, fallback string) string {
+	if code, _, ok := contracts.ErrorCode(err); ok {
+		return code
+	}
 	if err == nil {
 		return fallback
 	}
-	message := err.Error()
-	if strings.Contains(message, "pending change ") && strings.HasSuffix(message, " not found") {
-		return "U02"
-	}
 	root, rootErr := findProjectRoot()
 	if rootErr == nil {
+		code := ""
 		for _, diagnostic := range project.Check(root) {
-			if message == diagnostic.Message || strings.HasSuffix(message, ": "+diagnostic.Message) {
-				return diagnostic.Code
+			if diagnostic.Warning {
+				continue
 			}
+			if code != "" && code != diagnostic.Code {
+				return fallback
+			}
+			code = diagnostic.Code
+		}
+		if code != "" {
+			return code
 		}
 	}
 	return fallback
@@ -74,7 +80,10 @@ func newChangeFailureCode(err error) string {
 		strings.HasPrefix(message, "invalid change number in "):
 		return "C13"
 	default:
-		return projectFailureCode(err, "P01")
+		if code, _, ok := contracts.ErrorCode(err); ok {
+			return code
+		}
+		return "P01"
 	}
 }
 

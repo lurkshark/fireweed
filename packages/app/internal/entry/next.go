@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 	"regexp"
-	"strings"
 
 	"github.com/lurkshark/fireweed/packages/runner"
 )
@@ -44,7 +43,7 @@ func runNext(allowUnmerged, jsonMode bool, out, errOut io.Writer) int {
 			code = match[1]
 		}
 		action := "Use the reported cause to correct the change or project checks, then retry next."
-		if strings.Contains(err.Error(), "requires approval") {
+		if runner.IsApprovalRequired(err) {
 			action = "Approve the change on the configured base or use --allow-unmerged for authorized local work, then retry next."
 		}
 		status := 1

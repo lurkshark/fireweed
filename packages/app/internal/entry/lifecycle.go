@@ -223,8 +223,8 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 		specs, err := contracts.ParseItems(section)
 		if err != nil {
 			code := "C03"
-			if strings.HasPrefix(err.Error(), "duplicate item ID: ") {
-				code = "C05"
+			if assigned, _, ok := contracts.ErrorCode(err); ok {
+				code = assigned
 			}
 			return fail(2, code, fmt.Sprintf("%v. Correct the module Specs and retry coverage.", err))
 		}

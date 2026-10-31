@@ -59,7 +59,7 @@ func runQueue(max int, forDuration time.Duration, allowUnmerged, jsonMode bool, 
 			code = match[1]
 		}
 		action := "Use the reported cause to correct the change or project checks, then retry run."
-		if strings.Contains(err.Error(), "requires approval") {
+		if runner.IsApprovalRequired(err) {
 			action = "Approve the change on the configured base or use --allow-unmerged for authorized local work, then retry run."
 		}
 		status := 1
