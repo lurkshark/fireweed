@@ -139,11 +139,28 @@ func Test_RUN_044_RetryBoundsUnicodeFailureExcerptsAndMarksOmissions(t *testing.
 	if !strings.Contains(section, "RUN044_HEAD_00_") || !strings.Contains(section, strings.Repeat("界", 4000)) {
 		t.Error("first failure did not receive a readable Unicode excerpt")
 	}
+	for i := 0; i < 12; i++ {
+		head := fmt.Sprintf("RUN044_HEAD_%02d_", i)
+		start := strings.Index(section, head)
+		if start < 0 {
+			continue // This case was omitted under the section budget.
+		}
+		fillRunes := 0
+		for _, r := range section[start+len(head):] {
+			if r != '界' {
+				break
+			}
+			fillRunes++
+		}
+		if n := utf8.RuneCountInString(head) + fillRunes; n > 4096 {
+			t.Errorf("case %d failure excerpt contains at least %d Unicode code points, want at most 4096", i, n)
+		}
+		if strings.Contains(section, fmt.Sprintf("RUN044_TAIL_%02d", i)) {
+			t.Errorf("case %d failure excerpt continued past its first 4096 code points", i)
+		}
+	}
 	if !strings.Contains(section, "RUN044_DEPENDENT_FIRST") || strings.Index(section, "RUN044_DEPENDENT_FIRST") >= strings.Index(section, "RUN044_HEAD_00_") {
 		t.Error("lexically first dependent failure was omitted or misordered")
-	}
-	if strings.Contains(section, "RUN044_TAIL_00") {
-		t.Error("first failure excerpt continued past 4096 code points")
 	}
 	if strings.Contains(section, "ALP-002_long_11") {
 		t.Error("section exceeded its budget instead of omitting later cases")

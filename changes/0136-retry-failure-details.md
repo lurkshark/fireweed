@@ -4,7 +4,7 @@ audit_pending:
 audit_rounds: 1
 bases: {}
 module: runner
-phase: evals
+phase: audit
 run: 20261031T075040-5475d59eb944f0afb625ad13
 ---
 
@@ -70,6 +70,7 @@ headings need not have an exact prescribed wording. No real agent or network.
 
 - evals 2026-10-31T08:03:11.52703Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=364 failing=2 passing=362
 - audit 2026-10-31T08:04:06.095812Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=5cb9f9dac24b0b6bb1b970edd4fab4406d2b4d0435ddefc3ef59a2cfdd267f18 tests=0 failing=0 passing=0
+- evals 2026-10-31T08:12:36.370233Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=364 failing=2 passing=362
 
 ## Audit
 
