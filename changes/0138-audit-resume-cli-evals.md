@@ -14,7 +14,7 @@ eval_fix:
     - APP-089
     - APP-090
 module: app
-phase: audit
+phase: impl
 run: 20261031T160522-cc75ead0e978d616ecc2f33c
 ---
 
@@ -81,3 +81,9 @@ comparison. Its IDs, run, audit round and configured bounds stay unchanged.
 ## Provenance
 
 - evals 2026-10-31T16:15:21.161101Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=282 failing=0 passing=282
+- audit 2026-10-31T16:16:14.725795Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=5cb9f9dac24b0b6bb1b970edd4fab4406d2b4d0435ddefc3ef59a2cfdd267f18 tests=0 failing=0 passing=0
+
+## Audit
+
+No findings
+Checked IDs: APP-076, APP-077, APP-079, APP-080, APP-081, APP-082, APP-083, APP-084, APP-086, APP-089, APP-090
