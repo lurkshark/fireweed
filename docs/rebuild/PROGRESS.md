@@ -7,9 +7,14 @@ history (last present at `c536833`).
 
 ## State — 2026-10-30
 
-126 changes applied (0001–0127; 0109 was abandoned). Changes 0128–0133 are
-queued. No active, blocked or claimed change. The owner authorized the controller
-upgrade to 0.1.1 on 2026-10-30; version, executable hash and clean source revision
+126 changes applied (0001–0127; 0109 was abandoned). Change 0128 is blocked in
+implementation after both attempts failed CON-016; 0129–0133 remain queued and
+wait on its module. No claim remains. Its evals and independent audit passed,
+but the eval-phase ErrorCode stub lives in frozen api.go rather than delegating
+to disposable implementation. The queue run stopped under the checkpoint rule.
+The full eval-phase check took about 16 minutes, above the 15-minute target.
+The owner authorized the controller upgrade to 0.1.1 on 2026-10-30; version,
+executable hash and clean source revision
 were verified after installation. Controller `check` passed with the existing
 C01/C18 warnings.
 The owner authorized pushing this controller repin to `origin/main` on 2026-10-30.
@@ -39,14 +44,18 @@ The owner authorized pushing this controller repin to `origin/main` on 2026-10-3
 
 ## Next
 
-Product work is paused until the owner agrees the next slice. Suggested order:
+Owner decision required before continuing: authorize repair of 0128's eval-phase
+interface wiring so ErrorCode delegates to disposable code, preserving its eval
+assertions and leaving caller migrations to 0129, 0132 and 0133. Do not reset the
+blocked change or its attempts without that decision. See its Questions.
 
-1. Typed diagnostics: replace the 14 places in `packages/app/internal/entry`
-   that recover codes by matching error text. The contracts drill gap
-   (CON-011/012) is this problem.
-2. `drill` in NEW, then real drills of mid-graph modules (`project`, `checks`)
+After resolving 0128, finish the existing queue before choosing another slice.
+The queue completes typed diagnostics and addresses the contracts drill gap
+(CON-011/012). Suggested later order:
+
+1. `drill` in NEW, then real drills of mid-graph modules (`project`, `checks`)
    with strict input isolation.
-3. Remaining commands, recipes, versioning and packaging, then the final gates.
+2. Remaining commands, recipes, versioning and packaging, then the final gates.
 
 ## Standing rules
 
