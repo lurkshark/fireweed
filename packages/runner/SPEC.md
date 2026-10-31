@@ -206,6 +206,15 @@ Next MUST return an error for which IsApprovalRequired reports true when the sel
 ### RUN-042
 IsApprovalRequired MUST report false for Next errors caused by anything other than a missing approval.
 
+### RUN-043
+On a verification retry, Next MUST append a detail section identifying the module, classname, testcase name and Case.Failure for failed cases from every reported module, including dependents, subject to RUN-044.
+It MUST select cases by lexical module name and then report order, excluding passing and skipped cases.
+
+### RUN-044
+The failed-case detail section MUST fit within 16,384 Unicode code points, including labels and truncation markers.
+Each Case.Failure excerpt MUST contain at most its first 4,096 code points.
+Shortened diagnostic text or omitted cases MUST be marked.
+
 ## Decisions
 
 [0075-bounded-agent-invocation] An unset configured timeout defaults to 90 minutes. limit_patterns are

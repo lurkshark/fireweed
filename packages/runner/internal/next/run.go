@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/lurkshark/fireweed/packages/assets"
 	"github.com/lurkshark/fireweed/packages/contracts"
@@ -256,7 +257,57 @@ func verificationFeedback(phase string, verification workflow.Result, verifyErr 
 			feedback.WriteByte('\n')
 		}
 	}
+	feedback.WriteString(failedCaseDetails(verification, names))
 	return feedback.String()
+}
+
+const (
+	failedCaseSectionLimit = 16384
+	failureExcerptLimit    = 4096
+)
+
+func failedCaseDetails(verification workflow.Result, names []string) string {
+	type failedCase struct {
+		module, classname, name, failure string
+	}
+	var cases []failedCase
+	for _, module := range names {
+		for _, c := range verification.Reports[module].Cases {
+			if c.Result == "fail" {
+				cases = append(cases, failedCase{module, c.Classname, c.Name, c.Failure})
+			}
+		}
+	}
+	if len(cases) == 0 {
+		return ""
+	}
+	var section strings.Builder
+	section.WriteString("\n# Failed test cases\n")
+	used := utf8.RuneCountInString(section.String())
+	for i, c := range cases {
+		failure := []rune(c.failure)
+		shortened := len(failure) > failureExcerptLimit
+		if shortened {
+			failure = failure[:failureExcerptLimit]
+		}
+		entry := fmt.Sprintf("Module: %s\nClassname: %s\nTestcase: %s\nFailure: %s", c.module, c.classname, c.name, string(failure))
+		if shortened {
+			entry += "\n[diagnostic truncated]"
+		}
+		entry += "\n"
+		remaining := len(cases) - i - 1
+		reserve := 0
+		if remaining > 0 {
+			reserve = utf8.RuneCountInString(fmt.Sprintf("[%d failed cases omitted]\n", remaining))
+		}
+		if used+utf8.RuneCountInString(entry)+reserve > failedCaseSectionLimit {
+			section.WriteString(fmt.Sprintf("[%d failed cases omitted]\n", len(cases)-i))
+			break
+		}
+		section.WriteString(entry)
+		used += utf8.RuneCountInString(entry)
+	}
+	return section.String()
 }
 
 func requireApproval(root, path string) error {
