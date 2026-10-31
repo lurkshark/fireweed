@@ -98,6 +98,98 @@ cp packages/alpha/evals/next_test.go "$1/audit.eval"
 	auditWorkspaceGone(t, f)
 }
 
+func Test_RUN_013_AuditRetryUsesApprovedAgentConfiguration(t *testing.T) {
+	f := newNextFixture(t, true, true, "normal")
+	config := nextRead(t, f.root, "fireweed.yaml") + "limit_wait: 1ms\nlimit_budget: 50ms\nlimit_patterns: [RATE LIMIT]\n"
+	nextWrite(t, f.root, "fireweed.yaml", config)
+	nextCommit(t, f.root, "approved audit retry policy")
+	alternate := filepath.Join(f.logDir, "unapproved-auditor.sh")
+	unapproved := strings.Replace(config, filepath.Join(f.logDir, "auditor.sh"), alternate, 1)
+	if unapproved == config {
+		t.Fatal("fixture did not change the audit command")
+	}
+	nextWrite(t, f.logDir, "unapproved.yaml", unapproved)
+	nextWrite(t, f.logDir, "held-root", f.root)
+	nextWrite(t, f.logDir, "unapproved-auditor.sh", "#!/bin/sh\nprintf unapproved > \"$1/unapproved-invoked\"\nexit 9\n")
+	auditBeforeEdit(t, f, `count=0
+[ ! -f "$1/audit-attempts" ] || count=$(cat "$1/audit-attempts")
+count=$((count + 1))
+printf '%s' "$count" > "$1/audit-attempts"
+if [ "$count" -eq 1 ]; then
+  printf '%s' "$PWD" > "$1/first-audit.cwd"
+  held=$(cat "$1/held-root")
+  cp "$1/unapproved.yaml" "$held/fireweed.yaml"
+  printf 'RATE LIMIT' >&2
+  exit 9
+fi
+printf approved > "$1/approved-reused"
+exit 9
+`)
+	r, err := f.run(false)
+	if err == nil || runner.IsUsageStop(err) || len(r.Steps) != 3 || !r.Steps[1].Agent.UsageLimit || r.Steps[2].Phase != "audit" {
+		t.Fatalf("approved audit retry = %#v, %v", r, err)
+	}
+	if got := nextRead(t, f.logDir, "approved-reused"); got != "approved" {
+		t.Errorf("approved auditor was not reused: %q", got)
+	}
+	if _, statErr := os.Stat(filepath.Join(f.logDir, "unapproved-invoked")); !os.IsNotExist(statErr) {
+		t.Errorf("unapproved auditor ran: %v", statErr)
+	}
+	if got := nextRead(t, f.root, "fireweed.yaml"); got != unapproved {
+		t.Error("fixture did not leave the on-disk unapproved config in place")
+	}
+	if cwd := nextRead(t, f.logDir, "first-audit.cwd"); cwd == f.root || cwd == nextRead(t, f.logDir, "audit.cwd") {
+		t.Errorf("audit retry did not use a fresh restricted workspace: first=%q last=%q", cwd, nextRead(t, f.logDir, "audit.cwd"))
+	} else if _, statErr := os.Stat(cwd); !os.IsNotExist(statErr) {
+		t.Errorf("first audit workspace remains: %v", statErr)
+	}
+	auditWorkspaceGone(t, f)
+}
+
+func Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificationRetry(t *testing.T) {
+	f := newNextFixture(t, true, true, "normal")
+	nextWrite(t, f.logDir, "held-root", f.root)
+	nextWrite(t, f.logDir, "auditor.sh", `#!/bin/sh
+printf 'audit|%s|%s\n' "$PWD" "$FIREWEED_BIN" >> "$1/invocations"
+printf '%s' "$PWD" > "$1/audit.cwd"
+count=0
+[ ! -f "$1/audit-attempts" ] || count=$(cat "$1/audit-attempts")
+count=$((count + 1))
+printf '%s' "$count" > "$1/audit-attempts"
+if [ "$count" -eq 1 ]; then
+  cat >> changes/0001-next.md <<'AUDIT'
+
+## Audit
+No findings
+Checked IDs: ALP-002
+AUDIT
+  held=$(cat "$1/held-root")
+  printf 'package internal\n' > "$held/packages/alpha/internal/audit-zone-violation.go"
+else
+  held=$(cat "$1/held-root")
+  cp "$held/changes/0001-next.md" "$1/held-before-retry"
+  cp changes/0001-next.md "$1/workspace-before-retry"
+  rm "$held/packages/alpha/internal/audit-zone-violation.go"
+fi
+printf auditor
+`)
+	r, err := f.run(false)
+	if err != nil || r.State.Phase != "applied" || len(r.Steps) != 4 || r.Steps[1].Phase != "audit" || r.Steps[2].Phase != "audit" {
+		t.Fatalf("audit verification retry = %#v, %v", r, err)
+	}
+	for _, path := range []string{"held-before-retry", "workspace-before-retry"} {
+		got := nextRead(t, f.logDir, path)
+		if !strings.Contains(got, "No findings\nChecked IDs: ALP-002") || !strings.Contains(got, "One new value is needed.") {
+			t.Errorf("first permitted Audit edit absent before retry in %s: %q", path, got)
+		}
+	}
+	archived := nextRead(t, f.root, "changes/archive/0001-next.md")
+	if !strings.Contains(archived, "No findings; checked ALP-002") {
+		t.Errorf("retry did not retain Audit: %q", archived)
+	}
+	auditWorkspaceGone(t, f)
+}
+
 func Test_RUN_046_AuditCommitDoesNotEnterHeldGit(t *testing.T) {
 	f := newNextFixture(t, true, true, "commit-success")
 	auditAction(t, f, `git rev-parse HEAD > "$1/audit.commit"
