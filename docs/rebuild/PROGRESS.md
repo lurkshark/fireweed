@@ -24,17 +24,18 @@ checkout. 0134 applied at `b42370c` after one corrected audit finding, with
 passing implementation Provenance (789 cases). NEW was rebuilt and its actual
 `playbook evals` output confirmed the replaceable-stub guidance.
 
-0135 is blocked in evals at `5d33222`: the lead interrupted verification to
+0135 was blocked in evals at `5d33222`: the lead interrupted verification to
 address an existing whole-Case equality assertion that would conflict with the
 new Failure field. Bootstrap treats interruption as a saved-attempt block,
 rather than retaining a live claim. Its untouched worker evals/interface work
 is saved at `refs/fireweed/attempts/0135-junit-failure-details/1`. The proposed
 correction is to exclude only the newly added field from the older equality
 assertion while preserving its existing field assertions and the new Failure
-evals. No correction or resume has been performed; owner checkpoint required.
-0136–0138 remain queued and waiting. The execution checkout is clean, the run
-has returned and there are no shared claims. No EC gate is claimed passed and
-no controller promotion has occurred.
+evals. The owner authorized resuming saved attempt 1 and that correction on
+2026-10-31. This author commit clears the interruption block before bootstrap
+restores the work; normal phase checks and bounds remain required.
+0136–0138 remain queued. No EC gate is claimed passed and no controller
+promotion has occurred.
 
 The current controller remains bootstrap 0.1.1 at the verified pin below.
 The owner authorized pushing current main to origin/main on 2026-10-30,
@@ -62,11 +63,10 @@ integration at dae9b28.
 
 ## Next
 
-1. Stop for the owner's 0135 blocked-change checkpoint. If continuation is
-   authorized, remove its blocked field in an author commit, resume saved
-   attempt 1 with bootstrap, correct the eval expectation before freeze using
-   the configured worker, and retain normal phase checks and bounds. Then
-   complete 0136–0138. 0132–0134 are complete.
+1. Resume 0135 saved attempt 1 with bootstrap as authorized, correct the eval
+   expectation before freeze using the configured worker, and retain normal
+   phase checks and bounds. Then complete 0136–0138; stop at any new block.
+   0132–0134 are complete.
 2. Prove ACCEPTANCE EC1–EC5: focused core review, fresh-checkout checks,
    reference smoke and isolated real-worker self-hosting without a drill.
 3. Perform EC6's separate controller pin/instruction handoff and record its

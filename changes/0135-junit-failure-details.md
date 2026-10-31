@@ -1,7 +1,6 @@
 ---
 audit_rounds: 0
 bases: {}
-blocked: interrupted; resume with --from-attempt after removing blocked
 module: checks
 phase: evals
 run: 20261031T065710-5addb41e87d5cd80494011f0
