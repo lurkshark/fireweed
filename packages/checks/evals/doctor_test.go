@@ -372,6 +372,8 @@ func Test_CHK_053_NestedModuleTemplatesRenderForBothCanaries(t *testing.T) {
 	fields := "{{name}}|{{prefix}}|{{package}}|{{go_module}}|{{module_dir}}|{{other_dir}}\n"
 	f.put(".fireweed/templates/module/evals/nested.txt.tmpl", "eval|"+fields)
 	f.put(".fireweed/templates/module/internal/nested.txt", "internal|"+fields)
+	canaries := string(mustRead(t, filepath.Join(f.root, ".fireweed/canaries/canaries.yaml")))
+	f.put(".fireweed/canaries/canaries.yaml", strings.Replace(canaries, "undeclared:\n", "  evals/baseline.txt: \"baseline|"+strings.TrimSpace(fields)+"\"\nundeclared:\n", 1))
 	eval := string(mustRead(t, filepath.Join(f.root, ".fireweed/eval.sh")))
 	check := fmt.Sprintf(`case "$1" in
   doctor*)
@@ -385,6 +387,7 @@ func Test_CHK_053_NestedModuleTemplatesRenderForBothCanaries(t *testing.T) {
     test -n "$other" &&
       test "$(cat "$2/evals/nested.txt")" = "eval|$expected" &&
       test "$(cat "$2/internal/nested.txt")" = "internal|$expected" &&
+      test "$(cat "$2/evals/baseline.txt")" = "baseline|$expected" &&
       test ! -e "$2/evals/nested.txt.tmpl" || exit 17
     printf 'rendered:%%s\n' "$1" >> %q
     ;;

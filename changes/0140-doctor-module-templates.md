@@ -6,7 +6,7 @@ bases: {}
 fixes:
     - CHK-053
 module: checks
-phase: evals
+phase: audit
 run: 20261031T173236-b24f73fe1d5d8a504a84f2be
 ---
 
@@ -75,6 +75,7 @@ because of this doctor failure. Return to the affected gates after this fix.
 
 - evals 2026-10-31T17:42:19.822978Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=630 failing=1 passing=629
 - audit 2026-10-31T17:43:10.279209Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=5cb9f9dac24b0b6bb1b970edd4fab4406d2b4d0435ddefc3ef59a2cfdd267f18 tests=0 failing=0 passing=0
+- evals 2026-10-31T17:52:16.504128Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=630 failing=1 passing=629
 
 ## Audit
 
