@@ -1,4 +1,5 @@
 ---
+audit_rounds: 0
 bases: {}
 eval_fix:
     - APP-076
@@ -13,6 +14,8 @@ eval_fix:
     - APP-089
     - APP-090
 module: app
+phase: audit
+run: 20261031T160522-cc75ead0e978d616ecc2f33c
 ---
 
 
@@ -74,3 +77,7 @@ this simpler scoped correction, stop for SYSTEM's human decision. Original
 0138 saved implementation attempt 2 is retained; its claim was released and
 only the two restored implementation files returned to HEAD after exact byte
 comparison. Its IDs, run, audit round and configured bounds stay unchanged.
+
+## Provenance
+
+- evals 2026-10-31T16:15:21.161101Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=282 failing=0 passing=282

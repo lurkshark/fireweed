@@ -57,10 +57,12 @@ func runForCalls(t *testing.T, f runCLISetup, bin string, want ...string) {
 	if len(calls) != len(want) {
 		t.Fatalf("calls=%v; want %v", calls, want)
 	}
-	for i, phase := range want {
-		if expected := phase + "|" + f.root + "|" + bin; calls[i] != expected {
-			t.Errorf("call %d=%q; want %q", i, calls[i], expected)
+	for i, call := range want {
+		module, phase, ok := strings.Cut(call, "|")
+		if !ok {
+			t.Fatalf("invalid expected call %q", call)
 		}
+		runCLIAssertCall(t, calls[i], module, phase, f.root, bin)
 	}
 }
 

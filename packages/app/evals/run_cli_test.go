@@ -232,11 +232,20 @@ func runCLIAssertCalls(t *testing.T, f runCLISetup, bin string, names ...string)
 	}
 	for i, name := range names {
 		for j, phase := range []string{"evals", "audit", "impl"} {
-			want := fmt.Sprintf("%s|%s|%s|%s", name, phase, f.root, bin)
-			if calls[i*3+j] != want {
-				t.Errorf("call %d=%q; want %q", i*3+j, calls[i*3+j], want)
-			}
+			runCLIAssertCall(t, calls[i*3+j], name, phase, f.root, bin)
 		}
+	}
+}
+
+func runCLIAssertCall(t *testing.T, call, module, phase, root, bin string) {
+	t.Helper()
+	fields := strings.Split(call, "|")
+	if len(fields) != 4 {
+		t.Errorf("agent call=%q; want module|phase|cwd|bin", call)
+		return
+	}
+	if fields[0] != module || fields[1] != phase || fields[3] != bin || fields[2] == "" || (phase != "audit" && fields[2] != root) {
+		t.Errorf("agent call=%q; want module=%q phase=%q worker cwd=%q bin=%q", call, module, phase, root, bin)
 	}
 }
 

@@ -196,8 +196,9 @@ func Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume(t *testing.T) 
 		t.Errorf("owned resume calls=%v, want 4", calls)
 	} else {
 		for i, phase := range []string{"evals", "evals", "audit", "impl"} {
-			if want := phase + "|" + root + "|" + bin; calls[i] != want {
-				t.Errorf("owned resume call %d=%q, want %q", i, calls[i], want)
+			fields := strings.Split(calls[i], "|")
+			if len(fields) != 3 || fields[0] != phase || fields[2] != bin || fields[1] == "" || (phase != "audit" && fields[1] != root) {
+				t.Errorf("owned resume call %d=%q; want phase=%q worker cwd=%q bin=%q", i, calls[i], phase, root, bin)
 			}
 		}
 	}
@@ -275,9 +276,8 @@ func Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume(t *testing.T) 
 		t.Errorf("shared budget calls=%v, want 5", calls)
 	} else {
 		for i, call := range []string{"alpha|evals", "alpha|evals", "alpha|audit", "alpha|impl", "beta|evals"} {
-			if want := call + "|" + f.root + "|" + bin; calls[i] != want {
-				t.Errorf("shared budget call %d=%q, want %q", i, calls[i], want)
-			}
+			module, phase, _ := strings.Cut(call, "|")
+			runCLIAssertCall(t, calls[i], module, phase, f.root, bin)
 		}
 	}
 	status, out, stderr = runNextCLI(t, bin, f.root, "next", "--json")
