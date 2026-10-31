@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/runner"
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
@@ -211,6 +212,52 @@ func Test_RUN_046_AuditCommitDoesNotEnterHeldGit(t *testing.T) {
 	}
 	if out, err := auditGitObject(f.root, auditOID); err == nil {
 		t.Errorf("held repository contains audit commit %s: %s", auditOID, out)
+	}
+	auditWorkspaceGone(t, f)
+}
+
+func Test_RUN_047_RUN_048_FirstAuditBeforeProvenanceIsImported(t *testing.T) {
+	f := newNextFixture(t, true, true, "normal")
+	const inserted = "## Audit\nNo findings\nChecked IDs: ALP-002\n\n"
+	auditBeforeEdit(t, f, `cp changes/0001-next.md "$1/audit.original"
+awk '
+  /^## Provenance$/ && !inserted {
+    printf "## Audit\nNo findings\nChecked IDs: ALP-002\n\n"
+    inserted = 1
+  }
+  { print }
+  END { if (!inserted) exit 8 }
+' "$1/audit.original" > changes/0001-next.md || exit 8
+cp changes/0001-next.md "$1/audit.candidate"
+printf auditor
+exit 0
+`)
+	r, err := f.run(false)
+	if err != nil || r.State.Phase != "applied" || len(r.Steps) != 3 {
+		t.Fatalf("audit before Provenance lifecycle = %#v, %v", r, err)
+	}
+	original := nextRead(t, f.logDir, "audit.original")
+	candidate := nextRead(t, f.logDir, "audit.candidate")
+	if !strings.Contains(original, "## Provenance\n") || strings.Count(candidate, inserted) != 1 ||
+		strings.Replace(candidate, inserted, "", 1) != original ||
+		strings.Index(candidate, "## Audit\n") > strings.Index(candidate, "## Provenance\n") {
+		t.Errorf("auditor did not insert only the first Audit before Provenance")
+	}
+	archived := nextRead(t, f.root, "changes/archive/0001-next.md")
+	for _, section := range []string{"Motivation", "Interface", "Added", "Modified", "Removed", "Decisions"} {
+		want, _ := contracts.Section(original, section)
+		got, _ := contracts.Section(archived, section)
+		if got != want {
+			t.Errorf("held %s changed outside Audit: got %q, want %q", section, got, want)
+		}
+	}
+	beforeProvenance, _ := contracts.Section(original, "Provenance")
+	afterProvenance, hasProvenance := contracts.Section(archived, "Provenance")
+	if !hasProvenance || !strings.HasPrefix(afterProvenance, beforeProvenance) {
+		t.Errorf("held Provenance lost existing contents: %q", afterProvenance)
+	}
+	if audit, ok := contracts.Section(archived, "Audit"); !ok || !strings.Contains(audit, "No findings; checked ALP-002") {
+		t.Errorf("inserted Audit was not imported: %q", audit)
 	}
 	auditWorkspaceGone(t, f)
 }

@@ -1,9 +1,12 @@
 ---
+audit_rounds: 0
 bases: {}
 fixes:
     - RUN-047
     - RUN-048
 module: runner
+phase: audit
+run: 20261031T164442-1cdd9f10e0c2d16e7a023032
 ---
 
 
@@ -62,3 +65,7 @@ with fail-first eval commit a455bb8. Its owning NEW pin released its stopped
 claim; no controller was switched or claim resumed across controllers. The
 focused diagnostic fixtures also released only their own claims. Resume the
 acceptance gates with the corrected candidate after normal verification passes.
+
+## Provenance
+
+- evals 2026-10-31T16:54:57.723397Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=381 failing=1 passing=380
