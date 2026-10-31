@@ -45,14 +45,28 @@ a first Audit section before Provenance. No core finding remains unresolved.
 Per-change evidence and the stopped, unclaimed first EC5 clone are in 0139's
 archive. Intentional comparison differences are in DECISIONS D005/D010/D011.
 
-The controller remains bootstrap at the pin below. EC3–EC6 remain pending for
-the corrected candidate. No promotion occurred. The owner authorized only the
-earlier push through the core-cutover authoring integration at `dae9b28`;
-subsequent work remains local.
+The corrected `66f0c67` candidate built and passed ordinary/race Go tests and
+vet, plus the affected Audit-insertion and reference lifecycle smokes. Both
+controllers passed check; explicit full-range history checks remain running.
+A real NEW spec lifecycle in the retained EC5 clone passed fail-first, restricted
+audit, full implementation verification and archive (`cafd070` / `a2b9e66` /
+`e2c0b25`). The observed audit input contained only
+change/spec/evals, could not read the held commit, and was removed. Its checkout
+is clean and unclaimed; CI remains pending.
+
+EC3 NEW doctor exposed a separate concrete core defect: valid project-owned
+nested module template directories are rejected with C14. Bootstrap doctor
+passes the unchanged Go setup. Normal fix `0140-doctor-module-templates` is
+queued for CHK-053, without changing templates or weakening checks. The C16
+managed-block warning reflects the current bootstrap guidance and is addressed
+by EC6's planned instruction alignment. Return to the affected gates after 0140.
+The controller remains bootstrap. EC3–EC6 are not complete; no promotion or
+new push occurred.
 
 ## Next
 
-1. Use the corrected clean candidate for EC3: build, ordinary/race Go tests, vet, and
+1. Complete 0140 through the normal lifecycle, then use its clean candidate
+   for EC3: build, ordinary/race Go tests, vet, and
    both controller/NEW check, doctor --no-agent, explicit-range history and CI.
 2. Pass EC4's one deterministic reference comparison and EC5's isolated real-
    worker NEW lifecycle, restricted audit, archive, CI and cleanup. No drill.
