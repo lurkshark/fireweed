@@ -6,6 +6,7 @@ audit_rounds: 0
 bases:
     RUN-013: a6739afb
     RUN-027: 84080c43
+blocked: 'audit attempts exhausted: P03: audit missing checked ID RUN-027'
 module: runner
 phase: audit
 run: 20261031T085104-0a74a70a942f28f9dee76ea3
