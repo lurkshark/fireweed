@@ -1,6 +1,9 @@
 ---
+audit_rounds: 0
 bases: {}
 module: assets
+phase: audit
+run: 20261031T083123-6495f160d6d93790bae33f68
 ---
 
 
@@ -23,10 +26,10 @@ regenerate. This is instructional guidance using existing change sections.
 
 ## Added
 
-### new:worker-decision-note-guidance
+### AST-045
 The evals, impl and regenerate playbooks MUST instruct workers to record only previously unspecified behavioral choices in Decisions, using one or two sentences per choice, and to put verification, debugging and recovery records in Notes.
 
-### new:worker-decision-note-examples
+### AST-046
 Each of those playbooks MUST include short illustrative examples classifying a lasting behavioral choice as a Decision and a verification or recovery event as a Note.
 
 ## Modified
@@ -53,3 +56,7 @@ Preserve 0134's eval stub handoff guidance and existing eval_fix, phase-zone and
 regeneration instructions. Keep audit scoped to its existing restricted role;
 this change covers the three worker playbooks. No new sections, configuration,
 size enforcement or changes to how Decisions/Notes are stored or applied.
+
+## Provenance
+
+- evals 2026-10-31T08:34:34.744176Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=803 failing=8 passing=795
