@@ -13,16 +13,46 @@ Full product completion remains open.
 The owner selected the next bounded milestone on 2026-10-31: implement drill
 support and prove one independent contracts drill in an isolated clone, with
 main's NEW pin unchanged. PLAN orders execution, ACCEPTANCE DR1–DR4 defines
-completion, and GOAL is the restart prompt. All DR gates are pending;
-implementation and the real proof have not started. This update is planning only.
-Main was clean and the pinned controller's queue empty before these author edits,
-with no shared claims or live controller/worker processes.
+completion, and GOAL is the restart prompt. **Stopped at the required owner
+checkpoint:** 0141-drill-lifecycle blocked during implementation at `ec5c27e`.
+DR1 is incomplete; DR2–DR4 have not started. No candidate CLI fixture, candidate
+identity, isolated proof clone or new native drill report/ref exists yet.
+Main is clean with no shared claims or live controller/worker processes; the
+original NEW controller hash remains unchanged. The unrelated guidance worktree
+was preserved.
 Only the earlier push through `dae9b28` was owner-authorized; later work is local.
 
 0131–0138, the two app audit-cwd eval fixes, and demonstrated follow-ups 0139
 (Audit insertion) and 0140 (nested doctor templates) are applied. Their phase
 checks/audits and 0138's owner-authorized recovery exception remain in archived
 Provenance/Notes. Preserve these archives; the completed queue is not restart work.
+
+## Drill checkpoint — 0141
+
+The focused Regeneration/R16 review led to the runner API/lifecycle change.
+The pinned NEW controller recorded genuine fail-first, one findings round and
+a passing restricted independent re-audit, with frozen evals/interfaces. Both
+auditors used the configured Codex model/effort. Manual Audit-only formatting
+and carry-forward of previously passed Checked IDs explain the audit lines'
+`agent=manual` Provenance; the saved attempt's Notes record those completions.
+
+Implementation exhausted the normal attempts bound. The final verification
+report has four failing runner cases (including the parent case) and passing
+app dependents. The frozen fake agents for `agent_retry`, `verify_retry` and
+`usage_once` leave their initial bad file unchanged on the later successful
+invocation, while RUN-056/RUN-057 assertions require it to become `new`.
+Implementation cannot repair those fixtures or invent replacement worker output.
+The cleanup failure case passed after the bounded implementation correction.
+
+The controller saved implementation and step notes at
+`refs/fireweed/attempts/drill-lifecycle/1` and restored the checkout/released the
+claim. The queued change retains its Provenance; no replacement change, eval_fix,
+retry reset or gap fix was authored. Owner direction is required for frozen-eval
+recovery before resuming. Review also identified unresolved native-report
+integration details in the saved implementation: its compact frontmatter date
+is unreadable by existing drift tracking, and model recording reads `agent.model`
+rather than the configured command's `-m` value. These are pending review, not
+additional authorized changes after this checkpoint.
 
 ## Completed cutover evidence
 
@@ -113,7 +143,8 @@ Provenance/Notes. Preserve these archives; the completed queue is not restart wo
 
 ## Next
 
-Start with PLAN's focused drill review and author the needed runner/app slice
-through the unchanged NEW pin. Complete DR1/DR2 before the one isolated real
-contracts proof. Stop at the first owner checkpoint and record any unresolved
-gap without authoring its fix. No push is authorized.
+Wait for the owner's recovery decision on blocked 0141 and its frozen fixtures.
+Do not resume, reset bounds, author follow-ups or start a real drill automatically.
+After an authorized recovery, return to the app command and complete DR1/DR2
+before the one isolated contracts proof. Keep main's controller pin unchanged.
+No push is authorized; all later full-completion gates remain open.
