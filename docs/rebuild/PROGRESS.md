@@ -7,7 +7,7 @@ history (last present at `c536833`).
 
 ## State — 2026-10-31
 
-135 changes applied (0001–0136; 0109 was abandoned). All six typed-diagnostic
+136 changes applied (0001–0137; 0109 was abandoned). All six typed-diagnostic
 changes (0128–0133) have passing implementation Provenance; spec changes passed
 independent audits and maintenance preserved frozen evals/interfaces. 0132
 resumed from saved attempt 1 after the owner's interruption and continuation.
@@ -39,7 +39,11 @@ an audit-enabled deterministic retry fixture: its saved prompt contains the
 dependent module's JUnit-only assertion, a 4,096-code-point failure excerpt and
 a 4,225-code-point section including the heading. Inspectable fixture:
 `/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-0136-smoke-agyg5ph1`.
-0137–0138 remain queued. The run returned clean and unclaimed; no EC gate is
+0137 applied at `6b26ab7`, with passing implementation Provenance (803 cases)
+and an independent audit with no findings. Rebuilt NEW's actual evals, impl
+and regenerate playbook outputs confirmed the Decisions/Notes guidance and
+examples while preserving the stub handoff instructions. 0138 is the remaining
+queued prerequisite. The run returned clean and unclaimed; no EC gate is
 claimed passed and no controller promotion has occurred.
 
 The current controller remains bootstrap 0.1.1 at the verified pin below.
@@ -68,8 +72,9 @@ integration at dae9b28.
 
 ## Next
 
-1. Complete 0137–0138 with bootstrap and normal phase checks; stop at any new
-   block. 0132–0136 are complete, including the JUnit retry-feedback CLI slice.
+1. Complete 0138 with bootstrap and normal phase checks; stop at any new
+   block. 0132–0137 are complete, including the JUnit retry-feedback CLI slice
+   and the worker guidance improvements.
 2. Prove ACCEPTANCE EC1–EC5: focused core review, fresh-checkout checks,
    reference smoke and isolated real-worker self-hosting without a drill.
 3. Perform EC6's separate controller pin/instruction handoff and record its
