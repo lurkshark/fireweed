@@ -108,12 +108,35 @@ func RunWithBudget(ctx context.Context, request model.NextRequest, budget *Usage
 			if preInvoke.Head != state.PhaseBase {
 				return result, fmt.Errorf("P05: held %s phase HEAD moved from %s to %s before agent invocation", phase, state.PhaseBase, preInvoke.Head)
 			}
+			invokeSnapshot := state.Snapshot
+			var audit *auditWorkspace
+			if role == "audit" {
+				audit, err = newAuditWorkspace(state)
+				if err != nil {
+					return result, fmt.Errorf("prepare audit workspace: %w", err)
+				}
+				invokeSnapshot.Root = audit.root
+			}
 			agent, invokeErr := invoke.Agent(ctx, model.AgentRequest{
-				Snapshot: state.Snapshot, Role: role, Prompt: prompt + feedback,
+				Snapshot: invokeSnapshot, Role: role, Prompt: prompt + feedback,
 				Bin: request.Bin, Timeout: request.Timeout,
 			})
 			result.Steps = append(result.Steps, model.StepResult{Phase: phase, Role: role, Agent: agent})
-			recovered, recoveryErr := recoverAgentCommits(state.Snapshot.Root, state.PhaseBase)
+			if audit != nil {
+				auditErr := audit.importAudit(state.Snapshot.Root, state.Change.Path)
+				cleanupErr := os.RemoveAll(audit.root)
+				if auditErr != nil || cleanupErr != nil {
+					if auditErr != nil {
+						auditErr = fmt.Errorf("validate audit submission: %w", auditErr)
+					}
+					return result, errors.Join(auditErr, cleanupErr, invokeErr)
+				}
+			}
+			var recovered bool
+			var recoveryErr error
+			if role == "worker" {
+				recovered, recoveryErr = recoverAgentCommits(state.Snapshot.Root, state.PhaseBase)
+			}
 			if recoveryErr != nil {
 				return result, errors.Join(fmt.Errorf("recover %s agent commits: %w", phase, recoveryErr), invokeErr)
 			}

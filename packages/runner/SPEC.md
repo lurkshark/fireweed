@@ -58,10 +58,9 @@ Unless AllowUnmerged is true, Next MUST reject a selected change absent from
 both the local and shared base before claiming it or assigning IDs.
 
 ### RUN-013
-For each phase, Next MUST invoke the worker role for evals and impl, and the
-audit role for audit, using the held snapshot and request Bin and Timeout.
-Worker prompts MUST include full workflow context. Audit prompts MUST include
-the change, projected spec and eval contents without implementation contents.
+For each phase, Next MUST invoke the worker role for evals and impl from the held checkout and the audit role from its restricted input workspace, using approved agent configuration and request Bin and Timeout.
+Worker prompts MUST include full workflow context.
+Audit prompts MUST include the change, projected spec, eval contents and audit playbook without implementation contents.
 
 ### RUN-014
 After each successful agent invocation, Next MUST verify the current phase and
@@ -128,9 +127,7 @@ is exhausted or Max is reached. That error MUST retain a blocked change's
 verification cause and saved attempt ref.
 
 ### RUN-027
-When a phase agent creates commits, Next MUST soft-reset HEAD to the held phase
-base after invocation and before verification or returning an invocation failure,
-retaining the step's working-tree and index work.
+When an evals or impl worker creates commits, Next MUST soft-reset the held checkout's HEAD to its phase base after invocation and before verification or returning an invocation failure, retaining the step's working-tree and index work.
 
 ### RUN-028
 For each such recovery, Next MUST return a P05 warning in State.Diagnostics
@@ -214,6 +211,25 @@ It MUST select cases by lexical module name and then report order, excluding pas
 The failed-case detail section MUST fit within 16,384 Unicode code points, including labels and truncation markers.
 Each Case.Failure excerpt MUST contain at most its first 4,096 code points.
 Shortened diagnostic text or omitted cases MUST be marked.
+
+### RUN-045
+Next MUST run every automatic audit invocation in a fresh temporary workspace containing only the current change, projected module SPEC.md and module eval files at project-relative paths, plus independent Git metadata.
+It MUST omit the held checkout's other files, including implementation, interfaces, hooks and configuration.
+
+### RUN-046
+The audit workspace's Git metadata MUST contain none of the held repository's history, refs or saved attempts.
+Audit-agent commits within this workspace MUST remain absent from the held checkout's history and refs.
+
+### RUN-047
+Next MUST accept only edits to the Audit section of the copied current change.
+Edits elsewhere in that change, edits to copied specs or evals, or added or deleted files outside Git metadata MUST reject the submission without copying any workspace edits to the held checkout.
+
+### RUN-048
+When audit workspace edits are permitted, Next MUST copy its Audit section back before retrying or returning, including agent failures and time or usage stops.
+Copying audit work MUST not itself advance a phase or replace other held change contents.
+
+### RUN-049
+Next MUST remove every temporary audit workspace after invocation, including after invalid submissions, agent failures and time or usage stops.
 
 ## Decisions
 
