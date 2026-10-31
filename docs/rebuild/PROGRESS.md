@@ -24,8 +24,9 @@ checkout. Changes 0134–0138 are queued; no EC gate is claimed passed and no
 controller promotion has occurred.
 
 The current controller remains bootstrap 0.1.1 at the verified pin below.
-Prior approval to push the 2026-10-30 bootstrap repin is historical, not
-permission to push this integration or the future NEW promotion.
+The owner authorized pushing current main to origin/main on 2026-10-30,
+including the completed diagnostic queue and the core-cutover authoring
+integration at dae9b28.
 
 **Working through NEW (`bin/fireweed`), each proven by an actual CLI run:**
 
