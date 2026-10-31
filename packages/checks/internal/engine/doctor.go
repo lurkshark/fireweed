@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -228,9 +229,6 @@ func (d *doctorState) readRecipe(root string) error {
 		if entry.Name() == "SPEC.md" {
 			hasSpec = true
 		}
-		if entry.IsDir() {
-			return fmt.Errorf("module template %s has directory", entry.Name())
-		}
 	}
 	if !hasSpec {
 		return fmt.Errorf("module template SPEC.md missing")
@@ -302,17 +300,31 @@ func (d *doctorState) writeMap(dir string, files map[string]string, values map[s
 	return paths, nil
 }
 func (d *doctorState) renderModules() error {
-	entries, _ := os.ReadDir(filepath.Join(d.root, ".fireweed", "templates", "module"))
+	templateDir := filepath.Join(d.root, ".fireweed", "templates", "module")
 	templates := map[string]string{}
-	for _, e := range entries {
-		if e.IsDir() {
-			continue
+	err := filepath.WalkDir(templateDir, func(path string, entry fs.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
 		}
-		b, err := os.ReadFile(filepath.Join(d.root, ".fireweed", "templates", "module", e.Name()))
+		if entry.IsDir() {
+			return nil
+		}
+		rel, err := filepath.Rel(templateDir, path)
 		if err != nil {
-			return fmt.Errorf("module template %s: %w", e.Name(), err)
+			return err
 		}
-		templates[e.Name()] = string(b)
+		if !entry.Type().IsRegular() {
+			return fmt.Errorf("module template %s is not a regular file", rel)
+		}
+		b, err := os.ReadFile(path)
+		if err != nil {
+			return fmt.Errorf("module template %s: %w", rel, err)
+		}
+		templates[filepath.ToSlash(rel)] = string(b)
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("module template: %w", err)
 	}
 	for i := 0; i < 2; i++ {
 		id, err := randomHex(5)
