@@ -7,17 +7,14 @@ history (last present at `c536833`).
 
 ## State — 2026-10-30
 
-127 changes applied (0001–0128; 0109 was abandoned). The owner explicitly
-approved running all queued changes on 2026-10-30. The author repaired 0128's
-ErrorCode facade to delegate to disposable code, preserving its frozen evals;
-resumed implementation and full controller verification passed.
-0129 passed evals and independent audit. After the owner approved its first
-recovery, the worker fixed module SPEC.md diagnostic paths and the focused
-doctor regression passed. Both resumed implementation attempts then failed
-Test_APP_109_APP_112_APP_113_CIStaticUsageAndConfiguration. A focused run
-confirmed C05/status 1 are correct, but the earlier Load failure routes CI to
-advice the existing corrective-guidance assertion rejects. No claim remains;
-0130–0133 still wait on project. The owner approved the guidance recovery below.
+128 changes applied (0001–0129; 0109 was abandoned). The owner explicitly
+approved running all queued changes on 2026-10-30. Approved recoveries repaired
+0128's ErrorCode facade and 0129's module diagnostic path/corrective guidance
+while preserving frozen evals. 0129 passed its own evals, independent audit,
+focused doctor/CI regressions, full app suite and full controller verification.
+An actual NEW CLI smoke confirmed doctor C05 with the module SPEC.md path,
+Stamp C08 for invalid bases, and U02 for a missing change. Changes 0130–0133
+remain approved and eligible. No claim remains.
 Queued predicates 0130/0131 state the facade/stub wiring requirement before
 their evals phases.
 The owner authorized the controller upgrade to 0.1.1 on 2026-10-30; version,
@@ -51,11 +48,7 @@ The owner authorized pushing this controller repin to `origin/main` on 2026-10-3
 
 ## Next
 
-Owner approved the project-local corrective-guidance recovery on 2026-10-30.
-Resume 0129, preserving frozen evals, typed codes/causes, module SPEC.md paths,
-existing run/phase and audit evidence. Updated Notes require focused doctor/CI
-regressions and the existing app suite before returning to full controller
-checks. Continue 0130–0133 after application. Stop on any new block.
+Run approved changes 0130–0133 through the controller. Stop on any new block.
 The queue completes typed diagnostics and addresses the contracts drill gap
 (CON-011/012). Suggested later order:
 
