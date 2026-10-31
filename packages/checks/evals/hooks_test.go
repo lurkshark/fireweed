@@ -97,6 +97,39 @@ func Test_CHK_038_ExitAndReportAgreement(t *testing.T) {
 	}
 }
 
+func Test_CHK_080_EvaluateRetainsParsedFailureDetails(t *testing.T) {
+	for _, tc := range []struct {
+		name, xml, exit, wantFailure string
+		wantExit                     int
+	}{
+		{"nonzero failure", `<testsuite><testcase name="CHK-003_assertion"><failure message="want 2">got 3 at example_test.go:17</failure></testcase></testsuite>`, "7", "got 3 at example_test.go:17", 7},
+		{"zero passing", `<testsuite><testcase name="CHK-003_pass"/></testsuite>`, "0", "", 0},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			snap := hookSnapshot(t, `printf '%s' '`+tc.xml+`' > {report}; exit `+tc.exit, nil)
+			report, err := checks.Evaluate(context.Background(), checks.HookRequest{Snapshot: snap, Module: "alpha", Timeout: 2 * time.Second})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(report.Cases) != 1 {
+				t.Fatalf("cases = %#v; want one", report.Cases)
+			}
+			if report.HookExit != tc.wantExit {
+				t.Errorf("hook exit = %d; want %s", report.HookExit, tc.exit)
+			}
+			if !strings.Contains(report.Cases[0].Failure, tc.wantFailure) {
+				t.Errorf("failure = %q; missing %q", report.Cases[0].Failure, tc.wantFailure)
+			}
+			if tc.wantFailure == "" && report.Cases[0].Failure != "" {
+				t.Errorf("passing case failure = %q; want empty", report.Cases[0].Failure)
+			}
+			if tc.wantFailure != "" && !strings.Contains(report.Cases[0].Failure, "want 2") {
+				t.Errorf("failure = %q; missing message", report.Cases[0].Failure)
+			}
+		})
+	}
+}
+
 func Test_CHK_036_CHK_037_MissingReportAndLaunchFailure(t *testing.T) {
 	for _, tc := range []struct {
 		command any

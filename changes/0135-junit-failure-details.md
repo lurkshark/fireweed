@@ -2,7 +2,7 @@
 audit_rounds: 0
 bases: {}
 module: checks
-phase: evals
+phase: audit
 run: 20261031T065710-5addb41e87d5cd80494011f0
 ---
 
@@ -58,3 +58,7 @@ result classification, ID mapping, coverage, fail-first and exit-status checks.
 Retain diagnostic text in reports; excerpt limits belong to the retry prompt
 consumer in 0136. Reuse public ParseJUnit/Evaluate fixtures with literal JUnit
 and deterministic local hooks. Keep the change within checks.
+
+## Provenance
+
+- evals 2026-10-31T07:26:18.166228Z agent=manual fireweed=0.1.1 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=610 failing=3 passing=607

@@ -46,6 +46,7 @@ func Test_CHK_001_CHK_029_CHK_030_NestedJUnitIDsResultsAndTime(t *testing.T) {
 	}
 	for _, got := range report.Cases {
 		sort.Strings(got.IDs)
+		got.Failure = ""
 		if !reflect.DeepEqual(got, want[got.Name]) {
 			t.Errorf("case = %#v; want %#v", got, want[got.Name])
 		}
@@ -59,6 +60,53 @@ func Test_CHK_001_CHK_029_CHK_030_SingleSuiteSkipped(t *testing.T) {
 	}
 	if len(report.Cases) != 1 || report.Cases[0].Result != "skip" || report.Cases[0].Seconds != 0.125 || !reflect.DeepEqual(report.Cases[0].IDs, []string{"CHK-001"}) {
 		t.Fatalf("skipped case = %#v", report.Cases)
+	}
+}
+
+func Test_CHK_079_ParseJUnitRetainsFailureAndErrorDetails(t *testing.T) {
+	data := []byte(`<testsuite>
+<testcase name="CHK-001_failure_combined"><failure message="want 2 &amp; got 3">assertion at example_test.go:17</failure></testcase>
+<testcase name="CHK-001_failure_message"><failure message="expected true"/></testcase>
+<testcase name="CHK-002_failure_body"><failure>actual value was false</failure></testcase>
+<testcase name="CHK-002_error_combined"><error message="panic: nil pointer">stack at example_test.go:29</error></testcase>
+<testcase name="CHK-003_error_message"><error message="setup failed"/></testcase>
+<testcase name="CHK-003_error_body"><error>missing fixture</error></testcase>
+<testcase name="CHK-001_empty_failure"><failure/></testcase>
+<testcase name="CHK-002_pass"/>
+<testcase name="CHK-003_skip"><skipped/></testcase>
+</testsuite>`)
+	report, err := checks.ParseJUnit(data, checkSpecs())
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[string][]string{
+		"CHK-001_failure_combined": {"want 2 & got 3", "assertion at example_test.go:17"},
+		"CHK-001_failure_message":  {"expected true"},
+		"CHK-002_failure_body":     {"actual value was false"},
+		"CHK-002_error_combined":   {"panic: nil pointer", "stack at example_test.go:29"},
+		"CHK-003_error_message":    {"setup failed"},
+		"CHK-003_error_body":       {"missing fixture"},
+		"CHK-001_empty_failure":    nil,
+		"CHK-002_pass":             nil,
+		"CHK-003_skip":             nil,
+	}
+	if len(report.Cases) != len(want) {
+		t.Fatalf("cases = %#v; want %d", report.Cases, len(want))
+	}
+	for _, got := range report.Cases {
+		parts, ok := want[got.Name]
+		if !ok {
+			t.Errorf("unexpected case %#v", got)
+			continue
+		}
+		if len(parts) == 0 && got.Failure != "" {
+			t.Errorf("%s: failure = %q; want empty", got.Name, got.Failure)
+		}
+		for _, part := range parts {
+			if !strings.Contains(got.Failure, part) {
+				t.Errorf("%s: failure = %q; missing %q", got.Name, got.Failure, part)
+			}
+		}
 	}
 }
 

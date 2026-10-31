@@ -12,6 +12,7 @@ type Case struct {
 	Classname string
 	IDs       []string
 	Result    string
+	Failure   string
 	Seconds   float64
 }
 
