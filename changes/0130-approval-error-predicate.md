@@ -14,6 +14,10 @@ depending on message wording, which a regenerated runner may change.
 Add `IsApprovalRequired(err error) bool` to the runner public API, beside the
 existing `IsUsageStop`.
 
+Keep the public facade delegating to disposable implementation. During evals,
+add the implementation stub in a new internal file so the impl step can replace
+it without editing the frozen interface (the wiring repair from 0128).
+
 ## Added
 
 ### new:approval-required

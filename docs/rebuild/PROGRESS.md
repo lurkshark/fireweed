@@ -7,12 +7,12 @@ history (last present at `c536833`).
 
 ## State — 2026-10-30
 
-126 changes applied (0001–0127; 0109 was abandoned). The owner explicitly
-approved running all queued changes on 2026-10-30. Before resuming blocked 0128,
-the author repaired its ErrorCode facade to delegate to a disposable stub;
-CON-016 still fails as expected and all frozen eval assertions are unchanged.
-Its existing run, phase and audit evidence are retained. Caller migrations stay
-in 0129, 0132 and 0133. No claim was held during this author repair.
+127 changes applied (0001–0128; 0109 was abandoned). The owner explicitly
+approved running all queued changes on 2026-10-30. The author repaired 0128's
+ErrorCode facade to delegate to disposable code, preserving its frozen evals;
+resumed implementation and full controller verification passed. Changes
+0129–0133 remain approved and eligible. Queued predicates 0130/0131 now state
+the same facade/stub wiring requirement before their evals phases.
 The owner authorized the controller upgrade to 0.1.1 on 2026-10-30; version,
 executable hash and clean source revision
 were verified after installation. Controller `check` passed with the existing
@@ -44,8 +44,7 @@ The owner authorized pushing this controller repin to `origin/main` on 2026-10-3
 
 ## Next
 
-Resume 0128 implementation, then finish the existing approved queue through
-0133. Stop on any new block under the checkpoint rule.
+Run the existing approved queue from 0129 through 0133. Stop on any new block under the checkpoint rule.
 The queue completes typed diagnostics and addresses the contracts drill gap
 (CON-011/012). Suggested later order:
 

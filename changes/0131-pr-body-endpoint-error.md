@@ -13,6 +13,10 @@ unspecified message text. Make the endpoint configuration failure identifiable.
 
 Add `IsEndpointConfigError(err error) bool` to the workflow public API.
 
+Keep the public facade delegating to disposable implementation. During evals,
+add the implementation stub in a new internal file so the impl step can replace
+it without editing the frozen interface (the wiring repair from 0128).
+
 ## Added
 
 ### new:endpoint-config-error
