@@ -1,17 +1,8 @@
 ---
-audit_pending:
-    - RUN-051
-    - RUN-053
-    - RUN-056
-    - RUN-057
-    - RUN-058
-    - RUN-059
-    - RUN-060
-    - RUN-062
 audit_rounds: 1
 bases: {}
 module: runner
-phase: audit
+phase: impl
 run: 20261031T220623-e826454d4fd1bcfca2375a01
 ---
 
@@ -110,13 +101,7 @@ product surface, hardening campaign or speculative prerequisite is authorized.
 - evals 2026-10-31T22:27:25.744814Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=124 failing=25 passing=99
 - audit 2026-10-31T22:29:55.525964Z agent=manual fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 - evals 2026-10-31T22:50:05.029594Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=128 failing=29 passing=99
+- audit 2026-10-31T22:51:33.041786Z agent=manual fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 ## Audit
 
-- RUN-051: "Drill MUST create a detached scratch worktree at the invoking HEAD under the common Git directory's fireweed/worktrees directory and run the configured setup hook there with FIREWEED_BIN set to request Bin." — The setup assertion checks its path and detached state, but never checks the scratch HEAD against the invoking HEAD.
-- RUN-053: "Drill MUST invoke reconstruction in a separate input workspace containing the target's retained files and only interface files from its transitive dependencies, plus SYSTEM.md and fresh independent Git metadata." — The input fixture has only one direct dependency of the target; no assertion checks an interface from a dependency beyond it.
-- RUN-056: "Drill MUST use the configured worker command, wrapper and timeout through InvokeAgent, retaining ordered AgentResults in Steps." — The drill tests check the worker and wrapper, and a request timeout override, but never assert that the configured timeout bounds a drill invocation when the request timeout is unset.
-- RUN-057: "Drill MUST treat usage-limit responses as the same attempt, applying configured limit_wait and limit_budget without spending a failed attempt." — The usage tests count calls and budget exhaustion, but do not assert that the configured wait occurs.
-- RUN-058: "After accepted reconstruction, Drill MUST run the target module's eval hook and require passing enforced cases and coverage through checks." — The own-eval tests assert case failures but never require coverage to pass.
-- RUN-059: "Every dependent MUST satisfy passing enforced cases and coverage for a passing drill, even when own or another dependent's evals fail." — The dependent-eval tests assert failed cases but never require dependent coverage to pass.
-- RUN-060: "Eval entries MUST identify module, testcase, spec IDs and result" — The report tests search for tokens anywhere in the document; no assertion binds module, testcase, IDs and result to each eval entry or spec ID and target module to each gap. They also do not assert that the successful worker observation appears in the report.
-- RUN-062: "Cleanup failure MUST be returned as an error rather than reported as a passing drill." — No test induces a cleanup failure or asserts its returned error and result.
+No findings; checked RUN-050, RUN-051, RUN-052, RUN-053, RUN-054, RUN-055, RUN-056, RUN-057, RUN-058, RUN-059, RUN-060, RUN-061, RUN-062
