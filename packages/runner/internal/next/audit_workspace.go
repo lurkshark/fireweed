@@ -195,8 +195,14 @@ func (w *auditWorkspace) importAudit(heldRoot, changePath string) error {
 		}
 	} else {
 		heading := "## Audit\n"
-		idx := strings.Index(string(candidate), heading)
-		if idx < 0 || string(candidate[:idx]) != original && string(candidate[:idx]) != original+"\n" || idx+len(heading)+len(audit) != len(candidate) {
+		idx := strings.Index("\n"+string(candidate), "\n"+heading)
+		if idx < 0 {
+			return fmt.Errorf("audit workspace modified change outside Audit")
+		}
+		end := idx + len(heading) + len(audit)
+		// Removing the inserted section must recover every original byte.
+		withoutAudit := string(candidate[:idx]) + string(candidate[end:])
+		if withoutAudit != original && !(end == len(candidate) && withoutAudit == original+"\n") {
 			return fmt.Errorf("audit workspace modified change outside Audit")
 		}
 	}

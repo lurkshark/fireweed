@@ -5,7 +5,7 @@ fixes:
     - RUN-047
     - RUN-048
 module: runner
-phase: impl
+phase: applied
 run: 20261031T164442-1cdd9f10e0c2d16e7a023032
 ---
 
@@ -75,3 +75,4 @@ Checked IDs: RUN-047, RUN-048
 
 - evals 2026-10-31T16:54:57.723397Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=381 failing=1 passing=380
 - audit 2026-10-31T16:55:46.809038Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=5cb9f9dac24b0b6bb1b970edd4fab4406d2b4d0435ddefc3ef59a2cfdd267f18 tests=0 failing=0 passing=0
+- impl 2026-10-31T17:15:02.876086Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=381 failing=0 passing=381
