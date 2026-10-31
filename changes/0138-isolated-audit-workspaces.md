@@ -9,7 +9,6 @@ audit_rounds: 1
 bases:
     RUN-013: a6739afb
     RUN-027: 84080c43
-blocked: 'impl attempts exhausted: P02: failing eval for RUN-016: Test_RUN_016_UnlimitedQueueOrder'
 module: runner
 phase: impl
 run: 20261031T085104-0a74a70a942f28f9dee76ea3
@@ -81,6 +80,16 @@ the auditor in the checkout containing it.
 A linked worktree: it exposes the source repository's Git objects and refs.
 
 ## Notes
+
+The owner authorized a one-time frozen-eval recovery exception on 2026-10-31:
+independent restricted review of the shared queue-helper correction, an author
+commit while unclaimed, then resumption of saved implementation attempt 2.
+That review reported No findings for RUN-016, RUN-017, RUN-018 and RUN-019;
+only its Audit section changed and all other supplied inputs stayed unchanged.
+The correction preserves module, phase, Bin and held worker cwd assertions and
+requires a separate, cleaned-up audit cwd. IDs, run, audit rounds, configured
+bounds and product requirements remain unchanged. Full controller verification
+and the cutover gates still apply.
 
 The owner authorized a fresh independent audit on 2026-10-31 after incomplete
 checked-ID submissions exhausted the prior audit attempts. Check all seven

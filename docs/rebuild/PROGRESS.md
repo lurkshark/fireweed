@@ -54,14 +54,14 @@ the focused new workspace tests pass. The implementation is saved at
 `refs/fireweed/attempts/0138-isolated-audit-workspaces/2`; attempt 1 retains the
 earlier partial audit. No worker eval edit was retained.
 
-Stop for an owner recovery decision. SYSTEM requires eval_fix for frozen evals,
-but a later same-module change waits behind blocked 0138. A prepared helper
-patch retains module/phase/Bin checks and held worker cwd, while asserting a
-separate, cleaned-up audit cwd. Proposed one-time exception: independently
-review that patch, commit it as an author correction with no live claim, then
-resume saved implementation attempt 2 under bootstrap. Keep IDs, run, audit
-rounds, configured bounds and product requirements unchanged. The checkout is
-clean and unclaimed; EC1–EC6 remain pending and no promotion occurred.
+The owner authorized the proposed one-time recovery exception on 2026-10-31.
+A restricted independent review of the helper patch reported No findings for
+RUN-016–019; its only edit was the review change's Audit section. This author
+commit corrects the helper and clears blocked while unclaimed, preserving
+module/phase/Bin checks and held worker cwd while requiring a separate,
+cleaned-up audit cwd. Resume saved implementation attempt 2 under bootstrap.
+IDs, run, audit rounds, configured bounds and product requirements remain
+unchanged. EC1–EC6 remain pending and no promotion occurred.
 
 The current controller remains bootstrap 0.1.1 at the verified pin below.
 The owner authorized pushing current main to origin/main on 2026-10-30,
@@ -89,10 +89,10 @@ integration at dae9b28.
 
 ## Next
 
-1. Stop for the owner's 0138 frozen-eval recovery decision. Do not change the
-   frozen helper or resume the saved implementation without that decision.
-   0132–0137 are complete, including the JUnit retry-feedback CLI slice and
-   worker guidance. Normal verification and acceptance gates remain required.
+1. Resume 0138 implementation attempt 2 with bootstrap as authorized and run
+   normal verification against the independently reviewed helper correction.
+   Stop at any new block. 0132–0137 are complete, including the JUnit retry-
+   feedback CLI slice and worker guidance. Acceptance gates remain required.
 2. Prove ACCEPTANCE EC1–EC5: focused core review, fresh-checkout checks,
    reference smoke and isolated real-worker self-hosting without a drill.
 3. Perform EC6's separate controller pin/instruction handoff and record its

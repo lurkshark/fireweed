@@ -232,9 +232,19 @@ func assertRunAgentLog(t *testing.T, f runFixture, want ...string) {
 	}
 	for i, name := range want {
 		for j, phase := range []string{"evals", "audit", "impl"} {
-			line := fmt.Sprintf("%s|%s|%s|/fixture/run-bin", name, phase, f.root)
-			if got[i*3+j] != line {
-				t.Errorf("agent call %d = %q, want %q", i*3+j, got[i*3+j], line)
+			parts := strings.Split(got[i*3+j], "|")
+			if len(parts) != 4 || parts[0] != name || parts[1] != phase || parts[3] != "/fixture/run-bin" {
+				t.Errorf("agent call %d = %q", i*3+j, got[i*3+j])
+				continue
+			}
+			if phase == "audit" {
+				if parts[2] == f.root || !filepath.IsAbs(parts[2]) {
+					t.Errorf("audit call %d used held checkout: %q", i*3+j, got[i*3+j])
+				} else if _, err := os.Stat(parts[2]); !os.IsNotExist(err) {
+					t.Errorf("audit workspace %q remains: %v", parts[2], err)
+				}
+			} else if parts[2] != f.root {
+				t.Errorf("worker call %d left held checkout: %q", i*3+j, got[i*3+j])
 			}
 		}
 	}
