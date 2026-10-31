@@ -1,5 +1,6 @@
 ---
 audit_rounds: 0
+blocked: 'impl attempts exhausted: P02: failing eval for CON-016: Test_CON_016_ErrorCode'
 module: contracts
 phase: impl
 run: 20261031T004124-adafe55aac45dd6c68a386f3
@@ -62,3 +63,7 @@ string matching at every caller.
 ## Audit
 
 No findings. Checked CON-001, CON-002, CON-003, CON-004, CON-005, CON-006, CON-007, CON-008, CON-009, CON-010, CON-011, CON-012, CON-013, CON-014, CON-015, CON-016, CON-017, CON-018, CON-019.
+
+## Questions
+
+Blocked: CON-016 requires implementing the public ErrorCode function, but its existing stub is in packages/contracts/api.go, an interface path. The impl step's P2-01 boundary rejects editing it. The same boundary rejects dependent caller updates outside contracts, although this change's Interface says callers must stop classifying parse errors by message prefix. Should the controller provide an authorized interface/cross-module phase or should the change be re-scoped?
