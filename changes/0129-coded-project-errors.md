@@ -1,11 +1,5 @@
 ---
 audit_rounds: 0
-blocked: |-
-    impl attempts exhausted: P02: failing eval for APP-109: Test_APP_109_APP_112_APP_113_CIStaticUsageAndConfiguration
-    B02: APP-103: 17 cases
-    B02: APP-104: 19 cases
-    B02: APP-103: 17 cases
-    B02: APP-104: 19 cases
 module: project
 phase: impl
 run: 20261031T033337-304bd319d25e3df24a16e023
@@ -59,15 +53,18 @@ Load MUST return an error preserving the contracts ErrorCode C03 or C05 when a m
 Implementation should also replace the message-prefix check in
 internal/queue/cause.go with contracts.ErrorCode.
 
-Owner approved the diagnostic-path recovery and resumption on 2026-10-30.
-The previous implementation passed own evals but failed the existing
-Test_APP_065_APP_066_APP_067_DoctorFailures assertion at doctor_setup_test.go:272:
-C05 and its duplicate-ID message were correct, while Path was fireweed.yaml
-instead of SPEC.md. Load now detects malformed items before Check's projection;
-Check currently labels every Load error fireweed.yaml. Preserve module SPEC.md
-path information through the project-local load failure and diagnostic path,
-without changing frozen evals or other modules. Run the existing focused doctor
-eval as well as verify --quick before returning. Keep this run and phase.
+Owner approved both the diagnostic-path and corrective-guidance recoveries on
+2026-10-30. Retain module SPEC.md path information through project-local Load
+failures and Check diagnostics: the existing doctor regression requires it.
+The next full check exposed Test_APP_109_APP_112_APP_113_CIStaticUsageAndConfiguration:
+C05/status 1 were correct, but the earlier Load error sends CI down a path whose
+advice fails the existing corrective-guidance assertion. Add actionable guidance
+to the module parse-error wrapper (for example, Use valid, unique spec item
+headings), retaining the contracts code, wrapped cause and module SPEC.md path.
+Preserve frozen evals and interfaces, and edit only allowed project internals.
+Run both focused app regressions and the full existing app eval suite before
+returning, along with verify --quick, so any remaining dependent regressions are
+visible within this bounded attempt. Keep the existing run, phase and audit.
 
 ## Provenance
 

@@ -17,7 +17,7 @@ doctor regression passed. Both resumed implementation attempts then failed
 Test_APP_109_APP_112_APP_113_CIStaticUsageAndConfiguration. A focused run
 confirmed C05/status 1 are correct, but the earlier Load failure routes CI to
 advice the existing corrective-guidance assertion rejects. No claim remains;
-0130–0133 still wait on project. The new block stopped the queue.
+0130–0133 still wait on project. The owner approved the guidance recovery below.
 Queued predicates 0130/0131 state the facade/stub wiring requirement before
 their evals phases.
 The owner authorized the controller upgrade to 0.1.1 on 2026-10-30; version,
@@ -51,13 +51,11 @@ The owner authorized pushing this controller repin to `origin/main` on 2026-10-3
 
 ## Next
 
-Owner checkpoint requested for 0129's remaining CI guidance mismatch. Proposed
-project-local recovery: retain the typed parse code, cause and module SPEC.md
-path while adding corrective guidance to the module parse-error wrapper (for
-example, Use valid, unique spec item headings). Preserve frozen evals, the
-existing run/phase and audit evidence; run both focused doctor and CI regressions
-before returning to full controller checks, then continue 0130–0133. Do not
-clear the new block without the owner's decision.
+Owner approved the project-local corrective-guidance recovery on 2026-10-30.
+Resume 0129, preserving frozen evals, typed codes/causes, module SPEC.md paths,
+existing run/phase and audit evidence. Updated Notes require focused doctor/CI
+regressions and the existing app suite before returning to full controller
+checks. Continue 0130–0133 after application. Stop on any new block.
 The queue completes typed diagnostics and addresses the contracts drill gap
 (CON-011/012). Suggested later order:
 
