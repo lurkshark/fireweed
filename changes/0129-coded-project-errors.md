@@ -1,11 +1,5 @@
 ---
 audit_rounds: 0
-blocked: |-
-    impl attempts exhausted: P02: failing eval for APP-065: Test_APP_065_APP_066_APP_067_DoctorFailures
-    B02: APP-103: 17 cases
-    B02: APP-104: 19 cases
-    B02: APP-103: 17 cases
-    B02: APP-104: 19 cases
 module: project
 phase: impl
 run: 20261031T033337-304bd319d25e3df24a16e023
@@ -58,6 +52,16 @@ Load MUST return an error preserving the contracts ErrorCode C03 or C05 when a m
 
 Implementation should also replace the message-prefix check in
 internal/queue/cause.go with contracts.ErrorCode.
+
+Owner approved the diagnostic-path recovery and resumption on 2026-10-30.
+The previous implementation passed own evals but failed the existing
+Test_APP_065_APP_066_APP_067_DoctorFailures assertion at doctor_setup_test.go:272:
+C05 and its duplicate-ID message were correct, while Path was fireweed.yaml
+instead of SPEC.md. Load now detects malformed items before Check's projection;
+Check currently labels every Load error fireweed.yaml. Preserve module SPEC.md
+path information through the project-local load failure and diagnostic path,
+without changing frozen evals or other modules. Run the existing focused doctor
+eval as well as verify --quick before returning. Keep this run and phase.
 
 ## Provenance
 

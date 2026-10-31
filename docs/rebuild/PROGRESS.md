@@ -16,7 +16,7 @@ attempts failed Test_APP_065_APP_066_APP_067_DoctorFailures. A focused run
 confirmed C05 and the duplicate-ID message are correct, but diagnostic Path is
 fireweed.yaml instead of SPEC.md: Load now detects malformed items earlier,
 while project.Check labels every load failure fireweed.yaml. No claim remains;
-0130–0133 wait on project. The queue stopped under the checkpoint rule.
+0130–0133 wait on project. The owner approved the scoped recovery below.
 Queued predicates 0130/0131 state the facade/stub wiring requirement before
 their evals phases.
 The owner authorized the controller upgrade to 0.1.1 on 2026-10-30; version,
@@ -50,10 +50,9 @@ The owner authorized pushing this controller repin to `origin/main` on 2026-10-3
 
 ## Next
 
-Owner checkpoint requested: resume 0129 with a project-local correction that
-preserves the module SPEC.md path in load-error diagnostics, keeping its evals
-unchanged, then continue 0130–0133. Do not clear the new block without that
-decision. The existing spec/audit evidence and saved attempts remain retained.
+Owner approved resuming 0129 with the project-local diagnostic-path correction
+on 2026-10-30, preserving frozen evals and existing run/phase, then continuing
+0130–0133. The new recovery guidance is in 0129 Notes. Stop on any new block.
 The queue completes typed diagnostics and addresses the contracts drill gap
 (CON-011/012). Suggested later order:
 
