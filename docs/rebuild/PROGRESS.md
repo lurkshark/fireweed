@@ -10,9 +10,15 @@ history (last present at `c536833`).
 127 changes applied (0001–0128; 0109 was abandoned). The owner explicitly
 approved running all queued changes on 2026-10-30. The author repaired 0128's
 ErrorCode facade to delegate to disposable code, preserving its frozen evals;
-resumed implementation and full controller verification passed. Changes
-0129–0133 remain approved and eligible. Queued predicates 0130/0131 now state
-the same facade/stub wiring requirement before their evals phases.
+resumed implementation and full controller verification passed.
+0129 passed evals and independent audit, then blocked after both implementation
+attempts failed Test_APP_065_APP_066_APP_067_DoctorFailures. A focused run
+confirmed C05 and the duplicate-ID message are correct, but diagnostic Path is
+fireweed.yaml instead of SPEC.md: Load now detects malformed items earlier,
+while project.Check labels every load failure fireweed.yaml. No claim remains;
+0130–0133 wait on project. The queue stopped under the checkpoint rule.
+Queued predicates 0130/0131 state the facade/stub wiring requirement before
+their evals phases.
 The owner authorized the controller upgrade to 0.1.1 on 2026-10-30; version,
 executable hash and clean source revision
 were verified after installation. Controller `check` passed with the existing
@@ -44,7 +50,10 @@ The owner authorized pushing this controller repin to `origin/main` on 2026-10-3
 
 ## Next
 
-Run the existing approved queue from 0129 through 0133. Stop on any new block under the checkpoint rule.
+Owner checkpoint requested: resume 0129 with a project-local correction that
+preserves the module SPEC.md path in load-error diagnostics, keeping its evals
+unchanged, then continue 0130–0133. Do not clear the new block without that
+decision. The existing spec/audit evidence and saved attempts remain retained.
 The queue completes typed diagnostics and addresses the contracts drill gap
 (CON-011/012). Suggested later order:
 
