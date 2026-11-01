@@ -6,6 +6,8 @@ bases:
     GIT-003: d38fe764
     GIT-007: b5f091aa
 module: gitstore
+phase: audit
+run: 20261101T163610-5aa75d72a618d8940a073080
 ---
 
 ## Motivation
@@ -73,3 +75,4 @@ decision; assets remains pending until gitstore proof and evidence close.
 ## Audit
 
 ## Provenance
+- evals 2026-11-01T16:45:00.964312Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=9 failing=0 passing=9

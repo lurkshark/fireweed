@@ -149,8 +149,10 @@ func Test_GIT_003_GIT_006_GIT_007_ChangesReadAtAndSelectedCommit(t *testing.T) {
 	put(t, root, "selected.txt", []byte("selected\n"))
 	put(t, root, "staged.txt", []byte("staged\n"))
 	git(t, root, "add", "selected.txt", "staged.txt")
+	put(t, root, "staged.txt", []byte("staged worktree\n"))
 	put(t, root, "unstaged.txt", []byte("unstaged\n"))
 	git(t, root, "mv", "old-name.txt", "new-name.txt")
+	put(t, root, "new-name.txt", []byte("renamed worktree\n"))
 	put(t, root, "untracked.txt", []byte("new\n"))
 	changes, err := gitstore.Changes(root, base)
 	if err != nil {
@@ -162,6 +164,9 @@ func Test_GIT_003_GIT_006_GIT_007_ChangesReadAtAndSelectedCommit(t *testing.T) {
 			t.Errorf("invalid change: %#v", change)
 		}
 		byPath[change.Path] = change
+	}
+	if len(changes) != len(byPath) {
+		t.Errorf("duplicate reported paths: %#v", changes)
 	}
 	for _, path := range []string{"committed.txt", "selected.txt", "staged.txt", "unstaged.txt", "untracked.txt", "new-name.txt"} {
 		if _, ok := byPath[path]; !ok {
@@ -194,11 +199,71 @@ func Test_GIT_003_GIT_006_GIT_007_ChangesReadAtAndSelectedCommit(t *testing.T) {
 	if got := git(t, root, "show", "HEAD:staged.txt"); got != "original" {
 		t.Errorf("unrelated staged file was committed: %q", got)
 	}
+	if got := git(t, root, "show", ":staged.txt"); got != "staged" {
+		t.Errorf("unrelated staged index content changed: %q", got)
+	}
 	if got := git(t, root, "diff", "--cached", "--name-only"); !strings.Contains(got, "staged.txt") || !strings.Contains(got, "new-name.txt") {
 		t.Errorf("unrelated index changes lost: %q", got)
 	}
 	if data, err := os.ReadFile(filepath.Join(root, "unstaged.txt")); err != nil || string(data) != "unstaged\n" {
 		t.Errorf("unrelated worktree change lost: %q, %v", data, err)
+	}
+	put(t, root, "selected.txt", []byte("selected index\n"))
+	git(t, root, "add", "selected.txt")
+	put(t, root, "selected.txt", []byte("selected worktree\n"))
+	put(t, root, "new-selected.txt", []byte("new selected\n"))
+	gotHead, err = gitstore.Commit(root, "selected worktree and new file", []string{"selected.txt", "new-selected.txt"})
+	if err != nil || gotHead == "" || gotHead != head(t, root) {
+		t.Fatalf("Commit selected worktree and new file = %q, %v", gotHead, err)
+	}
+	if got := git(t, root, "diff-tree", "--no-commit-id", "--name-only", "-r", gotHead); got != "new-selected.txt\nselected.txt" {
+		t.Errorf("committed selected paths = %q, want new-selected.txt and selected.txt", got)
+	}
+	if got := git(t, root, "log", "-1", "--format=%s"); got != "selected worktree and new file" {
+		t.Errorf("selected commit subject = %q", got)
+	}
+	if got := git(t, root, "show", "HEAD:selected.txt"); got != "selected worktree" {
+		t.Errorf("selected worktree HEAD content = %q", got)
+	}
+	if got := git(t, root, "show", "HEAD:new-selected.txt"); got != "new selected" {
+		t.Errorf("new selected HEAD content = %q", got)
+	}
+	if got := git(t, root, "show", "HEAD:staged.txt"); got != "original" {
+		t.Errorf("unrelated staged file was committed: %q", got)
+	}
+	if got := git(t, root, "show", ":staged.txt"); got != "staged" {
+		t.Errorf("unrelated staged index content changed: %q", got)
+	}
+	if got := git(t, root, "diff", "--cached", "--name-only"); !strings.Contains(got, "staged.txt") || !strings.Contains(got, "new-name.txt") {
+		t.Errorf("unrelated index changes lost: %q", got)
+	}
+	if data, err := os.ReadFile(filepath.Join(root, "unstaged.txt")); err != nil || string(data) != "unstaged\n" {
+		t.Errorf("unrelated worktree change lost: %q, %v", data, err)
+	}
+}
+
+func Test_GIT_003_UnstagedTrackedRename(t *testing.T) {
+	root := repo(t)
+	base := head(t, root)
+	if err := os.Rename(filepath.Join(root, "seed.txt"), filepath.Join(root, "renamed-seed.txt")); err != nil {
+		t.Fatal(err)
+	}
+	git(t, root, "add", "-N", "renamed-seed.txt")
+	changes, err := gitstore.Changes(root, base)
+	if err != nil {
+		t.Fatal(err)
+	}
+	count := 0
+	for _, change := range changes {
+		if change.Path == "renamed-seed.txt" {
+			count++
+			if change.OldPath != "seed.txt" {
+				t.Errorf("unstaged rename = %#v, want old path seed.txt", change)
+			}
+		}
+	}
+	if count != 1 {
+		t.Errorf("renamed-seed.txt reported %d times: %#v", count, changes)
 	}
 }
 
