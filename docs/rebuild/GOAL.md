@@ -1,37 +1,27 @@
-# Drill milestone goal prompt
+# Foundation drills goal prompt
 
-Restart prompt for the implementing agent. Editing this document does not start
-implementation, invoke a drill or switch controllers. PROGRESS.md records the
-pin/state; PLAN.md orders the slice; ACCEPTANCE.md defines DR1–DR4 and the later
-full-completion gates. EC1–EC6 are complete and their evidence remains valid
-unless relevant changes invalidate it.
+Restart prompt for future execution. This planning update does not start a goal,
+change, worker or drill. SYSTEM.md governs execution; PLAN.md orders the work;
+ACCEPTANCE.md defines FD1–FD4; PROGRESS.md records the pin, state and evidence.
+Completed EC1–EC6 and DR1–DR4 evidence is reused where still valid.
 
 ```text
-/goal Implement NEW drill support in /Users/joel/Workspace/fireweed and prove one independent contracts drill in an isolated clone. Complete ACCEPTANCE DR1–DR4 under the unchanged main NEW controller pin. Stop on any blocked change or gap needing the owner's decision. Full product completion remains open.
+/goal Prove independent gitstore and assets drills in isolated NEW candidate clones, gitstore first and assets second, one at a time. Complete ACCEPTANCE FD1–FD4 under the unchanged main NEW controller pin and configured bounds. Stop at any blocked change, independence/access failure or gap needing the owner's decision. Full product completion remains open.
 
 Resume:
-- Read AGENTS.md, SYSTEM.md and docs/rebuild/{PROGRESS,PLAN,ACCEPTANCE,DECISIONS}.md. The unchanged design is product authority and SYSTEM's guardrails govern execution.
-- Inspect live Git status, queue, controller processes and shared claims. Finish existing work only with its owning controller; never reset another worktree's work or release its claim.
-- Use /Users/joel/Workspace/fireweed/.fireweed/bin/fireweed for main workflow commands. Verify the source/hash recorded in PROGRESS; keep that pin unchanged throughout this milestone. Never use mutable bin/fireweed as main's controller or silently fall back to bootstrap.
-- Put the current tree's .fireweed/bin first on worker PATH. Use GOCACHE=/tmp/fireweed-rebuild-cache. Preserve completed cutover archives, evidence and unrelated worktrees.
+- Read AGENTS.md, SYSTEM.md and docs/rebuild/{PROGRESS,PLAN,ACCEPTANCE,DECISIONS}.md. The unchanged design is product authority. Inspect live Git status, queue, controller processes and shared claims; preserve unrelated worktrees and finish a claim only with its owning controller.
+- Verify main's controller source/hash against PROGRESS. Use /Users/joel/Workspace/fireweed/.fireweed/bin/fireweed for main workflow commands; never mutable bin/fireweed or an automatic bootstrap fallback. Keep the pin and all configured bounds unchanged. Put the current tree's .fireweed/bin first on worker PATH and use GOCACHE=/tmp/fireweed-rebuild-cache.
+- Select an explicitly identified clean NEW candidate for the isolated proofs. Align clone/scratch instructions, setup and PATH; hooks copy the actual invoker. Reuse valid checks and the completed contracts proof; repeat checks only when relevant changes invalidate evidence.
 
-Implementation:
-- Follow PLAN's per-change loop. Review the drill slice once against the design's Regeneration section and R16, then review only affected fixes. Implement runner drill orchestration and app CLI support; add prerequisites only for concrete unmet behavior needed by this slice.
-- Keep normal fail-first, separate restricted audits, immutable metadata/evals/interfaces, phase zones, approval/P07 and configured retry/audit/time/usage bounds. Read live status and authoring limits before starting work; never record their values in planning documents or change them to evade enforcement.
-- Cover setup, disposable-only deletion, reconstruction inputs, own/transitive dependent verification, report/ref outcomes and cleanup through public deterministic evals. Keep Go checks independent of real agents/bootstrap.
-- Never commit during a worker step. The pinned controller owns phases, Specs/Decisions, application and archives. Protected author/setup/evidence edits belong in separate commits with no active run or shared claim.
-- Close implementation with an actual candidate CLI drill fixture and DR2's clean-candidate checks. Reuse valid evidence rather than repeat the completed cutover campaign.
+Sequential proofs:
+- Inspect independence before each real invocation. Supply the target's retained spec/Decisions/interfaces/evals and approved retained files, plus only declared dependency interfaces. Both targets depend only on contracts. Keep dependent implementations in the separate verifier checkout, outside the rebuilding worker's inputs.
+- Exclude target disposable implementation and embedded bundle data, source history, saved attempts, product binaries, bootstrap and other modules' internals as reconstruction inputs. Do not query product executables for target content; assets recipes/playbooks/help/explanations must not be recovered from the invoking candidate.
+- Workers, auditors and drill workers use exactly: codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}. Stop on access failure; never substitute model or effort.
+- Run gitstore within existing bounds. Require own and every transitive dependent module's evals to pass, retained inputs unchanged, reviewed native report and retained rebuilt-code ref, verified independence and complete scratch cleanup. Resolve any required owner checkpoint and commit reviewed evidence before starting assets. Run assets with the same requirements; never overlap the two drills.
+- Stop on any blocked change, independence/access failure or gap/contradicted Decision needing owner agreement. Do not automatically author gap fixes, reset retries/rounds or expand to another module. Owner-approved corrections follow PLAN's normal fail-first, restricted independent audit and immutable phase rules, preserving cases, assertions and ID coverage.
 
-One real proof:
-- Use an isolated clone of the tested candidate and identify its executable/source/hash. Configure clone and scratch setup/instructions/PATH for that candidate; hooks copy the actual invoker. This product fixture does not change main's pin or take over a live claim.
-- Inspect independence before the real invocation. Rebuild contracts from its retained spec, Decisions, interfaces and evals; it has no dependency interfaces. Do not expose old implementation/history, other modules' internals, saved attempts, old binaries or bootstrap as reconstruction inputs. The verifier may use dependent implementations outside the rebuilding worker's inputs.
-- Workers, auditors and the drill worker use exactly: codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}. On access failure, stop and report it; never substitute model or effort.
-- Run only the contracts real drill, within normal configured bounds. Require own and all transitive dependent evals to pass, retained contracts/evals unchanged, the design-required native report and retained rebuilt-code ref, and complete scratch cleanup.
-- Review the report and independence evidence. Stop on any blocked change, independence/access failure or gap/contradicted Decision needing owner agreement. Do not automatically author gap fixes, reset retries or expand to another module.
-
-Completion and scope:
-- Record concise DR1–DR4 results, candidate identity, report/ref and inspectable clone location in PROGRESS. Per-change evidence stays in archived Provenance; commit the reviewed native drill report as an author with no active run/claim. No supplemental report inventories or hash manifests.
-- Finish with a clean checkout, no live runs/shared claims and main's original controller pin verified unchanged. Push only on explicit owner instruction.
-- No other real module drill, main contracts implementation replacement, real regenerate change, controller promotion, deferred command/recipe/version/packaging work or release is included.
-- This goal completes only when DR1–DR4 pass. A failed drill or unresolved gap is a checkpoint, not a waiver. All later full-completion gates remain required.
+Completion:
+- Record concise FD1–FD4 results, candidate identities, native reports/refs and inspectable clone locations in PROGRESS. Commit reviewed native reports as protected author evidence with no active run/shared claim. Per-change evidence stays in archived Provenance; create no supplemental report inventories or hash manifests.
+- Finish clean, with no live runs/shared claims, scratch removed and main's original pin verified unchanged. Preserve completed evidence and unrelated worktrees. No main implementation import, real regenerate change, controller promotion, other module drill, deferred product work or push is included.
+- Complete this goal only after both module proofs and FD1–FD4 pass. A failed drill or unresolved owner checkpoint is not completion. All later full-completion gates remain required.
 ```

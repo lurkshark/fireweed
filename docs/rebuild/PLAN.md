@@ -1,99 +1,80 @@
 # Rebuild plan
 
 The design remains product authority; SYSTEM.md governs execution.
-[PROGRESS.md](PROGRESS.md) holds current state, evidence and the controller pin;
-[ACCEPTANCE.md](ACCEPTANCE.md) holds milestone and full-completion gates;
-[GOAL.md](GOAL.md) is the restart prompt. Keep execution order here rather than
-repeating completed queues or gate criteria in several documents.
+[PROGRESS.md](PROGRESS.md) records state, evidence and the controller pin;
+[ACCEPTANCE.md](ACCEPTANCE.md) defines gates; [GOAL.md](GOAL.md) is the restart
+prompt. Keep execution order here and per-change evidence in archived Provenance.
 
-## Completed — Early Go core-loop cutover
+## Completed milestones
 
-EC1–EC6 passed, including 0131–0138, demonstrated follow-up fixes, real-worker
-self-hosting and the separate NEW controller handoff at `c1de8f4`. Preserve
-archived Provenance and reuse the valid evidence recorded in PROGRESS. Bootstrap
-is an explicit recovery option only; the early-cutover queue is closed.
+EC1–EC6 completed the early Go core-loop cutover and separate NEW pin handoff.
+DR1–DR4 completed native drill support and one independent contracts proof,
+including owner-approved contracts clarifications in 0144. Preserve the recorded
+checks, native report/ref, inspectable clones and immutable archives. Completed
+implementation procedures are not a queue to repeat.
 
-## Completed — Drill support and one independent contracts drill
+## Current milestone — Independent gitstore and assets drills
 
-Owner-selected on 2026-10-31; DR1–DR4 passed, including the owner-approved
-contracts clarifications. PROGRESS records completion and retained evidence.
-The execution sequence below implemented the design's drill workflow and proved
-one independent contracts rebuild in an isolated clone. Acceptance DR1–DR4
-bounds completion. This starts the real-regeneration work in full gates 7/8;
-it does not complete either gate for every module or the full product.
+Owner-selected on 2026-11-01. Prove the next dependency layer: **gitstore first,
+then assets, one at a time**. Each depends only on contracts, whose independent
+proof is complete. ACCEPTANCE FD1–FD4 bounds this milestone and advances full
+regeneration gate 7. This planning update starts no execution.
 
-1. **Review the slice once.** Trace the design's Regeneration section and R16
-   to runner/app specs and existing public evals. At the slice's start, NEW had
-   no drill API and its CLI marked drill unimplemented. Reuse existing setup,
-   hooks, zone maps, process bounds and regeneration guidance. Add a lower-level
-   prerequisite only for a concrete missing behavior needed by this slice.
-2. **Implement through the pinned controller.** Author coherent changes for
-   the runner drill lifecycle and app command, returning to the CLI as soon as
-   prerequisites are usable. Keep normal fail-first, restricted independent
-   audit, phase-zone checks, approval/P07, attempts and audit rounds. Permanent
-   evals use deterministic fixtures/fake agents for report/ref outcomes,
-   cleanup, failures and bounded stops; no real model access in Go tests.
-3. **Close the CLI slice.** Build a clean candidate and pass DR2's checks.
-   Exercise an actual candidate drill invocation with deterministic fixtures,
-   including its output/exit behavior. Identify the executable being tested.
-   Main's pinned controller continues to govern implementation changes.
-4. **Run one real contracts drill in an isolated clone.** Before invoking an
-   agent, inspect scratch setup and reconstruction inputs for independence.
-   The rebuild worker receives only retained spec/Decisions/interfaces/evals
-   and allowed dependency interfaces; contracts has no dependencies. Keep
-   dependent implementations available to the verifier outside the rebuilding
-   worker's inputs. Exclude old implementation/history, saved attempts, old
-   binaries and bootstrap as reconstruction inputs. If that separation is not
-   established, stop before spending the real run.
-5. **Review and close.** Use the configured model/effort, check own and all
-   transitive dependent evals, inspect the native report and retained ref, and
-   verify unchanged retained files plus scratch cleanup. Retain the isolated
-   clone until its concise handoff is recorded. Stop on a blocked change,
-   failed independence/access, or any gap/contradicted Decision needing owner
-   agreement. Do not author gap fixes or launch another module's drill.
+1. **Prepare the candidate and inputs.** Inspect current state and verify main's
+   unchanged controller pin. Select a clean isolated NEW candidate and identify
+   its executable/source/hash. Align clone/scratch instructions, setup and PATH
+   with that candidate; setup copies the actual invoking controller. Reuse
+   unaffected DR2/0144 checks and contracts evidence; run checks invalidated by
+   relevant changes. Inspect input membership and independent Git metadata
+   before spending either real run, without consulting old target implementation.
+2. **Prove gitstore.** Apply approved disposable zones and supply retained target
+   inputs plus contracts' declared interfaces only. Keep full-project verification
+   outside the rebuilding worker's inputs. Run within existing bounds, review
+   own/all-transitive-dependent evals, every worker tool command, gaps and
+   contradicted Decisions. Retain its native report/ref and verify cleanup.
+   Stop at required owner checkpoints. Finish review and commit evidence with
+   no active run/claim before proceeding.
+3. **Prove assets.** Repeat the same process only after gitstore's proof closes.
+   Delete all target disposable content, including embedded bundle files. The
+   candidate's embedded recipes, playbooks, help and explanations are old target
+   implementation and cannot supply reconstruction inputs. Gitstore internals
+   are not an assets dependency interface. Never overlap the two real drills.
+4. **Close FD1–FD4.** Record both candidate identities, native reports/refs and
+   inspectable clones concisely in PROGRESS. Preserve retained contracts/evals,
+   verify cleanup and unchanged main pin/bounds, and stop once the gates pass.
 
-Scope ends after this contracts proof and its reviewed evidence. No main pin
-promotion, main contracts-code replacement, real regenerate change, additional
-module drill, deferred command/recipe/version/packaging work or push is included.
+Use the exact agent argv in GOAL and the execution rules in SYSTEM. Gap fixes
+require owner agreement before authoring; they are not automatically authorized
+by this plan. The milestone excludes other modules' real drills, main
+implementation import/replacement, real regenerate changes, controller promotion,
+deferred product work and push. Full product completion remains open.
 
-## Controller and candidate
+## Per-change loop for owner-approved corrections
 
-Use the unchanged `/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed` pin
-from PROGRESS for all main workflow commands. Keep `.fireweed/bin` first on
-worker PATH and `GOCACHE=/tmp/fireweed-rebuild-cache`; FIREWEED_BIN names the
-actual invoker. Worker builds of mutable `bin/fireweed` never replace the pin.
-
-The new drill command is tested through an explicitly identified candidate
-executable in the isolated clone. Record its source/hash, configure clone and
-scratch instructions/setup/PATH consistently, and ensure hooks copy that
-invoking candidate. This fixture selection does not repin main. Never silently
-fall back to bootstrap or resume another controller's live claim.
-
-## Per-change loop
-
-1. Author: read SYSTEM, projected specs, relevant design clauses and the pinned
-   controller's author-change playbook. Motivation names the CLI scenario and
-   design/SYSTEM basis. Use new: handles, stamp, check and show --projected;
+1. Author: read SYSTEM, projected specs, the affected design clauses and the
+   pinned controller's author-change playbook. Motivation names the concrete
+   failure or agreed gap. Use new: handles, stamp, check and show --projected;
    commit the authored change separately with no active run/claim.
-2. Controller start, then context before each worker step.
-3. Evals: black-box tests, described interfaces and allowed new disposable stubs.
-   Every Added/Modified/fixes ID needs genuine failure unless already_satisfied.
-   Iterate with verify --quick; done runs full checks. Use eval_fix for wrong
-   frozen evals, preserving coverage and behavioral obligations.
-4. Independent audit: only unasserted spec clauses, restricted inputs, re-audits
-   limited to prior finding IDs, and at most the configured findings rounds.
-5. Implementation: allowed files only. Controller done verifies, applies,
-   archives and commits. Workers never commit. Stop on every blocked change;
-   never alter refs, bounds or requirements to avoid a checkpoint.
-6. Record current state in PROGRESS and per-change evidence in archived
-   Provenance. The native drill report is required product evidence; create no
-   supplemental reports, testcase inventories or hash manifests.
+2. Controller start, then context before each worker step. Read live approval
+   state and authoring bounds without recording their values in planning docs.
+3. Evals: public black-box tests with genuine fail-first per affected ID unless
+   legitimately already_satisfied. Preserve existing cases, assertions and ID
+   coverage. Iterate with verify --quick; done always runs full checks. Use the
+   controller's eval_fix path for wrong frozen evals; do not repeat historical
+   recovery exceptions without explicit owner authorization.
+4. Independent restricted audit: only unasserted spec clauses, re-audits limited
+   to prior finding IDs, with the unchanged configured round/attempt bounds.
+5. Implementation: allowed files only, frozen evals/interfaces/metadata. The
+   controller verifies, applies, archives and commits; workers never commit.
+   Stop whenever a change blocks; never reset counters or alter enforcement.
+6. Record current handoff in PROGRESS and per-change evidence in Provenance.
+   Reassess evidence affected by the correction; do not repeat unaffected checks
+   or expand real-drill scope automatically.
 
 ## Later full completion
 
-The full requirement inventory and all nine gates remain in ACCEPTANCE. Later
-owner-selected slices cover the remaining modules' independent drills, real
-regenerate validation, gc/migrate and stale/fix conveniences, recipes,
-version/file-format migration, warning completeness and delivery. Reuse valid
-cutover evidence; rerun checks only when relevant changes or unresolved failures
-invalidate it, in addition to required controller phase checks.
+All nine full-completion gates remain in ACCEPTANCE. After this milestone, the
+remaining dependency order is project → checks → workflow → runner → app.
+Later owner-selected work also includes real regenerate validation, gc/migrate
+and stale/fix conveniences, recipes, version/file-format migration, warnings
+and delivery. None is started by this planning update.

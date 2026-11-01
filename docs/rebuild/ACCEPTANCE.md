@@ -132,7 +132,7 @@ changes invalidate it; these criteria are not a queue to execute again.
    and no automatic fallback may mix them. This is core cutover, not a release
    or a declaration that the full design is complete.
 
-## Current milestone — Drill support and contracts proof (DR1–DR4)
+## Completed drill support and contracts proof — DR1–DR4
 
 Owner-selected on 2026-10-31; **DR1–DR4 completed** with evidence in
 [PROGRESS.md](PROGRESS.md), including the owner-approved contracts clarifications.
@@ -178,6 +178,51 @@ No main controller promotion, main contracts implementation replacement, real
 regenerate change or other deferred product work is included. Passing DR1–DR4
 advances full gates 7/8; all-module drill coverage and full product completion
 remain open. Reuse the EC5 real spec-change evidence where still valid.
+
+## Current milestone — Independent foundation drills (FD1–FD4)
+
+Owner-selected on 2026-11-01; **pending execution**. Run gitstore first, then
+assets, one at a time. Both depend only on contracts. These gates derive from
+the design's Regeneration section, R16 and full gate 7; they add no product scope.
+EC1–EC6 and DR1–DR4 remain completed evidence. PLAN orders execution and SYSTEM
+preserves the controller pin, configured bounds and owner checkpoints.
+
+1. **FD1 — Candidate and independence preflight.** Identify the clean isolated
+   NEW candidate's executable/source/hash and align clone/scratch instructions,
+   setup and PATH; hooks copy the actual invoker. Reuse valid checks, repeating
+   only evidence invalidated by relevant changes. Before each real call, inspect
+   the target's approved retained spec/Decisions/interfaces/evals and retained
+   files, with only contracts' declared interfaces as dependency inputs. Exclude
+   old disposable code/data, history, attempts, product binaries, bootstrap and
+   other modules' internals. Assets content cannot be extracted from the
+   invoking candidate's embedded recipes/playbooks/help/explanations. Verification
+   retains dependent implementations outside the reconstruction workspace.
+2. **FD2 — Independent gitstore proof.** Use the configured real model/effort and
+   unchanged bounds. Require own and all transitive dependent evals to pass with
+   retained inputs/evals unchanged. Review worker tool commands for independence,
+   and native report cases, contradicted Decisions and targeted gaps. Retain
+   `.fireweed/drills/gitstore.md` and `refs/fireweed/drills/gitstore/<date>`.
+   Stop for owner agreement on any gap/contradicted Decision needing it, blocked
+   change or independence/access failure. Commit reviewed evidence and finish
+   cleanup with no active run/shared claim before starting assets.
+3. **FD3 — Independent assets proof.** After FD2 closes, meet the same proof,
+   review, preservation and cleanup requirements for assets. Retain
+   `.fireweed/drills/assets.md` and `refs/fireweed/drills/assets/<date>`.
+   The two real drills must not overlap. No report suggestion automatically
+   authorizes a correction or another module's drill.
+4. **FD4 — Retained evidence and clean handoff.** Preserve coverage and complete
+   any owner-approved correction through normal fail-first, restricted independent
+   audit and frozen phase zones. Reassess affected evidence. Commit the reviewed
+   native reports as protected author evidence with no active run/shared claim;
+   record both results, candidate identities, report/ref and inspectable clone
+   locations concisely in PROGRESS. Verify scratch cleanup, clean checkouts,
+   unchanged main pin/bounds and preserved completed evidence/unrelated worktrees.
+   No supplemental report inventories or hash manifests. Completion requires
+   both passing independent proofs and no unresolved required owner checkpoint.
+
+No main implementation import/replacement, real regenerate change, other module
+real drill, controller promotion, deferred product work or push is included.
+Passing FD1–FD4 advances full gate 7; the later full-completion gates remain.
 
 ## Full-completion gates (after early cutover)
 
