@@ -54,6 +54,25 @@ is unreadable by existing drift tracking, and model recording reads `agent.model
 rather than the configured command's `-m` value. These are pending review, not
 additional authorized changes after this checkpoint.
 
+The owner authorized a scoped eval_fix recovery on 2026-10-31, preserving
+coverage, independent audit, the pin and bounds. Recovery preflight found a
+further checkpoint before any frozen edit or new claim: normal eval_fix cannot
+repair this unapplied spec change under the current pin. RUN-056/RUN-057 exist
+only in 0141's projection (public `show runner RUN-056` returns U02), and main
+still has the drill stub. An earlier eval_fix lacks those specs and passing
+implementation; a later one is held by the blocked same-module change. The pin's
+Start selects the eligible queue head and has no exception for this case.
+Eval_fix also cannot be mixed into 0141's Added specs or waive its all-own-pass
+gate. No source files, bounds, controller, shared claims or attempt refs changed.
+
+The minimal further recovery would need an explicit one-time frozen-eval
+exception: add the missing successful `new` write in the three fake-agent
+branches, independently audit the corrected assertions in restricted inputs,
+commit only the reviewed correction as an author while unclaimed, then resume
+0141 from saved attempt 1 with its IDs, run and audit rounds preserved. This is
+not the pin's normal eval_fix lifecycle, so the scoped eval_fix authorization
+has not been silently broadened to that exception. No such edit was made.
+
 ## Completed cutover evidence
 
 - **EC1:** all prerequisites and demonstrated follow-ups applied; clean main,
@@ -143,8 +162,10 @@ additional authorized changes after this checkpoint.
 
 ## Next
 
-Wait for the owner's recovery decision on blocked 0141 and its frozen fixtures.
-Do not resume, reset bounds, author follow-ups or start a real drill automatically.
+Wait for an owner decision on the newly demonstrated eval_fix recovery
+constraint: an explicit one-time frozen-eval exception, or separately scoped
+controller support. Do not resume, reset bounds, author follow-ups or start a
+real drill automatically.
 After an authorized recovery, return to the app command and complete DR1/DR2
 before the one isolated contracts proof. Keep main's controller pin unchanged.
 No push is authorized; all later full-completion gates remain open.
