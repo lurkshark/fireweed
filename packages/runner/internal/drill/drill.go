@@ -109,7 +109,7 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 
 	// Delete only the target's disposable files. The verifier retains all other
 	// project files, including dependent implementation and hook configuration.
-	if err = removeDisposable(scratch, *target); err != nil {
+	if err = removeDisposable(scratch, snapshot, *target); err != nil {
 		return result, err
 	}
 	input, err = makeInput(scratch, snapshot, *target)
@@ -142,7 +142,7 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 		agentSnapshot.Root = input
 		step, invokeErr := invoke.Agent(ctx, model.AgentRequest{Snapshot: agentSnapshot, Role: "worker", Prompt: prompt + feedback, Bin: request.Bin, Timeout: request.Timeout})
 		result.Steps = append(result.Steps, step)
-		if validationErr := validateInput(input, *target, original); validationErr != nil {
+		if validationErr := validateInput(input, snapshot, *target, original); validationErr != nil {
 			failure = fmt.Errorf("invalid reconstruction edits: %w", validationErr)
 			break
 		}
@@ -179,7 +179,7 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 			feedback = "\n\n# Previous reconstruction failure\n" + failure.Error() + "\n" + step.Stdout + "\n" + step.Stderr
 			continue
 		}
-		if err = importDisposable(input, scratch, *target); err != nil {
+		if err = importDisposable(input, scratch, snapshot, *target); err != nil {
 			failure = err
 			break
 		}
@@ -337,10 +337,45 @@ func walkFiles(root string, visit func(rel string, entry fs.DirEntry) error) err
 		return visit(filepath.ToSlash(rel), entry)
 	})
 }
-func removeDisposable(root string, module project.Module) error {
+
+// disposable applies module precedence and the approved project protection to
+// a target path. Dependency interfaces are selected by their declared zone.
+func disposable(snapshot project.Snapshot, module project.Module, rel string) bool {
+	if contracts.ResolveZone(rel, module.Zones) != "disposable" {
+		return false
+	}
+	full := filepath.ToSlash(filepath.Join(module.Dir, filepath.FromSlash(rel)))
+	for _, segment := range strings.Split(rel, "/") {
+		if segment == ".git" || segment == ".fireweed" {
+			return false
+		}
+	}
+	if base := filepath.Base(rel); base == "AGENTS.md" || base == "CLAUDE.md" {
+		return false
+	}
+	var protected []string
+	switch configured := snapshot.Config["protected"].(type) {
+	case []string:
+		protected = configured
+	case []any:
+		for _, value := range configured {
+			if pattern, ok := value.(string); ok {
+				protected = append(protected, pattern)
+			}
+		}
+	}
+	for _, pattern := range protected {
+		if contracts.MatchGlob(pattern, full) {
+			return false
+		}
+	}
+	return true
+}
+
+func removeDisposable(root string, snapshot project.Snapshot, module project.Module) error {
 	moduleRoot := filepath.Join(root, filepath.FromSlash(module.Dir))
 	return walkFiles(moduleRoot, func(rel string, _ fs.DirEntry) error {
-		if contracts.ResolveZone(rel, module.Zones) == "disposable" {
+		if disposable(snapshot, module, rel) {
 			return os.Remove(filepath.Join(moduleRoot, filepath.FromSlash(rel)))
 		}
 		return nil
@@ -406,7 +441,7 @@ func makeInput(scratch string, snapshot project.Snapshot, target project.Module)
 			if module.Name != target.Name && zone != "interface" {
 				return nil
 			}
-			if module.Name == target.Name && zone == "disposable" {
+			if module.Name == target.Name && disposable(snapshot, module, rel) {
 				return nil
 			}
 			if !entry.Type().IsRegular() {
@@ -476,7 +511,7 @@ func reconstructionPrompt(target project.Module, original map[string][]byte) (st
 	sort.Strings(evals)
 	return fmt.Sprintf("# Rebuild %s\n\nTarget spec and Decisions:\n%s\n\nRetained interfaces and files:\n%s\n\nRetained evals:\n%s\n\nRebuild only target disposable paths. Do not edit retained inputs. Do not read outside the supplied input workspace, external trees, old code, source history, binaries, saved attempts, or dependent internal implementation. Do not repair dependent internals. Write DRILL_NOTES.md with separate ## Contradicted Decisions and ## Gaps sections. Every gap must name the nearest spec ID or \"no spec\" and a target module. Do not commit.\n", target.Name, spec, strings.Join(retained, "\n"), strings.Join(evals, "\n")), nil
 }
-func validateInput(root string, target project.Module, original map[string][]byte) error {
+func validateInput(root string, snapshot project.Snapshot, target project.Module, original map[string][]byte) error {
 	current, err := inventory(root)
 	if err != nil {
 		return err
@@ -497,18 +532,18 @@ func validateInput(root string, target project.Module, original map[string][]byt
 		if path == "DRILL_NOTES.md" {
 			continue
 		}
-		if !strings.HasPrefix(path, target.Dir+"/") || contracts.ResolveZone(strings.TrimPrefix(path, target.Dir+"/"), target.Zones) != "disposable" {
+		if !strings.HasPrefix(path, target.Dir+"/") || !disposable(snapshot, target, strings.TrimPrefix(path, target.Dir+"/")) {
 			return fmt.Errorf("unexpected file %s", path)
 		}
 	}
 	return nil
 }
-func importDisposable(input, scratch string, target project.Module) error {
-	if err := removeDisposable(scratch, target); err != nil {
+func importDisposable(input, scratch string, snapshot project.Snapshot, target project.Module) error {
+	if err := removeDisposable(scratch, snapshot, target); err != nil {
 		return err
 	}
 	return walkFiles(filepath.Join(input, filepath.FromSlash(target.Dir)), func(rel string, _ fs.DirEntry) error {
-		if contracts.ResolveZone(rel, target.Zones) != "disposable" {
+		if !disposable(snapshot, target, rel) {
 			return nil
 		}
 		return copyFile(filepath.Join(input, filepath.FromSlash(target.Dir), filepath.FromSlash(rel)), filepath.Join(scratch, filepath.FromSlash(target.Dir), filepath.FromSlash(rel)))
