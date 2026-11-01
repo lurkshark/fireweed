@@ -246,7 +246,7 @@ func Test_RUN_040_EarlierBlockRetainsCauseBeforeTimeStop(t *testing.T) {
 	timeFastHook(t, f)
 	timeAgentAfterWork(t, f, `if [ "$module" = gamma ] && [ "$phase" = evals ]; then
   printf 'TIME_HELD_WORK\n' > packages/gamma/evals/time-work.txt
-  sleep 6
+  while :; do sleep 1; done
 fi
 `)
 	req := f.request(0, false)

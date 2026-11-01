@@ -3,6 +3,8 @@ bases: {}
 eval_fix:
     - RUN-040
 module: runner
+phase: audit
+run: 20261101T232415-5d4da9457a9f8ef9cf7c9ba8
 ---
 
 ## Motivation
@@ -38,3 +40,5 @@ including restart of attempt accounting affected by the authoring error. The
 prior run was stopped and released before this repair. Reuse the preserved
 one-line correction. For worker feedback use fireweed verify --quick; the
 controller performs required full checks and owns every phase commit.
+## Provenance
+- evals 2026-11-01T23:30:42.628942Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=132 failing=0 passing=132
