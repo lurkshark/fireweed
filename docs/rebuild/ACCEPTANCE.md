@@ -179,10 +179,11 @@ regenerate change or other deferred product work is included. Passing DR1–DR4
 advances full gates 7/8; all-module drill coverage and full product completion
 remain open. Reuse the EC5 real spec-change evidence where still valid.
 
-## Current milestone — Independent foundation drills (FD1–FD4)
+## Completed foundation drills — FD1–FD4
 
-Owner-selected on 2026-11-01; **pending execution**. Run gitstore first, then
-assets, one at a time. Both depend only on contracts. These gates derive from
+Owner-selected and completed on 2026-11-01; **FD1–FD4 passed** with evidence in
+[PROGRESS.md](PROGRESS.md). Gitstore ran first, then assets, one at a time.
+Both depend only on contracts. These gates derive from
 the design's Regeneration section, R16 and full gate 7; they add no product scope.
 EC1–EC6 and DR1–DR4 remain completed evidence. PLAN orders execution and SYSTEM
 preserves the controller pin, configured bounds and owner checkpoints.

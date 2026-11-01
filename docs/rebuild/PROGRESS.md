@@ -11,13 +11,13 @@ The owner selected **independent gitstore, then assets drills, one at a time**;
 PLAN orders execution, ACCEPTANCE FD1–FD4 defines completion, and GOAL is the
 restart prompt. Both targets depend only on contracts.
 
-**FD1/FD2 passed for gitstore; assets is next.** The owner-approved recovery
-proof passed on its first reconstruction invocation. Native gitstore evidence
-is reviewed and retained below. Assets has not started. Main and the proof
-clone are unclaimed, with no live drill/worker and scratch removed. Main's pin
-and configured bounds remain unchanged. Preserve the completed contracts proof
-and unrelated worktrees. Only the earlier push through `dae9b28` was authorized;
-later work remains local. Full product completion stays open.
+**FD1–FD4 passed.** Independent gitstore and assets proofs completed in that
+order, one at a time, under main's unchanged NEW pin and configured bounds.
+Both native reports are reviewed and retained below. Main and the proof clones
+are clean and unclaimed after the protected evidence commits; no live drill,
+worker or scratch remains. Preserve the completed contracts proof and unrelated
+worktrees. Only the earlier push through `dae9b28` was authorized; later work is
+local. **Full product completion remains open**, with all later gates required.
 
 ## Foundation proofs — FD1–FD4
 
@@ -50,8 +50,53 @@ are byte-unchanged; the rebuilt ref changes only target disposable paths:
 (commit `3cdc945cea3923dd22877e56e9a570f7a3caf346`). Invoking implementation and
 HEAD stayed unchanged during the drill. Both input/verifier scratch directories
 were removed, and no live run/shared claim remains. The native report is retained
-verbatim, including its final blank line warning. Evidence is committed before
-starting assets. FD3 and final FD4 remain pending.
+verbatim, including its final blank line warning. Evidence was committed before
+assets started.
+
+**Assets: FD1/FD3 passed.** Inspectable clone:
+`/private/tmp/fireweed-fd-assets-s53ujqr9/candidate`, aligned base
+`87261cd10e45a243d450ec419a5a927bd98156e0`. It uses the same verified clean
+`1602083` executable/source/hash above; runtime source and assets retained
+contracts/evals are unchanged. Unaffected DR2 and subsequent checks were reused;
+candidate `check` and `check-commits fc12ffc..87261cd` passed without diagnostics.
+Public zone classification confirmed every old bundle file disposable, including
+the nested recipe SPEC. Preflight and live inspection found exactly 17 retained
+files (target spec/Decisions/api/model/evals, contracts interfaces and isolation
+SYSTEM), one fresh input commit and no remotes/alternates. No old bundle data,
+history, binaries, attempts or other-module internals entered the worker inputs.
+The separate verifier deleted all old assets disposable files and copied the
+actual invoker with matching hash. Agents used the exact configured argv/model/
+effort, prescribed cache and current-tree PATH; Go verification used GOPROXY=off.
+
+Native report: [.fireweed/drills/assets.md](../../.fireweed/drills/assets.md).
+The first reconstruction invocation passed all **863 cases**: 82 own and 781
+across app, checks, project, runner and workflow. No contradicted Decisions were
+identified. The report's Gaps entry describes inability to run the full retained
+suite in the input-only workspace, where manifests and dependency implementation
+were deliberately absent. This is the required isolation arrangement, already
+explained in supplied SYSTEM; the separate native verifier ran and passed that
+full suite. The note is resolved by this verification and requires no behavioral
+choice or owner-agreed fix; it stays verbatim in the native report.
+
+Review of all 26 executed shell commands (including complete Python bodies)
+found reads confined to supplied inputs, newly written code and owned in-input
+fixtures. Recipes/playbooks/help/explanations were reconstructed without querying
+the invoker. A rejected combined cleanup command was safely replaced with file
+unlink/directory removal; temporary fixtures were removed. Retained inputs are
+byte-unchanged. The rebuilt ref changes only assets disposable paths:
+`refs/fireweed/drills/assets/20261101T173119.320562000`
+(commit `53ed45d3ee36dcac05fc5b736fa461152dd011d4`). The invoking implementation
+and HEAD stayed unchanged during the drill. Native input/verifier cleanup passed;
+no live run/shared claim remains. Trailing whitespace and final blank-line
+warnings inside captured native observations are retained verbatim as evidence
+formatting, not a product change.
+
+**FD4 passed.** Both native reports are committed as protected author evidence;
+refs and inspectable clones are retained. Main's original source/hash pin and
+all configuration/bounds are unchanged. Main implementation was not replaced or
+imported; no real regenerate change, controller promotion, other-module drill,
+deferred product work or push occurred. Completed contracts evidence and the
+unrelated worktree remain intact. Full-completion gates remain required.
 
 The earlier interrupted gitstore invocation remains incomplete, with no native
 report/ref, at `/private/tmp/fireweed-fd-gitstore-ierzwr1i/candidate`. Its second
@@ -228,8 +273,6 @@ completion remains open.
 
 ## Next
 
-Prepare and independently inspect assets inputs, excluding every disposable
-embedded bundle file and all invoker content as reconstruction sources. Run only
-assets next, with exact configured agents and unchanged main pin/bounds. Stop on
-new gaps, contradicted Decisions, access/independence failure or a blocked change.
-Commit reviewed native evidence and complete FD4 before marking this goal done.
+This goal is complete. No further execution slice is selected. Full product
+completion remains open; later work requires an owner-selected scope and all
+remaining ACCEPTANCE gates. Keep the controller pin/bounds and retained proofs.

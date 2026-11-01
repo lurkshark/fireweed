@@ -13,12 +13,14 @@ including owner-approved contracts clarifications in 0144. Preserve the recorded
 checks, native report/ref, inspectable clones and immutable archives. Completed
 implementation procedures are not a queue to repeat.
 
-## Current milestone — Independent gitstore and assets drills
+## Completed foundation milestone — Independent gitstore and assets drills
 
-Owner-selected on 2026-11-01. Prove the next dependency layer: **gitstore first,
-then assets, one at a time**. Each depends only on contracts, whose independent
-proof is complete. ACCEPTANCE FD1–FD4 bounds this milestone and advances full
-regeneration gate 7. This planning update starts no execution.
+Owner-selected and completed on 2026-11-01: **gitstore first, then assets, one
+at a time**. FD1–FD4 passed; PROGRESS records the reviewed native evidence.
+The sequence below records the completed milestone. Each depends only on
+contracts, whose independent proof is complete. ACCEPTANCE FD1–FD4 bounds this
+milestone and advances full regeneration gate 7. No further execution slice is
+selected; full product completion remains open.
 
 1. **Prepare the candidate and inputs.** Inspect current state and verify main's
    unchanged controller pin. Select a clean isolated NEW candidate and identify
