@@ -27,7 +27,7 @@ type envelope struct {
 }
 
 var pending = map[string]bool{
-	"drill": true, "gc": true, "migrate": true,
+	"gc": true, "migrate": true,
 }
 
 func Run(args []string, out, errOut io.Writer) int {
@@ -239,6 +239,8 @@ func Run(args []string, out, errOut io.Writer) int {
 			return fail("U01", "run takes no arguments. Use run [--for 1h] [--max N] [--allow-unmerged] [--json].")
 		}
 		return runQueue(max, forDuration, allowUnmerged, jsonMode, out, errOut)
+	case "drill":
+		return runDrill(positional[1:], jsonMode, out, errOut)
 	case "doctor":
 		if count != 0 {
 			return fail("U01", "doctor takes no arguments. Use doctor [--no-agent] [--json].")

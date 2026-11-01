@@ -526,6 +526,27 @@ History MUST return exit2 for lookup failures with U02 naming the rejected modul
 Other project.SpecHistory failures MUST return exit1 retaining their cause code and corrective guidance.
 Failure output MUST contain code/message diagnostics: JSON uses null data and empty stderr; plain output uses empty stdout and stderr diagnostics.
 
+### APP-136
+drill <module> MUST discover the nearest project root and invoke runner.Drill with that Root, the requested Module and the actual invoking executable as Bin. It MUST leave Timeout unset so configured backend bounds apply.
+
+### APP-137
+A successful drill MUST return exit 0 with empty stderr and plain output identifying the module, passing result, project-relative native report path and retained rebuilt-code ref.
+
+### APP-138
+Successful drill --json MUST return exit 0 with schema 1 object data containing module, result, report, ref and base_commit string fields associated with the runner result. It MUST emit empty diagnostics and empty stderr.
+
+### APP-139
+drill MUST reject missing or extra module arguments with exit 2 and corrective U01, and an unknown module with exit 2 and corrective U02 naming it. These rejections MUST invoke neither setup/eval hooks nor agents.
+
+### APP-140
+drill project-discovery or configuration-loading failures MUST return exit 2 with corrective diagnostics retaining their cause code or C01 when uncoded. JSON MUST use schema 1 with null data and empty stderr; plain failures MUST use empty stdout and stderr diagnostics.
+
+### APP-141
+Ordinary runner.Drill failures MUST return exit 1 with corrective diagnostics retaining the cause code or P01 when uncoded. Diagnostics MUST identify the native report and rebuilt ref when those artifacts exist. JSON MUST use schema 1 with null data and empty stderr; plain failures use empty stdout and stderr diagnostics.
+
+### APP-142
+A clean runner.IsUsageStop error with drill Result stopped MUST return exit 3 with the stop reason and any native report/ref identifiers. JSON MUST use schema 1 object data containing module, result, report, ref, base_commit and reason, with empty diagnostics and stderr; plain output MUST name the stopped module and reason.
+
 ## Decisions
 
 [0069-project-initialization] Init accepts codex and claude presets as argv commands; other selections are shell command templates containing {prompt}, stored as strings for one-pass quoted substitution when execution is implemented. Local recipes use recipe.yaml metadata, recipe.md instructions and a files/ project-relative payload; none uses empty language defaults and a generic module scaffold.
