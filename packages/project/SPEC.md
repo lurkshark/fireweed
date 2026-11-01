@@ -198,6 +198,33 @@ Stamp MUST return an error whose contracts ErrorCode is U02, with the requested 
 ### PRJ-059
 Load MUST return an error preserving the contracts ErrorCode C03 or C05 when a module SPEC.md fails to parse.
 
+### PRJ-060
+StaleSpecs MUST return the target change's Modified and Removed items whose recorded bases differ from the corresponding preceding projected spec hashes, in edit order, with ID, RecordedHash and Current text.
+Items without a bases entry MUST be omitted.
+
+### PRJ-061
+StaleSpecs MUST recover Before by projecting the spec immediately before the target change at the Git commit that last changed that change file's bases mapping.
+It MUST set Recovered true only when the recovered item's normalized SpecHash equals RecordedHash.
+
+### PRJ-062
+When matching stamped history cannot be recovered, StaleSpecs MUST return the stale item's Current text and RecordedHash with Recovered false and empty Before.
+Unavailable history MUST NOT prevent reporting other stale items.
+
+### PRJ-063
+StaleSpecs MUST leave repository files, index and refs unchanged.
+It MUST return an empty slice when no recorded bases are stale.
+
+### PRJ-064
+StampMissing MUST add canonical preceding-projection hashes only for Modified or Removed IDs absent from bases, preserving every existing entry including stale hashes.
+It MUST retain other frontmatter values and human section contents.
+
+### PRJ-065
+StampMissing MUST reject a nonmapping bases value or an edited ID absent from the preceding projection with C08 and preserve the target file on rejection.
+
+### PRJ-066
+StaleSpecs and StampMissing MUST accept a unique pending slug, queued basename or repository-relative queued path.
+An unknown selector MUST return U02 naming the requested change; an ambiguous slug MUST return C13.
+
 ## Decisions
 
 [0126-spec-history-query] History reads the project's current archive files, as the archive-backed show
