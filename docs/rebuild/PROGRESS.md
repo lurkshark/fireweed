@@ -11,10 +11,11 @@ The owner selected **independent gitstore, then assets drills, one at a time**;
 PLAN orders execution, ACCEPTANCE FD1–FD4 defines completion, and GOAL is the
 restart prompt. Both targets depend only on contracts.
 
-**FD execution stopped at a gitstore owner checkpoint.** One isolated gitstore
-drill was invoked; it did not produce a completed proof. Assets has not started,
-and no correction is authored. See the checkpoint below. Main is unclaimed,
-the queue is empty and no drill workflow/worker is live. The controller pin and
+**FD execution resumed after owner approval.** The interrupted gitstore run
+did not produce a completed proof. Owner-approved clarification 0145 is applied;
+prepare one fresh isolated gitstore proof under unchanged bounds. Assets has
+not started. Main is unclaimed, the queue is empty and no drill workflow/worker
+is live at this handoff. The controller pin and
 configured bounds remain unchanged. Preserve the contracts proof clone/ref and unrelated worktrees.
 Only the earlier push through `dae9b28` was owner-authorized; later work is local.
 
@@ -61,15 +62,25 @@ removed after process inspection. The candidate is clean and unclaimed;
 `.fireweed/drills/gitstore.md` and a gitstore rebuilt-code ref were **not**
 produced. No substitute evidence report or implementation import was created.
 
-FD3 has not started; FD4 remains open. The owner approved the two reported
-choices on 2026-11-01. Public probes confirmed main already implements them,
-including unstaged tracked-diff rename retention and selected new files.
-Normal change 0145 records the clarifications with legitimate already_satisfied
-entries and focused regression assertions, preserving implementation and prior
-coverage. No change claim is active at authoring. Recovery of the interrupted
-drill still needs a concrete decision before another real invocation; do not
-reset or silently restart its attempt budget or begin assets. Main's original pin and configuration are
-unchanged, and the completed contracts evidence and unrelated worktrees remain.
+FD3 has not started; FD4 remains open. The owner's 2026-11-01 `Approve` reply
+accepted the two reported choices and recovery. Public probes confirmed main
+already implements them, including unstaged tracked-diff rename retention and
+selected new files. Normal change
+[0145](../../changes/archive/0145-gitstore-drill-clarifications.md) applied at
+`0eb1353` with legitimate already_satisfied entries. It preserves every prior
+case/assertion, implementation and interface. Its eval phase passed all 9 cases;
+restricted independent audit passed both IDs with no findings; full controller
+verification passed 790 cases. The first eval worker's premature phase advance
+was rejected with P03; the configured remaining retry restored runtime fields
+and removed the premature Provenance before normal controller phase commits.
+Per-change evidence stays in the archive.
+
+Approved recovery is one fresh isolated gitstore invocation after 0145, under
+the unchanged per-run bounds. The interrupted invocation remains incomplete;
+do not resume its lost state, reuse its rebuilt code, or silently manipulate
+counters. Close the fresh gitstore proof and commit reviewed native evidence
+before assets. Main's original pin/configuration, completed contracts evidence
+and unrelated worktrees remain unchanged.
 
 ## Completed drill evidence — DR1–DR4
 
@@ -230,8 +241,8 @@ completion remains open.
 
 ## Next
 
-Complete owner-approved 0145 through the normal controller lifecycle, independent
-restricted audit and frozen phase zones. Then obtain the concrete interrupted-run
-recovery decision before another real drill. Gitstore's completed proof and
-reviewed evidence must close before assets begins. Reuse valid contracts and
-candidate checks; keep main's controller pin and all configured bounds unchanged.
+Prepare and independently inspect the clarified gitstore inputs in a fresh
+candidate clone, then perform the owner-approved recovery invocation. Stop on
+new gaps, contradicted Decisions, access/independence failure or a blocked change.
+Gitstore's completed proof and committed reviewed native evidence must close
+before assets. Reuse valid checks and keep main's pin and bounds unchanged.
