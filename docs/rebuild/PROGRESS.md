@@ -13,12 +13,14 @@ Full product completion remains open.
 The owner selected the next bounded milestone on 2026-10-31: implement drill
 support and prove one independent contracts drill in an isolated clone, with
 main's NEW pin unchanged. PLAN orders execution, ACCEPTANCE DR1–DR4 defines
-completion, and GOAL is the restart prompt. **DR1 and DR2 passed.** 0141 applied
+completion, and GOAL is the restart prompt. **DR1–DR3 passed; DR4 is at an owner
+checkpoint for reported specification gaps.** 0141 applied
 at 74dca97 after owner-authorized frozen-eval recovery; 0142 applied the native
 app command at d8fb93a; 0143 applied project protection at 8d6f51b. The clean
-candidate passed all required checks and actual CLI fixtures below. DR3/DR4
-remain pending: run one independent contracts drill in the isolated candidate
-clone, review its native report/ref and stop at any required checkpoint.
+candidate passed all required checks and actual CLI fixtures below. The single
+independent contracts drill passed all own/transitive evals; its reviewed native
+report and rebuilt-code ref are retained. DR4 cannot close until the owner
+resolves the reported gaps; no automatic fixes or additional drills are authorized.
 Main's NEW pin remains unchanged; unrelated worktrees and cutover evidence
 are preserved.
 Only the earlier push through `dae9b28` was owner-authorized; later work is local.
@@ -68,6 +70,37 @@ all four NEW check envelopes had no diagnostics. GOCACHE was the prescribed
 plain/JSON, usage/lookup exits, exhausted verification failure, retained native
 report/ref and scratch cleanup; inspectable deterministic fixture:
 `/tmp/fireweed-dr2-cli-81n68sm9/project`.
+
+The single real contracts drill returned exit 0 on its first reconstruction
+attempt: **923 cases passed** (52 contracts, 871 across all seven transitive
+dependents). It used the exact tested candidate above and configured
+`gpt-6-sol` / high effort. Clone-only fixture alignment is base
+`0b1a36a551073c660e4093ab5aa73729c49a7fbb`; only instructions changed from the
+tested source, with configuration, setup logic and bounds unchanged.
+Native evidence: [.fireweed/drills/contracts.md](../../.fireweed/drills/contracts.md).
+Rebuilt-code ref in the inspectable clone:
+`refs/fireweed/drills/contracts/20261101T041658.861289000`
+(commit `518caf16bb6f21d86b3986bb1ef52899abad5376`).
+
+Live inspection confirmed one fresh input-only commit containing the five
+retained contracts files plus isolation policy, no remotes/alternates, and no
+old implementation/history, attempts, binaries or other modules' internals.
+The scratch controller hash matched the candidate. Review of every worker tool
+command found reads confined to those inputs and newly written code. Retained
+spec/Decisions/interfaces/evals are byte-unchanged; the ref changes only target
+disposable code. The original clone implementation remains untouched. Input
+and verifier scratch directories were removed; no live run/shared claim remains.
+The native report is retained verbatim, including its extra final blank line
+reported by `git diff --check`; this evidence-format warning is not a product fix.
+
+**Required owner checkpoint:** the report identifies no contradicted Decision,
+but records three contracts gaps needing agreement: CON-008's round-trip domain
+(nil maps and Go concrete types), CON-010's assigned-ID heading grammar, and
+CON-002's handling of duplicate section names (also affecting ReplaceSection).
+Passing evals do not waive these unresolved choices. No spec/Decision/eval or
+main contracts implementation was changed. The report is reviewed and committed;
+DR4 and this goal remain incomplete until the owner decides how to handle the
+gaps. Do not author fixes, repeat the drill or expand scope without that decision.
 
 ## Completed cutover evidence
 
@@ -158,7 +191,7 @@ report/ref and scratch cleanup; inspectable deterministic fixture:
 
 ## Next
 
-Align the isolated clone's instructions/PATH with the tested candidate, then
-run the single independent real contracts drill under unchanged model/effort
-and bounds. Review native evidence and cleanup for DR3/DR4. Stop at the next
-required checkpoint. No push is authorized; full product completion stays open.
+Stop at DR4's owner gap checkpoint. Await a decision on the three reported
+contracts gaps before any follow-up authoring or drill. Preserve the tested
+candidate clone/ref, native report, clean main and unchanged controller pin.
+No push is authorized; full product completion remains open.
