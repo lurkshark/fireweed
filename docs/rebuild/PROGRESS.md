@@ -11,10 +11,61 @@ The owner selected **independent gitstore, then assets drills, one at a time**;
 PLAN orders execution, ACCEPTANCE FD1–FD4 defines completion, and GOAL is the
 restart prompt. Both targets depend only on contracts.
 
-This update is planning only: neither new drill nor a correction has started.
-Main is clean and unclaimed; the queue is empty and no workflow/worker is live. The controller pin and configured bounds
-remain unchanged. Preserve the contracts proof clone/ref and unrelated worktrees.
+**FD execution stopped at a gitstore owner checkpoint.** One isolated gitstore
+drill was invoked; it did not produce a completed proof. Assets has not started,
+and no correction is authored. See the checkpoint below. Main is unclaimed,
+the queue is empty and no drill workflow/worker is live. The controller pin and
+configured bounds remain unchanged. Preserve the contracts proof clone/ref and unrelated worktrees.
 Only the earlier push through `dae9b28` was owner-authorized; later work is local.
+
+## Foundation drill checkpoint — FD1–FD4
+
+Inspectable candidate clone:
+`/private/tmp/fireweed-fd-gitstore-ierzwr1i/candidate`. Its NEW executable was
+built from clean source `1602083a955df97910348be76f99cc3816729d93`, with
+`vcs.modified=false`, SHA-256
+`5c52a4d949d9e39bfb8560bd349da5cde884533dea8e976647656e0ded52b74f`.
+Clone-only instruction alignment is
+`0146b7779e16a0289bfd7f16d7af9aafd75f8930`. Configuration, setup and bounds
+match main. DR2's unaffected checks and completed contracts proof were reused;
+the intervening contracts change passed candidate race tests and vet. Candidate
+`check` and `check-commits 8d6f51b..0146b77` passed without diagnostics.
+
+FD1's gitstore preflight and live input inspection found retained target
+SPEC/Decisions, api/model and evals (including empty `.gitkeep`), contracts'
+declared interfaces, and isolation SYSTEM only. Input metadata had one fresh
+commit, no remotes/alternates, history, disposable implementation, binaries or
+other modules' internals. The separate verifier deleted old gitstore disposable
+files and copied the actual candidate invoker with matching hash. The real
+worker used the exact configured Codex argv/model/effort and prescribed cache
+and PATH. Retained input files were unchanged on final inspection. A complete
+worker-command review was not possible because the interrupted run wrote no
+native transcript/report; full independence acceptance remains incomplete.
+
+FD2 is **incomplete**. The first reconstruction reached own/all-dependent
+verification; dependent failures included selected commits of new paths being
+rejected by `git commit --only` because the rebuilt Commit did not first stage
+those paths. The controller entered its configured second attempt. Worker
+notes reported no contradicted Decision and two gaps requiring owner review:
+
+- GIT-003 / gitstore: one entry per path for simultaneous staged and unstaged
+  edits, preserving a rename from either layer.
+- GIT-007 / gitstore: selected worktree bytes when index and worktree differ.
+
+The supervising agent interrupted the owning CLI to stop at that checkpoint,
+but SIGINT exited it with 130 rather than producing a native report/ref and
+cleanup. This interruption was a supervision error; no passing case count or
+completed proof is claimed. The reconstruction worker subsequently exited.
+Only this invocation's input and verifier scratch directories were manually
+removed after process inspection. The candidate is clean and unclaimed;
+`.fireweed/drills/gitstore.md` and a gitstore rebuilt-code ref were **not**
+produced. No substitute evidence report or implementation import was created.
+
+FD3 has not started; FD4 remains open. Owner agreement is needed on the two
+reported choices and on recovery of this interrupted, uncompleted drill before
+another real invocation. Do not reset or silently restart its attempt budget,
+author fixes, or begin assets. Main's original pin and configuration are
+unchanged, and the completed contracts evidence and unrelated worktrees remain.
 
 ## Completed drill evidence — DR1–DR4
 
@@ -175,7 +226,7 @@ completion remains open.
 
 ## Next
 
-When execution is requested, use GOAL to prepare the isolated NEW candidate and
-inspect gitstore's reconstruction inputs before its real invocation. Close its
-reviewed proof, owner checkpoints and cleanup before beginning assets. Reuse
-valid contracts/candidate evidence and keep the controller pin/bounds unchanged.
+Wait for the owner's gitstore gap and interrupted-run recovery decision above.
+No automatic rerun or correction is authorized. Gitstore's completed proof and
+reviewed evidence must close before assets begins. Reuse valid contracts and
+candidate checks; keep main's controller pin and all configured bounds unchanged.
