@@ -30,9 +30,24 @@ dependent suite was active. No completed full-verification result or impl phase
 commit was obtained. The outer `next` was interrupted with SIGINT (exit 130);
 remaining verification processes exited, and the owning unchanged controller
 released the claim. This is an interrupted impl change, not an applied or
-controller-blocked change. Do not reset attempts or audit rounds. Owner agreement
-on scoped verification-cost diagnosis is required before resuming; no automatic
-performance fix, longer verification allowance or further slice is selected.
+controller-blocked change. Do not reset attempts or audit rounds.
+
+The owner approved scoped cost diagnosis, preserving the pin, configured bounds
+and frozen tests. Retained native reports prove project passed in 2.354 seconds
+(126 cases), app in 258.332 (291), checks in 232.562 (101), and runner in 286.791
+(132); full verification executes those suites sequentially. Workflow did not
+produce a completed report. The protected hook omits JUnit time attributes, so
+its native Seconds fields are zero; stdout provides these package timings.
+This measurement limitation is recorded, not automatically fixed.
+
+A bounded unchanged app probe passed in 262.355 seconds. An identical Go cache
+probe with diagnostic logging then passed from cache in 1.901 seconds; normal
+environment cache reuse was not established by a separate 20-second probe.
+Four bounded build probes found too little VCS-stamping overhead to justify a
+change. No source, eval, hook, pin or configured-bound correction was made.
+Recovery will reuse valid ordinary Go cache results with cache diagnostics
+enabled, use quick worker feedback and retain the controller's full done checks
+under the unchanged cost guardrail. No longer verification allowance is granted.
 
 SP1–SP4 remain incomplete. App integration, actual new-option CLI/candidate gates
 and the project drill have not started. No workflow/worker or shared claim is
@@ -298,8 +313,9 @@ completion remains open.
 
 ## Next
 
-Await owner agreement on the 0146 verification-cost checkpoint above. Inspect
-live state and the unchanged main pin before any authorized recovery. Preserve
+Resume 0146 after the owner-approved diagnosis above, with full verification
+still bounded by SYSTEM's cost guardrail. Inspect live state and the unchanged
+main pin before recovery. Preserve
 the interrupted implementation, frozen interfaces/evals, audit, attempts and
 round state; resume only with its owning controller. After scoped project/app
 changes close and actual NEW CLI/candidate gates pass, inspect independent
