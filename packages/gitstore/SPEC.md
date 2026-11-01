@@ -19,7 +19,7 @@ Inspect MUST return canonical absolute worktree/common-Git directories plus HEAD
 BaseRef MUST prefer a locally known remote/base ref, falling back to the local base branch and rejecting a missing base. An omitted remote MUST mean origin. An omitted base MUST use the local remote HEAD's branch when known, otherwise main.
 
 ### GIT-003
-Changes MUST report repository-relative staged and unstaged tracked edits and untracked paths against the given base, retaining both names for staged renames.
+Changes MUST report repository-relative staged and unstaged tracked edits and untracked paths against the given base, once per reported Path. Renames reported by either tracked diff MUST retain both names.
 
 ### GIT-004
 WriteBlob MUST store a byte payload in local Git objects and return its object ID.
@@ -31,7 +31,7 @@ Run MUST launch argv in the requested directory with the supplied environment/st
 ReadAt MUST return a revision's file bytes or an error for absent paths.
 
 ### GIT-007
-Commit MUST commit only explicitly selected paths with the given subject, return the new HEAD, and leave unrelated working and index changes uncommitted.
+Commit MUST commit the worktree contents of explicitly selected paths, including new files, with the given subject and return the new HEAD. It MUST leave unrelated working and index changes uncommitted.
 
 ### GIT-008
 ReadBlob MUST return the bytes of a local Git blob object by its object ID.
