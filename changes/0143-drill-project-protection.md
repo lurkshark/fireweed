@@ -53,3 +53,13 @@ Normal separate restricted audit, frozen phase zones and unchanged controller
 bounds apply. Workers read context before each step and never commit. Passing
 Audit submissions use No findings and all listed Checked IDs; findings quote
 an exact clause with a separator and explanation.
+
+For worker iteration, use focused public drill tests for these IDs and affected
+existing drill behavior. Automatic next/done still perform the unchanged full
+own/dependent/boundary phase checks; do not skip those, call done manually, commit
+or alter hooks/bounds. A pending Audit section is preseeded so the restricted
+review can replace only its body without inserting surrounding whitespace.
+
+## Audit
+
+Pending independent audit.

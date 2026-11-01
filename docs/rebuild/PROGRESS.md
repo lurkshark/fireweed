@@ -14,8 +14,8 @@ The owner selected the next bounded milestone on 2026-10-31: implement drill
 support and prove one independent contracts drill in an isolated clone, with
 main's NEW pin unchanged. PLAN orders execution, ACCEPTANCE DR1–DR4 defines
 completion, and GOAL is the restart prompt. **0141 applied at 74dca97 after
-owner-authorized frozen-eval recovery.** DR1 still needs the native app command
-and a demonstrated project-protection correction; 0142/0143 are authored next.
+owner-authorized frozen-eval recovery.** 0142 applied the native app command at d8fb93a. DR1 still needs the demonstrated
+project-protection correction in authored 0143.
 DR2–DR4 have not started. There is no candidate CLI fixture, candidate identity,
 isolated proof clone or new native drill report/ref yet. Main's NEW pin remains
 unchanged; unrelated worktrees and cutover evidence are preserved.
@@ -46,8 +46,10 @@ within implementation; temporary recovery workspaces are removed.
 A focused public DR1 fixture then demonstrated that project-level protected
 paths inside disposable globs are deleted from the rebuilt ref despite a
 passing drill. 0143 corrects that existing deletion/input/import obligation
-through normal fail-first and audit. 0142 first returns to the CLI caller using
-the usable runner API. No real drill has run, and no automatic reconstruction
+through normal fail-first and audit. 0142 returned to the CLI caller and passed
+all 291 app cases. Its first audit submission was rejected without import for
+edits outside Audit; a fresh restricted audit passed after pre-seeding that
+section. No verdict, frozen eval or audit counter was manually changed. No real drill has run, and no automatic reconstruction
 gap fix or unrelated prerequisite is included.
 
 ## Completed cutover evidence
@@ -139,7 +141,6 @@ gap fix or unrelated prerequisite is included.
 
 ## Next
 
-Run authored 0142 (native drill CLI), then 0143 (project protection), through the
-unchanged NEW pin. Finish DR1/DR2 with clean-candidate checks and an actual CLI
+Run authored 0143 (project protection) through the unchanged NEW pin. Finish DR1/DR2 with clean-candidate checks and an actual CLI
 fixture before the one isolated contracts proof. Stop at the next required
 checkpoint. No push is authorized; all later full-completion gates remain open.
