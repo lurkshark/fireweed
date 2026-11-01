@@ -69,10 +69,10 @@ mkdir -p packages/alpha/internal
 case "$mode" in
   timeout) printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; sleep 10;;
   usage_always) printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; echo 'RATE LIMIT' >&2; exit 9;;
-  usage_once) if [ "$count" -eq 1 ]; then printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; echo 'RATE LIMIT' >&2; exit 9; fi;;
-  agent_retry|mixed_exhaust) if [ "$count" -eq 1 ]; then printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; echo 'WORKER_FAILURE' >&2; exit 7; fi;;
+  usage_once) if [ "$count" -eq 1 ]; then printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; echo 'RATE LIMIT' >&2; exit 9; fi; [ "$(cat packages/alpha/internal/value.go 2>/dev/null)" = PARTIAL_WORK ] || { echo 'prior retry work missing' >&2; exit 8; }; printf 'new' > packages/alpha/internal/value.go;;
+  agent_retry|mixed_exhaust) if [ "$count" -eq 1 ]; then printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; echo 'WORKER_FAILURE' >&2; exit 7; fi; if [ "$mode" = agent_retry ]; then [ "$(cat packages/alpha/internal/value.go 2>/dev/null)" = PARTIAL_WORK ] || { echo 'prior retry work missing' >&2; exit 8; }; printf 'new' > packages/alpha/internal/value.go; fi;;
   agent_fail_always) printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; echo 'WORKER_FAILURE' >&2; exit 7;;
-  verify_retry) if [ "$count" -eq 1 ]; then printf 'wrong' > packages/alpha/internal/value.go; exit 0; fi;;
+  verify_retry) if [ "$count" -eq 1 ]; then printf 'wrong' > packages/alpha/internal/value.go; exit 0; fi; [ "$(cat packages/alpha/internal/value.go 2>/dev/null)" = wrong ] || { echo 'prior retry work missing' >&2; exit 8; }; printf 'new' > packages/alpha/internal/value.go;;
   wrong|mixed_exhaust) printf 'wrong' > packages/alpha/internal/value.go;;
   *) printf 'new' > packages/alpha/internal/value.go;;
 esac
