@@ -43,8 +43,11 @@ standalone probes and controller hooks. The protected hook omits JUnit durations
 so native Seconds fields are zero; stdout supplies uncached package timings.
 That measurement limitation remains recorded, with no automatic fix.
 
-Stop here for owner acceptance of the scoped cold-precheck timing overrun before
-app work. No general longer-verification allowance or bound change is granted.
+The owner accepted this timing overrun and permanently raised SYSTEM's full
+implementation Verify process guardrail from 15 to **25 minutes** on 2026-11-01.
+Own Verify remains under 5 minutes. This changes no configured controller bound,
+pin, frozen test, enforcement or evidence requirement. Continue SP1–SP4 and stop
+at the next owner checkpoint.
 SP1–SP4 remain incomplete: app integration, actual new-option CLI/candidate gates
 and the project drill have not started. Main is clean/unclaimed with no live
 workflow/worker or native scratch worktree. Main's controller source/hash and
@@ -309,10 +312,9 @@ completion remains open.
 
 ## Next
 
-Await owner acceptance of 0146's approximately 15m06s uncached controller
-precheck. Its required full done verification passed in approximately 12 seconds;
-0146 is applied and archived, with no live run/shared claim. Keep the pin,
-configured bounds, frozen tests and completed proofs unchanged. After acceptance,
-author the app CLI integration through the normal controller lifecycle, then
+0146 is applied and archived; its timing checkpoint is accepted under the
+owner-updated 25-minute full-verification process guardrail. Keep the pin,
+configured bounds, frozen tests and completed proofs unchanged. Author the app
+CLI integration through the normal controller lifecycle, then
 complete actual NEW CLI/candidate gates and inspect independent project inputs
 before its one real drill. SP1–SP4 remains the selected incomplete milestone.
