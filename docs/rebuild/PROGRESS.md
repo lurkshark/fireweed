@@ -28,10 +28,10 @@ diagnostic conventions. Its 13 genuine failing cases cover all seven new IDs;
 all 291 existing cases passed. Restricted audit passed all eight affected IDs,
 then full controller application passed all **304 cases**. Existing evals and
 interfaces stayed frozen. Evidence remains in [0147's archived Provenance](../../changes/archive/0147-stale-authoring-cli.md).
-SP1 behavior and SP2's feature lifecycle are complete; candidate CI is stopped
-at the runner checkpoint below, and the independent project proof is pending.
+SP1 behavior and SP2's feature lifecycle are complete; candidate CI recovery
+is proceeding below, and the independent project proof is pending.
 
-**Candidate checks — owner checkpoint.** Inspectable clone:
+**Candidate checks — recovery.** Inspectable clone:
 `/private/tmp/fireweed-sp-project-8ko73j3j/candidate`. Clean executable source
 `5bacb4ab5817e8eaea38218e6a8bcf9354dce42c`, version 0.1.0,
 `vcs.modified=false`, SHA-256
@@ -79,8 +79,17 @@ allowing the attempt-accounting restart caused by the authoring error. The
 stopped run's one-line eval correction is preserved for the restarted worker;
 author repair commits contain no eval edits. Resume the normal pinned-controller
 lifecycle with the same cases, assertions, ID coverage, pin and bounds.
-No real project drill has started; preflight selected 19 regular retained
-inputs only. Candidate remains clean and unclaimed.
+**0148 applied at `a11ace0`** after that repair. The normal eval_fix lifecycle
+passed all 132 own cases (`4e76986`), its restricted independent audit had no
+findings for RUN-040 (`376b45f`), and full implementation verification passed
+all 436 cases. Only the one fake-agent wait changed; every existing case,
+assertion, covered ID, runtime source, interface, spec and configured bound was
+preserved. Evidence remains in
+[0148's archived Provenance](../../changes/archive/0148-run-time-stop-fixture.md).
+Main is clean and unclaimed. Align the candidate with this correction and
+recheck affected runner normal/race tests and CI; reuse unaffected Go, CLI and
+foundation evidence. No real project drill has started; preflight selected 19
+regular retained inputs only. Candidate remains clean and unclaimed.
 
 **Owner checkpoint — verification cost.** The initial worker full verify was
 interrupted at the 15-minute guardrail (outer next exit 130), preserving work
@@ -107,7 +116,7 @@ implementation Verify process guardrail from 15 to **25 minutes** on 2026-11-01.
 Own Verify remains under 5 minutes. This changes no configured controller bound,
 pin, frozen test, enforcement or evidence requirement. Continue SP1–SP4 and stop
 at the next owner checkpoint.
-SP1–SP4 remain incomplete: finish 0148 and candidate CI before the
+SP1–SP4 remain incomplete: finish candidate CI before the
 project drill. Main's controller source/hash and
 fireweed.yaml are unchanged; completed reports/refs/inspectable clones and the
 unrelated worktree remain preserved. Only the earlier push through `dae9b28`
@@ -370,9 +379,9 @@ completion remains open.
 
 ## Next
 
-0146 and 0147 are applied and archived. Complete the owner-approved 0148 metadata
-repair/restart and finish its audited eval_fix lifecycle, then close
-candidate CI before the one real project drill. Inspect native inputs before reconstruction. Keep main's pin,
+0146–0148 are applied and archived. Align the candidate with 0148, recheck
+affected runner normal/race tests and close candidate CI before the one real
+project drill. Inspect native inputs before reconstruction. Keep main's pin,
 configured bounds, frozen tests and completed proofs unchanged; SYSTEM's
 full-verification process guardrail is 25 minutes. Stop at owner checkpoints.
 SP1–SP4 remains the selected incomplete milestone.
