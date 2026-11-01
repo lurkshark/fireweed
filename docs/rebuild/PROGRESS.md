@@ -61,10 +61,14 @@ removed after process inspection. The candidate is clean and unclaimed;
 `.fireweed/drills/gitstore.md` and a gitstore rebuilt-code ref were **not**
 produced. No substitute evidence report or implementation import was created.
 
-FD3 has not started; FD4 remains open. Owner agreement is needed on the two
-reported choices and on recovery of this interrupted, uncompleted drill before
-another real invocation. Do not reset or silently restart its attempt budget,
-author fixes, or begin assets. Main's original pin and configuration are
+FD3 has not started; FD4 remains open. The owner approved the two reported
+choices on 2026-11-01. Public probes confirmed main already implements them,
+including unstaged tracked-diff rename retention and selected new files.
+Normal change 0145 records the clarifications with legitimate already_satisfied
+entries and focused regression assertions, preserving implementation and prior
+coverage. No change claim is active at authoring. Recovery of the interrupted
+drill still needs a concrete decision before another real invocation; do not
+reset or silently restart its attempt budget or begin assets. Main's original pin and configuration are
 unchanged, and the completed contracts evidence and unrelated worktrees remain.
 
 ## Completed drill evidence — DR1–DR4
@@ -226,7 +230,8 @@ completion remains open.
 
 ## Next
 
-Wait for the owner's gitstore gap and interrupted-run recovery decision above.
-No automatic rerun or correction is authorized. Gitstore's completed proof and
+Complete owner-approved 0145 through the normal controller lifecycle, independent
+restricted audit and frozen phase zones. Then obtain the concrete interrupted-run
+recovery decision before another real drill. Gitstore's completed proof and
 reviewed evidence must close before assets begins. Reuse valid contracts and
 candidate checks; keep main's controller pin and all configured bounds unchanged.
