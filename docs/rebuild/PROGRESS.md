@@ -13,13 +13,13 @@ Full product completion remains open.
 The owner selected the next bounded milestone on 2026-10-31: implement drill
 support and prove one independent contracts drill in an isolated clone, with
 main's NEW pin unchanged. PLAN orders execution, ACCEPTANCE DR1–DR4 defines
-completion, and GOAL is the restart prompt. **Stopped at the required owner
-checkpoint:** 0141-drill-lifecycle blocked during implementation at `ec5c27e`.
-DR1 is incomplete; DR2–DR4 have not started. No candidate CLI fixture, candidate
-identity, isolated proof clone or new native drill report/ref exists yet.
-Main is clean with no shared claims or live controller/worker processes; the
-original NEW controller hash remains unchanged. The unrelated guidance worktree
-was preserved.
+completion, and GOAL is the restart prompt. **DR1 recovery is in progress.**
+0141 blocked at ec5c27e on faulty frozen retry fixtures. The owner approved a
+one-time recovery exception; the reviewed correction is committed as e19a9d6,
+and 0141 is ready to resume its saved implementation. DR1 remains incomplete;
+DR2–DR4 have not started. There is no candidate CLI fixture, candidate identity,
+isolated proof clone or new native drill report/ref yet. Main's NEW pin is
+unchanged; unrelated worktrees and cutover evidence are preserved.
 Only the earlier push through `dae9b28` was owner-authorized; later work is local.
 
 0131–0138, the two app audit-cwd eval fixes, and demonstrated follow-ups 0139
@@ -27,51 +27,33 @@ Only the earlier push through `dae9b28` was owner-authorized; later work is loca
 checks/audits and 0138's owner-authorized recovery exception remain in archived
 Provenance/Notes. Preserve these archives; the completed queue is not restart work.
 
-## Drill checkpoint — 0141
+## Drill recovery — 0141
 
 The focused Regeneration/R16 review led to the runner API/lifecycle change.
-The pinned NEW controller recorded genuine fail-first, one findings round and
-a passing restricted independent re-audit, with frozen evals/interfaces. Both
-auditors used the configured Codex model/effort. Manual Audit-only formatting
-and carry-forward of previously passed Checked IDs explain the audit lines'
-`agent=manual` Provenance; the saved attempt's Notes record those completions.
+The pinned NEW controller recorded genuine fail-first, a findings round and a
+passing restricted re-audit, with frozen evals/interfaces. The implementation
+then blocked at ec5c27e after the configured attempts: three fake-agent retry
+branches never replaced their bad output on successful calls. The final report
+had four failing runner cases (including a parent case) and passing app evals.
+The saved work remains at refs/fireweed/attempts/drill-lifecycle/1.
 
-Implementation exhausted the normal attempts bound. The final verification
-report has four failing runner cases (including the parent case) and passing
-app dependents. The frozen fake agents for `agent_retry`, `verify_retry` and
-`usage_once` leave their initial bad file unchanged on the later successful
-invocation, while RUN-056/RUN-057 assertions require it to become `new`.
-Implementation cannot repair those fixtures or invent replacement worker output.
-The cleanup failure case passed after the bounded implementation correction.
+The owner authorized scoped eval_fix recovery, then explicitly approved a
+one-time frozen-eval exception when preflight proved that the normal kind cannot
+repair 0141's unapplied spec IDs under this pin. Author commit e19a9d6 changes
+only three fake-agent branches: success writes new only after observing the
+expected earlier PARTIAL_WORK/wrong value. Every test name, ID, assertion,
+coverage gate, interface and configured bound is preserved; mixed_exhaust still
+exhausts its shared allowance. Targeted RUN-056/RUN-057 tests passed against the
+saved implementation. Restricted review found a missing retention check in the
+unconditional draft; the guarded correction passed fresh restricted re-audit,
+No findings for RUN-056/RUN-057. Review workspaces were input-only with fresh Git
+metadata and are removed. The current change's Notes hold the exception and
+manual Audit-formatting history; normal controller Provenance is untouched.
 
-The controller saved implementation and step notes at
-`refs/fireweed/attempts/drill-lifecycle/1` and restored the checkout/released the
-claim. The queued change retains its Provenance; no replacement change, eval_fix,
-retry reset or gap fix was authored. Owner direction is required for frozen-eval
-recovery before resuming. Review also identified unresolved native-report
-integration details in the saved implementation: its compact frontmatter date
-is unreadable by existing drift tracking, and model recording reads `agent.model`
-rather than the configured command's `-m` value. These are pending review, not
-additional authorized changes after this checkpoint.
-
-The owner authorized a scoped eval_fix recovery on 2026-10-31, preserving
-coverage, independent audit, the pin and bounds. Recovery preflight found a
-further checkpoint before any frozen edit or new claim: normal eval_fix cannot
-repair this unapplied spec change under the current pin. RUN-056/RUN-057 exist
-only in 0141's projection (public `show runner RUN-056` returns U02), and main
-still has the drill stub. An earlier eval_fix lacks those specs and passing
-implementation; a later one is held by the blocked same-module change. The pin's
-Start selects the eligible queue head and has no exception for this case.
-Eval_fix also cannot be mixed into 0141's Added specs or waive its all-own-pass
-gate. No source files, bounds, controller, shared claims or attempt refs changed.
-
-The minimal further recovery would need an explicit one-time frozen-eval
-exception: add the missing successful `new` write in the three fake-agent
-branches, independently audit the corrected assertions in restricted inputs,
-commit only the reviewed correction as an author while unclaimed, then resume
-0141 from saved attempt 1 with its IDs, run and audit rounds preserved. This is
-not the pin's normal eval_fix lifecycle, so the scoped eval_fix authorization
-has not been silently broadened to that exception. No such edit was made.
+Resume the original attempt with its IDs, run, phase and audit_rounds intact;
+full own/dependent/boundary checks and the next checkpoint still apply. Existing
+native-report date/model integration details remain for implementation review,
+without frozen-eval edits or unrelated scope. No real drill has run.
 
 ## Completed cutover evidence
 
@@ -162,10 +144,7 @@ has not been silently broadened to that exception. No such edit was made.
 
 ## Next
 
-Wait for an owner decision on the newly demonstrated eval_fix recovery
-constraint: an explicit one-time frozen-eval exception, or separately scoped
-controller support. Do not resume, reset bounds, author follow-ups or start a
-real drill automatically.
-After an authorized recovery, return to the app command and complete DR1/DR2
-before the one isolated contracts proof. Keep main's controller pin unchanged.
-No push is authorized; all later full-completion gates remain open.
+Resume 0141 from saved attempt 1 through the unchanged owning NEW pin. Complete
+its existing implementation/report obligations, return to the app command, and
+finish DR1/DR2 before the one isolated contracts proof. Stop at the next required
+checkpoint. No push is authorized; all later full-completion gates remain open.

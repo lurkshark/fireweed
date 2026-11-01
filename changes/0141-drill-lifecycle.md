@@ -1,7 +1,6 @@
 ---
 audit_rounds: 1
 bases: {}
-blocked: impl verification attempts exhausted
 module: runner
 phase: impl
 run: 20261031T220623-e826454d4fd1bcfca2375a01
@@ -75,6 +74,32 @@ Drill MUST remove its verification worktree and input workspace on success, agen
 ## Decisions
 
 ## Notes
+
+The owner explicitly approved a one-time frozen-eval recovery exception on
+2026-10-31 after the normal eval_fix path proved unavailable for this unapplied
+spec change. Author commit e19a9d6 corrects only the usage_once, agent_retry and
+verify_retry fake-agent branches. Their successful new writes require the prior
+PARTIAL_WORK/wrong value, preserving the retry-work retention assertion; the
+mixed_exhaust scenario remains failing. Testcase names, IDs, assertions, coverage,
+interfaces and configured bounds are unchanged.
+
+A separate input-only Codex review raised a RUN-056 retention finding on an
+unconditional draft write. The scoped guarded-write correction passed the fresh
+restricted re-audit: No findings; Checked IDs RUN-056 and RUN-057, with RUN-057
+carrying forward its prior pass. Both invocations used the exact configured
+model/effort, changed only their copied Audit section, had fresh one-commit Git
+metadata and were cleaned up. The corrected RUN-056/RUN-057 tests passed against
+saved attempt 1. This owner exception preserves the original run, assigned IDs,
+phase, audit_rounds and retained attempt refs; it does not replace controller
+Provenance or the original passing Audit section. Full controller checks remain
+required when resuming that attempt.
+
+The remaining implementation review is confined to existing native report
+obligations: the report date must be readable by existing date-based drift
+tracking, and model metadata must identify the configured command's actual
+model rather than be blank when only -m supplies it. Keep ref-safe date naming
+and the frozen interface compatible. Do not change frozen evals to hide these
+integration details, add unrelated behavior or author automatic drill gap fixes.
 
 Use public deterministic fixture hooks and bounded fake agents; no real Codex
 access or bootstrap in Go tests. Reuse existing public checks, contracts zone
