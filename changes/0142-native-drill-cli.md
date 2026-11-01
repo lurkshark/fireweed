@@ -66,4 +66,3 @@ step. Passing Audit submissions use No findings and a complete Checked IDs list;
 findings use an exact clause quote followed by a separator and explanation.
 No public app facade changes, protected tooling edits, extra flags, other
 deferred commands or automatic gap authoring are included.
-

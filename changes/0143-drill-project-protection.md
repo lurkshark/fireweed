@@ -53,4 +53,3 @@ Normal separate restricted audit, frozen phase zones and unchanged controller
 bounds apply. Workers read context before each step and never commit. Passing
 Audit submissions use No findings and all listed Checked IDs; findings quote
 an exact clause with a separator and explanation.
-
