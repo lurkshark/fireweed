@@ -16,12 +16,30 @@ missing-bases-only `check --fix`, their required project/app integration, and
 project's proof after those changes close. Project depends only on contracts,
 gitstore and assets; the completed foundation evidence is reused where valid.
 
-This update is planning only: no execution goal, authored product change, worker
-or drill is started. Main is clean/unclaimed after the protected planning commit;
-the queue is empty and no workflow/worker is live. Main's controller pin and all
-configured bounds remain unchanged. Preserve completed reports/refs/inspectable
-clones and unrelated worktrees. Only the earlier push through `dae9b28` was
-authorized; later work remains local.
+Execution started under the owner's SP1–SP4 goal and stopped at a verification
+cost checkpoint. Change **0146-stale-change-authoring** supplies project's
+StaleSpecs/StampMissing APIs and PRJ-060–066. The pinned NEW controller committed
+genuine fail-first at `9e08d86` (126 cases, 17 failing), then a restricted
+independent audit with no findings at `a313e6d`. Its disposable implementation
+is preserved uncommitted in `packages/project/internal/queue/stale.go`; interfaces
+and evals remain frozen. Per-change evidence stays in the queued change.
+
+The implementation worker's first full `fireweed verify` exceeded SYSTEM's
+15-minute full-implementation verification cost guardrail while the final
+dependent suite was active. No completed full-verification result or impl phase
+commit was obtained. The outer `next` was interrupted with SIGINT (exit 130);
+remaining verification processes exited, and the owning unchanged controller
+released the claim. This is an interrupted impl change, not an applied or
+controller-blocked change. Do not reset attempts or audit rounds. Owner agreement
+on scoped verification-cost diagnosis is required before resuming; no automatic
+performance fix, longer verification allowance or further slice is selected.
+
+SP1–SP4 remain incomplete. App integration, actual new-option CLI/candidate gates
+and the project drill have not started. No workflow/worker or shared claim is
+live; main intentionally retains the uncommitted implementation for recovery.
+Main's controller source/hash and fireweed.yaml are unchanged, and completed
+reports/refs/inspectable clones plus the unrelated worktree remain preserved.
+Only the earlier push through `dae9b28` was authorized; later work remains local.
 
 ## Foundation proofs — FD1–FD4
 
@@ -280,9 +298,10 @@ completion remains open.
 
 ## Next
 
-When execution is requested, invoke GOAL for SP1–SP4. Inspect live state and the
-unchanged main pin first, author the scoped project/app stale-change behavior
-through the normal controller lifecycle, and verify the actual NEW options.
-Then prepare a clean isolated candidate and inspect project reconstruction inputs
-before its one real drill. Stop at owner checkpoints; preserve completed proofs
-and reuse unaffected checks. This planning update starts no execution.
+Await owner agreement on the 0146 verification-cost checkpoint above. Inspect
+live state and the unchanged main pin before any authorized recovery. Preserve
+the interrupted implementation, frozen interfaces/evals, audit, attempts and
+round state; resume only with its owning controller. After scoped project/app
+changes close and actual NEW CLI/candidate gates pass, inspect independent
+project inputs before its one real drill. Preserve completed proofs and reuse
+unaffected evidence; SP1–SP4 remains the selected incomplete milestone.
