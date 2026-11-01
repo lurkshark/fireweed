@@ -1,8 +1,7 @@
 ---
 bases: {}
-fixes:
+eval_fix:
     - RUN-040
-kind: eval_fix
 module: runner
 ---
 
@@ -34,3 +33,8 @@ All blocking-cause assertions passed. Correct only the fake-agent wait in
 Test_RUN_040_EarlierBlockRetainsCauseBeforeTimeStop; do not increase its deadline
 or weaken any assertion. Use normal eval_fix verification and restricted audit.
 
+The owner approved metadata repair and lifecycle restart on 2026-11-01,
+including restart of attempt accounting affected by the authoring error. The
+prior run was stopped and released before this repair. Reuse the preserved
+one-line correction. For worker feedback use fireweed verify --quick; the
+controller performs required full checks and owns every phase commit.

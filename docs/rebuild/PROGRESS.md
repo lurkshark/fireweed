@@ -73,13 +73,14 @@ was interrupted (exit 130) before further verification; its worker stopped and
 the claim was released. No phase commit, audit, archive or block occurred.
 Run `20261101T220404-446c231a1bbfdb04e783d235` and its evals work remain preserved.
 
-**Owner checkpoint — author metadata repair.** Permission is pending to correct
-0148's metadata and restart its lifecycle, explicitly allowing the attempt
-accounting restart caused by this authoring error. Do not silently reset it.
+**Owner-approved author metadata repair.** On 2026-11-01 the owner approved
+correcting 0148 to `eval_fix: [RUN-040]` and restarting its lifecycle, explicitly
+allowing the attempt-accounting restart caused by the authoring error. The
+stopped run's one-line eval correction is preserved for the restarted worker;
+author repair commits contain no eval edits. Resume the normal pinned-controller
+lifecycle with the same cases, assertions, ID coverage, pin and bounds.
 No real project drill has started; preflight selected 19 regular retained
-inputs only. Candidate and main are unclaimed, with no active verification or
-worker. Main's two dirty files are the controller's runtime change metadata
-and the preserved one-line eval correction; candidate remains clean.
+inputs only. Candidate remains clean and unclaimed.
 
 **Owner checkpoint — verification cost.** The initial worker full verify was
 interrupted at the 15-minute guardrail (outer next exit 130), preserving work
@@ -106,9 +107,8 @@ implementation Verify process guardrail from 15 to **25 minutes** on 2026-11-01.
 Own Verify remains under 5 minutes. This changes no configured controller bound,
 pin, frozen test, enforcement or evidence requirement. Continue SP1–SP4 and stop
 at the next owner checkpoint.
-SP1–SP4 remain incomplete: resolve the candidate CI owner checkpoint before the
-project drill. Main is clean/unclaimed with no live
-workflow/worker or native scratch worktree. Main's controller source/hash and
+SP1–SP4 remain incomplete: finish 0148 and candidate CI before the
+project drill. Main's controller source/hash and
 fireweed.yaml are unchanged; completed reports/refs/inspectable clones and the
 unrelated worktree remain preserved. Only the earlier push through `dae9b28`
 was authorized; later work remains local.
@@ -370,8 +370,8 @@ completion remains open.
 
 ## Next
 
-0146 and 0147 are applied and archived. Stop for the 0148 author-metadata repair
-decision above. If approved, finish its audited eval_fix lifecycle, then close
+0146 and 0147 are applied and archived. Complete the owner-approved 0148 metadata
+repair/restart and finish its audited eval_fix lifecycle, then close
 candidate CI before the one real project drill. Inspect native inputs before reconstruction. Keep main's pin,
 configured bounds, frozen tests and completed proofs unchanged; SYSTEM's
 full-verification process guardrail is 25 minutes. Stop at owner checkpoints.
