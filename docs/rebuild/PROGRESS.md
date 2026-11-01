@@ -55,17 +55,31 @@ in 8.38 seconds. The identical full CI replay also failed the same case. A
 focused JSON replay with the CI hook's invoking-bin/PATH context passed in 8.35
 seconds. Full CI attempts took 1612.351 and 996.942 seconds; both reported only
 that E01 cause. No source, frozen eval, pin or configured bound was changed.
-The exact failing assertion has not been recovered from CI's summary diagnostic;
-the fixture couples an earlier block, a six-second fake worker sleep and an
-eight-second Run limit. Context-sensitive behavior remains unresolved.
+An unchanged protected-hook replay recovered the assertion: gamma advanced to
+audit before the eight-second deadline, while the test expected held evals.
+Its six-second fake-worker sleep can finish before that deadline. The replay
+ran 132 cases in 234.914 seconds; only this held-phase assertion failed.
 
 The owner authorized scoped RUN-040 recovery on 2026-11-01: diagnose and make any
 necessary correction through the normal pinned-controller lifecycle, using
 eval_fix for frozen eval corrections and preserving cases, assertions, ID coverage,
-pin and configured bounds. An unchanged full protected-hook replay is recovering
-the actual assertion before selecting a correction. No real project drill has
-started; preflight selected 19 regular retained inputs only. Candidate and main
-remain unclaimed; candidate verification is active during diagnosis.
+pin and configured bounds. Change 0148 was authored at `90c2875`, but the author
+mistakenly used `kind: eval_fix` with `fixes` instead of the documented
+`eval_fix: [RUN-040]`. Its one-line worker correction waits for cancellation
+instead of sleeping six seconds; every assertion and deadline is unchanged.
+The controller's runner hook passed all 132 cases in 284.436 seconds, then
+correctly required fail-first for the wrongly authored kind. The owning next
+was interrupted (exit 130) before further verification; its worker stopped and
+the claim was released. No phase commit, audit, archive or block occurred.
+Run `20261101T220404-446c231a1bbfdb04e783d235` and its evals work remain preserved.
+
+**Owner checkpoint — author metadata repair.** Permission is pending to correct
+0148's metadata and restart its lifecycle, explicitly allowing the attempt
+accounting restart caused by this authoring error. Do not silently reset it.
+No real project drill has started; preflight selected 19 regular retained
+inputs only. Candidate and main are unclaimed, with no active verification or
+worker. Main's two dirty files are the controller's runtime change metadata
+and the preserved one-line eval correction; candidate remains clean.
 
 **Owner checkpoint — verification cost.** The initial worker full verify was
 interrupted at the 15-minute guardrail (outer next exit 130), preserving work
@@ -356,9 +370,9 @@ completion remains open.
 
 ## Next
 
-0146 and 0147 are applied and archived. Complete owner-authorized scoped RUN-040
-diagnosis/recovery through the normal controller lifecycle, then close candidate
-CI before the one real project drill. Inspect native inputs before reconstruction. Keep main's pin,
+0146 and 0147 are applied and archived. Stop for the 0148 author-metadata repair
+decision above. If approved, finish its audited eval_fix lifecycle, then close
+candidate CI before the one real project drill. Inspect native inputs before reconstruction. Keep main's pin,
 configured bounds, frozen tests and completed proofs unchanged; SYSTEM's
 full-verification process guardrail is 25 minutes. Stop at owner checkpoints.
 SP1–SP4 remains the selected incomplete milestone.
