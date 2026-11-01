@@ -11,76 +11,63 @@ The owner selected **independent gitstore, then assets drills, one at a time**;
 PLAN orders execution, ACCEPTANCE FD1–FD4 defines completion, and GOAL is the
 restart prompt. Both targets depend only on contracts.
 
-**FD execution resumed after owner approval.** The interrupted gitstore run
-did not produce a completed proof. Owner-approved clarification 0145 is applied;
-prepare one fresh isolated gitstore proof under unchanged bounds. Assets has
-not started. Main is unclaimed, the queue is empty and no drill workflow/worker
-is live at this handoff. The controller pin and
-configured bounds remain unchanged. Preserve the contracts proof clone/ref and unrelated worktrees.
-Only the earlier push through `dae9b28` was owner-authorized; later work is local.
+**FD1/FD2 passed for gitstore; assets is next.** The owner-approved recovery
+proof passed on its first reconstruction invocation. Native gitstore evidence
+is reviewed and retained below. Assets has not started. Main and the proof
+clone are unclaimed, with no live drill/worker and scratch removed. Main's pin
+and configured bounds remain unchanged. Preserve the completed contracts proof
+and unrelated worktrees. Only the earlier push through `dae9b28` was authorized;
+later work remains local. Full product completion stays open.
 
-## Foundation drill checkpoint — FD1–FD4
+## Foundation proofs — FD1–FD4
 
-Inspectable candidate clone:
-`/private/tmp/fireweed-fd-gitstore-ierzwr1i/candidate`. Its NEW executable was
-built from clean source `1602083a955df97910348be76f99cc3816729d93`, with
+**Gitstore: FD1/FD2 passed.** Inspectable clone:
+`/private/tmp/fireweed-fd-gitstore-recovery-f73u9gx9/candidate`, aligned base
+`89d7dbfb23b788d3efc98ba8c7709291420d8438`. It reused the clean NEW executable
+built from `1602083a955df97910348be76f99cc3816729d93`, version 0.1.0,
 `vcs.modified=false`, SHA-256
 `5c52a4d949d9e39bfb8560bd349da5cde884533dea8e976647656e0ded52b74f`.
-Clone-only instruction alignment is
-`0146b7779e16a0289bfd7f16d7af9aafd75f8930`. Configuration, setup and bounds
-match main. DR2's unaffected checks and completed contracts proof were reused;
-the intervening contracts change passed candidate race tests and vet. Candidate
-`check` and `check-commits 8d6f51b..0146b77` passed without diagnostics.
+Runtime source is unchanged since that build. DR2's unaffected checks and the
+contracts proof were reused; affected gitstore race tests and vet, candidate
+`check`, and `check-commits 0eb1353..89d7dbf` passed without diagnostics.
 
-FD1's gitstore preflight and live input inspection found retained target
-SPEC/Decisions, api/model and evals (including empty `.gitkeep`), contracts'
-declared interfaces, and isolation SYSTEM only. Input metadata had one fresh
-commit, no remotes/alternates, history, disposable implementation, binaries or
-other modules' internals. The separate verifier deleted old gitstore disposable
-files and copied the actual candidate invoker with matching hash. The real
-worker used the exact configured Codex argv/model/effort and prescribed cache
-and PATH. Retained input files were unchanged on final inspection. A complete
-worker-command review was not possible because the interrupted run wrote no
-native transcript/report; full independence acceptance remains incomplete.
+The approved recovery invocation used exact configured Codex argv/model/effort,
+cache, PATH and unchanged bounds. Preflight and live inspection found exactly
+eight retained input files: isolation SYSTEM, target SPEC/Decisions/api/model/
+evals (including empty `.gitkeep`), and contracts interfaces only. Input Git
+had one fresh commit, no remotes/alternates or old history. Old disposable code,
+binaries, saved attempts and dependent internals were excluded; the separate
+verifier's controller copy matched the invoker. Review of all 21 shell commands
+and six patch operations found reads confined to supplied inputs, newly written
+code and temporary eval fixtures. Its temporary in-input test layout was removed
+with unlink/rmdir after a rejected rm cleanup command.
 
-FD2 is **incomplete**. The first reconstruction reached own/all-dependent
-verification; dependent failures included selected commits of new paths being
-rejected by `git commit --only` because the rebuilt Commit did not first stage
-those paths. The controller entered its configured second attempt. Worker
-notes reported no contradicted Decision and two gaps requiring owner review:
+Native report: [.fireweed/drills/gitstore.md](../../.fireweed/drills/gitstore.md).
+All **790 cases passed**: 9 own, 781 across app, checks, project, runner and
+workflow. No gaps or contradicted Decisions were identified. Retained inputs
+are byte-unchanged; the rebuilt ref changes only target disposable paths:
+`refs/fireweed/drills/gitstore/20261101T170411.628421000`
+(commit `3cdc945cea3923dd22877e56e9a570f7a3caf346`). Invoking implementation and
+HEAD stayed unchanged during the drill. Both input/verifier scratch directories
+were removed, and no live run/shared claim remains. The native report is retained
+verbatim, including its final blank line warning. Evidence is committed before
+starting assets. FD3 and final FD4 remain pending.
 
-- GIT-003 / gitstore: one entry per path for simultaneous staged and unstaged
-  edits, preserving a rename from either layer.
-- GIT-007 / gitstore: selected worktree bytes when index and worktree differ.
-
-The supervising agent interrupted the owning CLI to stop at that checkpoint,
-but SIGINT exited it with 130 rather than producing a native report/ref and
-cleanup. This interruption was a supervision error; no passing case count or
-completed proof is claimed. The reconstruction worker subsequently exited.
-Only this invocation's input and verifier scratch directories were manually
-removed after process inspection. The candidate is clean and unclaimed;
-`.fireweed/drills/gitstore.md` and a gitstore rebuilt-code ref were **not**
-produced. No substitute evidence report or implementation import was created.
-
-FD3 has not started; FD4 remains open. The owner's 2026-11-01 `Approve` reply
-accepted the two reported choices and recovery. Public probes confirmed main
-already implements them, including unstaged tracked-diff rename retention and
-selected new files. Normal change
+The earlier interrupted gitstore invocation remains incomplete, with no native
+report/ref, at `/private/tmp/fireweed-fd-gitstore-ierzwr1i/candidate`. Its second
+attempt was interrupted with SIGINT; the CLI exited 130 without native cleanup.
+The worker exited and only that run's scratch was manually removed. No rebuilt
+code was reused. The owner's 2026-11-01 `Approve` accepted its reported choices
+and recovery through the fresh invocation above. Normal change
 [0145](../../changes/archive/0145-gitstore-drill-clarifications.md) applied at
-`0eb1353` with legitimate already_satisfied entries. It preserves every prior
-case/assertion, implementation and interface. Its eval phase passed all 9 cases;
-restricted independent audit passed both IDs with no findings; full controller
-verification passed 790 cases. The first eval worker's premature phase advance
-was rejected with P03; the configured remaining retry restored runtime fields
-and removed the premature Provenance before normal controller phase commits.
-Per-change evidence stays in the archive.
-
-Approved recovery is one fresh isolated gitstore invocation after 0145, under
-the unchanged per-run bounds. The interrupted invocation remains incomplete;
-do not resume its lost state, reuse its rebuilt code, or silently manipulate
-counters. Close the fresh gitstore proof and commit reviewed native evidence
-before assets. Main's original pin/configuration, completed contracts evidence
-and unrelated worktrees remain unchanged.
+`0eb1353` with legitimate already_satisfied entries: public probes already
+satisfied both choices, including unstaged tracked-diff rename retention and
+selected new files. It preserved all prior assertions, implementation and
+interfaces. Its 9 eval cases and restricted independent audit of both IDs passed,
+then full controller verification passed 790 cases. The first eval worker's
+premature phase advance was rejected with P03; the remaining configured retry
+restored runtime fields and removed premature Provenance before normal phase
+commits. Per-change evidence remains in the archive.
 
 ## Completed drill evidence — DR1–DR4
 
@@ -241,8 +228,8 @@ completion remains open.
 
 ## Next
 
-Prepare and independently inspect the clarified gitstore inputs in a fresh
-candidate clone, then perform the owner-approved recovery invocation. Stop on
+Prepare and independently inspect assets inputs, excluding every disposable
+embedded bundle file and all invoker content as reconstruction sources. Run only
+assets next, with exact configured agents and unchanged main pin/bounds. Stop on
 new gaps, contradicted Decisions, access/independence failure or a blocked change.
-Gitstore's completed proof and committed reviewed native evidence must close
-before assets. Reuse valid checks and keep main's pin and bounds unchanged.
+Commit reviewed native evidence and complete FD4 before marking this goal done.
