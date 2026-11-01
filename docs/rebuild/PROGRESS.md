@@ -13,12 +13,14 @@ Full product completion remains open.
 The owner selected the next bounded milestone on 2026-10-31: implement drill
 support and prove one independent contracts drill in an isolated clone, with
 main's NEW pin unchanged. PLAN orders execution, ACCEPTANCE DR1–DR4 defines
-completion, and GOAL is the restart prompt. **0141 applied at 74dca97 after
-owner-authorized frozen-eval recovery.** 0142 applied the native app command at d8fb93a. DR1 still needs the demonstrated
-project-protection correction in authored 0143.
-DR2–DR4 have not started. There is no candidate CLI fixture, candidate identity,
-isolated proof clone or new native drill report/ref yet. Main's NEW pin remains
-unchanged; unrelated worktrees and cutover evidence are preserved.
+completion, and GOAL is the restart prompt. **DR1 and DR2 passed.** 0141 applied
+at 74dca97 after owner-authorized frozen-eval recovery; 0142 applied the native
+app command at d8fb93a; 0143 applied project protection at 8d6f51b. The clean
+candidate passed all required checks and actual CLI fixtures below. DR3/DR4
+remain pending: run one independent contracts drill in the isolated candidate
+clone, review its native report/ref and stop at any required checkpoint.
+Main's NEW pin remains unchanged; unrelated worktrees and cutover evidence
+are preserved.
 Only the earlier push through `dae9b28` was owner-authorized; later work is local.
 
 0131–0138, the two app audit-cwd eval fixes, and demonstrated follow-ups 0139
@@ -43,14 +45,29 @@ names, IDs, assertions, coverage, interfaces, original run/audit state, the pin
 and bounds were preserved. Native report date/model integration was corrected
 within implementation; temporary recovery workspaces are removed.
 
-A focused public DR1 fixture then demonstrated that project-level protected
-paths inside disposable globs are deleted from the rebuilt ref despite a
-passing drill. 0143 corrects that existing deletion/input/import obligation
-through normal fail-first and audit. 0142 returned to the CLI caller and passed
-all 291 app cases. Its first audit submission was rejected without import for
-edits outside Audit; a fresh restricted audit passed after pre-seeding that
-section. No verdict, frozen eval or audit counter was manually changed. No real drill has run, and no automatic reconstruction
-gap fix or unrelated prerequisite is included.
+A focused public DR1 fixture demonstrated that project-level protected paths
+inside disposable globs were deleted despite a passing drill. 0143 corrected
+that deletion/input/import obligation through normal fail-first and restricted
+audit; final implementation verification passed all 423 runner/app cases.
+0142 passed all 291 app cases. Its first audit submission was rejected without
+import for edits outside Audit; a fresh restricted audit passed after pre-seeding
+that section. No verdict, frozen eval or audit counter was manually changed.
+No automatic reconstruction-gap fix or unrelated prerequisite is included.
+
+DR2's clean candidate source is
+`8d6f51be53e5f87e01ded3d8232352a1249a6ac7`, version 0.1.0, built with
+`vcs.modified=false`; executable `.fireweed/bin/fireweed` SHA-256 is
+`9325d9ff69b3a27b81e3f24f010bf18057ce43644df1273ec1c14f25cce9ff21`.
+Inspectable clone: `/private/tmp/fireweed-dr-candidate-edppuez8/candidate`.
+Build, `go test ./...`, `go test -race ./...`, `go vet ./...`, NEW `check`,
+`doctor --no-agent`, `check-commits` and `ci` with hook doctor enabled passed.
+The exact nonempty history range was
+`be35552b706aa3000ff8f11306d129ff1d701b85..8d6f51be53e5f87e01ded3d8232352a1249a6ac7`;
+all four NEW check envelopes had no diagnostics. GOCACHE was the prescribed
+`/tmp/fireweed-rebuild-cache`. Actual candidate CLI fixtures passed success
+plain/JSON, usage/lookup exits, exhausted verification failure, retained native
+report/ref and scratch cleanup; inspectable deterministic fixture:
+`/tmp/fireweed-dr2-cli-81n68sm9/project`.
 
 ## Completed cutover evidence
 
@@ -141,6 +158,7 @@ gap fix or unrelated prerequisite is included.
 
 ## Next
 
-Run authored 0143 (project protection) through the unchanged NEW pin. Finish DR1/DR2 with clean-candidate checks and an actual CLI
-fixture before the one isolated contracts proof. Stop at the next required
-checkpoint. No push is authorized; all later full-completion gates remain open.
+Align the isolated clone's instructions/PATH with the tested candidate, then
+run the single independent real contracts drill under unchanged model/effort
+and bounds. Review native evidence and cleanup for DR3/DR4. Stop at the next
+required checkpoint. No push is authorized; full product completion stays open.
