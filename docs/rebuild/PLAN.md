@@ -13,14 +13,79 @@ including owner-approved contracts clarifications in 0144. Preserve the recorded
 checks, native report/ref, inspectable clones and immutable archives. Completed
 implementation procedures are not a queue to repeat.
 
+## Next milestone — Stale-change authoring support and independent project drill
+
+Owner-selected on 2026-11-01; **planning only, execution not started**. This
+succeeds completed FD1–FD4 and closes the stale-authoring portion of design R28
+before proving project independently. ACCEPTANCE SP1–SP4 defines completion;
+GOAL is the future execution prompt. The unchanged design remains authority.
+The scope is project behavior and its app CLI integration, then **one real
+project drill**. Project depends only on contracts, gitstore and assets, whose
+reviewed independent proofs remain preserved and reusable.
+
+1. **Define the scoped changes.** Read the design's Stale changes/Fixing a stale
+   change clauses, current project/app specs and retained interfaces/evals.
+   Author coherent module changes through the pinned NEW controller. Cover
+   `show --stale <change>` and `check --fix`; add only the interfaces, CLI
+   guidance or diagnostics required by those existing design behaviors. Keep
+   spec items atomic and preserve every existing case, assertion and ID.
+2. **Implement stale-change authoring support.** For each stale spec, show the
+   diff from the stamped text to the current projected text. Recover old text
+   by projecting at the commit that last changed the change's bases and verify
+   its normalized hash; when matching history cannot be recovered, show current
+   text and recorded hash. `check --fix` stamps only missing base entries and
+   preserves all existing entries, including stale ones. Ordinary check remains
+   read-only and still diagnoses stale bases; the fix flag never resolves a
+   conflict silently. Use normal fail-first, restricted independent audit,
+   immutable phase zones, approval and configured bounds for project/app work.
+3. **Verify the actual NEW CLI and candidate.** Exercise both options in fresh
+   local Git fixtures, including historical recovery, fallback, mixed missing/
+   valid/stale bases, usage/lookup failures and applicable JSON envelopes/exits.
+   Confirm show is read-only and fix changes only permitted missing bases.
+   Finish and archive all scoped changes before the drill. Build an explicitly
+   identified clean NEW candidate; pass Go tests/race/vet and candidate check,
+   doctor --no-agent, explicit-baseline check-commits and CI with hook doctor
+   enabled. Reuse valid unaffected evidence; required phase checks still run.
+   Main workflow commands keep the original pin; new product options are tested
+   against the explicitly selected candidate, not assumed present in that pin.
+4. **Prove project independently.** After the feature changes and checks close,
+   align the isolated candidate's instructions, setup and worker PATH; hooks
+   copy the actual invoker. Inspect the reconstruction inputs before spending
+   the real invocation: retained project spec/Decisions/interfaces/evals and
+   approved retained files, plus only declared interfaces from contracts,
+   gitstore and assets. Keep dependent implementations and build/hook setup in
+   a separate verifier. Exclude old target disposable code, embedded data,
+   history, attempts, product binaries, bootstrap and dependency internals.
+   Never query invoker content as an oracle. Require own and every transitive
+   dependent module's evals to pass with retained inputs unchanged, then review
+   the complete worker commands, native report and rebuilt-code ref.
+5. **Close SP1–SP4.** Commit reviewed `.fireweed/drills/project.md` as protected
+   author evidence with no live run/shared claim; retain its
+   `refs/fireweed/drills/project/<date>` ref and inspectable clone location.
+   Record concise results in PROGRESS, with per-change evidence in archived
+   Provenance. Verify cleanup, clean checkouts, unchanged pin/bounds and preserved
+   completed proofs/unrelated worktrees. Reassess only evidence invalidated by
+   relevant changes; an additional module's real drill needs owner selection.
+
+Use exact configured workers/auditors/drill workers from GOAL. Stop on a blocked
+change, independence/access failure or gap/contradicted Decision needing owner
+agreement. Do not automatically author drill-gap fixes, reset retries/rounds or
+expand the scope. Owner-approved corrections use the normal loop below.
+
+This milestone includes ordinary project/app implementation for the two options;
+it includes no import of the independently rebuilt project implementation into
+main, real regenerate change, controller promotion, other-module drill, gc,
+migrate, additional recipes, file-format migration, unrelated warning cleanup,
+deferred product work or push. Full product completion remains open.
+
 ## Completed foundation milestone — Independent gitstore and assets drills
 
 Owner-selected and completed on 2026-11-01: **gitstore first, then assets, one
 at a time**. FD1–FD4 passed; PROGRESS records the reviewed native evidence.
 The sequence below records the completed milestone. Each depends only on
 contracts, whose independent proof is complete. ACCEPTANCE FD1–FD4 bounds this
-milestone and advances full regeneration gate 7. No further execution slice is
-selected; full product completion remains open.
+milestone and advanced full regeneration gate 7. Full product completion remains
+open; the next planned milestone is defined above.
 
 1. **Prepare the candidate and inputs.** Inspect current state and verify main's
    unchanged controller pin. Select a clean isolated NEW candidate and identify
@@ -75,8 +140,9 @@ deferred product work and push. Full product completion remains open.
 
 ## Later full completion
 
-All nine full-completion gates remain in ACCEPTANCE. After this milestone, the
-remaining dependency order is project → checks → workflow → runner → app.
-Later owner-selected work also includes real regenerate validation, gc/migrate
-and stale/fix conveniences, recipes, version/file-format migration, warnings
-and delivery. None is started by this planning update.
+All nine full-completion gates remain in ACCEPTANCE. After SP1–SP4, the remaining
+drill order is checks → workflow → runner → app. Later owner-selected work also
+includes real regenerate validation, gc/migrate, additional recipes, version/
+file-format migration, warnings and delivery. Coordinate later behavior changes
+with affected proofs and repeat only evidence they invalidate. None is started
+by this planning update.

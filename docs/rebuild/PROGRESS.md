@@ -5,19 +5,23 @@ Current handoff only. Per-change evidence remains in archived Provenance
 
 ## State — 2026-11-01
 
-**EC1–EC6 and DR1–DR4 passed.** Early Go core-loop cutover, native drill support
-and the independent contracts proof are complete. Full product completion is open.
-The owner selected **independent gitstore, then assets drills, one at a time**;
-PLAN orders execution, ACCEPTANCE FD1–FD4 defines completion, and GOAL is the
-restart prompt. Both targets depend only on contracts.
+**EC1–EC6, DR1–DR4 and FD1–FD4 passed.** The independent contracts, gitstore
+and assets proofs remain complete and preserved below. Full product completion
+remains open, with every later gate required.
 
-**FD1–FD4 passed.** Independent gitstore and assets proofs completed in that
-order, one at a time, under main's unchanged NEW pin and configured bounds.
-Both native reports are reviewed and retained below. Main and the proof clones
-are clean and unclaimed after the protected evidence commits; no live drill,
-worker or scratch remains. Preserve the completed contracts proof and unrelated
-worktrees. Only the earlier push through `dae9b28` was authorized; later work is
-local. **Full product completion remains open**, with all later gates required.
+The owner selected the next planned milestone: **stale-change authoring support,
+then one independent project drill**. PLAN orders execution, ACCEPTANCE SP1–SP4
+defines gates and GOAL is the restart prompt. Scope is `show --stale <change>`,
+missing-bases-only `check --fix`, their required project/app integration, and
+project's proof after those changes close. Project depends only on contracts,
+gitstore and assets; the completed foundation evidence is reused where valid.
+
+This update is planning only: no execution goal, authored product change, worker
+or drill is started. Main is clean/unclaimed after the protected planning commit;
+the queue is empty and no workflow/worker is live. Main's controller pin and all
+configured bounds remain unchanged. Preserve completed reports/refs/inspectable
+clones and unrelated worktrees. Only the earlier push through `dae9b28` was
+authorized; later work remains local.
 
 ## Foundation proofs — FD1–FD4
 
@@ -266,13 +270,19 @@ completion remains open.
   because its worker searched other modules' internals. Use the reviewed NEW
   proof above. Preserve completed archives and evidence; repeat only checks or
   proofs invalidated by relevant changes, within the selected scope.
-- FD1–FD4 cover gitstore and assets only. Main implementation import/replacement,
-  real regenerate changes, controller promotion, other modules' real drills,
-  deferred product work and push remain outside this milestone. All later
-  full-completion gates remain in ACCEPTANCE.
+- FD1–FD4 are completed gitstore/assets evidence. SP1–SP4 is the next planned
+  scope: stale authoring in project/app, then one project drill. Its dependency
+  inputs are contracts/gitstore/assets interfaces only; dependency internals and
+  invoking candidate content are excluded. Only ordinary feature implementation
+  belongs on main; independently rebuilt project code stays in the proof ref.
+  Real regenerate changes, controller promotion, other-module drills, unrelated
+  deferred work and push remain outside SP1–SP4. Later gates remain required.
 
 ## Next
 
-This goal is complete. No further execution slice is selected. Full product
-completion remains open; later work requires an owner-selected scope and all
-remaining ACCEPTANCE gates. Keep the controller pin/bounds and retained proofs.
+When execution is requested, invoke GOAL for SP1–SP4. Inspect live state and the
+unchanged main pin first, author the scoped project/app stale-change behavior
+through the normal controller lifecycle, and verify the actual NEW options.
+Then prepare a clean isolated candidate and inspect project reconstruction inputs
+before its one real drill. Stop at owner checkpoints; preserve completed proofs
+and reuse unaffected checks. This planning update starts no execution.

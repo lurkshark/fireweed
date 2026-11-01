@@ -225,6 +225,66 @@ No main implementation import/replacement, real regenerate change, other module
 real drill, controller promotion, deferred product work or push is included.
 Passing FD1–FD4 advances full gate 7; the later full-completion gates remain.
 
+## Next milestone — Stale-change authoring and project proof (SP1–SP4)
+
+Owner-selected on 2026-11-01; **pending execution**. PLAN orders the work; GOAL
+is the restart prompt. These gates derive from the design's Stale changes,
+Fixing a stale change and Regeneration clauses, R28/R16 and full gates 5/7.
+They add no product scope. EC1–EC6, DR1–DR4 and FD1–FD4 remain completed evidence.
+Main's NEW controller pin, all configured bounds and SYSTEM's remaining process
+and owner-checkpoint guardrails stay unchanged.
+
+1. **SP1 — Complete the stale-authoring behavior.** Through coherent project/app
+   changes, implement `show --stale <change>` and `check --fix`. Show each stale
+   spec's stamped-to-current-projection diff; locate stamped text by projecting
+   at the commit that last changed the change's bases and checking the recorded
+   normalized hash. When matching historical text cannot be recovered, show
+   current text and recorded hash. Fix stamps missing base entries only,
+   preserving existing valid and stale entries; ordinary check stays read-only
+   and stale bases remain diagnosed. Preserve other existing behavior.
+2. **SP2 — Normal lifecycle and NEW CLI/candidate evidence.** Every scoped
+   behavioral change passes genuine fail-first unless legitimately already
+   satisfied, separate restricted independent audit and full controller phase
+   verification, preserving cases/assertions/ID coverage and frozen phase zones.
+   Actual NEW CLI fixtures prove historical diff recovery, unavailable/mismatched
+   history fallback, mixed missing/valid/stale bases, intended file effects and
+   applicable JSON/diagnostic/usage/lookup exit behavior. Build the exact clean
+   candidate; pass Go tests, race tests and vet, NEW check, doctor --no-agent,
+   explicit-baseline check-commits and CI with hook doctor enabled. Identify its
+   source/hash and exact nonempty history range. Reuse unaffected valid evidence
+   and explain warnings. Finish scoped changes and release claims before SP3.
+3. **SP3 — One independent project drill.** In an isolated verified NEW candidate
+   clone, align instructions/setup/PATH and confirm setup copies the actual
+   invoker. Before the real call, inspect retained project spec/Decisions/
+   interfaces/evals and approved retained files, plus only declared interfaces
+   from contracts, gitstore and assets. Exclude old target disposable code/data,
+   source history, saved attempts, product binaries, bootstrap and other-module
+   internals; do not query invoker content as an oracle. Keep full verification
+   implementations outside worker inputs. Use the exact configured real agent
+   argv/model/effort and unchanged bounds. Require own and every transitive
+   dependent module's enforced evals and coverage to pass with retained inputs
+   byte-unchanged. Review all worker commands and native report fields/cases,
+   contradicted Decisions and gaps. Missing access or independence is a stop.
+4. **SP4 — Retained evidence and clean handoff.** Stop for any blocked change or
+   gap/contradicted Decision needing owner agreement; no automatic gap fixes or
+   reset of retries/rounds. Complete any approved correction through normal
+   fail-first/restricted audit/frozen-phase rules and reassess affected evidence.
+   Retain `.fireweed/drills/project.md`, its
+   `refs/fireweed/drills/project/<date>` rebuilt-code ref and inspectable clone.
+   Commit the reviewed native report as protected author evidence with no live
+   run/shared claim; record concise SP1–SP4 results and candidate identity in
+   PROGRESS. Preserve completed reports/refs/clones and unrelated worktrees,
+   verify scratch cleanup, clean checkouts and unchanged main pin/bounds. No
+   supplemental report inventories or hash manifests. Completion requires both
+   product options and the passing independent proof, with no unresolved owner
+   checkpoint; a failed drill does not complete this milestone.
+
+Only the two options' required project/app implementation and the project proof
+are included. No drill implementation import/replacement on main, real regenerate
+change, controller promotion, other-module real drill, gc/migrate, additional
+recipes, file-format migration, unrelated warning cleanup or push is included.
+Full product completion and every later full-completion gate remain open.
+
 ## Full-completion gates (after early cutover)
 
 Use one design/inventory review, then check fixes against affected requirements. Reuse valid evidence under SYSTEM's rules; required phase checks still run. Every gate below must pass for full product completion; EC1–EC6 separately authorize early cutover. Passing applicable gates ends verification unless later changes invalidate evidence. Rebuild-planning edits alone do not require product tests/drills.
