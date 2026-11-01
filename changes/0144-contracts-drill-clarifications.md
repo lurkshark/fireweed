@@ -8,6 +8,8 @@ bases:
     CON-009: 23ed3cc6
     CON-010: be0602a2
 module: contracts
+phase: audit
+run: 20261101T044753-ef5465bf4fed388695bee0d5
 ---
 
 ## Motivation
@@ -76,6 +78,13 @@ context before each step and never commit or call done manually; the controller
 owns verification and phase commits. Use focused public tests for iteration;
 automatic next/done still run the unchanged full phase checks.
 
+Focused public fail-first test: CON-008 accepted nil frontmatter; CON-010 rejected
+`7CON-001` and accepted `con-001`. The duplicate-section CON-002/009 assertions
+passed. Both missing behaviors are implementation-writable in
+`packages/contracts/internal/primitives/primitives.go`.
+
 ## Audit
 
 Pending independent audit.
+## Provenance
+- evals 2026-11-01T04:50:42.04137Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=64 failing=3 passing=61

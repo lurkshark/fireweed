@@ -58,6 +58,36 @@ func Test_CON_008_RenderRoundTrip(t *testing.T) {
 	}
 }
 
+func Test_CON_008_YAMLRepresentationsAndNilFrontmatter(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		frontmatter map[string]any
+	}{
+		{"scalar", map[string]any{"name": "contracts", "enabled": true, "count": 2, "ratio": 1.5, "unset": nil}},
+		{"sequence", map[string]any{"items": []any{"alpha", 2, true}}},
+		{"mapping", map[string]any{"nested": map[string]any{"name": "contracts", "count": 2}}},
+		{"empty_mapping", map[string]any{}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			want := contracts.Document{Frontmatter: tc.frontmatter, Body: "# Title\n\nBody  \n"}
+			source, err := contracts.RenderDocument(want)
+			if err != nil {
+				t.Fatalf("RenderDocument: %v", err)
+			}
+			got, err := contracts.ParseDocument(source)
+			if err != nil {
+				t.Fatalf("ParseDocument: %v", err)
+			}
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("round trip = %#v; want %#v", got, want)
+			}
+		})
+	}
+	if _, err := contracts.RenderDocument(contracts.Document{Body: "body\n"}); err == nil {
+		t.Error("RenderDocument accepted nil frontmatter")
+	}
+}
+
 func Test_CON_002_CON_009_Sections(t *testing.T) {
 	source := "intro\n## Alpha\nA  \n\n## Beta\nB\n\n## Gamma\nC\n"
 	if got, ok := contracts.Section(source, "Beta"); !ok || got != "B\n\n" {
@@ -80,6 +110,17 @@ func Test_CON_009_CON_002_AppendSection(t *testing.T) {
 	}
 	if body, ok := contracts.Section(got, "New"); !ok || body != "added\n" {
 		t.Errorf("appended section = %q, %v", body, ok)
+	}
+}
+
+func Test_CON_002_CON_009_FirstDuplicateSection(t *testing.T) {
+	source := "intro\n## Alpha\nkeep  \n\n## Beta\nfirst\n\n## Gamma\nuntouched\n## Beta\nsecond\n## Delta\nend\n"
+	if got, ok := contracts.Section(source, "Beta"); !ok || got != "first\n\n" {
+		t.Errorf("Section(Beta) = %q, %v; want first body", got, ok)
+	}
+	want := "intro\n## Alpha\nkeep  \n\n## Beta\nreplacement\n## Gamma\nuntouched\n## Beta\nsecond\n## Delta\nend\n"
+	if got := contracts.ReplaceSection(source, "Beta", "replacement\n"); got != want {
+		t.Errorf("replacement changed duplicate or surrounding sections:\n got %q\nwant %q", got, want)
 	}
 }
 
@@ -124,6 +165,34 @@ func Test_CON_006_CON_010_ParseHandlesInSourceOrder(t *testing.T) {
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("items = %#v; want %#v", got, want)
+	}
+}
+
+func Test_CON_010_AssignedIDGrammar(t *testing.T) {
+	source := "### 7CON-001 [draft]\nFirst\n\n### A2-3\nSecond\n### new:alpha-2\nHandle\n"
+	want := []contracts.Item{
+		{ID: "7CON-001", Tag: "draft", Body: "First\n\n"},
+		{ID: "A2-3", Body: "Second\n"},
+		{ID: "new:alpha-2", Body: "Handle\n"},
+	}
+	got, err := contracts.ParseItems(source)
+	if err != nil {
+		t.Errorf("ParseItems: %v", err)
+	} else if !reflect.DeepEqual(got, want) {
+		t.Errorf("items = %#v; want %#v", got, want)
+	}
+	for _, tc := range []struct{ name, heading string }{
+		{"lowercase_prefix", "### con-001"},
+		{"empty_prefix", "### -001"},
+		{"empty_suffix", "### CON-"},
+		{"punctuation", "### CO_N-001"},
+		{"nondecimal_suffix", "### CON-A"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if _, err := contracts.ParseItems(tc.heading + "\nBody\n"); err == nil {
+				t.Errorf("ParseItems accepted malformed assigned ID %q", tc.heading)
+			}
+		})
 	}
 }
 
