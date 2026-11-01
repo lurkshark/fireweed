@@ -134,9 +134,10 @@ changes invalidate it; these criteria are not a queue to execute again.
 
 ## Current milestone — Drill support and contracts proof (DR1–DR4)
 
-Owner-selected on 2026-10-31; pending until actual evidence is recorded. These
-execution gates derive from the design's Regeneration section and R16. PLAN
-orders the work; SYSTEM's bounds and owner checkpoints apply throughout.
+Owner-selected on 2026-10-31; **DR1–DR4 completed** with evidence in
+[PROGRESS.md](PROGRESS.md), including the owner-approved contracts clarifications.
+These execution gates derive from the design's Regeneration section and R16.
+PLAN orders the work; SYSTEM's bounds and owner checkpoints apply throughout.
 
 1. **DR1 — Complete the drill slice.** Implement runner orchestration and the
    app's native `drill <module>` command through the unchanged main NEW pin.

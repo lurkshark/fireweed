@@ -13,16 +13,18 @@ self-hosting and the separate NEW controller handoff at `c1de8f4`. Preserve
 archived Provenance and reuse the valid evidence recorded in PROGRESS. Bootstrap
 is an explicit recovery option only; the early-cutover queue is closed.
 
-## Current milestone — Drill support and one independent contracts drill
+## Completed — Drill support and one independent contracts drill
 
-Owner-selected on 2026-10-31. Implement the design's drill workflow and prove
+Owner-selected on 2026-10-31; DR1–DR4 passed, including the owner-approved
+contracts clarifications. PROGRESS records completion and retained evidence.
+The execution sequence below implemented the design's drill workflow and proved
 one independent contracts rebuild in an isolated clone. Acceptance DR1–DR4
 bounds completion. This starts the real-regeneration work in full gates 7/8;
 it does not complete either gate for every module or the full product.
 
 1. **Review the slice once.** Trace the design's Regeneration section and R16
-   to current runner/app specs and existing public evals. NEW currently has no
-   drill API and its CLI marks drill unimplemented. Reuse existing setup,
+   to runner/app specs and existing public evals. At the slice's start, NEW had
+   no drill API and its CLI marked drill unimplemented. Reuse existing setup,
    hooks, zone maps, process bounds and regeneration guidance. Add a lower-level
    prerequisite only for a concrete missing behavior needed by this slice.
 2. **Implement through the pinned controller.** Author coherent changes for

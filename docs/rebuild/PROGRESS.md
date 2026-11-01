@@ -13,17 +13,16 @@ Full product completion remains open.
 The owner selected the next bounded milestone on 2026-10-31: implement drill
 support and prove one independent contracts drill in an isolated clone, with
 main's NEW pin unchanged. PLAN orders execution, ACCEPTANCE DR1–DR4 defines
-completion, and GOAL is the restart prompt. **DR1–DR3 passed; DR4 awaits the owner-authorized
-contracts clarification change 0144.** 0141 applied
+completion, and GOAL is the restart prompt. **DR1–DR4 passed.** 0141 applied
 at 74dca97 after owner-authorized frozen-eval recovery; 0142 applied the native
 app command at d8fb93a; 0143 applied project protection at 8d6f51b. The clean
 candidate passed all required checks and actual CLI fixtures below. The single
 independent contracts drill passed all own/transitive evals; its reviewed native
-report and rebuilt-code ref are retained. The owner approved the reported
-interpretations and authorized scoped change 0144 with preserved coverage, normal
-fail-first and independent audit. Main's pin and bounds remain unchanged.
-Main's NEW pin remains unchanged; unrelated worktrees and cutover evidence
-are preserved.
+report and rebuilt-code ref are retained. Owner-authorized 0144 applied the
+reported contracts clarifications at b5fc1f5 through normal fail-first and
+independent audit, and the retained rebuild passes its strengthened evals.
+Main's NEW pin and bounds are unchanged; the queue is empty, shared claims and
+live runs are absent, and unrelated worktrees/cutover evidence are preserved.
 Only the earlier push through `dae9b28` was owner-authorized; later work is local.
 
 0131–0138, the two app audit-cwd eval fixes, and demonstrated follow-ups 0139
@@ -94,16 +93,26 @@ and verifier scratch directories were removed; no live run/shared claim remains.
 The native report is retained verbatim, including its extra final blank line
 reported by `git diff --check`; this evidence-format warning is not a product fix.
 
-The owner resolved the DR4 checkpoint by approving scoped contracts
-clarifications using all three reported interpretations: reject nil frontmatter
-and bound round-trip type identity to YAML representations (CON-008), uppercase
-alphanumeric assigned-ID prefixes with a hyphen and decimal suffix (CON-010),
-and first-match duplicate sections (CON-002/009). Authored 0144 implements those
-clarifications through the unchanged pin. Public checks show genuine mismatches
-for nil frontmatter and ID syntax; duplicate sections are already satisfied.
-No frozen coverage is dropped and no drill implementation is imported into main.
-DR4 remains incomplete until this normal fail-first/audit change applies and the
-retained proof is reassessed. No additional real module drill is authorized.
+The owner approved all three reported interpretations. Normal change
+[0144](../../changes/archive/0144-contracts-drill-clarifications.md) applied at
+`b5fc1f54e2be9638c8ed686e817c9468dbb0554a`: CON-008 rejects nil frontmatter and
+bounds type identity to YAML representations, CON-010 defines assigned-ID
+syntax, and CON-002/009 select the first duplicate section. All existing
+assertions remain. Its evals had three genuine failures; restricted independent
+audit passed all four IDs, followed by full controller verification with all
+935 cases passing. Evals/interfaces stayed frozen through implementation.
+Pin `check` and `check-commits 4bffbd0..b5fc1f5` passed without diagnostics.
+
+DR4 reassessment exported the retained rebuilt-code ref into a separate temporary
+verifier and supplied the newly frozen contracts spec/evals, without changing
+the retained ref, proof clone or native report. All 64 contracts cases passed
+under `go test -race`, and vet passed; main passed the same affected Go checks.
+The reported interpretations already hold in that independent rebuild, so the
+original real proof remains valid and was reused. Other modules' code/evals and
+their native passing evidence are unchanged. The temporary verifier was removed;
+no second real drill or main implementation import occurred. The native report's
+historical Gaps section stays verbatim; this owner-approved change resolves it.
+**DR4 is complete, and full product completion remains open.**
 
 ## Completed cutover evidence
 
@@ -194,7 +203,7 @@ retained proof is reassessed. No additional real module drill is authorized.
 
 ## Next
 
-Run owner-authorized 0144 through normal fail-first and restricted independent
-audit under the unchanged controller and bounds, then resume DR4 using valid
-retained evidence. Stop on any blocked change or new gap needing owner agreement.
-No push is authorized; full product completion remains open.
+The bounded drill milestone is complete. Await the next owner-selected slice;
+no further implementation, real module drill, regenerate run, controller
+promotion or push is authorized by this milestone. Preserve the inspectable
+candidate clone/ref and native report. All later full-completion gates remain.
