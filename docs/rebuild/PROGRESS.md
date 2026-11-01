@@ -16,45 +16,41 @@ missing-bases-only `check --fix`, their required project/app integration, and
 project's proof after those changes close. Project depends only on contracts,
 gitstore and assets; the completed foundation evidence is reused where valid.
 
-Execution started under the owner's SP1–SP4 goal and stopped at a verification
-cost checkpoint. Change **0146-stale-change-authoring** supplies project's
-StaleSpecs/StampMissing APIs and PRJ-060–066. The pinned NEW controller committed
-genuine fail-first at `9e08d86` (126 cases, 17 failing), then a restricted
-independent audit with no findings at `a313e6d`. Its disposable implementation
-is preserved uncommitted in `packages/project/internal/queue/stale.go`; interfaces
-and evals remain frozen. Per-change evidence stays in the queued change.
+**0146 applied at `21d5dde`**: project's StaleSpecs/StampMissing APIs and
+PRJ-060–066 are implemented. Genuine fail-first (`9e08d86`: 126 cases, 17
+failing), restricted independent audit with no findings (`a313e6d`), and full
+controller application/archive passed. Final implementation verification passed
+all **798 cases**; retained interfaces/evals stayed byte-unchanged through impl.
+Per-change evidence is [0146's archived Provenance](../../changes/archive/0146-stale-change-authoring.md).
 
-The implementation worker's first full `fireweed verify` exceeded SYSTEM's
-15-minute full-implementation verification cost guardrail while the final
-dependent suite was active. No completed full-verification result or impl phase
-commit was obtained. The outer `next` was interrupted with SIGINT (exit 130);
-remaining verification processes exited, and the owning unchanged controller
-released the claim. This is an interrupted impl change, not an applied or
-controller-blocked change. Do not reset attempts or audit rounds.
+**Owner checkpoint — verification cost.** The initial worker full verify was
+interrupted at the 15-minute guardrail (outer next exit 130), preserving work
+and releasing its claim. The owner then approved scoped diagnosis with pin,
+configured bounds and frozen tests unchanged. Diagnosis found project took
+2.354 seconds; app, checks and runner took 258.332, 232.562 and 286.791 seconds
+in that interrupted pass. An unchanged app probe passed in 262.355 seconds;
+an identical cache probe took 1.901 seconds. Build probes did not justify a
+VCS-stamping change. No performance source, hook or frozen-test fix was made.
 
-The owner approved scoped cost diagnosis, preserving the pin, configured bounds
-and frozen tests. Retained native reports prove project passed in 2.354 seconds
-(126 cases), app in 258.332 (291), checks in 232.562 (101), and runner in 286.791
-(132); full verification executes those suites sequentially. Workflow did not
-produce a completed report. The protected hook omits JUnit time attributes, so
-its native Seconds fields are zero; stdout provides these package timings.
-This measurement limitation is recorded, not automatically fixed.
+Recovery kept the same run/impl phase and exact configured Codex worker; it used
+quick worker feedback and temporary `GODEBUG=gocachetest=1` diagnostics. The
+controller's uncached precheck completed at approximately **15m06s**, slightly
+over SYSTEM's cost guardrail, before its ordinary done step reran full checks
+from valid Go cache in approximately **12 seconds** and archived automatically.
+All 126 project, 291 app, 101 checks, 132 runner and 148 workflow cases passed.
+Cache logs show unchanged test binary IDs but different runtime-input IDs between
+standalone probes and controller hooks. The protected hook omits JUnit durations,
+so native Seconds fields are zero; stdout supplies uncached package timings.
+That measurement limitation remains recorded, with no automatic fix.
 
-A bounded unchanged app probe passed in 262.355 seconds. An identical Go cache
-probe with diagnostic logging then passed from cache in 1.901 seconds; normal
-environment cache reuse was not established by a separate 20-second probe.
-Four bounded build probes found too little VCS-stamping overhead to justify a
-change. No source, eval, hook, pin or configured-bound correction was made.
-Recovery will reuse valid ordinary Go cache results with cache diagnostics
-enabled, use quick worker feedback and retain the controller's full done checks
-under the unchanged cost guardrail. No longer verification allowance is granted.
-
-SP1–SP4 remain incomplete. App integration, actual new-option CLI/candidate gates
-and the project drill have not started. No workflow/worker or shared claim is
-live; main intentionally retains the uncommitted implementation for recovery.
-Main's controller source/hash and fireweed.yaml are unchanged, and completed
-reports/refs/inspectable clones plus the unrelated worktree remain preserved.
-Only the earlier push through `dae9b28` was authorized; later work remains local.
+Stop here for owner acceptance of the scoped cold-precheck timing overrun before
+app work. No general longer-verification allowance or bound change is granted.
+SP1–SP4 remain incomplete: app integration, actual new-option CLI/candidate gates
+and the project drill have not started. Main is clean/unclaimed with no live
+workflow/worker or native scratch worktree. Main's controller source/hash and
+fireweed.yaml are unchanged; completed reports/refs/inspectable clones and the
+unrelated worktree remain preserved. Only the earlier push through `dae9b28`
+was authorized; later work remains local.
 
 ## Foundation proofs — FD1–FD4
 
@@ -313,11 +309,10 @@ completion remains open.
 
 ## Next
 
-Resume 0146 after the owner-approved diagnosis above, with full verification
-still bounded by SYSTEM's cost guardrail. Inspect live state and the unchanged
-main pin before recovery. Preserve
-the interrupted implementation, frozen interfaces/evals, audit, attempts and
-round state; resume only with its owning controller. After scoped project/app
-changes close and actual NEW CLI/candidate gates pass, inspect independent
-project inputs before its one real drill. Preserve completed proofs and reuse
-unaffected evidence; SP1–SP4 remains the selected incomplete milestone.
+Await owner acceptance of 0146's approximately 15m06s uncached controller
+precheck. Its required full done verification passed in approximately 12 seconds;
+0146 is applied and archived, with no live run/shared claim. Keep the pin,
+configured bounds, frozen tests and completed proofs unchanged. After acceptance,
+author the app CLI integration through the normal controller lifecycle, then
+complete actual NEW CLI/candidate gates and inspect independent project inputs
+before its one real drill. SP1–SP4 remains the selected incomplete milestone.
