@@ -2,7 +2,7 @@
 audit_rounds: 1
 bases: {}
 module: runner
-phase: impl
+phase: applied
 run: 20261031T220623-e826454d4fd1bcfca2375a01
 ---
 
@@ -101,6 +101,16 @@ model rather than be blank when only -m supplies it. Keep ref-safe date naming
 and the frozen interface compatible. Do not change frozen evals to hide these
 integration details, add unrelated behavior or author automatic drill gap fixes.
 
+The pinned controller invoked both independent auditors with the configured
+Codex command in its restricted temporary input workspace. The first returned
+eight coverage findings; a manual Audit-only formatting correction inserted the
+required separator and shortened RUN-060's exact quote before controller done.
+After eval corrections, restricted re-audit reported no findings for the pending
+IDs. A manual Audit-only completion carried forward the first audit's previously
+passed IDs to satisfy the controller's full Checked IDs requirement. Those two
+manual completions account for agent=manual audit Provenance; neither changed
+an independent finding or verdict, the audit-round count, evals or interfaces.
+
 Use public deterministic fixture hooks and bounded fake agents; no real Codex
 access or bootstrap in Go tests. Reuse existing public checks, contracts zone
 resolution, agent invocation and Git/process primitives. A clean input Git
@@ -128,6 +138,7 @@ product surface, hardening campaign or speculative prerequisite is authorized.
 - audit 2026-10-31T22:29:55.525964Z agent=manual fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 - evals 2026-10-31T22:50:05.029594Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=128 failing=29 passing=99
 - audit 2026-10-31T22:51:33.041786Z agent=manual fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-01T01:57:30.2036Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=410 failing=0 passing=410
 ## Audit
 
 No findings; checked RUN-050, RUN-051, RUN-052, RUN-053, RUN-054, RUN-055, RUN-056, RUN-057, RUN-058, RUN-059, RUN-060, RUN-061, RUN-062

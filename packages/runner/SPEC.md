@@ -231,6 +231,45 @@ Copying audit work MUST not itself advance a phase or replace other held change 
 ### RUN-049
 Next MUST remove every temporary audit workspace after invocation, including after invalid submissions, agent failures and time or usage stops.
 
+### RUN-050
+Drill MUST reject an unknown module, dirty invoking checkout or any live shared change claim before setup or agent invocation, leaving the invoking checkout and refs unchanged.
+
+### RUN-051
+Drill MUST create a detached scratch worktree at the invoking HEAD under the common Git directory's fireweed/worktrees directory and run the configured setup hook there with FIREWEED_BIN set to request Bin. Setup failure MUST prevent agent invocation and return its captured failure.
+
+### RUN-052
+Drill MUST delete only target-module files classified disposable by the approved zone precedence before reconstruction. It MUST retain every other target-module file and every other module's files in the verification worktree.
+
+### RUN-053
+Drill MUST invoke reconstruction in a separate input workspace containing the target's retained files and only interface files from its transitive dependencies, plus SYSTEM.md and fresh independent Git metadata. It MUST exclude original implementation, other-module internals, source history, saved attempts and binaries from those inputs.
+
+### RUN-054
+The reconstruction prompt MUST include the target spec and Decisions, identify its retained interfaces and evals, and require rebuilding only disposable paths without reading outside supplied inputs. It MUST request separate Contradicted Decisions and Gaps sections in DRILL_NOTES.md, each gap naming the nearest spec ID or "no spec" and a target module.
+
+### RUN-055
+Drill MUST accept reconstruction edits only to target disposable paths and DRILL_NOTES.md, rejecting retained-file changes, deletions or other additions before importing code. It MUST import accepted rebuilt disposable files into the verification worktree without changing retained files or the invoking implementation.
+
+### RUN-056
+Drill MUST use the configured worker command, wrapper and timeout through InvokeAgent, retaining ordered AgentResults in Steps. Non-usage failures and verification retries MUST share the configured attempts bound, retain rebuilt work and include the preceding failure in retry prompts.
+
+### RUN-057
+Drill MUST treat usage-limit responses as the same attempt, applying configured limit_wait and limit_budget without spending a failed attempt. An exhausted usage budget MUST return an IsUsageStop error with Result stopped; cancellation or timeout MUST return an error and stop reconstruction.
+
+### RUN-058
+After accepted reconstruction, Drill MUST run the target module's eval hook and require passing enforced cases and coverage through checks. It MUST retain the complete returned own report in Own, including failed testcase details when verification fails.
+
+### RUN-059
+Drill MUST evaluate every direct and transitive dependent in lexical module-name order regardless of verify_dependents, retaining each report in Dependents. Every dependent MUST satisfy passing enforced cases and coverage for a passing drill, even when own or another dependent's evals fail.
+
+### RUN-060
+After reconstruction has been invoked, Drill MUST write .fireweed/drills/<module>.md with date, base_commit, agent, model and result frontmatter and Own evals, Dependent evals, Contradicted Decisions and Gaps sections. Eval entries MUST identify module, testcase, spec IDs and result; agent observations and verification failures MUST remain visible, with each gap identifying a nearest spec ID or "no spec" and target module.
+
+### RUN-061
+After accepted reconstruction, Drill MUST retain the rebuilt verification tree at refs/fireweed/drills/<module>/<date>, returning that ref without moving the invoking HEAD. A passing result MUST require accepted reconstruction and passing own and all dependent evals; failure MUST return a nonnil error with Result fail.
+
+### RUN-062
+Drill MUST remove its verification worktree and input workspace on success, agent or verification failure, invalid edits, usage stop and cancellation. Cleanup failure MUST be returned as an error rather than reported as a passing drill.
+
 ## Decisions
 
 [0075-bounded-agent-invocation] An unset configured timeout defaults to 90 minutes. limit_patterns are
