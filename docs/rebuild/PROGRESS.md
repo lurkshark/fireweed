@@ -28,8 +28,32 @@ diagnostic conventions. Its 13 genuine failing cases cover all seven new IDs;
 all 291 existing cases passed. Restricted audit passed all eight affected IDs,
 then full controller application passed all **304 cases**. Existing evals and
 interfaces stayed frozen. Evidence remains in [0147's archived Provenance](../../changes/archive/0147-stale-authoring-cli.md).
-SP1 behavior and SP2's feature lifecycle are complete; clean-candidate checks
-and the independent project proof remain pending.
+SP1 behavior and SP2's feature lifecycle are complete; the candidate CI replay
+and independent project proof remain pending.
+
+**Candidate checks in progress.** Inspectable clone:
+`/private/tmp/fireweed-sp-project-8ko73j3j/candidate`. Clean executable source
+`5bacb4ab5817e8eaea38218e6a8bcf9354dce42c`, version 0.1.0,
+`vcs.modified=false`, SHA-256
+`6edbd0e3e6d0903b1f780c1cf30a79891cb2a7593dc7f42bf3ebb5c7cd340ae4`.
+Isolation-policy-only alignment is
+`f22a327811f0c188cbbbe239a544e27fda80ce5b`; runtime source, interfaces/evals,
+configuration, setup and hooks are byte-unchanged, so valid Go checks are reused.
+Build, `go test ./...`, `go test -race ./...`, vet, NEW check and all ten
+`doctor --no-agent` canaries passed. Actual candidate CLI fixtures passed history
+recovery, fallback, mixed bases, file/index/ref effects, JSON and applicable exits;
+inspectable fixtures: `/private/tmp/fireweed-sp-cli-y4uu9x98`.
+
+NEW `check-commits` passed without diagnostics over
+`be35552b706aa3000ff8f11306d129ff1d701b85..5bacb4ab5817e8eaea38218e6a8bcf9354dce42c`
+(996 commits) and the policy-only append
+`5bacb4ab5817e8eaea38218e6a8bcf9354dce42c..f22a327811f0c188cbbbe239a544e27fda80ce5b`.
+CI with doctor enabled over the combined baseline-to-alignment range first
+reported E01 for existing `Test_RUN_040_EarlierBlockRetainsCauseBeforeTimeStop`.
+That case passed normal and race suites, then an unchanged focused replay passed
+in 8.38 seconds. The identical full CI command is being replayed; no source,
+frozen eval, pin or configured bound was changed for this failure. No real
+project drill has started. Preflight selected 19 regular retained inputs only.
 
 **Owner checkpoint — verification cost.** The initial worker full verify was
 interrupted at the 15-minute guardrail (outer next exit 130), preserving work
@@ -56,8 +80,8 @@ implementation Verify process guardrail from 15 to **25 minutes** on 2026-11-01.
 Own Verify remains under 5 minutes. This changes no configured controller bound,
 pin, frozen test, enforcement or evidence requirement. Continue SP1–SP4 and stop
 at the next owner checkpoint.
-SP1–SP4 remain incomplete: actual candidate CLI/Go/native gates and the project
-drill are next. Main is clean/unclaimed with no live
+SP1–SP4 remain incomplete: finish the candidate CI replay before the project
+drill. Main is clean/unclaimed with no live
 workflow/worker or native scratch worktree. Main's controller source/hash and
 fireweed.yaml are unchanged; completed reports/refs/inspectable clones and the
 unrelated worktree remain preserved. Only the earlier push through `dae9b28`
@@ -320,9 +344,9 @@ completion remains open.
 
 ## Next
 
-0146 and 0147 are applied and archived. Build an identified clean isolated NEW
-candidate, verify its actual options and required Go/native gates, then inspect
-project's reconstruction inputs before its one real drill. Keep main's pin,
+0146 and 0147 are applied and archived. Finish the unchanged candidate CI replay
+above, then inspect project's native reconstruction inputs before its one real
+drill. Keep main's pin,
 configured bounds, frozen tests and completed proofs unchanged; SYSTEM's
 full-verification process guardrail is 25 minutes. Stop at owner checkpoints.
 SP1–SP4 remains the selected incomplete milestone.
