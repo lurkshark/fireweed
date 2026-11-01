@@ -47,6 +47,15 @@ type SpecHistoryEntry struct {
 	ImplementationDate time.Time
 }
 
+// StaleSpec describes a recorded base that differs from the preceding projection.
+type StaleSpec struct {
+	ID           string
+	RecordedHash string
+	Before       string
+	Current      string
+	Recovered    bool
+}
+
 // Diagnostic reports a static authoring check.
 type Diagnostic struct {
 	Code    string
