@@ -13,12 +13,11 @@ Full product completion remains open.
 The owner selected the next bounded milestone on 2026-10-31: implement drill
 support and prove one independent contracts drill in an isolated clone, with
 main's NEW pin unchanged. PLAN orders execution, ACCEPTANCE DR1–DR4 defines
-completion, and GOAL is the restart prompt. **DR1 recovery is in progress.**
-0141 blocked at ec5c27e on faulty frozen retry fixtures. The owner approved a
-one-time recovery exception; the reviewed correction is committed as e19a9d6,
-and 0141 is ready to resume its saved implementation. DR1 remains incomplete;
+completion, and GOAL is the restart prompt. **0141 applied at 74dca97 after
+owner-authorized frozen-eval recovery.** DR1 still needs the native app command
+and a demonstrated project-protection correction; 0142/0143 are authored next.
 DR2–DR4 have not started. There is no candidate CLI fixture, candidate identity,
-isolated proof clone or new native drill report/ref yet. Main's NEW pin is
+isolated proof clone or new native drill report/ref yet. Main's NEW pin remains
 unchanged; unrelated worktrees and cutover evidence are preserved.
 Only the earlier push through `dae9b28` was owner-authorized; later work is local.
 
@@ -27,33 +26,29 @@ Only the earlier push through `dae9b28` was owner-authorized; later work is loca
 checks/audits and 0138's owner-authorized recovery exception remain in archived
 Provenance/Notes. Preserve these archives; the completed queue is not restart work.
 
-## Drill recovery — 0141
+## Drill slice
 
-The focused Regeneration/R16 review led to the runner API/lifecycle change.
-The pinned NEW controller recorded genuine fail-first, a findings round and a
-passing restricted re-audit, with frozen evals/interfaces. The implementation
-then blocked at ec5c27e after the configured attempts: three fake-agent retry
-branches never replaced their bad output on successful calls. The final report
-had four failing runner cases (including a parent case) and passing app evals.
-The saved work remains at refs/fireweed/attempts/drill-lifecycle/1.
+0141's runner API/lifecycle applied at 74dca97 with genuine fail-first,
+restricted independent audit and final full verification: 128 runner and 282 app
+cases passed. Its archived Provenance/Notes hold the recovery and manual audit
+submission history. The original implementation attempt remains at
+refs/fireweed/attempts/drill-lifecycle/1.
 
-The owner authorized scoped eval_fix recovery, then explicitly approved a
-one-time frozen-eval exception when preflight proved that the normal kind cannot
-repair 0141's unapplied spec IDs under this pin. Author commit e19a9d6 changes
-only three fake-agent branches: success writes new only after observing the
-expected earlier PARTIAL_WORK/wrong value. Every test name, ID, assertion,
-coverage gate, interface and configured bound is preserved; mixed_exhaust still
-exhausts its shared allowance. Targeted RUN-056/RUN-057 tests passed against the
-saved implementation. Restricted review found a missing retention check in the
-unconditional draft; the guarded correction passed fresh restricted re-audit,
-No findings for RUN-056/RUN-057. Review workspaces were input-only with fresh Git
-metadata and are removed. The current change's Notes hold the exception and
-manual Audit-formatting history; normal controller Provenance is untouched.
+The owner explicitly approved a one-time exception after the pin's normal
+eval_fix path proved unavailable for unapplied spec IDs. Author e19a9d6 changes
+only the three faulty fake-agent retry branches, requiring their earlier work
+before success. A bounded restricted review/correction/re-audit passed RUN-056
+and RUN-057, and targeted tests passed against the saved implementation. Test
+names, IDs, assertions, coverage, interfaces, original run/audit state, the pin
+and bounds were preserved. Native report date/model integration was corrected
+within implementation; temporary recovery workspaces are removed.
 
-Resume the original attempt with its IDs, run, phase and audit_rounds intact;
-full own/dependent/boundary checks and the next checkpoint still apply. Existing
-native-report date/model integration details remain for implementation review,
-without frozen-eval edits or unrelated scope. No real drill has run.
+A focused public DR1 fixture then demonstrated that project-level protected
+paths inside disposable globs are deleted from the rebuilt ref despite a
+passing drill. 0143 corrects that existing deletion/input/import obligation
+through normal fail-first and audit. 0142 first returns to the CLI caller using
+the usable runner API. No real drill has run, and no automatic reconstruction
+gap fix or unrelated prerequisite is included.
 
 ## Completed cutover evidence
 
@@ -144,7 +139,7 @@ without frozen-eval edits or unrelated scope. No real drill has run.
 
 ## Next
 
-Resume 0141 from saved attempt 1 through the unchanged owning NEW pin. Complete
-its existing implementation/report obligations, return to the app command, and
-finish DR1/DR2 before the one isolated contracts proof. Stop at the next required
+Run authored 0142 (native drill CLI), then 0143 (project protection), through the
+unchanged NEW pin. Finish DR1/DR2 with clean-candidate checks and an actual CLI
+fixture before the one isolated contracts proof. Stop at the next required
 checkpoint. No push is authorized; all later full-completion gates remain open.
