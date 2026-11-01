@@ -59,12 +59,13 @@ The exact failing assertion has not been recovered from CI's summary diagnostic;
 the fixture couples an earlier block, a six-second fake worker sleep and an
 eight-second Run limit. Context-sensitive behavior remains unresolved.
 
-Stop before a third CI attempt or real project drill. Runner recovery is outside
-the selected ordinary project/app implementation slice and needs owner agreement
-on scoped diagnosis/correction through the normal controller lifecycle (eval_fix
-if frozen eval correction is needed), preserving cases, assertions and IDs.
-No real project drill has started; preflight selected 19 regular retained inputs
-only. Candidate and main are clean/unclaimed with no live verification processes.
+The owner authorized scoped RUN-040 recovery on 2026-11-01: diagnose and make any
+necessary correction through the normal pinned-controller lifecycle, using
+eval_fix for frozen eval corrections and preserving cases, assertions, ID coverage,
+pin and configured bounds. An unchanged full protected-hook replay is recovering
+the actual assertion before selecting a correction. No real project drill has
+started; preflight selected 19 regular retained inputs only. Candidate and main
+remain unclaimed; candidate verification is active during diagnosis.
 
 **Owner checkpoint — verification cost.** The initial worker full verify was
 interrupted at the 15-minute guardrail (outer next exit 130), preserving work
@@ -355,10 +356,9 @@ completion remains open.
 
 ## Next
 
-0146 and 0147 are applied and archived. Await owner agreement on scoped RUN-040
-runner recovery for the repeated candidate CI failure above; do not run a third
-CI attempt, alter frozen evals/bounds or start the real project drill meanwhile.
-After the gate passes, inspect native inputs before the one project drill. Keep main's pin,
+0146 and 0147 are applied and archived. Complete owner-authorized scoped RUN-040
+diagnosis/recovery through the normal controller lifecycle, then close candidate
+CI before the one real project drill. Inspect native inputs before reconstruction. Keep main's pin,
 configured bounds, frozen tests and completed proofs unchanged; SYSTEM's
 full-verification process guardrail is 25 minutes. Stop at owner checkpoints.
 SP1–SP4 remains the selected incomplete milestone.
