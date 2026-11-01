@@ -15,7 +15,7 @@ name: contracts
 ParseDocument MUST decode leading --- delimited YAML mapping frontmatter and retain the remaining Markdown body.
 
 ### CON-002
-Section MUST return the body and presence of a named level-two Markdown section.
+Section MUST return the body and presence of the first matching named level-two Markdown section.
 
 ### CON-003
 SpecHash MUST return the first eight lowercase hex characters of SHA-256 over the rendered item, including its ID and tag, after normalizing CRLF to LF, removing spaces/tabs at line ends and canonicalizing trailing blank lines to one final newline.
@@ -33,13 +33,13 @@ ParseItems MUST accept new:<slug> item headings and preserve the complete handle
 ParseDocument MUST reject malformed, non-mapping or unterminated frontmatter.
 
 ### CON-008
-RenderDocument MUST produce a document whose parsed frontmatter and body equal its input.
+For non-nil frontmatter maps in ParseDocument's YAML scalar, sequence and mapping representations, RenderDocument MUST produce a document whose parsed frontmatter and body equal its input. It MUST reject nil frontmatter maps; other YAML-serializable Go values are not required to retain their concrete types.
 
 ### CON-009
-ReplaceSection MUST replace a named level-two Markdown section without changing other sections, appending the section when absent.
+ReplaceSection MUST replace the first matching named level-two Markdown section without changing other sections, appending the section when absent.
 
 ### CON-010
-ParseItems MUST return level-three items in source order with ID, optional bracketed tag and complete body, including mixed assigned-ID and handle items.
+ParseItems MUST return level-three items in source order with ID, optional bracketed tag and complete body, including mixed assigned-ID and handle items. An assigned ID MUST consist of a nonempty uppercase ASCII alphanumeric prefix, one hyphen and a nonempty ASCII decimal suffix.
 
 ### CON-011
 ParseItems MUST reject malformed item headings.
