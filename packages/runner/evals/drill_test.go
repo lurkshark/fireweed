@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"sort"
 	"strings"
 	"testing"
@@ -82,6 +83,8 @@ case "$mode" in
   add_foreign) mkdir -p packages/core/internal; printf 'bad' > packages/core/internal/foreign.go;;
   add_other) printf 'bad' > packages/alpha/extra.txt;;
   change_preserved) printf 'bad' > packages/alpha/internal/retained.go;;
+  add_project_protected) printf 'bad' > packages/alpha/internal/project-new.txt;;
+  change_protected_dependency_interface) printf 'bad' > packages/core/api.go;;
 esac
 cat > DRILL_NOTES.md <<'NOTES'
 ## Contradicted Decisions
@@ -164,6 +167,19 @@ func (f drillFixture) run(ctx context.Context, timeout time.Duration) (runner.Dr
 func (f drillFixture) mode(t *testing.T, mode string) {
 	t.Helper()
 	nextWrite(t, f.observations, "mode", mode)
+}
+
+func drillProjectProtectedFixture(t *testing.T) drillFixture {
+	t.Helper()
+	f := newDrillFixture(t)
+	config := nextRead(t, f.root, "fireweed.yaml")
+	config = strings.Replace(config, "module_defaults:\n", "protected: [\"packages/alpha/internal/project-*.txt\", \"packages/core/api.go\"]\nmodule_defaults:\n", 1)
+	nextWrite(t, f.root, "fireweed.yaml", config)
+	nextWrite(t, f.root, "packages/alpha/internal/project-protected.txt", "PROJECT_PROTECTED_INPUT\n")
+	nextCommit(t, f.root, "project protected drill inputs")
+	f.base = nextGit(t, f.root, "rev-parse", "HEAD")
+	nextWrite(t, f.observations, "base", f.base)
+	return f
 }
 
 func drillObserved(t *testing.T, f drillFixture, path string) string {
@@ -304,6 +320,69 @@ func Test_RUN_052_RUN_053_RUN_054_RestrictedInputsAndPrompt(t *testing.T) {
 		}
 	}
 	drillCleaned(t, f)
+}
+
+func Test_RUN_052_RUN_053_ProjectProtectedDisposableIsRetainedInputAndVerifierFile(t *testing.T) {
+	f := drillProjectProtectedFixture(t)
+	script := nextRead(t, f.observations, "agent.sh")
+	anchor := "mode=success\n"
+	if !strings.Contains(script, anchor) {
+		t.Fatal("fixture agent insertion point missing")
+	}
+	observe := `if [ -f packages/alpha/internal/project-protected.txt ]; then
+  cp packages/alpha/internal/project-protected.txt "$1/protected.input"
+fi
+if [ -f packages/core/api.go ]; then
+  cp packages/core/api.go "$1/protected-interface.input"
+fi
+`
+	nextWrite(t, f.observations, "agent.sh", strings.Replace(script, anchor, observe+anchor, 1))
+	r, err := f.run(context.Background(), 0)
+	if err != nil || r.Result != "pass" || r.Ref == "" {
+		t.Fatalf("protected-path drill = %#v, %v", r, err)
+	}
+	const protected = "packages/alpha/internal/project-protected.txt"
+	if paths := nextGit(t, f.root, "ls-tree", "-r", "--name-only", r.Ref, protected); paths != protected {
+		t.Errorf("rebuilt verifier lost project-protected file: %q", paths)
+	} else if got := nextGit(t, f.root, "show", r.Ref+":"+protected); got != "PROJECT_PROTECTED_INPUT" {
+		t.Errorf("rebuilt verifier changed project-protected file: %q", got)
+	}
+	if got, readErr := os.ReadFile(filepath.Join(f.observations, "protected.input")); readErr != nil || string(got) != "PROJECT_PROTECTED_INPUT\n" {
+		t.Errorf("retained reconstruction input = %q, %v", got, readErr)
+	}
+	if got, readErr := os.ReadFile(filepath.Join(f.observations, "protected-interface.input")); readErr != nil || string(got) != nextRead(t, f.root, "packages/core/api.go") {
+		t.Errorf("protected dependency interface = %q, %v", got, readErr)
+	}
+	files := strings.Fields(drillObserved(t, f, "input.files"))
+	for _, want := range []string{"./" + protected, "./packages/core/api.go"} {
+		if !slices.Contains(files, want) {
+			t.Errorf("reconstruction input omitted %s: %q", want, files)
+		}
+	}
+	drillCleaned(t, f)
+}
+
+func Test_RUN_055_ProjectProtectedAdditionAndDependencyInterfaceEditAreRejected(t *testing.T) {
+	for _, mode := range []string{"add_project_protected", "change_protected_dependency_interface"} {
+		t.Run(mode, func(t *testing.T) {
+			f := drillProjectProtectedFixture(t)
+			f.mode(t, mode)
+			r, err := f.run(context.Background(), 0)
+			if err == nil || r.Result != "fail" || len(r.Steps) != 1 || r.Ref != "" {
+				t.Errorf("unauthorized %s reconstruction = %#v, %v", mode, r, err)
+			}
+			if got := nextGit(t, f.root, "rev-parse", "HEAD"); got != f.base {
+				t.Errorf("invalid reconstruction moved invoking HEAD to %s", got)
+			}
+			if refs := nextGit(t, f.root, "for-each-ref", "--format=%(refname)", "refs/fireweed/drills"); refs != "" {
+				t.Errorf("invalid reconstruction retained rebuilt ref: %q", refs)
+			}
+			if _, statErr := os.Stat(filepath.Join(f.observations, "eval.order")); !os.IsNotExist(statErr) {
+				t.Errorf("invalid reconstruction reached evaluation: %v", statErr)
+			}
+			drillCleaned(t, f)
+		})
+	}
 }
 
 func Test_RUN_055_ReconstructionSubmissionAllowsOnlyDisposableAndNotes(t *testing.T) {

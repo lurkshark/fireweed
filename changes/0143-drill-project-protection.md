@@ -5,6 +5,8 @@ fixes:
     - RUN-053
     - RUN-055
 module: runner
+phase: audit
+run: 20261101T024402-5b20ef3a216ee76e284f30bf
 ---
 
 ## Motivation
@@ -60,6 +62,15 @@ own/dependent/boundary phase checks; do not skip those, call done manually, comm
 or alter hooks/bounds. A pending Audit section is preseeded so the restricted
 review can replace only its body without inserting surrounding whitespace.
 
+Fail-first: focused public Drill tests on the current implementation showed
+RUN-052/RUN-053 losing the project-protected file from both the rebuilt ref and
+reconstruction input, and RUN-055 accepting a new protected file and retaining
+a rebuilt ref. The protected dependency interface was present and read-only.
+The implementation-writable correction point is
+`packages/runner/internal/drill/drill.go`; no stub is needed.
+
 ## Audit
 
 Pending independent audit.
+## Provenance
+- evals 2026-11-01T03:01:24.623335Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=132 failing=3 passing=129
