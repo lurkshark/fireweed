@@ -23,6 +23,14 @@ controller application/archive passed. Final implementation verification passed
 all **798 cases**; retained interfaces/evals stayed byte-unchanged through impl.
 Per-change evidence is [0146's archived Provenance](../../changes/archive/0146-stale-change-authoring.md).
 
+**0147 applied at `78c334f`**: app exposes both options with existing JSON and
+diagnostic conventions. Its 13 genuine failing cases cover all seven new IDs;
+all 291 existing cases passed. Restricted audit passed all eight affected IDs,
+then full controller application passed all **304 cases**. Existing evals and
+interfaces stayed frozen. Evidence remains in [0147's archived Provenance](../../changes/archive/0147-stale-authoring-cli.md).
+SP1 behavior and SP2's feature lifecycle are complete; clean-candidate checks
+and the independent project proof remain pending.
+
 **Owner checkpoint — verification cost.** The initial worker full verify was
 interrupted at the 15-minute guardrail (outer next exit 130), preserving work
 and releasing its claim. The owner then approved scoped diagnosis with pin,
@@ -48,8 +56,8 @@ implementation Verify process guardrail from 15 to **25 minutes** on 2026-11-01.
 Own Verify remains under 5 minutes. This changes no configured controller bound,
 pin, frozen test, enforcement or evidence requirement. Continue SP1–SP4 and stop
 at the next owner checkpoint.
-SP1–SP4 remain incomplete: app integration, actual new-option CLI/candidate gates
-and the project drill have not started. Main is clean/unclaimed with no live
+SP1–SP4 remain incomplete: actual candidate CLI/Go/native gates and the project
+drill are next. Main is clean/unclaimed with no live
 workflow/worker or native scratch worktree. Main's controller source/hash and
 fireweed.yaml are unchanged; completed reports/refs/inspectable clones and the
 unrelated worktree remain preserved. Only the earlier push through `dae9b28`
@@ -312,9 +320,9 @@ completion remains open.
 
 ## Next
 
-0146 is applied and archived; its timing checkpoint is accepted under the
-owner-updated 25-minute full-verification process guardrail. Keep the pin,
-configured bounds, frozen tests and completed proofs unchanged. Author the app
-CLI integration through the normal controller lifecycle, then
-complete actual NEW CLI/candidate gates and inspect independent project inputs
-before its one real drill. SP1–SP4 remains the selected incomplete milestone.
+0146 and 0147 are applied and archived. Build an identified clean isolated NEW
+candidate, verify its actual options and required Go/native gates, then inspect
+project's reconstruction inputs before its one real drill. Keep main's pin,
+configured bounds, frozen tests and completed proofs unchanged; SYSTEM's
+full-verification process guardrail is 25 minutes. Stop at owner checkpoints.
+SP1–SP4 remains the selected incomplete milestone.
