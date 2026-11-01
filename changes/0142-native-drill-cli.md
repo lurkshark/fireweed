@@ -1,6 +1,8 @@
 ---
 bases: {}
 module: app
+phase: audit
+run: 20261101T020325-69e136eb165ae11673beab70
 ---
 
 ## Motivation
@@ -16,25 +18,25 @@ one isolated real contracts proof. No other deferred commands are included.
 
 ## Added
 
-### new:drill-routing
+### APP-136
 drill <module> MUST discover the nearest project root and invoke runner.Drill with that Root, the requested Module and the actual invoking executable as Bin. It MUST leave Timeout unset so configured backend bounds apply.
 
-### new:drill-plain-success
+### APP-137
 A successful drill MUST return exit 0 with empty stderr and plain output identifying the module, passing result, project-relative native report path and retained rebuilt-code ref.
 
-### new:drill-json-success
+### APP-138
 Successful drill --json MUST return exit 0 with schema 1 object data containing module, result, report, ref and base_commit string fields associated with the runner result. It MUST emit empty diagnostics and empty stderr.
 
-### new:drill-preflight
+### APP-139
 drill MUST reject missing or extra module arguments with exit 2 and corrective U01, and an unknown module with exit 2 and corrective U02 naming it. These rejections MUST invoke neither setup/eval hooks nor agents.
 
-### new:drill-config
+### APP-140
 drill project-discovery or configuration-loading failures MUST return exit 2 with corrective diagnostics retaining their cause code or C01 when uncoded. JSON MUST use schema 1 with null data and empty stderr; plain failures MUST use empty stdout and stderr diagnostics.
 
-### new:drill-failure
+### APP-141
 Ordinary runner.Drill failures MUST return exit 1 with corrective diagnostics retaining the cause code or P01 when uncoded. Diagnostics MUST identify the native report and rebuilt ref when those artifacts exist. JSON MUST use schema 1 with null data and empty stderr; plain failures use empty stdout and stderr diagnostics.
 
-### new:drill-usage-stop
+### APP-142
 A clean runner.IsUsageStop error with drill Result stopped MUST return exit 3 with the stop reason and any native report/ref identifiers. JSON MUST use schema 1 object data containing module, result, report, ref, base_commit and reason, with empty diagnostics and stderr; plain output MUST name the stopped module and reason.
 
 ## Modified
@@ -66,3 +68,11 @@ step. Passing Audit submissions use No findings and a complete Checked IDs list;
 findings use an exact clause quote followed by a separator and explanation.
 No public app facade changes, protected tooling edits, extra flags, other
 deferred commands or automatic gap authoring are included.
+
+Fail-first: the focused APP-136–APP-142 app tests all failed against the current
+CLI's unimplemented U01 drill response. A temporary public runner probe
+confirmed the fixture's pass, own/dependent eval failure, usage stop and setup
+failure paths; that probe was removed. `fireweed verify` passed in evals phase.
+It reported only the existing APP-103/APP-104 B02 case-count warnings.
+## Provenance
+- evals 2026-11-01T02:26:15.165Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=291 failing=10 passing=281
