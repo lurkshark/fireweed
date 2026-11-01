@@ -32,22 +32,30 @@ SP1 behavior and SP2's feature lifecycle are complete; candidate CI recovery
 is proceeding below, and the independent project proof is pending.
 
 **Candidate checks — recovery.** Inspectable clone:
-`/private/tmp/fireweed-sp-project-8ko73j3j/candidate`. Clean executable source
-`5bacb4ab5817e8eaea38218e6a8bcf9354dce42c`, version 0.1.0,
+`/private/tmp/fireweed-sp-project-8ko73j3j/candidate`. Current clean executable
+source/aligned base `fed193a3f8d2c86dab33aef69972543e41d45e9f`, version 0.1.0,
 `vcs.modified=false`, SHA-256
-`6edbd0e3e6d0903b1f780c1cf30a79891cb2a7593dc7f42bf3ebb5c7cd340ae4`.
-Isolation-policy-only alignment is
-`f22a327811f0c188cbbbe239a544e27fda80ce5b`; runtime source, interfaces/evals,
-configuration, setup and hooks are byte-unchanged, so valid Go checks are reused.
-Build, `go test ./...`, `go test -race ./...`, vet, NEW check and all ten
-`doctor --no-agent` canaries passed. Actual candidate CLI fixtures passed history
+`58d032f11b42868d8ff25d9d93d44e4b996269f06c693bb70a928089d19fa3ea`.
+This merges archived 0148 into the isolated candidate, retaining its input-only
+SYSTEM/AGENTS policy. Runtime source, interfaces, configuration, setup and hooks
+are unchanged from the earlier clean build at
+`5bacb4ab5817e8eaea38218e6a8bcf9354dce42c`; only RUN-040's fake-agent wait changed.
+Reuse passing full Go normal/race suites and vet for unaffected modules. Affected
+runner normal/race suites passed in 269.433/283.520 seconds; runner vet passed.
+The rebuilt candidate passed NEW check and all ten doctor --no-agent canaries.
+Actual candidate CLI fixtures remain valid for unchanged behavior: history
 recovery, fallback, mixed bases, file/index/ref effects, JSON and applicable exits;
 inspectable fixtures: `/private/tmp/fireweed-sp-cli-y4uu9x98`.
 
-NEW `check-commits` passed without diagnostics over
+NEW check-commits passed without diagnostics over
 `be35552b706aa3000ff8f11306d129ff1d701b85..5bacb4ab5817e8eaea38218e6a8bcf9354dce42c`
-(996 commits) and the policy-only append
-`5bacb4ab5817e8eaea38218e6a8bcf9354dce42c..f22a327811f0c188cbbbe239a544e27fda80ce5b`.
+(996 commits), the policy-only append
+`5bacb4ab5817e8eaea38218e6a8bcf9354dce42c..f22a327811f0c188cbbbe239a544e27fda80ce5b`,
+and the 11-commit correction/alignment append
+`f22a327811f0c188cbbbe239a544e27fda80ce5b..fed193a3f8d2c86dab33aef69972543e41d45e9f`.
+Native CI with doctor enabled is now running over the complete explicit range
+`be35552b706aa3000ff8f11306d129ff1d701b85..fed193a3f8d2c86dab33aef69972543e41d45e9f`.
+The following earlier failure is corrected by 0148 but still awaits this CI gate.
 CI with doctor enabled over the combined baseline-to-alignment range first
 reported E01 for existing `Test_RUN_040_EarlierBlockRetainsCauseBeforeTimeStop`.
 That case passed normal and race suites, then an unchanged focused replay passed
@@ -86,8 +94,8 @@ all 436 cases. Only the one fake-agent wait changed; every existing case,
 assertion, covered ID, runtime source, interface, spec and configured bound was
 preserved. Evidence remains in
 [0148's archived Provenance](../../changes/archive/0148-run-time-stop-fixture.md).
-Main is clean and unclaimed. Align the candidate with this correction and
-recheck affected runner normal/race tests and CI; reuse unaffected Go, CLI and
+Main is clean and unclaimed. The candidate includes this correction; affected
+runner checks passed and full CI remains active. Reuse unaffected Go, CLI and
 foundation evidence. No real project drill has started; preflight selected 19
 regular retained inputs only. Candidate remains clean and unclaimed.
 
@@ -379,9 +387,8 @@ completion remains open.
 
 ## Next
 
-0146–0148 are applied and archived. Align the candidate with 0148, recheck
-affected runner normal/race tests and close candidate CI before the one real
-project drill. Inspect native inputs before reconstruction. Keep main's pin,
+0146–0148 are applied and archived. Close the active candidate CI gate before
+the one real project drill. Inspect native inputs before reconstruction. Keep main's pin,
 configured bounds, frozen tests and completed proofs unchanged; SYSTEM's
 full-verification process guardrail is 25 minutes. Stop at owner checkpoints.
 SP1–SP4 remains the selected incomplete milestone.
