@@ -28,10 +28,10 @@ diagnostic conventions. Its 13 genuine failing cases cover all seven new IDs;
 all 291 existing cases passed. Restricted audit passed all eight affected IDs,
 then full controller application passed all **304 cases**. Existing evals and
 interfaces stayed frozen. Evidence remains in [0147's archived Provenance](../../changes/archive/0147-stale-authoring-cli.md).
-SP1 behavior and SP2's feature lifecycle are complete; the candidate CI replay
-and independent project proof remain pending.
+SP1 behavior and SP2's feature lifecycle are complete; candidate CI is stopped
+at the runner checkpoint below, and the independent project proof is pending.
 
-**Candidate checks in progress.** Inspectable clone:
+**Candidate checks — owner checkpoint.** Inspectable clone:
 `/private/tmp/fireweed-sp-project-8ko73j3j/candidate`. Clean executable source
 `5bacb4ab5817e8eaea38218e6a8bcf9354dce42c`, version 0.1.0,
 `vcs.modified=false`, SHA-256
@@ -51,9 +51,20 @@ NEW `check-commits` passed without diagnostics over
 CI with doctor enabled over the combined baseline-to-alignment range first
 reported E01 for existing `Test_RUN_040_EarlierBlockRetainsCauseBeforeTimeStop`.
 That case passed normal and race suites, then an unchanged focused replay passed
-in 8.38 seconds. The identical full CI command is being replayed; no source,
-frozen eval, pin or configured bound was changed for this failure. No real
-project drill has started. Preflight selected 19 regular retained inputs only.
+in 8.38 seconds. The identical full CI replay also failed the same case. A
+focused JSON replay with the CI hook's invoking-bin/PATH context passed in 8.35
+seconds. Full CI attempts took 1612.351 and 996.942 seconds; both reported only
+that E01 cause. No source, frozen eval, pin or configured bound was changed.
+The exact failing assertion has not been recovered from CI's summary diagnostic;
+the fixture couples an earlier block, a six-second fake worker sleep and an
+eight-second Run limit. Context-sensitive behavior remains unresolved.
+
+Stop before a third CI attempt or real project drill. Runner recovery is outside
+the selected ordinary project/app implementation slice and needs owner agreement
+on scoped diagnosis/correction through the normal controller lifecycle (eval_fix
+if frozen eval correction is needed), preserving cases, assertions and IDs.
+No real project drill has started; preflight selected 19 regular retained inputs
+only. Candidate and main are clean/unclaimed with no live verification processes.
 
 **Owner checkpoint — verification cost.** The initial worker full verify was
 interrupted at the 15-minute guardrail (outer next exit 130), preserving work
@@ -80,8 +91,8 @@ implementation Verify process guardrail from 15 to **25 minutes** on 2026-11-01.
 Own Verify remains under 5 minutes. This changes no configured controller bound,
 pin, frozen test, enforcement or evidence requirement. Continue SP1–SP4 and stop
 at the next owner checkpoint.
-SP1–SP4 remain incomplete: finish the candidate CI replay before the project
-drill. Main is clean/unclaimed with no live
+SP1–SP4 remain incomplete: resolve the candidate CI owner checkpoint before the
+project drill. Main is clean/unclaimed with no live
 workflow/worker or native scratch worktree. Main's controller source/hash and
 fireweed.yaml are unchanged; completed reports/refs/inspectable clones and the
 unrelated worktree remain preserved. Only the earlier push through `dae9b28`
@@ -344,9 +355,10 @@ completion remains open.
 
 ## Next
 
-0146 and 0147 are applied and archived. Finish the unchanged candidate CI replay
-above, then inspect project's native reconstruction inputs before its one real
-drill. Keep main's pin,
+0146 and 0147 are applied and archived. Await owner agreement on scoped RUN-040
+runner recovery for the repeated candidate CI failure above; do not run a third
+CI attempt, alter frozen evals/bounds or start the real project drill meanwhile.
+After the gate passes, inspect native inputs before the one project drill. Keep main's pin,
 configured bounds, frozen tests and completed proofs unchanged; SYSTEM's
 full-verification process guardrail is 25 minutes. Stop at owner checkpoints.
 SP1–SP4 remains the selected incomplete milestone.
