@@ -42,7 +42,7 @@ stamp <change> MUST discover the root, invoke project.Stamp and print confirmati
 check MUST invoke project.Check and exit 0 when no error diagnostics remain, or exit 1 with all diagnostics when static checks fail.
 
 ### APP-008
-Without --history, show <module> [ID] MUST return the current module document or selected item, using the whole-queue project projection with --projected.
+Without --history or --stale, show <module> [ID] MUST return the current module document or selected item, using the whole-queue project projection with --projected.
 
 ### APP-009
 Without --from-attempt, start <change> MUST discover the root, invoke
@@ -546,6 +546,34 @@ Ordinary runner.Drill failures MUST return exit 1 with corrective diagnostics re
 
 ### APP-142
 A clean runner.IsUsageStop error with drill Result stopped MUST return exit 3 with the stop reason and any native report/ref identifiers. JSON MUST use schema 1 object data containing module, result, report, ref, base_commit and reason, with empty diagnostics and stderr; plain output MUST name the stopped module and reason.
+
+### APP-143
+show --stale <change> MUST discover the nearest project root and query project.StaleSpecs for the pending change selector.
+For each recovered entry in returned order, it MUST identify the spec and display a line diff from Before to Current, distinguishing removed and added lines.
+
+### APP-144
+For an unrecovered stale entry, show --stale MUST identify the spec, display its RecordedHash and Current text, and indicate that stamped text was unavailable.
+It MUST NOT present an unverified historical text as a recovered diff.
+
+### APP-145
+The CLI MUST accept show --stale with exactly one change selector and reject its combination with --history or --projected.
+Use of --stale outside show or invalid stale-view arguments MUST return exit 2 with corrective U01 guidance describing valid show --stale usage.
+
+### APP-146
+show --stale MUST return exit 2 for change lookup failures, retaining U02 for an unknown selector or C13 for an ambiguous slug and naming the rejected selector.
+Project discovery or configuration errors MUST return exit 2 retaining their cause code or C01 when uncoded; other query failures MUST return exit 1 retaining their cause code or P01.
+
+### APP-147
+check --fix MUST fill missing Modified and Removed bases across the pending queue using project.StampMissing before ordinary project.Check diagnostics.
+Every existing bases entry, including valid and stale hashes, MUST remain unchanged; stale conflicts MUST still produce C08 and exit 1.
+
+### APP-148
+check --fix MUST use check's existing plain/JSON success and diagnostic shapes, returning exit 0 only when no error remains.
+Stamping rejections MUST return exit 1 with their cause code and corrective guidance; project discovery or configuration errors MUST retain exit 2.
+
+### APP-149
+The CLI MUST accept check --fix without positional arguments and reject --fix with other commands.
+Invalid fix-command usage MUST return exit 2 with corrective U01 guidance describing valid check --fix usage before mutation.
 
 ## Decisions
 

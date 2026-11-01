@@ -31,6 +31,35 @@ var pending = map[string]bool{
 }
 
 func Run(args []string, out, errOut io.Writer) int {
+	if contains(args, "--stale") || contains(args, "--fix") {
+		remaining := make([]string, 0, len(args))
+		staleCount, fixCount := 0, 0
+		for _, arg := range args {
+			switch arg {
+			case "--json":
+			case "--stale":
+				staleCount++
+			case "--fix":
+				fixCount++
+			default:
+				remaining = append(remaining, arg)
+			}
+		}
+		if staleCount > 0 && (staleCount != 1 || fixCount != 0 || len(remaining) != 2 || remaining[0] != "show" || strings.HasPrefix(remaining[1], "-")) {
+			return cliFailure(2, contains(args, "--json"), out, errOut, "U01", "Use show --stale <change> [--json] with exactly one selector and no other options.")
+		}
+		if fixCount > 0 && (fixCount != 1 || len(remaining) != 1 || remaining[0] != "check") {
+			return cliFailure(2, contains(args, "--json"), out, errOut, "U01", "Use check --fix [--json] without positional arguments or other options.")
+		}
+	}
+	if isInitRequest(args) || isNewModuleRequest(args) {
+		if contains(args, "--stale") {
+			return cliFailure(2, contains(args, "--json"), out, errOut, "U01", "--stale is only available with show. Use show --stale <change> [--json].")
+		}
+		if contains(args, "--fix") {
+			return cliFailure(2, contains(args, "--json"), out, errOut, "U01", "--fix is only available with check. Use check --fix [--json].")
+		}
+	}
 	if isInitRequest(args) {
 		if contains(args, "--for") {
 			return cliFailure(2, contains(args, "--json"), out, errOut, "U01", "--for is only available with run. Use run --for 1h.")
@@ -43,6 +72,8 @@ func Run(args []string, out, errOut io.Writer) int {
 	jsonMode := false
 	projected := false
 	history := false
+	stale := false
+	fix := false
 	quick := false
 	full := false
 	noAgent := false
@@ -65,6 +96,16 @@ func Run(args []string, out, errOut io.Writer) int {
 			projected = true
 		} else if arg == "--history" {
 			history = true
+		} else if arg == "--stale" {
+			if stale {
+				return cliFailure(2, contains(args, "--json"), out, errOut, "U01", "Use show --stale <change> [--json] with one --stale option.")
+			}
+			stale = true
+		} else if arg == "--fix" {
+			if fix {
+				return cliFailure(2, contains(args, "--json"), out, errOut, "U01", "Use check --fix [--json] with one --fix option.")
+			}
+			fix = true
 		} else if arg == "--quick" {
 			quick = true
 		} else if arg == "--full" {
@@ -133,6 +174,9 @@ func Run(args []string, out, errOut io.Writer) int {
 	}
 	for _, arg := range positional {
 		if strings.HasPrefix(arg, "-") {
+			if fix {
+				return fail("U01", fmt.Sprintf("Unknown option %q. Use check --fix [--json] without other options.", arg))
+			}
 			return fail("U01", fmt.Sprintf("Unknown option %q. Use help to see available commands and options.", arg))
 		}
 	}
@@ -140,6 +184,12 @@ func Run(args []string, out, errOut io.Writer) int {
 		return fail("U01", "A command is required. Use help to see available commands.")
 	}
 	command := positional[0]
+	if stale && (command != "show" || history || projected) {
+		return fail("U01", "Use show --stale <change> [--json] without --history or --projected.")
+	}
+	if fix && command != "check" {
+		return fail("U01", "Use check --fix [--json] without positional arguments.")
+	}
 	if projected && command != "show" {
 		return fail("U01", "--projected is only available with show.")
 	}
@@ -284,17 +334,35 @@ func Run(args []string, out, errOut io.Writer) int {
 		body = fmt.Sprintf("Stamped %s\n", positional[1])
 	case "check":
 		if count != 0 {
-			return fail("U01", "check takes no arguments. Use check alone.")
+			if fix {
+				return fail("U01", "check --fix takes no arguments. Use check --fix [--json].")
+			}
+			return fail("U01", "check takes no arguments. Use check [--fix] [--json].")
 		}
 		snapshot, err := loadValidatedProject()
 		if err != nil {
 			return fail(projectFailureCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
 		}
+		if fix {
+			changes, err := project.Queue(snapshot.Root)
+			if err != nil {
+				return failStatus(1, projectFailureCode(err, "P01"), fmt.Sprintf("%v. Use corrected queued changes, then retry check --fix.", err))
+			}
+			for _, change := range changes {
+				if err := project.StampMissing(snapshot.Root, change.Path); err != nil {
+					return failStatus(1, projectFailureCode(err, "P01"), fmt.Sprintf("%v. Use a valid base and change, then retry check --fix.", err))
+				}
+			}
+		}
 		results := project.Check(snapshot.Root)
 		diagnostics := make([]diagnostic, 0, len(results))
 		hasErrors := false
 		for _, result := range results {
-			diagnostics = append(diagnostics, diagnostic{Code: result.Code, Message: result.Message, Path: result.Path, Warning: result.Warning})
+			message := result.Message
+			if fix && !result.Warning {
+				message += ". Use the reported cause to correct the change, then retry check --fix."
+			}
+			diagnostics = append(diagnostics, diagnostic{Code: result.Code, Message: message, Path: result.Path, Warning: result.Warning})
 			if !result.Warning {
 				hasErrors = true
 			}
@@ -318,6 +386,12 @@ func Run(args []string, out, errOut io.Writer) int {
 		}
 		return 0
 	case "show":
+		if stale {
+			if count != 1 {
+				return fail("U01", "Use show --stale <change> [--json] with exactly one change selector.")
+			}
+			return runShowStale(positional[1], jsonMode, out, errOut)
+		}
 		if count < 1 || count > 2 {
 			return fail("U01", "show requires a module and optional item ID. Use show <module> [ID] [--projected|--history].")
 		}

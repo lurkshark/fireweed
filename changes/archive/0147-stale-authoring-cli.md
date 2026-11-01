@@ -4,7 +4,7 @@ already_satisfied:
 bases:
     APP-008: 01a6e117
 module: app
-phase: impl
+phase: applied
 run: 20261101T195004-729a090e3389f1b64d28cef5
 ---
 
@@ -104,6 +104,7 @@ full-verification process guardrail is 25 minutes, with own Verify under 5.
 ## Provenance
 - evals 2026-11-01T20:08:19.104116Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=304 failing=13 passing=291
 - audit 2026-11-01T20:09:23.21348Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-01T20:26:10.329834Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=304 failing=0 passing=304
 ## Audit
 
 No findings; checked APP-008, APP-143, APP-144, APP-145, APP-146, APP-147, APP-148, APP-149
