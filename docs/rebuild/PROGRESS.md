@@ -156,9 +156,26 @@ Its first worker invocation exited before edits with no detailed CLI cause;
 one bounded doctor probe passed both configured worker/auditor fixed replies.
 The same owning controller and held run then resumed successfully, with no
 model/effort change, fallback, verification-attempt reset or block.
-Finish 0150's restricted audit and full verification, reassess affected evidence,
-then use fresh independent inputs for the one newly authorized project drill.
-Stop at the next owner checkpoint.
+**0150 applied at `b1a6015`**: its eval_fix passed all 304 app cases (`a0fd015`),
+restricted audit passed APP-107/108/112/113 (`7eb3e4e`), and full implementation
+verification passed all 304 cases. Runtime source, interfaces and specs were
+unchanged. Evidence remains in
+[0150's archived Provenance](../../changes/archive/0150-diagnostic-eval-contracts.md).
+P03 rejected the first eval worker's premature phase edit before any worker
+commit. The normal remaining attempt restored the approved evals state and
+removed temporary manual provenance; final phase commits/provenance belong to
+the configured outside controller. Explicit worker phase control was added to
+Notes and aligned in SYSTEM between changes; no attempts or bounds were reset.
+
+Both scoped recovery changes are archived, with main clean and unclaimed.
+Update the isolated candidate, preserving its failed report/ref/history. Recheck
+affected project/app normal/race tests and vet, NEW check and doctor, then NEW
+history/CI on the explicit append after `fed193a`, reusing the passing original
+`be35552..fed193a` prefix. This retains the standing history baseline and covers
+the whole history without repeating unaffected traversal. CI still checks all
+current module evals/coverage, boundaries and hook doctor. Identify the clean
+updated executable, then use fresh independent inputs for the one newly
+authorized project drill. Stop at the next owner checkpoint.
 
 **Owner checkpoint — verification cost.** The initial worker full verify was
 interrupted at the 15-minute guardrail (outer next exit 130), preserving work
@@ -448,8 +465,7 @@ completion remains open.
 
 ## Next
 
-0146–0149 are applied and archived. Finish owner-authorized 0150's eval repair,
-reassess affected candidate checks,
+0146–0150 are applied and archived. Reassess affected candidate checks,
 then run the one newly authorized fresh independent project drill.
 Keep main's pin,
 configured bounds, frozen tests and completed proofs unchanged; SYSTEM's
