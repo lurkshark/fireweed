@@ -228,7 +228,7 @@ Passing FD1–FD4 advances full gate 7; the later full-completion gates remain.
 ## Completed milestone — Stale-change authoring and project proof (SP1–SP4)
 
 Owner-selected and completed on 2026-11-01; **SP1–SP4 passed**. PROGRESS records
-the reviewed evidence; PLAN and GOAL retain the completed execution scope.
+the reviewed evidence; PLAN and these gates retain the completed execution scope.
 These gates derive from the design's Stale changes,
 Fixing a stale change and Regeneration clauses, R28/R16 and full gates 5/7.
 They add no product scope. EC1–EC6, DR1–DR4 and FD1–FD4 remain completed evidence.
@@ -285,6 +285,70 @@ are included. No drill implementation import/replacement on main, real regenerat
 change, controller promotion, other-module real drill, gc/migrate, additional
 recipes, file-format migration, unrelated warning cleanup or push is included.
 Full product completion and every later full-completion gate remain open.
+
+## Next planned milestone — Checks contracts and proof (CK1–CK4)
+
+Selected for planning on 2026-11-01; **all CK gates are pending execution**.
+This update starts no change, worker, verification run or drill; execution needs
+a separate owner instruction. These gates cover checks-owned obligations from
+the unchanged design (R07/R09–R11/R15/R18/R25/R28/R29) and its independent proof
+(R16/full gate 7), adding no product scope. Completed EC1–EC6, DR1–DR4, FD1–FD4
+and SP1–SP4 criteria and evidence remain preserved. Main's pin, configured
+bounds and SYSTEM's process/owner checkpoints remain unchanged.
+
+1. **CK1 — Focused checks contract review and necessary corrections.** Review
+   checks' current spec/Decisions/interfaces/evals once against its existing
+   JUnit/evidence/coverage, zone, hook/boundary, doctor and history obligations.
+   Record concise conclusions and close only concrete unmet clauses or
+   demonstrated failures within checks. No implementation is presumed needed.
+   Each necessary change uses normal fail-first unless legitimately already
+   satisfied, separate restricted independent audit and full phase checks;
+   preserve existing cases, assertions, ID coverage and behavior. Wrong frozen
+   evals use eval_fix. Review fixes only against affected requirements. Ambiguous
+   behavior or required changes outside checks, including dependency interfaces,
+   stop for owner agreement before authoring; no speculative hardening or
+   repository-wide spec rewrite. Finish and archive scoped changes before CK3.
+2. **CK2 — Identified clean NEW candidate.** Pass applicable Go normal/race/vet
+   checks, NEW check, doctor --no-agent, explicit-baseline check-commits and CI
+   with hook doctor enabled. Exercise actual NEW CLI paths affected by any
+   correction. Record clean executable source/hash and exact nonempty history
+   ranges; preserve the standing baseline and reuse valid prefixes/unaffected
+   evidence without skipping required phase checks. Explain warnings without
+   unrelated cleanup. No live scoped change or claim remains before CK3.
+3. **CK3 — One independent checks drill.** In an isolated verified NEW candidate
+   clone, align instructions/setup/PATH and confirm setup copies the invoker.
+   Inspect independence before the real invocation and in the live worker
+   input/verifier. Supply retained checks spec/Decisions/interfaces/evals and
+   approved retained files, plus only declared contracts/gitstore/assets/project
+   interfaces, including model interfaces. Keep actual dependency/dependent
+   implementations, full manifests and hooks outside reconstruction inputs in
+   the separate verifier. Exclude old target disposable code/data, history,
+   saved attempts, binaries, bootstrap and other-module internals; never query
+   invoker content as an oracle. Use the exact configured real agent/model/
+   effort and unchanged bounds. Checks and every transitive dependent
+   (workflow, runner, app) must pass enforced evals and coverage with retained
+   inputs byte-unchanged. Review every command, full script, incremental patch
+   and native report fields/cases, contradicted Decisions and gaps.
+4. **CK4 — Reviewed evidence and clean handoff.** Stop on any blocked change,
+   independence/access failure or gap/contradicted Decision needing owner
+   agreement. No automatic gap fixes, fresh drill after exhausted attempts,
+   counter resets or expanded scope. Owner-approved recovery follows the normal
+   audited lifecycle, preserves frozen obligations and reassesses affected
+   evidence; a fresh drill needs owner authorization. Retain the reviewed native
+   `.fireweed/drills/checks.md`, `refs/fireweed/drills/checks/<date>` and inspectable
+   clone; commit the report as protected author evidence with no live run/claim.
+   Record concise CK results, review conclusions and candidate/evidence locations
+   in PROGRESS, keeping per-change evidence in archived Provenance. Verify clean
+   checkouts, scratch cleanup, no active run/claim, unchanged main pin/bounds and
+   preserved prior proofs/unrelated worktrees. No supplemental reports, testcase
+   inventories or hash manifests. Completion requires CK1/CK2 and a passing
+   independent checks proof with no unresolved owner checkpoint.
+
+No rebuilt-code import/replacement on main, real regenerate change, controller
+promotion, workflow/runner/app real drill, gc/migrate, additional recipes,
+compatibility/file-format migration, unrelated warning cleanup, delivery or push
+is included. Later drill order is workflow → runner → app, each owner-selected.
+Remaining drills alone do not complete the product; all full gates below remain.
 
 ## Full-completion gates (after early cutover)
 

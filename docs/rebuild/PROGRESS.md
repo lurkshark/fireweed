@@ -9,7 +9,25 @@ Current handoff only. Per-change evidence remains in archived Provenance
 The owner-selected stale-change authoring milestone is finished: both CLI options
 are implemented, normal lifecycle/candidate gates passed, and project now has a
 reviewed passing independent proof. Full product completion remains open; every
-later full-completion gate is still required. No further execution slice is selected.
+later full-completion gate is still required. The owner requested planning for
+the checks milestone only; no further execution slice is authorized or started.
+
+**Next planned milestone — CK1–CK4, all pending execution.** GOAL, PLAN and
+ACCEPTANCE now define checks contract completion followed by one independent
+checks drill. On separate execution instruction, begin with one focused review
+of checks' existing design/spec obligations and make only necessary scoped
+corrections through the normal audited lifecycle. Ambiguous behavior or required
+work outside checks needs owner agreement before authoring. Verify an identified
+clean NEW candidate, then supply retained checks inputs and only declared
+contracts/gitstore/assets/project interfaces to reconstruction; keep full
+dependency/dependent code, manifests and hooks in the separate verifier.
+Require checks and all transitive dependents (workflow, runner, app) to pass
+enforced evals and coverage, with retained inputs byte-unchanged and complete
+command/patch/report review. Retain the native checks report/ref and inspectable
+clone. Stop at blocked changes, independence/access failures and owner-required
+gaps or contradicted Decisions; no automatic fixes or reset/fresh drill after
+exhausted attempts. Main's pin/bounds and all prior proofs remain unchanged.
+This planning update starts no change, worker, verification run or drill.
 
 **SP1/SP2 — product and lifecycle.** 0146 applied at `21d5dde` with project
 StaleSpecs/StampMissing APIs and PRJ-060–066. Genuine fail-first (`9e08d86`:
@@ -332,7 +350,8 @@ completion remains open.
   `be35552b706aa3000ff8f11306d129ff1d701b85`; always pass an explicit range.
 - GOAL records the exact worker/auditor/drill argv; no model/effort substitution.
   Audits use the configured controller audit step and temporary input-only
-  workspace. Reconstruction inputs must separately meet FD1 independence.
+  workspace. Reconstruction inputs must separately meet the selected milestone's
+  independence gate (CK3 for the next planned checks proof).
 
 ## Standing rules and remaining scope
 
@@ -366,7 +385,12 @@ completion remains open.
 
 ## Next
 
-SP1–SP4 is complete. No further slice is selected. Preserve the pinned controller,
-configured bounds, completed proofs and inspectable clones. Await owner selection
-before further implementation, real drills, controller promotion or deferred work.
-Full product completion and every later full-completion gate remain open.
+SP1–SP4 is complete; CK1–CK4 is planned and pending execution. Await a separate
+owner instruction before the focused checks review, implementation, candidate
+verification or real drill. SYSTEM's no-further-execution state remains in force.
+Preserve main's pin, configured bounds, all completed proofs and inspectable
+clones; the next proof is checks only. Later drill order is workflow → runner →
+app, each owner-selected. No regenerated implementation import, real regenerate
+change, controller promotion, deferred work or push is included. Full product
+completion and every later full-completion gate remain open; remaining drills
+alone do not complete the product.

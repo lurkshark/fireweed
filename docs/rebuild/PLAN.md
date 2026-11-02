@@ -13,12 +13,78 @@ including owner-approved contracts clarifications in 0144. Preserve the recorded
 checks, native report/ref, inspectable clones and immutable archives. Completed
 implementation procedures are not a queue to repeat.
 
+## Next planned milestone — Checks contract completion and independent proof
+
+Selected for planning on 2026-11-01; **CK1–CK4 are pending execution**.
+This update authorizes no change, worker, verification run or drill. A separate
+owner instruction is required to start; SYSTEM's no-further-execution state and
+all process guardrails remain in force. GOAL is the future restart prompt.
+The milestone covers checks' existing design obligations and then **one real
+checks drill**. Contracts, gitstore, assets and project already have reviewed
+independent proofs; preserve them and reuse unaffected evidence.
+
+1. **Review checks once and close concrete contract gaps (CK1).** Read the
+   current checks spec/Decisions, interfaces and evals against the unchanged
+   design. Cover JUnit parsing and evidence/coverage, phase zones, hook and
+   boundary enforcement, doctor canaries/recovery/agent probes, and history/
+   merge/squash behavior. Use only checks-owned obligations in ACCEPTANCE
+   R07/R09–R11/R15/R18/R25/R28/R29; those rows do not authorize cross-module
+   feature work. Do not presume gaps. Make only necessary checks corrections
+   supported by a concrete unmet clause or demonstrated failure, through the
+   normal per-change loop below. Preserve cases, assertions, IDs and behavior;
+   use eval_fix for wrong frozen evals. Resolve ambiguity or required work
+   outside checks, including dependency interface changes, at an owner
+   checkpoint before authoring. Record concise conclusions in PROGRESS, with
+   per-change evidence in Provenance; no extra inventory or broad spec rewrite.
+2. **Verify the candidate (CK2).** Finish and archive scoped changes, then build
+   an identified clean NEW candidate. Pass applicable Go normal/race/vet checks,
+   NEW check, doctor --no-agent, explicit-baseline check-commits and CI with hook
+   doctor enabled. Exercise actual NEW CLI behavior affected by any correction.
+   Identify executable source/hash and exact nonempty history ranges; preserve
+   the standing baseline, reusing valid prefixes and unaffected checks/proofs.
+   Required phase checks still run. Explain warnings; do not select unrelated
+   cleanup. Main workflow control stays on the original separate NEW pin.
+3. **Prove checks independently (CK3).** After CK1/CK2 close, align an isolated
+   candidate clone's instructions, setup and worker PATH; setup copies the
+   actual invoker. Inspect independence before the real invocation and in the
+   live input/verifier. Supply retained checks spec/Decisions/interfaces/evals
+   and approved retained files, plus only declared contracts/gitstore/assets/
+   project interfaces, including model interfaces. Keep dependency/dependent
+   implementations, manifests and hooks in the separate verifier. Exclude old
+   target disposable code/data, history, saved attempts, binaries, bootstrap
+   and other-module internals; do not query invoker content as an oracle.
+   Use GOAL's exact configured real agent and unchanged bounds. Require checks
+   and all transitive dependents (workflow, runner, app) to pass enforced evals
+   and coverage, with retained inputs byte-unchanged. Review all commands,
+   complete scripts, incremental patches and native report fields/cases,
+   contradicted Decisions and gaps.
+4. **Retain evidence and close CK1–CK4 (CK4).** Retain the reviewed native
+   `.fireweed/drills/checks.md`, `refs/fireweed/drills/checks/<date>` rebuilt-code
+   ref and inspectable clone. Commit the native report as protected author
+   evidence with no live run/shared claim; record concise review/results,
+   candidate identity and evidence locations in PROGRESS. Verify scratch
+   cleanup, clean checkouts, no active run/claim, unchanged main pin/bounds and
+   preserved completed proofs/unrelated worktrees. No supplemental reports,
+   testcase inventories or hash manifests. A failed drill is not completion.
+
+Stop on any blocked change, independence/access failure or gap/contradicted
+Decision needing owner agreement. No automatic drill-gap fixes, fresh runs after
+exhausted attempts, counter resets or scope expansion. Owner-approved recovery
+uses the normal loop and reassesses only affected evidence; any fresh drill
+requires the owner's authorization. Stop verification once the gates pass.
+
+This proposed milestone excludes rebuilt-code import/replacement on main, real
+regenerate changes, controller promotion, other-module real drills, gc/migrate,
+additional recipes, compatibility/file-format migration, unrelated warning
+cleanup, delivery and push. Later modules and all full-completion gates remain
+open. Planning does not start any of this work.
+
 ## Completed milestone — Stale-change authoring support and independent project drill
 
 Owner-selected and completed on 2026-11-01; **SP1–SP4 passed**. This
 succeeded FD1–FD4 and closed the stale-authoring portion of design R28
 with a passing independent project proof. PROGRESS records reviewed evidence;
-the following execution steps and GOAL prompt retain the completed scope.
+the following execution steps and ACCEPTANCE SP1–SP4 retain the completed scope.
 The unchanged design remains authority. The scope is project behavior and its
 app CLI integration, then **one real
 project drill**. Project depends only on contracts, gitstore and assets, whose
@@ -141,8 +207,9 @@ deferred product work and push. Full product completion remains open.
 
 ## Later full completion
 
-All nine full-completion gates remain in ACCEPTANCE. After SP1–SP4, the remaining
-drill order is checks → workflow → runner → app. Later owner-selected work also
+All nine full-completion gates remain in ACCEPTANCE. Checks is the next planned
+proof; after CK1–CK4, the remaining drill order is workflow → runner → app, each
+owner-selected. Remaining drills alone do not complete the product. Later work also
 includes real regenerate validation, gc/migrate, additional recipes, version/
 file-format migration, warnings and delivery. Coordinate later behavior changes
 with affected proofs and repeat only evidence they invalidate. None is started
