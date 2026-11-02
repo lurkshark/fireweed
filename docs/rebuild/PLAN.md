@@ -13,13 +13,14 @@ including owner-approved contracts clarifications in 0144. Preserve the recorded
 checks, native report/ref, inspectable clones and immutable archives. Completed
 implementation procedures are not a queue to repeat.
 
-## Next milestone — Stale-change authoring support and independent project drill
+## Completed milestone — Stale-change authoring support and independent project drill
 
-Owner-selected on 2026-11-01; **planning only, execution not started**. This
-succeeds completed FD1–FD4 and closes the stale-authoring portion of design R28
-before proving project independently. ACCEPTANCE SP1–SP4 defines completion;
-GOAL is the future execution prompt. The unchanged design remains authority.
-The scope is project behavior and its app CLI integration, then **one real
+Owner-selected and completed on 2026-11-01; **SP1–SP4 passed**. This
+succeeded FD1–FD4 and closed the stale-authoring portion of design R28
+with a passing independent project proof. PROGRESS records reviewed evidence;
+the following execution steps and GOAL prompt retain the completed scope.
+The unchanged design remains authority. The scope is project behavior and its
+app CLI integration, then **one real
 project drill**. Project depends only on contracts, gitstore and assets, whose
 reviewed independent proofs remain preserved and reusable.
 

@@ -225,10 +225,11 @@ No main implementation import/replacement, real regenerate change, other module
 real drill, controller promotion, deferred product work or push is included.
 Passing FD1–FD4 advances full gate 7; the later full-completion gates remain.
 
-## Next milestone — Stale-change authoring and project proof (SP1–SP4)
+## Completed milestone — Stale-change authoring and project proof (SP1–SP4)
 
-Owner-selected on 2026-11-01; **pending execution**. PLAN orders the work; GOAL
-is the restart prompt. These gates derive from the design's Stale changes,
+Owner-selected and completed on 2026-11-01; **SP1–SP4 passed**. PROGRESS records
+the reviewed evidence; PLAN and GOAL retain the completed execution scope.
+These gates derive from the design's Stale changes,
 Fixing a stale change and Regeneration clauses, R28/R16 and full gates 5/7.
 They add no product scope. EC1–EC6, DR1–DR4 and FD1–FD4 remain completed evidence.
 Main's NEW controller pin, all configured bounds and SYSTEM's remaining process

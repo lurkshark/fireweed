@@ -5,213 +5,109 @@ Current handoff only. Per-change evidence remains in archived Provenance
 
 ## State — 2026-11-01
 
-**EC1–EC6, DR1–DR4 and FD1–FD4 passed.** The independent contracts, gitstore
-and assets proofs remain complete and preserved below. Full product completion
-remains open, with every later gate required.
+**SP1–SP4 passed.** EC1–EC6, DR1–DR4 and FD1–FD4 remain complete and preserved.
+The owner-selected stale-change authoring milestone is finished: both CLI options
+are implemented, normal lifecycle/candidate gates passed, and project now has a
+reviewed passing independent proof. Full product completion remains open; every
+later full-completion gate is still required. No further execution slice is selected.
 
-The owner selected the next planned milestone: **stale-change authoring support,
-then one independent project drill**. PLAN orders execution, ACCEPTANCE SP1–SP4
-defines gates and GOAL is the restart prompt. Scope is `show --stale <change>`,
-missing-bases-only `check --fix`, their required project/app integration, and
-project's proof after those changes close. Project depends only on contracts,
-gitstore and assets; the completed foundation evidence is reused where valid.
+**SP1/SP2 — product and lifecycle.** 0146 applied at `21d5dde` with project
+StaleSpecs/StampMissing APIs and PRJ-060–066. Genuine fail-first (`9e08d86`:
+126 cases, 17 failing), restricted audit (`a313e6d`) and full implementation
+verification (798 passing cases) are preserved in
+[0146's archive](../../changes/archive/0146-stale-change-authoring.md).
+0147 applied at `78c334f`, exposing show --stale and missing-bases-only check --fix.
+Its 13 new cases failed first while all 291 existing cases passed; restricted
+audit and full verification passed all 304 final app cases. Evidence remains in
+[0147's archive](../../changes/archive/0147-stale-authoring-cli.md).
+Actual NEW CLI fixtures cover stamped history recovery, unavailable/mismatched
+fallback, mixed missing/valid/stale bases, file/index/ref effects, JSON and
+applicable diagnostic/usage/lookup exits. Inspectable fixtures:
+`/private/tmp/fireweed-sp-cli-y4uu9x98`. Runtime behavior is unchanged by recovery,
+so those fixtures remain valid.
 
-**0146 applied at `21d5dde`**: project's StaleSpecs/StampMissing APIs and
-PRJ-060–066 are implemented. Genuine fail-first (`9e08d86`: 126 cases, 17
-failing), restricted independent audit with no findings (`a313e6d`), and full
-controller application/archive passed. Final implementation verification passed
-all **798 cases**; retained interfaces/evals stayed byte-unchanged through impl.
-Per-change evidence is [0146's archived Provenance](../../changes/archive/0146-stale-change-authoring.md).
+Owner-approved recovery changes are also applied and archived. 0148 (`a11ace0`)
+corrected RUN-040's timing fixture under eval_fix, preserving its deadline and
+all assertions; 132 own and 436 full cases passed. The owner explicitly approved
+repair/restart of its initially mistaken author metadata. 0149 (`c4d34a2`)
+clarified existing diagnostic contracts with already_satisfied, passing 127 own
+and 812 full cases. 0150 (`b1a6015`) repaired app's corrective-word helper and
+malformed-history fixture under eval_fix, passing all 304 cases. Their restricted
+audits passed with no findings. Archives hold the per-change Provenance; no
+runtime source, public interface or configured bound changed in 0148–0150.
+P03 rejected 0150's first premature worker phase edit before a worker commit;
+the normal remaining attempt restored approved state. Final phase provenance is
+controller-owned, and explicit worker phase control is retained in SYSTEM.
+A bounded doctor probe after 0149's first invocation failure passed both exact
+configured worker/auditor fixed replies; the same claim then resumed normally.
 
-**0147 applied at `78c334f`**: app exposes both options with existing JSON and
-diagnostic conventions. Its 13 genuine failing cases cover all seven new IDs;
-all 291 existing cases passed. Restricted audit passed all eight affected IDs,
-then full controller application passed all **304 cases**. Existing evals and
-interfaces stayed frozen. Evidence remains in [0147's archived Provenance](../../changes/archive/0147-stale-authoring-cli.md).
-SP1 behavior and SP2's feature lifecycle are complete; candidate CI recovery
-is proceeding below, and the independent project proof is pending.
-
-**Candidate checks — recovery.** Inspectable clone:
-`/private/tmp/fireweed-sp-project-8ko73j3j/candidate`. Current clean executable
-source/aligned base `3f95497a164b045bf374da4a1498011bb0bc14c2`, version 0.1.0,
+**Verified candidate.** Inspectable clone:
+`/private/tmp/fireweed-sp-project-8ko73j3j/candidate`. Executable source/aligned
+base `3f95497a164b045bf374da4a1498011bb0bc14c2`, version 0.1.0,
 `vcs.modified=false`, SHA-256
 `4e6f5adf84ca0bc3dcb28001d9623b51bb68bebc5a4d53d93dbbb6c479fd927f`.
-The isolated input-only SYSTEM/AGENTS policy is retained. Runtime source,
+The candidate retains its input-only SYSTEM/AGENTS policy. Runtime source,
 interfaces, configuration, setup and hooks are byte-identical to prior verified
-`fed193a`; recovery changes only project specs/evals and app evals. Reuse passing
-full Go normal/race suites and vet for unaffected modules. Affected project
-normal/race passed in 3.681/5.394 seconds; app normal/race passed in
-268.242/300.839 seconds; affected vet passed. The rebuilt candidate passed NEW
-check and all ten doctor --no-agent canaries. Actual candidate CLI fixtures remain
-valid for unchanged behavior: history recovery, fallback, mixed bases,
-file/index/ref effects, JSON and applicable exits; inspectable fixtures:
-`/private/tmp/fireweed-sp-cli-y4uu9x98`.
+`fed193a`; recovery changes project specs/evals and app evals only. Valid full
+Go normal/race/vet evidence is reused for unaffected modules. Affected project
+normal/race passed in 3.681/5.394 seconds, app in 268.242/300.839 seconds, and
+affected vet passed. Earlier affected runner normal/race passed in
+269.433/283.520 seconds. NEW check and all ten doctor --no-agent canaries passed.
 
+The standing history baseline remains `be35552b706aa3000ff8f11306d129ff1d701b85`.
 NEW check-commits passed without diagnostics over
-`be35552b706aa3000ff8f11306d129ff1d701b85..5bacb4ab5817e8eaea38218e6a8bcf9354dce42c`
-(996 commits), the policy-only append
+`be35552b706aa3000ff8f11306d129ff1d701b85..5bacb4ab5817e8eaea38218e6a8bcf9354dce42c`,
 `5bacb4ab5817e8eaea38218e6a8bcf9354dce42c..f22a327811f0c188cbbbe239a544e27fda80ce5b`,
-and the 11-commit correction/alignment append
-`f22a327811f0c188cbbbe239a544e27fda80ce5b..fed193a3f8d2c86dab33aef69972543e41d45e9f`.
-Native CI with doctor enabled passed without diagnostics in 1065.946 seconds over
-the complete explicit range
-`be35552b706aa3000ff8f11306d129ff1d701b85..fed193a3f8d2c86dab33aef69972543e41d45e9f`.
-Current check-commits passed the 14-commit append without diagnostics:
+`f22a327811f0c188cbbbe239a544e27fda80ce5b..fed193a3f8d2c86dab33aef69972543e41d45e9f`,
+and the 14-commit recovery append
 `fed193a3f8d2c86dab33aef69972543e41d45e9f..3f95497a164b045bf374da4a1498011bb0bc14c2`.
-Native CI with hook doctor enabled passed without diagnostics in 505.103 seconds
-over that same explicit append, checking every current module's evals/coverage
-and boundaries. The earlier
-passing baseline-to-fed193a prefix is reused; the standing baseline is unchanged.
-The following earlier failure is resolved by 0148 and its passing CI gate.
-CI with doctor enabled over the combined baseline-to-alignment range first
-reported E01 for existing `Test_RUN_040_EarlierBlockRetainsCauseBeforeTimeStop`.
-That case passed normal and race suites, then an unchanged focused replay passed
-in 8.38 seconds. The identical full CI replay also failed the same case. A
-focused JSON replay with the CI hook's invoking-bin/PATH context passed in 8.35
-seconds. Full CI attempts took 1612.351 and 996.942 seconds; both reported only
-that E01 cause. No source, frozen eval, pin or configured bound was changed.
-An unchanged protected-hook replay recovered the assertion: gamma advanced to
-audit before the eight-second deadline, while the test expected held evals.
-Its six-second fake-worker sleep can finish before that deadline. The replay
-ran 132 cases in 234.914 seconds; only this held-phase assertion failed.
+Native CI with hook doctor enabled passed without diagnostics over
+`be35552b706aa3000ff8f11306d129ff1d701b85..fed193a3f8d2c86dab33aef69972543e41d45e9f`
+in 1065.946 seconds and the same explicit recovery append in 505.103 seconds.
+The valid prefix is reused; the append CI checked all current module evals,
+coverage, boundaries and doctor canaries, without skipping any required gate.
 
-The owner authorized scoped RUN-040 recovery on 2026-11-01: diagnose and make any
-necessary correction through the normal pinned-controller lifecycle, using
-eval_fix for frozen eval corrections and preserving cases, assertions, ID coverage,
-pin and configured bounds. Change 0148 was authored at `90c2875`, but the author
-mistakenly used `kind: eval_fix` with `fixes` instead of the documented
-`eval_fix: [RUN-040]`. Its one-line worker correction waits for cancellation
-instead of sleeping six seconds; every assertion and deadline is unchanged.
-The controller's runner hook passed all 132 cases in 284.436 seconds, then
-correctly required fail-first for the wrongly authored kind. The owning next
-was interrupted (exit 130) before further verification; its worker stopped and
-the claim was released. No phase commit, audit, archive or block occurred.
-Run `20261101T220404-446c231a1bbfdb04e783d235` and its evals work remain preserved.
+**SP3 — independent project proof passed.** The owner-authorized fresh drill
+used that clean candidate, exact configured gpt-6-sol/high worker and unchanged
+bounds. Live inspection confirmed 19 byte-identical retained inputs, fresh
+one-commit Git metadata, no remotes/alternates, no old report/history, saved
+attempts, binaries, manifests or other-module internals. The separate verifier's
+old target disposable files were absent and its controller matched the invoker.
+Review covered all 51 shell commands and 22 patch operations, including complete
+script bodies and incremental changes behind repeated cumulative patch output.
+Reads stayed within supplied inputs/new files. Attempts to read absent app evals
+returned no files; no dependent implementation or outside oracle was accessed.
 
-**Owner-approved author metadata repair.** On 2026-11-01 the owner approved
-correcting 0148 to `eval_fix: [RUN-040]` and restarting its lifecycle, explicitly
-allowing the attempt-accounting restart caused by the authoring error. The
-stopped run's one-line eval correction is preserved for the restarted worker;
-author repair commits contain no eval edits. Resume the normal pinned-controller
-lifecycle with the same cases, assertions, ID coverage, pin and bounds.
-**0148 applied at `a11ace0`** after that repair. The normal eval_fix lifecycle
-passed all 132 own cases (`4e76986`), its restricted independent audit had no
-findings for RUN-040 (`376b45f`), and full implementation verification passed
-all 436 cases. Only the one fake-agent wait changed; every existing case,
-assertion, covered ID, runtime source, interface, spec and configured bound was
-preserved. Evidence remains in
-[0148's archived Provenance](../../changes/archive/0148-run-time-stop-fixture.md).
-Main is clean and unclaimed. The candidate includes this correction; affected
-runner checks and full CI passed. Reuse unaffected Go, CLI and
-foundation evidence. The real project drill result and owner checkpoint follow.
+The native result is pass after its configured retry, in 2216.237 seconds:
+**all 812 enforced cases passed** — project 127, app 304, checks 101, runner 132
+and workflow 148 — with passing coverage and all retained inputs byte-unchanged.
+No contradicted Decision or unresolved behavioral gap remains. The agent's
+no-manifest note is the intentional input-only testing limitation, resolved by
+the separate verifier's passing own and all-transitive-dependent evals.
+Native report: [.fireweed/drills/project.md](../../.fireweed/drills/project.md),
+preserved verbatim. Passing ref, retained in main and the inspectable clone:
+`refs/fireweed/drills/project/20261102T031647.104747000` at
+`481bc00c1da360d3e8bf76cd5ba04053d2dccaeb`, based on the identified candidate.
+The drill left invoking HEAD/executable unchanged. Candidate report-only author
+commit `3e40231` then retained the reviewed report with a clean checkout.
+Rebuilt implementation remains in the proof ref; main's implementation was not replaced.
 
-**SP3 — independent project drill failed; owner checkpoint.** The one authorized
-native drill ran from clean `fed193a3f8d2c86dab33aef69972543e41d45e9f` with the
-recorded candidate executable, exact configured real worker and unchanged bounds.
-Live inspection confirmed 19 byte-identical retained inputs, fresh one-commit Git
-metadata with no remotes/alternates, no supplied old code/binaries/manifests or
-dependent internals, an empty disposable target in the separate verifier, and an
-exact copied invoking controller. Review covered all 50 shell commands, their
-complete script bodies and recorded patch operations across both configured
-attempts. Reads stayed within supplied inputs/new files; no old implementation,
-outside checkout, saved attempt, binary or invoker-content oracle was used.
+The earlier failed project proof remains inspectable at
+`refs/fireweed/drills/project/20261102T000116.032120000` (`dc7a84f1ae92d7f0bab3b91cc293882427591fad`),
+with its verbatim report in main commit `86c512c` and candidate commit `41bdb56`.
+Its 16 failed dependent entries led to the owner-approved 0149/0150 corrections;
+no retry bound was reset. Completed contracts/gitstore/assets reports, refs,
+archives and inspectable clones remain preserved.
 
-The native result is **fail** after its configured retry, in 2023.229 seconds.
-It retains **795 passing / 16 failing testcase entries**: project 126/0,
-app 289/15, checks 101/0, runner 132/0 and workflow 147/1. Parent/subtest failures
-are separate native entries. Project's own evals pass, but dependent diagnostic
-contracts do not: cause wording/corrective guidance, show-history propagation of
-U02/C01/C03 and exit status, and a blank base being classified stale instead of
-missing. The CLI names only the first failing case per affected module; the
-native report retains every failure. No contradicted Decision was identified.
-The agent's no-manifest note is the intended input-only verification limitation;
-the actual failed dependent evals, not that limitation, prevent a passing proof.
-
-Retain the native report verbatim at
-[.fireweed/drills/project.md](../../.fireweed/drills/project.md), with rebuilt ref
-`refs/fireweed/drills/project/20261102T000116.032120000` pointing to
-`dc7a84f1ae92d7f0bab3b91cc293882427591fad`, in main and the inspectable candidate.
-The ref's 19 retained inputs are byte-identical; changes are confined to project
-disposable code and DRILL_NOTES.md. Main's implementation was not replaced.
-The drill left its invoking HEAD/executable unchanged. Candidate report-only
-author commit `41bdb56` then retained the reviewed evidence with a clean checkout;
-executable source remains `fed193a`. Native input and verifier worktrees were
-removed, and claims are absent. Preserve the inspectable clone.
-The owner authorized scoped diagnosis and normal audited corrections for these
-project/app/workflow diagnostic contracts, then one fresh project drill after
-affected checks pass, on 2026-11-01. Preserve cases, assertions, ID coverage,
-main's pin and configured bounds; use eval_fix for wrong frozen evals.
-The failed report/ref and inspectable clone remain preserved unchanged.
-
-Scoped diagnosis selected two coherent changes. 0149 clarifies existing project
-compatibility contracts with already_satisfied: missing versus stale bases,
-unknown-module/create-file causes, history code prefixes, and module diagnostic
-paths. Main already supplies these; its runtime implementation is retained.
-0150 is an app eval_fix: recognize meaningful correct/remove/rename guidance,
-and validate the malformed-history fixture's C03/path without requiring the word
-"parse" or one error representation. Every behavioral assertion remains required.
-No workflow change or runtime replacement is currently needed.
-
-**0149 applied at `c4d34a2`**: all 127 own cases passed (`96a5351`), restricted
-audit passed all six items (`6596896`), and full implementation verification
-passed all 812 cases. Runtime source and interfaces were unchanged. Existing
-cases/assertions were retained or strengthened; null/empty-base variants reuse
-an existing case. Evidence remains in
-[0149's archived Provenance](../../changes/archive/0149-diagnostic-contracts.md).
-Its first worker invocation exited before edits with no detailed CLI cause;
-one bounded doctor probe passed both configured worker/auditor fixed replies.
-The same owning controller and held run then resumed successfully, with no
-model/effort change, fallback, verification-attempt reset or block.
-**0150 applied at `b1a6015`**: its eval_fix passed all 304 app cases (`a0fd015`),
-restricted audit passed APP-107/108/112/113 (`7eb3e4e`), and full implementation
-verification passed all 304 cases. Runtime source, interfaces and specs were
-unchanged. Evidence remains in
-[0150's archived Provenance](../../changes/archive/0150-diagnostic-eval-contracts.md).
-P03 rejected the first eval worker's premature phase edit before any worker
-commit. The normal remaining attempt restored the approved evals state and
-removed temporary manual provenance; final phase commits/provenance belong to
-the configured outside controller. Explicit worker phase control was added to
-Notes and aligned in SYSTEM between changes; no attempts or bounds were reset.
-
-Both scoped recovery changes are archived, with main clean and unclaimed.
-The updated candidate passed affected project/app normal/race tests and vet,
-NEW check and doctor, and NEW history/CI on the explicit append after `fed193a`,
-reusing the passing original `be35552..fed193a` prefix. This retains the standing
-history baseline and covers the whole history without repeating unaffected
-traversal. CI checked all current module evals/coverage, boundaries and hook
-doctor. Use fresh independent inputs for the one newly authorized project drill;
-the failed report/ref/history remain preserved. Stop at the next owner checkpoint.
-
-**Owner checkpoint — verification cost.** The initial worker full verify was
-interrupted at the 15-minute guardrail (outer next exit 130), preserving work
-and releasing its claim. The owner then approved scoped diagnosis with pin,
-configured bounds and frozen tests unchanged. Diagnosis found project took
-2.354 seconds; app, checks and runner took 258.332, 232.562 and 286.791 seconds
-in that interrupted pass. An unchanged app probe passed in 262.355 seconds;
-an identical cache probe took 1.901 seconds. Build probes did not justify a
-VCS-stamping change. No performance source, hook or frozen-test fix was made.
-
-Recovery kept the same run/impl phase and exact configured Codex worker; it used
-quick worker feedback and temporary `GODEBUG=gocachetest=1` diagnostics. The
-controller's uncached precheck completed at approximately **15m06s**, slightly
-over SYSTEM's cost guardrail, before its ordinary done step reran full checks
-from valid Go cache in approximately **12 seconds** and archived automatically.
-All 126 project, 291 app, 101 checks, 132 runner and 148 workflow cases passed.
-Cache logs show unchanged test binary IDs but different runtime-input IDs between
-standalone probes and controller hooks. The protected hook omits JUnit durations,
-so native Seconds fields are zero; stdout supplies uncached package timings.
-That measurement limitation remains recorded, with no automatic fix.
-
-The owner accepted this timing overrun and permanently raised SYSTEM's full
-implementation Verify process guardrail from 15 to **25 minutes** on 2026-11-01.
-Own Verify remains under 5 minutes. This changes no configured controller bound,
-pin, frozen test, enforcement or evidence requirement. Continue SP1–SP4 and stop
-at the next owner checkpoint.
-SP1/SP2 are complete; SP3 failed and SP4 completion remains open during
-owner-authorized diagnostic-contract recovery. Main's controller source/hash and
-fireweed.yaml are unchanged; completed reports/refs/inspectable clones and the
-unrelated worktree remain preserved. Only the earlier push through `dae9b28`
-was authorized; later work remains local.
+**SP4 — handoff.** Native input and verifier scratch worktrees were removed;
+main and candidate are clean and unclaimed, with no active worker/run. Main's
+separate NEW pin and fireweed.yaml bounds are unchanged. The unrelated worktree
+at `/Users/joel/.codex/worktrees/stub-handoff-guidance/fireweed` is preserved.
+The owner permanently raised SYSTEM's full implementation Verify process
+cost guardrail from 15 to 25 minutes on 2026-11-01; own Verify stays under five
+minutes and configured controller bounds were never changed. Only the earlier
+push through `dae9b28` was authorized; subsequent work remains local. No controller
+promotion, main regeneration replacement, other-module real drill or release occurred.
 
 ## Foundation proofs — FD1–FD4
 
@@ -460,8 +356,8 @@ completion remains open.
   because its worker searched other modules' internals. Use the reviewed NEW
   proof above. Preserve completed archives and evidence; repeat only checks or
   proofs invalidated by relevant changes, within the selected scope.
-- FD1–FD4 are completed gitstore/assets evidence. SP1–SP4 is the next planned
-  scope: stale authoring in project/app, then one project drill. Its dependency
+- FD1–FD4 and SP1–SP4 are completed evidence: gitstore/assets proofs, stale
+  authoring in project/app, then the passing project proof. Project's dependency
   inputs are contracts/gitstore/assets interfaces only; dependency internals and
   invoking candidate content are excluded. Only ordinary feature implementation
   belongs on main; independently rebuilt project code stays in the proof ref.
@@ -470,9 +366,7 @@ completion remains open.
 
 ## Next
 
-0146–0150 are applied and archived; affected candidate checks and CI passed.
-Run the one newly authorized fresh independent project drill.
-Keep main's pin,
-configured bounds, frozen tests and completed proofs unchanged; SYSTEM's
-full-verification process guardrail is 25 minutes. Stop at owner checkpoints.
-SP1–SP4 remains the selected incomplete milestone.
+SP1–SP4 is complete. No further slice is selected. Preserve the pinned controller,
+configured bounds, completed proofs and inspectable clones. Await owner selection
+before further implementation, real drills, controller promotion or deferred work.
+Full product completion and every later full-completion gate remain open.
