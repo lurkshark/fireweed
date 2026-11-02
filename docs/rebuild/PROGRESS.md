@@ -131,8 +131,22 @@ The drill left its invoking HEAD/executable unchanged. Candidate report-only
 author commit `41bdb56` then retained the reviewed evidence with a clean checkout;
 executable source remains `fed193a`. Native input and verifier worktrees were
 removed, and claims are absent. Preserve the inspectable clone.
-Stop for owner agreement before diagnostic-contract fixes, wrong-eval changes
-or another real drill. No automatic follow-up changes or attempt resets.
+The owner authorized scoped diagnosis and normal audited corrections for these
+project/app/workflow diagnostic contracts, then one fresh project drill after
+affected checks pass, on 2026-11-01. Preserve cases, assertions, ID coverage,
+main's pin and configured bounds; use eval_fix for wrong frozen evals.
+The failed report/ref and inspectable clone remain preserved unchanged.
+
+Scoped diagnosis selected two coherent changes. 0149 clarifies existing project
+compatibility contracts with already_satisfied: missing versus stale bases,
+unknown-module/create-file causes, history code prefixes, and module diagnostic
+paths. Main already supplies these; its runtime implementation is retained.
+0150 is an app eval_fix: recognize meaningful correct/remove/rename guidance,
+and validate the malformed-history fixture's C03/path without requiring the word
+"parse". Every behavioral assertion remains required. No workflow change or
+runtime replacement is currently needed. Finish normal restricted audits and
+full verification, reassess affected evidence, then use fresh independent inputs
+for the one newly authorized project drill. Stop at the next owner checkpoint.
 
 **Owner checkpoint — verification cost.** The initial worker full verify was
 interrupted at the 15-minute guardrail (outer next exit 130), preserving work
@@ -159,8 +173,8 @@ implementation Verify process guardrail from 15 to **25 minutes** on 2026-11-01.
 Own Verify remains under 5 minutes. This changes no configured controller bound,
 pin, frozen test, enforcement or evidence requirement. Continue SP1–SP4 and stop
 at the next owner checkpoint.
-SP1/SP2 are complete; SP3 failed and SP4 completion remains open at the
-diagnostic-contract owner checkpoint. Main's controller source/hash and
+SP1/SP2 are complete; SP3 failed and SP4 completion remains open during
+owner-authorized diagnostic-contract recovery. Main's controller source/hash and
 fireweed.yaml are unchanged; completed reports/refs/inspectable clones and the
 unrelated worktree remain preserved. Only the earlier push through `dae9b28`
 was authorized; later work remains local.
@@ -422,8 +436,9 @@ completion remains open.
 
 ## Next
 
-0146–0148 are applied and archived; candidate checks and CI passed. The independent
-project drill failed; stop for the diagnostic-contract owner decision above.
+0146–0148 are applied and archived; candidate checks and CI passed. Finish the
+owner-authorized 0149/0150 diagnostic-contract recovery, reassess affected checks,
+then run the one newly authorized fresh independent project drill.
 Keep main's pin,
 configured bounds, frozen tests and completed proofs unchanged; SYSTEM's
 full-verification process guardrail is 25 minutes. Stop at owner checkpoints.
