@@ -325,5 +325,5 @@ func decodeEnvelope(t *testing.T, output string) map[string]json.RawMessage {
 }
 
 func corrective(message string) bool {
-	return regexp.MustCompile(`(?i)\b(help|usage|valid|available|expected|required|requires|try|use|choose|provide|specify)\b`).MatchString(message)
+	return regexp.MustCompile(`(?i)\b(help|usage|valid|available|expected|required|requires|try|use|choose|provide|specify|correct|remove|rename)\b`).MatchString(message)
 }

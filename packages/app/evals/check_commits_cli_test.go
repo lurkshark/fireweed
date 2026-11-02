@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/lurkshark/fireweed/packages/checks"
+	"github.com/lurkshark/fireweed/packages/contracts"
 )
 
 const checkCommitsChange = "---\nmodule: alpha\n%s---\n\n## Motivation\nRecord a local change.\n\n## Interface\n\n## Added\n\n## Modified\n\n## Removed\n\n## Decisions\n\n## Notes\n"
@@ -265,8 +266,13 @@ func Test_APP_107_APP_108_CheckCommitsFailures(t *testing.T) {
 	cliCommit(t, codedRoot, "record malformed SPEC")
 	cliGit(t, codedRoot, "checkout", "HEAD^", "--", "packages/alpha/SPEC.md")
 	cliCommit(t, codedRoot, "restore current SPEC")
-	if _, err := checks.History(codedRoot, codedBase+"..HEAD"); err == nil || !strings.Contains(err.Error(), "parse packages/alpha/SPEC.md") {
-		t.Fatalf("coded operational fixture: want malformed recorded SPEC, got %v", err)
+	if _, err := checks.History(codedRoot, codedBase+"..HEAD"); err == nil {
+		t.Fatal("coded operational fixture: want malformed recorded SPEC")
+	} else {
+		code, _, coded := contracts.ErrorCode(err)
+		if !(coded && code == "C03" || strings.HasPrefix(err.Error(), "C03:")) || !strings.Contains(err.Error(), "packages/alpha/SPEC.md") {
+			t.Fatalf("coded operational fixture: want C03 for malformed recorded SPEC path, got %v", err)
+		}
 	}
 	status, output, stderr = runSavedAttemptApp(t, appNestedDir(t, codedRoot), "check-commits", codedBase+"..HEAD", "--json")
 	message = commandFailure(t, status, 1, output, stderr, true)

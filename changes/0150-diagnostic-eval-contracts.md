@@ -6,6 +6,8 @@ eval_fix:
     - APP-112
     - APP-113
 module: app
+phase: audit
+run: 20261102T023131-6d7ad8ebd7e0e1fc2fbde48e
 ---
 
 ## Motivation
@@ -43,3 +45,10 @@ stderr, cause and guidance assertions. Do not change application implementation
 or other modules. Use fireweed verify --quick for worker feedback; the controller
 owns full checks, restricted audit, phase commits and archive.
 
+Worker phase control: do not invoke done, start, release, next, run, abandon,
+git commit or git reset, and do not edit run/phase fields or Provenance. Use
+verify --quick for feedback and return. The outside owning controller alone
+performs every phase transition and commit.
+
+## Provenance
+- evals 2026-11-02T02:48:15.408863Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=304 failing=0 passing=304
