@@ -33,19 +33,19 @@ is proceeding below, and the independent project proof is pending.
 
 **Candidate checks — recovery.** Inspectable clone:
 `/private/tmp/fireweed-sp-project-8ko73j3j/candidate`. Current clean executable
-source/aligned base `fed193a3f8d2c86dab33aef69972543e41d45e9f`, version 0.1.0,
+source/aligned base `3f95497a164b045bf374da4a1498011bb0bc14c2`, version 0.1.0,
 `vcs.modified=false`, SHA-256
-`58d032f11b42868d8ff25d9d93d44e4b996269f06c693bb70a928089d19fa3ea`.
-This merges archived 0148 into the isolated candidate, retaining its input-only
-SYSTEM/AGENTS policy. Runtime source, interfaces, configuration, setup and hooks
-are unchanged from the earlier clean build at
-`5bacb4ab5817e8eaea38218e6a8bcf9354dce42c`; only RUN-040's fake-agent wait changed.
-Reuse passing full Go normal/race suites and vet for unaffected modules. Affected
-runner normal/race suites passed in 269.433/283.520 seconds; runner vet passed.
-The rebuilt candidate passed NEW check and all ten doctor --no-agent canaries.
-Actual candidate CLI fixtures remain valid for unchanged behavior: history
-recovery, fallback, mixed bases, file/index/ref effects, JSON and applicable exits;
-inspectable fixtures: `/private/tmp/fireweed-sp-cli-y4uu9x98`.
+`4e6f5adf84ca0bc3dcb28001d9623b51bb68bebc5a4d53d93dbbb6c479fd927f`.
+The isolated input-only SYSTEM/AGENTS policy is retained. Runtime source,
+interfaces, configuration, setup and hooks are byte-identical to prior verified
+`fed193a`; recovery changes only project specs/evals and app evals. Reuse passing
+full Go normal/race suites and vet for unaffected modules. Affected project
+normal/race passed in 3.681/5.394 seconds; app normal/race passed in
+268.242/300.839 seconds; affected vet passed. The rebuilt candidate passed NEW
+check and all ten doctor --no-agent canaries. Actual candidate CLI fixtures remain
+valid for unchanged behavior: history recovery, fallback, mixed bases,
+file/index/ref effects, JSON and applicable exits; inspectable fixtures:
+`/private/tmp/fireweed-sp-cli-y4uu9x98`.
 
 NEW check-commits passed without diagnostics over
 `be35552b706aa3000ff8f11306d129ff1d701b85..5bacb4ab5817e8eaea38218e6a8bcf9354dce42c`
@@ -56,7 +56,12 @@ and the 11-commit correction/alignment append
 Native CI with doctor enabled passed without diagnostics in 1065.946 seconds over
 the complete explicit range
 `be35552b706aa3000ff8f11306d129ff1d701b85..fed193a3f8d2c86dab33aef69972543e41d45e9f`.
-The following earlier failure is resolved by 0148 and this passing CI gate.
+Current check-commits passed the 14-commit append without diagnostics:
+`fed193a3f8d2c86dab33aef69972543e41d45e9f..3f95497a164b045bf374da4a1498011bb0bc14c2`.
+Native CI with hook doctor enabled is active over that same explicit append,
+checking every current module's evals/coverage and boundaries. The earlier
+passing baseline-to-fed193a prefix is reused; the standing baseline is unchanged.
+The following earlier failure is resolved by 0148 and its passing CI gate.
 CI with doctor enabled over the combined baseline-to-alignment range first
 reported E01 for existing `Test_RUN_040_EarlierBlockRetainsCauseBeforeTimeStop`.
 That case passed normal and race suites, then an unchanged focused replay passed
