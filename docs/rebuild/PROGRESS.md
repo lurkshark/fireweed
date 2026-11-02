@@ -143,10 +143,22 @@ unknown-module/create-file causes, history code prefixes, and module diagnostic
 paths. Main already supplies these; its runtime implementation is retained.
 0150 is an app eval_fix: recognize meaningful correct/remove/rename guidance,
 and validate the malformed-history fixture's C03/path without requiring the word
-"parse". Every behavioral assertion remains required. No workflow change or
-runtime replacement is currently needed. Finish normal restricted audits and
-full verification, reassess affected evidence, then use fresh independent inputs
-for the one newly authorized project drill. Stop at the next owner checkpoint.
+"parse" or one error representation. Every behavioral assertion remains required.
+No workflow change or runtime replacement is currently needed.
+
+**0149 applied at `c4d34a2`**: all 127 own cases passed (`96a5351`), restricted
+audit passed all six items (`6596896`), and full implementation verification
+passed all 812 cases. Runtime source and interfaces were unchanged. Existing
+cases/assertions were retained or strengthened; null/empty-base variants reuse
+an existing case. Evidence remains in
+[0149's archived Provenance](../../changes/archive/0149-diagnostic-contracts.md).
+Its first worker invocation exited before edits with no detailed CLI cause;
+one bounded doctor probe passed both configured worker/auditor fixed replies.
+The same owning controller and held run then resumed successfully, with no
+model/effort change, fallback, verification-attempt reset or block.
+Finish 0150's restricted audit and full verification, reassess affected evidence,
+then use fresh independent inputs for the one newly authorized project drill.
+Stop at the next owner checkpoint.
 
 **Owner checkpoint — verification cost.** The initial worker full verify was
 interrupted at the 15-minute guardrail (outer next exit 130), preserving work
@@ -436,8 +448,8 @@ completion remains open.
 
 ## Next
 
-0146–0148 are applied and archived; candidate checks and CI passed. Finish the
-owner-authorized 0149/0150 diagnostic-contract recovery, reassess affected checks,
+0146–0149 are applied and archived. Finish owner-authorized 0150's eval repair,
+reassess affected candidate checks,
 then run the one newly authorized fresh independent project drill.
 Keep main's pin,
 configured bounds, frozen tests and completed proofs unchanged; SYSTEM's

@@ -36,8 +36,9 @@ No API, runtime implementation, spec, configuration or module metadata changes.
 Keep the requirement for a real corrective action: extend corrective() only to
 recognize the meaningful verbs correct/remove/rename in addition to its existing
 terms. Keep the malformed recorded-SPEC fixture's failure assertion, checking its
-assigned C03 through public contracts.ErrorCode and its module path, instead of
-requiring the word "parse". Preserve all subsequent CLI exit, code, JSON,
+assigned C03 through public contracts.ErrorCode or a `C03:` error prefix, together
+with its module path, instead of requiring the word "parse". This fixture checks
+the cause, without imposing one error representation. Preserve all subsequent CLI exit, code, JSON,
 stderr, cause and guidance assertions. Do not change application implementation
 or other modules. Use fireweed verify --quick for worker feedback; the controller
 owns full checks, restricted audit, phase commits and archive.
