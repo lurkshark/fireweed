@@ -53,9 +53,10 @@ NEW check-commits passed without diagnostics over
 `5bacb4ab5817e8eaea38218e6a8bcf9354dce42c..f22a327811f0c188cbbbe239a544e27fda80ce5b`,
 and the 11-commit correction/alignment append
 `f22a327811f0c188cbbbe239a544e27fda80ce5b..fed193a3f8d2c86dab33aef69972543e41d45e9f`.
-Native CI with doctor enabled is now running over the complete explicit range
+Native CI with doctor enabled passed without diagnostics in 1065.946 seconds over
+the complete explicit range
 `be35552b706aa3000ff8f11306d129ff1d701b85..fed193a3f8d2c86dab33aef69972543e41d45e9f`.
-The following earlier failure is corrected by 0148 but still awaits this CI gate.
+The following earlier failure is resolved by 0148 and this passing CI gate.
 CI with doctor enabled over the combined baseline-to-alignment range first
 reported E01 for existing `Test_RUN_040_EarlierBlockRetainsCauseBeforeTimeStop`.
 That case passed normal and race suites, then an unchanged focused replay passed
@@ -95,7 +96,7 @@ assertion, covered ID, runtime source, interface, spec and configured bound was
 preserved. Evidence remains in
 [0148's archived Provenance](../../changes/archive/0148-run-time-stop-fixture.md).
 Main is clean and unclaimed. The candidate includes this correction; affected
-runner checks passed and full CI remains active. Reuse unaffected Go, CLI and
+runner checks and full CI passed. Reuse unaffected Go, CLI and
 foundation evidence. No real project drill has started; preflight selected 19
 regular retained inputs only. Candidate remains clean and unclaimed.
 
@@ -124,8 +125,8 @@ implementation Verify process guardrail from 15 to **25 minutes** on 2026-11-01.
 Own Verify remains under 5 minutes. This changes no configured controller bound,
 pin, frozen test, enforcement or evidence requirement. Continue SP1–SP4 and stop
 at the next owner checkpoint.
-SP1–SP4 remain incomplete: finish candidate CI before the
-project drill. Main's controller source/hash and
+SP1/SP2 are complete; SP3/SP4 remain incomplete pending the independent
+project drill and reviewed handoff. Main's controller source/hash and
 fireweed.yaml are unchanged; completed reports/refs/inspectable clones and the
 unrelated worktree remain preserved. Only the earlier push through `dae9b28`
 was authorized; later work remains local.
@@ -387,8 +388,8 @@ completion remains open.
 
 ## Next
 
-0146–0148 are applied and archived. Close the active candidate CI gate before
-the one real project drill. Inspect native inputs before reconstruction. Keep main's pin,
+0146–0148 are applied and archived; candidate checks and CI passed. Run the one
+real project drill and inspect its native inputs before reconstruction. Keep main's pin,
 configured bounds, frozen tests and completed proofs unchanged; SYSTEM's
 full-verification process guardrail is 25 minutes. Stop at owner checkpoints.
 SP1–SP4 remains the selected incomplete milestone.
