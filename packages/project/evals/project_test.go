@@ -1,6 +1,7 @@
 package evals_test
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -221,9 +222,34 @@ func Test_PRJ_025_PRJ_026_NewChangeInvalidArguments(t *testing.T) {
 	} {
 		t.Run(tc.id+"_"+tc.name, func(t *testing.T) {
 			root := fixture(t)
-			if _, err := project.NewChange(root, tc.module, tc.slug); err == nil {
+			_, err := project.NewChange(root, tc.module, tc.slug)
+			if err == nil {
 				t.Errorf("accepted module %q and slug %q", tc.module, tc.slug)
+			} else if tc.id == "PRJ-025" && (!strings.HasPrefix(err.Error(), "unknown module ") || !strings.Contains(err.Error(), tc.module)) {
+				t.Errorf("unknown module error = %q; want prefix and rejected module %q", err, tc.module)
 			}
 		})
+	}
+}
+
+func Test_PRJ_067_NewChangeBlockedQueuedPathPreservesCause(t *testing.T) {
+	root := fixture(t)
+	const queuedPath = "changes/0001-blocked.md"
+	if err := os.MkdirAll(filepath.Join(root, filepath.FromSlash(queuedPath)), 0755); err != nil {
+		t.Fatal(err)
+	}
+	path, err := project.NewChange(root, "alpha", "blocked")
+	if err == nil {
+		t.Fatal("NewChange accepted a queued path occupied by a directory")
+	}
+	if path != "" {
+		t.Errorf("rejected NewChange path = %q; want empty", path)
+	}
+	if !strings.HasPrefix(err.Error(), "create "+queuedPath+":") {
+		t.Errorf("NewChange error = %q; want repository-relative create prefix", err)
+	}
+	var pathErr *os.PathError
+	if !errors.As(err, &pathErr) || pathErr.Path != filepath.Join(root, filepath.FromSlash(queuedPath)) || pathErr.Err == nil {
+		t.Errorf("NewChange error = %v; want retained filesystem cause for %s", err, queuedPath)
 	}
 }

@@ -4,14 +4,16 @@ already_satisfied:
     - PRJ-025
     - PRJ-055
     - PRJ-056
-    - new:create-change-cause
-    - new:document-diagnostic-path
+    - PRJ-067
+    - PRJ-068
 bases:
     PRJ-015: 12d385ec
     PRJ-025: e5686358
     PRJ-055: ab809b96
     PRJ-056: adc7f8db
 module: project
+phase: audit
+run: 20261102T021403-224e6f0fcfb6b2f14f07be9d
 ---
 
 ## Motivation
@@ -32,12 +34,12 @@ No public signature, type, configuration or module metadata changes.
 
 ## Added
 
-### new:create-change-cause
+### PRJ-067
 When NewChange cannot create its queued file, it MUST return an error beginning
 with `create <queued path>:` and retaining the filesystem cause, where the queued
 path is repository-relative.
 
-### new:document-diagnostic-path
+### PRJ-068
 When Check rejects syntax or duplicate identities in a module SPEC.md, the
 failure diagnostic MUST identify that document's repository-relative path in
 Diagnostic.Path.
@@ -80,3 +82,5 @@ All listed items are already satisfied by main. No runtime implementation change
 or interface change is intended. Use fireweed verify --quick for worker feedback;
 the controller owns full checks, restricted audit, phase commits and archive.
 
+## Provenance
+- evals 2026-11-02T02:21:52.817484Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=127 failing=0 passing=127

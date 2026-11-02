@@ -380,6 +380,29 @@ func Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics(t *testing.T) {
 					t.Errorf("Check did not report C08 for Removed entry with %s (%s): %#v", tc.name, tc.cause, removedDiagnostics)
 				}
 			}
+			if tc.name == "missing_base" {
+				for _, variant := range []struct{ name, front string }{
+					{"null", "bases:\n  ALP-001: null\n"},
+					{"empty_string", "bases:\n  ALP-001: \"\"\n"},
+				} {
+					for _, edit := range []string{"Modified", "Removed"} {
+						modified, removed := "### ALP-001\nAlpha MUST change.\n", ""
+						if edit == "Removed" {
+							modified, removed = "", "### ALP-001\n"
+						}
+						queued(t, root, "0001-check.md", variant.front, "Needed.\n", "", modified, removed)
+						found := false
+						for _, diagnostic := range project.Check(root) {
+							if !diagnostic.Warning && diagnostic.Code == "C08" && strings.Contains(diagnostic.Message, "missing base for ALP-001") {
+								found = true
+							}
+						}
+						if !found {
+							t.Errorf("Check did not report C08 missing base for %s with %s entry", edit, variant.name)
+						}
+					}
+				}
+			}
 			if tc.name == "nonnormative_change" || tc.name == "invalid_review_tag" {
 				front, added, modified, want := "", "", "", ""
 				code := "C04"

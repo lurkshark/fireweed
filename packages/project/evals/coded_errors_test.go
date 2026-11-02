@@ -41,7 +41,7 @@ func Test_PRJ_058_MissingPendingChangeHasSubject(t *testing.T) {
 	}
 }
 
-func Test_PRJ_059_LoadPreservesModuleParseCode(t *testing.T) {
+func Test_PRJ_059_PRJ_068_LoadPreservesModuleParseCodeAndCheckPath(t *testing.T) {
 	for _, tc := range []struct {
 		name, spec, code string
 	}{
@@ -51,13 +51,23 @@ func Test_PRJ_059_LoadPreservesModuleParseCode(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			root := fixture(t)
-			put(t, root, "packages/alpha/SPEC.md", tc.spec)
+			const path = "packages/alpha/SPEC.md"
+			put(t, root, path, tc.spec)
 			_, err := project.Load(root)
 			if err == nil {
 				t.Fatal("Load accepted malformed module SPEC.md")
 			}
 			if code, _, ok := contracts.ErrorCode(err); !ok || code != tc.code {
 				t.Errorf("Load error code = (%q, %v); want (%s, true): %v", code, ok, tc.code, err)
+			}
+			found := false
+			for _, diagnostic := range project.Check(root) {
+				if !diagnostic.Warning && diagnostic.Code == tc.code && diagnostic.Path == path {
+					found = true
+				}
+			}
+			if !found {
+				t.Errorf("Check diagnostics = %#v; want %s identifying %s", project.Check(root), tc.code, path)
 			}
 		})
 	}

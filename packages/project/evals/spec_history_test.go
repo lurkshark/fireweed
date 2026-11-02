@@ -186,8 +186,8 @@ func Test_PRJ_055_SpecHistoryLookupNamesAndRemovedCurrentSpec(t *testing.T) {
 		{"alpha", "BET-001", "BET-001"},
 	} {
 		_, err := project.SpecHistory(root, tc.module, tc.id)
-		if err == nil || !strings.HasPrefix(err.Error(), "U02") || !strings.Contains(err.Error(), tc.rejected) {
-			t.Errorf("lookup module %q ID %q = %v; want U02 naming %q", tc.module, tc.id, err, tc.rejected)
+		if err == nil || !strings.HasPrefix(err.Error(), "U02: ") || !strings.Contains(err.Error(), tc.rejected) {
+			t.Errorf("lookup module %q ID %q = %v; want U02: naming %q", tc.module, tc.id, err, tc.rejected)
 		}
 	}
 }
@@ -207,8 +207,8 @@ func Test_PRJ_056_SpecHistoryConfigurationAndArchiveSyntaxErrors(t *testing.T) {
 				put(t, root, "fireweed.yaml", tc.config)
 			}
 			_, err := project.SpecHistory(root, "alpha", "")
-			if err == nil || !strings.HasPrefix(err.Error(), "C01") {
-				t.Errorf("invalid config = %v; want C01", err)
+			if err == nil || !strings.HasPrefix(err.Error(), "C01: ") {
+				t.Errorf("invalid config = %v; want C01: prefix", err)
 			}
 		})
 	}
@@ -222,8 +222,8 @@ func Test_PRJ_056_SpecHistoryConfigurationAndArchiveSyntaxErrors(t *testing.T) {
 			path := "changes/archive/0001-invalid.md"
 			put(t, root, path, tc.document)
 			_, err := project.SpecHistory(root, "alpha", "ALP-002")
-			if err == nil || !strings.HasPrefix(err.Error(), "C03") || !strings.Contains(err.Error(), path) {
-				t.Errorf("malformed archive = %v; want C03 naming %s", err, path)
+			if err == nil || !strings.HasPrefix(err.Error(), "C03: ") || !strings.Contains(err.Error(), path) {
+				t.Errorf("malformed archive = %v; want C03: naming %s", err, path)
 			}
 		})
 	}
