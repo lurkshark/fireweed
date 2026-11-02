@@ -97,8 +97,42 @@ preserved. Evidence remains in
 [0148's archived Provenance](../../changes/archive/0148-run-time-stop-fixture.md).
 Main is clean and unclaimed. The candidate includes this correction; affected
 runner checks and full CI passed. Reuse unaffected Go, CLI and
-foundation evidence. No real project drill has started; preflight selected 19
-regular retained inputs only. Candidate remains clean and unclaimed.
+foundation evidence. The real project drill result and owner checkpoint follow.
+
+**SP3 — independent project drill failed; owner checkpoint.** The one authorized
+native drill ran from clean `fed193a3f8d2c86dab33aef69972543e41d45e9f` with the
+recorded candidate executable, exact configured real worker and unchanged bounds.
+Live inspection confirmed 19 byte-identical retained inputs, fresh one-commit Git
+metadata with no remotes/alternates, no supplied old code/binaries/manifests or
+dependent internals, an empty disposable target in the separate verifier, and an
+exact copied invoking controller. Review covered all 50 shell commands, their
+complete script bodies and recorded patch operations across both configured
+attempts. Reads stayed within supplied inputs/new files; no old implementation,
+outside checkout, saved attempt, binary or invoker-content oracle was used.
+
+The native result is **fail** after its configured retry, in 2023.229 seconds.
+It retains **795 passing / 16 failing testcase entries**: project 126/0,
+app 289/15, checks 101/0, runner 132/0 and workflow 147/1. Parent/subtest failures
+are separate native entries. Project's own evals pass, but dependent diagnostic
+contracts do not: cause wording/corrective guidance, show-history propagation of
+U02/C01/C03 and exit status, and a blank base being classified stale instead of
+missing. The CLI names only the first failing case per affected module; the
+native report retains every failure. No contradicted Decision was identified.
+The agent's no-manifest note is the intended input-only verification limitation;
+the actual failed dependent evals, not that limitation, prevent a passing proof.
+
+Retain the native report verbatim at
+[.fireweed/drills/project.md](../../.fireweed/drills/project.md), with rebuilt ref
+`refs/fireweed/drills/project/20261102T000116.032120000` pointing to
+`dc7a84f1ae92d7f0bab3b91cc293882427591fad`, in main and the inspectable candidate.
+The ref's 19 retained inputs are byte-identical; changes are confined to project
+disposable code and DRILL_NOTES.md. Main's implementation was not replaced.
+The drill left its invoking HEAD/executable unchanged. Candidate report-only
+author commit `41bdb56` then retained the reviewed evidence with a clean checkout;
+executable source remains `fed193a`. Native input and verifier worktrees were
+removed, and claims are absent. Preserve the inspectable clone.
+Stop for owner agreement before diagnostic-contract fixes, wrong-eval changes
+or another real drill. No automatic follow-up changes or attempt resets.
 
 **Owner checkpoint — verification cost.** The initial worker full verify was
 interrupted at the 15-minute guardrail (outer next exit 130), preserving work
@@ -125,8 +159,8 @@ implementation Verify process guardrail from 15 to **25 minutes** on 2026-11-01.
 Own Verify remains under 5 minutes. This changes no configured controller bound,
 pin, frozen test, enforcement or evidence requirement. Continue SP1–SP4 and stop
 at the next owner checkpoint.
-SP1/SP2 are complete; SP3/SP4 remain incomplete pending the independent
-project drill and reviewed handoff. Main's controller source/hash and
+SP1/SP2 are complete; SP3 failed and SP4 completion remains open at the
+diagnostic-contract owner checkpoint. Main's controller source/hash and
 fireweed.yaml are unchanged; completed reports/refs/inspectable clones and the
 unrelated worktree remain preserved. Only the earlier push through `dae9b28`
 was authorized; later work remains local.
@@ -388,8 +422,9 @@ completion remains open.
 
 ## Next
 
-0146–0148 are applied and archived; candidate checks and CI passed. Run the one
-real project drill and inspect its native inputs before reconstruction. Keep main's pin,
+0146–0148 are applied and archived; candidate checks and CI passed. The independent
+project drill failed; stop for the diagnostic-contract owner decision above.
+Keep main's pin,
 configured bounds, frozen tests and completed proofs unchanged; SYSTEM's
 full-verification process guardrail is 25 minutes. Stop at owner checkpoints.
 SP1–SP4 remains the selected incomplete milestone.
