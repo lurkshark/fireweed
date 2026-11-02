@@ -57,7 +57,10 @@ Check MUST reject a change that uses the same edit identity more than once acros
 Check MUST reject a pending change that references a handle absent from that change's Added entries with diagnostic C09.
 
 ### PRJ-015
-Check MUST reject Modified or Removed entries whose bases hash is missing or differs from the preceding projected spec's canonical hash with diagnostic C08.
+Check MUST reject Modified or Removed entries whose bases hash is missing or
+differs from the preceding projected spec's canonical hash with diagnostic C08.
+An absent, null or empty-string entry MUST report `missing base for <ID>`;
+a nonempty differing hash MUST report `stale base for <ID>`.
 
 ### PRJ-016
 Check MUST reject Modified or Removed IDs absent from the projection preceding the change with diagnostic C08.
@@ -87,7 +90,8 @@ NewChange MUST use the next number after the largest pending or archived change 
 NewChange MUST reject a slug already present in the pending queue or archive without overwriting existing files.
 
 ### PRJ-025
-NewChange MUST reject an unknown target module.
+NewChange MUST reject an unknown target module with an error beginning
+`unknown module ` and naming the rejected module.
 
 ### PRJ-026
 NewChange MUST reject an empty slug or a slug containing characters other than lowercase letters, digits and hyphens.
@@ -181,13 +185,16 @@ With an empty ID filter, SpecHistory MUST return each target-module archive cont
 A module with no matching archives MUST return an empty slice.
 
 ### PRJ-055
-An unknown module or an ID absent from both current module Specs and matching archive edits MUST return U02 with the rejected name.
+An unknown module or an ID absent from both current module Specs and matching
+archive edits MUST return an error beginning `U02: ` and naming the rejected name.
 A current ID with no matching archive edits MUST return an empty slice.
-An ID in matching archive edits MUST remain queryable when it no longer exists in current Specs.
+An ID in matching archive edits MUST remain queryable when it no longer exists
+in current Specs.
 
 ### PRJ-056
-Missing or malformed fireweed.yaml MUST produce a C01 error.
-Malformed archived change documents or malformed Added/Modified item syntax MUST produce a C03 error identifying the archive path.
+Missing or malformed fireweed.yaml MUST produce an error beginning `C01: `.
+Malformed archived change documents or malformed Added/Modified item syntax
+MUST produce an error beginning `C03: ` and identifying the archive path.
 
 ### PRJ-057
 Stamp MUST return an error whose contracts ErrorCode is C08 when the change's bases frontmatter is not a mapping.
@@ -224,6 +231,16 @@ StampMissing MUST reject a nonmapping bases value or an edited ID absent from th
 ### PRJ-066
 StaleSpecs and StampMissing MUST accept a unique pending slug, queued basename or repository-relative queued path.
 An unknown selector MUST return U02 naming the requested change; an ambiguous slug MUST return C13.
+
+### PRJ-067
+When NewChange cannot create its queued file, it MUST return an error beginning
+with `create <queued path>:` and retaining the filesystem cause, where the queued
+path is repository-relative.
+
+### PRJ-068
+When Check rejects syntax or duplicate identities in a module SPEC.md, the
+failure diagnostic MUST identify that document's repository-relative path in
+Diagnostic.Path.
 
 ## Decisions
 
