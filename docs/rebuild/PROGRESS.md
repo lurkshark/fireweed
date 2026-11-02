@@ -58,8 +58,9 @@ the complete explicit range
 `be35552b706aa3000ff8f11306d129ff1d701b85..fed193a3f8d2c86dab33aef69972543e41d45e9f`.
 Current check-commits passed the 14-commit append without diagnostics:
 `fed193a3f8d2c86dab33aef69972543e41d45e9f..3f95497a164b045bf374da4a1498011bb0bc14c2`.
-Native CI with hook doctor enabled is active over that same explicit append,
-checking every current module's evals/coverage and boundaries. The earlier
+Native CI with hook doctor enabled passed without diagnostics in 505.103 seconds
+over that same explicit append, checking every current module's evals/coverage
+and boundaries. The earlier
 passing baseline-to-fed193a prefix is reused; the standing baseline is unchanged.
 The following earlier failure is resolved by 0148 and its passing CI gate.
 CI with doctor enabled over the combined baseline-to-alignment range first
@@ -173,14 +174,13 @@ the configured outside controller. Explicit worker phase control was added to
 Notes and aligned in SYSTEM between changes; no attempts or bounds were reset.
 
 Both scoped recovery changes are archived, with main clean and unclaimed.
-Update the isolated candidate, preserving its failed report/ref/history. Recheck
-affected project/app normal/race tests and vet, NEW check and doctor, then NEW
-history/CI on the explicit append after `fed193a`, reusing the passing original
-`be35552..fed193a` prefix. This retains the standing history baseline and covers
-the whole history without repeating unaffected traversal. CI still checks all
-current module evals/coverage, boundaries and hook doctor. Identify the clean
-updated executable, then use fresh independent inputs for the one newly
-authorized project drill. Stop at the next owner checkpoint.
+The updated candidate passed affected project/app normal/race tests and vet,
+NEW check and doctor, and NEW history/CI on the explicit append after `fed193a`,
+reusing the passing original `be35552..fed193a` prefix. This retains the standing
+history baseline and covers the whole history without repeating unaffected
+traversal. CI checked all current module evals/coverage, boundaries and hook
+doctor. Use fresh independent inputs for the one newly authorized project drill;
+the failed report/ref/history remain preserved. Stop at the next owner checkpoint.
 
 **Owner checkpoint — verification cost.** The initial worker full verify was
 interrupted at the 15-minute guardrail (outer next exit 130), preserving work
@@ -470,8 +470,8 @@ completion remains open.
 
 ## Next
 
-0146–0150 are applied and archived. Reassess affected candidate checks,
-then run the one newly authorized fresh independent project drill.
+0146–0150 are applied and archived; affected candidate checks and CI passed.
+Run the one newly authorized fresh independent project drill.
 Keep main's pin,
 configured bounds, frozen tests and completed proofs unchanged; SYSTEM's
 full-verification process guardrail is 25 minutes. Stop at owner checkpoints.
