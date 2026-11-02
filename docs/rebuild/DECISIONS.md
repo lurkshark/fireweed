@@ -59,8 +59,8 @@ remains a property of the diagnostic. D006's existing assignments remain unchang
 
 The regenerate lifecycle feature assigns P10 to the warning that its module
 lacks a passing drill dated after the latest applied implementation Provenance.
-This allocation grants no drill authorization; the current scope is in PLAN
-and PROGRESS.
+This allocation grants no drill authorization; PROGRESS records current
+status and GOAL links the planned milestone.
 
 ## D009 — Early core-loop cutover milestone (owner, 2026-10-30)
 

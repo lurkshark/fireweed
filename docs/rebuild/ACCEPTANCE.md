@@ -1,7 +1,8 @@
 # Acceptance
 
-The full inventory of design obligations, the early core-cutover gates, and
-the later gates that end the rebuild.
+The ordered milestone plan and acceptance gates, with the full inventory of
+design obligations. Completed criteria are historical evidence, not a queue to
+repeat. Execute only the separately owner-authorized milestone.
 R01–R29 are planning labels, not another spec layer. The design defines the
 obligations; SYSTEM.md bounds how they are implemented and verified. Evidence is
 the archived changes, their evals and actual NEW runs; link it here only when a
@@ -43,8 +44,11 @@ gate closes. Current status is in [PROGRESS.md](PROGRESS.md).
 
 ## Required command inventory for full completion
 
-The early milestone uses the scoped command list below. Full completion must
-exercise NEW beyond public function tests: every design command and documented option, read-command JSON, and representative invalid-input and exit behavior. Combine related checks in existing fixtures; no Cartesian product of commands, options, errors, recipes or platforms is required unless the design specifies the interaction. Old-controller syntax adds no requirements.
+Full completion must exercise NEW beyond public function tests: every design
+command and documented option, read-command JSON, and representative invalid-input
+and exit behavior. Combine related checks in existing fixtures; no Cartesian
+product of commands, options, errors, recipes or platforms is required unless the
+design specifies the interaction. Old-controller syntax adds no requirements.
 
 ```text
 help, version
@@ -137,7 +141,8 @@ changes invalidate it; these criteria are not a queue to execute again.
 Owner-selected on 2026-10-31; **DR1–DR4 completed** with evidence in
 [PROGRESS.md](PROGRESS.md), including the owner-approved contracts clarifications.
 These execution gates derive from the design's Regeneration section and R16.
-PLAN orders the work; SYSTEM's bounds and owner checkpoints apply throughout.
+The gates below record the completed order; SYSTEM's bounds and owner
+checkpoints apply throughout.
 
 1. **DR1 — Complete the drill slice.** Implement runner orchestration and the
    app's native `drill <module>` command through the unchanged main NEW pin.
@@ -185,8 +190,9 @@ Owner-selected and completed on 2026-11-01; **FD1–FD4 passed** with evidence i
 [PROGRESS.md](PROGRESS.md). Gitstore ran first, then assets, one at a time.
 Both depend only on contracts. These gates derive from
 the design's Regeneration section, R16 and full gate 7; they add no product scope.
-EC1–EC6 and DR1–DR4 remain completed evidence. PLAN orders execution and SYSTEM
-preserves the controller pin, configured bounds and owner checkpoints.
+EC1–EC6 and DR1–DR4 remain completed evidence. The gates below record the
+completed order; SYSTEM preserves the controller pin, configured bounds and
+owner checkpoints.
 
 1. **FD1 — Candidate and independence preflight.** Identify the clean isolated
    NEW candidate's executable/source/hash and align clone/scratch instructions,
@@ -228,7 +234,7 @@ Passing FD1–FD4 advances full gate 7; the later full-completion gates remain.
 ## Completed milestone — Stale-change authoring and project proof (SP1–SP4)
 
 Owner-selected and completed on 2026-11-01; **SP1–SP4 passed**. PROGRESS records
-the reviewed evidence; PLAN and these gates retain the completed execution scope.
+the reviewed evidence; these gates retain the completed execution scope.
 These gates derive from the design's Stale changes,
 Fixing a stale change and Regeneration clauses, R28/R16 and full gates 5/7.
 They add no product scope. EC1–EC6, DR1–DR4 and FD1–FD4 remain completed evidence.
@@ -324,7 +330,8 @@ bounds and SYSTEM's process/owner checkpoints remain unchanged.
    implementations, full manifests and hooks outside reconstruction inputs in
    the separate verifier. Exclude old target disposable code/data, history,
    saved attempts, binaries, bootstrap and other-module internals; never query
-   invoker content as an oracle. Use the exact configured real agent/model/
+   invoker content as an oracle. Input Git must expose no old history,
+   remotes or alternates. Use the exact configured real agent/model/
    effort and unchanged bounds. Checks and every transitive dependent
    (workflow, runner, app) must pass enforced evals and coverage with retained
    inputs byte-unchanged. Review every command, full script, incremental patch
@@ -349,6 +356,9 @@ promotion, workflow/runner/app real drill, gc/migrate, additional recipes,
 compatibility/file-format migration, unrelated warning cleanup, delivery or push
 is included. Later drill order is workflow → runner → app, each owner-selected.
 Remaining drills alone do not complete the product; all full gates below remain.
+Later owner-selected work includes real regenerate validation, gc/migrate,
+additional recipes, version/file-format migration and delivery. Coordinate later
+behavior changes with affected proofs and repeat only evidence they invalidate.
 
 ## Full-completion gates (after early cutover)
 
