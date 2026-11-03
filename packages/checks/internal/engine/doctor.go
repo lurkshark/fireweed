@@ -136,7 +136,7 @@ func Doctor(ctx context.Context, request model.DoctorRequest) model.DoctorReport
 	}
 	d.probeHooks()
 	if !request.NoAgent {
-		d.probeAgents(repo.CommonDir)
+		d.probeAgents(request.Root, repo.CommonDir)
 	}
 	return d.report
 }
@@ -774,7 +774,22 @@ func agentArgs(command any, values map[string]string) ([]string, error) {
 		return nil, fmt.Errorf("invalid agent command %T", command)
 	}
 }
-func (d *doctorState) probeAgents(common string) {
+func (d *doctorState) probeAgents(projectRoot, common string) {
+	projectRoot, err := filepath.Abs(projectRoot)
+	if err != nil {
+		d.issue("C15", "doctor agent log root: "+err.Error(), "", false)
+		return
+	}
+	run, err := randomHex(16)
+	if err != nil {
+		d.issue("C15", "doctor agent log run: "+err.Error(), "", false)
+		return
+	}
+	logDir := filepath.Join(projectRoot, ".fireweed", "runs", run)
+	if err := os.MkdirAll(logDir, 0755); err != nil {
+		d.issue("C15", "doctor agent log directory: "+err.Error(), "", false)
+		return
+	}
 	agent := mapValue(d.snapshot.Config, "agent")
 	audit := mapValue(d.snapshot.Config, "audit")
 	worker := agent["command"]
@@ -787,10 +802,10 @@ func (d *doctorState) probeAgents(common string) {
 		name    string
 		command any
 	}{{"worker", worker}, {"audit", auditCommand}} {
-		d.probeAgent(v.name, v.command, agent["wrap"], common)
+		d.probeAgent(v.name, v.command, agent["wrap"], common, logDir)
 	}
 }
-func (d *doctorState) probeAgent(name string, command, wrap any, common string) {
+func (d *doctorState) probeAgent(name string, command, wrap any, common, logDir string) {
 	values := map[string]string{"prompt": "Reply with exactly " + doctorReply, "git_common_dir": common}
 	args, err := agentArgs(command, values)
 	display := fmt.Sprint(command)
@@ -806,18 +821,34 @@ func (d *doctorState) probeAgent(name string, command, wrap any, common string) 
 		d.issue("C15", name+" command "+display+": "+err.Error(), "", false)
 		return
 	}
+	logPath := filepath.Join(logDir, "doctor-"+name+"-1.log")
+	logFile, err := os.OpenFile(logPath, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0644)
+	if err != nil {
+		d.check(name, "", false, "agent log: "+err.Error())
+		d.issue("C15", name+" agent log: "+err.Error(), "", false)
+		return
+	}
 	timeout := d.req.Timeout
 	if timeout <= 0 {
 		timeout = 3 * time.Minute
 	}
 	p, e := gitstore.Run(d.ctx, gitstore.Request{Args: args, Dir: d.root, Timeout: timeout})
+	logErr := errors.Join(writeDoctorProbeLog(logFile, p.Stdout, p.Stderr), logFile.Close())
+	detailLog := "; log: " + logPath
 	tail := finalLines(p.Stdout+"\n"+p.Stderr, 20)
 	ok := e == nil && p.ExitCode == 0 && strings.Contains(p.Stdout+p.Stderr, doctorReply)
+	if logErr != nil {
+		d.issue("C15", name+" agent log "+logPath+": "+logErr.Error(), "", false)
+	}
 	if ok {
-		d.check(name, "", true, "fixed reply received")
+		detail := "fixed reply received" + detailLog
+		if logErr != nil {
+			detail += "; log error: " + logErr.Error()
+		}
+		d.check(name, "", logErr == nil, detail)
 		return
 	}
-	d.check(name, "", false, fmt.Sprintf("exit %d: %v", p.ExitCode, e))
+	d.check(name, "", false, fmt.Sprintf("exit %d: %v%s", p.ExitCode, e, detailLog))
 	kind := "command failure"
 	for _, pattern := range doctorStringList(d.snapshot.Config["limit_patterns"]) {
 		if pattern != "" && strings.Contains(strings.ToLower(tail), strings.ToLower(pattern)) {
@@ -826,6 +857,22 @@ func (d *doctorState) probeAgent(name string, command, wrap any, common string) 
 		}
 	}
 	d.issue("C15", fmt.Sprintf("%s %s: %s; exit %d; %v\n%s", name, kind, display, p.ExitCode, e, tail), "", false)
+}
+func writeDoctorProbeLog(file *os.File, stdout, stderr string) error {
+	if _, err := fmt.Fprintf(file, "stdout %d bytes\n", len(stdout)); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(file, stdout); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(file, "\nstderr %d bytes\n", len(stderr)); err != nil {
+		return err
+	}
+	if _, err := io.WriteString(file, stderr); err != nil {
+		return err
+	}
+	_, err := io.WriteString(file, "\n")
+	return err
 }
 func finalLines(s string, n int) string {
 	lines := strings.Split(strings.TrimRight(s, "\n"), "\n")
