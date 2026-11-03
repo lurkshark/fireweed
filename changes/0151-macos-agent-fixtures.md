@@ -30,7 +30,7 @@ eval_fix:
     - APP-141
     - APP-142
 module: app
-phase: audit
+phase: impl
 run: 20261103T040710-7a84b102fdee95e56d35cb99
 ---
 
@@ -67,3 +67,7 @@ implementation verification. Workers verify and return; only the outside
 owning controller may advance phases, commit or archive.
 ## Provenance
 - evals 2026-11-03T04:17:39.505831Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=304 failing=0 passing=304
+- audit 2026-11-03T04:18:23.164423Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+## Audit
+
+No findings; checked APP-062, APP-063, APP-064, APP-065, APP-066, APP-067, APP-074, APP-075, APP-076, APP-077, APP-078, APP-079, APP-080, APP-081, APP-082, APP-083, APP-084, APP-085, APP-086, APP-089, APP-090, APP-136, APP-137, APP-138, APP-139, APP-140, APP-141, APP-142
