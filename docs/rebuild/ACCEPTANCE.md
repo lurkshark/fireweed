@@ -5,8 +5,9 @@ design obligations. Completed criteria are historical evidence, not a queue to
 repeat. Execute only the separately owner-authorized milestone.
 R01–R29 are planning labels, not another spec layer. The design defines the
 obligations; SYSTEM.md bounds how they are implemented and verified. Evidence is
-the archived changes, their evals and actual NEW runs; link it here only when a
-gate closes. Current status is in [PROGRESS.md](PROGRESS.md).
+committed archived changes with Provenance and native drill reports in
+.fireweed/drills/; link it here only when a gate closes. Current status is in
+[PROGRESS.md](PROGRESS.md).
 
 ## Requirement inventory
 
@@ -75,232 +76,142 @@ drill <module>
 gc, migrate, agents-md --write
 ```
 
-## Completed early Go core-loop cutover — EC1–EC6
+## Current milestone — Stabilization and cleanup
 
-Selected on 2026-10-30 and completed on 2026-10-31. The historical criteria below
-are preserved; PROGRESS records their passing evidence and the EC6 handoff.
-This authorized Go/current-format core-loop adoption before the deferred product
-surface, without relaxing approval/P07, zones, fail-first, audits or bounds.
-It included no real drill/regeneration proof. Reuse its evidence unless relevant
-changes invalidate it; these criteria are not a queue to execute again.
+Owner-selected on **2026-11-02**. Execute A → B → C1–C8 in order; one normal
+product change at a time. This documentation update prepares the plan only;
+A–C execution remains pending. CK1–CK4 are deferred. The requirement inventory,
+command inventory and every full-completion gate remain required.
 
-1. **EC1 — Complete prerequisites.** Finish the preceding 0132/0133 diagnostic
-   queue, integrate this branch's authored files onto current main while its run
-   is stopped, then apply 0134–0138 through bootstrap with normal lifecycle
-   evidence. All five are required, including the guidance improvements.
-   Resolve every blocked cutover change; require a clean execution checkout and
-   no shared claims before handoff. A brief gap between claims in a live run
-   is not an integration/promotion window.
-2. **EC2 — Focused core review.** Review the scoped commands and safeguards once
-   against the design, current specs and existing CLI/public evals. Check fail-first,
-   immutable metadata/zones, independent audit input isolation and Audit-only
-   import, approval/P07, saved-attempt recovery, agent commit recovery and
-   clean time/usage stops. Confirm 0135/0136 carry JUnit-only dependent assertions
-   into bounded retry feedback. Record concrete unresolved findings and known
-   intentional bootstrap/NEW differences briefly, then review only affected
-   fixes.
-3. **EC3 — Fresh-checkout checks.** At the exact candidate commit, build NEW and
-   pass `go test ./...`, `go test -race ./...` and `go vet ./...` using
-   GOCACHE=/tmp/fireweed-rebuild-cache. Run controller and NEW `check`,
-   `doctor --no-agent`, `check-commits <baseline>..HEAD` and `ci <baseline>..HEAD`
-   over a recorded explicit nonempty range using PROGRESS's history baseline.
-   CI includes hook doctor checks; the real-worker gate proves agent access.
-   Resolve errors and explain warnings without treating zero warnings as a gate.
-   These checks must use clean candidate trees, not another worker's live files.
-4. **EC4 — One reference lifecycle smoke.** Run an equivalent ordinary spec-change
-   fixture through bootstrap and NEW. Compare exit codes, JSON envelope shape,
-   phase/commit outcomes and resulting ref shape, allowing generated IDs/times
-   and commit hashes to differ. Reuse existing deterministic hook/fake-agent
-   fixtures. Record intentional differences in DECISIONS; reference bugs do not
-   define acceptance. Per-edge-case equivalence is not required.
-5. **EC5 — Real-worker self-hosting without a drill.** In an isolated clone of
-   the candidate, configure instructions, setup and worker PATH explicitly for
-   NEW and make NEW govern one small real spec change through failing evals,
-   a separate restricted audit, implementation, full verification and archive.
-   Use the configured Codex model/effort and normal approval; inspect phase
-   commits, Provenance, NEW CI and temporary-audit cleanup. Pin executable paths
-   and identify the binary actually invoked so bootstrap cannot supply a false
-   pass. Retain inspectable clone evidence until the concise handoff is recorded.
-   Missing real-worker/auditor access blocks this gate. No drill is required.
-6. **EC6 — Promote separately from the subject.** Only after EC1–EC5 pass and
-   every repository run has returned with no shared claims, install a verified
-   copy of NEW as the pinned controller (intended path
-   `/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed`). Keep mutable
-   `bin/fireweed` as the product subject and retain the existing bootstrap
-   executable as an explicit recovery option. In one protected author handoff
-   commit, align AGENTS.md, SYSTEM.md, PROGRESS, recipe/setup instructions and
-   worker PATH; ensure scratch hooks copy the invoking controller. Record the
-   NEW source commit, binary hash, gate results and deferred scope in PROGRESS.
-   Verify the pin and smoke-check `status --json`, `check` and
-   `doctor --no-agent` with it. No claim may be resumed by a different controller,
-   and no automatic fallback may mix them. This is core cutover, not a release
-   or a declaration that the full design is complete.
+**Budget:** the owner selected **three days from execution start**. Record the
+start and resulting deadline in PROGRESS when execution begins; stop for owner
+review at that deadline or after C8, whichever comes first. Module boundaries
+can require multiple changes per stage. Keep normal approval/P07 and all other
+bounds active; the time budget does not permit changing them.
 
-## Completed drill support and contracts proof — DR1–DR4
+**Stops:** stop at the first blocked change, failed verification unresolved under
+SYSTEM's correction limit, access/independence failure or decision not covered
+by this plan. Do not reset attempts/rounds, start replacement changes to evade
+bounds, repin independently or push. No module drills, CK execution or other
+follow-up is included after C8.
 
-Owner-selected on 2026-10-31; **DR1–DR4 completed** with evidence in
-[PROGRESS.md](PROGRESS.md), including the owner-approved contracts clarifications.
-These execution gates derive from the design's Regeneration section and R16.
-The gates below record the completed order; SYSTEM's bounds and owner
-checkpoints apply throughout.
+### A — Restore and validate the identical controller (author work)
 
-1. **DR1 — Complete the drill slice.** Implement runner orchestration and the
-   app's native `drill <module>` command through the unchanged main NEW pin.
-   Cover scratch setup, approved-zone disposable deletion, retained reconstruction
-   inputs, own/all-transitive-dependent evals, contradicted Decisions and targeted
-   gaps, the design's native report fields/sections, retained rebuilt-code ref
-   and cleanup. Use normal fail-first and restricted independent audit, frozen
-   evals/interfaces and approval/retry/round enforcement. Permanent public evals
-   use deterministic hooks/fake agents for success, failure and bounded stops.
-2. **DR2 — Verify the candidate.** In a clean checkout, build the exact candidate
-   and pass Go tests, race tests and vet with the prescribed GOCACHE. Required
-   phase checks and actual candidate CLI fixtures pass, including output/exit
-   behavior and representative failure/cleanup cases. Run NEW `check`,
-   `doctor --no-agent`, explicit-baseline `check-commits` and `ci` with hook doctor enabled;
-   reuse unaffected valid evidence and explain warnings. Record the candidate
-   source/hash and explicit nonempty history range, without changing main's pin.
-3. **DR3 — One independent real contracts drill.** In an isolated candidate
-   clone, explicitly select the tested NEW executable and align instructions,
-   scratch setup and worker PATH. Inspect independence before the real call:
-   the reconstruction worker gets retained spec/Decisions/interfaces/evals and
-   permitted dependency interfaces only; contracts has no dependencies. Exclude
-   old implementation/history, other modules' internals, saved attempts, old
-   binaries and bootstrap as reconstruction inputs. Keep verification's dependent
-   implementations outside the rebuilding worker's inputs. Use the configured
-   real Codex model/effort and existing bounds. Own and every transitive dependent
-   module's evals pass without retained-contract/eval edits. Missing access or
-   independence is a stop, never a substitute proof.
-4. **DR4 — Review and retain evidence.** Review the native
-   `.fireweed/drills/contracts.md` report, including own/dependent cases,
-   contradicted Decisions and gaps; retain its `refs/fireweed/drills/contracts/<date>`
-   rebuilt-code ref. Stop for the owner on any blocked change or gap/contradicted
-   Decision needing agreement; no automatic gap fixes or additional module drills.
-   Commit the reviewed report as protected author evidence with no active run/claim,
-   verify cleanup and unchanged main pin, and retain the inspectable clone location
-   plus concise results in PROGRESS. No supplemental reports or hash inventories.
+With no active change/run/claim, build the controller from the source pinned in
+PROGRESS in a clean temporary clone. Use `GOCACHE=/tmp/fireweed-rebuild-cache`
+and matching `-trimpath` settings if discoverable. Compare the full SHA-256
+against the single controller pin in PROGRESS. Install at its pinned path only
+if identical; on mismatch, stop and report expected and actual hashes to the
+owner, without repinning or recording another hash in planning documents.
 
-No main controller promotion, main contracts implementation replacement, real
-regenerate change or other deferred product work is included. Passing DR1–DR4
-advances full gates 7/8; all-module drill coverage and full product completion
-remain open. Reuse the EC5 real spec-change evidence where still valid.
+The supplied outside review reported the pin, subject bin directory and fireweed
+refs absent. Planning-time observation found the pinned executable present and
+matching. This does not complete A's reproducible build or validation; reconcile
+that snapshot during A without re-investigating the supplied fixture diagnosis.
+Never select bootstrap automatically or resume another controller's claim.
 
-## Completed foundation drills — FD1–FD4
+With the restored controller, run `status --json`, `check` and
+`doctor --no-agent`, and report results before proceeding. Worker PATH starts
+with the current tree's `.fireweed/bin`; scratch setup copies the invoking
+controller. Mutable `bin/fireweed` remains the product under test.
 
-Owner-selected and completed on 2026-11-01; **FD1–FD4 passed** with evidence in
-[PROGRESS.md](PROGRESS.md). Gitstore ran first, then assets, one at a time.
-Both depend only on contracts. These gates derive from
-the design's Regeneration section, R16 and full gate 7; they add no product scope.
-EC1–EC6 and DR1–DR4 remain completed evidence. The gates below record the
-completed order; SYSTEM preserves the controller pin, configured bounds and
-owner checkpoints.
+### B — Protected process cleanup (one author commit)
 
-1. **FD1 — Candidate and independence preflight.** Identify the clean isolated
-   NEW candidate's executable/source/hash and align clone/scratch instructions,
-   setup and PATH; hooks copy the actual invoker. Reuse valid checks, repeating
-   only evidence invalidated by relevant changes. Before each real call, inspect
-   the target's approved retained spec/Decisions/interfaces/evals and retained
-   files, with only contracts' declared interfaces as dependency inputs. Exclude
-   old disposable code/data, history, attempts, product binaries, bootstrap and
-   other modules' internals. Assets content cannot be extracted from the
-   invoking candidate's embedded recipes/playbooks/help/explanations. Verification
-   retains dependent implementations outside the reconstruction workspace.
-2. **FD2 — Independent gitstore proof.** Use the configured real model/effort and
-   unchanged bounds. Require own and all transitive dependent evals to pass with
-   retained inputs/evals unchanged. Review worker tool commands for independence,
-   and native report cases, contradicted Decisions and targeted gaps. Retain
-   `.fireweed/drills/gitstore.md` and `refs/fireweed/drills/gitstore/<date>`.
-   Stop for owner agreement on any gap/contradicted Decision needing it, blocked
-   change or independence/access failure. Commit reviewed evidence and finish
-   cleanup with no active run/shared claim before starting assets.
-3. **FD3 — Independent assets proof.** After FD2 closes, meet the same proof,
-   review, preservation and cleanup requirements for assets. Retain
-   `.fireweed/drills/assets.md` and `refs/fireweed/drills/assets/<date>`.
-   The two real drills must not overlap. No report suggestion automatically
-   authorizes a correction or another module's drill.
-4. **FD4 — Retained evidence and clean handoff.** Preserve coverage and complete
-   any owner-approved correction through normal fail-first, restricted independent
-   audit and frozen phase zones. Reassess affected evidence. Commit the reviewed
-   native reports as protected author evidence with no active run/shared claim;
-   record both results, candidate identities, report/ref and inspectable clone
-   locations concisely in PROGRESS. Verify scratch cleanup, clean checkouts,
-   unchanged main pin/bounds and preserved completed evidence/unrelated worktrees.
-   No supplemental report inventories or hash manifests. Completion requires
-   both passing independent proofs and no unresolved required owner checkpoint.
+With no active change/run/claim, review and finish the prepared documentation:
 
-No main implementation import/replacement, real regenerate change, other module
-real drill, controller promotion, deferred product work or push is included.
-Passing FD1–FD4 advances full gate 7; the later full-completion gates remain.
+1. **B1 — SYSTEM.** Use the exact committed-evidence rule, remove completed
+   milestone-code references, shorten Scope guardrails to roughly half their
+   former length while retaining applicable rules, and require a milestone
+   budget in changes or days followed by owner review when reached.
+2. **B2 — PROGRESS.** One screen or less: current state, single controller
+   path/source/SHA-256, next work in C and open problems. Remove the historical
+   narrative; git history retains it. No temporary paths, evidence inventories,
+   case counts or additional binary hashes in planning documents.
+3. **B3 — ACCEPTANCE and GOAL.** Make this milestone current and defer CK1–CK4;
+   retain the full-completion requirements and a restartable ordered plan.
+4. **B4 — Commit.** Keep B1–B3 in one protected author commit, separately from
+   product changes. On 2026-11-02 the owner authorized committing/pushing the
+   initial planning update before A. After A, review the committed B edits and
+   commit any remaining protected cleanup separately before C. This exception
+   starts no product work and authorizes no product-work push.
 
-## Completed milestone — Stale-change authoring and project proof (SP1–SP4)
+### C — Product changes through the normal lifecycle
 
-Owner-selected and completed on 2026-11-01; **SP1–SP4 passed**. PROGRESS records
-the reviewed evidence; these gates retain the completed execution scope.
-These gates derive from the design's Stale changes,
-Fixing a stale change and Regeneration clauses, R28/R16 and full gates 5/7.
-They add no product scope. EC1–EC6, DR1–DR4 and FD1–FD4 remain completed evidence.
-Main's NEW controller pin, all configured bounds and SYSTEM's remaining process
-and owner-checkpoint guardrails stay unchanged.
+Author each change with the pinned controller's `author-change` playbook.
+Read projected specs, stamp/check/show the authored change, and run `context`
+before each step. Keep normal fail-first (or legitimate already_satisfied),
+audited eval_fix, independent restricted audits, frozen phases and full
+verification. Workers use `fireweed verify` and never commit; fireweed owns
+phase/application commits and archives. Preserve every existing assertion.
+Batch related work within module boundaries; finish each stage before the next.
 
-1. **SP1 — Complete the stale-authoring behavior.** Through coherent project/app
-   changes, implement `show --stale <change>` and `check --fix`. Show each stale
-   spec's stamped-to-current-projection diff; locate stamped text by projecting
-   at the commit that last changed the change's bases and checking the recorded
-   normalized hash. When matching historical text cannot be recovered, show
-   current text and recorded hash. Fix stamps missing base entries only,
-   preserving existing valid and stale entries; ordinary check stays read-only
-   and stale bases remain diagnosed. Preserve other existing behavior.
-2. **SP2 — Normal lifecycle and NEW CLI/candidate evidence.** Every scoped
-   behavioral change passes genuine fail-first unless legitimately already
-   satisfied, separate restricted independent audit and full controller phase
-   verification, preserving cases/assertions/ID coverage and frozen phase zones.
-   Actual NEW CLI fixtures prove historical diff recovery, unavailable/mismatched
-   history fallback, mixed missing/valid/stale bases, intended file effects and
-   applicable JSON/diagnostic/usage/lookup exit behavior. Build the exact clean
-   candidate; pass Go tests, race tests and vet, NEW check, doctor --no-agent,
-   explicit-baseline check-commits and CI with hook doctor enabled. Identify its
-   source/hash and exact nonempty history range. Reuse unaffected valid evidence
-   and explain warnings. Finish scoped changes and release claims before SP3.
-3. **SP3 — One independent project drill.** In an isolated verified NEW candidate
-   clone, align instructions/setup/PATH and confirm setup copies the actual
-   invoker. Before the real call, inspect retained project spec/Decisions/
-   interfaces/evals and approved retained files, plus only declared interfaces
-   from contracts, gitstore and assets. Exclude old target disposable code/data,
-   source history, saved attempts, product binaries, bootstrap and other-module
-   internals; do not query invoker content as an oracle. Keep full verification
-   implementations outside worker inputs. Use the exact configured real agent
-   argv/model/effort and unchanged bounds. Require own and every transitive
-   dependent module's enforced evals and coverage to pass with retained inputs
-   byte-unchanged. Review all worker commands and native report fields/cases,
-   contradicted Decisions and gaps. Missing access or independence is a stop.
-4. **SP4 — Retained evidence and clean handoff.** Stop for any blocked change or
-   gap/contradicted Decision needing owner agreement; no automatic gap fixes or
-   reset of retries/rounds. Complete any approved correction through normal
-   fail-first/restricted audit/frozen-phase rules and reassess affected evidence.
-   Retain `.fireweed/drills/project.md`, its
-   `refs/fireweed/drills/project/<date>` rebuilt-code ref and inspectable clone.
-   Commit the reviewed native report as protected author evidence with no live
-   run/shared claim; record concise SP1–SP4 results and candidate identity in
-   PROGRESS. Preserve completed reports/refs/clones and unrelated worktrees,
-   verify scratch cleanup, clean checkouts and unchanged main pin/bounds. No
-   supplemental report inventories or hash manifests. Completion requires both
-   product options and the passing independent proof, with no unresolved owner
-   checkpoint; a failed drill does not complete this milestone.
+1. **C1 — Fixture eval_fix (runner, app and any other affected fixture owner).**
+   Accept the supplied diagnosis: macOS sh kills scripts receiving long prompt
+   arguments; it is not a timeout. Change fake agents and every fixture passing
+   `{prompt}` to a script to use `bash`, or supply the prompt through stdin.
+   Keep all assertions. Completion requires `go test ./...` passing on this Mac;
+   do not weaken coverage, raise timeouts or investigate the OS failure again.
+2. **C2 — Agent logs (runner spec change).** Persist every agent invocation's
+   stdout and stderr at `.fireweed/runs/<run>/<phase>-<attempt>.log`, implementing
+   the design's run identifier that also locates its logs. Keep output inside
+   the existing gitignored runs directory.
+3. **C3 — Prompt file (runner/workflow spec change).** Add `{prompt_file}` to
+   `agent.command` and `audit.command`: write the prompt to a temporary file and
+   substitute its path. Keep `{prompt}` behavior unchanged. Coordinate any
+   necessary shared config/interface work through its owning module.
+4. **C4 — Small fixes, in as few coherent module changes as possible.**
+   Unknown change names or filenames supplied to `start`, `verify`, `done` and
+   other change selectors receive an unknown-change diagnostic listing valid
+   slugs, instead of P01 not-eligible-queue-head. Accepting `NNNN-slug` aliases
+   is also allowed. In audit, `verify` applies the same submission checks as
+   `done`; incomplete submissions fail with P09. The Go recipe and module
+   template explain the preceding-letter boundary in eval names: use
+   `Test_GRT_001_Name`; `TestGRT001` does not match. `init` writes
+   `>=MAJOR.MINOR, <MAJOR.(MINOR+1)` rather than `=X.Y.Z`.
+5. **C5 — gc.** Implement the design's stale-claim pruning, attempt-ref pruning
+   for archived changes and drill-ref pruning beyond a configured age. Add the
+   config key and document its default through normal owning-module changes.
+6. **C6 — migrate.** Implement the design's migration command. For format 1,
+   a verified no-op reporting `already current` is sufficient; include JSON
+   output and diagnostics.
+7. **C7 — Additional recipes.** Add `typescript-pnpm` and `python-uv`, each
+   including its recipe document, module templates, canaries and default hooks,
+   following the Go recipe. Each change's proof runs `doctor --no-agent` in a
+   fresh scratch project made by `init --recipe <name>`. If pnpm or uv is not
+   installed, stop and report; do not skip the recipe or its proof.
+8. **C8 — Real gitstore regeneration.** Run exactly one real `regenerate: true`
+   gitstore change through the normal lifecycle and report the result. Supply
+   retained contracts/evals and approved dependency interfaces; never read
+   bootstrap, deleted implementation, old history/binaries or saved attempts
+   as reconstruction inputs. This is a regenerate change, not a module drill.
 
-Only the two options' required project/app implementation and the project proof
-are included. No drill implementation import/replacement on main, real regenerate
-change, controller promotion, other-module real drill, gc/migrate, additional
-recipes, file-format migration, unrelated warning cleanup or push is included.
-Full product completion and every later full-completion gate remain open.
+**Final report after execution:** applied change slug and commit for each change;
+anything blocked/skipped with its reason; live `status --json` unapproved count;
+and the `go test ./...` result on this machine. Stop after C8 even if other
+full-completion gates remain open. Do not push.
 
-## Next planned milestone — Checks contracts and proof (CK1–CK4)
+## Completed milestones
 
-Selected for planning on 2026-11-01; **all CK gates are pending execution**.
-This update starts no change, worker, verification run or drill; execution needs
-a separate owner instruction. These gates cover checks-owned obligations from
-the unchanged design (R07/R09–R11/R15/R18/R25/R28/R29) and its independent proof
-(R16/full gate 7), adding no product scope. Completed EC1–EC6, DR1–DR4, FD1–FD4
-and SP1–SP4 criteria and evidence remain preserved. Main's pin, configured
-bounds and SYSTEM's process/owner checkpoints remain unchanged.
+Core cutover, drill support/contracts proof, foundation proofs and stale-change
+authoring/project proof remain completed. Their detailed historical handoffs and
+criteria remain in git history; do not repeat them unless relevant changes or
+unresolved failures invalidate their proof. Committed per-change evidence is in
+[changes/archive](../../changes/archive/), including Provenance. Native reports:
+[contracts](../../.fireweed/drills/contracts.md),
+[gitstore](../../.fireweed/drills/gitstore.md),
+[assets](../../.fireweed/drills/assets.md),
+[project](../../.fireweed/drills/project.md).
+Preserve their committed records and required proof refs; temporary artifacts
+are not evidence. Full product completion remains open.
+
+## Deferred milestone — Checks contracts and proof (CK1–CK4)
+
+**Deferred by the stabilization milestone selected on 2026-11-02.** All CK gates
+remain pending and need separate owner selection, including a budget in changes
+or days. They cover checks-owned obligations from the unchanged design
+(R07/R09–R11/R15/R18/R25/R28/R29) and its independent proof (R16/full gate 7).
+They add no product scope and are not part of the current A–C plan. Existing committed
+archives/reports remain available; only relevant invalidation calls for new proof.
 
 1. **CK1 — Focused checks contract review and necessary corrections.** Review
    checks' current spec/Decisions/interfaces/evals once against its existing
@@ -317,10 +228,11 @@ bounds and SYSTEM's process/owner checkpoints remain unchanged.
 2. **CK2 — Identified clean NEW candidate.** Pass applicable Go normal/race/vet
    checks, NEW check, doctor --no-agent, explicit-baseline check-commits and CI
    with hook doctor enabled. Exercise actual NEW CLI paths affected by any
-   correction. Record clean executable source/hash and exact nonempty history
-   ranges; preserve the standing baseline and reuse valid prefixes/unaffected
-   evidence without skipping required phase checks. Explain warnings without
-   unrelated cleanup. No live scoped change or claim remains before CK3.
+   correction. Keep exact executable identity and explicit nonempty history
+   ranges in the applicable committed evidence, with only the controller pin
+   in planning. Preserve the standing baseline and reuse valid prefixes and
+   unaffected evidence without skipping required phase checks. Explain warnings
+   without unrelated cleanup. No live scoped change or claim remains before CK3.
 3. **CK3 — One independent checks drill.** In an isolated verified NEW candidate
    clone, align instructions/setup/PATH and confirm setup copies the invoker.
    Inspect independence before the real invocation and in the live worker
@@ -342,11 +254,11 @@ bounds and SYSTEM's process/owner checkpoints remain unchanged.
    counter resets or expanded scope. Owner-approved recovery follows the normal
    audited lifecycle, preserves frozen obligations and reassesses affected
    evidence; a fresh drill needs owner authorization. Retain the reviewed native
-   `.fireweed/drills/checks.md`, `refs/fireweed/drills/checks/<date>` and inspectable
-   clone; commit the report as protected author evidence with no live run/claim.
-   Record concise CK results, review conclusions and candidate/evidence locations
-   in PROGRESS, keeping per-change evidence in archived Provenance. Verify clean
-   checkouts, scratch cleanup, no active run/claim, unchanged main pin/bounds and
+   `.fireweed/drills/checks.md` and `refs/fireweed/drills/checks/<date>`; commit
+   the report as protected author evidence with no live run/claim.
+   Update PROGRESS with current state and next work; keep per-change evidence
+   in archived Provenance and drill results in the committed native report.
+   Verify clean checkouts, scratch cleanup, no active run/claim, unchanged pin/bounds and
    preserved prior proofs/unrelated worktrees. No supplemental reports, testcase
    inventories or hash manifests. Completion requires CK1/CK2 and a passing
    independent checks proof with no unresolved owner checkpoint.
@@ -354,23 +266,24 @@ bounds and SYSTEM's process/owner checkpoints remain unchanged.
 No rebuilt-code import/replacement on main, real regenerate change, controller
 promotion, workflow/runner/app real drill, gc/migrate, additional recipes,
 compatibility/file-format migration, unrelated warning cleanup, delivery or push
-is included. Later drill order is workflow → runner → app, each owner-selected.
+is included in CK1–CK4. Later drill order is workflow → runner → app, each owner-selected.
 Remaining drills alone do not complete the product; all full gates below remain.
-Later owner-selected work includes real regenerate validation, gc/migrate,
-additional recipes, version/file-format migration and delivery. Coordinate later
-behavior changes with affected proofs and repeat only evidence they invalidate.
+Stabilization now selects real regenerate validation, gc/migrate and additional
+recipes before these deferred gates. Further version/file-format work and delivery
+remain later work. Reassess these gates when selected, and repeat only evidence
+invalidated by relevant changes or unresolved failures.
 
-## Full-completion gates (after early cutover)
+## Full-completion gates (still required)
 
-Use one design/inventory review, then check fixes against affected requirements. Reuse valid evidence under SYSTEM's rules; required phase checks still run. Every gate below must pass for full product completion; EC1–EC6 separately authorize early cutover. Passing applicable gates ends verification unless later changes invalidate evidence. Rebuild-planning edits alone do not require product tests/drills.
+Use one design/inventory review, then check fixes against affected requirements. Reuse valid evidence under SYSTEM's rules; required phase checks still run. Every gate below must pass for full product completion; the completed core cutover did not waive them. Passing applicable gates ends verification unless later changes invalidate evidence. Rebuild-planning edits alone do not require product tests/drills.
 
 1. **Traceability:** map design requirements to specs, referencing evals and archives; SYSTEM conventions use prescribed review/eval evidence. Verify every R row within that scope. Legitimate already_satisfied changes reuse existing assertions; review, quarantine or maintenance cannot waive design obligations. No extra spec layer or testcase inventory is required.
 2. **Process:** the recorded controller owns fail-first/audit/impl/archive commits (bootstrap before EC6, pinned NEW after it) for behavioral work; immutable evals/interfaces during impl; separate protected setup/author commits; no pending/blocked rebuild changes or active claims.
 3. **Go:** with `GOCACHE=/tmp/fireweed-rebuild-cache`, a fresh checkout builds the new binary and passes `go test ./...`, `go test -race ./...`, `go vet ./...`. Permanent tests run with local fixtures/fake agents and without bootstrap/agent authentication. Cross-compilation is not platform runtime testing; report limits accurately.
-4. **Controller checks:** the recorded controller runs `check`, `doctor`, `check-commits <setup-sha>..HEAD`, and `ci <setup-sha>..HEAD` with doctor enabled. Use the recorded stage-2 baseline; record the exact nonempty range and link per-module coverage. Resolve errors. For warnings, make a scoped correction or record the reason/limitation; zero warnings is not a separate gate. An empty default range proves no history.
+4. **Controller checks:** the recorded controller runs `check`, `doctor`, `check-commits <setup-sha>..HEAD`, and `ci <setup-sha>..HEAD` with doctor enabled. Use the stage-2 baseline in GOAL; retain the exact nonempty range and per-module coverage in committed evidence. Resolve errors. For warnings, make a scoped correction or record the reason/limitation; zero warnings is not a separate gate. An empty default range proves no history.
 5. **Product checks:** NEW binary in fresh repositories performs init/doctor, author/stamp/check, documented base approval, start/failing-evals/audit/impl/done, coverage/history/PR/CI. Exercise fixes, eval_fix, maintenance, blocked recovery and regenerate. Normal unattended approval rejection is tested without --allow-unmerged. Pin subject paths so bootstrap cannot be used accidentally.
 6. **Reference comparison (smoke):** one equivalent fixture lifecycle run with both binaries, comparing exit codes, JSON envelope shape and resulting commits/refs. Record intentional differences briefly. Reference bugs do not define acceptance, and per-edge-case equivalence is not required.
 7. **Real regeneration:** successful controller-driven drills for every rebuilt disposable module, dependency-first. Real agents reconstruct from retained specs/Decisions/interfaces/evals and permitted dependency interfaces, without old implementation/history, saved attempts, old binaries or bootstrap. Own/transitive dependent evals pass without preserved-contract edits. Commit reviewed reports/retain refs and clean scratch worktrees. Repeat only drills invalidated by relevant changes or unresolved failures. Gaps require human agreement before authored fixes; agent suggestions alone authorize none. Missing real-agent access blocks this gate.
 8. **Self-hosting:** in an isolated clone/fixture, the NEW binary governs a small real spec change and a real drill, with checked fail-first/audit/impl commits, archive/provenance, CI and scratch cleanup. Keep the original repository governed by its recorded controller; EC6 may already have promoted NEW. The real-drill portion remains required for full completion, separately from the earlier core self-hosting proof.
-9. **Delivery:** README build/test/use instructions, locally validated distribution/installer checksum behavior, clean committed target tree, restartable evidence record and independent product executable. No product runtime read/import/command requires bootstrap. Report exact checks/commits/reports and limitations. Push only on explicit owner instruction; do not publish or tag.
+9. **Delivery:** README build/test/use instructions, locally validated distribution/installer checksum behavior, clean committed target tree, concise restartable handoff and independent product executable. No product runtime read/import/command requires bootstrap. Report exact checks/commits/reports and limitations. Push only on explicit owner instruction; do not publish or tag.
 
