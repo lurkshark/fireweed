@@ -140,6 +140,7 @@ printf ']}'
 		"setup":      "sh .fireweed/setup.sh",
 	}}
 	f.put("fireweed.yaml", doctorConfig(t, recipe))
+	f.put(".gitignore", ".fireweed/runs/\n")
 	f.put("AGENTS.md", doctorGuidance)
 	f.put("packages/alpha/SPEC.md", "---\nname: alpha\nid_prefix: ALP\ndepends_on: []\n---\n# Alpha\n\n## Specs\n\n### ALP-001\nThe fixture MUST pass.\n")
 	f.put("packages/alpha/api.txt", "public\n")

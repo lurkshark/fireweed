@@ -1,6 +1,8 @@
 ---
 bases: {}
 module: checks
+phase: audit
+run: 20261103T070839-ebd933a1f0b32973fdbb6b6a
 ---
 
 ## Motivation
@@ -19,7 +21,7 @@ outcome information. Normal doctor CLI detail output already exposes that field.
 
 ## Added
 
-### new:agent-probe-logs
+### CHK-081
 Doctor MUST persist complete stdout and stderr from every executed worker and audit probe, including failed, timed-out and cancelled probes, under the invoking project's .fireweed/runs/<run>/<phase>-1.log. Each Doctor invocation MUST use a fresh shared run identity, with phases doctor-worker and doctor-audit. Each executed probe's Detail MUST identify its log file by absolute path.
 
 ## Modified
@@ -56,3 +58,5 @@ with prior findings; retain prior clearances without repeating their review.
 
 ## Audit
 
+## Provenance
+- evals 2026-11-03T07:24:07.696263Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=106 failing=5 passing=101
