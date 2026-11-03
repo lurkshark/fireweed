@@ -79,8 +79,8 @@ gc, migrate, agents-md --write
 ## Current milestone — Stabilization and cleanup
 
 Owner-selected on **2026-11-02**. Execute A → B → C1–C8 in order; one normal
-product change at a time. This documentation update prepares the plan only;
-A–C execution remains pending. CK1–CK4 are deferred. The requirement inventory,
+product change at a time. Execution state and the retained budget deadline are
+in PROGRESS. CK1–CK4 are deferred. The requirement inventory,
 command inventory and every full-completion gate remain required.
 
 **Budget:** the owner selected **three days from execution start**. Record the

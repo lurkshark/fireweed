@@ -1,10 +1,10 @@
 # Stabilization and cleanup restart prompt
 
-**Current selected milestone: A → B → C1–C8.** This update prepares documentation
-only; execution has not started. The owner supplied the execution scope below.
+**Current selected milestone: A → B → C1–C8.** Execution has started; consult
+PROGRESS for completed stages and the retained deadline. The owner supplied the scope below.
 Checks contracts/proof (CK1–CK4) are deferred; all full-completion gates remain.
 **Budget: three days from execution start**, selected by the owner. Record the
-start/deadline when execution begins. Stop for owner review at that deadline or
+start/deadline when execution begins; retain it when resuming. Stop for owner review at that deadline or
 after C8, whichever comes first.
 
 The unchanged [design](../../fireweed-design-v1.md) is product authority;
