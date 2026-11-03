@@ -817,11 +817,19 @@ func Test_CHK_063_CHK_064_CHK_065_CHK_066_CHK_067_AgentProbes(t *testing.T) {
 	if doctorErrors(r) || strings.Count(log, "worker:") != 1 || strings.Count(log, "audit:") != 1 || strings.Count(log, "wrap:") != 2 || !strings.Contains(log, "FIREWEED_DOCTOR_OK") {
 		t.Errorf("worker/audit/wrap probes: %s; log=%s", doctorText(r), log)
 	}
-	auditPrompt := false
+	workerPrompt, auditPrompt := false, false
 	for _, line := range strings.Split(log, "\n") {
-		if fields := strings.SplitN(line, ":", 3); len(fields) == 3 && fields[0] == "audit" && strings.Contains(fields[2], "FIREWEED_DOCTOR_OK") {
-			auditPrompt = true
+		if fields := strings.SplitN(line, ":", 3); len(fields) == 3 && strings.Contains(fields[2], "FIREWEED_DOCTOR_OK") {
+			switch fields[0] {
+			case "worker":
+				workerPrompt = true
+			case "audit":
+				auditPrompt = true
+			}
 		}
+	}
+	if !workerPrompt {
+		t.Errorf("worker did not receive its fixed-reply prompt: %s", log)
 	}
 	if !auditPrompt {
 		t.Errorf("audit did not receive its fixed-reply prompt: %s", log)
