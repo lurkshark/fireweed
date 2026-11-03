@@ -111,7 +111,7 @@ printf '<testsuite><testcase name="%s_case" classname="fixture"><failure message
 printf '%s\n' "$fail" >&2
 exit 1
 `)
-	nextWrite(t, root, ".gitignore", ".fireweed/drills/\n")
+	nextWrite(t, root, ".gitignore", ".fireweed/drills/\n.fireweed/runs/\n")
 	nextWrite(t, root, "SYSTEM.md", "# Fixture guidance\nSYSTEM_RETAINED\n")
 	nextWrite(t, root, "AGENTS.md", "AGENT_INSTRUCTION_SECRET\n")
 	nextWrite(t, root, "go.mod", "module example.invalid/drill-fixture\n\ngo 1.22\n")

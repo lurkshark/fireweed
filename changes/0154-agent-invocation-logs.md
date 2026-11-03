@@ -1,6 +1,8 @@
 ---
 bases: {}
 module: runner
+phase: audit
+run: 20261103T060941-ce9a68e0ebc23e4171d74f7a
 ---
 
 ## Motivation
@@ -17,20 +19,20 @@ Extend the retained AgentRequest with optional LogRoot, Run, Phase and Attempt
 fields describing log context. Extend AgentResult with LogPath. Existing
 fields and public function signatures remain. Next and Drill supply their
 invoking project root and stable run context internally; standalone callers
-may supply context or use the defaults in new:standalone-log-context.
+may supply context or use the defaults in RUN-066.
 
 ## Added
 
-### new:invocation-log
+### RUN-063
 InvokeAgent MUST persist the invocation's complete stdout and stderr, including partial output on command failure, timeout or cancellation, at .fireweed/runs/<run>/<phase>-<attempt>.log under its log project root. Repeated invocations at the same path MUST append without discarding earlier records. AgentResult.LogPath MUST identify that file by an absolute path.
 
-### new:next-log-context
+### RUN-064
 Next MUST assign each invocation the held change's run, current phase and one-based phase attempt, writing its log under the invoking project's .fireweed/runs directory. Audit logs MUST stay in that invoking project, outside the restricted audit input workspace.
 
-### new:drill-log-context
+### RUN-065
 Drill MUST allocate one log run identity per invocation and reuse it across reconstruction retries and usage waits. Its logs MUST use phase drill, the current one-based reconstruction attempt and the invoking project's root, outside scratch and reconstruction input workspaces.
 
-### new:standalone-log-context
+### RUN-066
 InvokeAgent MUST accept a log project root, run, phase and positive one-based attempt in AgentRequest. Unset fields MUST default to Snapshot.Root, a fresh run identifier, request Role and attempt 1, respectively.
 
 ## Modified
@@ -47,6 +49,16 @@ this runner portion does not complete C2 or authorize a real module drill. Use b
 and temporary repositories for permanent public-interface evals. Prefer reuse
 of representative fixtures/assertions and keep every pre-existing assertion.
 New Added IDs need genuine failing testcase evidence, not compilation errors.
+Declare every new retained AgentRequest/AgentResult field in the evals phase
+before completing it; do not defer these interface declarations to implementation.
+Fail-first must exercise missing logging behavior with the retained interfaces
+already present. The implementation phase keeps model/** and api.go frozen.
+The fresh own eval run exceeded five minutes. Before freezing evals, reduce
+redundant fixture execution while preserving every assertion and ID obligation.
+In particular, the new RUN-064 retry-both fixture duplicates the existing
+RUN-021/RUN-022 retry lifecycle: move its log assertions into that existing
+test, include RUN-064 in its name, and retain all original assertions.
+Do not raise timeouts, bounds or skip coverage to meet the cost gate.
 
 Keep existing result streams, exit codes, usage classification, timeouts and
 retry/round accounting intact. Retain output on errors. Logs must remain under
@@ -69,3 +81,5 @@ retain earlier clearances without repeating their review.
 
 ## Audit
 
+## Provenance
+- evals 2026-11-03T06:33:34.876514Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=142 failing=10 passing=132

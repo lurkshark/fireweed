@@ -14,6 +14,10 @@ type AgentRequest struct {
 	Prompt   string
 	Bin      string
 	Timeout  time.Duration
+	LogRoot  string
+	Run      string
+	Phase    string
+	Attempt  int
 }
 
 type AgentResult struct {
@@ -21,6 +25,7 @@ type AgentResult struct {
 	Stderr     string
 	ExitCode   int
 	UsageLimit bool
+	LogPath    string
 }
 
 type NextRequest struct {
