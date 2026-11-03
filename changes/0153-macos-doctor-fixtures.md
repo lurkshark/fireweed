@@ -1,6 +1,4 @@
 ---
-audit_pending:
-    - CHK-063
 audit_rounds: 1
 bases: {}
 eval_fix:
@@ -10,7 +8,7 @@ eval_fix:
     - CHK-066
     - CHK-067
 module: checks
-phase: audit
+phase: impl
 run: 20261103T052009-5096bd1be0486adcc6a17841
 ---
 
@@ -55,8 +53,9 @@ confirm the corrected evals preserve assertions of all listed spec clauses.
 
 ## Audit
 
-- CHK-063: "Doctor MUST run the worker and audit commands once each in scratch through the configured agent.wrap with a fixed-reply prompt, requiring exit 0 and the requested reply for success." — The eval asserts the fixed-reply prompt on the audit line, but not on the worker line. Its general FIREWEED_DOCTOR_OK log check can be satisfied by the audit prompt alone.
+No findings; checked CHK-063, CHK-064, CHK-065, CHK-066, CHK-067
 ## Provenance
 - evals 2026-11-03T05:30:18.999922Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=101 failing=0 passing=101
 - audit 2026-11-03T05:32:35.5279Z agent=manual fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 - evals 2026-11-03T05:41:38.739674Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=101 failing=0 passing=101
+- audit 2026-11-03T05:44:21.857441Z agent=manual fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
