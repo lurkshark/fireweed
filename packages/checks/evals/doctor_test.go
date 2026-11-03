@@ -72,8 +72,8 @@ func doctorConfig(t *testing.T, recipe assets.Recipe) string {
 		"limit_patterns":  []string{"rate limit"},
 		"module_defaults": map[string]any{"interface": recipe.ModuleDefaults.Interface, "evals": recipe.ModuleDefaults.Evals, "disposable": recipe.ModuleDefaults.Disposable},
 		"hooks":           recipe.Hooks,
-		"agent":           map[string]any{"command": []string{"sh", ".fireweed/agent.sh", "{prompt}", "{git_common_dir}"}, "wrap": []string{"sh", ".fireweed/wrap.sh"}},
-		"audit":           map[string]any{"enabled": true, "command": []string{"sh", ".fireweed/audit.sh", "{prompt}"}},
+		"agent":           map[string]any{"command": []string{"bash", ".fireweed/agent.sh", "{prompt}", "{git_common_dir}"}, "wrap": []string{"bash", ".fireweed/wrap.sh"}},
+		"audit":           map[string]any{"enabled": true, "command": []string{"bash", ".fireweed/audit.sh", "{prompt}"}},
 	}
 	data, err := yaml.Marshal(config)
 	if err != nil {
@@ -111,9 +111,9 @@ func newDoctorFixture(t *testing.T) doctorFixture {
 	for path, body := range r.Files {
 		f.put(path, body)
 	}
-	f.put(".fireweed/wrap.sh", fmt.Sprintf("#!/bin/sh\nprintf 'wrap:%%s\n' \"$PWD\" >> %q\nexec \"$@\"\n", f.log))
-	f.put(".fireweed/agent.sh", fmt.Sprintf("#!/bin/sh\nprintf 'worker:%%s:%%s:%%s\n' \"$PWD\" \"$1\" \"$2\" >> %q\nprintf 'FIREWEED_DOCTOR_OK\\n'\n", f.log))
-	f.put(".fireweed/audit.sh", fmt.Sprintf("#!/bin/sh\nprintf 'audit:%%s:%%s\n' \"$PWD\" \"$1\" >> %q\nprintf 'FIREWEED_DOCTOR_OK\\n'\n", f.log))
+	f.put(".fireweed/wrap.sh", fmt.Sprintf("#!/bin/bash\nprintf 'wrap:%%s\n' \"$PWD\" >> %q\nexec \"$@\"\n", f.log))
+	f.put(".fireweed/agent.sh", fmt.Sprintf("#!/bin/bash\nprintf 'worker:%%s:%%s:%%s\n' \"$PWD\" \"$1\" \"$2\" >> %q\nprintf 'FIREWEED_DOCTOR_OK\\n'\n", f.log))
+	f.put(".fireweed/audit.sh", fmt.Sprintf("#!/bin/bash\nprintf 'audit:%%s:%%s\n' \"$PWD\" \"$1\" >> %q\nprintf 'FIREWEED_DOCTOR_OK\\n'\n", f.log))
 	return f
 }
 
@@ -175,9 +175,9 @@ find packages -name SPEC.md | while IFS= read -r spec; do
   if test -f "$dir/evals/internal.txt"; then printf '%%s: interface violation\n' "$name"; fi
 done
 `, f.log))
-	f.put(".fireweed/wrap.sh", fmt.Sprintf("#!/bin/sh\nprintf 'wrap:%%s\n' \"$PWD\" >> %q\nexec \"$@\"\n", f.log))
-	f.put(".fireweed/agent.sh", fmt.Sprintf("#!/bin/sh\nprintf 'worker:%%s:%%s:%%s\n' \"$PWD\" \"$1\" \"$2\" >> %q\nprintf 'FIREWEED_DOCTOR_OK\\n'\n", f.log))
-	f.put(".fireweed/audit.sh", fmt.Sprintf("#!/bin/sh\nprintf 'audit:%%s:%%s\n' \"$PWD\" \"$1\" >> %q\nprintf 'FIREWEED_DOCTOR_OK\\n'\n", f.log))
+	f.put(".fireweed/wrap.sh", fmt.Sprintf("#!/bin/bash\nprintf 'wrap:%%s\n' \"$PWD\" >> %q\nexec \"$@\"\n", f.log))
+	f.put(".fireweed/agent.sh", fmt.Sprintf("#!/bin/bash\nprintf 'worker:%%s:%%s:%%s\n' \"$PWD\" \"$1\" \"$2\" >> %q\nprintf 'FIREWEED_DOCTOR_OK\\n'\n", f.log))
+	f.put(".fireweed/audit.sh", fmt.Sprintf("#!/bin/bash\nprintf 'audit:%%s:%%s\n' \"$PWD\" \"$1\" >> %q\nprintf 'FIREWEED_DOCTOR_OK\\n'\n", f.log))
 	return f
 }
 
@@ -835,7 +835,7 @@ func Test_CHK_063_CHK_064_CHK_065_CHK_066_CHK_067_AgentProbes(t *testing.T) {
 	g := localDoctorFixture(t)
 	g.editConfig(func(config map[string]any) {
 		delete(config["audit"].(map[string]any), "command")
-		config["agent"].(map[string]any)["command"] = "sh .fireweed/agent.sh {prompt} {git_common_dir}"
+		config["agent"].(map[string]any)["command"] = "bash .fireweed/agent.sh {prompt} {git_common_dir}"
 	})
 	g.commit()
 	rr := checks.Doctor(context.Background(), g.request(false))
@@ -844,7 +844,7 @@ func Test_CHK_063_CHK_064_CHK_065_CHK_066_CHK_067_AgentProbes(t *testing.T) {
 	}
 
 	h := localDoctorFixture(t)
-	h.put(".fireweed/agent.sh", fmt.Sprintf("#!/bin/sh\nfor i in $(seq 1 25); do printf 'line-%%02d\\n' \"$i\"; done\necho RATE LIMIT reached\nexit 9\n"))
+	h.put(".fireweed/agent.sh", fmt.Sprintf("#!/bin/bash\nfor i in $(seq 1 25); do printf 'line-%%02d\\n' \"$i\"; done\necho RATE LIMIT reached\nexit 9\n"))
 	h.commit()
 	bad := checks.Doctor(context.Background(), h.request(false))
 	if !hasDoctorDiagnostic(bad, "C15", false, "usage limit", "rate limit", "line-25") {
@@ -854,7 +854,7 @@ func Test_CHK_063_CHK_064_CHK_065_CHK_066_CHK_067_AgentProbes(t *testing.T) {
 		t.Errorf("agent output was not trimmed to final 20 lines: %s", doctorText(bad))
 	}
 	outOfTail := localDoctorFixture(t)
-	outOfTail.put(".fireweed/agent.sh", "#!/bin/sh\necho RATE LIMIT early\nfor i in $(seq 1 25); do printf 'later-%02d\\n' \"$i\"; done\nexit 9\n")
+	outOfTail.put(".fireweed/agent.sh", "#!/bin/bash\necho RATE LIMIT early\nfor i in $(seq 1 25); do printf 'later-%02d\\n' \"$i\"; done\nexit 9\n")
 	outOfTail.commit()
 	ordinary := checks.Doctor(context.Background(), outOfTail.request(false))
 	if !hasDoctorDiagnostic(ordinary, "C15", false, "agent.sh", "later-25") {
@@ -865,7 +865,7 @@ func Test_CHK_063_CHK_064_CHK_065_CHK_066_CHK_067_AgentProbes(t *testing.T) {
 			t.Errorf("out-of-tail pattern classified as usage limit: %s", doctorText(ordinary))
 		}
 	}
-	for _, tc := range []struct{ name, script string }{{"wrong reply", "#!/bin/sh\necho WRONG_REPLY\n"}, {"nonzero with reply", "#!/bin/sh\necho FIREWEED_DOCTOR_OK\nexit 7\n"}, {"ordinary failure", "#!/bin/sh\nfor i in $(seq 1 25); do printf 'ordinary-%02d\\n' \"$i\"; done\nexit 8\n"}} {
+	for _, tc := range []struct{ name, script string }{{"wrong reply", "#!/bin/bash\necho WRONG_REPLY\n"}, {"nonzero with reply", "#!/bin/bash\necho FIREWEED_DOCTOR_OK\nexit 7\n"}, {"ordinary failure", "#!/bin/bash\nfor i in $(seq 1 25); do printf 'ordinary-%02d\\n' \"$i\"; done\nexit 8\n"}} {
 		t.Run(tc.name, func(t *testing.T) {
 			q := localDoctorFixture(t)
 			q.put(".fireweed/agent.sh", tc.script)
@@ -880,7 +880,7 @@ func Test_CHK_063_CHK_064_CHK_065_CHK_066_CHK_067_AgentProbes(t *testing.T) {
 		})
 	}
 	wrongAudit := localDoctorFixture(t)
-	wrongAudit.put(".fireweed/audit.sh", "#!/bin/sh\necho WRONG_REPLY\n")
+	wrongAudit.put(".fireweed/audit.sh", "#!/bin/bash\necho WRONG_REPLY\n")
 	wrongAudit.commit()
 	auditFailure := checks.Doctor(context.Background(), wrongAudit.request(false))
 	if !hasDoctorDiagnostic(auditFailure, "C15", false, "audit.sh") || hasDoctorCheck(auditFailure, "audit", true) {
@@ -888,7 +888,7 @@ func Test_CHK_063_CHK_064_CHK_065_CHK_066_CHK_067_AgentProbes(t *testing.T) {
 	}
 
 	i := localDoctorFixture(t)
-	i.put(".fireweed/audit.sh", "#!/bin/sh\nsleep 2\n")
+	i.put(".fireweed/audit.sh", "#!/bin/bash\nsleep 2\n")
 	i.commit()
 	req := i.request(false)
 	req.Timeout = 100 * time.Millisecond
@@ -899,8 +899,8 @@ func Test_CHK_063_CHK_064_CHK_065_CHK_066_CHK_067_AgentProbes(t *testing.T) {
 	}
 
 	defaulted := localDoctorFixture(t)
-	defaulted.put(".fireweed/agent.sh", "#!/bin/sh\nsleep 0.2\nprintf 'FIREWEED_DOCTOR_OK\\n'\n")
-	defaulted.put(".fireweed/audit.sh", "#!/bin/sh\nsleep 0.2\nprintf 'FIREWEED_DOCTOR_OK\\n'\n")
+	defaulted.put(".fireweed/agent.sh", "#!/bin/bash\nsleep 0.2\nprintf 'FIREWEED_DOCTOR_OK\\n'\n")
+	defaulted.put(".fireweed/audit.sh", "#!/bin/bash\nsleep 0.2\nprintf 'FIREWEED_DOCTOR_OK\\n'\n")
 	defaulted.commit()
 	defaultRequest := defaulted.request(false)
 	defaultRequest.Timeout = 0
@@ -919,7 +919,7 @@ func Test_CHK_063_CHK_064_CHK_065_CHK_066_CHK_067_AgentProbes(t *testing.T) {
 
 func Test_CHK_065_UnsetTimeoutBoundsAuditProbe(t *testing.T) {
 	f := localDoctorFixture(t)
-	f.put(".fireweed/audit.sh", fmt.Sprintf("#!/bin/sh\nprintf 'audit:%%s:%%s\n' \"$PWD\" \"$1\" >> %q\nprintf 'audit-timeout-started\n'\nsleep 210\nprintf 'FIREWEED_DOCTOR_OK\n'\n", f.log))
+	f.put(".fireweed/audit.sh", fmt.Sprintf("#!/bin/bash\nprintf 'audit:%%s:%%s\n' \"$PWD\" \"$1\" >> %q\nprintf 'audit-timeout-started\n'\nsleep 210\nprintf 'FIREWEED_DOCTOR_OK\n'\n", f.log))
 	f.commit()
 	req := f.request(false)
 	req.Timeout = 0

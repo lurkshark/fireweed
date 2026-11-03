@@ -7,6 +7,8 @@ eval_fix:
     - CHK-066
     - CHK-067
 module: checks
+phase: audit
+run: 20261103T052009-5096bd1be0486adcc6a17841
 ---
 
 ## Motivation
@@ -50,3 +52,5 @@ confirm the corrected evals preserve assertions of all listed spec clauses.
 
 ## Audit
 
+## Provenance
+- evals 2026-11-03T05:30:18.999922Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=101 failing=0 passing=101
