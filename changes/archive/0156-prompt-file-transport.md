@@ -3,7 +3,7 @@ audit_rounds: 1
 bases:
     RUN-003: 7d803e4b
 module: runner
-phase: impl
+phase: applied
 run: 20261103T075827-096b27941f3bb219cec10904
 ---
 
@@ -72,3 +72,4 @@ No findings; checked RUN-003, RUN-067
 - audit 2026-11-03T08:28:20.732624Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 - evals 2026-11-03T08:49:55.679328Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=159 failing=15 passing=144
 - audit 2026-11-03T08:50:58.368799Z agent=manual fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-03T09:23:12.688726Z agent=manual fireweed=0.1.0 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=463 failing=0 passing=463

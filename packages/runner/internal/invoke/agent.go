@@ -17,8 +17,7 @@ import (
 
 const defaultTimeout = 90 * time.Minute
 
-func Agent(ctx context.Context, request model.AgentRequest) (model.AgentResult, error) {
-	var result model.AgentResult
+func Agent(ctx context.Context, request model.AgentRequest) (result model.AgentResult, retErr error) {
 	agent := section(request.Snapshot.Config, "agent")
 	command := agent["command"]
 	switch request.Role {
@@ -38,11 +37,23 @@ func Agent(ctx context.Context, request model.AgentRequest) (model.AgentResult, 
 	if err != nil {
 		return result, fmt.Errorf("inspect agent repository: %w", err)
 	}
-	argv, err := commandArgs(command, request.Prompt, repo.CommonDir)
+	promptFile := ""
+	if usesPromptFile(command) || usesPromptFile(agent["wrap"]) {
+		promptFile, err = writePromptFile(request.Prompt)
+		if err != nil {
+			return result, err
+		}
+		defer func() {
+			if err := os.Remove(promptFile); err != nil {
+				retErr = errors.Join(retErr, fmt.Errorf("remove agent prompt file: %w", err))
+			}
+		}()
+	}
+	argv, err := commandArgs(command, request.Prompt, promptFile, repo.CommonDir)
 	if err != nil {
 		return result, err
 	}
-	wrap, err := argvValue(agent["wrap"], request.Prompt, repo.CommonDir)
+	wrap, err := argvValue(agent["wrap"], request.Prompt, promptFile, repo.CommonDir)
 	if err != nil {
 		return result, fmt.Errorf("agent wrap: %w", err)
 	}
@@ -183,21 +194,21 @@ func unset(value any) bool {
 	return false
 }
 
-func commandArgs(value any, prompt, commonDir string) ([]string, error) {
+func commandArgs(value any, prompt, promptFile, commonDir string) ([]string, error) {
 	if shell, ok := value.(string); ok {
-		return []string{"/bin/sh", "-c", expand(shell, shellQuote(prompt), shellQuote(commonDir))}, nil
+		return []string{"/bin/sh", "-c", expand(shell, shellQuote(prompt), shellQuote(promptFile), shellQuote(commonDir))}, nil
 	}
-	return argvValue(value, prompt, commonDir)
+	return argvValue(value, prompt, promptFile, commonDir)
 }
 
-func argvValue(value any, prompt, commonDir string) ([]string, error) {
+func argvValue(value any, prompt, promptFile, commonDir string) ([]string, error) {
 	parts, err := stringValues(value)
 	if err != nil {
 		return nil, err
 	}
 	args := make([]string, len(parts))
 	for i, part := range parts {
-		args[i] = expand(part, prompt, commonDir)
+		args[i] = expand(part, prompt, promptFile, commonDir)
 	}
 	return args, nil
 }
@@ -223,8 +234,51 @@ func stringValues(value any) ([]string, error) {
 	}
 }
 
-func expand(template, prompt, commonDir string) string {
-	return strings.NewReplacer("{prompt}", prompt, "{git_common_dir}", commonDir).Replace(template)
+func expand(template, prompt, promptFile, commonDir string) string {
+	return strings.NewReplacer("{prompt}", prompt, "{prompt_file}", promptFile, "{git_common_dir}", commonDir).Replace(template)
+}
+
+func usesPromptFile(value any) bool {
+	switch typed := value.(type) {
+	case string:
+		return strings.Contains(typed, "{prompt_file}")
+	case []string:
+		for _, part := range typed {
+			if strings.Contains(part, "{prompt_file}") {
+				return true
+			}
+		}
+	case []any:
+		for _, part := range typed {
+			if text, ok := part.(string); ok && strings.Contains(text, "{prompt_file}") {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func writePromptFile(prompt string) (string, error) {
+	file, err := os.CreateTemp("", "fireweed-prompt-")
+	if err != nil {
+		return "", fmt.Errorf("create agent prompt file: %w", err)
+	}
+	keep := false
+	defer func() {
+		if !keep {
+			_ = os.Remove(file.Name())
+		}
+	}()
+	path, err := filepath.Abs(file.Name())
+	if err == nil {
+		_, err = file.WriteString(prompt)
+	}
+	err = errors.Join(err, file.Close())
+	if err != nil {
+		return "", fmt.Errorf("write agent prompt file: %w", err)
+	}
+	keep = true
+	return path, nil
 }
 
 func shellQuote(value string) string {

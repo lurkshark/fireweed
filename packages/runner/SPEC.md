@@ -24,7 +24,7 @@ InvokeAgent MUST select agent.command for the worker role and audit.command for 
 InvokeAgent MUST run the selected command from Snapshot.Root.
 
 ### RUN-003
-InvokeAgent MUST expand {prompt} and {git_common_dir} once in command templates and wrapper argv. Commands MUST accept shell strings or argv, quoting shell substitutions and preserving argv values literally.
+InvokeAgent MUST expand {prompt}, {prompt_file} and {git_common_dir} once in command templates and wrapper argv. Commands MUST accept shell strings or argv, quoting shell substitutions and preserving argv values literally.
 
 ### RUN-004
 InvokeAgent MUST prepend the configured agent.wrap argv prefix for both worker and audit commands.
@@ -281,6 +281,9 @@ Drill MUST allocate one log run identity per invocation and reuse it across reco
 
 ### RUN-066
 InvokeAgent MUST accept a log project root, run, phase and positive one-based attempt in AgentRequest. Unset fields MUST default to Snapshot.Root, a fresh run identifier, request Role and attempt 1, respectively.
+
+### RUN-067
+InvokeAgent MUST create one temporary file containing the exact request Prompt only when {prompt_file} occurs in the selected command or wrapper templates, and expand that placeholder to its absolute path. The file MUST remain available through command execution and be removed afterward, including after launch failure, nonzero exit, timeout or cancellation.
 
 ## Decisions
 
