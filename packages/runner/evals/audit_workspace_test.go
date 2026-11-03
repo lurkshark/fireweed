@@ -150,7 +150,7 @@ exit 9
 func Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificationRetry(t *testing.T) {
 	f := newNextFixture(t, true, true, "normal")
 	nextWrite(t, f.logDir, "held-root", f.root)
-	nextWrite(t, f.logDir, "auditor.sh", `#!/bin/sh
+	nextWrite(t, f.logDir, "auditor.sh", `#!/bin/bash
 printf 'audit|%s|%s\n' "$PWD" "$FIREWEED_BIN" >> "$1/invocations"
 printf '%s' "$PWD" > "$1/audit.cwd"
 count=0

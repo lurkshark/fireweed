@@ -43,12 +43,12 @@ printf 'SETUP_BINARY_SECRET' > .fireweed/bin/fireweed
 if [ -f "$1/setup-fail" ]; then echo SETUP_FAILURE >&2; exit 17; fi
 if [ -f "$1/cleanup-fail" ]; then chmod 0500 "$(dirname "$PWD")"; fi
 `)
-	nextWrite(t, observations, "wrapper.sh", `#!/bin/sh
+	nextWrite(t, observations, "wrapper.sh", `#!/bin/bash
 printf '%s\n' "$FIREWEED_BIN" >> "$1/wrapper.bin"
 shift
 exec "$@"
 `)
-	nextWrite(t, observations, "agent.sh", `#!/bin/sh
+	nextWrite(t, observations, "agent.sh", `#!/bin/bash
 count=0
 [ ! -f "$1/count" ] || count=$(cat "$1/count")
 count=$((count + 1))
@@ -128,8 +128,8 @@ hooks:
   setup: [sh, %q, %q]
   eval: [sh, %q, "{module}", "{report}", %q]
 agent:
-  command: [sh, %q, %q, "{prompt}"]
-  wrap: [sh, %q, %q]
+  command: [bash, %q, %q, "{prompt}"]
+  wrap: [bash, %q, %q]
   model: fixture-model
 attempts: 2
 timeout: 2s

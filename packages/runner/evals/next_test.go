@@ -70,7 +70,7 @@ func newNextFixture(t *testing.T, queued, approved bool, workerMode string) next
 	worker := filepath.Join(logDir, "worker.sh")
 	auditor := filepath.Join(logDir, "auditor.sh")
 	// The scripts are fixture agents. Only the runner may call workflow transitions.
-	nextWrite(t, logDir, "worker.sh", `#!/bin/sh
+	nextWrite(t, logDir, "worker.sh", `#!/bin/bash
 phase=$(sed -n 's/^phase: //p' changes/0001-next.md | head -1)
 attempt_file="$1/$phase-attempts"
 attempt=0
@@ -188,7 +188,7 @@ if [ "$2" = commit-success ]; then
 fi
 printf 'worker-%s' "$phase"
 `)
-	nextWrite(t, logDir, "auditor.sh", `#!/bin/sh
+	nextWrite(t, logDir, "auditor.sh", `#!/bin/bash
 printf '%s' "$2" > "$1/audit.prompt"
 printf 'audit|%s|%s\n' "$PWD" "$FIREWEED_BIN" >> "$1/invocations"
 printf '%s' "$PWD" > "$1/audit.cwd"
@@ -222,9 +222,9 @@ hooks:
   eval: [sh, .fireweed/eval.sh, "{module}", "{report}", %q]
   boundaries: [sh, .fireweed/boundaries.sh]
 agent:
-  command: [sh, %q, %q, %q, "{prompt}"]
+  command: [bash, %q, %q, %q, "{prompt}"]
 audit:
-  command: [sh, %q, %q, "{prompt}"]
+  command: [bash, %q, %q, "{prompt}"]
 timeout: 50ms
 `, logDir, worker, logDir, workerMode, auditor, logDir))
 	nextWrite(t, root, ".fireweed/eval.sh", `#!/bin/sh
@@ -492,7 +492,7 @@ func Test_RUN_013_RUN_014_CompleteSpecChange(t *testing.T) {
 		t.Errorf("pending change remains: %v", err)
 	}
 	archived := nextRead(t, f.root, "changes/archive/0001-next.md")
-	for _, marker := range []string{"phase: applied", "### ALP-002", "No findings", "- evals ", "- audit ", "- impl ", "agent=sh"} {
+	for _, marker := range []string{"phase: applied", "### ALP-002", "No findings", "- evals ", "- audit ", "- impl ", "agent=bash"} {
 		if !strings.Contains(archived, marker) {
 			t.Errorf("archive omitted %q", marker)
 		}

@@ -37,7 +37,7 @@ func agentFixture(t *testing.T) project.Snapshot {
 func agentScript(t *testing.T, root, name, body string) string {
 	t.Helper()
 	path := filepath.Join(root, name)
-	if err := os.WriteFile(path, []byte("#!/bin/sh\n"+body+"\n"), 0755); err != nil {
+	if err := os.WriteFile(path, []byte("#!/bin/bash\n"+body+"\n"), 0755); err != nil {
 		t.Fatal(err)
 	}
 	return path

@@ -39,7 +39,7 @@ func newRunFixtureMode(t *testing.T, queued int, unmerged bool, mode string) run
 	if err != nil {
 		t.Fatal(err)
 	}
-	nextWrite(t, agents, "worker.sh", `#!/bin/sh
+	nextWrite(t, agents, "worker.sh", `#!/bin/bash
 held=''
 for file in changes/*.md; do
   [ -f "$file" ] || continue
@@ -77,7 +77,7 @@ GO
 esac
 printf '%s-%s' "$module" "$phase"
 `)
-	nextWrite(t, agents, "auditor.sh", `#!/bin/sh
+	nextWrite(t, agents, "auditor.sh", `#!/bin/bash
 held=''
 for file in changes/*.md; do
   [ -f "$file" ] || continue
@@ -107,9 +107,9 @@ hooks:
   eval: [sh, .fireweed/eval.sh, "{module}", "{report}"]
   boundaries: [sh, .fireweed/boundaries.sh]
 agent:
-  command: [sh, %q, %q, %q, "{prompt}"]
+  command: [bash, %q, %q, %q, "{prompt}"]
 audit:
-  command: [sh, %q, %q, "{prompt}"]
+  command: [bash, %q, %q, "{prompt}"]
 timeout: 50ms
 `, filepath.Join(agents, "worker.sh"), agents, mode, filepath.Join(agents, "auditor.sh"), agents))
 	nextWrite(t, root, ".fireweed/eval.sh", `#!/bin/sh

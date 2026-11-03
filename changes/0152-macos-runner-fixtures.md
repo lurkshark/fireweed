@@ -64,6 +64,8 @@ eval_fix:
     - RUN-061
     - RUN-062
 module: runner
+phase: audit
+run: 20261103T042918-41113579d244714bcda25705
 ---
 
 ## Motivation
@@ -101,3 +103,5 @@ Only runner eval files may change. Use normal fireweed verify and return;
 workers never invoke lifecycle mutators, commit, edit run/phase/Provenance or
 advance themselves. The owning pinned controller performs normal phase checks,
 separate restricted audit, full dependent verification and archive commits.
+## Provenance
+- evals 2026-11-03T04:39:54.617392Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=132 failing=0 passing=132
