@@ -69,7 +69,7 @@ hooks:
   setup: [sh, %q, %q]
   eval: [sh, %q, "{module}", "{report}", %q]
 agent:
-  command: [sh, %q, %q, "{prompt}"]
+  command: [bash, %q, %q, "{prompt}"]
 attempts: 1
 timeout: 2s
 limit_patterns: [RATE LIMIT]

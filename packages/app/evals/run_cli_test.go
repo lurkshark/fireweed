@@ -83,9 +83,9 @@ hooks:
   eval: [sh, .fireweed/eval.sh, "{module}", "{report}"]
   boundaries: [sh, .fireweed/boundaries.sh]
 agent:
-  command: [sh, %q, %q, "{prompt}"]
+  command: [bash, %q, %q, "{prompt}"]
 audit:
-  command: [sh, %q, %q, "{prompt}"]
+  command: [bash, %q, %q, "{prompt}"]
 `, worker, logs, auditor, logs))
 	appPut(t, root, ".fireweed/eval.sh", `#!/bin/sh
 case "$1" in alpha) prefix=ALP;; beta) prefix=BET;; *) exit 35;; esac

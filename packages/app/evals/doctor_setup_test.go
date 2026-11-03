@@ -61,7 +61,7 @@ func doctorCLIFixtureAt(t *testing.T, bin, root string) (string, string, string)
 	}
 	log := filepath.Join(t.TempDir(), "probes.log")
 	appPut(t, root, "go.mod", "module example.test/doctorcli\n\ngo 1.23\n")
-	status, out, errOut := runAppBinary(t, bin, root, "init", "--recipe", "go", "--agent", "sh .fireweed/agent.sh {prompt}", "--audit-agent", "sh .fireweed/audit.sh {prompt}", "--no-app")
+	status, out, errOut := runAppBinary(t, bin, root, "init", "--recipe", "go", "--agent", "bash .fireweed/agent.sh {prompt}", "--audit-agent", "bash .fireweed/audit.sh {prompt}", "--no-app")
 	if status != 0 || errOut != "" {
 		t.Fatalf("initialize Go fixture: status=%d stdout=%q stderr=%q", status, out, errOut)
 	}
@@ -73,6 +73,8 @@ func doctorCLIFixtureAt(t *testing.T, bin, root string) (string, string, string)
 	doctorCLIConfig(t, root, func(config map[string]any) {
 		config["modules"] = []string{"packages/alpha"}
 		config["hooks"].(map[string]any)["setup"] = "sh .fireweed/setup.sh"
+		config["agent"].(map[string]any)["command"] = []string{"bash", ".fireweed/agent.sh", "{prompt}"}
+		config["audit"].(map[string]any)["command"] = []string{"bash", ".fireweed/audit.sh", "{prompt}"}
 	})
 	doctorCLIGit(t, root, "init", "-b", "main")
 	doctorCLIGit(t, root, "config", "user.name", "Doctor CLI Fixture")

@@ -69,9 +69,9 @@ hooks:
   eval: [sh, .fireweed/eval.sh, "{module}", "{report}"]
   boundaries: [sh, .fireweed/boundaries.sh]
 agent:
-  command: [sh, %q, %q, "{prompt}", %q]
+  command: [bash, %q, %q, "{prompt}", %q]
 audit:
-  command: [sh, %q, %q, "{prompt}", %q]
+  command: [bash, %q, %q, "{prompt}", %q]
 `, worker, logs, bin, auditor, logs, bin))
 	appPut(t, root, ".fireweed/expected-bin", bin+"\n")
 	appPut(t, root, ".fireweed/eval.sh", `#!/bin/sh

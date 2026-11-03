@@ -30,6 +30,8 @@ eval_fix:
     - APP-141
     - APP-142
 module: app
+phase: audit
+run: 20261103T040710-7a84b102fdee95e56d35cb99
 ---
 
 ## Motivation
@@ -63,3 +65,5 @@ Only app eval files may change. All app evals must pass through normal
 fireweed verify, followed by an independent restricted audit and normal full
 implementation verification. Workers verify and return; only the outside
 owning controller may advance phases, commit or archive.
+## Provenance
+- evals 2026-11-03T04:17:39.505831Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=304 failing=0 passing=304
