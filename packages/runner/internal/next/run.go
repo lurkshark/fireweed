@@ -120,6 +120,7 @@ func RunWithBudget(ctx context.Context, request model.NextRequest, budget *Usage
 			agent, invokeErr := invoke.Agent(ctx, model.AgentRequest{
 				Snapshot: invokeSnapshot, Role: role, Prompt: prompt + feedback,
 				Bin: request.Bin, Timeout: request.Timeout,
+				LogRoot: state.Snapshot.Root, Run: state.Run, Phase: phase, Attempt: attempt + 1,
 			})
 			result.Steps = append(result.Steps, model.StepResult{Phase: phase, Role: role, Agent: agent})
 			if audit != nil {
@@ -149,6 +150,9 @@ func RunWithBudget(ctx context.Context, request model.NextRequest, budget *Usage
 			}
 			if stop := budget.TimeStop(ctx); stop != nil {
 				return result, stop
+			}
+			if invoke.IsLogError(invokeErr) {
+				return result, fmt.Errorf("invoke %s agent: %w", phase, invokeErr)
 			}
 			if agent.UsageLimit && ctx.Err() == nil && !errors.Is(invokeErr, context.Canceled) && !errors.Is(invokeErr, context.DeadlineExceeded) {
 				if err := budget.Wait(ctx, policy); err != nil {

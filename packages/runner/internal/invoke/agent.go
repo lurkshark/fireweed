@@ -2,7 +2,12 @@ package invoke
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/hex"
+	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -58,14 +63,104 @@ func Agent(ctx context.Context, request model.AgentRequest) (model.AgentResult, 
 		Env: map[string]string{"FIREWEED_BIN": request.Bin}, Timeout: timeout,
 	})
 	result = model.AgentResult{Stdout: process.Stdout, Stderr: process.Stderr, ExitCode: process.ExitCode}
+	path, logErr := logPath(request)
+	if logErr == nil {
+		result.LogPath = path
+		logErr = appendLog(path, process.Stdout, process.Stderr)
+	}
+	if logErr != nil {
+		logErr = &LogError{Cause: logErr}
+	}
 	if process.ExitCode != 0 {
 		patterns, err := stringValues(request.Snapshot.Config["limit_patterns"])
 		if err != nil {
-			return result, fmt.Errorf("limit_patterns: %w", err)
+			return result, errors.Join(runErr, logErr, fmt.Errorf("limit_patterns: %w", err))
 		}
 		result.UsageLimit = matchesLimit(process.Stdout, process.Stderr, patterns)
 	}
-	return result, runErr
+	return result, errors.Join(runErr, logErr)
+}
+
+// LogError distinguishes a persistence failure from an agent's usage response.
+type LogError struct{ Cause error }
+
+func (e *LogError) Error() string { return fmt.Sprintf("persist agent log: %v", e.Cause) }
+func (e *LogError) Unwrap() error { return e.Cause }
+
+func IsLogError(err error) bool {
+	var logError *LogError
+	return errors.As(err, &logError)
+}
+
+// NewRunID creates a log identity for one runner operation.
+func NewRunID() (string, error) {
+	var random [16]byte
+	if _, err := rand.Read(random[:]); err != nil {
+		return "", fmt.Errorf("create agent log run: %w", err)
+	}
+	return hex.EncodeToString(random[:]), nil
+}
+
+func logPath(request model.AgentRequest) (string, error) {
+	root := request.LogRoot
+	if root == "" {
+		root = request.Snapshot.Root
+	}
+	root, err := filepath.Abs(root)
+	if err != nil {
+		return "", fmt.Errorf("agent log root: %w", err)
+	}
+	run := request.Run
+	if run == "" {
+		run, err = NewRunID()
+		if err != nil {
+			return "", err
+		}
+	}
+	phase := request.Phase
+	if phase == "" {
+		phase = request.Role
+	}
+	if !pathComponent(run) || !pathComponent(phase) {
+		return "", fmt.Errorf("invalid agent log run or phase")
+	}
+	attempt := request.Attempt
+	if attempt <= 0 {
+		attempt = 1
+	}
+	return filepath.Join(root, ".fireweed", "runs", run, fmt.Sprintf("%s-%d.log", phase, attempt)), nil
+}
+
+func pathComponent(value string) bool {
+	return value != "" && value != "." && value != ".." && !strings.ContainsAny(value, "/\\")
+}
+
+func appendLog(path, stdout, stderr string) (err error) {
+	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+		return fmt.Errorf("create agent log directory: %w", err)
+	}
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		return fmt.Errorf("open agent log: %w", err)
+	}
+	defer func() { err = errors.Join(err, file.Close()) }()
+	// Lengths make each stream unambiguous even when it contains no final newline.
+	if _, err = fmt.Fprintf(file, "stdout %d bytes\n", len(stdout)); err != nil {
+		return fmt.Errorf("write agent log: %w", err)
+	}
+	if _, err = file.WriteString(stdout); err != nil {
+		return fmt.Errorf("write agent log: %w", err)
+	}
+	if _, err = fmt.Fprintf(file, "\nstderr %d bytes\n", len(stderr)); err != nil {
+		return fmt.Errorf("write agent log: %w", err)
+	}
+	if _, err = file.WriteString(stderr); err != nil {
+		return fmt.Errorf("write agent log: %w", err)
+	}
+	if _, err = file.WriteString("\n"); err != nil {
+		return fmt.Errorf("write agent log: %w", err)
+	}
+	return nil
 }
 
 func section(config map[string]any, key string) map[string]any {

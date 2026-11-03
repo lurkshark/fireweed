@@ -270,8 +270,22 @@ After accepted reconstruction, Drill MUST retain the rebuilt verification tree a
 ### RUN-062
 Drill MUST remove its verification worktree and input workspace on success, agent or verification failure, invalid edits, usage stop and cancellation. Cleanup failure MUST be returned as an error rather than reported as a passing drill.
 
+### RUN-063
+InvokeAgent MUST persist the invocation's complete stdout and stderr, including partial output on command failure, timeout or cancellation, at .fireweed/runs/<run>/<phase>-<attempt>.log under its log project root. Repeated invocations at the same path MUST append without discarding earlier records. AgentResult.LogPath MUST identify that file by an absolute path.
+
+### RUN-064
+Next MUST assign each invocation the held change's run, current phase and one-based phase attempt, writing its log under the invoking project's .fireweed/runs directory. Audit logs MUST stay in that invoking project, outside the restricted audit input workspace.
+
+### RUN-065
+Drill MUST allocate one log run identity per invocation and reuse it across reconstruction retries and usage waits. Its logs MUST use phase drill, the current one-based reconstruction attempt and the invoking project's root, outside scratch and reconstruction input workspaces.
+
+### RUN-066
+InvokeAgent MUST accept a log project root, run, phase and positive one-based attempt in AgentRequest. Unset fields MUST default to Snapshot.Root, a fresh run identifier, request Role and attempt 1, respectively.
+
 ## Decisions
 
 [0075-bounded-agent-invocation] An unset configured timeout defaults to 90 minutes. limit_patterns are
 case-insensitive literal substrings, using the final 20 lines of stdout followed
 by stderr with terminal newline separators trimmed.
+
+- agent-invocation-logs: Agent logs append length-labeled stdout and stderr records after each invocation, preserving both streams' bytes even without final newlines. A log write error is returned alongside any agent error while the captured result remains available.

@@ -133,6 +133,10 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 	feedback := ""
 	accepted := false
 	var failure error
+	logRun, err := invoke.NewRunID()
+	if err != nil {
+		return result, err
+	}
 	for attempt := 0; attempt < attempts; {
 		if err = ctx.Err(); err != nil {
 			failure = err
@@ -140,7 +144,11 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 		}
 		agentSnapshot := snapshot
 		agentSnapshot.Root = input
-		step, invokeErr := invoke.Agent(ctx, model.AgentRequest{Snapshot: agentSnapshot, Role: "worker", Prompt: prompt + feedback, Bin: request.Bin, Timeout: request.Timeout})
+		step, invokeErr := invoke.Agent(ctx, model.AgentRequest{
+			Snapshot: agentSnapshot, Role: "worker", Prompt: prompt + feedback,
+			Bin: request.Bin, Timeout: request.Timeout,
+			LogRoot: repo.Root, Run: logRun, Phase: "drill", Attempt: attempt + 1,
+		})
 		result.Steps = append(result.Steps, step)
 		if validationErr := validateInput(input, snapshot, *target, original); validationErr != nil {
 			failure = fmt.Errorf("invalid reconstruction edits: %w", validationErr)
@@ -151,6 +159,10 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 			break
 		}
 		if errors.Is(invokeErr, context.DeadlineExceeded) || errors.Is(invokeErr, context.Canceled) {
+			failure = invokeErr
+			break
+		}
+		if invoke.IsLogError(invokeErr) {
 			failure = invokeErr
 			break
 		}
