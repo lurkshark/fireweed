@@ -150,6 +150,34 @@ exec "$@"`)
 	}
 }
 
+func Test_RUN_067_WrapperOnlyPlaceholderCreatesPromptFile(t *testing.T) {
+	snap := agentFixture(t)
+	observations := t.TempDir()
+	promptFileTempDir(t)
+	wrapper := agentScript(t, snap.Root, "wrapper-only.sh", `printf '%s' "$1" > "$2/path"
+cat "$1" > "$2/content" || exit 12
+printf '%s' "$3" > "$2/second-path"
+shift 3
+exec "$@"`)
+	snap.Config["agent"] = map[string]any{
+		"command": []any{"/bin/sh", "-c", "printf wrapper-only"},
+		"wrap":    []any{wrapper, "{prompt_file}", observations, "{prompt_file}"},
+	}
+	prompt := "wrapper-only 'literal' {prompt_file}\nΩ"
+	result, err := runner.InvokeAgent(context.Background(), request(snap, "worker", prompt))
+	if err != nil || result.Stdout != "wrapper-only" || result.ExitCode != 0 {
+		t.Errorf("wrapper-only invocation = %#v, %v", result, err)
+	}
+	path := promptFileObservation(t, observations, "path")
+	if got := promptFileObservation(t, observations, "content"); got != prompt {
+		t.Errorf("wrapper-only prompt file content = %q, want %q", got, prompt)
+	}
+	if second := promptFileObservation(t, observations, "second-path"); second != path {
+		t.Errorf("wrapper-only placeholders used different files: %q, %q", path, second)
+	}
+	promptFileRemoved(t, path, snap.Root)
+}
+
 func Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure(t *testing.T) {
 	for _, tc := range []struct{ name string }{
 		{"success"}, {"nonzero"}, {"timeout"}, {"cancellation"}, {"launch failure"},
