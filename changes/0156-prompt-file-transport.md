@@ -2,6 +2,8 @@
 bases:
     RUN-003: 7d803e4b
 module: runner
+phase: audit
+run: 20261103T075827-096b27941f3bb219cec10904
 ---
 
 ## Motivation
@@ -22,7 +24,7 @@ result fields, logging, command selection and execution behavior.
 
 ## Added
 
-### new:prompt-file-lifetime
+### RUN-067
 InvokeAgent MUST create one temporary file containing the exact request Prompt only when {prompt_file} occurs in the selected command or wrapper templates, and expand that placeholder to its absolute path. The file MUST remain available through command execution and be removed afterward, including after launch failure, nonzero exit, timeout or cancellation.
 
 ## Modified
@@ -63,3 +65,5 @@ flagged IDs; retain earlier clearances without repeating their review.
 
 ## Audit
 
+## Provenance
+- evals 2026-11-03T08:27:40.623917Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=158 failing=14 passing=144
