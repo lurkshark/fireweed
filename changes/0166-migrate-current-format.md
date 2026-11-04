@@ -1,0 +1,73 @@
+---
+bases:
+    APP-014: 1ce99378
+module: app
+---
+
+## Motivation
+
+ACCEPTANCE C6 selects the design's migrate command and explicitly permits a
+verified no-op for format 1. Users need a checked confirmation that their
+current project already uses the supported format, including JSON and causes
+when verification fails. Implement no older-format rewrites in this slice.
+
+## Interface
+
+No public signatures change. Compose project loading and static Check through
+the app CLI; validation runs no hooks or agents and performs no writes.
+
+## Added
+
+### new:migrate-current
+migrate MUST discover the nearest project root and validate a format-1 project with project.Check before reporting already current with exit 0. The format-1 operation MUST leave working files, index, HEAD and refs unchanged.
+
+### new:migrate-json
+migrate --json MUST emit schema 1 with string data equal to the plain confirmation on success or null data on failure. It MUST retain diagnostic codes, messages and warning status, with empty stderr.
+
+### new:migrate-failures
+migrate MUST return exit 2 for usage, project discovery or loading failures and unsupported format versions, using U01 for usage, C01 for unsupported formats and the existing loading cause code otherwise. Static validation errors MUST return exit 1 with their existing cause codes. All failures MUST include corrective guidance.
+
+## Modified
+
+### APP-014
+gc and migrate listed by help MUST dispatch supported maintenance operations instead of reporting that they are unimplemented or under construction.
+
+## Removed
+
+## Decisions
+
+## Notes
+
+Accept no positional arguments or command-specific flags other than --json.
+Require explicit configuration format version 1; unsupported versions are
+diagnosed, never rewritten or guessed. Reuse project.Check and preserve its
+diagnostics and warnings. This is only the owner-selected current-format no-op;
+the full compatibility/migration obligations remain open for later work.
+
+The last unfinished-command representative is migrate. APP-014 intentionally
+changes that temporary requirement to supported maintenance dispatch as C6
+implements the last placeholder. Update its expected result through this normal
+Modified spec. Retain help-listing, plain/JSON status/output and diagnostics
+assertions under supported and invalid requests; keep U01 rejection assertions
+for invalid maintenance usage. Do not weaken any other existing assertion.
+
+Use public CLI evals in temporary repositories for nested-root discovery,
+valid/empty current-format projects, exact confirmation/JSON, repeated no-op
+with dirty/staged/untracked files and all refs preserved, malformed config,
+unsupported format, a static validation error and argument rejection before
+mutation. Keep fixtures representative, own Verify below five minutes and full
+impl Verify below twenty-five. No process instrumentation or time-bound changes.
+
+Do not edit other modules, root config, protected setup, module SPEC/Decisions,
+bounds or timeouts. C7 tooling/recipes and C8 regeneration follow only after C6.
+Workers run pinned fireweed context, verify with fireweed verify --quick,
+poll until terminal and return. They never commit, invoke lifecycle mutators in
+the held checkout, edit run/phase/Provenance or alter frozen evals/interfaces.
+Only the outside owning controller advances, commits, applies and archives
+with normal full verification.
+
+The separate restricted auditor edits only the existing Audit body. Findings
+use - ID: "exact clause" — missing assertion. Passing audit writes No findings
+and Checked IDs. Re-audits cover only flagged IDs, retaining prior clearances
+and all counters/bounds.
+
