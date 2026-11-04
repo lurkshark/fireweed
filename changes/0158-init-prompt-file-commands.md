@@ -3,6 +3,8 @@ bases:
     APP-053: 724ef7fa
     APP-054: 35e56075
 module: app
+phase: audit
+run: 20261104T082316-c3cd0c4234bd8471a3269d76
 ---
 
 ## Motivation
@@ -64,3 +66,5 @@ retaining previous clearances and every counter/bound.
 
 ## Audit
 
+## Provenance
+- evals 2026-11-04T08:38:36.574541Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=306 failing=2 passing=304

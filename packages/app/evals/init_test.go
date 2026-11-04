@@ -301,6 +301,54 @@ func Test_APP_050_APP_052_NoneDefaultApp(t *testing.T) {
 	}
 }
 
+func Test_APP_053_InitFileOnlyWorkerCommand(t *testing.T) {
+	bin := buildAppBinary(t)
+	root := t.TempDir()
+	agent := "touch FILE_WORKER_RAN && printf '%s' {prompt_file}"
+	status, stdout, stderr := runAppBinary(t, bin, root, "init", "--recipe", "none", "--agent", agent, "--no-app")
+	if status != 0 || stderr != "" || !strings.Contains(stdout, "eval") {
+		t.Errorf("APP-053 file-only worker init: status=%d stdout=%q stderr=%q", status, stdout, stderr)
+	}
+	if status != 0 {
+		assertNoInitConfig(t, root)
+		return
+	}
+	config := readInitConfig(t, root)
+	if config.Agent.Command != agent {
+		t.Errorf("APP-053 file-only worker command = %#v; want exact shell template %q", config.Agent.Command, agent)
+	}
+	if !config.Audit.Enabled || config.Audit.Command != nil {
+		t.Errorf("APP-054 audit fallback changed: %+v", config.Audit)
+	}
+	if _, err := os.Stat(filepath.Join(root, "FILE_WORKER_RAN")); !os.IsNotExist(err) {
+		t.Errorf("init executed worker command: %v", err)
+	}
+}
+
+func Test_APP_054_InitFileOnlyAuditCommand(t *testing.T) {
+	bin := buildAppBinary(t)
+	root := t.TempDir()
+	auditor := "touch FILE_AUDITOR_RAN && printf '%s' {prompt_file}"
+	status, stdout, stderr := runAppBinary(t, bin, root, "init", "--recipe", "none", "--agent", "codex", "--audit-agent", auditor, "--no-app")
+	if status != 0 || stderr != "" || !strings.Contains(stdout, "eval") {
+		t.Errorf("APP-054 file-only audit init: status=%d stdout=%q stderr=%q", status, stdout, stderr)
+	}
+	if status != 0 {
+		assertNoInitConfig(t, root)
+		return
+	}
+	config := readInitConfig(t, root)
+	if got := initCommand(config.Agent.Command); !reflect.DeepEqual(got, []string{"codex", "exec", "{prompt}"}) {
+		t.Errorf("APP-053 worker preset changed: %q", got)
+	}
+	if !config.Audit.Enabled || config.Audit.Command != auditor {
+		t.Errorf("APP-054 file-only audit command = %+v; want exact shell template %q", config.Audit, auditor)
+	}
+	if _, err := os.Stat(filepath.Join(root, "FILE_AUDITOR_RAN")); !os.IsNotExist(err) {
+		t.Errorf("init executed audit command: %v", err)
+	}
+}
+
 func Test_APP_042_APP_048_APP_049_APP_050_APP_053_APP_054_APP_060_LocalInit(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := t.TempDir()
