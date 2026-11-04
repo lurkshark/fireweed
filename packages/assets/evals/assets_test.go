@@ -36,6 +36,19 @@ func Test_AST_008_Help(t *testing.T) {
 	}
 }
 
+func Test_AST_048_GCHelp(t *testing.T) {
+	help := assets.Help()
+	for _, check := range []struct{ pattern, description string }{
+		{`(?i)\bgc\b[^.\n]*prunes?[^.\n]*stale claims`, "gc prunes stale claims"},
+		{`(?i)\bgc\b[^.\n]*prunes?[^.\n]*attempt refs? for archived changes`, "gc prunes attempt refs for archived changes"},
+		{`(?i)\bgc\b[^.\n]*prunes?[^.\n]*drill refs? older than gc\.drill_max_age`, "gc prunes old drill refs"},
+		{`(?i)gc\.drill_max_age[^.\n]*positive Go duration[^.\n]*fireweed\.yaml`, "positive Go duration setting in fireweed.yaml"},
+		{`(?i)gc\.drill_max_age[^.\n]*default[^.\n]*720h[^.\n]*\(30 days\)`, "720h (30 days) default"},
+	} {
+		requirePattern(t, help, check.pattern, check.description)
+	}
+}
+
 func Test_AST_002_Playbooks(t *testing.T) {
 	for _, name := range []string{"author-change", "evals", "audit", "impl", "regenerate"} {
 		text, err := assets.Playbook(name)
