@@ -1,18 +1,16 @@
 # Rebuild decisions
 
-Clarifications of the design and intentional differences from the bootstrap, one
-short entry each. Decisions from the first run are on the `rebuild-v1` branch;
-[LESSONS.md](LESSONS.md) summarizes the ones that still matter.
+Retained design clarifications and intentional reference-smoke differences.
+These do not add milestone scope or replace the unchanged design. Standing
+process and fixture guidance is consolidated in SYSTEM.md; completed procedures
+and first-run lessons remain in git history, never reconstruction inputs.
 
 ## D001–D004 — History (2026-10-26)
 
-The first run is preserved on `rebuild-v1`; `main` restarted from the setup
-baseline. The owner then accepted three design revisions, all reflected in
-fireweed-design-v1.md and tracked in ACCEPTANCE: usability (R26–R28), any merge
-strategy (R29) and bounded effort (R22–R25). The rebuild uses the tested
-bootstrap as its pre-cutover controller (0.1.1), never as an implementation
-oracle, and proves behavior in vertical slices through NEW. PROGRESS.md records
-the current controller and the retained bootstrap recovery pin after EC6.
+The first run was retired; the owner accepted usability, merge-strategy and
+bounded-effort revisions now reflected in the design and ACCEPTANCE R22–R29.
+Bootstrap governed pre-cutover work only. PROGRESS records the current NEW pin;
+neither the old branch nor bootstrap source/tests are implementation oracles.
 
 ## D005 — Initial product diagnostic allocation
 
@@ -20,8 +18,8 @@ The design requires stable codes and explanations but does not assign a meaning
 to P2-01. AST-003 assigns it to missing genuine fail-first evidence.
 The bootstrap's operational `explain P2-01` instead describes a forbidden-zone
 edit. The completed controller/product smoke records this intentional difference;
-the authored product meaning remains authoritative. Bootstrap code assignments are not
-product authority. Other code mappings remain to be authored with their behavior.
+the authored product meaning remains authoritative. Bootstrap code assignments
+are not product authority.
 
 ## D006 — Diagnostic allocation (human review 3)
 
@@ -31,21 +29,20 @@ product. This allocation did not itself change the controller pin.
 
 | Range | Area and fixed assignments |
 | --- | --- |
-| C01–C99 | Deterministic configuration and static checks. C01 configuration discovery/decoding; C02 module graph; C03 document/item syntax; C04 normative text; C05 ID ownership/uniqueness; C06 spec tags; C07 change structure/Motivation; C08 bases; C09 handles; C10 coverage; C11 eval-hook/JUnit contract; C12 metadata/zone declarations; C13 queue identity. C14–C16 reserved. C17 spec shape, C18 copied conventions, C19 Decision length retain design meanings. |
+| C01–C99 | Deterministic configuration and static checks. C01 configuration discovery/decoding; C02 module graph; C03 document/item syntax; C04 normative text; C05 ID ownership/uniqueness; C06 spec tags; C07 change structure/Motivation; C08 bases; C09 handles; C10 coverage; C11 eval-hook/JUnit contract; C12 metadata/zone declarations; C13 queue identity. C14–C16 doctor diagnostics are allocated in D007. C17 spec shape, C18 copied conventions, C19 Decision length retain design meanings. |
 | P01–P99, P2-01 | Lifecycle and approval. P01 preconditions; P02 claims; P03 approved state; P04 approval warning; P05 stale base; P06 blocked/Questions; P07 unapproved-work limit; P08 repeated-module warning; P09 audit submission. Existing P2-01 remains missing genuine fail-first evidence. |
 | Z01–Z99 | Phase-zone permissions. Existing Z01 remains a forbidden path edit. |
 | X01–X99 | Boundaries. X01 unsuppressed violation; X02 required hook missing or unable to complete; X03 reasoned opt-out; X04 boundary enforcement unnecessary. B05 is retired. |
-| U01–U99 | CLI usage and lookup. U01 invalid arguments/options; U02 unknown lookup name. Replace the legacy CLI_* labels. |
+| U01–U99 | CLI usage and lookup. U01 invalid arguments/options; U02 unknown lookup name. The legacy CLI_* labels are retired. |
 | E01–E99 | Required eval results. E01 an enforced testcase failed where passing results are required. |
 | H01–H04 | History, with the design's exact meanings. |
 | B01–B04 | Budget/report warnings only, with the design's exact meanings. No B05 allocation. |
 
 Unlisted numbers are reserved. Every emitted code must have an accurate cause
 and corrective action in explain. Wrong label assertions are repaired through
-eval_fix without losing the behavior assertions or ID coverage. Normal changes
-then establish exact assigned-code assertions and migrate implementation. The
-spec split removes the old blanket C01 promise before that migration; no existing
-Specs or Decisions are edited by hand.
+eval_fix without losing behavior assertions or ID coverage; implementation/code
+allocation changes use normal spec changes. Existing product Specs and Decisions
+are never edited by hand.
 
 ## D007 — Doctor diagnostics
 
@@ -64,12 +61,9 @@ status and GOAL links the planned milestone.
 
 ## D009 — Early core-loop cutover milestone (owner, 2026-10-30)
 
-The owner selected an early Go/current-format core-loop cutover before drills,
-regeneration validation and the remaining product surface. It required 0134–0138
-and ACCEPTANCE EC1–EC5 under bootstrap, then EC6 as a separate controller
-pin/handoff; PROGRESS records completion. Full design obligations and
-full-completion gates remain open; this changed sequencing, not product scope
-or enforcement.
+The completed Go/current-format core-loop cutover preceded drills and remaining
+product work. It changed sequencing only: every design obligation and
+full-completion gate remains required. ACCEPTANCE summarizes completed milestones.
 
 ## D010 — Held-change continuation
 

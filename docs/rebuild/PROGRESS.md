@@ -1,33 +1,35 @@
 # Rebuild handoff
 
-**Current milestone: stabilization and cleanup complete.** A, B and C1–C8 passed.
-C7 includes both fresh default-init doctor proofs. The single real gitstore
-regeneration passed its normal full gate and is archived, with retained inputs
-unchanged. Final local `go test ./...` passed. No queued change or live claim
-remains; required proof refs and the unrelated worktree are preserved.
-Execution stopped after C8 without pushing. CK1–CK4 are deferred;
-every full-completion gate remains required and full product completion is open.
+**State:** stabilization A → B → C1–C8 is complete. Both additional recipes passed
+fresh default-init doctor proofs; the real gitstore regenerate passed full
+verification. Final local `go test ./...` passed at that handoff. The queue and
+claims were empty, with prior proof refs and the unrelated worktree preserved.
+
+**Next milestone: CK1–CK4, approved plan; execution not authorized.** No CK review,
+correction, candidate checks
+or real drill has started. [ACCEPTANCE](ACCEPTANCE.md#planned-milestone--checks-contracts-and-proof-ck1ck4)
+holds the ordered plan; [GOAL](GOAL.md) is its future restart prompt.
+Approved plan budget: **three days from the next authorized execution start**.
+Start/deadline are unset until execution is authorized; record them then and
+retain them on resume. The completed stabilization budget is closed.
+Full product completion remains open; every full-completion gate is retained.
+
+**Push authorization (2026-11-04):** the owner authorized a separate planning
+commit and one push of all pending `main` commits to origin. This authorizes no
+CK execution, future push, publication, tags or bookkeeping-ref push.
 
 **Controller pin:** `/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed`,
 version 0.1.0, source `281ae9498c0fa20b44dc525494427ff123331ab3`, SHA-256
 `bf0dbc59b7fa7ce2ff957a6f21f34903655b6b054a10695cfeef5ece67fa3575`.
-Keep it separate from mutable `bin/fireweed`; bootstrap is explicit recovery only.
-This non-trimpath pin reproduces at its embedded clean source location.
-Worker PATH starts with the current tree's `.fireweed/bin`; use the prescribed
-rebuild cache and exact agent argv in [GOAL.md](GOAL.md).
+Keep it unchanged and separate from mutable `bin/fireweed`; bootstrap is explicit
+owner-directed recovery only. This non-trimpath pin reproduces at its embedded
+clean source location. Worker PATH starts with the current tree's `.fireweed/bin`;
+use the prescribed rebuild cache and exact agent argv in GOAL.
 
-**Next:** Owner review before selecting further execution. The completed scope
-is in [ACCEPTANCE](ACCEPTANCE.md#current-milestone--stabilization-and-cleanup).
-Execution start: **2026-11-02 19:53:07 PST**. Three-day deadline:
-**2026-11-05 19:53:07 PST** (2026-11-06 03:53:07 UTC).
-Stop for owner review at that deadline or after C8, whichever comes first.
-No push or module drill is authorized for execution.
-
-**Open problems:** None unresolved within this milestone. Existing testcase-budget
-warnings remain outside this cleanup. Both stack tools are available;
-use the existing pnpm through a project version pin because the unpinned
-Corepack default tries the registry. Keep every assertion, logging and
-independent-audit control intact.
-Preserve normal approval/audit/retry bounds.
-Committed evidence remains in [archived changes](../../changes/archive/) and
-[native drill reports](../../.fireweed/drills/); git history retains older handoffs.
+**Open checkpoints:** owner authorization of CK execution; then CK3 input/
+verifier isolation under this unchanged pin must be established before the real
+agent. No implementation need is presumed. Existing testcase-budget warnings
+remain outside scoped cleanup. Preserve normal approval/audit/retry bounds;
+read live approval state at execution rather than treating the prior handoff as
+current approval. Evidence remains in archived Notes/Provenance and native drill
+reports; no supplemental inventories or manifests.
