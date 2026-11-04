@@ -1,6 +1,8 @@
 ---
 bases: {}
 module: app
+phase: audit
+run: 20261104T112355-b20f8f9cb762f7216a46ef8b
 ---
 
 ## Motivation
@@ -17,13 +19,13 @@ and zero Now so the backend uses current UTC time.
 
 ## Added
 
-### new:gc-result
+### APP-150
 gc MUST discover the nearest project root, invoke workflow.GC and return exit 0 on success. Plain output MUST list the sorted full pruned ref names or explicitly report that no refs were pruned.
 
-### new:gc-json
+### APP-151
 Successful gc --json MUST emit schema 1 object data containing a pruned array of sorted full deleted ref names, including an empty array when nothing was pruned, with empty diagnostics and stderr.
 
-### new:gc-failures
+### APP-152
 gc MUST return exit 2 for project discovery or configuration failures, retaining the cause code or C01 when uncoded. Other cleanup failures MUST return exit 1 retaining the cause code or P01 when uncoded. Failures MUST give corrective diagnostics, with null data and empty stderr in JSON mode.
 
 ## Modified
@@ -64,3 +66,5 @@ use - ID: "exact clause" — missing assertion. Passing audit writes No findings
 and Checked IDs. Re-audits cover only flagged IDs, retaining prior clearances
 and all counters/bounds.
 
+## Provenance
+- evals 2026-11-04T11:40:03.255739Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=313 failing=7 passing=306
