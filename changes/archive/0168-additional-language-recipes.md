@@ -3,7 +3,7 @@ audit_rounds: 1
 bases:
     AST-004: a9742599
 module: assets
-phase: impl
+phase: applied
 run: 20261104T165115-6eb1fbc842333208fb055f7a
 ---
 
@@ -60,6 +60,8 @@ BuiltinRecipe MUST return the embedded recipes for go, typescript-pnpm and pytho
 
 ## Decisions
 
+The TypeScript eval hook uses Node's built-in TypeScript test runner through pnpm. Python modules are importable packages at their module directories in a uv workspace, and their eval hook uses unittest through uv.
+
 ## Notes
 
 Fail-first: `GOCACHE=/tmp/fireweed-rebuild-cache go test ./packages/assets/evals -run 'Test_AST_(004_Additional|049_|050_|051_|052_|053_|054_|055_|056_|057_|058_)' -count=1` failed for every assigned ID because the current `BuiltinRecipe` rejects `typescript-pnpm` and `python-uv`. Missing behavior is implementation-writable in `packages/assets/internal/recipe/recipe.go` and new embedded files under `packages/assets/internal/recipe/files/`; no retained interface edit is needed.
@@ -67,6 +69,14 @@ Fail-first: `GOCACHE=/tmp/fireweed-rebuild-cache go test ./packages/assets/evals
 Evals step: `PATH=/Users/joel/Workspace/fireweed/.fireweed/bin:$PATH GOCACHE=/tmp/fireweed-rebuild-cache /Users/joel/Workspace/fireweed/.fireweed/bin/fireweed verify --quick` passed (`verify: evals`).
 
 Audit-gap correction: AST-050 now asserts guidance against a second dependency graph; AST-056 now varies a module directory and a resolved interface zone. `GOCACHE=/tmp/fireweed-rebuild-cache go test ./packages/assets/evals -run 'Test_AST_(050_|056_)' -count=1` still fails for both IDs on the missing built-ins, and pinned `fireweed verify --quick` passed (`verify: evals`).
+
+Implementation proof: `GOCACHE=/tmp/fireweed-rebuild-cache go build -o bin/fireweed .` succeeded. In each fresh scratch Git project, `git init -q -b main`, `bin/fireweed init --recipe typescript-pnpm|python-uv --agent 'codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt}' --audit-agent <same argv> --no-app`, the documented root workspace files, `pnpm install --offline` or `UV_CACHE_DIR=/tmp/fireweed-uv-cache UV_OFFLINE=1 uv sync --offline`, a copy of the invoking subject in `.fireweed/bin/fireweed`, and an initial Git commit prepared doctor. With scratch `.fireweed/bin` first on PATH, `bin/fireweed doctor --no-agent` passed separately for both recipes: baseline eval/boundaries, failing_eval, missing_id, undeclared, internal_eval, and every recovery. The Python proof was rerun in a new fresh init after correcting the unmapped testcase name; its first run exposed that mismatch.
+
+The earlier `--no-app` proofs are superseded. Controller review interrupted the first implementation invocation before application: a public-bundle probe throwing before `test('PRB001Unstarted', ...)` registration exposed fabricated named failure evidence, and the Python template did not match its declared interface layout. The same held run and audit counter were retained. A second implementation invocation used exactly `codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`; no frozen eval or interface was edited.
+
+For the corrected candidate, `GOCACHE=/tmp/fireweed-rebuild-cache go build -o bin/fireweed .` and `go test ./packages/assets/evals -run 'Test_AST_(004_Additional|049_|050_|051_|052_|053_|054_|055_|056_|057_|058_)' -count=1` passed. The public collection probe returned a nonzero hook with a generic collection failure and no `PRB001Unstarted` testcase. Bounded temporary public-bundle checks confirmed that spec-looking collection filenames remain unmapped and a started test calling `exit(0)` fails the report for both languages.
+
+For each corrected proof, a separate fresh scratch Git project ran `git init -q -b main`; `bin/fireweed init --recipe typescript-pnpm` or `--recipe python-uv` with the exact configured Codex agent and audit-agent argv, with default app creation; copied that invoking subject to scratch `.fireweed/bin/fireweed`; placed scratch `.fireweed/bin` first on PATH; created the documented root `package.json` plus `pnpm-workspace.yaml` or root `pyproject.toml`; ran `pnpm install --offline` with `packageManager: pnpm@10.15.1` or `UV_CACHE_DIR=/tmp/fireweed-uv-cache UV_OFFLINE=1 uv sync --offline`; then committed only the scratch setup. Scratch `.fireweed/bin/fireweed doctor --no-agent` passed separately for both: baseline eval/boundaries, failing_eval, missing_id, undeclared, internal_eval and all four recoveries. After doctor, `packages` contained only the default `app`, and `git status --short` showed only the scratch `doctor.out` log, confirming fixture cleanup. A first TypeScript scratch wrapper used nonexistent `./bin/fireweed`; the corrected fresh proof used `.fireweed/bin/fireweed`.
 
 Preserve every existing Go recipe assertion, hook behavior, payload and other
 assets behavior. Keep specs atomic and new metadata consistent with the files
@@ -122,6 +132,7 @@ other IDs were not re-audited.
 - audit 2026-11-04T17:01:16.619258Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 - evals 2026-11-04T17:04:41.518012Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=117 failing=31 passing=86
 - audit 2026-11-04T17:10:27.764306Z agent=manual fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-04T17:59:56.949361Z agent=manual fireweed=0.1.0 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=1014 failing=0 passing=1014
 ## Audit
 
 No findings; checked AST-004, AST-049, AST-050, AST-051, AST-052, AST-053, AST-054, AST-055, AST-056, AST-057, AST-058

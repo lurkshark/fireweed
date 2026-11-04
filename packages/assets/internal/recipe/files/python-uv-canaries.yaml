@@ -1,0 +1,40 @@
+version: 1
+baseline:
+  SPEC.md: |
+    ---
+    name: {{name}}
+    id_prefix: {{prefix}}
+    depends_on: []
+    ---
+    ## Specs
+    ### {{prefix}}-001
+    The canary MUST pass.
+  __init__.py: |
+    """Retained interface for {{name}}."""
+    MODULE_NAME = '{{name}}'
+  evals/test_baseline.py: |
+    import unittest
+    from {{package}} import MODULE_NAME
+    class TestBaseline(unittest.TestCase):
+        def test_{{prefix}}001Baseline(self):
+            self.assertEqual('{{name}}', MODULE_NAME)
+undeclared:
+  undeclared.py: |
+    __import__('{{other_dir}}'.split('/')[-1])
+internal_eval:
+  internal/canary.py: |
+    value = 1
+  evals/test_internal.py: |
+    import {{package}}.internal.canary
+failing_eval:
+  evals/test_failing.py: |
+    import unittest
+    class TestFailing(unittest.TestCase):
+        def test_{{prefix}}001Fail(self):
+            self.fail('doctor canary')
+missing_id:
+  evals/test_unlinked.py: |
+    import unittest
+    class Test_Unlinked(unittest.TestCase):
+        def test_case(self):
+            pass

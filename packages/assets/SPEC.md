@@ -22,7 +22,7 @@ Playbook MUST return nonempty instructions for author-change, evals, audit, impl
 Explain MUST describe the cause and corrective action for C01 (invalid configuration), C04 (non-normative text), C05 (foreign or duplicate spec/edit identities), C06 (invalid tags), C07 (missing Motivation or invalid change module target), C08 (missing/stale edit bases or absent targets), C09 (undeclared handles), X01 (boundary violations), X02 (missing/incomplete boundary hooks), X03 (reasoned boundary opt-out), X04 (unnecessary boundary enforcement), U01 (invalid arguments/options or unsupported commands), U02 (unknown or ambiguous requested names) and P2-01 (missing genuine fail-first evidence). Explain MUST reject unknown codes.
 
 ### AST-004
-BuiltinRecipe MUST return the embedded Go recipe for go and reject unknown names.
+BuiltinRecipe MUST return the embedded recipes for go, typescript-pnpm and python-uv and reject unknown names.
 
 ### AST-005
 The Go eval hook MUST run the requested module's Go tests and write JUnit testcase names, classnames, pass/fail/skip and elapsed seconds while preserving test failure exit status.
@@ -175,9 +175,41 @@ The Go recipe instructions and module SPEC template MUST explain that a letter i
 ### AST-048
 Help MUST document that gc prunes stale claims, attempt refs for archived changes and drill refs older than gc.drill_max_age. It MUST identify gc.drill_max_age as a positive Go duration in fireweed.yaml with default 720h (30 days).
 
+### AST-049
+BuiltinRecipe for typescript-pnpm and python-uv MUST provide nonempty instructions, interface/evals/disposable defaults, eval/boundaries/setup commands, protected glue, language lockfile worker_writable entries and project-relative instruction, hook, module-template and canary files.
+
+### AST-050
+The additional recipe instructions MUST explain stack prerequisites and workspace setup, using pnpm workspaces with package exports for TypeScript and uv workspaces with an import linter for Python. They MUST explain deriving the module graph from FIREWEED_BIN modules --json rather than maintaining another dependency graph.
+
+### AST-051
+The additional recipes' module templates and canary snippets MUST support name, prefix, package, module_dir and other_dir substitutions used by doctor.
+
+### AST-052
+Each additional recipe MUST provide a version-1 canary map containing baseline, undeclared, internal_eval, failing_eval and missing_id entries.
+
+### AST-053
+Rendered baseline modules for typescript-pnpm and python-uv MUST pass their declared eval and boundaries hooks.
+
+### AST-054
+Each additional recipe's eval hook MUST run the requested module's language evals and write JUnit testcase names, classnames, pass/fail/skip and elapsed seconds while preserving test failure exit status.
+
+### AST-055
+The additional eval hooks MUST retain started-but-unfinished tests and collection or compile failures as visible failures rather than passing or empty evidence.
+
+### AST-056
+The additional boundaries hooks MUST query FIREWEED_BIN modules --json and derive their checks from its module directories, depends_on and resolved zone map.
+
+### AST-057
+The additional boundaries hooks MUST report module-prefixed violations for imports of undeclared modules and for eval imports reaching beyond retained interfaces, including their own implementation.
+
+### AST-058
+Each supplied additional-recipe canary MUST expose its named violation through the corresponding hook. The hooks MUST pass cleanly again after the canary is removed.
+
 ## Decisions
 
 [0014-go-setup-bundle] Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,
 .fireweed/templates/module/SPEC.md and api.go.tmpl, and
 .fireweed/canaries/canaries.yaml. Setup runs go mod download after the project has
 a Go module; the recipe instructions explain that prerequisite.
+
+- additional-language-recipes: The TypeScript eval hook uses Node's built-in TypeScript test runner through pnpm. Python modules are importable packages at their module directories in a uv workspace, and their eval hook uses unittest through uv.
