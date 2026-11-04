@@ -1,11 +1,11 @@
 # Rebuild handoff
 
-**2026-11-02 — current milestone: stabilization and cleanup.** A and B passed.
-C1 is complete and local `go test ./...` passed. C2 runner invocation and
-doctor probe logging are applied with normal full verification. C3 runner
-prompt-file transport is applied; doctor expansion and init acceptance are next.
-Queue and shared claims are empty. CK1–CK4 are deferred; full product completion
-remains open. Existing testcase-budget warnings remain outside this cleanup.
+**Current milestone: stabilization and cleanup.** A, B, C1 and C2 passed.
+C3 runner and doctor prompt-file support are applied. The owner-authorized
+audited eval recovery passed normal full verification and local `go test ./...`.
+Init custom-command acceptance is next. Queue and shared claims are empty.
+CK1–CK4 are deferred; full product completion remains open. Existing
+testcase-budget warnings remain outside this cleanup.
 
 **Controller pin:** `/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed`,
 version 0.1.0, source `281ae9498c0fa20b44dc525494427ff123331ab3`, SHA-256
@@ -15,7 +15,7 @@ This non-trimpath pin reproduces at its embedded clean source location.
 Worker PATH starts with the current tree's `.fireweed/bin`; use the prescribed
 rebuild cache and exact agent argv in [GOAL.md](GOAL.md).
 
-**Next:** Finish C3 doctor prompt-file expansion and init custom commands, then C4–C8 in [ACCEPTANCE's order](ACCEPTANCE.md#current-milestone--stabilization-and-cleanup).
+**Next:** Finish C3 init custom-command acceptance, then C4–C8 in [ACCEPTANCE's order](ACCEPTANCE.md#current-milestone--stabilization-and-cleanup).
 Execution start: **2026-11-02 19:53:07 PST**. Three-day deadline:
 **2026-11-05 19:53:07 PST** (2026-11-06 03:53:07 UTC).
 Stop for owner review at that deadline or after C8, whichever comes first.
