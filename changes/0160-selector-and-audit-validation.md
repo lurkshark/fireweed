@@ -3,6 +3,8 @@ bases:
     FLOW-059: c604037a
     FLOW-061: bd22d0d8
 module: workflow
+phase: audit
+run: 20261104T092604-46015dd5982246d41866b1ac
 ---
 
 ## Motivation
@@ -32,6 +34,10 @@ Start MUST distinguish an explicit unknown change selector from queue eligibilit
 ## Decisions
 
 ## Notes
+
+Fail-first: the targeted public API evals failed against the current product.
+Audit Verify accepted missing and incomplete Checked IDs; Start returned P01
+for unknown selectors, and the other lookup errors omitted the valid slug.
 
 Preserve every existing assertion, accepted selector form, implicit selection,
 dirty/static/ownership/stale precondition and cause code. Known but ineligible
@@ -68,3 +74,5 @@ retaining prior clearances and all counters/bounds.
 
 ## Audit
 
+## Provenance
+- evals 2026-11-04T09:37:27.360774Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=150 failing=2 passing=148
