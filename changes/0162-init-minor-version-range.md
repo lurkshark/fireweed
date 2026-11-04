@@ -2,7 +2,7 @@
 bases:
     APP-041: "96246406"
 module: app
-phase: audit
+phase: impl
 run: 20261104T101354-2c33ac1a4ecbf37807fa3201
 ---
 
@@ -55,5 +55,7 @@ retaining prior clearances and all counters/bounds.
 
 ## Audit
 
+No findings; checked APP-041
 ## Provenance
 - evals 2026-11-04T10:27:59.744809Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=306 failing=1 passing=305
+- audit 2026-11-04T10:28:30.466184Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
