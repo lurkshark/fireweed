@@ -155,7 +155,7 @@ init MUST create an editable SYSTEM.md project scaffold when absent and retain a
 init MUST create or update the fireweed managed AGENTS.md block, pointing to author-change and context, while preserving text outside the markers.
 
 ### APP-045
-init --recipe go MUST copy assets.BuiltinRecipe(go)'s Files into their project-relative destinations without changing their contents.
+init --recipe <name> MUST accept any currently available recipe returned by assets.BuiltinRecipe(name) and copy its Files into their project-relative destinations without changing their contents.
 
 ### APP-046
 Successful init MUST print the selected recipe's instructions on stdout and return exit 0 with empty stderr.

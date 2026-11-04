@@ -216,14 +216,17 @@ func zoneMap(z contracts.Zones) map[string]any {
 }
 
 func selectInitRecipe(root, name string) (assets.Recipe, string, error) {
-	switch name {
-	case "go":
-		r, err := assets.BuiltinRecipe("go")
-		return r, "C03", err
-	case "none":
+	if name == "none" {
 		return assets.Recipe{Name: "none", Instructions: noneInstructions, Hooks: map[string]any{}, Files: map[string]string{}}, "", nil
 	}
 	if !strings.HasPrefix(name, "./") && !strings.HasPrefix(name, "../") && !filepath.IsAbs(name) {
+		r, err := assets.BuiltinRecipe(name)
+		if err == nil {
+			return r, "", nil
+		}
+		if name == "go" {
+			return r, "C03", err
+		}
 		return assets.Recipe{}, "U02", fmt.Errorf("unknown recipe %q. Use go, none, or a local ./directory recipe", name)
 	}
 	path := filepath.Join(root, name)
