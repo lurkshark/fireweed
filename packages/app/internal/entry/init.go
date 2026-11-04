@@ -15,7 +15,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const initUsage = "Use init --recipe go|none|./directory --agent codex|claude|<command containing {prompt}> [--audit-agent <agent>] [--no-app] [--json]."
+const initUsage = "Use init --recipe go|none|./directory --agent codex|claude|<command containing {prompt} or {prompt_file}> [--audit-agent <agent>] [--no-app] [--json]."
 
 const managedBlock = "<!-- fireweed:start -->\nThis project uses fireweed. Specs and change files are the source of truth.\nRun `fireweed playbook author-change` before authoring changes and\n`fireweed context <change>` before each step.\n<!-- fireweed:end -->"
 
@@ -186,7 +186,7 @@ func initAgent(name string) (any, bool) {
 	case "claude":
 		return []string{"claude", "-p", "{prompt}", "--permission-mode", "acceptEdits"}, true
 	default:
-		return name, strings.Contains(name, "{prompt}")
+		return name, strings.Contains(name, "{prompt}") || strings.Contains(name, "{prompt_file}")
 	}
 }
 

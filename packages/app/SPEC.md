@@ -179,10 +179,10 @@ init --no-app MUST skip creation of the app module.
 When the selected recipe supplies no module templates, init MUST create a minimal app SPEC.md with empty Specs and Decisions sections.
 
 ### APP-053
-init MUST configure codex or claude command presets, or preserve a custom agent command template containing {prompt}, in agent.command.
+init MUST configure codex or claude argv command presets, or preserve a custom agent command template containing {prompt} or {prompt_file} as a shell string, in agent.command.
 
 ### APP-054
-init MUST enable audit by default and write a separately selected --audit-agent command when supplied, otherwise leaving audit.command unset for agent fallback.
+init MUST enable audit by default and write a separately selected --audit-agent command when supplied, accepting the same presets and custom template forms as --agent, otherwise leaving audit.command unset for agent fallback.
 
 ### APP-055
 init MUST reject missing --recipe or --agent values, malformed options or extra positional arguments with corrective U01 and exit 2 before creating files; missing-input messages MUST list valid recipe and agent choices.
@@ -577,7 +577,6 @@ Invalid fix-command usage MUST return exit 2 with corrective U01 guidance descri
 
 ## Decisions
 
-[0069-project-initialization] Init accepts codex and claude presets as argv commands; other selections are shell command templates containing {prompt}, stored as strings for one-pass quoted substitution when execution is implemented. Local recipes use recipe.yaml metadata, recipe.md instructions and a files/ project-relative payload; none uses empty language defaults and a generic module scaffold.
 
 [0074-doctor-setup-commands] Doctor CLI leaves request Timeout unset, using the backend's existing defaults;
 no new timeout flag is introduced. Successful doctor JSON checks use fields name,
@@ -591,3 +590,5 @@ read from go.mod when present and is otherwise empty.
 
 [0127-show-history-command] History JSON uses lowercase keys and preserves project query section strings;
 plain output labels each section and identifies undated entries explicitly.
+
+- init-prompt-file-commands: Local recipes use recipe.yaml metadata, recipe.md instructions and a files/ project-relative payload; none uses empty language defaults and a generic module scaffold.
