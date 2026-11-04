@@ -169,6 +169,9 @@ The evals, impl and regenerate playbooks MUST instruct workers to record only pr
 ### AST-046
 Each of those playbooks MUST include short illustrative examples classifying a lasting behavioral choice as a Decision and a verification or recovery event as a Note.
 
+### AST-047
+The Go recipe instructions and module SPEC template MUST explain that a letter immediately before a spec prefix prevents ID matching, showing Test_GRT_001_Name as a matching name for GRT-001 and TestGRT001 as a name that does not match.
+
 ## Decisions
 
 [0014-go-setup-bundle] Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,
