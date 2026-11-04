@@ -2,6 +2,8 @@
 bases:
     AST-004: a9742599
 module: assets
+phase: audit
+run: 20261104T165115-6eb1fbc842333208fb055f7a
 ---
 
 ## Motivation
@@ -18,34 +20,34 @@ both named bundles through the existing data interface and embedded files.
 
 ## Added
 
-### new:additional-recipe-layout
+### AST-049
 BuiltinRecipe for typescript-pnpm and python-uv MUST provide nonempty instructions, interface/evals/disposable defaults, eval/boundaries/setup commands, protected glue, language lockfile worker_writable entries and project-relative instruction, hook, module-template and canary files.
 
-### new:additional-recipe-instructions
+### AST-050
 The additional recipe instructions MUST explain stack prerequisites and workspace setup, using pnpm workspaces with package exports for TypeScript and uv workspaces with an import linter for Python. They MUST explain deriving the module graph from FIREWEED_BIN modules --json rather than maintaining another dependency graph.
 
-### new:additional-recipe-bindings
+### AST-051
 The additional recipes' module templates and canary snippets MUST support name, prefix, package, module_dir and other_dir substitutions used by doctor.
 
-### new:additional-recipe-canary-maps
+### AST-052
 Each additional recipe MUST provide a version-1 canary map containing baseline, undeclared, internal_eval, failing_eval and missing_id entries.
 
-### new:additional-recipe-baselines
+### AST-053
 Rendered baseline modules for typescript-pnpm and python-uv MUST pass their declared eval and boundaries hooks.
 
-### new:additional-recipe-evals
+### AST-054
 Each additional recipe's eval hook MUST run the requested module's language evals and write JUnit testcase names, classnames, pass/fail/skip and elapsed seconds while preserving test failure exit status.
 
-### new:additional-recipe-eval-errors
+### AST-055
 The additional eval hooks MUST retain started-but-unfinished tests and collection or compile failures as visible failures rather than passing or empty evidence.
 
-### new:additional-recipe-graph
+### AST-056
 The additional boundaries hooks MUST query FIREWEED_BIN modules --json and derive their checks from its module directories, depends_on and resolved zone map.
 
-### new:additional-recipe-violations
+### AST-057
 The additional boundaries hooks MUST report module-prefixed violations for imports of undeclared modules and for eval imports reaching beyond retained interfaces, including their own implementation.
 
-### new:additional-recipe-recovery
+### AST-058
 Each supplied additional-recipe canary MUST expose its named violation through the corresponding hook. The hooks MUST pass cleanly again after the canary is removed.
 
 ## Modified
@@ -58,6 +60,10 @@ BuiltinRecipe MUST return the embedded recipes for go, typescript-pnpm and pytho
 ## Decisions
 
 ## Notes
+
+Fail-first: `GOCACHE=/tmp/fireweed-rebuild-cache go test ./packages/assets/evals -run 'Test_AST_(004_Additional|049_|050_|051_|052_|053_|054_|055_|056_|057_|058_)' -count=1` failed for every assigned ID because the current `BuiltinRecipe` rejects `typescript-pnpm` and `python-uv`. Missing behavior is implementation-writable in `packages/assets/internal/recipe/recipe.go` and new embedded files under `packages/assets/internal/recipe/files/`; no retained interface edit is needed.
+
+Evals step: `PATH=/Users/joel/Workspace/fireweed/.fireweed/bin:$PATH GOCACHE=/tmp/fireweed-rebuild-cache /Users/joel/Workspace/fireweed/.fireweed/bin/fireweed verify --quick` passed (`verify: evals`).
 
 Preserve every existing Go recipe assertion, hook behavior, payload and other
 assets behavior. Keep specs atomic and new metadata consistent with the files
@@ -102,3 +108,5 @@ use - ID: "exact clause" — missing assertion. Passing audit writes No findings
 and Checked IDs. Re-audits cover only flagged IDs, retaining prior clearances
 and all counters/bounds.
 
+## Provenance
+- evals 2026-11-04T17:00:02.536427Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=117 failing=31 passing=86
