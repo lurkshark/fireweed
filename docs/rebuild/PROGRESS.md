@@ -5,6 +5,8 @@ The owner-authorized CHK-083/RUN-067 recovery passed audit and full verification
 C6 `migrate-current-format` stopped in evals on an untestable APP-154 audit
 finding; its Question is committed and its claim released. C7–C8 are unstarted.
 Shared claims are empty; the pending change retains its run and audit counters.
+Local `go test ./...` fails only C6's pending fail-first tests; other module
+suites, including checks and runner, passed.
 CK1–CK4 are deferred; full product completion remains open. Existing
 testcase-budget warnings remain outside this cleanup.
 
