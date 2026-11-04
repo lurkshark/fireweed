@@ -162,27 +162,52 @@ func Test_APP_003_InvalidRequests(t *testing.T) {
 	}
 }
 
-func Test_APP_014_UnimplementedCommands(t *testing.T) {
-	for _, command := range []string{"migrate"} {
+func Test_APP_014_MaintenanceCommandsDispatch(t *testing.T) {
+	bin := buildAppBinary(t)
+	root := migrateProject(t)
+	for _, command := range []string{"gc", "migrate"} {
 		t.Run(command, func(t *testing.T) {
 			if !strings.Contains(assets.Help(), command) {
 				t.Fatalf("%q is not listed by help", command)
 			}
-			status, stdout, stderr := run(command)
-			if status == 0 || !regexp.MustCompile(`(?i)unimplemented|not implemented|under construction`).MatchString(stdout+stderr) {
-				t.Errorf("status=%d diagnostic=%q; want nonzero and explicit unimplemented notice", status, stdout+stderr)
+			status, plain, stderr := runAppBinary(t, bin, root, command)
+			if status != 0 || stderr != "" || strings.TrimSpace(plain) == "" {
+				t.Fatalf("%s plain: status=%d stdout=%q stderr=%q", command, status, plain, stderr)
 			}
-			if !strings.HasPrefix(strings.TrimSpace(stdout+stderr), "U01:") {
-				t.Errorf("diagnostic %q must have code U01", stdout+stderr)
+			if regexp.MustCompile(`(?i)unimplemented|not implemented|under construction`).MatchString(plain) {
+				t.Errorf("%s still reported a placeholder: %q", command, plain)
+			}
+			status, output, stderr := runAppBinary(t, bin, root, command, "--json")
+			if status != 0 || stderr != "" {
+				t.Fatalf("%s JSON: status=%d stdout=%q stderr=%q", command, status, output, stderr)
+			}
+			env := decodeEnvelope(t, output)
+			if string(env["data"]) == "null" {
+				t.Errorf("%s JSON data is null", command)
+			}
+			var diagnostics []json.RawMessage
+			if err := json.Unmarshal(env["diagnostics"], &diagnostics); err != nil || diagnostics == nil || len(diagnostics) != 0 {
+				t.Errorf("%s JSON diagnostics=%s: %v", command, env["diagnostics"], err)
+			}
+			for _, args := range [][]string{{command, "extra"}, {command, "--bogus"}} {
+				for _, jsonMode := range []bool{false, true} {
+					call := append([]string(nil), args...)
+					if jsonMode {
+						call = append(call, "--json")
+					}
+					status, stdout, errOut := runAppBinary(t, bin, root, call...)
+					message := commandFailure(t, status, 2, stdout, errOut, jsonMode)
+					if jsonMode {
+						message = assertFailedJSON(t, stdout, "U01")
+					} else if !strings.HasPrefix(strings.TrimSpace(errOut), "U01:") {
+						t.Errorf("%s invalid plain diagnostic=%q; want U01", command, errOut)
+					}
+					if !corrective(message) {
+						t.Errorf("%s invalid diagnostic lacks guidance: %q", command, message)
+					}
+				}
 			}
 		})
-	}
-	status, stdout, stderr := run("migrate", "--json")
-	if status == 0 || stderr != "" {
-		t.Errorf("JSON migrate status=%d stderr=%q; want nonzero and empty stderr", status, stderr)
-	}
-	if message := assertFailedJSON(t, stdout, "U01"); !regexp.MustCompile(`(?i)unimplemented|not implemented|under construction`).MatchString(message) {
-		t.Errorf("JSON diagnostic %q must explicitly report unimplemented", message)
 	}
 }
 

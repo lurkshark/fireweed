@@ -2,6 +2,8 @@
 bases:
     APP-014: 1ce99378
 module: app
+phase: audit
+run: 20261104T121536-5791bf8c68d7e282cc14f914
 ---
 
 ## Motivation
@@ -18,13 +20,13 @@ the app CLI; validation runs no hooks or agents and performs no writes.
 
 ## Added
 
-### new:migrate-current
+### APP-153
 migrate MUST discover the nearest project root and validate a format-1 project with project.Check before reporting already current with exit 0. The format-1 operation MUST leave working files, index, HEAD and refs unchanged.
 
-### new:migrate-json
+### APP-154
 migrate --json MUST emit schema 1 with string data equal to the plain confirmation on success or null data on failure. It MUST retain diagnostic codes, messages and warning status, with empty stderr.
 
-### new:migrate-failures
+### APP-155
 migrate MUST return exit 2 for usage, project discovery or loading failures and unsupported format versions, using U01 for usage, C01 for unsupported formats and the existing loading cause code otherwise. Static validation errors MUST return exit 1 with their existing cause codes. All failures MUST include corrective guidance.
 
 ## Modified
@@ -71,3 +73,5 @@ use - ID: "exact clause" — missing assertion. Passing audit writes No findings
 and Checked IDs. Re-audits cover only flagged IDs, retaining prior clearances
 and all counters/bounds.
 
+## Provenance
+- evals 2026-11-04T12:33:20.065941Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=323 failing=11 passing=312
