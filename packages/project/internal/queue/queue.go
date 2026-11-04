@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project/internal/fixture"
@@ -97,5 +98,13 @@ func resolve(changes []model.Change, target string) (int, error) {
 			return i, nil
 		}
 	}
-	return -1, contracts.CodedError{Code: "U02", Subject: target, Cause: fmt.Errorf("pending change %q not found", target)}
+	slugs := make([]string, len(changes))
+	for i, change := range changes {
+		slugs[i] = change.Slug
+	}
+	guidance := "no pending changes"
+	if len(slugs) > 0 {
+		guidance = "valid pending change slugs: " + strings.Join(slugs, ", ")
+	}
+	return -1, contracts.CodedError{Code: "U02", Subject: target, Cause: fmt.Errorf("pending change %q not found; %s", target, guidance)}
 }

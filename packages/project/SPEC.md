@@ -24,7 +24,7 @@ ValidateGraph MUST return nil for a valid graph and an explanatory error identif
 NewChange MUST create a queued Markdown skeleton for an existing module with Motivation, Interface, Added, Modified, Removed and Decisions sections, containing no assigned spec IDs.
 
 ### PRJ-004
-Project and Stamp MUST resolve a change argument from its unique slug, queued basename or repository-relative queued path, rejecting missing or ambiguous targets.
+Project and Stamp MUST resolve a change argument from its unique slug, queued basename or repository-relative queued path, rejecting missing or ambiguous targets. An unknown target MUST return U02 naming the rejected selector and listing valid pending change slugs.
 
 ### PRJ-005
 Project MUST preserve complete Added and Modified item text and remove Removed items when applying pending spec edits.
@@ -230,7 +230,7 @@ StampMissing MUST reject a nonmapping bases value or an edited ID absent from th
 
 ### PRJ-066
 StaleSpecs and StampMissing MUST accept a unique pending slug, queued basename or repository-relative queued path.
-An unknown selector MUST return U02 naming the requested change; an ambiguous slug MUST return C13.
+An unknown selector MUST return U02 naming the requested change and listing valid pending change slugs; an ambiguous slug MUST return C13.
 
 ### PRJ-067
 When NewChange cannot create its queued file, it MUST return an error beginning
