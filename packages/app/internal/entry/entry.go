@@ -26,10 +26,6 @@ type envelope struct {
 	Diagnostics []diagnostic `json:"diagnostics"`
 }
 
-var pending = map[string]bool{
-	"migrate": true,
-}
-
 func Run(args []string, out, errOut io.Writer) int {
 	if contains(args, "--stale") || contains(args, "--fix") {
 		remaining := make([]string, 0, len(args))
@@ -293,6 +289,8 @@ func Run(args []string, out, errOut io.Writer) int {
 		return runDrill(positional[1:], jsonMode, out, errOut)
 	case "gc":
 		return runGC(positional[1:], jsonMode, out, errOut)
+	case "migrate":
+		return runMigrate(positional[1:], jsonMode, out, errOut)
 	case "doctor":
 		if count != 0 {
 			return fail("U01", "doctor takes no arguments. Use doctor [--no-agent] [--json].")
@@ -452,9 +450,6 @@ func Run(args []string, out, errOut io.Writer) int {
 			}
 		}
 	default:
-		if pending[command] {
-			return fail("U01", fmt.Sprintf("%s is under construction and is not implemented yet. Use help for available information commands.", command))
-		}
 		return fail("U01", fmt.Sprintf("Unknown command %q. Use help to see available commands.", command))
 	}
 	if !strings.HasSuffix(body, "\n") {

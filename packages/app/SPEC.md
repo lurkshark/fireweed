@@ -62,7 +62,7 @@ coverage <module> MUST evaluate current specs, or the selected projection with -
 Unknown explain codes or playbook names MUST return exit 2 with a nonempty corrective U02 diagnostic.
 
 ### APP-014
-Commands listed by help but still under construction MUST explicitly report that they are unimplemented with diagnostic U01 and return nonzero.
+gc and migrate listed by help MUST dispatch supported maintenance operations instead of reporting that they are unimplemented or under construction.
 
 ### APP-015
 Failed --json requests MUST use the schema-1 envelope with null data and a diagnostic containing code and message.
@@ -583,6 +583,15 @@ Successful gc --json MUST emit schema 1 object data containing a pruned array of
 
 ### APP-152
 gc MUST return exit 2 for project discovery or configuration failures, retaining the cause code or C01 when uncoded. Other cleanup failures MUST return exit 1 retaining the cause code or P01 when uncoded. Failures MUST give corrective diagnostics, with null data and empty stderr in JSON mode.
+
+### APP-153
+migrate MUST discover the nearest project root and validate a format-1 project with project.Check before reporting already current with exit 0. The format-1 operation MUST leave working files, index, HEAD and refs unchanged.
+
+### APP-154
+migrate --json MUST emit schema 1 with string data equal to the plain confirmation on success or null data on failure. It MUST retain diagnostic codes and messages, with empty stderr.
+
+### APP-155
+migrate MUST return exit 2 for usage, project discovery or loading failures and unsupported format versions, using U01 for usage, C01 for unsupported formats and the existing loading cause code otherwise. Static validation errors MUST return exit 1 with their existing cause codes. All failures MUST include corrective guidance.
 
 ## Decisions
 
