@@ -146,7 +146,19 @@ func changeBy(root, target string) (project.Change, error) {
 			return c, nil
 		}
 	}
-	return project.Change{}, fmt.Errorf("U02: change %q not found", target)
+	slugs := make([]string, 0, len(q))
+	for _, c := range q {
+		slugs = append(slugs, c.Slug)
+	}
+	return project.Change{}, unknownChange(target, slugs)
+}
+
+func unknownChange(target string, slugs []string) error {
+	if len(slugs) == 0 {
+		return fmt.Errorf("U02: change %q not found; no valid change slugs", target)
+	}
+	sort.Strings(slugs)
+	return fmt.Errorf("U02: change %q not found; valid change slugs: %s", target, strings.Join(slugs, ", "))
 }
 func existing(root, slug string) (claim, string, error) {
 	oid, ok, e := gitstore.Ref(root, ref(slug))
@@ -295,6 +307,11 @@ func Start(root, target string) (model.State, error) {
 	}
 	if e = hard(project.Check(root)); e != nil {
 		return model.State{}, e
+	}
+	if target != "" {
+		if _, e = changeBy(root, target); e != nil {
+			return model.State{}, e
+		}
 	}
 	q, e := Eligible(root)
 	if e != nil {
@@ -564,7 +581,8 @@ func Verify(ctx context.Context, req model.Request) (model.Result, error) {
 		return r, e
 	}
 	if c.Phase == "audit" {
-		return r, nil
+		_, _, _, e = auditProcess(s, c)
+		return r, e
 	}
 	if c.Phase != "evals" && c.Phase != "impl" {
 		return r, fmt.Errorf("P01: unsupported phase %s", c.Phase)
@@ -710,6 +728,7 @@ func commitPhase(s model.State, c claim, oid string, ch project.Change, paths []
 }
 func auditProcess(s model.State, c claim) (project.Change, string, bool, error) {
 	ch := s.Change
+	ch.Document.Frontmatter = cloneMap(ch.Document.Frontmatter)
 	body, _ := contracts.Section(ch.Document.Body, "Audit")
 	all := map[string]string{}
 	for _, it := range append(append([]contracts.Item{}, ch.Added...), ch.Modified...) {

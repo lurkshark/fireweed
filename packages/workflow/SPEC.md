@@ -195,13 +195,13 @@ Verify and Done MUST prefix unapproved author, runtime or audit-state alteration
 Start, Verify and Done MUST prefix stale-base rejections with P05, retaining the underlying cause.
 
 ### FLOW-059
-Audit Done MUST prefix malformed or incomplete No findings submission errors with P09.
+During audit, Verify MUST apply Done's audit-submission checks. Verify and Done MUST prefix malformed or incomplete submission rejections with P09.
 
 ### FLOW-060
 Done MUST prefix its existing blocked-change error with P06 while preserving the committed blocking state and claim release.
 
 ### FLOW-061
-Current and Context MUST prefix unknown requested change lookup errors with U02.
+Start MUST distinguish an explicit unknown change selector from queue eligibility. Lifecycle operations MUST return U02 for unknown explicit change selectors, naming the rejected value and listing valid slugs for the operation.
 
 ### FLOW-062
 Lifecycle operations MUST preserve assigned static, eval, zone and boundary causes when returning their existing failures, except for lifecycle stale-base classification P05.

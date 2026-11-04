@@ -48,9 +48,11 @@ func commitChangePaths(root, revision string) ([]string, error) {
 
 func selectCommitChange(paths []string, selector string) (string, error) {
 	var matches []string
+	slugs := make([]string, 0, len(paths))
 	for _, candidate := range paths {
 		base := path.Base(candidate)
 		slug := strings.TrimSuffix(base[strings.IndexByte(base, '-')+1:], ".md")
+		slugs = append(slugs, slug)
 		if selector == candidate {
 			return base, nil
 		}
@@ -62,7 +64,7 @@ func selectCommitChange(paths []string, selector string) (string, error) {
 		return matches[0], nil
 	}
 	if len(matches) == 0 {
-		return "", fmt.Errorf("U02: change %q not found", selector)
+		return "", unknownChange(selector, slugs)
 	}
 	return "", fmt.Errorf("U02: change %q is ambiguous", selector)
 }
