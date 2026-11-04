@@ -1,6 +1,8 @@
 ---
 bases: {}
 module: assets
+phase: audit
+run: 20261104T095615-46a54aa85931068e8a8dedf7
 ---
 
 ## Motivation
@@ -17,7 +19,7 @@ instructions and module SPEC template through its existing outputs.
 
 ## Added
 
-### new:go-eval-id-boundary
+### AST-047
 The Go recipe instructions and module SPEC template MUST explain that a letter immediately before a spec prefix prevents ID matching, showing Test_GRT_001_Name as a matching name for GRT-001 and TestGRT001 as a name that does not match.
 
 ## Modified
@@ -51,5 +53,9 @@ all other bytes. Findings use - ID: "exact clause" — missing assertion. Passin
 audit writes No findings and Checked IDs. Re-audits cover only flagged IDs,
 retaining prior clearances and all counters/bounds.
 
+Fail-first: `go test ./packages/assets/evals -run '^Test_AST_047_GoRecipeEvalNameBoundary$' -count=1` failed for both the recipe instructions and module SPEC template against the current bundle. The implementation-writable replacements are `packages/assets/internal/recipe/files/go.md` and `packages/assets/internal/recipe/files/SPEC.md`.
+
 ## Audit
 
+## Provenance
+- evals 2026-11-04T10:00:03.624915Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=85 failing=3 passing=82
