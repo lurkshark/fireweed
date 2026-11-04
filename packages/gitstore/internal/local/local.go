@@ -18,22 +18,20 @@ import (
 
 const gitTimeout = 30 * time.Second
 
-// Run keeps the command and its ordinary descendants in one process group.
+// Run starts each command in its own process group so cancellation also stops
+// children that remain in that group.
 func Run(ctx context.Context, request model.Request) (model.Result, error) {
 	var result model.Result
 	if len(request.Args) == 0 {
 		return result, errors.New("empty command")
 	}
-	if ctx == nil {
-		ctx = context.Background()
+	if err := ctx.Err(); err != nil {
+		return result, err
 	}
 	if request.Timeout > 0 {
 		var cancel context.CancelFunc
 		ctx, cancel = context.WithTimeout(ctx, request.Timeout)
 		defer cancel()
-	}
-	if err := ctx.Err(); err != nil {
-		return result, err
 	}
 	cmd := exec.Command(request.Args[0], request.Args[1:]...)
 	cmd.Dir = request.Dir
@@ -71,20 +69,22 @@ func Run(ctx context.Context, request model.Request) (model.Result, error) {
 	return result, nil
 }
 
-func git(root string, input []byte, args ...string) ([]byte, error) {
+func git(root string, input []byte, env map[string]string, args ...string) ([]byte, error) {
+	if env == nil {
+		env = make(map[string]string)
+	}
+	env["GIT_NO_LAZY_FETCH"] = "1"
+	env["GIT_TERMINAL_PROMPT"] = "0"
 	argv := append([]string{"git", "-C", root, "-c", "core.hooksPath=/dev/null"}, args...)
-	result, err := Run(context.Background(), model.Request{
-		Args: argv, Input: input, Timeout: gitTimeout,
-		Env: map[string]string{"GIT_NO_LAZY_FETCH": "1", "GIT_TERMINAL_PROMPT": "0"},
-	})
+	result, err := Run(context.Background(), model.Request{Args: argv, Env: env, Input: input, Timeout: gitTimeout})
 	if err != nil {
-		return nil, fmt.Errorf("git %s: %w: %s", strings.Join(args, " "), err, result.Stderr)
+		return nil, fmt.Errorf("git %s: %w: %s", strings.Join(args, " "), err, strings.TrimSpace(result.Stderr))
 	}
 	return []byte(result.Stdout), nil
 }
 
-func line(root string, args ...string) (string, error) {
-	out, err := git(root, nil, args...)
+func gitText(root string, args ...string) (string, error) {
+	out, err := git(root, nil, nil, args...)
 	return strings.TrimSpace(string(out)), err
 }
 
@@ -98,7 +98,7 @@ func canonical(path string) (string, error) {
 
 func Inspect(dir string) (model.Repository, error) {
 	var repo model.Repository
-	root, err := line(dir, "rev-parse", "--show-toplevel")
+	root, err := gitText(dir, "rev-parse", "--show-toplevel")
 	if err != nil {
 		return repo, err
 	}
@@ -106,7 +106,7 @@ func Inspect(dir string) (model.Repository, error) {
 	if err != nil {
 		return repo, err
 	}
-	common, err := line(dir, "rev-parse", "--git-common-dir")
+	common, err := gitText(dir, "rev-parse", "--git-common-dir")
 	if err != nil {
 		return repo, err
 	}
@@ -117,18 +117,12 @@ func Inspect(dir string) (model.Repository, error) {
 	if err != nil {
 		return repo, err
 	}
-	repo.Head, err = line(dir, "rev-parse", "--verify", "HEAD")
+	repo.Head, err = gitText(dir, "rev-parse", "--verify", "HEAD")
 	if err != nil {
 		return repo, err
 	}
-	// A detached HEAD makes symbolic-ref exit nonzero.
-	repo.Branch, _ = line(dir, "symbolic-ref", "--quiet", "--short", "HEAD")
+	repo.Branch, _ = gitText(dir, "symbolic-ref", "--quiet", "--short", "HEAD")
 	return repo, nil
-}
-
-func refExists(root, name string) bool {
-	_, err := git(root, nil, "show-ref", "--verify", "--quiet", name)
-	return err == nil
 }
 
 func BaseRef(root, remote, base string) (string, error) {
@@ -136,46 +130,31 @@ func BaseRef(root, remote, base string) (string, error) {
 		remote = "origin"
 	}
 	if base == "" {
-		prefix := "refs/remotes/" + remote + "/"
-		if target, err := line(root, "symbolic-ref", "--quiet", prefix+"HEAD"); err == nil && strings.HasPrefix(target, prefix) {
-			base = strings.TrimPrefix(target, prefix)
-		}
-		if base == "" {
+		remoteHead := "refs/remotes/" + remote + "/HEAD"
+		resolved, err := gitText(root, "symbolic-ref", "--quiet", remoteHead)
+		if err == nil && strings.HasPrefix(resolved, "refs/remotes/"+remote+"/") {
+			base = strings.TrimPrefix(resolved, "refs/remotes/"+remote+"/")
+		} else {
 			base = "main"
 		}
 	}
-	remoteRef := "refs/remotes/" + remote + "/" + base
-	if refExists(root, remoteRef) {
-		return remoteRef, nil
+	for _, name := range []string{"refs/remotes/" + remote + "/" + base, "refs/heads/" + base} {
+		if _, exists, err := Ref(root, name); err != nil {
+			return "", err
+		} else if exists {
+			return name, nil
+		}
 	}
-	localRef := "refs/heads/" + base
-	if refExists(root, localRef) {
-		return localRef, nil
-	}
-	return "", fmt.Errorf("base branch %q not found", base)
+	return "", fmt.Errorf("base %q not found", base)
 }
 
 func Changes(root, base string) ([]model.Change, error) {
-	changes := make([]model.Change, 0)
-	seen := make(map[string]int)
-	add := func(change model.Change) {
-		if at, ok := seen[change.Path]; ok {
-			// Keep the old path when the index identifies a rename.
-			if change.OldPath != "" && changes[at].OldPath == "" {
-				changes[at] = change
-			}
-			return
-		}
-		seen[change.Path] = len(changes)
-		changes = append(changes, change)
-	}
-	for _, cached := range []bool{false, true} {
-		args := []string{"--no-optional-locks", "diff", "--no-ext-diff", "--no-textconv", "--name-status", "-z", "-M"}
-		if cached {
-			args = append(args, "--cached")
-		}
-		args = append(args, base, "--")
-		out, err := git(root, nil, args...)
+	byPath := make(map[string]model.Change)
+	for _, args := range [][]string{
+		{"diff", "--cached", "--name-status", "-z", "-M", base, "--"},
+		{"diff", "--name-status", "-z", "-M", "--"},
+	} {
+		out, err := git(root, nil, nil, args...)
 		if err != nil {
 			return nil, err
 		}
@@ -183,87 +162,128 @@ func Changes(root, base string) ([]model.Change, error) {
 		for i := 0; i < len(fields)-1; {
 			status := string(fields[i])
 			i++
-			if i >= len(fields)-1 || status == "" {
-				return nil, errors.New("malformed git diff output")
+			if status == "" || i >= len(fields)-1 {
+				return nil, errors.New("invalid Git name-status output")
 			}
-			path := string(fields[i])
+			change := model.Change{Path: string(fields[i]), Status: status[:1]}
 			i++
-			change := model.Change{Path: path, Status: status[:1]}
 			if status[0] == 'R' || status[0] == 'C' {
 				if i >= len(fields)-1 {
-					return nil, errors.New("malformed git rename output")
+					return nil, errors.New("invalid Git rename output")
 				}
-				change.OldPath = path
-				change.Path = string(fields[i])
+				change.OldPath, change.Path = change.Path, string(fields[i])
 				i++
 			}
-			add(change)
+			if old, ok := byPath[change.Path]; !ok || (old.OldPath == "" && change.OldPath != "") {
+				byPath[change.Path] = change
+			}
 		}
 	}
-	untracked, err := git(root, nil, "ls-files", "--others", "--exclude-standard", "-z")
+	out, err := git(root, nil, nil, "ls-files", "--others", "--exclude-standard", "-z")
 	if err != nil {
 		return nil, err
 	}
-	for _, path := range bytes.Split(untracked, []byte{0}) {
-		if len(path) != 0 {
-			add(model.Change{Path: string(path), Status: "?"})
+	for _, path := range bytes.Split(out, []byte{0}) {
+		if len(path) > 0 {
+			name := string(path)
+			if _, exists := byPath[name]; !exists {
+				byPath[name] = model.Change{Path: name, Status: "?"}
+			}
 		}
 	}
-	sort.Slice(changes, func(i, j int) bool { return changes[i].Path < changes[j].Path })
+	paths := make([]string, 0, len(byPath))
+	for path := range byPath {
+		paths = append(paths, path)
+	}
+	sort.Strings(paths)
+	changes := make([]model.Change, 0, len(paths))
+	for _, path := range paths {
+		changes = append(changes, byPath[path])
+	}
 	return changes, nil
 }
 
 func ReadAt(root, revision, path string) ([]byte, error) {
-	return git(root, nil, "cat-file", "blob", revision+":"+path)
+	return git(root, nil, nil, "show", revision+":"+path)
 }
 
 func Commit(root, subject string, paths []string) (string, error) {
 	if len(paths) == 0 {
 		return "", errors.New("no paths selected")
 	}
-	stage := append([]string{"--literal-pathspecs", "add", "-A", "--"}, paths...)
-	if _, err := git(root, nil, stage...); err != nil {
+	old, err := gitText(root, "rev-parse", "HEAD")
+	if err != nil {
 		return "", err
 	}
-	args := []string{"--literal-pathspecs", "commit", "--only", "-m", subject, "--"}
-	args = append(args, paths...)
-	if _, err := git(root, nil, args...); err != nil {
+	file, err := os.CreateTemp("", "fireweed-index-*")
+	if err != nil {
 		return "", err
 	}
-	return line(root, "rev-parse", "--verify", "HEAD")
+	index := file.Name()
+	_ = file.Close()
+	defer os.Remove(index)
+	env := map[string]string{"GIT_INDEX_FILE": index}
+	if _, err := git(root, nil, env, "read-tree", "HEAD"); err != nil {
+		return "", err
+	}
+	args := append([]string{"add", "-A", "--"}, paths...)
+	if _, err := git(root, nil, env, args...); err != nil {
+		return "", err
+	}
+	tree, err := git(root, nil, env, "write-tree")
+	if err != nil {
+		return "", err
+	}
+	commit, err := git(root, nil, nil, "commit-tree", strings.TrimSpace(string(tree)), "-p", old, "-m", subject)
+	if err != nil {
+		return "", err
+	}
+	newHead := strings.TrimSpace(string(commit))
+	if _, err := git(root, nil, nil, "update-ref", "HEAD", newHead, old); err != nil {
+		return "", err
+	}
+	args = append([]string{"reset", "-q", "HEAD", "--"}, paths...)
+	if _, err := git(root, nil, nil, args...); err != nil {
+		return newHead, err
+	}
+	return newHead, nil
 }
 
 func WriteBlob(root string, data []byte) (string, error) {
-	out, err := git(root, data, "hash-object", "-w", "--stdin")
+	out, err := git(root, data, nil, "hash-object", "-w", "--stdin")
 	return strings.TrimSpace(string(out)), err
 }
 
 func ReadBlob(root, oid string) ([]byte, error) {
-	return git(root, nil, "cat-file", "blob", oid)
+	return git(root, nil, nil, "cat-file", "blob", oid)
 }
 
 func Ref(root, name string) (string, bool, error) {
-	if _, err := git(root, nil, "check-ref-format", name); err != nil {
+	if _, err := git(root, nil, nil, "check-ref-format", name); err != nil {
 		return "", false, err
 	}
-	if !refExists(root, name) {
+	out, err := git(root, nil, nil, "show-ref", "--verify", "--hash", name)
+	if err == nil {
+		return strings.TrimSpace(string(out)), true, nil
+	}
+	// Git versions differ on the status returned for a missing valid ref.
+	var exit *exec.ExitError
+	if errors.As(err, &exit) {
 		return "", false, nil
 	}
-	oid, err := line(root, "show-ref", "--verify", "--hash", name)
-	return oid, err == nil, err
+	return "", false, err
 }
 
 func CASRef(root, name, old, new string) error {
-	if new == "" {
-		if old == "" {
-			return errors.New("cannot delete absent ref")
-		}
-		_, err := git(root, nil, "update-ref", "-d", name, old)
-		return err
-	}
 	if old == "" {
 		old = strings.Repeat("0", 40)
 	}
-	_, err := git(root, nil, "update-ref", name, new, old)
+	var args []string
+	if new == "" {
+		args = []string{"update-ref", "-d", name, old}
+	} else {
+		args = []string{"update-ref", name, new, old}
+	}
+	_, err := git(root, nil, nil, args...)
 	return err
 }
