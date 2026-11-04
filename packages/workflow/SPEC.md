@@ -463,6 +463,21 @@ PRBody MUST return an error for which IsEndpointConfigError reports true when th
 ### FLOW-127
 IsEndpointConfigError MUST report false when PRBody fails because the range cannot be resolved.
 
+### FLOW-128
+GC MUST prune refs/fireweed/claims entries whose recorded worktree is missing or is no longer registered with the same Git common directory, while retaining claims for live registered worktrees.
+
+### FLOW-129
+GC MUST prune refs/fireweed/attempts/<slug>/* only for changes present in changes/archive, retaining attempt refs for unapplied changes.
+
+### FLOW-130
+GC MUST prune refs/fireweed/drills/<module>/<date> when the UTC timestamp encoded in the native drill ref name is older than gc.drill_max_age relative to GCRequest.Now, or current UTC time when Now is zero, retaining refs at or newer than the cutoff.
+
+### FLOW-131
+GC MUST read gc.drill_max_age as a positive Go duration, defaulting to 720h (30 days) when unset. An invalid configured value MUST return C01 before any pruning.
+
+### FLOW-132
+GC MUST return the sorted full names of only its successfully deleted refs. It MUST leave all other refs, HEAD, index and working files unchanged.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
