@@ -1,6 +1,8 @@
 ---
 bases: {}
 module: workflow
+phase: audit
+run: 20261104T104701-454dc2889e6024874eb1a3c3
 ---
 
 ## Motivation
@@ -21,19 +23,19 @@ for compilation; it remains implementation-writable after interfaces freeze.
 
 ## Added
 
-### new:gc-stale-claims
+### FLOW-128
 GC MUST prune refs/fireweed/claims entries whose recorded worktree is missing or is no longer registered with the same Git common directory, while retaining claims for live registered worktrees.
 
-### new:gc-archived-attempts
+### FLOW-129
 GC MUST prune refs/fireweed/attempts/<slug>/* only for changes present in changes/archive, retaining attempt refs for unapplied changes.
 
-### new:gc-drill-expiry
+### FLOW-130
 GC MUST prune refs/fireweed/drills/<module>/<date> when the UTC timestamp encoded in the native drill ref name is older than gc.drill_max_age relative to GCRequest.Now, or current UTC time when Now is zero, retaining refs at or newer than the cutoff.
 
-### new:gc-retention-config
+### FLOW-131
 GC MUST read gc.drill_max_age as a positive Go duration, defaulting to 720h (30 days) when unset. An invalid configured value MUST return C01 before any pruning.
 
-### new:gc-result-scope
+### FLOW-132
 GC MUST return the sorted full names of only its successfully deleted refs. It MUST leave all other refs, HEAD, index and working files unchanged.
 
 ## Modified
@@ -80,3 +82,5 @@ retaining prior clearances and all counters/bounds.
 
 ## Audit
 
+## Provenance
+- evals 2026-11-04T10:56:20.358802Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=160 failing=10 passing=150

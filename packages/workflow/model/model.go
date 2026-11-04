@@ -100,3 +100,12 @@ type BlockResult struct {
 	AttemptRef string
 	AttemptOID string
 }
+
+type GCRequest struct {
+	Root string
+	Now  time.Time
+}
+
+type GCResult struct {
+	Pruned []string
+}

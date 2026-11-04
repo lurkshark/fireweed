@@ -20,6 +20,8 @@ type Quarantine = model.Quarantine
 type BoundaryOptOut = model.BoundaryOptOut
 type BlockRequest = model.BlockRequest
 type BlockResult = model.BlockResult
+type GCRequest = model.GCRequest
+type GCResult = model.GCResult
 
 func Start(root, change string) (State, error) { return lifecycle.Start(root, change) }
 func StartFromAttempt(root, change string, attempt int) (State, error) {
@@ -48,3 +50,6 @@ func PRBody(root, revisionRange string) (PRBodyReport, error) {
 	return lifecycle.PRBody(root, revisionRange)
 }
 func IsEndpointConfigError(err error) bool { return lifecycle.IsEndpointConfigError(err) }
+func GC(ctx context.Context, request GCRequest) (GCResult, error) {
+	return lifecycle.GC(ctx, request)
+}
