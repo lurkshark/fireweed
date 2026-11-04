@@ -264,6 +264,12 @@ Evaluate MUST retain parsed Case.Failure strings in its returned Report.Cases, i
 ### CHK-081
 Doctor MUST persist complete stdout and stderr from every executed worker and audit probe, including failed, timed-out and cancelled probes, under the invoking project's .fireweed/runs/<run>/<phase>-1.log. Each Doctor invocation MUST use a fresh shared run identity, with phases doctor-worker and doctor-audit. Each executed probe's Detail MUST identify its log file by absolute path.
 
+### CHK-082
+Doctor MUST expand {prompt}, {prompt_file} and {git_common_dir} once in selected worker/audit command templates and wrapper argv, quoting shell substitutions and preserving argv values literally.
+
+### CHK-083
+Doctor MUST create one temporary file containing the exact probe prompt only when a selected command or wrapper template uses {prompt_file}, and expand that placeholder to its absolute path. The file MUST remain available through execution and be removed afterward, including after launch failure, nonzero exit, timeout or cancellation.
+
 ## Decisions
 
 [0071-doctor-probes] Doctor requests the literal reply FIREWEED_DOCTOR_OK; limit_patterns match

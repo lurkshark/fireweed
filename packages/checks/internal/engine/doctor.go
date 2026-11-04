@@ -733,14 +733,13 @@ func (d *doctorState) probeBoundary(s project.Snapshot, v doctorVariant, name st
 }
 func agentArgs(command any, values map[string]string) ([]string, error) {
 	replace := func(s string, quote bool) string {
-		for _, k := range []string{"prompt", "git_common_dir"} {
-			v := values[k]
+		return agentPlaceholder.ReplaceAllStringFunc(s, func(token string) string {
+			v := values[strings.Trim(token, "{}")]
 			if quote {
 				v = shellQuote(v)
 			}
-			s = strings.ReplaceAll(s, "{"+k+"}", v)
-		}
-		return s
+			return v
+		})
 	}
 	switch v := command.(type) {
 	case string:
@@ -774,6 +773,29 @@ func agentArgs(command any, values map[string]string) ([]string, error) {
 		return nil, fmt.Errorf("invalid agent command %T", command)
 	}
 }
+
+var agentPlaceholder = regexp.MustCompile(`\{(?:prompt|prompt_file|git_common_dir)\}`)
+
+func agentUsesPromptFile(command any) bool {
+	switch v := command.(type) {
+	case string:
+		return strings.Contains(v, "{prompt_file}")
+	case []string:
+		for _, arg := range v {
+			if strings.Contains(arg, "{prompt_file}") {
+				return true
+			}
+		}
+	case []any:
+		for _, arg := range v {
+			if s, ok := arg.(string); ok && strings.Contains(s, "{prompt_file}") {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func (d *doctorState) probeAgents(projectRoot, common string) {
 	projectRoot, err := filepath.Abs(projectRoot)
 	if err != nil {
@@ -806,9 +828,28 @@ func (d *doctorState) probeAgents(projectRoot, common string) {
 	}
 }
 func (d *doctorState) probeAgent(name string, command, wrap any, common, logDir string) {
-	values := map[string]string{"prompt": "Reply with exactly " + doctorReply, "git_common_dir": common}
-	args, err := agentArgs(command, values)
+	prompt := "Reply with exactly " + doctorReply
+	values := map[string]string{"prompt": prompt, "git_common_dir": common}
 	display := fmt.Sprint(command)
+	if agentUsesPromptFile(command) || agentUsesPromptFile(wrap) {
+		file, err := os.CreateTemp("", "fireweed-doctor-prompt-")
+		if err != nil {
+			d.check(name, "", false, err.Error())
+			d.issue("C15", name+" command "+display+": "+err.Error(), "", false)
+			return
+		}
+		defer os.Remove(file.Name())
+		path, pathErr := filepath.Abs(file.Name())
+		_, writeErr := io.WriteString(file, prompt)
+		closeErr := file.Close()
+		if err := errors.Join(pathErr, writeErr, closeErr); err != nil {
+			d.check(name, "", false, err.Error())
+			d.issue("C15", name+" command "+display+": "+err.Error(), "", false)
+			return
+		}
+		values["prompt_file"] = path
+	}
+	args, err := agentArgs(command, values)
 	if err == nil && wrap != nil {
 		var prefix []string
 		prefix, err = agentArgs(wrap, values)
