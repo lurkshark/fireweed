@@ -3,7 +3,8 @@
 **Current milestone: stabilization and cleanup.** A, B and C1–C3 passed.
 The owner-authorized audited eval recovery passed normal full verification
 and local `go test ./...`; init prompt-file acceptance is now applied too.
-C4 is next. Queue and shared claims are empty. CK1–CK4 are deferred;
+C4 project selector guidance is applied; workflow/audit, Go guidance and init
+version range remain next. Queue and shared claims are empty. CK1–CK4 are deferred;
 full product completion remains open. Existing testcase-budget warnings
 remain outside this cleanup.
 
@@ -15,7 +16,7 @@ This non-trimpath pin reproduces at its embedded clean source location.
 Worker PATH starts with the current tree's `.fireweed/bin`; use the prescribed
 rebuild cache and exact agent argv in [GOAL.md](GOAL.md).
 
-**Next:** C4 selector/audit diagnostics, Go naming guidance and init version range, then C5–C8 in [ACCEPTANCE's order](ACCEPTANCE.md#current-milestone--stabilization-and-cleanup).
+**Next:** Finish C4 workflow/audit diagnostics, Go naming guidance and init version range, then C5–C8 in [ACCEPTANCE's order](ACCEPTANCE.md#current-milestone--stabilization-and-cleanup).
 Execution start: **2026-11-02 19:53:07 PST**. Three-day deadline:
 **2026-11-05 19:53:07 PST** (2026-11-06 03:53:07 UTC).
 Stop for owner review at that deadline or after C8, whichever comes first.
