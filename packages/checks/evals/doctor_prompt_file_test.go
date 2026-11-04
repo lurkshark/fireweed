@@ -16,16 +16,26 @@ const doctorProbePrompt = "Reply with exactly FIREWEED_DOCTOR_OK"
 
 func doctorRecordedPath(t *testing.T, log, label string) string {
 	t.Helper()
+	return doctorRecordedPaths(t, log, label, 1)[0]
+}
+
+func doctorRecordedPaths(t *testing.T, log, label string, count int) []string {
+	t.Helper()
 	var paths []string
 	for _, line := range strings.Split(log, "\n") {
 		if strings.HasPrefix(line, label+":") {
 			paths = append(paths, strings.TrimPrefix(line, label+":"))
 		}
 	}
-	if len(paths) != 1 || !filepath.IsAbs(paths[0]) {
-		t.Fatalf("%s paths = %q; want one absolute path", label, paths)
+	if len(paths) != count {
+		t.Fatalf("%s paths = %q; want %d absolute paths", label, paths, count)
 	}
-	return paths[0]
+	for _, path := range paths {
+		if !filepath.IsAbs(path) {
+			t.Fatalf("%s path = %q; want an absolute path", label, path)
+		}
+	}
+	return paths
 }
 
 func doctorPromptFileRemoved(t *testing.T, path string) {
@@ -179,11 +189,19 @@ func Test_CHK_083_DoctorRemovesPromptFileOnProbeFailures(t *testing.T) {
 				t.Errorf("%s probe outcome changed: %s", mode, doctorText(report))
 			}
 			log := doctorLog(f)
-			path := doctorRecordedPath(t, log, "worker-file")
+			count := 1
+			if mode == "launch" {
+				// The shared wrapper records both the failed worker launch and
+				// the subsequent audit probe; both files must be cleaned up.
+				count = 2
+			}
+			paths := doctorRecordedPaths(t, log, "worker-file", count)
 			if mode != "launch" && !strings.Contains(log, "worker-content:"+doctorProbePrompt+"\n") {
 				t.Errorf("%s worker could not read exact prompt: %q", mode, log)
 			}
-			doctorPromptFileRemoved(t, path)
+			for _, path := range paths {
+				doctorPromptFileRemoved(t, path)
+			}
 			doctorProbeLog(t, f, report, "worker")
 			doctorCallerClean(t, f, status, registrations)
 		})

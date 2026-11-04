@@ -191,14 +191,17 @@ func Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure(t 
 				snap.Config["agent"] = map[string]any{"command": []any{filepath.Join(snap.Root, "missing-agent"), "{prompt_file}"}}
 			} else {
 				script := agentScript(t, snap.Root, "prompt-file-lifetime.sh", `printf '%s' "$1" > "$2/path"
-cat "$1" > "$2/content" || exit 12
+test -r "$1" || exit 12
+prompt_bytes=
+IFS= read -r -d '' prompt_bytes < "$1" || test -n "$prompt_bytes" || exit 12
+printf '%s' "$prompt_bytes" > "$2/content" || exit 12
 printf ready > "$2/ready"
 case "$3" in
   nonzero) printf partial; printf warning >&2; exit 9;;
   timeout|cancellation) printf partial; printf warning >&2; sleep 5;;
 esac
 printf success`)
-				snap.Config["agent"] = map[string]any{"command": []any{script, "{prompt_file}", observations, tc.name}}
+				snap.Config["agent"] = map[string]any{"command": []any{"/bin/bash", script, "{prompt_file}", observations, tc.name}}
 			}
 			req := request(snap, "worker", prompt)
 			req.Timeout = 2 * time.Second
