@@ -143,7 +143,7 @@ Existing operational precondition failures without a more specific D006 cause MU
 For workflow or checks failures carrying an assigned code, the CLI MUST preserve that code and reported warnings.
 
 ### APP-041
-init MUST create fireweed.yaml in the current directory with format version 1, a binary range containing assets.Version, base main, remote origin and modules [packages/*].
+init MUST create fireweed.yaml in the current directory with format version 1, a binary range >=MAJOR.MINOR, <MAJOR.(MINOR+1) derived from assets.Version, base main, remote origin and modules [packages/*].
 
 ### APP-042
 init MUST write the selected recipe's module_defaults, hooks, protected and worker_writable values into the generated configuration.

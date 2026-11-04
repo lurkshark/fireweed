@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/lurkshark/fireweed/packages/assets"
@@ -112,8 +113,19 @@ func runInit(args []string, out, errOut io.Writer) int {
 			return fail("C03", fmt.Sprintf("Invalid module template: %v. Correct the selected recipe.", err))
 		}
 	}
+	version := strings.Split(assets.Version(), ".")
+	if len(version) != 3 {
+		return fail("P01", "Invalid embedded fireweed version. Use a build with a numeric MAJOR.MINOR.PATCH version.")
+	}
+	major, majorErr := strconv.Atoi(version[0])
+	minor, minorErr := strconv.Atoi(version[1])
+	patch, patchErr := strconv.Atoi(version[2])
+	if majorErr != nil || minorErr != nil || patchErr != nil || major < 0 || minor < 0 || patch < 0 {
+		return fail("P01", "Invalid embedded fireweed version. Use a build with a numeric MAJOR.MINOR.PATCH version.")
+	}
+	binaryRange := fmt.Sprintf(">=%d.%d, <%d.%d", major, minor, major, minor+1)
 	config := map[string]any{
-		"fireweed": "=" + assets.Version(), "version": 1,
+		"fireweed": binaryRange, "version": 1,
 		"base": "main", "remote": "origin", "modules": []string{"packages/*"},
 		"module_defaults": zoneMap(recipe.ModuleDefaults), "hooks": recipe.Hooks,
 		"protected": recipe.Protected, "worker_writable": recipe.WorkerWritable,
