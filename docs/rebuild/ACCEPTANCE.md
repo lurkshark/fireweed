@@ -78,9 +78,9 @@ gc, migrate, agents-md --write
 
 ## Planned milestone — Checks contracts and proof (CK1–CK4)
 
-**Plan approved on 2026-11-04; execution remains unauthorized.** The one-time
-planning push authorization is recorded in PROGRESS; it authorizes no CK execution.
-Execute CK1 → CK2 → CK3 → CK4 only after owner authorization. This selects
+**Plan and execution approved on 2026-11-04.** PROGRESS records the execution
+budget and the separate, completed one-time planning push authorization.
+Execute CK1 → CK2 → CK3 → CK4 in order. This selects
 checks-owned obligations from the unchanged design (R07/R09–R11/R15/R18/R25/
 R28/R29) and its independent proof (R16/full gate 7); it adds no product scope.
 The requirement inventory, command inventory and every full-completion gate

@@ -1,8 +1,8 @@
 # Checks milestone restart prompt
 
-**Plan approved; execution is not authorized.** PROGRESS records the one-time
-planning push authorization. Future CK execution still excludes pushing.
-The approved budget is three days from authorized execution start; it is not running.
+**Plan and execution approved on 2026-11-04.** PROGRESS records the running
+three-day execution budget and the separate, completed one-time planning push
+authorization. CK execution excludes pushing.
 [ACCEPTANCE](ACCEPTANCE.md#planned-milestone--checks-contracts-and-proof-ck1ck4)
 is the single ordered CK1–CK4 plan and retains the full requirement/command
 inventories and completion gates. [PROGRESS](PROGRESS.md) holds current state
@@ -10,7 +10,7 @@ and the sole controller pin. [SYSTEM](../../SYSTEM.md) governs process/stops;
 [DECISIONS](DECISIONS.md) holds retained design clarifications. The unchanged
 [design](../../fireweed-design-v1.md) remains product authority.
 
-Use this prompt only after execution is authorized:
+Execution restart prompt:
 
 ```text
 /goal Execute CK1–CK4 in ACCEPTANCE in order under the accepted milestone budget: focused checks contract review and necessary corrections; clean identified candidate validation; one independent checks drill; reviewed evidence and clean handoff. Preserve every full-completion requirement and the exact controller pin in PROGRESS. Stop on the first blocked change, unresolved verification under SYSTEM's correction limit, uncovered owner decision, access/independence failure, budget deadline or CK4 completion. Do not push.
