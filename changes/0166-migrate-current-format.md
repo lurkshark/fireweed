@@ -82,3 +82,19 @@ and all counters/bounds.
 ## Audit
 
 - APP-154: "It MUST retain diagnostic codes, messages and warning status, with empty stderr." — missing assertion that a warning returned by project.Check is retained with warning status true.
+
+## Questions
+
+APP-154's requested positive-warning fixture is unavailable through the current
+public project.Check API: its diagnostic constructor emits only errors with
+Warning false. The existing eval compares every returned diagnostic's code,
+message, path and warning status, but no public input produces a true warning.
+Should C6 narrow this unexercisable positive-warning requirement to the current
+observable diagnostics, or should separately owned project warning behavior be
+authorized first? Full-completion warning requirements remain open either way.
+
+The automatic correction worker returned without eval edits. The owning
+controller interrupted before another audit, retaining the original run,
+evals phase, audit_pending APP-154 and audit_rounds 1. No assertions, retry
+counters, bounds or Provenance were changed. The claim is released for this
+owner decision under SYSTEM's untestable-finding stop rule.
