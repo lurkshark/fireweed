@@ -575,6 +575,15 @@ Stamping rejections MUST return exit 1 with their cause code and corrective guid
 The CLI MUST accept check --fix without positional arguments and reject --fix with other commands.
 Invalid fix-command usage MUST return exit 2 with corrective U01 guidance describing valid check --fix usage before mutation.
 
+### APP-150
+gc MUST discover the nearest project root, invoke workflow.GC and return exit 0 on success. Plain output MUST list the sorted full pruned ref names or explicitly report that no refs were pruned.
+
+### APP-151
+Successful gc --json MUST emit schema 1 object data containing a pruned array of sorted full deleted ref names, including an empty array when nothing was pruned, with empty diagnostics and stderr.
+
+### APP-152
+gc MUST return exit 2 for project discovery or configuration failures, retaining the cause code or C01 when uncoded. Other cleanup failures MUST return exit 1 retaining the cause code or P01 when uncoded. Failures MUST give corrective diagnostics, with null data and empty stderr in JSON mode.
+
 ## Decisions
 
 
