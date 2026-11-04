@@ -84,11 +84,20 @@ func Test_FLOW_128_GCPrunesMissingAndUnregisteredClaimsOnly(t *testing.T) {
 		t.Fatal(err)
 	}
 	gcClaim(t, root, "unregistered", unregistered)
+	foreign, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	git(t, foreign, "init")
+	if got := git(t, foreign, "worktree", "list", "--porcelain"); !strings.Contains(got, "worktree "+foreign) {
+		t.Fatalf("foreign repository does not register its worktree: %s", got)
+	}
+	gcClaim(t, root, "foreign", foreign)
 	gcRef(t, root, "refs/fireweed/other/keep", head(t, root))
 
 	r := gcCall(t, root, gcNow)
-	gcPruned(t, r.Pruned, []string{"refs/fireweed/claims/missing", "refs/fireweed/claims/unregistered"})
-	for _, name := range []string{"missing", "unregistered"} {
+	gcPruned(t, r.Pruned, []string{"refs/fireweed/claims/missing", "refs/fireweed/claims/unregistered", "refs/fireweed/claims/foreign"})
+	for _, name := range []string{"missing", "unregistered", "foreign"} {
 		gcPresent(t, root, "refs/fireweed/claims/"+name, false)
 	}
 	for _, name := range []string{"main-live", "linked-live"} {
