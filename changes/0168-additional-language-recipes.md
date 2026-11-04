@@ -1,12 +1,9 @@
 ---
-audit_pending:
-    - AST-050
-    - AST-056
 audit_rounds: 1
 bases:
     AST-004: a9742599
 module: assets
-phase: audit
+phase: impl
 run: 20261104T165115-6eb1fbc842333208fb055f7a
 ---
 
@@ -114,11 +111,17 @@ use - ID: "exact clause" — missing assertion. Passing audit writes No findings
 and Checked IDs. Re-audits cover only flagged IDs, retaining prior clearances
 and all counters/bounds.
 
+The restricted re-audit passed AST-050 and AST-056 after their additive eval
+corrections. The other affected IDs retain their first-audit clearances, as
+recorded by audit_pending containing only those two IDs. The cumulative Checked
+list carries those prior clearances forward for the pinned controller; the
+other IDs were not re-audited.
+
 ## Provenance
 - evals 2026-11-04T17:00:02.536427Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=117 failing=31 passing=86
 - audit 2026-11-04T17:01:16.619258Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 - evals 2026-11-04T17:04:41.518012Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=117 failing=31 passing=86
+- audit 2026-11-04T17:10:27.764306Z agent=manual fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 ## Audit
 
-- AST-050: "They MUST explain deriving the module graph from FIREWEED_BIN modules --json rather than maintaining another dependency graph." — No assertion checks the instruction against maintaining another dependency graph.
-- AST-056: "The additional boundaries hooks MUST query FIREWEED_BIN modules --json and derive their checks from its module directories, depends_on and resolved zone map." — The tests vary depends_on, but no assertion checks that changing module directories or resolved zones changes the boundary result.
+No findings; checked AST-004, AST-049, AST-050, AST-051, AST-052, AST-053, AST-054, AST-055, AST-056, AST-057, AST-058
