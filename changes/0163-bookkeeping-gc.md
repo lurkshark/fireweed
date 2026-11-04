@@ -1,10 +1,8 @@
 ---
-audit_pending:
-    - FLOW-128
 audit_rounds: 1
 bases: {}
 module: workflow
-phase: audit
+phase: impl
 run: 20261104T104701-454dc2889e6024874eb1a3c3
 ---
 
@@ -85,8 +83,9 @@ retaining prior clearances and all counters/bounds.
 
 ## Audit
 
-- FLOW-128: "GC MUST prune refs/fireweed/claims entries whose recorded worktree is missing or is no longer registered with the same Git common directory, while retaining claims for live registered worktrees." — missing assertion that a claim for an existing worktree registered to a different Git common directory is pruned.
+No findings; checked FLOW-128, FLOW-129, FLOW-130, FLOW-131, FLOW-132
 ## Provenance
 - evals 2026-11-04T10:56:20.358802Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=160 failing=10 passing=150
 - audit 2026-11-04T10:56:58.12221Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 - evals 2026-11-04T11:05:02.221412Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=160 failing=10 passing=150
+- audit 2026-11-04T11:06:25.018555Z agent=manual fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
