@@ -7,6 +7,8 @@ package failures. Its boundary check reads the invoking FIREWEED_BIN's modules
 JSON; module SPEC.md files are the only graph source. It enforces declared
 cross-module dependencies and eval imports through public interfaces.
 
+When naming Go eval tests, a letter immediately before a spec prefix prevents ID matching. Test_GRT_001_Name matches GRT-001; TestGRT001 does not match GRT-001.
+
 Canaries use the controller's version-1 canaries.yaml contract, with Go module
 and random module-name substitutions. Templates use {{name}}, {{package}} and
 {{prefix}}. The setup hook copies the invoking controller into scratch trees
