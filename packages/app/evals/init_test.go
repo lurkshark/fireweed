@@ -2,6 +2,7 @@ package evals_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -162,6 +163,22 @@ func Test_APP_041_APP_042_APP_043_APP_044_APP_045_APP_046_APP_050_APP_053_APP_05
 	config := readInitConfig(t, root)
 	if config.Version != 1 || !initRangeContainsVersion(config.Fireweed, assets.Version()) || config.Base != "main" || config.Remote != "origin" || !reflect.DeepEqual(config.Modules, []string{"packages/*"}) {
 		t.Errorf("APP-041 configuration header = %+v", config)
+	}
+	version, ok := initVersionParts(assets.Version())
+	if !ok {
+		t.Fatalf("APP-041 assets.Version %q is not numeric", assets.Version())
+	}
+	wantRange := fmt.Sprintf(">=%d.%d, <%d.%d", version[0], version[1], version[0], version[1]+1)
+	if config.Fireweed != wantRange {
+		t.Errorf("APP-041 binary range = %q; want exact minor window %q", config.Fireweed, wantRange)
+	}
+	patch := fmt.Sprintf("%d.%d.%d", version[0], version[1], version[2]+1)
+	if !initRangeContainsVersion(config.Fireweed, patch) {
+		t.Errorf("APP-041 binary range %q excludes later patch %s", config.Fireweed, patch)
+	}
+	nextMinor := fmt.Sprintf("%d.%d.0", version[0], version[1]+1)
+	if initRangeContainsVersion(config.Fireweed, nextMinor) {
+		t.Errorf("APP-041 binary range %q accepts next minor %s", config.Fireweed, nextMinor)
 	}
 	if !reflect.DeepEqual(config.ModuleDefaults.Protected, recipe.ModuleDefaults.Protected) || !reflect.DeepEqual(config.ModuleDefaults.Interface, recipe.ModuleDefaults.Interface) || !reflect.DeepEqual(config.ModuleDefaults.Evals, recipe.ModuleDefaults.Evals) || !reflect.DeepEqual(config.ModuleDefaults.Disposable, recipe.ModuleDefaults.Disposable) || !reflect.DeepEqual(config.Hooks, recipe.Hooks) || !reflect.DeepEqual(config.Protected, recipe.Protected) || !reflect.DeepEqual(config.WorkerWritable, recipe.WorkerWritable) {
 		t.Errorf("APP-042 recipe metadata differs: %+v", config)
