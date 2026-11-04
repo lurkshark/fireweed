@@ -6,7 +6,7 @@ audit_rounds: 1
 bases:
     AST-004: a9742599
 module: assets
-phase: evals
+phase: audit
 run: 20261104T165115-6eb1fbc842333208fb055f7a
 ---
 
@@ -69,6 +69,8 @@ Fail-first: `GOCACHE=/tmp/fireweed-rebuild-cache go test ./packages/assets/evals
 
 Evals step: `PATH=/Users/joel/Workspace/fireweed/.fireweed/bin:$PATH GOCACHE=/tmp/fireweed-rebuild-cache /Users/joel/Workspace/fireweed/.fireweed/bin/fireweed verify --quick` passed (`verify: evals`).
 
+Audit-gap correction: AST-050 now asserts guidance against a second dependency graph; AST-056 now varies a module directory and a resolved interface zone. `GOCACHE=/tmp/fireweed-rebuild-cache go test ./packages/assets/evals -run 'Test_AST_(050_|056_)' -count=1` still fails for both IDs on the missing built-ins, and pinned `fireweed verify --quick` passed (`verify: evals`).
+
 Preserve every existing Go recipe assertion, hook behavior, payload and other
 assets behavior. Keep specs atomic and new metadata consistent with the files
 and instructions actually returned. Use real language packages and protected
@@ -115,6 +117,7 @@ and all counters/bounds.
 ## Provenance
 - evals 2026-11-04T17:00:02.536427Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=117 failing=31 passing=86
 - audit 2026-11-04T17:01:16.619258Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- evals 2026-11-04T17:04:41.518012Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=117 failing=31 passing=86
 ## Audit
 
 - AST-050: "They MUST explain deriving the module graph from FIREWEED_BIN modules --json rather than maintaining another dependency graph." — No assertion checks the instruction against maintaining another dependency graph.

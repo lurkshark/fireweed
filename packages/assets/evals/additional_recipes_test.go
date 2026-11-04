@@ -122,6 +122,9 @@ func Test_AST_050_WorkspaceInstructions(t *testing.T) {
 			if !regexp.MustCompile(`(?s)(derive|generate|build).*fireweed_bin modules --json|fireweed_bin modules --json.*(derive|generate|build)`).MatchString(guide) {
 				t.Error("instructions do not explain graph derivation")
 			}
+			if !regexp.MustCompile(`(?i)(do not|don't|avoid|without)[^.\n]*(second|separate|duplicate|another)[^.\n]*dependency graph|(second|separate|duplicate|another)[^.\n]*dependency graph[^.\n]*(do not|don't|avoid)`).MatchString(guide) {
+				t.Error("instructions do not forbid maintaining a second dependency graph")
+			}
 		})
 	}
 }
@@ -276,11 +279,14 @@ func (w *extraWorkspace) remove(paths []string) {
 	}
 }
 func (w *extraWorkspace) graph(deps []string, eval string, betaInterface []string) {
+	w.graphAt("packages/alpha", deps, eval, betaInterface)
+}
+func (w *extraWorkspace) graphAt(alphaDir string, deps []string, eval string, betaInterface []string) {
 	if deps == nil {
 		deps = []string{}
 	}
 	modules := []map[string]any{
-		{"name": "alpha", "dir": "packages/alpha", "depends_on": deps, "zones": map[string]any{"interface": w.recipe.ModuleDefaults.Interface, "evals": []string{eval}, "disposable": w.recipe.ModuleDefaults.Disposable}},
+		{"name": "alpha", "dir": alphaDir, "depends_on": deps, "zones": map[string]any{"interface": w.recipe.ModuleDefaults.Interface, "evals": []string{eval}, "disposable": w.recipe.ModuleDefaults.Disposable}},
 		{"name": "beta", "dir": "packages/beta", "depends_on": []string{}, "zones": map[string]any{"interface": betaInterface, "evals": []string{eval}, "disposable": w.recipe.ModuleDefaults.Disposable}},
 	}
 	b, err := json.Marshal(map[string]any{"data": modules})
@@ -459,6 +465,44 @@ func Test_AST_056_GraphDerivedBoundaries(t *testing.T) {
 				t.Errorf("declared dependency rejected: %v %s", err, out)
 			}
 			w.remove(paths)
+
+			// Move only the import source to another directory at the same depth.
+			// The graph's dir must determine whether the hook scans that source.
+			for path, body := range w.canaries.Undeclared {
+				w.write(filepath.Join("packages/relocated", strings.TrimSuffix(renderExtra(path, "alpha"), ".tmpl")), renderExtra(body, "alpha"))
+			}
+			w.graph(nil, "evals/**", w.recipe.ModuleDefaults.Interface)
+			_, out, err = w.hook("boundaries", "alpha")
+			if err != nil {
+				t.Errorf("import outside graph directory was scanned: %v %s", err, out)
+			}
+			w.graphAt("packages/relocated", nil, "evals/**", w.recipe.ModuleDefaults.Interface)
+			_, out, err = w.hook("boundaries", "alpha")
+			if err == nil || !strings.Contains(out, "alpha:") {
+				t.Errorf("relocated graph directory not scanned: %v %s", err, out)
+			}
+
+			// The same declared dependency is allowed or rejected according to
+			// beta's resolved interface zone in modules --json.
+			w.graph([]string{"beta"}, "evals/**", w.recipe.ModuleDefaults.Interface)
+			var publicImport string
+			if name == "typescript-pnpm" {
+				publicImport = "import '../../beta/src/index.ts';\n"
+			} else {
+				publicImport = "import beta\n"
+			}
+			file := map[string]string{"typescript-pnpm": "packages/alpha/evals/public.test.ts", "python-uv": "packages/alpha/evals/test_public.py"}[name]
+			w.write(file, publicImport)
+			_, out, err = w.hook("boundaries", "alpha")
+			if err != nil {
+				t.Errorf("retained interface import rejected: %v %s", err, out)
+			}
+			w.graph([]string{"beta"}, "evals/**", []string{"unrelated/**"})
+			_, out, err = w.hook("boundaries", "alpha")
+			if err == nil || !strings.Contains(out, "alpha:") {
+				t.Errorf("resolved interface zone change ignored: %v %s", err, out)
+			}
+			w.remove([]string{file})
 		})
 	}
 }
