@@ -172,6 +172,9 @@ Each of those playbooks MUST include short illustrative examples classifying a l
 ### AST-047
 The Go recipe instructions and module SPEC template MUST explain that a letter immediately before a spec prefix prevents ID matching, showing Test_GRT_001_Name as a matching name for GRT-001 and TestGRT001 as a name that does not match.
 
+### AST-048
+Help MUST document that gc prunes stale claims, attempt refs for archived changes and drill refs older than gc.drill_max_age. It MUST identify gc.drill_max_age as a positive Go duration in fireweed.yaml with default 720h (30 days).
+
 ## Decisions
 
 [0014-go-setup-bundle] Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,

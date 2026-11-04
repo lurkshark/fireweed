@@ -14,6 +14,10 @@ Lifecycle:    start, verify, done, next, run, release, commits, abandon
 Regeneration: drill
 Maintenance:  gc, migrate, agents-md
 Information:  version
+
+gc prunes stale claims, attempt refs for archived changes, and drill refs older than gc.drill_max_age.
+gc.drill_max_age is a positive Go duration in fireweed.yaml.
+gc.drill_max_age has a default of 720h (30 days).
 `
 
 func Help() string { return help }
