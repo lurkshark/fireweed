@@ -1,35 +1,35 @@
 # Rebuild handoff
 
-**One additional independent checks drill authorized; CK3/CK4 in progress.**
-The CHK-055 clarification and scoped workflow eval_fix are applied and archived as
-`0170-doctor-baseline-scope` and `0171-boundary-cause-eval`. After bounded doctor
-access probes passed with the prescribed model/effort, the owner-authorized audit
-retry resumed workflow's original run and passed with no findings. Required full
-implementation verification passed, preserving counters and approval enforcement.
+**Stopped at CK3: the additional authorized proof exhausted its attempts and failed.**
+The CHK-055 clarification and scoped workflow eval_fix remain applied and archived
+as `0170-doctor-baseline-scope` and `0171-boundary-cause-eval`. Their audits and
+required implementation verification passed. The clean recovery candidate passed
+normal/race/vet suites and actual candidate check, doctor --no-agent and explicit-
+baseline check-commits/CI with hook doctor enabled. Exact identity, range and
+results remain in the reviewed native checks report. No runtime implementation,
+interface, hook or configuration changes were made on main, and no reconstructed
+source was imported.
 
-The clean recovery candidate passed the required normal/race/vet suites, actual
-candidate check and doctor --no-agent, and explicit-baseline check-commits/CI with
-hook doctor enabled. Exact source/executable identity, range and results are in
-the reviewed native checks report. No runtime implementation, interface, hook or
-configuration changes were made. No live run/shared claim or scratch worktree
-remains; the main and candidate checkouts are clean.
+After recovery validation, the owner separately authorized one additional native
+checks drill and CK4 review if it passed. That single invocation exhausted its
+configured attempts and failed enforced checks/app/workflow cases; runner passed.
+CK4's passing-proof/completion gate remains open. The reviewed native
+[checks report](../../.fireweed/drills/checks.md) preserves current attempts,
+cases, diagnostics, independence review and copied prior validation evidence.
+Its failed rebuilt ref is `refs/fireweed/drills/checks/20261105T051932.421753000`.
+The earlier failed ref `refs/fireweed/drills/checks/20261105T000910.693992000`
+remains unchanged; its complete report remains in committed history.
 
-The original CK1 review and pre-recovery CK2/controller-handoff evidence remain
-retained. The single native checks drill exhausted both configured attempts and
-failed enforced checks/app/workflow evals; runner passed. No further drill ran.
-CK4's passing-proof/completion gate remains open. The owner explicitly authorized
-one additional independent native checks drill on the validated recovery source,
-followed by CK4 review if it passes. Reuse completed validation and unaffected
-evidence; inspect the actual input and separate verifier before releasing each
-real worker. This exception authorizes no further drill, controller promotion,
-counter reset, gate change or scope expansion. Stop on the existing failure/owner
-decision conditions or CK4 completion. Do not restart the exhausted proof or
-reset its attempts. The pin,
-bounds, prior proof refs, unrelated worktree and original deadline remain fixed.
-The reviewed native [checks report](../../.fireweed/drills/checks.md) preserves
-CK1/CK2 evidence, both reconstruction attempts, final cases, gaps and diagnostics.
-Its failed rebuilt ref is `refs/fireweed/drills/checks/20261105T000910.693992000`.
-Reconstructed implementation was not imported onto main.
+**Owner checkpoint:** review missing_id detection, global boundary-baseline
+handling and doubled X02 cause propagation, together with the CHK-057 recovery
+check selection and CHK-060 diagnostic wording questions. No automatic fix or
+further drill is authorized. Owner agreement precedes scoped audited recovery;
+another real drill still needs separate explicit authorization. Preserve gates,
+obligations, counters and the exhausted attempts. Native input/verifier cleanup
+and local report/ref retention are complete; the task-owned invoking clone/gate
+were removed. No active run/shared claim remains. Main and validated candidate
+checkouts are clean. The pin, bounds, prior proof/attempt refs, unrelated worktree
+and original deadline remain unchanged.
 
 [ACCEPTANCE](ACCEPTANCE.md#planned-milestone--checks-contracts-and-proof-ck1ck4)
 holds the ordered plan; [GOAL](GOAL.md) is its restart prompt.
