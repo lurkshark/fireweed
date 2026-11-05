@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/lurkshark/fireweed/packages/assets"
+	"github.com/lurkshark/fireweed/packages/checks"
 	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/gitstore"
 	"github.com/lurkshark/fireweed/packages/project"
@@ -1235,7 +1236,27 @@ func Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses(t *testing.T) {
 		t.Fatalf("evals Done: %v", err)
 	}
 	write(t, boundaryHook, "packages/alpha/internal/ready", "ready\n")
-	if _, err := verify(boundaryHook, false); err == nil || !strings.HasPrefix(err.Error(), "X02: boundary hook:") {
-		t.Errorf("boundary hook cause = %v", err)
+	snapshot, err := project.Load(boundaryHook)
+	if err != nil {
+		t.Fatal(err)
+	}
+	req := request(boundaryHook)
+	boundaryDiagnostics, boundaryErr := checks.Boundaries(context.Background(), checks.BoundaryRequest{
+		Snapshot: snapshot, Bin: req.Bin, Timeout: req.Timeout,
+	})
+	if boundaryErr == nil || !strings.Contains(boundaryErr.Error(), "/missing/fireweed-boundary-hook") ||
+		len(boundaryDiagnostics) != 1 || boundaryDiagnostics[0].Code != "X02" ||
+		!strings.Contains(boundaryDiagnostics[0].Message, "/missing/fireweed-boundary-hook") {
+		t.Fatalf("unlaunchable boundary fixture = diagnostics %#v, error %v; want X02 naming missing executable", boundaryDiagnostics, boundaryErr)
+	}
+	want := boundaryErr.Error()
+	if !strings.HasPrefix(want, "X02: ") {
+		want = "X02: " + want
+	}
+	if strings.Count(want, "X02:") != 1 {
+		t.Fatalf("boundary cause has repeated X02: %q", want)
+	}
+	if _, err := verify(boundaryHook, false); err == nil || err.Error() != want {
+		t.Errorf("boundary hook cause = %v, want exactly %q", err, want)
 	}
 }

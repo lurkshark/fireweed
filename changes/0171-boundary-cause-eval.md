@@ -3,6 +3,8 @@ bases: {}
 eval_fix:
     - FLOW-062
 module: workflow
+phase: audit
+run: 20261105T021206-ef462a22e9bb7d1fa7c39456
 ---
 
 ## Motivation
@@ -53,3 +55,9 @@ quote an exact normalized FLOW-062 clause with no asserting test. Passing audit
 writes No findings and Checked FLOW-062. Re-audit only flagged IDs, retaining
 prior clearances and counters. Record concise verification evidence in Notes.
 
+Verification: the focused FLOW-062 Go testcase and pinned-controller
+`fireweed verify --quick` passed; the latter covered FLOW-062 with all workflow
+evals passing.
+
+## Provenance
+- evals 2026-11-05T02:19:23.252649Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=160 failing=0 passing=160
