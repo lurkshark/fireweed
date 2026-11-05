@@ -178,7 +178,7 @@ Doctor MUST render two uniquely named throwaway modules from project-owned modul
 Doctor MUST report C14 naming missing or malformed module templates or required canary maps and skip the affected probes.
 
 ### CHK-055
-Doctor MUST require passing baseline evals, coverage and applicable boundaries before planting canaries and after removing each planted canary, reporting C14 with the failed hook and canary when recovery fails.
+Doctor MUST require passing baseline evals and coverage for the throwaway canary modules, and applicable boundaries, before planting canaries and after removing each planted canary. This baseline coverage requirement applies to the canary modules used to prove hooks, rather than every existing module. Recovery failures MUST produce C14 naming the failed hook and canary.
 
 ### CHK-056
 Doctor MUST plant the supplied undeclared canary and require its boundary hook to report a module-attributed violation; a missed canary MUST produce C14 naming the hook and canary.
