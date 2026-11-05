@@ -1,6 +1,6 @@
 # Rebuild handoff
 
-**Stopped at CK3; owner checkpoint.** CK1's focused checks review found no
+**Owner-approved scoped recovery; stop before another drill.** CK1's focused checks review found no
 necessary product correction, and no scoped change was authored. CK2 and the
 separately authorized verified controller handoff are complete. The single native
 checks drill exhausted both configured attempts and failed enforced checks/app/
@@ -37,14 +37,18 @@ claim resume. This non-trimpath pin reproduces at its embedded clean source
 location. Worker PATH starts with the current tree's `.fireweed/bin`; use the
 prescribed rebuild cache and exact agent argv in GOAL.
 
-**Owner checkpoint:** review the exhausted proof's failing-eval canary recognition
-and boundary-hook cause failures, plus the reported CHK-055 baseline-scope note.
-The unchanged design's throwaway-module hook proof supplies context; no contract
-clarification or corrective change has been authored. Owner agreement is required
-before scoped audited recovery, and any further real drill needs separate explicit
-authorization. Preserve frozen obligations and counters and reassess only affected
-evidence. Do not restart this drill, replace it to reset attempts, promote another
-controller or broaden scope automatically.
+**Recovery authorization (2026-11-04):** the owner approved clarifying CHK-055's
+baseline coverage as the throwaway canary modules used to prove hooks, and one
+scoped workflow eval_fix for FLOW-062's incidental boundary-error wording. Execute
+both through the normal audited lifecycle, preserving existing assertions,
+coverage, approval enforcement and counters. Main's passing doctor behavior and
+CHK-058/CHK-029/CON-004 remain unchanged; the failed reconstruction is not imported.
+Complete affected candidate validation from clean committed recovery source,
+including the original explicit history baseline and CI with hook doctor enabled.
+Then stop before another drill. Any further real drill needs separate explicit
+owner authorization. Do not restart the exhausted drill, reset attempts, promote
+another controller or broaden scope automatically. The original deadline remains
+unchanged.
 
 Native input/verifier worktrees and registrations were removed, with no live run
 or shared claim. The pin, configured bounds, prior refs and unrelated worktree
