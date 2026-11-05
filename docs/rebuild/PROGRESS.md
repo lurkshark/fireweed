@@ -1,10 +1,13 @@
 # Rebuild handoff
 
-**Stopped during approved recovery: required audit model at capacity.** The
+**Owner-authorized audit retry and recovery validation; stop before another drill.** The
 CHK-055 clarification is applied and archived as `0170-doctor-baseline-scope`.
 The scoped workflow eval_fix `0171-boundary-cause-eval` passed evals and remains
 at audit in its original run; the restricted auditor exited before submitting
-an audit because the prescribed model was at capacity. The owned claim was
+an audit because the prescribed model was at capacity. A bounded doctor access
+check now passes both worker and auditor with the same prescribed model/effort.
+The owner authorized retrying this audit and completing recovery validation.
+The owned claim was
 released normally, preserving work, run/phase state and counters. Resume only
 this same change/run under the unchanged pin after access is restored; no model
 substitution or replacement change. Required recovery candidate validation is
