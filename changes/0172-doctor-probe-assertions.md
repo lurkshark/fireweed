@@ -4,6 +4,8 @@ eval_fix:
     - CHK-057
     - CHK-060
 module: checks
+phase: audit
+run: 20261105T215537-14c3ae392f33f060ba32aaf5
 ---
 
 ## Motivation
@@ -44,3 +46,5 @@ each worker step and the applicable fireweed verify before returning. Use the
 separate restricted auditor. Workers never commit, advance or edit run/phase
 or Provenance. Preserve prior evidence, counters, audit bounds and the pin.
 No drill is part of this change.
+## Provenance
+- evals 2026-11-05T22:06:47.32438Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=114 failing=0 passing=114

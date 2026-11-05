@@ -694,7 +694,13 @@ done
 `)
 	f.commit()
 	r := checks.Doctor(context.Background(), f.request(true))
-	if !hasDoctorDiagnostic(r, "C14", false, "internal_eval", "boundar") || hasDoctorCheck(r, "internal_eval", true) {
+	passedProbe := false
+	for _, check := range r.Checks {
+		if check.Passed && (check.Name == "internal_eval" || strings.HasPrefix(check.Name, "internal_eval ")) {
+			passedProbe = true
+		}
+	}
+	if !hasDoctorDiagnostic(r, "C14", false, "internal_eval", "boundar") || passedProbe {
 		t.Errorf("same-module non-interface violation accepted: %s", doctorText(r))
 	}
 	if !hasDoctorCheck(r, "undeclared", true) {
@@ -798,7 +804,16 @@ printf '<testsuite><testcase name="%s-001"/></testsuite>' "$prefix" > "$3"
 			f.put("packages/alpha/SPEC.md", strings.Replace(string(mustRead(t, filepath.Join(f.root, "packages/alpha/SPEC.md"))), "depends_on: []", "depends_on: []\nhooks:\n  "+tc.hook+": "+tc.command, 1))
 			f.commit()
 			r := checks.Doctor(context.Background(), f.request(true))
-			if !hasDoctorDiagnostic(r, "C14", false, tc.canary, tc.name) {
+			diagnosed := false
+			for _, d := range r.Diagnostics {
+				message := strings.ToLower(d.Message)
+				if d.Code == "C14" && !d.Warning && strings.Contains(message, tc.canary) &&
+					strings.Contains(message, "alpha "+tc.hook+" override") &&
+					(tc.name == "eval" || strings.Contains(message, "boundary hook") || strings.Contains(message, "boundaries hook")) {
+					diagnosed = true
+				}
+			}
+			if !diagnosed {
 				t.Errorf("broken %s override missed its %s canary without C14: %s", tc.name, tc.canary, doctorText(r))
 			}
 		})
