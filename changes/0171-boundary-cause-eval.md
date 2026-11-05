@@ -1,0 +1,55 @@
+---
+bases: {}
+eval_fix:
+    - FLOW-062
+module: workflow
+---
+
+## Motivation
+
+The owner approved a scoped workflow eval_fix after the failed independent
+checks drill returned X02 with the correct missing boundary-hook executable
+cause, but FLOW-062's eval required the incidental words "boundary hook:".
+FLOW-062 requires preserving the assigned cause, not one checks producer's
+wording. D006 permits correcting emitted-code assertions through audited
+eval_fix. Preserve every existing behavior assertion, testcase and covered ID.
+
+## Interface
+
+No public signature, runtime implementation, spec, hook or configuration edits.
+
+## Added
+
+## Modified
+
+## Removed
+
+## Decisions
+
+## Notes
+
+Change only the unlaunchable-boundary-hook assertion in
+Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses and its strictly
+necessary public imports/setup. Obtain the expected cause by calling public
+checks.Boundaries on the same configured fixture through public project loading.
+Require a real X02 failure naming /missing/fireweed-boundary-hook, and require
+workflow Verify to preserve that returned cause exactly. This keeps launch
+failure and cause propagation assertions, rejects lost/changed/doubled codes,
+and permits either producer wording. Retain the original fixture and all static,
+coverage, report, fail-first, zone and ordinary boundary assertions unchanged.
+Do not edit other cases or weaken the check to any error or X02 alone.
+
+Use the normal eval_fix lifecycle: all own evals pass with every listed ID still
+covered, followed by restricted independent audit and required implementation
+verification. No failed reconstruction source is imported. Evals workers run
+pinned fireweed context before work and verify with fireweed verify --quick,
+polling to terminal, then return. Implementation may edit only this change file.
+Only the outside owning controller advances, commits, applies or archives.
+Never invoke start, done, next, run, release, abandon, git commit or git reset;
+never edit run/phase fields or Provenance. Preserve counters and all bounds.
+
+The separate restricted auditor edits only the existing Audit body. Findings
+quote an exact normalized FLOW-062 clause with no asserting test. Passing audit
+writes No findings and Checked FLOW-062. Re-audit only flagged IDs, retaining
+prior clearances and counters. Record concise verification evidence in Notes.
+
