@@ -1,6 +1,6 @@
 # Rebuild handoff
 
-**Approved recoveries and candidate validation complete; stopped before another drill.**
+**One additional independent checks drill authorized; CK3/CK4 in progress.**
 The CHK-055 clarification and scoped workflow eval_fix are applied and archived as
 `0170-doctor-baseline-scope` and `0171-boundary-cause-eval`. After bounded doctor
 access probes passed with the prescribed model/effort, the owner-authorized audit
@@ -17,9 +17,14 @@ remains; the main and candidate checkouts are clean.
 The original CK1 review and pre-recovery CK2/controller-handoff evidence remain
 retained. The single native checks drill exhausted both configured attempts and
 failed enforced checks/app/workflow evals; runner passed. No further drill ran.
-CK4's passing-proof/completion gate remains open. Any additional real drill needs
-separate explicit owner authorization and fresh live input/verifier isolation
-inspection. Do not restart the exhausted proof or reset its attempts. The pin,
+CK4's passing-proof/completion gate remains open. The owner explicitly authorized
+one additional independent native checks drill on the validated recovery source,
+followed by CK4 review if it passes. Reuse completed validation and unaffected
+evidence; inspect the actual input and separate verifier before releasing each
+real worker. This exception authorizes no further drill, controller promotion,
+counter reset, gate change or scope expansion. Stop on the existing failure/owner
+decision conditions or CK4 completion. Do not restart the exhausted proof or
+reset its attempts. The pin,
 bounds, prior proof refs, unrelated worktree and original deadline remain fixed.
 The reviewed native [checks report](../../.fireweed/drills/checks.md) preserves
 CK1/CK2 evidence, both reconstruction attempts, final cases, gaps and diagnostics.
