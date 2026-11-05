@@ -3,6 +3,9 @@
 **Plan and execution approved on 2026-11-04.** PROGRESS records the running
 three-day execution budget and the separate, completed one-time planning push
 authorization. CK execution excludes pushing.
+The owner separately authorized the verified drill-capable controller handoff;
+PROGRESS records the resulting pin. Keep it fixed for the remaining CK work and
+retain the original budget deadline and all enforcement bounds.
 [ACCEPTANCE](ACCEPTANCE.md#planned-milestone--checks-contracts-and-proof-ck1ck4)
 is the single ordered CK1–CK4 plan and retains the full requirement/command
 inventories and completion gates. [PROGRESS](PROGRESS.md) holds current state

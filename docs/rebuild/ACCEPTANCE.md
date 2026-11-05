@@ -97,9 +97,17 @@ without copying their values into planning documents.
 design clauses and DECISIONS. Inspect live status/queue/runs/shared claims and
 preserve unrelated worktrees and proof refs. Commit approved planning/setup as
 separate protected author work with no active change/run/claim before product
-work. Keep the exact controller path/source/hash in PROGRESS throughout CK1–CK4;
-confirm it matches before use and stop on a mismatch or missing pin. No repin,
+work. Keep the resulting controller path/source/hash in PROGRESS through the
+remaining CK work after the separately authorized handoff below; confirm it
+matches before use and stop on a mismatch or missing pin. No further repin,
 bootstrap fallback, cross-controller resume or switch during a run/claim.
+The owner separately authorized a verified handoff on 2026-11-04 after the prior
+pin proved to lack native drill support. That handoff requires all CK2 validation
+from clean committed current source, no active run or shared claim, an exact
+source/hash record in PROGRESS and a separate protected author commit. Preserve
+the previous executable for explicit recovery, with no automatic fallback, then
+freeze the resulting pin through the remaining CK work. This exception does not
+reset the original budget or any enforcement bounds.
 The freshly built candidate is the product under test, separate from that pin.
 The pinned controller owns every lifecycle operation and the drill; their scratch
 setup copies the invoking pin and workers put that tree's `.fireweed/bin` first
@@ -203,7 +211,8 @@ recovery. Any further drill or scope expansion needs owner authorization.
    reasons, and live status --json unapproved count. Stop at CK4; do not push.
 
 **Excluded:** rebuilt-code import/replacement on main, real regenerate changes,
-controller promotion, workflow/runner/app real drills, gc/migrate work, further
+further controller promotion after the separately authorized handoff,
+workflow/runner/app real drills, gc/migrate work, further
 recipe work, compatibility/file-format migration, unrelated warning cleanup,
 delivery, publication and push. Later drill order remains workflow → runner →
 app, each owner-selected. Remaining drills alone do not complete the product;
