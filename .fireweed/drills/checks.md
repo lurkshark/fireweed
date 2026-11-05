@@ -33954,3 +33954,52 @@ Final live status --json showed an empty queue and `unapproved: 0`, with only th
 pre-existing B02 budget warnings. No live shared claim remains. The original
 user worktrees and prior proof refs were checked unchanged. The invoking main
 checkout and candidate source are clean after protected evidence bookkeeping.
+
+
+## Owner-approved recovery checkpoint
+
+The owner approved the CHK-055 clarification and scoped workflow eval_fix, with
+required candidate validation and an explicit stop before another drill. The
+original pin, deadline and enforcement bounds remain unchanged. This section
+adds recovery evidence; the native failed drill result and both exhausted
+attempts above remain unchanged.
+
+`0170-doctor-baseline-scope` was applied and archived by the pinned controller
+at `ed5b02a41de4bb2c00f295bae1832b44480202a2`. It modifies only CHK-055 to locate
+baseline eval coverage in the throwaway modules used to prove hooks. Existing
+evidence was legitimately already_satisfied. Evals passed 114 cases, the separate
+restricted audit passed CHK-055 with no findings, and full implementation
+verification passed 756 cases. Both worker quick verifications finished in about
+262 seconds. No product implementation, public interface, hook, configuration or
+checks eval was edited. Exact agent/model/effort and phase results are recorded
+in the archived Provenance.
+
+`0171-boundary-cause-eval` changes only FLOW-062's unlaunchable-boundary assertion
+and necessary public imports/setup. It derives the expected cause from public
+checks.Boundaries, requires X02 and the missing executable, and compares workflow
+Verify's cause exactly, normalizing the assigned prefix once. Other testcase
+assertions and all covered IDs remain. The focused testcase and quick Verify
+passed; controller-owned evals commit
+`8bdd005a845107d09042c70a3f78b93554defb43` records 160 passing workflow cases.
+The unchanged spec and runtime implementation were not edited.
+
+The subsequent independent restricted audit invocation returned exit 1 with
+`ERROR: Selected model is at capacity. Please try a different model.` Its native
+log confirms gpt-6-sol, high effort and a separate ephemeral audit session. No
+completed audit or finding was submitted. The controller returned terminal P01
+(`invoke audit agent: exit status 1`) and left the existing change at audit,
+run `20261105T021206-ef462a22e9bb7d1fa7c39456`, with audit_rounds 0. No retry,
+model substitution, counter reset or replacement run/change was performed.
+The controller released only this checkout's owned claim normally, preserving
+runtime state, committed eval work and HEAD. The native run/logs are retained.
+
+Required recovery candidate build, normal/race/vet suites, candidate check and
+doctor --no-agent, and explicit-baseline check-commits/CI remain pending until
+the workflow recovery completes its audit, implementation verification and
+archive. Prior candidate evidence remains historical evidence, not validation of
+the recovery head. No fresh candidate validation or real drill was invoked.
+The failed checks ref and all previous proof/attempt refs remain unchanged.
+Live status showed workflow queued at audit, no blocked finding, audit_rounds 0,
+and unapproved 1. Only the pre-existing B02 warnings remain. No shared claim or
+live controller remains; native audit scratch was removed. The unrelated
+worktree is preserved and the controller hash still matches PROGRESS.

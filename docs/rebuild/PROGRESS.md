@@ -1,10 +1,19 @@
 # Rebuild handoff
 
-**Owner-approved scoped recovery; stop before another drill.** CK1's focused checks review found no
-necessary product correction, and no scoped change was authored. CK2 and the
-separately authorized verified controller handoff are complete. The single native
-checks drill exhausted both configured attempts and failed enforced checks/app/
-workflow evals; runner passed. CK4's passing-proof/completion gate remains open.
+**Stopped during approved recovery: required audit model at capacity.** The
+CHK-055 clarification is applied and archived as `0170-doctor-baseline-scope`.
+The scoped workflow eval_fix `0171-boundary-cause-eval` passed evals and remains
+at audit in its original run; the restricted auditor exited before submitting
+an audit because the prescribed model was at capacity. The owned claim was
+released normally, preserving work, run/phase state and counters. Resume only
+this same change/run under the unchanged pin after access is restored; no model
+substitution or replacement change. Required recovery candidate validation is
+pending completion and archive of workflow's audit/implementation phases.
+
+The original CK1 review and pre-recovery CK2/controller-handoff evidence remain
+retained. The single native checks drill exhausted both configured attempts and
+failed enforced checks/app/workflow evals; runner passed. No further drill ran.
+CK4's passing-proof/completion gate remains open.
 The reviewed native [checks report](../../.fireweed/drills/checks.md) preserves
 CK1/CK2 evidence, both reconstruction attempts, final cases, gaps and diagnostics.
 Its failed rebuilt ref is `refs/fireweed/drills/checks/20261105T000910.693992000`.
