@@ -36268,3 +36268,8 @@ authorization is consumed. Stop for owner agreement on the unresolved failures
 and report-assertion questions before scoped audited recovery; any further real
 drill requires separate explicit authorization. Do not reset attempts, broaden
 scope or retry automatically. Prior CK1/CK2 and unaffected evidence remain valid.
+
+
+Author static check passed without diagnostics. `git diff --check` reports only
+whitespace within the native captured output and diff context above, rather
+than authored review text. Those trace bytes are preserved verbatim.
