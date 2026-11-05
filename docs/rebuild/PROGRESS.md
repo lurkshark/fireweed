@@ -1,22 +1,26 @@
 # Rebuild handoff
 
-**Owner-authorized audit retry and recovery validation; stop before another drill.** The
-CHK-055 clarification is applied and archived as `0170-doctor-baseline-scope`.
-The scoped workflow eval_fix `0171-boundary-cause-eval` passed evals and remains
-at audit in its original run; the restricted auditor exited before submitting
-an audit because the prescribed model was at capacity. A bounded doctor access
-check now passes both worker and auditor with the same prescribed model/effort.
-The owner authorized retrying this audit and completing recovery validation.
-The owned claim was
-released normally, preserving work, run/phase state and counters. Resume only
-this same change/run under the unchanged pin after access is restored; no model
-substitution or replacement change. Required recovery candidate validation is
-pending completion and archive of workflow's audit/implementation phases.
+**Approved recoveries and candidate validation complete; stopped before another drill.**
+The CHK-055 clarification and scoped workflow eval_fix are applied and archived as
+`0170-doctor-baseline-scope` and `0171-boundary-cause-eval`. After bounded doctor
+access probes passed with the prescribed model/effort, the owner-authorized audit
+retry resumed workflow's original run and passed with no findings. Required full
+implementation verification passed, preserving counters and approval enforcement.
+
+The clean recovery candidate passed the required normal/race/vet suites, actual
+candidate check and doctor --no-agent, and explicit-baseline check-commits/CI with
+hook doctor enabled. Exact source/executable identity, range and results are in
+the reviewed native checks report. No runtime implementation, interface, hook or
+configuration changes were made. No live run/shared claim or scratch worktree
+remains; the main and candidate checkouts are clean.
 
 The original CK1 review and pre-recovery CK2/controller-handoff evidence remain
 retained. The single native checks drill exhausted both configured attempts and
 failed enforced checks/app/workflow evals; runner passed. No further drill ran.
-CK4's passing-proof/completion gate remains open.
+CK4's passing-proof/completion gate remains open. Any additional real drill needs
+separate explicit owner authorization and fresh live input/verifier isolation
+inspection. Do not restart the exhausted proof or reset its attempts. The pin,
+bounds, prior proof refs, unrelated worktree and original deadline remain fixed.
 The reviewed native [checks report](../../.fireweed/drills/checks.md) preserves
 CK1/CK2 evidence, both reconstruction attempts, final cases, gaps and diagnostics.
 Its failed rebuilt ref is `refs/fireweed/drills/checks/20261105T000910.693992000`.

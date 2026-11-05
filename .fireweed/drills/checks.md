@@ -34003,3 +34003,79 @@ Live status showed workflow queued at audit, no blocked finding, audit_rounds 0,
 and unapproved 1. Only the pre-existing B02 warnings remain. No shared claim or
 live controller remains; native audit scratch was removed. The unrelated
 worktree is preserved and the controller hash still matches PROGRESS.
+
+
+## Recovery validation complete; stopped before another drill
+
+The owner authorized retrying the existing workflow audit with the same model
+once capacity returned, completing recovery validation and stopping before any
+additional drill. Bounded pinned-controller doctor probes passed both worker and
+auditor in separate ephemeral sessions with gpt-6-sol and high effort. The
+original capacity-failure trace remains retained; no model substitution or
+fallback occurred.
+
+The pinned controller resumed `0171-boundary-cause-eval` at audit in its original
+run `20261105T021206-ef462a22e9bb7d1fa7c39456`, preserving the already-passing evals
+Provenance and audit_rounds 0. The separate restricted audit passed FLOW-062 with
+no findings. The implementation worker edited only the change Notes and passed
+full Verify in 762.523 seconds; controller-owned implementation verification
+passed 642 cases and archived the change at `47f4a63a6d37781dc4c8f5e403c715a05816eb51`.
+`0170-doctor-baseline-scope` remains archived at
+`ed5b02a41de4bb2c00f295bae1832b44480202a2`, with its prior passing audit and full
+verification. No replacement change/run or counter reset was performed.
+
+Final source review confirms only the approved CHK-055 clarification and the
+FLOW-062 unlaunchable-boundary assertion/public setup changed, alongside archived
+changes and protected evidence. No runtime implementation, public interface,
+hook, recipe, configuration or other eval assertion was edited. The failed
+reconstruction was not imported. The original CK1 review and unaffected earlier
+proofs remain retained.
+
+A clean fresh checkout of `47f4a63a6d37781dc4c8f5e403c715a05816eb51` built an independent NEW 0.1.0 candidate
+with Go 1.27.2, darwin/arm64 and vcs.modified=false. Its executable SHA-256 is
+`59b60b9975f06b6fee0726f16b9690197f5057b793a1dea4d634af85c6ed6723`. It remained a product subject, separate from the unchanged controller
+pin. All candidate CLI commands selected that executable explicitly; doctor
+setup copied its invoking subject into scratch. No controller promotion occurred.
+
+With GOCACHE=/tmp/fireweed-rebuild-cache and serial package execution through
+GOFLAGS=-p=1, sequential validation passed without corrections or retries:
+
+| Validation | Exit | Seconds |
+| --- | --- | --- |
+| Clean candidate build | 0 | 1.82 |
+| go test ./... | 0 | 985.93 |
+| go test -race ./... | 0 | 1076.85 |
+| go vet ./... | 0 | 1.30 |
+| Candidate check --json | 0 | 0.47 |
+| Candidate doctor --no-agent --json | 0 | 10.22 |
+| Candidate check-commits, explicit range | 0 | 1387.52 |
+| Candidate ci, explicit range, hook doctor enabled | 0 | 2477.01 |
+
+Both history commands used the same exact nonempty range, containing 1,145 commits:
+
+```text
+be35552b706aa3000ff8f11306d129ff1d701b85..47f4a63a6d37781dc4c8f5e403c715a05816eb51
+```
+
+Candidate check, doctor, check-commits and CI returned no diagnostics. Standalone
+doctor passed all four canaries and recovery checks. CI enforced passing cases
+and coverage for app, assets, checks, contracts, gitstore, project, runner and
+workflow, plus boundaries and hook doctor; it did not run real agents. Applicable
+valid caches and unaffected historical evidence were reused without omitting
+required phase checks. Runtime validation was on darwin/arm64.
+
+Final live main status showed an empty queue and unapproved 2. The same standing
+B02 warnings remain for CHK-055 (16 cases), APP-103 (17) and APP-104 (19), against
+the unchanged limit of 15; their assertions were preserved as required, without
+unrelated cleanup or raised bounds. No active run or shared claim remains. The
+main and new candidate checkouts are clean; native audit/doctor scratch trees
+and registrations were removed. The original pin and recovery backup, prior
+attempt/proof refs and unrelated worktree were checked unchanged.
+
+The native failed checks result, both exhausted drill attempts and
+`refs/fireweed/drills/checks/20261105T000910.693992000` remain unchanged. No new
+drill, regenerate, rebuilt-code import, push, publication or promotion ran.
+The original deadline remains 2026-11-07 22:51:05 UTC (14:51:05 PST). Recovery
+validation is complete; CK3/CK4 still require a passing independent checks proof.
+Any further real drill needs separate owner authorization and fresh live
+input/verifier isolation inspection. No new reconstruction workspace was created.
