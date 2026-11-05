@@ -1,14 +1,14 @@
 # Rebuild handoff
 
-**State:** CK1's focused checks contract review identified no necessary correction;
-no scoped product change was authored. CK2 is complete: the clean identified
-candidate passed Go tests, race, vet, static check, hook-only doctor, and the
-explicit required history/CI range with hook doctor enabled. The separately
-owner-authorized handoff to a verified drill-capable NEW controller is complete.
-CK3's bounded access probes and actual input/verifier preflight are next; no real
-reconstruction agent has been invoked. Preserve the CK1 review and unaffected
-candidate evidence; record the detailed conclusions in the reviewed native
-checks report at CK4, without supplemental reports or inventories.
+**Stopped at CK3; owner checkpoint.** CK1's focused checks review found no
+necessary product correction, and no scoped change was authored. CK2 and the
+separately authorized verified controller handoff are complete. The single native
+checks drill exhausted both configured attempts and failed enforced checks/app/
+workflow evals; runner passed. CK4's passing-proof/completion gate remains open.
+The reviewed native [checks report](../../.fireweed/drills/checks.md) preserves
+CK1/CK2 evidence, both reconstruction attempts, final cases, gaps and diagnostics.
+Its failed rebuilt ref is `refs/fireweed/drills/checks/20261105T000910.693992000`.
+Reconstructed implementation was not imported onto main.
 
 [ACCEPTANCE](ACCEPTANCE.md#planned-milestone--checks-contracts-and-proof-ck1ck4)
 holds the ordered plan; [GOAL](GOAL.md) is its restart prompt.
@@ -37,12 +37,19 @@ claim resume. This non-trimpath pin reproduces at its embedded clean source
 location. Worker PATH starts with the current tree's `.fireweed/bin`; use the
 prescribed rebuild cache and exact agent argv in GOAL.
 
-**Open checkpoint:** establish actual CK3 reconstruction-input isolation and a
-separate full verifier under this pin before releasing the single real native
-checks drill. No implementation need is presumed. Stop on access/independence
-failure, unresolved verification, an owner decision, the original deadline or
-CK4 completion. No further promotion, extra drill, regenerate change or push is
-authorized.
+**Owner checkpoint:** review the exhausted proof's failing-eval canary recognition
+and boundary-hook cause failures, plus the reported CHK-055 baseline-scope note.
+The unchanged design's throwaway-module hook proof supplies context; no contract
+clarification or corrective change has been authored. Owner agreement is required
+before scoped audited recovery, and any further real drill needs separate explicit
+authorization. Preserve frozen obligations and counters and reassess only affected
+evidence. Do not restart this drill, replace it to reset attempts, promote another
+controller or broaden scope automatically.
+
+Native input/verifier worktrees and registrations were removed, with no live run
+or shared claim. The pin, configured bounds, prior refs and unrelated worktree
+remain unchanged. The original deadline still applies; full product completion
+and all remaining full-completion gates remain open.
 
 **Push authorization (2026-11-04):** the owner's separate one-time planning push
 is completed; it authorizes no future push, publication, tags or bookkeeping-ref
