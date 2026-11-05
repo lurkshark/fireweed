@@ -4,6 +4,8 @@ already_satisfied:
 bases:
     CHK-055: d2bd79ec
 module: checks
+phase: audit
+run: 20261105T020014-a4efd4188c470d3e12db98ca
 ---
 
 ## Motivation
@@ -53,3 +55,5 @@ identify an affected spec ID and exact normalized clause with no asserting test.
 Passing audit writes No findings and Checked CHK-055. Re-audit only previously
 flagged IDs, preserving counters and all prior clearances.
 
+## Provenance
+- evals 2026-11-05T02:05:13.106816Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=114 failing=0 passing=114
