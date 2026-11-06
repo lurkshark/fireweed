@@ -28494,3 +28494,68 @@ proof and attempt refs and unrelated worktree match their original values.
 The pin, model, counters, configured bounds and original deadline were
 preserved. CK1 and CK2 evidence applies, and CK4 remains open. A further
 invocation or product correction needs separate owner authorization.
+
+
+## Reviewed FLOW-062 recovery and affected CK2 validation
+
+The owner approved one audited workflow fix and affected CK2 validation,
+followed by a stop before another drill. `0175-preserve-x02-boundary-cause`
+applied at `0e2c84c638620df5a0393e95911eb7de9e00bce6` on held run
+`20261106T085253-cf6c6656e37fecebf85adaeb`. The new public eval gets the actual
+missing-hook cause from checks.Boundaries and requires Verify to return it
+with one X02 prefix, while retaining the full diagnostics. The existing exact
+unlaunchable-hook assertion and earlier evals are byte-unchanged. The
+implementation uses the selected X02 diagnostic for the code and keeps the
+wrapped checks error as the cause, with structured diagnostics returned
+separately. Existing error precedence and X01 behavior are preserved.
+
+The first eval worker attempted a prohibited phase advance. Its sandbox
+denied the Git write and the worker restored the held change document. The
+outside controller was stopped before it could commit the first draft's
+hard-coded producer wording. HEAD, index and claim were checked, and the
+first worker log was retained. A second prescribed gpt-6-sol/high worker
+corrected the new assertion on the same held run within the configured eval
+attempt bound. Pinned quick Verify passed and the outside owner advanced
+using pinned Done. Its evals Provenance records the manual advancement and
+161 cases, with the new case failing for the intended reason and the other
+160 passing. The independent restricted audit passed with no findings and
+zero recorded audit rounds. The temporary launcher added instructions on
+Audit formatting and worker phase boundaries to the existing prompts, with
+the configured Codex arguments and native enforcement intact. Full
+implementation verification passed all 643 cases. The preserved original
+worker log and the second worker log remain under the same run identity.
+
+The fresh, independently built candidate had embedded source
+`0e2c84c638620df5a0393e95911eb7de9e00bce6` and `vcs.modified=false`, built
+with Go 1.27.2 on darwin/arm64. Its SHA-256 was
+`cd55ff5ba0b8ab44b6098ee88e6dfc5bf3d63f939dd39023aaac0fafbe78c68e`.
+The explicit history range was
+`be35552b706aa3000ff8f11306d129ff1d701b85..0e2c84c638620df5a0393e95911eb7de9e00bce6`
+(1169 commits). The separate pinned controller remained in place.
+
+| Gate | Result | Seconds |
+| --- | --- | ---: |
+| go test ./... | Pass | 1048.72 |
+| go test -race ./... | Pass on unchanged retry | 344.23 |
+| go vet ./... | Pass | 1.30 |
+| Candidate check | Pass, no diagnostics | 0.40 |
+| Candidate doctor --no-agent | Pass, no diagnostics | 11.98 |
+| Candidate Verify and Done through CLI fixtures | Pass | 5.41 |
+| Candidate check-commits, explicit range | Pass, no diagnostics | 1377.58 |
+| Candidate ci, same range, hook doctor enabled | Pass, no diagnostics | 2324.16 |
+
+The initial race command exited 1 after 1143.60 seconds. The runner
+RUN-007/RUN-009 cancellation subcase exceeded its prompt-stop timer, with no
+data race reported. Runner and Git process code were unchanged. The same
+full race command passed on the same clean candidate on one retry, with no
+settings or bounds changed. The successful build emitted a sandbox warning
+about a Go module stat-cache write.
+
+The candidate CLI fixtures checked missing and unlaunchable hooks through
+both Verify and Done. Each returned the original cause under X02 and retained
+the structured diagnostics, with the fixture HEAD and held impl claim
+unchanged on failure. Fixture claims were released after the checks. Main and
+the candidate are clean, with no active claim or scratch worktree. The pin,
+counters, prior proof and attempt refs, unrelated worktree and original
+deadline were preserved. This validation does not advance CK3 or CK4. The
+next independent drill needs separate owner authorization.

@@ -1,6 +1,16 @@
 # Rebuild handoff
 
-**Stopped at CK3 after the newly authorized proof failed.** The rehearsed
+**Stopped before another CK3 invocation.** The approved FLOW-062 fix
+`0175-preserve-x02-boundary-cause` is applied and archived. Fail-first,
+independent audit and full implementation verification passed. The clean
+candidate passed the affected CK2 gates, including both boundary-failure
+fixtures through the candidate CLI and explicit-range CI with hook doctor
+enabled. The [reviewed checks report](../../.fireweed/drills/checks.md)
+records the exact validation.
+
+## Latest independent CK3 result
+
+The previously authorized proof failed. The rehearsed
 gate checked live isolation and released the first worker. The second
 configured launch followed review of the first trace and verifier feedback
 and a fresh live isolation check. Final checks, app and runner evals passed.
@@ -18,12 +28,12 @@ passed all CK2 gates, including explicit-range CI with hook doctor enabled.
 The [reviewed checks report](../../.fireweed/drills/checks.md) records the
 recovery and exact candidate validation.
 
-CK4 remains open. The final proof passed the doctor canary and global
+CK4 remains open. The retained proof passed the doctor canary and global
 boundary-baseline cases and retained coverage across all four modules.
-FLOW-062 remains an owner checkpoint. The approved invocation is spent.
-Another native invocation or scoped correction requires separate owner
-authorization. Main and the validated candidate are clean, with no active
-run or shared claim. The controller pin, original deadline, audit/retry
+FLOW-062 was corrected on main and the candidate was validated. A passing
+independent proof is still required. Another native invocation needs
+separate owner authorization. Main and the validated candidate are clean,
+with no active run or shared claim. The controller pin, original deadline, audit/retry
 bounds, retained proofs and unrelated worktree remain in place.
 
 ## Prior CK3 evidence
