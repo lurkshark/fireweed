@@ -262,7 +262,8 @@ After accepted reconstruction, Drill MUST run the target module's eval hook and 
 Drill MUST evaluate every direct and transitive dependent in lexical module-name order regardless of verify_dependents, retaining each report in Dependents. Every dependent MUST satisfy passing enforced cases and coverage for a passing drill, even when own or another dependent's evals fail.
 
 ### RUN-060
-After reconstruction has been invoked, Drill MUST write .fireweed/drills/<module>.md with date, base_commit, agent, model and result frontmatter and Own evals, Dependent evals, Contradicted Decisions and Gaps sections. Eval entries MUST identify module, testcase, spec IDs and result; agent observations and verification failures MUST remain visible, with each gap identifying a nearest spec ID or "no spec" and target module.
+
+After reconstruction has been invoked, Drill MUST write the current invocation's report to .fireweed/drills/<module>.md, replacing any previous report there, with date, base_commit, agent, model and result frontmatter and Own evals, Dependent evals, Contradicted Decisions and Gaps sections. Eval entries MUST identify module, testcase, spec IDs and result. Agent observations and verification failures MUST remain visible, with each gap identifying a nearest spec ID or "no spec" and target module.
 
 ### RUN-061
 After accepted reconstruction, Drill MUST retain the rebuilt verification tree at refs/fireweed/drills/<module>/<date>, returning that ref without moving the invoking HEAD. A passing result MUST require accepted reconstruction and passing own and all dependent evals; failure MUST return a nonnil error with Result fail.
