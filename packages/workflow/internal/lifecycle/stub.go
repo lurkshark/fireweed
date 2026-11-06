@@ -571,6 +571,9 @@ func Verify(ctx context.Context, req model.Request) (model.Result, error) {
 	if e = hard(project.Check(s.Snapshot.Root)); e != nil {
 		return r, e
 	}
+	if c.Phase != "evals" && c.Phase != "audit" && c.Phase != "impl" {
+		return r, fmt.Errorf("P01: unsupported phase %s", c.Phase)
+	}
 	diff, e := gitstore.Changes(s.Snapshot.Root, c.PhaseBase)
 	if e != nil {
 		return r, e
@@ -583,9 +586,6 @@ func Verify(ctx context.Context, req model.Request) (model.Result, error) {
 	if c.Phase == "audit" {
 		_, _, _, e = auditProcess(s, c)
 		return r, e
-	}
-	if c.Phase != "evals" && c.Phase != "impl" {
-		return r, fmt.Errorf("P01: unsupported phase %s", c.Phase)
 	}
 	names := []string{s.Change.Module}
 	if c.Phase == "impl" && !req.Quick {
