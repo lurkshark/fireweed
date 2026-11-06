@@ -3,6 +3,8 @@ bases: {}
 fixes:
     - FLOW-055
 module: workflow
+phase: audit
+run: 20261106T220145-0e7103c5413a9d2fb7940185
 ---
 
 ## Motivation
@@ -48,3 +50,5 @@ commits and archive. Workers never advance phases or edit run, phase, or
 Provenance metadata. The auditor uses only its restricted workspace and edits
 only the existing Audit body, preserving all bytes outside it. If coverage is
 adequate, the Audit body is exactly `No findings; checked FLOW-055`.
+## Provenance
+- evals 2026-11-06T22:10:50.082525Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=162 failing=1 passing=161

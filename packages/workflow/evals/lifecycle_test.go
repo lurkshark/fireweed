@@ -344,6 +344,34 @@ func Test_FLOW_055_VerifyAndDoneRejectUnsupportedHeldPhase(t *testing.T) {
 	}
 }
 
+func Test_FLOW_055_UnsupportedPhasePrecedesProtectedEdit(t *testing.T) {
+	root := fixture(t, "protected: [packages/alpha/internal/protected.txt]\n", "phase: review\n", "", "", "")
+	started := start(t, root)
+	if started.Phase != "review" {
+		t.Fatalf("held phase = %q, want review", started.Phase)
+	}
+	before := head(t, root)
+	write(t, root, "packages/alpha/internal/protected.txt", "protected worktree edit\n")
+	for _, operation := range []struct {
+		name string
+		call func() (workflow.Result, error)
+	}{
+		{"Verify", func() (workflow.Result, error) { return verify(root, true) }},
+		{"Done", func() (workflow.Result, error) { return done(root) }},
+	} {
+		if _, err := operation.call(); err == nil || !strings.HasPrefix(err.Error(), "P01: unsupported phase review") {
+			t.Errorf("%s with protected edit = %v, want P01 unsupported phase", operation.name, err)
+		}
+		if got := head(t, root); got != before {
+			t.Errorf("rejected %s moved HEAD: %s -> %s", operation.name, before, got)
+		}
+		current, err := workflow.Current(root, "manual")
+		if err != nil || current.Phase != "review" || current.PhaseBase != before || current.ClaimOID != started.ClaimOID {
+			t.Errorf("rejected %s changed held phase or claim: %#v, %v", operation.name, current, err)
+		}
+	}
+}
+
 func Test_FLOW_056_FLOW_061_CurrentAndContextIdentifyMissingClaimsAndChanges(t *testing.T) {
 	root := fixture(t, "", "", "", "", "")
 	if _, err := workflow.Current(root, "manual"); err == nil || !strings.HasPrefix(err.Error(), "P02: change has no claim") {
