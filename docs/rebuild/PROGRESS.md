@@ -1,6 +1,25 @@
 # Rebuild handoff
 
-**Stopped at CK3: the additional authorized proof exhausted its attempts and failed.**
+**Stopped before another CK3 invocation.** The owner-approved recovery is
+applied and archived in `0172-doctor-probe-assertions`,
+`0173-boundary-override-diagnostic` and `0174-boundary-hook-cause-contract`.
+The held 0172 audit recovered on its original run. The separate audits and
+required implementation verification passed. The fresh recovery candidate
+passed all CK2 gates, including explicit-range CI with hook doctor enabled.
+The [reviewed checks report](../../.fireweed/drills/checks.md) records the
+recovery and exact candidate validation.
+
+The existing CK3 proof remains failed and CK4 remains open. A future independent
+reconstruction has to demonstrate missing_id detection and enforcement of the
+global boundary baseline. Any further real drill needs separate owner
+authorization and fresh input/verifier isolation checks. Main and the validated
+candidate are clean, with no active run or shared claim. The controller pin,
+original deadline, audit/retry bounds, retained proofs and unrelated worktree
+remain in place.
+
+## Prior CK3 evidence
+
+The additional authorized proof exhausted its attempts and failed.
 The CHK-055 clarification and scoped workflow eval_fix remain applied and archived
 as `0170-doctor-baseline-scope` and `0171-boundary-cause-eval`. Their audits and
 required implementation verification passed. The clean recovery candidate passed
@@ -20,7 +39,7 @@ Its failed rebuilt ref is `refs/fireweed/drills/checks/20261105T051932.421753000
 The earlier failed ref `refs/fireweed/drills/checks/20261105T000910.693992000`
 remains unchanged; its complete report remains in committed history.
 
-**Owner checkpoint:** review missing_id detection, global boundary-baseline
+**Owner checkpoint after that proof:** review missing_id detection, global boundary-baseline
 handling and doubled X02 cause propagation, together with the CHK-057 recovery
 check selection and CHK-060 diagnostic wording questions. No automatic fix or
 further drill is authorized. Owner agreement precedes scoped audited recovery;

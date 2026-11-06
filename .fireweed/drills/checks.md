@@ -36273,3 +36273,72 @@ scope or retry automatically. Prior CK1/CK2 and unaffected evidence remain valid
 Author static check passed without diagnostics. `git diff --check` reports only
 whitespace within the native captured output and diff context above, rather
 than authored review text. Those trace bytes are preserved verbatim.
+
+## Reviewed recovery after the additional failed proof
+
+The owner approved a checks eval_fix for CHK-057 and CHK-060 and a CHK-043
+contract clarification, followed by clean candidate validation and a stop
+before another drill. Review identified two separate reconstruction defects.
+Doctor matched the wrong unmapped-ID wording for the Go canary, and its global
+boundary baseline considered only the throwaway module, missing the real
+module's violation and proceeding to planting. CHK-059 and the clarified
+CHK-055 continue to enforce both behaviors. The reconstructed source stayed on
+the retained proof ref.
+
+- `0172-doctor-probe-assertions` applied at
+  `35b8143`. It distinguishes the actual internal_eval probe from recovery.
+  The first restricted audit's extra blank line outside Audit failed the
+  import check. On owner authorization, the original run
+  `20261105T215537-14c3ae392f33f060ba32aaf5` retried the independent audit with
+  the same Codex invocation settings. A temporary launcher appended
+  formatting-only guidance to the prompt. The native importer accepted the
+  submission, the original audit log remained an exact prefix of the log, and
+  the audit round count stayed zero.
+- `0173-boundary-override-diagnostic` applied at
+  `6df7f31`. Review found that 0172 still required the word override and
+  rejected the second proof's alpha boundaries hook diagnostic. This narrow
+  follow-up accepts both boundary hook wordings and preserves the error-level
+  C14, module attribution and canary checks. The final predicate accepted the
+  recorded and current diagnostics and rejected five controls covering the
+  global hook, wrong module, wrong canary, warning severity and wrong code.
+- `0174-boundary-hook-cause-contract` applied at
+  `555ef08` as already_satisfied. Its existing public eval verifies the
+  separate X02 diagnostic and the launch, cancellation and timeout causes in
+  the returned error without an X02 prefix. FLOW-062 retains its exact cause
+  and single-prefix assertion.
+
+Each archived change records 114 passing checks evals, a separate restricted
+audit with no findings and 756 passing implementation verification cases.
+Only the checks spec, checks evals and archived changes differ from the source
+before this recovery. The earlier CK1 review and unaffected evidence still
+apply.
+
+### CK2 candidate validation
+
+Fresh clean source `555ef083c533aaa0c1be05af778a47157e03e448`, Go 1.27.2 on
+darwin/arm64, embedded `vcs.modified=false`. The independently built candidate
+SHA-256 is `0410472d48d722c425cf804be5e34219e09b777d83820cc8483a131a78e5b157`.
+The pinned controller remained separate. The explicit nonempty history range
+was `be35552b706aa3000ff8f11306d129ff1d701b85..555ef083c533aaa0c1be05af778a47157e03e448`
+(1161 commits).
+
+| Gate | Result | Seconds |
+| --- | --- | ---: |
+| go test ./... | Pass | 964.47 |
+| go test -race ./... | Pass | 1136.92 |
+| go vet ./... | Pass | 1.35 |
+| Candidate check | Pass, no diagnostics | 0.45 |
+| Candidate doctor --no-agent | Pass, all four canaries and recovery | 10.13 |
+| Candidate check-commits, explicit range | Pass, no diagnostics | 1318.55 |
+| Candidate ci, same range, hook doctor enabled | Pass, no diagnostics | 2329.27 |
+
+The build exited successfully with a Go module stat-cache write warning from
+the sandbox. Live status reported the existing CHK-055, APP-103 and APP-104
+case-count warnings and a repeated-module warning for the three scoped checks
+changes. Both checkouts were clean and all controller and candidate scratch
+worktrees were cleaned up. No shared claims remained. Prior proof and attempt
+refs and the unrelated worktree were verified against the pre-recovery state.
+The controller pin, approval enforcement, configured bounds and original
+deadline remained in place. The failed CK3 proof is still the latest native
+result. Another real drill requires separate owner authorization and isolation
+checks before CK4 can proceed.
