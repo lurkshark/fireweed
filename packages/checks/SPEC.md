@@ -142,7 +142,7 @@ Boundaries MUST suppress only exact baseline lines from normally exited hooks.
 Boundaries MUST suppress only the opted-out module's violation lines through a reasoned opt-out after a hook exits normally.
 
 ### CHK-043
-Boundaries MUST report hook launch, cancellation or timeout failures as errors with diagnostic X02.
+Boundaries MUST report hook launch, cancellation or timeout failures as errors with a diagnostic whose Code is X02. The returned error MUST preserve the hook failure cause without a leading X02 prefix.
 
 ### CHK-044
 Boundaries MUST fail with diagnostic X02 for a missing hook required by a module with disposable globs and no reasoned opt-out.
