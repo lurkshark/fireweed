@@ -2,6 +2,7 @@ package evals_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -199,6 +200,8 @@ func Test_CHK_043_LaunchCancellationAndTimeoutStayErrors(t *testing.T) {
 	}
 	if err == nil {
 		t.Error("launch failure returned no error")
+	} else if !strings.Contains(err.Error(), "missing-executable") || strings.HasPrefix(err.Error(), "X02:") {
+		t.Errorf("launch error = %q; want missing executable cause without X02 prefix", err)
 	}
 	requireBoundaryDiagnostic(t, diags, "X02", false, "")
 	snap.Config["hooks"] = map[string]any{"boundaries": boundaryScript(t, snap.Root, `sleep 2`)}
@@ -210,6 +213,8 @@ func Test_CHK_043_LaunchCancellationAndTimeoutStayErrors(t *testing.T) {
 	}
 	if err == nil {
 		t.Error("cancelled hook returned no error")
+	} else if !errors.Is(err, context.Canceled) || strings.HasPrefix(err.Error(), "X02:") {
+		t.Errorf("cancellation error = %q; want canceled cause without X02 prefix", err)
 	}
 	requireBoundaryDiagnostic(t, diags, "X02", false, "")
 	start := time.Now()
@@ -219,6 +224,8 @@ func Test_CHK_043_LaunchCancellationAndTimeoutStayErrors(t *testing.T) {
 	}
 	if err == nil {
 		t.Error("timed-out hook returned no error")
+	} else if !errors.Is(err, context.DeadlineExceeded) || strings.HasPrefix(err.Error(), "X02:") {
+		t.Errorf("timeout error = %q; want deadline cause without X02 prefix", err)
 	}
 	requireBoundaryDiagnostic(t, diags, "X02", false, "")
 	if time.Since(start) > 3*time.Second {
