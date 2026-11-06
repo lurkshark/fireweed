@@ -652,7 +652,9 @@ func Verify(ctx context.Context, req model.Request) (model.Result, error) {
 				if d.Warning || d.Code == "" {
 					continue
 				}
-				if strings.Contains(err.Error(), d.Message) {
+				if d.Code == "X02" && strings.HasPrefix(err.Error(), d.Code+": ") {
+					first = err
+				} else if d.Code == "X02" || strings.Contains(err.Error(), d.Message) {
 					first = fmt.Errorf("%s: %w", d.Code, err)
 				} else {
 					first = fmt.Errorf("%s: %s: %w", d.Code, d.Message, err)
@@ -660,7 +662,11 @@ func Verify(ctx context.Context, req model.Request) (model.Result, error) {
 				break
 			}
 			if first == nil {
-				first = fmt.Errorf("X02: %w", err)
+				if strings.HasPrefix(err.Error(), "X02: ") {
+					first = err
+				} else {
+					first = fmt.Errorf("X02: %w", err)
+				}
 			}
 		}
 		if err = hard(ds); err != nil && first == nil {
