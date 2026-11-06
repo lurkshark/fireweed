@@ -36342,3 +36342,64 @@ The controller pin, approval enforcement, configured bounds and original
 deadline remained in place. The failed CK3 proof is still the latest native
 result. Another real drill requires separate owner authorization and isolation
 checks before CK4 can proceed.
+
+
+## CK3 invocation stopped before worker release
+
+The owner authorized one native invocation on validated recovery source
+`555ef083c533aaa0c1be05af778a47157e03e448`. The clean isolated caller's
+protected setup commit `f20db727d2aa58e11d66244cf57cbb2b7f397ca0` changed
+only reconstruction instructions and the launch gate. The candidate identity
+and controller pin matched CK2, and the caller's static check passed.
+
+The first tool launch request timed out in automatic approval review before
+creating a process. The approved retry started one native invocation. The gate
+used the previously reviewed ten-minute manual inspection window. Both windows
+expired before live input and verifier inspection completed. Neither release
+marker was written, and the controller recorded two launcher exits. Neither
+Codex worker ran. No reconstructed files, eval reports or rebuilt ref were
+produced. The native controller removed the input and verifier. The prior
+retained failed proofs remain intact. This is a launch stop and supplies no
+new evidence about reconstruction behavior.
+
+The approved invocation is spent. CK1 and CK2 evidence remains applicable.
+CK3 has no passing proof and CK4 remains open. The controller pin, model and
+effort configuration, configured attempts and audit bounds, prior proof and
+attempt refs, unrelated worktree and original deadline were preserved.
+
+Native stop report follows verbatim.
+
+```text
+---
+date: 2026-11-06T04:37:33.857188Z
+base_commit: f20db727d2aa58e11d66244cf57cbb2b7f397ca0
+agent: codex
+model: gpt-6-sol
+result: fail
+---
+
+## Own evals
+
+## Dependent evals
+
+## Contradicted Decisions
+
+## Gaps
+
+## Agent observations
+
+### Attempt 1 (exit 1)
+Reconstruction held for outside-controller input/verifier inspection.
+
+Preflight gate expired; real agent was not invoked
+
+
+### Attempt 2 (exit 1)
+Reconstruction held for outside-controller input/verifier inspection.
+
+Preflight gate expired; real agent was not invoked
+
+
+## Verification failures
+reconstruction agent: exit status 1
+```

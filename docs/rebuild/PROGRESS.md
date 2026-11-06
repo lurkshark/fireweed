@@ -1,10 +1,11 @@
 # Rebuild handoff
 
-**One additional independent CK3 invocation authorized.** The owner authorized
-one native checks drill from the validated recovery source, with live input and
-verifier isolation checks and the unchanged controller, model, bounds and
-deadline. Proceed to CK4 only on a passing reviewed proof. The completed CK1
-review and CK2 validation apply.
+**Stopped at the CK3 launch gate.** The authorized native invocation used the
+validated recovery source. Both configured launches expired while held for
+live input and verifier inspection. The gate released neither worker, so no
+reconstruction or eval verification ran and no new rebuilt proof ref exists.
+The [reviewed checks report](../../.fireweed/drills/checks.md) retains the
+native stop report. The completed CK1 review and CK2 validation apply.
 
 The owner-approved recovery is
 applied and archived in `0172-doctor-probe-assertions`,
@@ -17,8 +18,8 @@ recovery and exact candidate validation.
 
 The existing CK3 proof remains failed and CK4 remains open. A future independent
 reconstruction has to demonstrate missing_id detection and enforcement of the
-global boundary baseline. Authorization covers only this invocation and its
-configured attempts. Main and the validated
+global boundary baseline. Another native invocation requires separate owner
+authorization. Main and the validated
 candidate are clean, with no active run or shared claim. The controller pin,
 original deadline, audit/retry bounds, retained proofs and unrelated worktree
 remain in place.
