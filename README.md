@@ -71,10 +71,16 @@ files, and `fireweed ci` to run automated checks in CI.
 
 ## Test regeneration
 
-`fireweed drill <module>` rebuilds a module’s disposable files in a scratch
-worktree using the retained spec, interface, and evals. It checks the rebuilt
-module and its dependents and writes a report to `.fireweed/drills/<module>.md`
-for review. Your checkout keeps its existing implementation.
+Run `fireweed drill <module>` to test whether a module can be rebuilt from its
+retained files. Review the results in `.fireweed/drills/<module>.md`.
+
+```mermaid
+flowchart TD
+    keep["Keep as agent inputs<br/>Spec, Decisions, interface, evals, and other retained files<br/>Dependency interfaces and SYSTEM.md"]
+    rebuild["Rebuild in an isolated workspace<br/>Only the target module's disposable files"]
+    verify["Check in a separate worktree<br/>Eval results and spec coverage for the target<br/>and all direct and transitive dependents"]
+    keep --> rebuild --> verify
+```
 
 This repository uses Fireweed for its own rebuild. Contributors use the pinned
 controller described in [AGENTS.md](AGENTS.md). See the [design](fireweed-design-v1.md)
