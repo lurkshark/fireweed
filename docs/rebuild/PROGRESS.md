@@ -1,6 +1,12 @@
 # Rebuild handoff
 
-**Stopped before another CK3 invocation.** The owner-approved recovery is
+**One additional independent CK3 invocation authorized.** The owner authorized
+one native checks drill from the validated recovery source, with live input and
+verifier isolation checks and the unchanged controller, model, bounds and
+deadline. Proceed to CK4 only on a passing reviewed proof. The completed CK1
+review and CK2 validation apply.
+
+The owner-approved recovery is
 applied and archived in `0172-doctor-probe-assertions`,
 `0173-boundary-override-diagnostic` and `0174-boundary-hook-cause-contract`.
 The held 0172 audit recovered on its original run. The separate audits and
@@ -11,8 +17,8 @@ recovery and exact candidate validation.
 
 The existing CK3 proof remains failed and CK4 remains open. A future independent
 reconstruction has to demonstrate missing_id detection and enforcement of the
-global boundary baseline. Any further real drill needs separate owner
-authorization and fresh input/verifier isolation checks. Main and the validated
+global boundary baseline. Authorization covers only this invocation and its
+configured attempts. Main and the validated
 candidate are clean, with no active run or shared claim. The controller pin,
 original deadline, audit/retry bounds, retained proofs and unrelated worktree
 remain in place.
