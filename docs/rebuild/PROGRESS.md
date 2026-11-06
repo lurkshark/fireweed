@@ -1,11 +1,13 @@
 # Rebuild handoff
 
-**Stopped at the CK3 launch gate.** The authorized native invocation used the
-validated recovery source. Both configured launches expired while held for
-live input and verifier inspection. The gate released neither worker, so no
-reconstruction or eval verification ran and no new rebuilt proof ref exists.
+**Stopped at CK3 after the newly authorized proof failed.** The rehearsed
+gate checked live isolation and released the first worker. The second
+configured launch followed review of the first trace and verifier feedback
+and a fresh live isolation check. Final checks, app and runner evals passed.
+Workflow FLOW-062 failed because Verify duplicated the hook-launch detail.
 The [reviewed checks report](../../.fireweed/drills/checks.md) retains the
-native stop report. The completed CK1 review and CK2 validation apply.
+native result and review. The rebuilt ref is
+`refs/fireweed/drills/checks/20261106T072400.155233000`.
 
 The owner-approved recovery is
 applied and archived in `0172-doctor-probe-assertions`,
@@ -16,13 +18,13 @@ passed all CK2 gates, including explicit-range CI with hook doctor enabled.
 The [reviewed checks report](../../.fireweed/drills/checks.md) records the
 recovery and exact candidate validation.
 
-The existing CK3 proof remains failed and CK4 remains open. A future independent
-reconstruction has to demonstrate missing_id detection and enforcement of the
-global boundary baseline. Another native invocation requires separate owner
-authorization. Main and the validated
-candidate are clean, with no active run or shared claim. The controller pin,
-original deadline, audit/retry bounds, retained proofs and unrelated worktree
-remain in place.
+CK4 remains open. The final proof passed the doctor canary and global
+boundary-baseline cases and retained coverage across all four modules.
+FLOW-062 remains an owner checkpoint. The approved invocation is spent.
+Another native invocation or scoped correction requires separate owner
+authorization. Main and the validated candidate are clean, with no active
+run or shared claim. The controller pin, original deadline, audit/retry
+bounds, retained proofs and unrelated worktree remain in place.
 
 ## Prior CK3 evidence
 
