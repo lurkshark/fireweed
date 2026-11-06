@@ -1260,3 +1260,69 @@ func Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses(t *testing.T) {
 		t.Errorf("boundary hook cause = %v, want exactly %q", err, want)
 	}
 }
+
+func Test_FLOW_062_MissingRequiredBoundaryHookKeepsCauseAndAllDiagnostics(t *testing.T) {
+	root := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
+	config := readFile(t, root, "fireweed.yaml")
+	withoutHook := strings.Replace(config, "  boundaries: [sh, .fireweed/boundaries.sh]\n", "", 1)
+	if withoutHook == config {
+		t.Fatal("fixture did not remove the required boundary hook")
+	}
+	write(t, root, "fireweed.yaml", withoutHook)
+	commit(t, root, "approved fixture without boundary hook")
+	start(t, root)
+	if _, err := done(root); err != nil {
+		t.Fatalf("evals Done: %v", err)
+	}
+	write(t, root, "packages/alpha/internal/ready", "ready\n")
+	current, err := workflow.Current(root, "manual")
+	if err != nil || current.Phase != "impl" {
+		t.Fatalf("impl state = %#v, %v", current, err)
+	}
+	req := request(root)
+	boundaryDiagnostics, boundaryErr := checks.Boundaries(context.Background(), checks.BoundaryRequest{
+		Snapshot: current.Snapshot, Bin: req.Bin, Timeout: req.Timeout,
+	})
+	if boundaryErr == nil || strings.TrimSpace(boundaryErr.Error()) == "" {
+		t.Fatalf("checks boundary cause = %v; want nonempty cause", boundaryErr)
+	}
+	wantModules := map[string]bool{"alpha": true, "beta": true, "gamma": true}
+	if len(boundaryDiagnostics) != len(wantModules) {
+		t.Fatalf("boundary diagnostics = %#v; want one per affected module", boundaryDiagnostics)
+	}
+	for _, d := range boundaryDiagnostics {
+		message := strings.ToLower(d.Message)
+		if d.Code != "X02" || d.Warning || !strings.Contains(message, "missing") ||
+			!strings.Contains(message, "boundar") || !strings.Contains(message, "hook") {
+			t.Fatalf("unexpected boundary diagnostic: %#v", d)
+		}
+		matched := false
+		for module := range wantModules {
+			if strings.Contains(d.Message, module) {
+				delete(wantModules, module)
+				matched = true
+				break
+			}
+		}
+		if !matched {
+			t.Fatalf("boundary diagnostic has no remaining affected module: %#v", d)
+		}
+	}
+	if len(wantModules) != 0 {
+		t.Fatalf("boundary diagnostics omitted modules: %v", wantModules)
+	}
+	result, err := verify(root, false)
+	want := boundaryErr.Error()
+	if !strings.HasPrefix(want, "X02: ") {
+		want = "X02: " + want
+	}
+	if strings.Count(want, "X02:") != 1 {
+		t.Fatalf("checks boundary cause has repeated X02: %q", want)
+	}
+	if err == nil || err.Error() != want || strings.Count(err.Error(), "X02:") != 1 {
+		t.Errorf("full Verify cause = %v; want exactly %q", err, want)
+	}
+	if !reflect.DeepEqual(result.Diagnostics, boundaryDiagnostics) {
+		t.Errorf("full Verify diagnostics = %#v; want %#v", result.Diagnostics, boundaryDiagnostics)
+	}
+}
