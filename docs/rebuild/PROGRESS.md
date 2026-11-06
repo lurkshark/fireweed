@@ -1,14 +1,16 @@
 # Rebuild handoff
 
-**Stopped at CK3.** The owner-authorized drill on the validated FLOW-062
-candidate exhausted its two configured attempts. Both workers passed live
-input and verifier isolation checks. Verification reported PackageFailure
-and missing coverage across checks, app, runner and workflow. A compile-only
-diagnostic on the final proof found an undefined variable and an unused
-import in reconstructed checks. The [reviewed report](../../.fireweed/drills/checks.md)
-and `refs/fireweed/drills/checks/20261106T155422.780454000` retain the result.
-CK4 remains open. A further invocation or correction needs separate owner
-authorization.
+**Stopped at CK3.** The latest owner-authorized native checks drill on
+validated source `0e2c84c638620df5a0393e95911eb7de9e00bce6` exhausted its
+configured attempts. Both workers passed live input and verifier isolation
+checks. Final checks, app and runner evals passed, and all four modules
+covered their current spec IDs. Workflow's FLOW-055 failed because Verify
+and Done returned Z01 for the unsupported phase instead of P01. The
+[reviewed report](../../.fireweed/drills/checks.md) and
+`refs/fireweed/drills/checks/20261106T205442.005371000` retain the result.
+The preceding compilation-failure report remains in commit `f37aa89`.
+CK4 remains open. A further invocation or correction requires separate
+owner authorization.
 
 The approved FLOW-062 fix
 `0175-preserve-x02-boundary-cause` is applied and archived. Fail-first,
