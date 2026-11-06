@@ -3,6 +3,8 @@ bases: {}
 eval_fix:
     - CHK-060
 module: checks
+phase: audit
+run: 20261106T001159-5ce3e44967e4517f77a749dc
 ---
 
 ## Motivation
@@ -50,3 +52,5 @@ controller runs full phase verification and advances the lifecycle.
 The auditor edits only the existing Audit body. Preserve every byte outside it.
 
 ## Audit
+## Provenance
+- evals 2026-11-06T00:22:48.494475Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=114 failing=0 passing=114

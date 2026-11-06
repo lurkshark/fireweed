@@ -807,9 +807,13 @@ printf '<testsuite><testcase name="%s-001"/></testsuite>' "$prefix" > "$3"
 			diagnosed := false
 			for _, d := range r.Diagnostics {
 				message := strings.ToLower(d.Message)
+				boundaryHook := tc.name == "boundary" && !strings.Contains(message, "global") &&
+					(strings.Contains(message, "alpha boundary hook") ||
+						strings.Contains(message, "alpha boundaries hook") ||
+						strings.Contains(message, "alpha boundaries override boundary hook") ||
+						strings.Contains(message, "alpha boundaries override boundaries hook"))
 				if d.Code == "C14" && !d.Warning && strings.Contains(message, tc.canary) &&
-					strings.Contains(message, "alpha "+tc.hook+" override") &&
-					(tc.name == "eval" || strings.Contains(message, "boundary hook") || strings.Contains(message, "boundaries hook")) {
+					(tc.name == "eval" && strings.Contains(message, "alpha "+tc.hook+" override") || boundaryHook) {
 					diagnosed = true
 				}
 			}
