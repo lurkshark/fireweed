@@ -1,4 +1,4 @@
-# Fireweed
+# 🔥🌱 fireweed
 
 Fireweed is a local CLI for spec-driven development in Git repositories. You
 describe behavior in Markdown, and coding agents write black-box tests (evals)
