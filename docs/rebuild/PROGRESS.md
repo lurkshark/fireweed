@@ -1,6 +1,16 @@
 # Rebuild handoff
 
-**Stopped before another CK3 invocation.** The approved FLOW-062 fix
+**Stopped at CK3.** The owner-authorized drill on the validated FLOW-062
+candidate exhausted its two configured attempts. Both workers passed live
+input and verifier isolation checks. Verification reported PackageFailure
+and missing coverage across checks, app, runner and workflow. A compile-only
+diagnostic on the final proof found an undefined variable and an unused
+import in reconstructed checks. The [reviewed report](../../.fireweed/drills/checks.md)
+and `refs/fireweed/drills/checks/20261106T155422.780454000` retain the result.
+CK4 remains open. A further invocation or correction needs separate owner
+authorization.
+
+The approved FLOW-062 fix
 `0175-preserve-x02-boundary-cause` is applied and archived. Fail-first,
 independent audit and full implementation verification passed. The clean
 candidate passed the affected CK2 gates, including both boundary-failure
@@ -8,7 +18,7 @@ fixtures through the candidate CLI and explicit-range CI with hook doctor
 enabled. The [reviewed checks report](../../.fireweed/drills/checks.md)
 records the exact validation.
 
-## Latest independent CK3 result
+## Prior CK3 workflow failure
 
 The previously authorized proof failed. The rehearsed
 gate checked live isolation and released the first worker. The second
@@ -29,7 +39,8 @@ The [reviewed checks report](../../.fireweed/drills/checks.md) records the
 recovery and exact candidate validation.
 
 CK4 remains open. The retained proof passed the doctor canary and global
-boundary-baseline cases and retained coverage across all four modules.
+boundary-baseline cases and retained coverage across all four modules in
+that earlier invocation.
 FLOW-062 was corrected on main and the candidate was validated. A passing
 independent proof is still required. Another native invocation needs
 separate owner authorization. Main and the validated candidate are clean,
