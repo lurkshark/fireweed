@@ -98,9 +98,9 @@ design clauses and DECISIONS. Inspect live status/queue/runs/shared claims and
 preserve unrelated worktrees and proof refs. Commit approved planning/setup as
 separate protected author work with no active change/run/claim before product
 work. Keep the resulting controller path/source/hash in PROGRESS through the
-remaining CK work after the separately authorized handoff below; confirm it
-matches before use and stop on a mismatch or missing pin. No further repin,
-bootstrap fallback, cross-controller resume or switch during a run/claim.
+remaining CK work; confirm it matches before use and stop on a mismatch or
+missing pin. Each replacement requires a separate owner-authorized, verified
+handoff. No automatic fallback, cross-controller resume or switch during a run/claim.
 The owner separately authorized a verified handoff on 2026-11-04 after the prior
 pin proved to lack native drill support. That handoff requires all CK2 validation
 from clean committed current source, no active run or shared claim, an exact
@@ -211,7 +211,7 @@ recovery. Any further drill or scope expansion needs owner authorization.
    reasons, and live status --json unapproved count. Stop at CK4; do not push.
 
 **Excluded:** rebuilt-code import/replacement on main, real regenerate changes,
-further controller promotion after the separately authorized handoff,
+controller promotion as part of CK1–CK4,
 workflow/runner/app real drills, gc/migrate work, further
 recipe work, compatibility/file-format migration, unrelated warning cleanup,
 delivery, publication and push. Later drill order remains workflow → runner →

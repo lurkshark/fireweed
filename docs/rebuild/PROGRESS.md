@@ -97,15 +97,20 @@ claim and no active change. Approval, audit/retry bounds and the original budget
 were preserved; no product or eval correction was needed.
 
 **Controller pin:** `/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed`,
-version 0.1.0, source `99a1d6d381a4475c0ec6108fa9c39963724c21df`, SHA-256
-`865eb02724a148068e343c79f084b36aab8a981ee9ae52082c76ccc17bdbd79b`.
-Keep this resulting pin unchanged and separate from mutable `bin/fireweed`.
-The previous executable is preserved at `.fireweed/bin/fireweed-pre-ck-handoff`;
-bootstrap remains at `.fireweed/bin/fireweed-bootstrap`. Both are for explicit
-owner-directed recovery only, with no automatic fallback or cross-controller
-claim resume. This non-trimpath pin reproduces at its embedded clean source
-location. Worker PATH starts with the current tree's `.fireweed/bin`; use the
-prescribed rebuild cache and exact agent argv in GOAL.
+version 0.1.0, source `193634686aa6a1c4eb32e69df1c85e1d5ce48bd7`, SHA-256
+`23e87b00217ab1a6990352393311bd150b7d60d3a4c138b75e285f518fba117f`.
+Built with Go 1.27.2 and `-trimpath` from clean source on darwin/arm64.
+The 2026-11-06 handoff passed normal and race Go tests, vet, candidate check,
+hook doctor, and the full explicit history check. Candidate CI with hook
+doctor passed for the range since the validated FLOW-062 candidate.
+The controller stays separate from mutable `bin/fireweed`.
+
+The immediate predecessor is preserved at `.fireweed/bin/fireweed-99a1d6d`.
+Earlier recovery executables remain at `.fireweed/bin/fireweed-pre-ck-handoff`
+and `.fireweed/bin/fireweed-bootstrap`. Use these only for explicit
+owner-directed recovery, with no automatic fallback or cross-controller
+claim resume. Worker PATH starts with the current tree's `.fireweed/bin`.
+Use the prescribed rebuild cache and exact agent argv in GOAL.
 
 **Recovery authorization (2026-11-04):** the owner approved clarifying CHK-055's
 baseline coverage as the throwaway canary modules used to prove hooks, and one
