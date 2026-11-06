@@ -598,6 +598,16 @@ func drillEvalEntry(section, module, testcase, id, result string) bool {
 
 func Test_RUN_060_RUN_061_DrillReportAndRetainedRef(t *testing.T) {
 	f := newDrillFixture(t)
+	const priorMarker = "PRIOR_REVIEWED_DRILL_REPORT_MARKER"
+	const reportPath = ".fireweed/drills/alpha.md"
+	nextWrite(t, f.root, reportPath, "---\nresult: fail\n---\n\nPrior review: "+priorMarker+"\n")
+	nextGit(t, f.root, "add", "-f", reportPath)
+	nextGit(t, f.root, "commit", "-q", "-m", "reviewed prior drill report")
+	f.base = nextGit(t, f.root, "rev-parse", "HEAD")
+	nextWrite(t, f.observations, "base", f.base)
+	if prior := nextGit(t, f.root, "show", f.base+":"+reportPath); !strings.Contains(prior, priorMarker) {
+		t.Fatalf("committed prior report lacks marker: %q", prior)
+	}
 	r, err := f.run(context.Background(), 0)
 	if err != nil || r.Result != "pass" || r.Module != "alpha" || r.Base != f.base || r.Date == "" || r.Agent == "" || r.Model == "" || r.ReportPath != ".fireweed/drills/alpha.md" || r.Ref != "refs/fireweed/drills/alpha/"+r.Date || len(r.Steps) != 1 {
 		t.Fatalf("passing result = %#v, %v", r, err)
@@ -606,6 +616,12 @@ func Test_RUN_060_RUN_061_DrillReportAndRetainedRef(t *testing.T) {
 		t.Error("retained rebuilt ref or invoking checkout wrong")
 	}
 	report := nextRead(t, f.root, r.ReportPath)
+	if strings.Contains(report, priorMarker) {
+		t.Errorf("current report retained prior review marker: %q", report)
+	}
+	if prior := nextGit(t, f.root, "show", f.base+":"+reportPath); !strings.Contains(prior, priorMarker) {
+		t.Errorf("reviewed prior report is not readable in Git: %q", prior)
+	}
 	for _, want := range []string{"date:", "base_commit: " + f.base, "agent:", "model:", "result: pass", "## Own evals", "## Dependent evals", "## Contradicted Decisions", "## Gaps", "ALP-001_case", "AAR-001_case", "ZET-001_case", "ALP-001", "AAR-001", "ZET-001", "pass", "ordered preference may be contradicted", "module alpha", "no spec", "module aardvark"} {
 		if !strings.Contains(report, want) {
 			t.Errorf("report lacks %q: %q", want, report)
