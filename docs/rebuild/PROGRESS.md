@@ -129,6 +129,10 @@ and all remaining full-completion gates remain open.
 is completed; it authorizes no future push, publication, tags or bookkeeping-ref
 push.
 
+**Push authorization (2026-11-06).** The owner explicitly approved a one-time
+push of all 43 commits from `ac4bf36` through `13a2685` to `origin/main`, with
+`ac4bf36` as the exclusive base.
+
 Existing testcase-budget warnings remain outside scoped cleanup. Preserve normal
 approval/audit/retry bounds; read live approval state rather than treating a
 prior handoff as current approval. Evidence remains in archived Notes/Provenance
