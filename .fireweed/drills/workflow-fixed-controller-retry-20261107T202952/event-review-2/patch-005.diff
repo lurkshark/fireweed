@@ -1,0 +1,18 @@
+--- packages/workflow/internal/lifecycle/core.go before (format normalized)
++++ packages/workflow/internal/lifecycle/core.go after (format normalized)
+@@ -340,7 +340,8 @@
+ 		}
++		blockName := strings.TrimSuffix(filepath.Base(block.Path), ".md")
+ 		if candidate.Module == block.Module {
+-			return block.Slug, "same_module"
++			return blockName, "same_module"
+ 		}
+ 		if depends(snap.Modules, candidate.Module, block.Module) {
+-			return block.Slug, "depends_on_blocked"
++			return blockName, "depends_on_blocked"
+ 		}
+@@ -348,3 +349,3 @@
+ 		if strings.TrimSpace(iface) != "" && depends(snap.Modules, block.Module, candidate.Module) {
+-			return block.Slug, "interface_dependency"
++			return blockName, "interface_dependency"
+ 		}

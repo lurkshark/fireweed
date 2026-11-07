@@ -1,0 +1,21 @@
+--- packages/workflow/internal/lifecycle/reports.go before (format normalized)
++++ packages/workflow/internal/lifecycle/reports.go after (format normalized)
+@@ -217,4 +217,16 @@
+ 		changedFiles = append(changedFiles, path)
+-		if strings.HasPrefix(path, "changes/") {
+-			touched[filepath.Base(path)] = true
++	}
++	rangeCommits, e := git(r, "rev-list", start+".."+end)
++	if e != nil {
++		return out, e
++	}
++	for _, oid := range strings.Fields(rangeCommits) {
++		paths, pe := git(r, "diff-tree", "--no-commit-id", "--name-only", "-r", oid)
++		if pe != nil {
++			return out, pe
++		}
++		for _, path := range strings.Split(paths, "\n") {
++			if strings.HasPrefix(path, "changes/") && strings.HasSuffix(path, ".md") {
++				touched[filepath.Base(path)] = true
++			}
+ 		}

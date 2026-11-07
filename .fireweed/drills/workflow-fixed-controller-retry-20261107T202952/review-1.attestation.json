@@ -1,0 +1,15 @@
+{
+  "actual_input": "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-2127954535",
+  "reviewed": [
+    "workflow SPEC including Decisions",
+    "workflow public API/model",
+    "all retained eval identities/imports/test inventory and lifecycle fixture, current-absence/audit-zone assertions",
+    "declared contracts/gitstore/assets/project/checks public API/model",
+    "input-only Git and immutable-byte live preflight",
+    "verifier separation and three fixed pins"
+  ],
+  "all_expected_input_hashes_match": true,
+  "no_extra_worker_input": true,
+  "no_original_implementation_read": true,
+  "result": "pass"
+}

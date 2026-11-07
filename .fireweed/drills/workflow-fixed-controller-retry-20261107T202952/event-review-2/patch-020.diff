@@ -1,0 +1,11 @@
+--- packages/workflow/internal/lifecycle/core.go before (format normalized)
++++ packages/workflow/internal/lifecycle/core.go after (format normalized)
+@@ -740,3 +740,7 @@
+ 			cur, _ := contracts.ParseDocument(approved)
+-			for _, key := range []string{"Audit", "Decisions", "Questions"} {
++			workerSections := []string{"Decisions", "Questions"}
++			if frontString(cur.Frontmatter["phase"]) == "audit" {
++				workerSections = append(workerSections, "Audit")
++			}
++			for _, key := range workerSections {
+ 				if s, ok := contracts.Section(d.Body, key); ok {

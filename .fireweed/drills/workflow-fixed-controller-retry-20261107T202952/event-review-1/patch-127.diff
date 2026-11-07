@@ -1,0 +1,7 @@
+--- packages/workflow/internal/lifecycle/verify.go before (format normalized)
++++ packages/workflow/internal/lifecycle/verify.go after (format normalized)
+@@ -291,3 +291,3 @@
+ 		}
+-		if err != nil && first == nil {
++		if err != nil && first == nil && c.Phase != "evals" {
+ 			first = err

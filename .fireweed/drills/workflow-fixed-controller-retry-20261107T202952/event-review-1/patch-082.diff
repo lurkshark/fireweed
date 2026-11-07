@@ -1,0 +1,8 @@
+--- packages/workflow/internal/lifecycle/verify.go before (format normalized)
++++ packages/workflow/internal/lifecycle/verify.go after (format normalized)
+@@ -56,2 +56,5 @@
+ 	bb := b.Body
++	if c.Phase != "audit" && section(ab, "Audit") != section(bb, "Audit") {
++		return code("P03", "approved audit state changed")
++	}
+ 	for _, key := range []string{"Audit", "Provenance", "Questions", "Decisions"} {

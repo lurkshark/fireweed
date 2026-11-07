@@ -1,0 +1,23 @@
+--- packages/workflow/internal/lifecycle/done.go before (format normalized)
++++ packages/workflow/internal/lifecycle/done.go after (format normalized)
+@@ -216,8 +216,16 @@
+ 	if removed != "" {
++		lines := strings.Split(decisions, "\n")
+ 		for _, entry := range strings.Split(removed, "\n") {
+-			entry = strings.TrimSpace(entry)
++			entry = strings.Trim(strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(entry), "- ")), "\"")
+ 			if entry != "" {
+-				decisions = strings.ReplaceAll(decisions, entry, "")
+-			}
+-		}
++				kept := lines[:0]
++				for _, line := range lines {
++					if !strings.Contains(line, entry) {
++						kept = append(kept, line)
++					}
++				}
++				lines = kept
++			}
++		}
++		decisions = strings.TrimSpace(strings.Join(lines, "\n"))
+ 	}

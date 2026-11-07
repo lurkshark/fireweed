@@ -1,0 +1,57 @@
+--- packages/workflow/internal/lifecycle/core.go before (format normalized)
++++ packages/workflow/internal/lifecycle/core.go after (format normalized)
+@@ -176,24 +176,26 @@
+ func archiveQueue(root string) ([]project.Change, error) {
+-	q, e := project.Queue(root)
+-	if e != nil {
+-		return nil, e
+-	}
+-	entries, e := os.ReadDir(filepath.Join(root, "changes", "archive"))
+-	if e != nil && !os.IsNotExist(e) {
+-		return nil, e
+-	}
+-	for _, ent := range entries {
+-		if ent.IsDir() || !strings.HasSuffix(ent.Name(), ".md") {
+-			continue
+-		}
+-		path := "changes/archive/" + ent.Name()
+-		s, e := textFile(root, path)
++	q := []project.Change{}
++	for _, dir := range []string{"changes", "changes/archive"} {
++		entries, e := os.ReadDir(filepath.Join(root, dir))
+ 		if e != nil {
++			if os.IsNotExist(e) {
++				continue
++			}
+ 			return nil, e
+ 		}
+-		d, e := contracts.ParseDocument(s)
+-		if e != nil {
+-			return nil, e
+-		}
+-		q = append(q, project.Change{Path: path, Slug: slug(ent.Name()), Module: frontString(d.Frontmatter["module"]), Document: d})
++		for _, ent := range entries {
++			if ent.IsDir() || !strings.HasSuffix(ent.Name(), ".md") {
++				continue
++			}
++			path := dir + "/" + ent.Name()
++			s, e := textFile(root, path)
++			if e != nil {
++				return nil, e
++			}
++			d, e := contracts.ParseDocument(s)
++			if e != nil {
++				return nil, e
++			}
++			q = append(q, project.Change{Path: path, Slug: slug(ent.Name()), Module: frontString(d.Frontmatter["module"]), Document: d})
++		}
+ 	}
+@@ -558,2 +560,8 @@
+ func validateBases(root string, ch project.Change) error {
++	bases := nested(ch.Document.Frontmatter, "bases")
++	for _, it := range append(ch.Modified, ch.Removed...) {
++		if strings.TrimSpace(frontString(bases[it.ID])) == "" {
++			return code("C08", "missing base for %s", it.ID)
++		}
++	}
+ 	stale, e := project.StaleSpecs(root, ch.Slug)

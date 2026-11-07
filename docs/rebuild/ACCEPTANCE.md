@@ -109,11 +109,14 @@ candidate `79cf33a7690082f28c06bf41a72719d282bc00fe` remains unchanged. This clo
 only that follow-up; WF4 remains open and no further native drill or unrelated
 correction is authorized. [GOAL](GOAL.md) is the stopped, restartable handoff.
 
-The owner has now approved exactly one further workflow retry on that same
-candidate with the fixed pinned controller and prepared inspector, adding exactly
-72 hours to the original deadline as recorded in PROGRESS. All other bounds and
-isolation gates remain. Retain evidence, clean up owned scratch and stop after
-this invocation; no further drill, correction, promotion or push is authorized.
+The separately approved retry with the fixed controller is now complete and
+failed native verification: app passed; workflow still fails FLOW-083 and runner
+still fails RUN-027/RUN-028. The [current report](../../.fireweed/drills/workflow.md)
+and [complete review](../../.fireweed/drills/workflow-fixed-controller-retry-20261107T202952/review.md)
+retain native cases, coverage, feedback, raw streams, failed ref and cleanup.
+The owner-added 72-hour deadline extension remains in PROGRESS; all other bounds
+and gates remain unchanged. This approval is consumed. WF4 remains open. Stop
+for owner review; no further drill, correction, promotion or push is authorized.
 
 **Entry.** Follow SYSTEM and the pin/deadline in PROGRESS. Read AGENTS,
 DECISIONS, the relevant unchanged design clauses and projected workflow

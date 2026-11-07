@@ -13,13 +13,14 @@ outside expected-pin hashes now match that controller. Candidate, worker inputs,
 command/model/effort, isolation and supervisor behavior are unchanged. The earlier
 retry approval is consumed; the commands below require separate new approval.
 
-The owner has approved one further retry with the fixed pin and added exactly
-72 hours to the original deadline. The current deadline is **2026-11-10 22:51:05 UTC**;
-the controller pin remains in PROGRESS. Preserve the candidate, configuration bounds/counters, archived changes,
-reports/proof/attempt refs, recovery executables and unrelated worktrees. Do not
-import reconstructed code, promote a controller, author product/spec/eval fixes,
-push, or restart a rejected gate. An owner-approved retry uses a new outside root;
-it never resumes the stopped invocation or its reconstructed files.
+The owner-approved fixed-controller retry is complete and failed; its approval
+is consumed. PROGRESS and the current workflow report retain the outcome. The
+owner added exactly 72 hours to the original deadline; the current deadline is
+**2026-11-10 22:51:05 UTC**. The fixed pin remains in PROGRESS. Preserve candidate,
+configuration bounds/counters, archives, reports/proof/attempt refs, recovery
+executables and unrelated worktrees. No further native launch, correction,
+reconstructed-code import, controller promotion or push is authorized. A newly
+approved retry must use a new outside root and fresh live gates.
 
 `guard.py` is an `agent.wrap` prefix. Its CLI accepts only the exact configured
 command/model/effort from SYSTEM, with the original prompt as its last argument.

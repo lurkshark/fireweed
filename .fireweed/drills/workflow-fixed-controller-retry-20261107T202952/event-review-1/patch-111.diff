@@ -1,0 +1,7 @@
+--- packages/workflow/internal/lifecycle/reports.go before (format normalized)
++++ packages/workflow/internal/lifecycle/reports.go after (format normalized)
+@@ -394,4 +394 @@
+ }
+-
+-var _ = os.ErrNotExist
+-var _ = filepath.Separator

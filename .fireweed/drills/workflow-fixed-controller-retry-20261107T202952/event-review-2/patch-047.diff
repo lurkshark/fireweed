@@ -1,0 +1,12 @@
+--- packages/workflow/internal/lifecycle/verify.go before (format normalized)
++++ packages/workflow/internal/lifecycle/verify.go after (format normalized)
+@@ -377,4 +377,8 @@
+ 			v.Seconds += tc.Seconds
++			seen := map[string]bool{}
+ 			for _, id := range tc.IDs {
+-				v.CasesPerSpec[id]++
++				if !seen[id] {
++					v.CasesPerSpec[id]++
++					seen[id] = true
++				}
+ 			}

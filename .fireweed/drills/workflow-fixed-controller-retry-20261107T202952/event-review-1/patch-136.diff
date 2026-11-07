@@ -1,0 +1,7 @@
+--- packages/workflow/internal/lifecycle/reports.go before (format normalized)
++++ packages/workflow/internal/lifecycle/reports.go after (format normalized)
+@@ -244,2 +244,4 @@
+ 			kind = "eval_fix"
++		} else if len(list(doc.Frontmatter["fixes"])) > 0 {
++			kind = "fix"
+ 		} else if frontBool(doc.Frontmatter["regenerate"]) {

@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "first_commands_reviewed": 33,
+  "first_trace_snapshots_reviewed": 147,
+  "full_native_feedback_bytes": 26098,
+  "feedback_sha256": "840a1dc6f77b2c39a390f087fe97b9dbaf6e2ca1f2a04593ea39d238c6706d58",
+  "second_prompt_only_original_plus_native_feedback": true,
+  "fresh_output_matches_reviewed_trace": true,
+  "native_forwarding_exact": true,
+  "no_observed_independence_violation": true
+}

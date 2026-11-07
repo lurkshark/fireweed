@@ -1,0 +1,76 @@
+--- packages/workflow/internal/lifecycle/core.go before
++++ packages/workflow/internal/lifecycle/core.go after
+@@ -0,0 +1,73 @@
++package lifecycle
++
++import (
++ "context"
++ "crypto/rand"
++ "encoding/hex"
++ "encoding/json"
++ "errors"
++ "fmt"
++ "os"
++ "os/exec"
++ "path/filepath"
++ "sort"
++ "strconv"
++ "strings"
++ "time"
++
++ "github.com/lurkshark/fireweed/packages/contracts"
++ "github.com/lurkshark/fireweed/packages/gitstore"
++ "github.com/lurkshark/fireweed/packages/project"
++ "github.com/lurkshark/fireweed/packages/workflow/model"
++)
++
++type claim struct {
++ Worktree string `json:"worktree"`
++ Change string `json:"change"`
++ Run string `json:"run"`
++ Phase string `json:"phase"`
++ PhaseBase string `json:"phase_base"`
++ Approved string `json:"approved"`
++ Snapshot project.Snapshot `json:"snapshot"`
++}
++
++func code(c string, f string, args ...any) error { return fmt.Errorf(c+": "+f,args...) }
++func canonical(root string)(string,error){ r,e:=gitstore.Inspect(root);if e!=nil{return "",e};return filepath.EvalSymlinks(r.Root) }
++func git(root string,args ...string)(string,error){c:=exec.Command("git",args...);c.Dir=root;c.Env=append(os.Environ(),"GIT_AUTHOR_NAME=Fireweed","GIT_AUTHOR_EMAIL=fireweed@local.invalid","GIT_COMMITTER_NAME=Fireweed","GIT_COMMITTER_EMAIL=fireweed@local.invalid");b,e:=c.CombinedOutput();if e!=nil{return "",fmt.Errorf("git %s: %s: %w",strings.Join(args," "),strings.TrimSpace(string(b)),e)};return strings.TrimSpace(string(b)),nil}
++func runID() string {b:=make([]byte,12);_,_ =rand.Read(b);return time.Now().UTC().Format("20060102T150405")+"-"+hex.EncodeToString(b)}
++func ref(ch project.Change)string{return "refs/fireweed/claims/"+ch.Slug}
++func readClaim(root string,ch project.Change)(claim,string,bool,error){oid,ok,e:=gitstore.Ref(root,ref(ch));if e!=nil||!ok{return claim{},"",ok,e};b,e:=gitstore.ReadBlob(root,oid);if e!=nil{return claim{},"",true,e};var c claim;e=json.Unmarshal(b,&c);return c,oid,true,e}
++func saveClaim(root string,ch project.Change,c claim,old string)(string,error){b,e:=json.Marshal(c);if e!=nil{return "",e};oid,e:=gitstore.WriteBlob(root,b);if e!=nil{return "",e};if e=gitstore.CASRef(root,ref(ch),old,oid);e!=nil{return "",code("P02","claim already held: %v",e)};return oid,nil}
++func releaseClaim(root string,ch project.Change,oid string)error {return gitstore.CASRef(root,ref(ch),oid,"")}
++func dirty(root string)(bool,error){s,e:=git(root,"status","--porcelain=v1","--untracked-files=all");return s!="",e}
++func textFile(root,path string)(string,error){b,e:=os.ReadFile(filepath.Join(root,filepath.FromSlash(path)));return string(b),e}
++func writeFile(root,path,value string)error{p:=filepath.Join(root,filepath.FromSlash(path));if e:=os.MkdirAll(filepath.Dir(p),0755);e!=nil{return e};return os.WriteFile(p,[]byte(value),0644)}
++func frontString(v any)string{if v==nil{return ""};return fmt.Sprint(v)}
++func frontInt(v any)int{switch n:=v.(type){case int:return n;case float64:return int(n);case string:i,_:=strconv.Atoi(n);return i};return 0}
++func frontBool(v any)bool{b,_:=v.(bool);return b}
++func list(v any)[]string{out:=[]string{};switch x:=v.(type){case []any:for _,a:=range x{out=append(out,fmt.Sprint(a))};case []string:return x;case string:if x!=""{out=append(out,x)}};return out}
++func nested(m map[string]any,k string)map[string]any{v,_:=m[k].(map[string]any);return v}
++func render(doc contracts.Document)(string,error){return contracts.RenderDocument(doc)}
++func updateDoc(root,path string,mutate func(*contracts.Document)error)error{s,e:=textFile(root,path);if e!=nil{return e};d,e:=contracts.ParseDocument(s);if e!=nil{return e};if e=mutate(&d);e!=nil{return e};s,e=render(d);if e!=nil{return e};return writeFile(root,path,s)}
++func archiveQueue(root string)([]project.Change,error){q,e:=project.Queue(root);if e!=nil{return nil,e};entries,e:=os.ReadDir(filepath.Join(root,"changes","archive"));if e!=nil&& !os.IsNotExist(e){return nil,e};for _,ent:=range entries{if ent.IsDir()||!strings.HasSuffix(ent.Name(),".md"){continue};path:="changes/archive/"+ent.Name();s,e:=textFile(root,path);if e!=nil{return nil,e};d,e:=contracts.ParseDocument(s);if e!=nil{return nil,e};q=append(q,project.Change{Path:path,Slug:slug(ent.Name()),Module:frontString(d.Frontmatter["module"]),Document:d})};return q,nil}
++func slug(name string)string{name=strings.TrimSuffix(filepath.Base(name),".md");if i:=strings.IndexByte(name,'-');i>=0&&i+1<len(name){return name[i+1:]};return name}
++func selectChange(root,selector string,archive bool)(project.Change,error){var all []project.Change;var e error;if archive{all,e=archiveQueue(root)}else{all,e=project.Queue(root)};if e!=nil{return project.Change{},e};valid:=[]string{};matches:=[]project.Change{};for _,ch:=range all{valid=append(valid,ch.Slug);if selector==ch.Slug||selector==ch.Path||selector==filepath.Base(ch.Path){matches=append(matches,ch)}};if len(matches)!=1{return project.Change{},code("U02","change %q not found or ambiguous; valid slugs: %s",selector,strings.Join(valid,", "))};return matches[0],nil}
++func state(root string,ch project.Change,c claim,oid string)(model.State,error){head,e:=git(root,"rev-parse","HEAD");if e!=nil{return model.State{},e};s,e:=textFile(root,ch.Path);if e==nil{d,pe:=contracts.ParseDocument(s);if pe==nil{ch.Document=d}};return model.State{Change:ch,Snapshot:c.Snapshot,Run:c.Run,Phase:c.Phase,Head:head,PhaseBase:c.PhaseBase,ClaimOID:oid},nil}
++func owned(root string,selector string)(project.Change,claim,string,error){var ch project.Change;var e error;if selector==""{q,qe:=project.Queue(root);if qe!=nil{return ch,claim{},"",qe};for _,candidate:=range q{c,oid,ok,re:=readClaim(root,candidate);if re!=nil{return ch,claim{},"",re};if ok&&c.Worktree==root{return candidate,c,oid,nil}};return ch,claim{},"",code("P02","worktree holds no change")};ch,e=selectChange(root,selector,false);if e!=nil{return ch,claim{},"",e};c,oid,ok,e:=readClaim(root,ch);if e!=nil{return ch,c,oid,e};if !ok{return ch,c,oid,code("P02","change has no claim")};if c.Worktree!=root{return ch,c,oid,code("P02","claim belongs to another worktree")};return ch,c,oid,nil}
++func Current(root,selector string)(model.State,error){r,e:=canonical(root);if e!=nil{return model.State{},e};ch,c,oid,e:=owned(r,selector);if e!=nil{return model.State{},e};return state(r,ch,c,oid)}
++func Release(root,selector string)error{r,e:=canonical(root);if e!=nil{return e};ch,_,oid,e:=owned(r,selector);if e!=nil{return e};return releaseClaim(r,ch,oid)}
++func depends(mods []project.Module,from,to string)bool{seen:=map[string]bool{};var walk func(string)bool;walk=func(n string)bool{if seen[n]{return false};seen[n]=true;for _,m:=range mods{if m.Name==n{for _,d:=range m.DependsOn{if d==to||walk(d){return true}}}};return false};return walk(from)}
++func waiting(root string,q []project.Change,i int)(string,string){candidate:=q[i];if frontString(candidate.Document.Frontmatter["blocked"])!=""{return "",""};snap,e:=project.Project(root,candidate.Slug);if e!=nil{return "",""};for j:=0;j<i;j++{block:=q[j];if frontString(block.Document.Frontmatter["blocked"])==""{continue};if candidate.Module==block.Module{return block.Slug,"same_module"};if depends(snap.Modules,candidate.Module,block.Module){return block.Slug,"depends_on_blocked"};iface,_:=contracts.Section(candidate.Document.Body,"Interface");if strings.TrimSpace(iface)!=""&&depends(snap.Modules,block.Module,candidate.Module){return block.Slug,"interface_dependency"}};return "",""}
++func Eligible(root string)([]project.Change,error){r,e:=canonical(root);if e!=nil{return nil,e};q,e:=project.Queue(r);if e!=nil{return nil,e};out:=[]project.Change{};for i,ch:=range q{if frontString(ch.Document.Frontmatter["blocked"])!=""{continue};on,_:=waiting(r,q,i);if on==""{out=append(out,ch)}};return out,nil}
++func start(root,selector string,attempt int,resume bool)(model.State,error){r,e:=canonical(root);if e!=nil{return model.State{},e};var ch project.Change;if selector!=""{ch,e=selectChange(r,selector,false);if e!=nil{return model.State{},e}};if resume{if attempt<=0{return model.State{},code("P01","invalid attempt %d",attempt)};name:="refs/fireweed/attempts/"+ch.Slug+"/"+strconv.Itoa(attempt);_,ok,re:=gitstore.Ref(r,name);if re!=nil{return model.State{},re};if !ok{return model.State{},code("P01","attempt %s not found",name)}};isDirty,e:=dirty(r);if e!=nil{return model.State{},e};if isDirty{return model.State{},code("P01","start requires clean worktree")};eligible,e:=Eligible(r);if e!=nil{return model.State{},e};if len(eligible)==0{return model.State{},code("P01","no eligible change")};if selector==""{ch=eligible[0]}else if ch.Path!=eligible[0].Path{return model.State{},code("P01","change is not eligible queue head")};if c,_,ok,re:=readClaim(r,ch);re!=nil{return model.State{},re}else if ok{return model.State{},code("P02","claim already held: %s: update-ref",c.Worktree)};head,e:=git(r,"rev-parse","HEAD");if e!=nil{return model.State{},e};s,e:=textFile(r,ch.Path);if e!=nil{return model.State{},e};doc,e:=contracts.ParseDocument(s);if e!=nil{return model.State{},e};if resume&&frontString(doc.Frontmatter["phase"])==""{return model.State{},code("P01","attempt requires committed phase")};if !resume{if e=validateBases(r,ch);e!=nil{return model.State{},e};s,e=assignIDs(r,ch,s);if e!=nil{return model.State{},e};doc,e=contracts.ParseDocument(s);if e!=nil{return model.State{},e}};phase:=frontString(doc.Frontmatter["phase"]);run:=frontString(doc.Frontmatter["run"]);if phase==""{phase="evals";if len(ch.Added)+len(ch.Modified)+len(ch.Removed)==0&&len(list(doc.Frontmatter["fixes"]))==0&&len(list(doc.Frontmatter["eval_fix"]))==0{phase="impl"};if frontBool(doc.Frontmatter["regenerate"]){phase="impl"}};if run==""{run=runID()};doc.Frontmatter["phase"]=phase;doc.Frontmatter["run"]=run;s,e=render(doc);if e!=nil{return model.State{},e};snap,e:=project.Project(r,ch.Slug);if e!=nil{return model.State{},e};snap.Root=r;c:=claim{Worktree:r,Change:ch.Slug,Run:run,Phase:phase,PhaseBase:head,Approved:s,Snapshot:snap};oid,e:=saveClaim(r,ch,c,"");if e!=nil{return model.State{},e};if e=writeFile(r,ch.Path,s);e!=nil{_ =releaseClaim(r,ch,oid);return model.State{},e};if resume{e=restoreAttempt(r,ch,attempt,s);if e!=nil{_ =releaseClaim(r,ch,oid);return model.State{},e}}else if frontBool(doc.Frontmatter["regenerate"]){_ =deleteDisposable(r,ch,snap)};st,e:=state(r,ch,c,oid);if e!=nil{return st,e};if !resume{base,_:=gitstore.BaseRef(r,"","main");if base!=""{_,be:=gitstore.ReadAt(r,base,ch.Path);if be!=nil{st.Diagnostics=append(st.Diagnostics,project.Diagnostic{Code:"P04",Message:"change is not on shared base",Warning:true})}}};return st,nil}
++func Start(root,selector string)(model.State,error){return start(root,selector,0,false)}
++func StartFromAttempt(root,selector string,n int)(model.State,error){return start(root,selector,n,true)}
++func validateBases(root string,ch project.Change)error{stale,e:=project.StaleSpecs(root,ch.Slug);if e!=nil{return e};for _,s:=range stale{if !s.Recovered{return code("P05","stale base for %s",s.ID)}};return nil}
++func assignIDs(root string,ch project.Change,s string)(string,error){doc,e:=contracts.ParseDocument(s);if e!=nil{return s,e};items,e:=contracts.ParseItems(section(doc.Body,"Added"));if e!=nil{return s,e};if len(items)==0{return s,nil};snap,e:=project.Load(root);if e!=nil{return s,e};prefix:="";used:=map[int]bool{};for _,m:=range snap.Modules{if m.Name!=ch.Module{continue};prefix=m.IDPrefix;for _,it:=range mustItems(section(m.Document.Body,"Specs")){var n int;if _,e:=fmt.Sscanf(it.ID,prefix+"-%d",&n);e==nil{used[n]=true}}};q,_:=project.Queue(root);for _,other:=range q{for _,it:=range other.Added{var n int;if _,e:=fmt.Sscanf(it.ID,prefix+"-%d",&n);e==nil{used[n]=true}}};for _,it:=range items{if !strings.HasPrefix(it.ID,"new:"){continue};n:=1;for used[n]{n++};used[n]=true;s=strings.ReplaceAll(s,it.ID,fmt.Sprintf("%s-%03d",prefix,n))};return s,nil}
++func section(body,name string)string{s,_:=contracts.Section(body,name);return s}
++func mustItems(s string)[]contracts.Item{it,_:=contracts.ParseItems(s);return it}
++func deleteDisposable(root string,ch project.Change,snap project.Snapshot)error{for _,m:=range snap.Modules{if m.Name!=ch.Module{continue};return filepath.WalkDir(filepath.Join(root,m.Dir),func(p string,d os.DirEntry,e error)error{if e!=nil{return nil};if d.IsDir(){return nil};rel,_:=filepath.Rel(filepath.Join(root,m.Dir),p);if contracts.ResolveZone(filepath.ToSlash(rel),m.Zones)=="disposable"{return os.Remove(p)};return nil})};return nil}
++func restoreAttempt(root string,ch project.Change,n int,approved string)error{ref:="refs/fireweed/attempts/"+ch.Slug+"/"+strconv.Itoa(n);files,e:=git(root,"diff","--name-only","HEAD",ref);if e!=nil{return e};for _,path:=range strings.Split(files,"\n"){if path==""{continue};if path==ch.Path{old,e:=gitstore.ReadAt(root,ref,path);if e!=nil{continue};d,e:=contracts.ParseDocument(string(old));if e!=nil{continue};cur,_:=contracts.ParseDocument(approved);if s,ok:=contracts.Section(d.Body,"Audit");ok{cur.Body=contracts.ReplaceSection(cur.Body,"Audit",s)};text,e:=render(cur);if e==nil{_ =writeFile(root,path,text)};continue};b,e:=gitstore.ReadAt(root,ref,path);if e!=nil{_ =os.Remove(filepath.Join(root,path));continue};_ =writeFile(root,path,string(b))};return nil}
++func sortedKeys(m map[string]any)[]string{k:=make([]string,0,len(m));for a:=range m{k=append(k,a)};sort.Strings(k);return k}
++var _ = errors.New
++var _ = context.Background

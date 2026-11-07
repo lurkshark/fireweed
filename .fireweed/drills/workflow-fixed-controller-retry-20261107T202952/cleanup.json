@@ -1,0 +1,20 @@
+{
+  "native_input_removed_by_controller": true,
+  "native_verifier_removed_by_controller": true,
+  "caller_removed_by_owner_after_retention": true,
+  "owned_process_groups_absent": [
+    87732,
+    88215,
+    53662
+  ],
+  "no_live_shared_claim": true,
+  "no_main_queue": true,
+  "native_terminal": {
+    "exit": 1,
+    "emergency": false,
+    "rejected": false
+  },
+  "retained_ref": "refs/fireweed/drills/workflow/20261107T202952.649365000",
+  "retained_oid": "50bd33c5526fb495d541e3290868d198ed010b78",
+  "no_reconstruction_applied": true
+}

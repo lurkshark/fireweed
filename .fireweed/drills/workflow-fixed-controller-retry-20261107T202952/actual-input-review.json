@@ -1,0 +1,161 @@
+{
+  "input": "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-2127954535",
+  "files": [
+    {
+      "path": "SYSTEM.md",
+      "sha256": "1fc838d4bf7acf99b812f2c2a529aaa5d6192d954453e3b3e3215671626855a1",
+      "bytes": 1950
+    },
+    {
+      "path": "packages/assets/api.go",
+      "sha256": "08c30556e55c2768495ea4d1b08a4744bd57771e133ead57b046b13e07dff1d8",
+      "bytes": 587
+    },
+    {
+      "path": "packages/assets/model/model.go",
+      "sha256": "058045c8bd2940d49678fb31aa1f7862f44d0848c175ea864dc8d6636ba0f28e",
+      "bytes": 348
+    },
+    {
+      "path": "packages/checks/api.go",
+      "sha256": "17400b58517d9722cbc44378b5500ba534f15009e049519a1bf7b0bc07ea3d3f",
+      "bytes": 1650
+    },
+    {
+      "path": "packages/checks/model/model.go",
+      "sha256": "351996d8e78770ecf2b10710ae32eece23149f4d306704e23712042843210584",
+      "bytes": 1278
+    },
+    {
+      "path": "packages/contracts/api.go",
+      "sha256": "2a9a2c86d3394ba42fdd0a848caf53981c390e226055329070427214a4863e75",
+      "bytes": 1606
+    },
+    {
+      "path": "packages/contracts/model/model.go",
+      "sha256": "13a8ffd3a338b105ab7677391372d87c0b37fc5aceca3b19ee5d5f456da551cf",
+      "bytes": 811
+    },
+    {
+      "path": "packages/gitstore/api.go",
+      "sha256": "a519d86c29c5b0f6c21d6a64852209f181d1b7c62567821ca4a2fa10ed59fc13",
+      "bytes": 1288
+    },
+    {
+      "path": "packages/gitstore/model/model.go",
+      "sha256": "9416b2e9aecc0fa41ed5f92995401b390ce8edf1b6ad3fc8086985351266e936",
+      "bytes": 398
+    },
+    {
+      "path": "packages/project/api.go",
+      "sha256": "5ed9814e3cc746aa9bfeccd7ff16fa22a24746bff1f25f482cbd900cc866d21f",
+      "bytes": 1468
+    },
+    {
+      "path": "packages/project/model/model.go",
+      "sha256": "c4aea379c049b6d8a5b5d07087b6a6f203421396652bfd0eda744bc1dfce72cb",
+      "bytes": 1399
+    },
+    {
+      "path": "packages/workflow/SPEC.md",
+      "sha256": "0f60150d1818f1e8e274eff0314fd091554425083643281204f226ef508ff74d",
+      "bytes": 22790
+    },
+    {
+      "path": "packages/workflow/api.go",
+      "sha256": "566d78443837d2621b735e6a64472ef3a8767a0fb13c92d233a491e5d50bc7e5",
+      "bytes": 2289
+    },
+    {
+      "path": "packages/workflow/evals/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "packages/workflow/evals/abandon_test.go",
+      "sha256": "067c689eecf3e1cb081dc9e4336b8a1745232bcfbc9f05801f70271fe9e0f31e",
+      "bytes": 12147
+    },
+    {
+      "path": "packages/workflow/evals/block_test.go",
+      "sha256": "74db0440280f46f932f60180932b264533c7afa65bf61f30a9188648d1954ade",
+      "bytes": 13149
+    },
+    {
+      "path": "packages/workflow/evals/commits_test.go",
+      "sha256": "a76ec60ff46aa6230f2152bac4b0511b5e4b3c41b1b6a30ba03e364c05aba522",
+      "bytes": 5298
+    },
+    {
+      "path": "packages/workflow/evals/costs_test.go",
+      "sha256": "1e12af64d69995233cb379fbff09a76adcd9024e32149b1d8016c2680417c2a9",
+      "bytes": 15427
+    },
+    {
+      "path": "packages/workflow/evals/current_absence_test.go",
+      "sha256": "cfde689cbf72505648bbc4209691c1bc7846824e4935fcf68dbdf09170f4b7bc",
+      "bytes": 1065
+    },
+    {
+      "path": "packages/workflow/evals/eligible_test.go",
+      "sha256": "4258342bd126cfdd4755e2206a9b873c3cd51c4fff9c7cedc5562109a660ff53",
+      "bytes": 7273
+    },
+    {
+      "path": "packages/workflow/evals/eval_fix_lifecycle_test.go",
+      "sha256": "b418f8d7331bf727c781be805ee00b7bfbc26f4397e10e32626f710268a0c792",
+      "bytes": 7172
+    },
+    {
+      "path": "packages/workflow/evals/gc_test.go",
+      "sha256": "2b914ccb56fc42ab65b08661a16a9e73d12421720ce5577ac7898ab3b783c233",
+      "bytes": 8420
+    },
+    {
+      "path": "packages/workflow/evals/lifecycle_test.go",
+      "sha256": "970c68fcbc50e1c5409c883767aac0329fd07141d41760bc401caa52a637e765",
+      "bytes": 56631
+    },
+    {
+      "path": "packages/workflow/evals/maintenance_start_test.go",
+      "sha256": "0c6d974bcfb7bb3cc7b6eb640dcfa02f6dead3d0e5d4688823008dbcb5c4bc74",
+      "bytes": 3596
+    },
+    {
+      "path": "packages/workflow/evals/pr_body_test.go",
+      "sha256": "0bc639e3461aa7e4442d352c248ea9169995099e796aa49515fffa2ed462287f",
+      "bytes": 16293
+    },
+    {
+      "path": "packages/workflow/evals/regenerate_start_test.go",
+      "sha256": "81386ff3ce64f60629a9dbe641e46923df3957ad9a182bb1da881b0078b68dd6",
+      "bytes": 8252
+    },
+    {
+      "path": "packages/workflow/evals/release_test.go",
+      "sha256": "ae99a5c8d3d8923e31530c5fc827d36f63c68cfcd592ff15bf9bb8384e8f4d20",
+      "bytes": 5944
+    },
+    {
+      "path": "packages/workflow/evals/resume_test.go",
+      "sha256": "3e6f6534569138d01817e23098bfb00e8105d98ae6fdc6685f78256f52479e6b",
+      "bytes": 16226
+    },
+    {
+      "path": "packages/workflow/evals/selector_audit_validation_test.go",
+      "sha256": "e47579ed0521791f46d527b121d2dc0a71d43fa36aa560d24af743d19d01955c",
+      "bytes": 7180
+    },
+    {
+      "path": "packages/workflow/evals/status_test.go",
+      "sha256": "e972385e83679105dea1944500635ab01de474bc879844a95d81c93a6db872d8",
+      "bytes": 14058
+    },
+    {
+      "path": "packages/workflow/model/model.go",
+      "sha256": "e7e6dc8235d9a4757301d0873121a12b91b7f26f1a3590bf003db792a590f5e0",
+      "bytes": 1896
+    }
+  ],
+  "all_expected_bytes_match": true
+}

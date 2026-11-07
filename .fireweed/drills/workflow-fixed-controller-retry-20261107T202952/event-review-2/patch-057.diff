@@ -1,0 +1,18 @@
+--- packages/workflow/internal/lifecycle/done.go before (format normalized)
++++ packages/workflow/internal/lifecycle/done.go after (format normalized)
+@@ -290,3 +290,6 @@
+ 	}
+-	system, _ := textFile(r, "SYSTEM.md")
++	system, e := textFile(r, "SYSTEM.md")
++	if e != nil {
++		return "", e
++	}
+ 	b.WriteString("\n# SYSTEM.md\n" + system)
+@@ -296,3 +299,6 @@
+ 	}
+-	book, _ := assets.Playbook(bookName)
++	book, e := assets.Playbook(bookName)
++	if e != nil {
++		return "", e
++	}
+ 	b.WriteString("\n# Playbook\n" + book)

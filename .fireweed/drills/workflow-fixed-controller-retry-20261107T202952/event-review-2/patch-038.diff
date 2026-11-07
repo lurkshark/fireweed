@@ -1,0 +1,13 @@
+--- packages/workflow/internal/lifecycle/reports.go before (format normalized)
++++ packages/workflow/internal/lifecycle/reports.go after (format normalized)
+@@ -135,7 +135,6 @@
+ 	}
++	if ref == "" {
++		return out, code("C01", "base ref unavailable for %s/%s", remote, base)
++	}
+ 	for _, a := range appliedList {
+-		if ref == "" {
+-			out.Unapproved++
+-			continue
+-		}
+ 		name := filepath.Base(a.path)

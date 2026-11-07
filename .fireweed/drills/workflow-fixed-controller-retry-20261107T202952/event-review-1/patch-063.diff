@@ -1,0 +1,19 @@
+--- packages/workflow/internal/lifecycle/core.go before (format normalized)
++++ packages/workflow/internal/lifecycle/core.go after (format normalized)
+@@ -512,13 +512,5 @@
+ 		}
+-		local, le := gitstore.BaseRef(r, "", base)
+-		shared, se := gitstore.BaseRef(r, remote, base)
+-		localHas, sharedHas := false, false
+-		if le == nil {
+-			_, be := gitstore.ReadAt(r, local, ch.Path)
+-			localHas = be == nil
+-		}
+-		if se == nil {
+-			_, be := gitstore.ReadAt(r, shared, ch.Path)
+-			sharedHas = be == nil
+-		}
++		_, le := gitstore.ReadAt(r, "refs/heads/"+base, ch.Path)
++		_, se := gitstore.ReadAt(r, "refs/remotes/"+remote+"/"+base, ch.Path)
++		localHas, sharedHas := le == nil, se == nil
+ 		if !localHas && !sharedHas {

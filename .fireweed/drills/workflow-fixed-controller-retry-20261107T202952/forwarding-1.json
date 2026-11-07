@@ -1,0 +1,9 @@
+{
+  "stdout_bytes": 575,
+  "stderr_bytes": 2078941,
+  "stdout_sha256": "226b13f905990dcfd577a941d9507d673a5f7d92910bf5c3314afe56e667990d",
+  "stderr_sha256": "31f9447cdd2d1e7fecfc85290aa1d7df537f0a4fc233073e3e9b7b1674876c63",
+  "native_log_payloads_exact": true,
+  "native_log_format": "stdout N bytes newline, stdout, newline stderr N bytes newline, stderr, newline",
+  "complete_forwarding": true
+}

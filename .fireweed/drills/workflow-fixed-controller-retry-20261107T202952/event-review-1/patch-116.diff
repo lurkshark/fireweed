@@ -1,0 +1,25 @@
+--- packages/workflow/internal/lifecycle/reports.go before (format normalized)
++++ packages/workflow/internal/lifecycle/reports.go after (format normalized)
+@@ -295,3 +295,21 @@
+ 		for _, name := range paths {
+-			b.WriteString("\n- " + name)
++			label := "other"
++			if strings.HasSuffix(name, "go.mod") || strings.HasSuffix(name, "package.json") {
++				label = "module manifest"
++			}
++			for _, w := range list(snap.Config["worker_writable"]) {
++				if contracts.MatchGlob(w, name) {
++					label = "worker_writable"
++				}
++			}
++			for _, m := range snap.Modules {
++				if m.Name == module && strings.HasPrefix(name, m.Dir+"/") {
++					zone := contracts.ResolveZone(strings.TrimPrefix(name, m.Dir+"/"), m.Zones)
++					if zone != "" {
++						label = zone
++					}
++					break
++				}
++			}
++			b.WriteString("\n- " + name + " (" + label + ")")
+ 		}

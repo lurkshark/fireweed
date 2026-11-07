@@ -1,0 +1,10 @@
+--- packages/workflow/internal/lifecycle/core.go before (format normalized)
++++ packages/workflow/internal/lifecycle/core.go after (format normalized)
+@@ -707,2 +707,7 @@
+ 			}
++			for _, pattern := range m.Zones.Protected {
++				if contracts.MatchGlob(pattern, full) {
++					return nil
++				}
++			}
+ 			if contracts.ResolveZone(filepath.ToSlash(rel), m.Zones) == "disposable" {

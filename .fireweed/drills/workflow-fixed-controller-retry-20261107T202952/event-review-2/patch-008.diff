@@ -1,0 +1,22 @@
+--- packages/workflow/internal/lifecycle/done.go before (format normalized)
++++ packages/workflow/internal/lifecycle/done.go after (format normalized)
+@@ -167,2 +167,5 @@
+ func applySpec(source string, ch project.Change) (string, error) {
++	if len(ch.Added)+len(ch.Modified)+len(ch.Removed) == 0 && len(nested(ch.Document.Frontmatter, "set")) == 0 && strings.TrimSpace(section(ch.Document.Body, "Decisions")) == "" && strings.TrimSpace(section(ch.Document.Body, "Removed decisions")) == "" {
++		return source, nil
++	}
+ 	doc, e := contracts.ParseDocument(source)
+@@ -258,2 +261,3 @@
+ 		}
++		b.WriteString("\n# Other relevant files\n")
+ 		_ = filepath.WalkDir(filepath.Join(r, m.Dir), func(p string, d os.DirEntry, err error) error {
+@@ -287,3 +291,3 @@
+ 	system, _ := textFile(r, "SYSTEM.md")
+-	b.WriteString("\n# SYSTEM\n" + system)
++	b.WriteString("\n# SYSTEM.md\n" + system)
+ 	bookName := c.Phase
+@@ -293,3 +297,3 @@
+ 	book, _ := assets.Playbook(bookName)
+-	b.WriteString("\n" + book)
++	b.WriteString("\n# Playbook\n" + book)
+ 	return b.String(), nil

@@ -1,0 +1,13 @@
+{
+  "result": "pass",
+  "input": "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-2127954535",
+  "candidate": "79cf33a7690082f28c06bf41a72719d282bc00fe",
+  "full_first_commands_scripts_patches_reviewed": true,
+  "full_native_feedback_reviewed": true,
+  "second_prompt_only_original_plus_native_feedback": true,
+  "fresh_output_matches_reviewed_trace": true,
+  "first_streams_sha256": {
+    "stdout": "226b13f905990dcfd577a941d9507d673a5f7d92910bf5c3314afe56e667990d",
+    "stderr": "31f9447cdd2d1e7fecfc85290aa1d7df537f0a4fc233073e3e9b7b1674876c63"
+  }
+}

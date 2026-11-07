@@ -1,0 +1,24 @@
+--- packages/workflow/internal/lifecycle/core.go before (format normalized)
++++ packages/workflow/internal/lifecycle/core.go after (format normalized)
+@@ -439,11 +439,12 @@
+ 		status, se := Status(r)
+-		if se == nil {
+-			config, _ := project.Load(r)
+-			max := frontInt(nested(config.Config, "authoring")["max_unapproved"])
+-			if max <= 0 {
+-				max = 5
+-			}
+-			if status.Unapproved >= max {
+-				return model.State{Diagnostics: []project.Diagnostic{{Code: "P07", Message: fmt.Sprintf("unapproved archives %d reached limit %d", status.Unapproved, max)}}}, code("P07", "unapproved archives reached limit")
+-			}
++		if se != nil {
++			return model.State{}, se
++		}
++		config, _ := project.Load(r)
++		max := frontInt(nested(config.Config, "authoring")["max_unapproved"])
++		if max <= 0 {
++			max = 5
++		}
++		if status.Unapproved >= max {
++			return model.State{Diagnostics: []project.Diagnostic{{Code: "P07", Message: fmt.Sprintf("unapproved archives %d reached limit %d", status.Unapproved, max)}}}, code("P07", "unapproved archives reached limit")
+ 		}

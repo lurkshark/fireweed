@@ -1,0 +1,11 @@
+--- packages/workflow/internal/lifecycle/verify.go before (format normalized)
++++ packages/workflow/internal/lifecycle/verify.go after (format normalized)
+@@ -264,2 +264,8 @@
+ 		_ = saveReport(root, c, m.Name, report)
++		if err != nil && len(report.Cases) == 0 {
++			if first == nil {
++				first = err
++			}
++			continue
++		}
+ 		specs := enforced(m)

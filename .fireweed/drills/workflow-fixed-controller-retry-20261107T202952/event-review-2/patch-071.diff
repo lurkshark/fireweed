@@ -1,0 +1,16 @@
+--- packages/workflow/internal/lifecycle/done.go before (format normalized)
++++ packages/workflow/internal/lifecycle/done.go after (format normalized)
+@@ -205,3 +205,5 @@
+ 	}
+-	doc.Body = contracts.ReplaceSection(doc.Body, "Specs", strings.Join(lines, "\n\n")+"\n")
++	if len(ch.Added)+len(ch.Modified)+len(ch.Removed) > 0 {
++		doc.Body = contracts.ReplaceSection(doc.Body, "Specs", strings.Join(lines, "\n\n")+"\n")
++	}
+ 	if set := nested(ch.Document.Frontmatter, "set"); len(set) > 0 {
+@@ -233,3 +235,5 @@
+ 	}
+-	doc.Body = contracts.ReplaceSection(doc.Body, "Decisions", strings.TrimSpace(decisions)+"\n")
++	if added != "" || removed != "" {
++		doc.Body = contracts.ReplaceSection(doc.Body, "Decisions", strings.TrimSpace(decisions)+"\n")
++	}
+ 	return render(doc)

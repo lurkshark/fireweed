@@ -1,0 +1,24 @@
+--- packages/workflow/internal/lifecycle/reports.go before (format normalized)
++++ packages/workflow/internal/lifecycle/reports.go after (format normalized)
+@@ -100,2 +100,3 @@
+ 	for _, m := range snap.Modules {
++		out.DriftSinceDrill[m.Name] = 0
+ 		drill := time.Time{}
+@@ -130,3 +131,6 @@
+ 	base := frontString(snap.Config["base"])
+-	ref, _ := gitstore.BaseRef(r, remote, base)
++	ref, e := gitstore.BaseRef(r, remote, base)
++	if e != nil {
++		return out, e
++	}
+ 	for _, a := range appliedList {
+@@ -229,3 +233,3 @@
+ 	if len(selected) == 0 {
+-		b.WriteString("No selected changes.\n")
++		b.WriteString("No changes selected.\n")
+ 	}
+@@ -407,3 +411,3 @@
+ 		}
+-		d := project.Diagnostic{Code: "B04", Message: fmt.Sprintf("%s %d bytes", path, len(data)), Warning: true}
++		d := project.Diagnostic{Code: "B04", Message: fmt.Sprintf("%s %d bytes", path, len(data)), Path: path, Warning: true}
+ 		out.Diagnostics = append(out.Diagnostics, d)
