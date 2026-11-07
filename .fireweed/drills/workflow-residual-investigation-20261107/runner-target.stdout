@@ -1,0 +1,5 @@
+--- FAIL: Test_RUN_027_RUN_028_RecoversAgentCommitsAcrossLifecycle (5.09s)
+    commit_recovery_test.go:76: branch phase commits = ["fireweed next evals" "fireweed next audit" "fireweed next impl"]
+FAIL
+FAIL	github.com/lurkshark/fireweed/packages/runner/evals	5.390s
+FAIL

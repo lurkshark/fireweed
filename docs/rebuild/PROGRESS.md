@@ -1,5 +1,18 @@
 # Rebuild handoff
 
+The owner requested investigation of FLOW-083 and RUN-027/RUN-028, scoped fix
+proposals, then one further workflow drill with unchanged candidate and pin. The
+[bounded investigation and proposals](../../.fireweed/drills/workflow-residual-investigation-20261107/proposal.md)
+are complete: recorded-phase Start deletion caused the FLOW-083 early abort; the
+runner test rejected an uncontracted commit-subject spelling. The proposed normal
+workflow clarification and runner eval_fix are not applied. The requested next
+invocation is an unchanged-input diagnostic repeat, not validation of those
+proposals or resolution of the retained-eval checkpoint. Supply no investigation
+finding or saved reconstruction as a worker hint/input. Use a new outside root,
+the prepared inspector, existing deadline/bounds/gates, retain evidence and stop
+after exactly one invocation. This instruction supersedes the stopped state
+below only for the requested investigation/proposal and single repeat.
+
 The owner-approved fixed-controller workflow retry is complete and **failed native
 verification**. One invocation used frozen candidate
 `79cf33a7690082f28c06bf41a72719d282bc00fe`, its two configured reconstruction

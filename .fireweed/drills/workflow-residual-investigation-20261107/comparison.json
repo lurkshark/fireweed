@@ -1,0 +1,16 @@
+{
+  "frozen_candidate": "79cf33a7690082f28c06bf41a72719d282bc00fe",
+  "both_existing_target_tests_pass_on_candidate": true,
+  "both_fail_on_retained_reconstruction": true,
+  "failed_context_probe": {
+    "context_contains_ordinary_impl": false,
+    "context_contains_regenerate": true,
+    "fixture_claim_released": true,
+    "native_drills": 0,
+    "phase": "impl",
+    "recorded_file_preserved": false,
+    "run": "fixture-recorded"
+  },
+  "tracked_files_unchanged": true,
+  "native_drills": 0
+}

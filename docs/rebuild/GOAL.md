@@ -1,40 +1,40 @@
-# Stopped after the fixed-controller workflow retry
+# One approved diagnostic repeat after residual investigation
 
-The single approved retry on subject
-`79cf33a7690082f28c06bf41a72719d282bc00fe` is complete and failed native
-verification. Workflow still fails FLOW-083; runner still fails RUN-027/RUN-028;
-app passed. The native report/ref and full outside evidence are retained in the
-[current report](../../.fireweed/drills/workflow.md) and
-[review](../../.fireweed/drills/workflow-fixed-controller-retry-20261107T202952/review.md).
-The failed reconstruction ref is
-`refs/fireweed/drills/workflow/20261107T202952.649365000`. No reconstruction was
-applied and no passing independent workflow proof is claimed. WF4 and full
-product completion remain open.
+The owner requested investigation and scoped fix proposals for the last FLOW-083
+and RUN-027/RUN-028 failures, then another workflow drill while freezing candidate
+`79cf33a7690082f28c06bf41a72719d282bc00fe` and the controller pin in PROGRESS.
+[Investigation/proposals](../../.fireweed/drills/workflow-residual-investigation-20261107/proposal.md)
+are complete with bounded public-API reproductions and unchanged baseline tests.
+No proposed spec/eval correction or product change is applied or authorized here.
+The prior failed report is preserved in
+[the complete previous report](../../.fireweed/drills/workflow-before-residual-investigation-retry-ade1cc8.md).
 
-Stop here for owner review. This approval is consumed. No additional native
-invocation, correction, dependency-import input expansion, reconstructed-code
-import, later module drill, controller promotion or push is authorized. Worker
-gap notes and native failures authorize no fixes. Further work requires separate
-owner agreement; preserve the archived changes and all previous reports/refs.
+Run exactly one new unchanged-input diagnostic workflow invocation through the
+prepared outside inspector. This explicit owner request authorizes the repeat;
+it does not validate the unapplied proposals or resolve the retained-eval
+checkpoint. Keep WF4/full completion open pending that checkpoint even if a fresh
+worker happens to satisfy the retained subject-text assertion. No finding,
+implementation detail, saved reconstruction or extra dependency input from the
+investigation may enter the new worker input tree or prompt. The native worker
+receives only the original retained inputs and this invocation's native feedback.
 
-The subject and its validated range remain
-`be35552b706aa3000ff8f11306d129ff1d701b85..79cf33a7690082f28c06bf41a72719d282bc00fe`.
-The fixed controller in [PROGRESS](PROGRESS.md) is distinct from that subject and
-remains unchanged. The owner added exactly 72 hours to the original deadline of
-2026-11-07 22:51:05 UTC; the current deadline is **2026-11-10 22:51:05 UTC**.
-All other bounds, existing archive counters and isolation gates remain intact.
+Read AGENTS, SYSTEM, PROGRESS, ACCEPTANCE and the prepared inspector handoff.
+Inspect live pin/deadline, queue, claims, processes and worktrees; use a fresh
+outside root and exact candidate plus SYSTEM/agent.wrap setup only. Review actual
+retained inputs before first release, every command/full script/incremental patch,
+full first trace/output/native feedback before any remaining configured release,
+and repeat the original live isolation checks. Keep durable raw streams outside
+the reconstruction workspace with unchanged forwarding and bounded worker-first
+stop/drain/reporting and whole-run emergency behavior. Reject independence/access
+failure; supply no corrective hint.
 
-The input/verifier/caller scratch and owned process groups are cleaned up. The
-queue and shared claims are empty; the unrelated worktree and recovery copies are
-preserved. Normal native failed-report/ref publication was observed; native
-reporting after rejection, interruption or emergency stop was not exercised.
-The two workers' complete raw streams matched native log payloads byte-for-byte.
-Neither attempt produced a compiler error, so this retry makes no new claim about
-the compiler-error path established by the separate CHK-034 validation fixture.
+The current deadline remains **2026-11-10 22:51:05 UTC**, the existing owner-added
+72-hour extension; do not extend it again. Preserve all other bounds/counters,
+exact command/model/effort, all prior reports/proof/attempt refs, archives,
+controller/recovery bytes and unrelated worktrees. No native invocation is active
+yet. Context/verify idle errors are not product validation.
 
-Before any newly authorized work, read AGENTS, SYSTEM, PROGRESS, ACCEPTANCE and the
-[prepared inspector handoff](workflow-drill/README.md); inspect live pin/deadline,
-status, queue, shared claims, processes and worktrees, and run applicable context.
-Never resume this consumed invocation or another controller's claim. Preserve the
-exact worker command/model/effort, intentional missing compilation infrastructure,
-retained input boundaries and prepared bounded stop/output-preservation behavior.
+Monitor this one invocation to terminal, review and retain actual native evidence
+and its limits, clean up only owned inactive scratch, commit protected evidence
+with no live run/claim, and stop. No further drill, proposed fix implementation,
+reconstructed-code import, controller promotion or push is authorized.

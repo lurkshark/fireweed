@@ -1,0 +1,5 @@
+--- FAIL: Test_FLOW_083_RecordedRegenerateImplContextUsesRegeneratePlaybook (0.54s)
+    regenerate_start_test.go:216: open /private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_FLOW_083_RecordedRegenerateImplContextUsesRegeneratePlayboo3130146942/001/packages/alpha/internal/ready: no such file or directory
+FAIL
+FAIL	github.com/lurkshark/fireweed/packages/workflow/evals	0.917s
+FAIL

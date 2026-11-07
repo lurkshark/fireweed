@@ -118,6 +118,13 @@ The owner-added 72-hour deadline extension remains in PROGRESS; all other bounds
 and gates remain unchanged. This approval is consumed. WF4 remains open. Stop
 for owner review; no further drill, correction, promotion or push is authorized.
 
+The owner subsequently requested residual investigation/proposals and one more
+unchanged-input diagnostic workflow invocation. The
+[scoped proposals](../../.fireweed/drills/workflow-residual-investigation-20261107/proposal.md)
+are not applied. This repeat uses the frozen subject and pin; it is not a check
+of those proposals, and the retained-eval checkpoint remains open even if the
+native result passes. Preserve all gates and bounds, retain evidence and stop.
+
 **Entry.** Follow SYSTEM and the pin/deadline in PROGRESS. Read AGENTS,
 DECISIONS, the relevant unchanged design clauses and projected workflow
 contracts. Inspect live status, queue, runs and shared claims. Preserve prior
