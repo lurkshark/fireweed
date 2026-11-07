@@ -478,6 +478,9 @@ GC MUST read gc.drill_max_age as a positive Go duration, defaulting to 720h (30 
 ### FLOW-132
 GC MUST return the sorted full names of only its successfully deleted refs. It MUST leave all other refs, HEAD, index and working files unchanged.
 
+### FLOW-133
+For a valid queue, Current(root, "") MUST return an error whose text is `P02: worktree holds no change` when the calling worktree owns none of its change claims.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
