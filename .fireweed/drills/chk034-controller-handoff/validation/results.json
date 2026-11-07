@@ -1,0 +1,239 @@
+[
+  {
+    "stage": "clone",
+    "argv": [
+      "git",
+      "clone",
+      "--no-hardlinks",
+      "--no-checkout",
+      "/Users/joel/Workspace/fireweed",
+      "/private/tmp/fireweed-chk034-3rjojxry/validation/source"
+    ],
+    "start": "2026-11-07T19:37:33.890082+00:00",
+    "finish": "2026-11-07T19:37:34.787209+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "checkout",
+    "argv": [
+      "git",
+      "checkout",
+      "--detach",
+      "12c571cc53c7e03b051811477adc83e5518f157d"
+    ],
+    "start": "2026-11-07T19:37:34.787688+00:00",
+    "finish": "2026-11-07T19:37:35.021415+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "build",
+    "argv": [
+      "go",
+      "build",
+      "-trimpath",
+      "-o",
+      "/private/tmp/fireweed-chk034-3rjojxry/validation/fireweed",
+      "."
+    ],
+    "start": "2026-11-07T19:37:35.075559+00:00",
+    "finish": "2026-11-07T19:37:36.327170+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "normal",
+    "argv": [
+      "go",
+      "test",
+      "./..."
+    ],
+    "start": "2026-11-07T19:37:36.327850+00:00",
+    "finish": "2026-11-07T19:43:20.138393+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "race",
+    "argv": [
+      "go",
+      "test",
+      "-race",
+      "./..."
+    ],
+    "start": "2026-11-07T19:43:20.144790+00:00",
+    "finish": "2026-11-07T19:49:33.686573+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "vet",
+    "argv": [
+      "go",
+      "vet",
+      "./..."
+    ],
+    "start": "2026-11-07T19:49:33.710730+00:00",
+    "finish": "2026-11-07T19:49:34.335954+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "check",
+    "argv": [
+      "/private/tmp/fireweed-chk034-3rjojxry/validation/fireweed",
+      "check",
+      "--json"
+    ],
+    "start": "2026-11-07T19:49:34.336676+00:00",
+    "finish": "2026-11-07T19:49:34.822832+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "doctor",
+    "argv": [
+      "/private/tmp/fireweed-chk034-3rjojxry/validation/fireweed",
+      "doctor",
+      "--no-agent",
+      "--json"
+    ],
+    "start": "2026-11-07T19:49:34.823215+00:00",
+    "finish": "2026-11-07T19:49:43.766464+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "history-delta",
+    "argv": [
+      "/private/tmp/fireweed-chk034-3rjojxry/validation/fireweed",
+      "check-commits",
+      "79cf33a7690082f28c06bf41a72719d282bc00fe..12c571cc53c7e03b051811477adc83e5518f157d",
+      "--json"
+    ],
+    "start": "2026-11-07T19:58:14.428065+00:00",
+    "finish": "2026-11-07T19:58:36.845841+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "ci",
+    "argv": [
+      "/private/tmp/fireweed-chk034-3rjojxry/validation/fireweed",
+      "ci",
+      "79cf33a7690082f28c06bf41a72719d282bc00fe..12c571cc53c7e03b051811477adc83e5518f157d",
+      "--json"
+    ],
+    "start": "2026-11-07T19:58:36.847109+00:00",
+    "finish": "2026-11-07T20:15:35.111997+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "version",
+    "argv": [
+      "/private/tmp/fireweed-chk034-3rjojxry/validation/fireweed",
+      "version"
+    ],
+    "start": "2026-11-07T20:15:35.117673+00:00",
+    "finish": "2026-11-07T20:15:35.124157+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "build-info",
+    "argv": [
+      "go",
+      "version",
+      "-m",
+      "/private/tmp/fireweed-chk034-3rjojxry/validation/fireweed"
+    ],
+    "start": "2026-11-07T20:15:35.124512+00:00",
+    "finish": "2026-11-07T20:15:35.137544+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "fixture-init",
+    "argv": [
+      "git",
+      "init",
+      "-b",
+      "main"
+    ],
+    "start": "2026-11-07T20:15:35.139202+00:00",
+    "finish": "2026-11-07T20:15:35.163653+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "fixture-add",
+    "argv": [
+      "git",
+      "add",
+      "."
+    ],
+    "start": "2026-11-07T20:15:35.164270+00:00",
+    "finish": "2026-11-07T20:15:35.188813+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "fixture-commit",
+    "argv": [
+      "git",
+      "-c",
+      "user.name=Fireweed Fixture",
+      "-c",
+      "user.email=fixture@localhost",
+      "commit",
+      "-m",
+      "diagnostic fixture"
+    ],
+    "start": "2026-11-07T20:15:35.189215+00:00",
+    "finish": "2026-11-07T20:15:35.213729+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "fixture-start",
+    "argv": [
+      "/private/tmp/fireweed-chk034-3rjojxry/validation/fireweed",
+      "start",
+      "diagnostic",
+      "--json"
+    ],
+    "start": "2026-11-07T20:15:35.214124+00:00",
+    "finish": "2026-11-07T20:15:35.472447+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "fixture-verify",
+    "argv": [
+      "/private/tmp/fireweed-chk034-3rjojxry/validation/fireweed",
+      "verify",
+      "diagnostic",
+      "--quick",
+      "--json"
+    ],
+    "start": "2026-11-07T20:15:35.473010+00:00",
+    "finish": "2026-11-07T20:15:36.160263+00:00",
+    "exit": 1,
+    "expected": 1
+  },
+  {
+    "stage": "fixture-release",
+    "argv": [
+      "/private/tmp/fireweed-chk034-3rjojxry/validation/fireweed",
+      "release",
+      "diagnostic",
+      "--json"
+    ],
+    "start": "2026-11-07T20:15:36.161934+00:00",
+    "finish": "2026-11-07T20:15:36.302700+00:00",
+    "exit": 0,
+    "expected": 0
+  }
+]

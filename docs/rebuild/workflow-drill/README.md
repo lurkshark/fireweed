@@ -7,6 +7,12 @@ invalid; WF4 remains open. No controller or product change is required by this
 preparation. A native reporting problem discovered later is an owner checkpoint,
 not permission to repair the pin or product.
 
+The owner subsequently authorized the scoped CHK-034 fix and verified controller
+handoff, now complete; see PROGRESS and the committed handoff evidence. The two
+outside expected-pin hashes now match that controller. Candidate, worker inputs,
+command/model/effort, isolation and supervisor behavior are unchanged. The earlier
+retry approval is consumed; the commands below require separate new approval.
+
 The controller pin and original deadline **2026-11-07 22:51:05 UTC** remain in
 PROGRESS. Preserve the candidate, configuration bounds/counters, archived changes,
 reports/proof/attempt refs, recovery executables and unrelated worktrees. Do not

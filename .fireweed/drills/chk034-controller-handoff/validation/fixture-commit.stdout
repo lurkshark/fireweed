@@ -1,0 +1,10 @@
+[main (root-commit) d00ca23] diagnostic fixture
+ 8 files changed, 90 insertions(+)
+ create mode 100644 .fireweed/hooks.go
+ create mode 100644 SYSTEM.md
+ create mode 100644 changes/0001-diagnostic.md
+ create mode 100644 fireweed.yaml
+ create mode 100644 go.mod
+ create mode 100644 packages/alpha/SPEC.md
+ create mode 100644 packages/alpha/api.go
+ create mode 100644 packages/alpha/evals/value_test.go

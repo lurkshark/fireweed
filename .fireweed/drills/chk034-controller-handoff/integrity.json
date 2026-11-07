@@ -1,0 +1,27 @@
+{
+  "baseline": "63c1aae9764fa9a8619eeb0dfa87475387524de4",
+  "fixed_source": "12c571cc53c7e03b051811477adc83e5518f157d",
+  "subject": "79cf33a7690082f28c06bf41a72719d282bc00fe",
+  "changed_existing_paths": [
+    "docs/rebuild/ACCEPTANCE.md",
+    "docs/rebuild/GOAL.md",
+    "docs/rebuild/PROGRESS.md",
+    "docs/rebuild/workflow-drill/README.md",
+    "docs/rebuild/workflow-drill/control.py",
+    "docs/rebuild/workflow-drill/preflight.py",
+    "packages/checks/internal/engine/hooks.go"
+  ],
+  "prior_fireweed_refs_preserved": true,
+  "prior_reports_byte_identical": true,
+  "prior_archives_byte_identical": true,
+  "prior_phase_counters_preserved": true,
+  "new_phase_commits": {
+    "0180-retain-failed-hook-output": 3
+  },
+  "unapproved": 1,
+  "configuration_spec_interface_hook_bytes_preserved": true,
+  "prior_recovery_hashes_preserved": true,
+  "unrelated_worktree_preserved": true,
+  "no_queue_or_shared_claim": true,
+  "native_drills_since_fix_authorization": 0
+}

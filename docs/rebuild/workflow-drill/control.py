@@ -9,7 +9,7 @@ import time
 
 COMMAND = ['codex', 'exec', '--ephemeral', '--ignore-user-config', '-m',
            'gpt-6-sol', '-c', 'model_reasoning_effort="high"', '-s', 'workspace-write']
-PIN = '23e87b00217ab1a6990352393311bd150b7d60d3a4c138b75e285f518fba117f'
+PIN = 'c9167d3878a1344719574d3ee1179d42295596f2f994c31c556ca25df8aaaada'
 CONTROLLER = '/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed'
 CANDIDATE = '79cf33a7690082f28c06bf41a72719d282bc00fe'
 DEADLINE = '2026-11-07T22:51:05+00:00'

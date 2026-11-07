@@ -1,11 +1,29 @@
 # Rebuild handoff
 
-The owner has now authorized one scoped CHK-034 fix through normal fail-first,
-independent restricted audit and full implementation verification, followed by a
-verified controller update after the fix is archived and no run/claim remains.
-The subject candidate stays `79cf33a7690082f28c06bf41a72719d282bc00fe`; the current
-pin below remains in force throughout the active change. No further native drill,
-dependency-import input expansion or push is authorized. Follow [GOAL](GOAL.md).
+The scoped CHK-034 fix and separately authorized controller handoff are complete.
+[0180](../../changes/archive/0180-retain-failed-hook-output.md) passed normal
+fail-first, independent restricted audit and full implementation verification.
+Captured hook stdout/stderr/exit are retained on hook execution, report-read and
+JUnit-parse errors, with strict rejection and evidence requirements unchanged.
+The fixed controller passed normal/race Go tests, vet, checks, hook doctor,
+explicit new history/CI range and a compiled-controller compiler-error fixture.
+Existing valid history-prefix evidence was reused; the initial bounded full-range
+probe timed out and is not claimed as a passing new full-range result. See the
+[committed handoff evidence](../../.fireweed/drills/chk034-controller-handoff.md).
+
+The primary pin below was replaced atomically after validation, with no live run
+or shared claim. Only outside expected-pin metadata changed in the prepared
+wrapper/inspector; no worker-input expansion or wrapper behavior change occurred.
+The queue is empty, all owned temporary repositories were removed, and the
+unrelated linked worktree and all prior evidence/refs remain intact. Existing
+archive counters and configured bounds were preserved; the new archived fix has
+its normal phase provenance. No reconstructed code, spec/interface/hook or runner
+change was applied, no further native drill ran and no push occurred.
+
+**Stop for owner review.** The frozen subject remains
+`79cf33a7690082f28c06bf41a72719d282bc00fe`, distinct from the fixed controller source.
+WF4 and full product completion remain open. Another native invocation or
+correction requires separate approval. Follow [GOAL](GOAL.md).
 
 The approved safer workflow retry is complete and **failed native verification**.
 Exactly one native invocation used candidate
@@ -23,7 +41,8 @@ native result and reviewed outcome. Workflow, runner and app all reported
 `PackageFailure`/C11 and missing-coverage C10 diagnostics; the published own and
 dependent case sections are empty. There is no passing workflow proof. Static
 review found a missing import in the fresh reconstruction, not an established
-retained contract/eval defect. No correction or extra build/test was performed.
+retained contract/eval defect. During that retry, no correction or extra
+build/test was performed.
 The failed reconstruction is retained at
 `refs/fireweed/drills/workflow/20261107T172136.182088000`.
 
@@ -52,21 +71,19 @@ The completed checks budget began 2026-11-04 22:51:05 UTC; it and the earlier
 stabilization budget are closed. The selected two-change follow-up is complete.
 Preserve the deadline and configured bounds/counters; none was raised or reset.
 
-At handoff, native cleanup removed the input tree and verifier worktree. The
-outside inspector, controller and both workers exited. The owned isolated caller
-was removed after its failed native ref and evidence were retained. Main was clean
-before protected evidence authoring; no live run/shared claim or queued change
-remains. The live unapproved count is zero. Archive phase counters, configuration,
-controller/recovery executables, all prior refs and the unrelated linked worktree
-are preserved. No reconstructed source was applied, no product/spec/eval/hook or
-controller change was authored, and no promotion or push occurred. Protected
-evidence is committed separately after terminal stop.
+At the previous native retry handoff, cleanup removed its input tree, verifier
+worktree and isolated caller; its inspector, controller and workers had exited.
+That evidence commit preceded the separately authorized CHK-034 fix and pin update
+above. Normal native failure publication remains the only reporting behavior
+established by that retry; the later diagnostics fixture establishes no new drill
+result or proof.
 
 **Controller pin** `/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed`,
-version 0.1.0, source `193634686aa6a1c4eb32e69df1c85e1d5ce48bd7`, SHA-256
-`23e87b00217ab1a6990352393311bd150b7d60d3a4c138b75e285f518fba117f`.
+version 0.1.0, source `12c571cc53c7e03b051811477adc83e5518f157d`, SHA-256
+`c9167d3878a1344719574d3ee1179d42295596f2f994c31c556ca25df8aaaada`.
 Built with Go 1.27.2 and `-trimpath` from clean source on darwin/arm64. Its
-verified owner-authorized handoff is recorded in commit `200711c`.
+verified owner-authorized handoff is recorded in the linked CHK-034 evidence.
+The retiring controller is preserved as `.fireweed/bin/fireweed-1936346`.
 
 Recovery executables remain at `.fireweed/bin/fireweed-99a1d6d`,
 `.fireweed/bin/fireweed-pre-ck-handoff` and `.fireweed/bin/fireweed-bootstrap`.

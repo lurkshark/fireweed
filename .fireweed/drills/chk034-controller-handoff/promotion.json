@@ -1,0 +1,23 @@
+{
+  "source": "12c571cc53c7e03b051811477adc83e5518f157d",
+  "subject": "79cf33a7690082f28c06bf41a72719d282bc00fe",
+  "sha256": "c9167d3878a1344719574d3ee1179d42295596f2f994c31c556ca25df8aaaada",
+  "version": "0.1.0",
+  "retiring_source": "193634686aa6a1c4eb32e69df1c85e1d5ce48bd7",
+  "retiring_recovery": "fireweed-1936346",
+  "no_active_run_or_claim": true,
+  "pin_replaced_atomically": true,
+  "outside_pin_metadata_updated_only": true,
+  "native_drills": 0,
+  "idle_check": {
+    "schema": 1,
+    "data": null,
+    "diagnostics": [
+      {
+        "code": "P02",
+        "message": "worktree holds no change. Use the held change and correct its checks, then retry verify.",
+        "warning": false
+      }
+    ]
+  }
+}

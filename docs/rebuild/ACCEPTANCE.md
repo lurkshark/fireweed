@@ -101,10 +101,13 @@ and processes are cleaned up; no correction, source application, promotion or pu
 occurred. Stop for owner review before another drill or any correction. Workflow
 remains next in the proof order, followed by runner and app.
 
-The owner subsequently authorized one scoped CHK-034 diagnostics fix and a
-verified controller handoff after its normal audited lifecycle completes. Keep
-subject candidate `79cf33a7690082f28c06bf41a72719d282bc00fe` unchanged; this authorizes
-no further native drill or unrelated correction. [GOAL](GOAL.md) bounds that work.
+The separately owner-authorized CHK-034 diagnostics fix and verified controller
+handoff are complete, with normal audited provenance in
+[0180](../../changes/archive/0180-retain-failed-hook-output.md) and protected
+[handoff evidence](../../.fireweed/drills/chk034-controller-handoff.md). Subject
+candidate `79cf33a7690082f28c06bf41a72719d282bc00fe` remains unchanged. This closes
+only that follow-up; WF4 remains open and no further native drill or unrelated
+correction is authorized. [GOAL](GOAL.md) is the stopped, restartable handoff.
 
 **Entry.** Follow SYSTEM and the pin/deadline in PROGRESS. Read AGENTS,
 DECISIONS, the relevant unchanged design clauses and projected workflow

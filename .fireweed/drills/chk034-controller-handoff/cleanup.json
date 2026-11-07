@@ -1,0 +1,10 @@
+{
+  "owned_repositories_removed": [
+    "preparation-check/caller",
+    "validation/source",
+    "validation/diagnostic-fixture"
+  ],
+  "no_claims": true,
+  "single_worktree_each": true,
+  "native_drills": 0
+}

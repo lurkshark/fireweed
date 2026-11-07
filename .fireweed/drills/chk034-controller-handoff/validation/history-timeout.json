@@ -1,0 +1,7 @@
+{
+  "range": "be35552b706aa3000ff8f11306d129ff1d701b85..12c571cc53c7e03b051811477adc83e5518f157d",
+  "outer_bound_seconds": 300,
+  "outcome": "external probe timeout; no reported history diagnostic",
+  "pin_unchanged": true,
+  "reuse": "committed passing be35552b706aa3000ff8f11306d129ff1d701b85..79cf33a7690082f28c06bf41a72719d282bc00fe prefix; history implementation unchanged; check explicit new delta under the same 300-second bound"
+}

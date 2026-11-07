@@ -53,7 +53,7 @@ try:
   assert (verifier/p).is_file(),p
  for module in ['contracts','gitstore','assets','project','checks','runner','app']:
   assert list((verifier/'packages'/module/'internal').rglob('*.go')),module
- pinhash='23e87b00217ab1a6990352393311bd150b7d60d3a4c138b75e285f518fba117f'
+ pinhash='c9167d3878a1344719574d3ee1179d42295596f2f994c31c556ca25df8aaaada'
  for p in [Path(record['fireweed_bin']),caller/'.fireweed/bin/fireweed',verifier/'.fireweed/bin/fireweed']:
   assert sha(p)==pinhash,str(p)
  summary={'input':str(inp),'verifier':str(verifier),'files':len(paths),'retained_verifier_files':len(expected['retained']),'deleted_disposable_paths':len(expected['deleted']),'input_git_commits':1,'pin':pinhash,'invocation':n,'result':'pass'}
