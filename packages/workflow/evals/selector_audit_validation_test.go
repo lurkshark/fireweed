@@ -68,6 +68,50 @@ func Test_FLOW_059_AuditVerifyChecksSubmissionWithoutAdvancing(t *testing.T) {
 	}
 }
 
+func Test_FLOW_002_AuditRejectsForbiddenEditBeforeHooks(t *testing.T) {
+	root := fixture(t, "", "", "", "", "")
+	marker := hookMarker(t, root)
+	auditState := toAudit(t, root)
+	if auditState.Phase != "audit" {
+		t.Fatalf("held phase = %q, want audit", auditState.Phase)
+	}
+	if err := os.Remove(marker); err != nil {
+		t.Fatalf("clear evals Done hook marker: %v", err)
+	}
+	audit(t, root, "Checked IDs: ALP-001\nNo findings\n")
+	submission := readFile(t, root, pendingCommitChange)
+	forbidden := "packages/alpha/evals/audit_zone_test.go"
+	write(t, root, forbidden, "package alpha_test\n")
+	base := head(t, root)
+
+	for _, operation := range []struct {
+		name string
+		call func() (workflow.Result, error)
+	}{
+		{"quick Verify", func() (workflow.Result, error) { return verify(root, true) }},
+		{"full Verify", func() (workflow.Result, error) { return verify(root, false) }},
+		{"Done", func() (workflow.Result, error) { return done(root) }},
+	} {
+		result, err := operation.call()
+		if err == nil || !strings.HasPrefix(err.Error(), "Z01:") || !strings.Contains(err.Error(), forbidden) {
+			t.Errorf("%s = phase %q, error %v; want Z01 naming %s", operation.name, result.State.Phase, err, forbidden)
+		}
+		if got := head(t, root); got != base {
+			t.Errorf("%s advanced HEAD: %s -> %s", operation.name, base, got)
+		}
+		if got := readFile(t, root, pendingCommitChange); got != submission {
+			t.Errorf("%s changed the valid audit submission", operation.name)
+		}
+		current, currentErr := workflow.Current(root, "manual")
+		if currentErr != nil || current.Phase != "audit" || current.PhaseBase != base || current.ClaimOID != auditState.ClaimOID {
+			t.Errorf("%s changed held audit phase or claim: %#v, %v", operation.name, current, currentErr)
+		}
+		if _, markerErr := os.Stat(marker); !os.IsNotExist(markerErr) {
+			t.Errorf("%s ran the eval hook before zone rejection: %v", operation.name, markerErr)
+		}
+	}
+}
+
 func Test_FLOW_061_UnknownLifecycleSelectorsNameValidSlugs(t *testing.T) {
 	root := fixture(t, "", "", "", "", "")
 	request := workflow.Request{Root: root, Change: "ghost"}

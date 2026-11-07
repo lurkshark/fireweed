@@ -1,8 +1,10 @@
 ---
-module: workflow
 bases: {}
 eval_fix:
-  - FLOW-002
+    - FLOW-002
+module: workflow
+phase: audit
+run: 20261107T073352-c84ff08dead7ea75d37cf5ce
 ---
 
 ## Motivation
@@ -70,3 +72,5 @@ unrelated worktrees. No source import, controller promotion or push.
 
 ## Audit
 
+## Provenance
+- evals 2026-11-07T07:40:23.815893Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=167 failing=0 passing=167
