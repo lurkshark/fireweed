@@ -198,7 +198,8 @@ func Test_FLOW_082_RegenerateWarningUsesLatestTargetImplProvenanceAndReportDate(
 	}
 }
 
-func Test_FLOW_083_RecordedRegenerateImplContextUsesRegeneratePlaybook(t *testing.T) {
+func recordedRegenerateFixture(t *testing.T) string {
+	t.Helper()
 	root := regenerateFixture(t, "")
 	change := readFile(t, root, "changes/0001-manual.md")
 	write(t, root, "changes/0001-manual.md", strings.Replace(change, "regenerate: true\n", "regenerate: true\nphase: impl\nrun: fixture-recorded\n", 1))
@@ -209,12 +210,29 @@ func Test_FLOW_083_RecordedRegenerateImplContextUsesRegeneratePlaybook(t *testin
 		}
 	}
 	commit(t, root, "approved recorded regenerate phase")
+	return root
+}
+
+func Test_FLOW_081_RecordedRegenerateStartRetainsDisposableFilesAndState(t *testing.T) {
+	root := recordedRegenerateFixture(t)
 	s := start(t, root)
 	if s.Phase != "impl" || s.Run != "fixture-recorded" {
 		t.Fatalf("recorded regenerate state = %#v", s)
 	}
 	if got := readFile(t, root, "packages/alpha/internal/ready"); got != "recorded phase implementation\n" {
 		t.Errorf("recorded phase repeated deletion: %q", got)
+	}
+	current, err := workflow.Current(root, "manual")
+	if err != nil || current.Phase != "impl" || current.Run != "fixture-recorded" {
+		t.Errorf("held recorded regenerate state = %#v, %v", current, err)
+	}
+}
+
+func Test_FLOW_083_RecordedRegenerateImplContextUsesRegeneratePlaybook(t *testing.T) {
+	root := recordedRegenerateFixture(t)
+	s := start(t, root)
+	if s.Phase != "impl" || s.Run != "fixture-recorded" {
+		t.Fatalf("recorded regenerate state = %#v", s)
 	}
 	context, err := workflow.Context(root, "manual", false)
 	if err != nil {

@@ -4,6 +4,8 @@ already_satisfied:
 bases:
     FLOW-081: f47668f4
 module: workflow
+phase: audit
+run: 20261107T214650-d187de5ae2adf49791730c83
 ---
 
 ## Motivation
@@ -78,3 +80,5 @@ runner eval_fix are archived and all runs/claims exit, the owner has authorized
 clean corrected-subject validation, a verified controller handoff, then exactly
 one workflow drill with that new controller. No worker launches a drill, imports
 reconstructed code, promotes a controller or pushes.
+## Provenance
+- evals 2026-11-07T21:52:57.972278Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=168 failing=0 passing=168
