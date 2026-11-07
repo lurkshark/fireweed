@@ -132,18 +132,19 @@ func Evaluate(ctx context.Context, request model.HookRequest) (model.Report, err
 	reportPath := filepath.Join(temp, "report.xml")
 	values := map[string]string{"module": module.Name, "module_dir": module.Dir, "report": reportPath}
 	process, err := runHook(ctx, request.Snapshot.Root, command, values, request.Bin, request.Timeout)
+	report := model.Report{HookExit: process.ExitCode, Stdout: process.Stdout, Stderr: process.Stderr}
 	if err != nil {
-		return model.Report{}, fmt.Errorf("C11: %w", err)
+		return report, fmt.Errorf("C11: %w", err)
 	}
 	data, err := os.ReadFile(reportPath)
 	if err != nil {
-		return model.Report{}, fmt.Errorf("C11: read JUnit report: %w", err)
+		return report, fmt.Errorf("C11: read JUnit report: %w", err)
 	}
-	report, err := ParseJUnit(data, specs)
+	parsed, err := ParseJUnit(data, specs)
 	if err != nil {
-		return model.Report{}, err
+		return report, err
 	}
-	report.HookExit, report.Stdout, report.Stderr = process.ExitCode, process.Stdout, process.Stderr
+	report.Cases, report.Seconds = parsed.Cases, parsed.Seconds
 	failed := false
 	for _, c := range report.Cases {
 		if c.Result == "fail" {
