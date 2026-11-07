@@ -76,3 +76,4 @@ worktrees. After both changes are archived with no active run/claim, the owner h
 authorized validation of the clean corrected subject, verified controller update,
 then one native workflow drill with the new controller. No worker launches a drill,
 promotes a controller or pushes. Stop after that separately owned final drill.
+## Audit
