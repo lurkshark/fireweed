@@ -3,6 +3,8 @@ bases: {}
 fixes:
     - CHK-034
 module: checks
+phase: audit
+run: 20261107T185805-016f27a13886e3ddfbcd9f8f
 ---
 
 ## Motivation
@@ -77,3 +79,7 @@ clean source. That protected author handoff is outside worker steps. It must not
 change the frozen subject candidate, add dependency-import inputs, apply a failed
 reconstruction, launch another drill or push. Stop after the fixed controller
 handoff with reviewed evidence; workflow proof remains open.
+
+Evals fail-first: `GOCACHE=/tmp/fireweed-rebuild-cache go test ./packages/checks/evals -run 'Test_CHK_034_EvaluateRetains' -count=1` failed on unmapped PackageFailure, malformed XML, missing report and hook timeout because Evaluate returned empty stdout/stderr and HookExit zero. The existing `packages/checks/internal/engine/hooks.go` is implementation-writable for this fix; no disposable stub is needed.
+## Provenance
+- evals 2026-11-07T19:13:03.692492Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=119 failing=5 passing=114
