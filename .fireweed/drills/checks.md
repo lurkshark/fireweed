@@ -37854,3 +37854,225 @@ planning/evidence only. WF3 requires separate explicit owner approval for one
 native workflow invocation on exactly the candidate above, under the unchanged
 controller, attempt/retry bounds and live isolation/inspection requirements.
 The native workflow proof and WF4 remain open.
+
+## Workflow follow-up preparation — approved corrections and updated WF2 candidate
+
+The owner agreed to and approved the two focused questions in the reviewed
+failed workflow handoff. This section records their completed normal audited
+changes and the updated clean candidate preparation. It does not replace the
+earlier workflow native failure or claim a new independent workflow proof. No additional
+native workflow drill ran during this follow-up.
+
+### Focused correction review and application
+
+The design makes Next/Run lifecycle loops that resume owned work or start
+eligible queued work. Review confirmed the existing Current empty-selector
+error and the runner's use of that exact absence signal. The narrow correction
+makes this already-existing observable behavior a retained workflow contract,
+without changing signatures, diagnostics allocation or runtime behavior.
+
+| Archived change | Kind and scope | Controller-owned phase commits |
+| --- | --- | --- |
+| `0178-current-absence-contract` | Added FLOW-133 with legitimate already_satisfied; assert the existing empty Current error for an unclaimed queue, empty queue and foreign-owned linked worktree. | evals `739b54e`, audit `ef3434c`, impl `95d6249` |
+| `0179-audit-zone-assertion` | FLOW-002 eval_fix adds one public audit-phase integration assertion; every existing test/assertion remains intact. | evals `9c5c808`, audit `b638b41`, impl `79cf33a` |
+
+FLOW-133 states: “For a valid queue, Current(root, "") MUST return an error
+whose text is `P02: worktree holds no change` when the calling worktree owns none
+of its change claims.” The three public absence scenarios require that exact
+existing error. Explicit selectors and other failure causes retain their
+existing behavior. No new classifier API or caller implementation was needed.
+
+The FLOW-002 test starts a real fixture claim, advances to audit, supplies a
+valid complete No findings submission and makes a representative forbidden eval
+file addition after the held audit phase base. Quick Verify, full Verify and
+Done must each reject with Z01 naming the path, without running the eval hook,
+changing the valid submission or advancing HEAD, phase, phase base or claim.
+The existing fixture marker is cleared after evals Done, so the audit checks
+observe only their own hook behavior. The current runtime already checks zones
+before processing an audit submission; the missing integration assertion is now
+retained. Checks' independent zone proof remains reused for classification.
+
+Only the outside pinned controller advanced phases, committed, applied and
+archived. Workers ran context and quick Verify and returned; they made no commit
+or lifecycle mutation. Evals/impl worker command reviews and the final package
+diff found no runtime, interface, dependency, manifest, hook or configuration
+edit. The workflow SPEC change is only the new FLOW-133 item; previous Specs and
+all Decisions remain unchanged. The eval_fix leaves SPEC byte-identical to its
+state after the first application. No failed reconstruction source was imported.
+
+| Applied change | Evals own cases / IDs, all pass | Full impl cases, all pass | Audit |
+| --- | --- | --- | --- |
+| 0178 | 166 / 133 | workflow 166, runner 159, app 323 (648 total) | No findings; checked FLOW-133 |
+| 0179 | 167 / 133 | workflow 167, runner 159, app 323 (649 total) | No findings; checked FLOW-002 |
+
+Every phase report has hook exit 0 and only passing cases, without skips.
+Dependent reports retain 67 runner and 155 app IDs. Workers' own quick Verify
+calls completed in 133.816/156.867 seconds for 0178 evals/impl and
+147.204/161.830 seconds for 0179. Normal full verification and Done remained
+required. Both changes retain zero audit finding rounds; no counter, frozen
+phase requirement or configured bound was reset or weakened.
+
+### Rejected audit submission and remaining bounded attempt
+
+The author omitted an empty Audit placeholder in 0178. Its first independent
+native auditor inserted Audit before Provenance and added one blank line to the
+preceding Notes region. The controller rejected the submission atomically with
+`validate audit submission: audit workspace modified change outside Audit`.
+Nothing from that submission was imported and the same claim remained held in
+audit. The first agent's passing conclusion was not treated as an accepted
+clearance. Its five commands read only the restricted retained inputs; this was
+a rejected write-boundary edit, not an outside implementation read.
+
+The remaining second audit attempt used a new input-only workspace containing
+only the active change, projected workflow SPEC and public evals: 19 files,
+one input-only Git commit, no remotes, alternates, old/unreachable objects,
+symlinks, implementation, manifests or binaries. A fresh independent agent used
+the exact configured gpt-6-sol/high command, ordinary workspace-write sandbox,
+90-minute bound and original deadline. It received the byte-preservation
+requirement and rejected-boundary reason, without the prior auditor's clearance
+or source access. It independently returned No findings and Checked FLOW-133.
+
+Review covered all seven commands and its full Python append script. Its output
+preserved every original change byte as an exact prefix, changed only the new
+Audit body/header at EOF and left all 18 other inputs byte-identical. Only that
+independently authored output was imported after integrity checks. Pinned Verify
+accepted it, and pinned Done advanced the same held claim. Audit Provenance says
+`agent=manual` because the outside controller used the CLI to commit that phase;
+the grade was produced by the separate real agent, whose full trace is retained
+in the linked audit evidence. The same pinned controller then continued the fresh impl phase normally.
+There was no replacement claim, controller switch, fabricated clearance or
+reset of the consumed audit attempt. The restricted input was removed afterward.
+
+Between claims, author-only commit `494f7e6` added an empty Audit placeholder to
+the still-unstarted 0179 document. Its independent native auditor then passed on
+the first attempt, editing only that existing body. All auditors used fresh
+restricted inputs and the unchanged configured model/effort. No access failure,
+probe retry or model/controller fallback occurred. The
+[complete audit attempt evidence](workflow.md#workflow-follow-up-audit-attempt-evidence)
+retains the rejected first submission, independent second grade and 0179 grade.
+
+### Updated WF2 candidate and validation
+
+Selected committed source:
+`79cf33a7690082f28c06bf41a72719d282bc00fe`.
+A fresh local clone checked out this source detached and clean. The independent
+subject was built outside the checkout with `go build -trimpath`, Go 1.27.2 on
+darwin/arm64. Build metadata identifies this exact revision and
+`vcs.modified=false`. It remained separate from the unchanged pinned controller;
+the clone's copied .fireweed/bin controller matched the standing pin and came
+first on PATH. All Go commands used `GOCACHE=/tmp/fireweed-rebuild-cache`.
+
+The explicit nonempty history range is
+`be35552b706aa3000ff8f11306d129ff1d701b85..79cf33a7690082f28c06bf41a72719d282bc00fe`
+(1,201 commits). Both history commands use those exact endpoints.
+
+| Gate | Command | Exit | Seconds |
+| --- | --- | ---: | ---: |
+| Build | `go build -trimpath -o <separate-subject> .` | 0 | 1.04 |
+| Build metadata | `go version -m <separate-subject>` | 0 | 0.02 |
+| Candidate check | `subject check --json` | 0 | 0.45 |
+| Candidate hook doctor | `subject doctor --no-agent --json` | 0 | 9.85 |
+| Candidate empty Next | `subject next --json` | 0 | 0.08 |
+| Normal Go suite (initial) | `go test ./...` | 1 | 342.15 |
+| Unchanged CHK-005 focused recheck | `go test ./packages/checks/evals -run ^Test_CHK_005_GlobalAndModuleBoundaryHooks$ -count=1` | 0 | 1.70 |
+| Normal Go suite (rerun) | `go test ./...` | 0 | 247.25 |
+| Race Go suite (initial) | `go test -race ./...` | 1 | 334.61 |
+| Unchanged CHK-081 focused race recheck | `go test -race ./packages/checks/evals -run ^Test_CHK_081_DoctorPersistsCancelledProbeOutput$ -count=1` | 0 | 3.33 |
+| Race Go suite (rerun) | `go test -race ./...` | 0 | 254.14 |
+| Vet | `go vet ./...` | 0 | 0.76 |
+| Explicit history | `subject check-commits <full-range> --json` | 0 | 1502.17 |
+| CI with hook doctor | `subject ci <full-range> --json` | 0 | 2376.58 |
+
+The candidate's actual `next --json` in the empty checkout returned exit 0,
+`empty: true`, no diagnostics and no agent invocation, exercising the composing
+CLI's no-held-claim path. The hook doctor ran all ten baseline/canary/recovery
+checks successfully: failing_eval, missing_id, undeclared import and internal
+eval detection, with recovery. CI ran with hook doctor enabled; its normal
+behavior skips real agent probes. Reuse the prior selected-invoker byte-copy
+proof because setup/hooks and runtime are unchanged; this candidate also ran its
+actual hook doctor and scratch cleanup.
+
+### Initial validation failures and unchanged reruns
+
+The first normal suite returned exit 1 after 342.15 seconds. Only the existing
+`Test_CHK_005_GlobalAndModuleBoundaryHooks` failed: its two-second context expired
+before the fixture markers appeared, returning X02 rather than attributed
+violations. The normal suite was concurrent with the original worktree's long
+read-only status scan. The exact case passed without edits under `-count=1`
+(1.70 seconds for the command, 0.824 for the package); the unchanged complete
+`go test ./...` then passed in 247.25 seconds, reusing already-passing package
+results through Go's ordinary cache.
+
+The first race suite returned exit 1 after 334.61 seconds. Only the existing
+`Test_CHK_081_DoctorPersistsCancelledProbeOutput` failed its prompt-return
+assertion (5.41 seconds); it reported no data race. The exact case passed without
+edits under race and `-count=1` (3.33 seconds for the command, 2.435 for the
+package). The unchanged complete `go test -race ./...` then passed in 254.14
+seconds, again using normal cached results for already-passing packages.
+
+These timing-sensitive existing checks are recorded rather than hidden.
+Resource/scheduling pressure is a plausible explanation, not an established
+cause. No test, timeout, concurrency setting, configuration, module input or
+runtime source was changed for either failure; the passing unchanged reruns are
+the final gate results. No additional correction was authored. The [initial failure outputs and focused recheck results](workflow.md#workflow-follow-up-validation-rerun-evidence)
+are retained with the reviewed workflow report. The build's
+nonfatal Go module stat-cache write sandbox warning is the same warning recorded
+in the prior preparation; the build succeeded with clean-source metadata.
+
+### Coverage, preservation and approval handoff
+
+Successful CI enforced eval results and coverage for every discovered module,
+with static, full-range history, boundaries and hook doctor enabled. CI's public
+JSON returns a confirmation and diagnostics rather than per-case data; the
+following current enforced-ID inventory comes from the retained SPEC headings
+(all are enforced, with no review/quarantine tags), combined with that successful
+all-module coverage gate. The phase reports above separately expose actual
+workflow/runner/app case rows and ID sets.
+
+| Module | Current enforced IDs covered |
+| --- | ---: |
+| app | 155 |
+| assets | 58 |
+| checks | 83 |
+| contracts | 19 |
+| gitstore | 10 |
+| project | 68 |
+| runner | 67 |
+| workflow | 133 |
+
+The standalone history response contained all 1,201 exact range OIDs and two
+recognized historical squashes (`0daea04d` / archive 0133 and `ebd73221` / archive
+0169), with no diagnostics. Candidate CI returned schema 1, confirmation `CI passed` and no diagnostics.
+Candidate check and doctor returned no diagnostics. Existing saved B02 warnings
+remain CHK-055 (16 cases), APP-103 (17), APP-104 (19), each against limit 15.
+Live original-worktree status returned P08 for three consecutive workflow
+applications, an expected warning after the selected follow-ups; it is not a
+separate stop under SYSTEM. No warning, assertion or limit was suppressed.
+
+Before evidence authoring, original main and the candidate checkout were clean,
+with no pending change or shared claim. The candidate's scratch worktrees and
+registrations were cleaned, and its validation clone was removed after the
+gates completed. All original archive blobs and counters remain intact; only
+the two new applied archives were added. The original worktree's live
+unapproved count is two, with its base/ref and normal enforcement unchanged.
+All entry proof/attempt refs, configuration, model/effort, controller pin,
+recovery executables, original deadline and unrelated linked worktree were
+preserved. The consumed audit attempt and zero persisted finding rounds remain
+visible in this review; no bound or counter was reset.
+
+The checks regeneration proof and unaffected foundation proofs remain reused:
+their regeneration inputs/runtime behavior are unchanged by these workflow
+contract/assertion changes. The earlier failed workflow report and ref
+`refs/fireweed/drills/workflow/20261107T052444.036890000` at
+`8035fc11289f6ad4595dd96d26b112437edd1980` remain retained. Their native workflow
+result is still fail. Both old report prefixes remain byte-identical, and this
+exact updated preparation is appended to both reports.
+
+The two owner-approved correction questions are closed. Updated WF2 preparation
+is complete for `79cf33a7690082f28c06bf41a72719d282bc00fe`. The selected two-change
+follow-up is finished. WF3 now requires separate explicit owner approval for
+one native workflow invocation on that exact candidate, under the standing
+pin/deadline/bounds and live isolation/inspection gates. WF4 and full product
+completion remain open. No further native drill, source import, controller
+promotion, later-module work, publication or push occurred during preparation.
+

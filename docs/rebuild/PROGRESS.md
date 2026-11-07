@@ -1,43 +1,47 @@
 # Rebuild handoff
 
-The owner approved the failed WF3 report's two focused corrections. Execute
-only the queued workflow Current absence-contract change and FLOW-002 audit-zone
-eval_fix through the normal independently audited lifecycle, with existing
-behavior legitimately already_satisfied where applicable. Then validate a clean
-identified candidate, commit evidence and stop at WF2's exact-candidate approval
-gate before another native invocation. No controller promotion or push.
+The owner-approved workflow follow-ups are complete: the Current absence
+contract is archived in [0178](../../changes/archive/0178-current-absence-contract.md),
+and the FLOW-002 audit-zone assertion eval_fix in
+[0179](../../changes/archive/0179-audit-zone-assertion.md). The focused review
+questions are resolved with existing runtime behavior preserved. Independent
+audits and normal full phase verification passed; no runtime/interface change
+or reconstructed source import was needed.
 
-The previous WF3 invocation on candidate
-`3d7d210fb7300a3cf48406247ce08db7a14e11fe` failed. Its
-[reviewed workflow report](../../.fireweed/drills/workflow.md) and failed native
-ref remain preserved. WF4 and full product completion are open. The previous
-WF1–WF2 preparation remains committed in the
-[checks report](../../.fireweed/drills/checks.md) and carried forward in the
-workflow report; reuse unaffected evidence and run applicable required checks
-for the updated candidate. Preserve the explicit history baseline
-`be35552b706aa3000ff8f11306d129ff1d701b85`.
+Updated WF2 preparation identifies candidate
+`79cf33a7690082f28c06bf41a72719d282bc00fe` over the exact range
+`be35552b706aa3000ff8f11306d129ff1d701b85..79cf33a7690082f28c06bf41a72719d282bc00fe`.
+The appended preparation in the [checks report](../../.fireweed/drills/checks.md)
+and [workflow report](../../.fireweed/drills/workflow.md) records candidate
+validation, the rejected audit submission and bounded independent retry, and
+initial timing-test failures with unchanged passing reruns.
 
-Follow the [ordered plan](ACCEPTANCE.md#planned-milestone--workflow-contracts-and-regeneration-proof-wf1wf4)
-and [follow-up scope](GOAL.md). Do not repair other reconstruction mistakes or
-expand the selected changes without a new demonstrated need and owner agreement.
+WF3 awaits explicit owner approval for one native workflow invocation on this
+exact candidate with the unchanged pin, bounds and live isolation/inspection
+gates. No further native workflow drill ran during preparation. WF4 and full
+product completion remain open. Follow the
+[ordered plan](ACCEPTANCE.md#planned-milestone--workflow-contracts-and-regeneration-proof-wf1wf4)
+and [approval handoff](GOAL.md). Stop before another drill or additional correction.
 
 The deadline remains **2026-11-07 22:51:05 UTC** (14:51:05 PST).
 The completed checks budget began 2026-11-04 22:51:05 UTC. It and the earlier
 stabilization budget are closed. Preserve the deadline and enforcement bounds.
+The selected two-change follow-up is complete; no later milestone is authorized.
 
-CK1–CK4 remain complete. Their reviewed report and proof ref
-`refs/fireweed/drills/checks/20261107T002339.020159000` are unchanged.
-FLOW-055 recovery remains archived as `0177-prioritize-unsupported-phase`.
-Preserve all prior reports/proof/attempt refs, archive counters and unrelated
-worktrees. The failed workflow ref is retained in addition to prior evidence;
-it does not satisfy the passing-proof gate.
+CK1–CK4 remain complete. Their native report and proof ref
+`refs/fireweed/drills/checks/20261107T002339.020159000` are preserved. The previous
+failed workflow invocation and reconstruction ref remain retained; they do not
+satisfy the passing workflow-proof gate. Preserve prior reports/proof/attempt
+refs and all earlier archive counters. Existing budget warnings and the scoped
+repeated-workflow warning are explained in the preparation evidence.
 
-At the preceding failure handoff, the invocation was terminal and native input/verifier cleanup passed.
-The isolated caller was removed after retaining its report/ref. Follow-up entry
-confirmed no live run/shared claim, an empty queue and zero unapproved changes.
-Configuration, archives/counters, recovery executables and the unrelated linked
-worktree were preserved. Existing testcase-budget warnings remain outside
-scoped cleanup. Protected evidence is committed separately from worker work.
+At handoff, main and the candidate were clean before evidence authoring; candidate
+scratch cleanup passed and its validation clone was removed. No live run/shared
+claim or queued change remained. The live unapproved count is two; normal
+approval enforcement and its configured bound are unchanged. Configuration,
+controller/recovery executables, prior refs, old archive contents/counters and
+the unrelated linked worktree were preserved. Only the two new applied archives
+were added. Protected evidence is committed separately from worker work.
 
 **Controller pin** `/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed`,
 version 0.1.0, source `193634686aa6a1c4eb32e69df1c85e1d5ce48bd7`, SHA-256

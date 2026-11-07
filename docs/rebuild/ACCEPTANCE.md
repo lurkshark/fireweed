@@ -78,20 +78,18 @@ gc, migrate, agents-md --write
 
 ## Planned milestone — Workflow contracts and regeneration proof (WF1–WF4)
 
-**WF1–WF2 preparation complete.** The appended workflow preparation in the
-[reviewed checks report](../../.fireweed/drills/checks.md) records the focused
-review and clean validation of candidate
-`3d7d210fb7300a3cf48406247ce08db7a14e11fe`. No correction was identified during preparation.
-The separately owner-approved WF3 invocation on that exact candidate failed
-within the existing two-attempt bound. The
-[reviewed workflow report](../../.fireweed/drills/workflow.md) retains the native
-failure, traces, reconstruction ref, carried-forward preparation and owner
-checkpoint. The owner subsequently approved the two focused corrections:
-Current's existing absence protocol and a FLOW-002 audit-zone assertion.
-Execute only those normal audited changes, then validate and identify the updated
-candidate at WF2's approval gate. WF4's passing independent proof remains open;
-another drill requires explicit approval of that identified candidate.
-Workflow remains next in the proof dependency order, followed by runner and app.
+**Focused follow-ups and updated WF2 preparation complete.** The owner-approved
+Current absence contract and FLOW-002 audit-zone assertion are applied as
+[0178](../../changes/archive/0178-current-absence-contract.md) and
+[0179](../../changes/archive/0179-audit-zone-assertion.md). The appended preparation
+in the [checks report](../../.fireweed/drills/checks.md) and
+[workflow report](../../.fireweed/drills/workflow.md) records review and clean
+validation of candidate `79cf33a7690082f28c06bf41a72719d282bc00fe`.
+WF3 requires separate explicit owner approval for one native workflow invocation
+on this exact candidate under the unchanged pin, bounds and live inspection gates.
+The earlier failed invocation/report/ref are preserved; WF4's passing independent
+proof remains open. Workflow remains next in the proof dependency order, followed
+by runner and app.
 
 **Entry.** Follow SYSTEM and the pin/deadline in PROGRESS. Read AGENTS,
 DECISIONS, the relevant unchanged design clauses and projected workflow
