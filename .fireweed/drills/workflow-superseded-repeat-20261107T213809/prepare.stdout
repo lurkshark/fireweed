@@ -1,0 +1,4 @@
+[detached HEAD 9a969eb] author: isolate workflow drill inputs and external gate
+ 2 files changed, 12 insertions(+), 45 deletions(-)
+ rewrite SYSTEM.md (99%)
+Prepared isolated caller only. No native drill launched.

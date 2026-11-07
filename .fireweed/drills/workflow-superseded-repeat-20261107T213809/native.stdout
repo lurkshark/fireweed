@@ -1,0 +1,1 @@
+{"schema":1,"data":null,"diagnostics":[{"code":"P01","message":"reconstruction agent: exit status 125. Retained report .fireweed/drills/workflow.md. Use the reported cause to correct the drill inputs or checks, then retry drill.","warning":false}]}

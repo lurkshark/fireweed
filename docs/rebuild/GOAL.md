@@ -1,40 +1,50 @@
-# One approved diagnostic repeat after residual investigation
+# Apply the two residual fixes, update the controller, then drill
 
-The owner requested investigation and scoped fix proposals for the last FLOW-083
-and RUN-027/RUN-028 failures, then another workflow drill while freezing candidate
-`79cf33a7690082f28c06bf41a72719d282bc00fe` and the controller pin in PROGRESS.
-[Investigation/proposals](../../.fireweed/drills/workflow-residual-investigation-20261107/proposal.md)
-are complete with bounded public-API reproductions and unchanged baseline tests.
-No proposed spec/eval correction or product change is applied or authorized here.
-The prior failed report is preserved in
-[the complete previous report](../../.fireweed/drills/workflow-before-residual-investigation-retry-ade1cc8.md).
+The owner replaced the unchanged diagnostic repeat with execution of the two
+[proposed fixes](../../.fireweed/drills/workflow-residual-investigation-20261107/proposal.md),
+a verified controller update after they complete, then one workflow drill using
+the new controller. The superseded invocation was rejected before any worker
+release/launch; [its limited report and cleanup](../../.fireweed/drills/workflow-superseded-repeat-20261107T213809/review.md)
+are retained. It produced no eval results or reconstruction ref.
 
-Run exactly one new unchanged-input diagnostic workflow invocation through the
-prepared outside inspector. This explicit owner request authorizes the repeat;
-it does not validate the unapplied proposals or resolve the retained-eval
-checkpoint. Keep WF4/full completion open pending that checkpoint even if a fresh
-worker happens to satisfy the retained subject-text assertion. No finding,
-implementation detail, saved reconstruction or extra dependency input from the
-investigation may enter the new worker input tree or prompt. The native worker
-receives only the original retained inputs and this invocation's native feedback.
+Apply exactly [0181](../../changes/0181-recorded-regenerate-preservation.md), a
+normal already_satisfied FLOW-081 clarification isolating recorded-phase file
+preservation from FLOW-083 Context selection, and
+[0182](../../changes/0182-recovery-history-assertions.md), a normal runner eval_fix
+for RUN-027/RUN-028 replacing uncontracted subject text with phase-content and
+fixture-commit ancestry evidence. Preserve every existing assertion/ID obligation.
+No runtime/interface/hook/configuration change or reconstruction import is needed.
+Use normal independent restricted audit and full phase verification; only the
+owning Fireweed controller commits, applies and archives. Workers run context
+before each step, verify, poll to terminal and return without lifecycle mutations.
+Keep all configured retry/audit counters and bounds intact.
 
-Read AGENTS, SYSTEM, PROGRESS, ACCEPTANCE and the prepared inspector handoff.
-Inspect live pin/deadline, queue, claims, processes and worktrees; use a fresh
-outside root and exact candidate plus SYSTEM/agent.wrap setup only. Review actual
-retained inputs before first release, every command/full script/incremental patch,
-full first trace/output/native feedback before any remaining configured release,
-and repeat the original live isolation checks. Keep durable raw streams outside
-the reconstruction workspace with unchanged forwarding and bounded worker-first
-stop/drain/reporting and whole-run emergency behavior. Reject independence/access
-failure; supply no corrective hint.
+Keep the current fixed pin in PROGRESS unchanged throughout BOTH normal changes.
+After both are archived and all run/claim processes exit, identify clean corrected
+source and validate applicable normal/race Go suites, vet, checks, hook doctor,
+explicit history/CI delta with valid prefixes reused, and relevant compiled CLI
+behavior. Then preserve the retiring pin and atomically install the validated
+controller, recording its source/hash. Never switch with a live run/shared claim.
 
-The current deadline remains **2026-11-10 22:51:05 UTC**, the existing owner-added
-72-hour extension; do not extend it again. Preserve all other bounds/counters,
-exact command/model/effort, all prior reports/proof/attempt refs, archives,
-controller/recovery bytes and unrelated worktrees. No native invocation is active
-yet. Context/verify idle errors are not product validation.
+The original `79cf33a7690082f28c06bf41a72719d282bc00fe` remains a preserved baseline
+object. The owner's new sequence authorizes a corrected subject containing these
+two applied changes for the final drill; do not silently run the old subject or
+hide corrections in setup. Update only outside candidate/pin metadata after clean
+validation. No new worker inputs beyond the corrected retained specs/evals and
+permitted interfaces, implementation hints, command interception or instrumentation.
 
-Monitor this one invocation to terminal, review and retain actual native evidence
-and its limits, clean up only owned inactive scratch, commit protected evidence
-with no live run/claim, and stop. No further drill, proposed fix implementation,
-reconstructed-code import, controller promotion or push is authorized.
+The owner has authorized the downstream drill after this concrete validation and
+handoff; a further approval request is not required for that bounded sequence.
+Use a fresh outside root, prepared inspector, exact configured worker command/
+model/effort and all original isolation/review/output-preservation/stop gates.
+Read actual retained inputs before release and the full first trace/output/native
+feedback before any remaining configured release. Keep investigation and saved
+reconstruction contents outside the new worker tree/prompt. Monitor exactly one
+final native invocation to terminal, retain actual report/ref and complete evidence,
+clean up owned scratch, commit a protected stopped handoff and stop afterward.
+
+The current deadline stays **2026-11-10 22:51:05 UTC** with no further extension.
+Preserve all prior reports/archives/proof/attempt refs, old phase counters,
+controller recovery executables and unrelated worktrees. No extra change, later
+module drill, reconstructed-code application, unvalidated promotion or push.
+WF4/full completion remain open until the final actual gates and review pass.

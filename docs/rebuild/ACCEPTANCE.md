@@ -125,6 +125,17 @@ are not applied. This repeat uses the frozen subject and pin; it is not a check
 of those proposals, and the retained-eval checkpoint remains open even if the
 native result passes. Preserve all gates and bounds, retain evidence and stop.
 
+The owner's latest instruction supersedes that unchanged diagnostic repeat:
+apply the two scoped residual fixes normally, then validate and update the pinned
+controller, then run one workflow drill on the clean corrected subject with the
+new controller. The superseded invocation stopped before worker release and its
+[limited evidence](../../.fireweed/drills/workflow-superseded-repeat-20261107T213809/review.md)
+is retained. Original 79cf33a remains a baseline; the newly authorized corrected
+subject will contain only the two applied changes plus protected author evidence.
+Existing WF2 validation gates apply; the owner has already authorized the
+subsequent single drill after verified handoff. No additional approval prompt is
+needed for this specific sequence. Keep bounds, audit and isolation intact.
+
 **Entry.** Follow SYSTEM and the pin/deadline in PROGRESS. Read AGENTS,
 DECISIONS, the relevant unchanged design clauses and projected workflow
 contracts. Inspect live status, queue, runs and shared claims. Preserve prior

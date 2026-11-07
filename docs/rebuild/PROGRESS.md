@@ -1,5 +1,24 @@
 # Rebuild handoff
 
+The owner now authorized applying exactly the two residual proposals through the
+normal audited workflow: [0181](../../changes/0181-recorded-regenerate-preservation.md)
+(FLOW-081 clarification with recorded-phase preservation/Context assertions) and
+[0182](../../changes/0182-recovery-history-assertions.md) (RUN-027/RUN-028 eval_fix
+using phase/ancestry evidence). Keep the current pin below unchanged through both
+changes. After both are applied/archived with no active run/claim, validate clean
+corrected source, complete a verified controller handoff, then run exactly one
+workflow drill with that new controller and corrected subject. The original
+79cf33a remains a preserved baseline object; this sequence supersedes its use as
+the next subject. Preserve deadline, bounds, existing counters and all prior
+evidence/refs. No extra correction, reconstruction import or push. Follow GOAL.
+
+The superseded unchanged-input invocation was rejected before first release when
+the owner changed the task. It launched no reconstruction worker, produced no
+evals or reconstruction ref, and published a failed native pre-release report.
+[Evidence and cleanup](../../.fireweed/drills/workflow-superseded-repeat-20261107T213809/review.md)
+are retained separately; this establishes no running-worker stop/drain behavior.
+Its input/verifier/caller and native process are cleaned up with no shared claim.
+
 The owner requested investigation of FLOW-083 and RUN-027/RUN-028, scoped fix
 proposals, then one further workflow drill with unchanged candidate and pin. The
 [bounded investigation and proposals](../../.fireweed/drills/workflow-residual-investigation-20261107/proposal.md)
