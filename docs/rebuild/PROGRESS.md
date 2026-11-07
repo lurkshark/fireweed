@@ -1,5 +1,16 @@
 # Rebuild handoff
 
+The owner has approved exactly one new workflow retry on frozen candidate
+`79cf33a7690082f28c06bf41a72719d282bc00fe`, using the fixed controller below and
+the prepared outside inspector. The owner also extended the original deadline
+by 72 hours to **2026-11-10 22:51:05 UTC** (14:51:05 PST). Keep all other bounds,
+counters, inputs and isolation gates unchanged. Preserve prior reports/refs,
+review actual retained inputs and every command/script/patch, retain the terminal
+native evidence, clean up only owned scratch, commit a protected handoff and stop.
+No correction, reconstructed-code import, further promotion or push is authorized.
+This approval supersedes the stopped state below for this single retry only.
+Follow [GOAL](GOAL.md).
+
 The scoped CHK-034 fix and separately authorized controller handoff are complete.
 [0180](../../changes/archive/0180-retain-failed-hook-output.md) passed normal
 fail-first, independent restricted audit and full implementation verification.
@@ -66,7 +77,8 @@ and product/spec/eval corrections need separate agreement. The external
 no additional invocation. Follow the [ordered plan](ACCEPTANCE.md#planned-milestone--workflow-contracts-and-regeneration-proof-wf1wf4)
 and [owner checkpoint](GOAL.md).
 
-The original deadline remains **2026-11-07 22:51:05 UTC** (14:51:05 PST).
+The original deadline was **2026-11-07 22:51:05 UTC**; the owner has added exactly
+72 hours, making the current deadline **2026-11-10 22:51:05 UTC** (14:51:05 PST).
 The completed checks budget began 2026-11-04 22:51:05 UTC; it and the earlier
 stabilization budget are closed. The selected two-change follow-up is complete.
 Preserve the deadline and configured bounds/counters; none was raised or reset.

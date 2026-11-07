@@ -109,6 +109,12 @@ candidate `79cf33a7690082f28c06bf41a72719d282bc00fe` remains unchanged. This clo
 only that follow-up; WF4 remains open and no further native drill or unrelated
 correction is authorized. [GOAL](GOAL.md) is the stopped, restartable handoff.
 
+The owner has now approved exactly one further workflow retry on that same
+candidate with the fixed pinned controller and prepared inspector, adding exactly
+72 hours to the original deadline as recorded in PROGRESS. All other bounds and
+isolation gates remain. Retain evidence, clean up owned scratch and stop after
+this invocation; no further drill, correction, promotion or push is authorized.
+
 **Entry.** Follow SYSTEM and the pin/deadline in PROGRESS. Read AGENTS,
 DECISIONS, the relevant unchanged design clauses and projected workflow
 contracts. Inspect live status, queue, runs and shared claims. Preserve prior

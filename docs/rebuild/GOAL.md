@@ -1,37 +1,41 @@
-# Completed CHK-034 fix and controller handoff
+# One approved workflow retry with the fixed controller
 
-The owner-authorized scoped fix is applied and archived in
-[0180](../../changes/archive/0180-retain-failed-hook-output.md). Normal fail-first,
-independent restricted audit and full implementation verification passed. Captured
-hook stdout/stderr/exit now survive report-read, JUnit-parse and hook-execution
-errors. Strict C11 rejection, fail-first and coverage enforcement remain intact.
-No spec/interface/hook, runner or dependency-import input changes were made.
-
-The separately built controller passed validation and replaced the primary pin
-with no live run or shared claim. [PROGRESS](PROGRESS.md) records its fixed source
-and hash; the retiring executable and all previous recovery copies are preserved.
-Only outside pin metadata changed in the prepared wrapper/inspector. The
-[handoff evidence](../../.fireweed/drills/chk034-controller-handoff.md) records
-validation, its limits and cleanup. The queue is empty. Stop here for owner review.
-
-The workflow subject remains exactly
-`79cf33a7690082f28c06bf41a72719d282bc00fe`, distinct from the fixed controller
-source. Its validated range remains
+The owner approved exactly one native workflow invocation on frozen subject
+`79cf33a7690082f28c06bf41a72719d282bc00fe`, using the fixed pinned controller in
+[PROGRESS](PROGRESS.md) and the prepared [outside inspector](workflow-drill/README.md).
+The controller source remains distinct from the candidate; do not repin again.
+The validated subject range remains
 `be35552b706aa3000ff8f11306d129ff1d701b85..79cf33a7690082f28c06bf41a72719d282bc00fe`.
-Preserve the original **2026-11-07 22:51:05 UTC** deadline, configured bounds,
-existing archive counters, reports/proof/attempt refs and unrelated worktree.
-No reconstructed code was applied, no further native drill ran and no push occurred.
 
-The previous workflow retry remains failed. Its exact
-[native report](../../.fireweed/drills/workflow.md), complete
-[prior report](../../.fireweed/drills/workflow-before-retry-a79f34c.md) and failed
-ref `refs/fireweed/drills/workflow/20261107T172136.182088000` remain unchanged.
-Normal native failure publication was observed there; native publication after
-interruption/rejection was not exercised. The CHK-034 diagnostic fixture is not a
-workflow proof. WF4 and full product completion remain open.
+The owner added exactly 72 hours to the original deadline of
+2026-11-07 22:51:05 UTC: the current deadline is **2026-11-10 22:51:05 UTC**.
+Preserve every other configured bound/counter, exact command/model/effort,
+worker instructions and isolation gate. Use a new isolated caller; no previous
+reconstruction or native invocation may be resumed. No dependency-import inputs,
+implementation hints, command interception or process/filesystem instrumentation.
 
-Another native invocation or correction requires separate owner approval. The
-[prepared retry handoff](workflow-drill/README.md) grants no invocation. Recheck
-AGENTS, SYSTEM, PROGRESS, ACCEPTANCE, live status, queue, shared claims, processes,
-pin and deadline before any newly approved work. Never switch controllers with a
-live run/claim or resume another controller's claim; no automatic recovery fallback.
+Read AGENTS, SYSTEM, PROGRESS, ACCEPTANCE and the prepared handoff. Check live
+status, queue, claims, processes, pin and worktrees; context/verify are idle checks
+until native work starts. Prepare only the candidate plus SYSTEM/agent.wrap setup.
+Before release one, review actual retained workflow spec/Decisions/interfaces/evals
+and declared dependency public interfaces. Check the input-only Git, immutable
+bytes, separate verifier and matching controller copies. Review every observed
+command, full script and incremental patch while preserving durable raw streams.
+Before the remaining configured attempt, review the complete first trace, fresh
+output and native feedback and repeat all isolation gates. Supply no extra hints.
+Reject immediately on independence/access failure and use the prepared bounded
+worker-first stop/drain/reporting path; retain the whole-run emergency bound.
+
+Monitor this single invocation to terminal, inspect the actual report/cases,
+coverage, Decisions, gaps and retained ref, then preserve all evidence and remove
+only owned inactive scratch. Preserve prior archives/reports/proof/attempt refs,
+checks proof, recovery executables and unrelated worktree. Commit protected
+evidence/handoff only with no active run/claim and stop afterward, whether it
+passes or fails. No product/spec/eval/hook correction, rebuilt-code import, later
+module drill, controller promotion or push is authorized. Another invocation or
+correction requires separate approval. WF4 closes only if its actual gates pass.
+
+The prior failed native result and stopped-drill evidence remain historical.
+The applied CHK-034 fix and controller validation are recorded in
+[0180](../../changes/archive/0180-retain-failed-hook-output.md) and its
+[handoff evidence](../../.fireweed/drills/chk034-controller-handoff.md).

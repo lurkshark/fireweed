@@ -13,8 +13,9 @@ outside expected-pin hashes now match that controller. Candidate, worker inputs,
 command/model/effort, isolation and supervisor behavior are unchanged. The earlier
 retry approval is consumed; the commands below require separate new approval.
 
-The controller pin and original deadline **2026-11-07 22:51:05 UTC** remain in
-PROGRESS. Preserve the candidate, configuration bounds/counters, archived changes,
+The owner has approved one further retry with the fixed pin and added exactly
+72 hours to the original deadline. The current deadline is **2026-11-10 22:51:05 UTC**;
+the controller pin remains in PROGRESS. Preserve the candidate, configuration bounds/counters, archived changes,
 reports/proof/attempt refs, recovery executables and unrelated worktrees. Do not
 import reconstructed code, promote a controller, author product/spec/eval fixes,
 push, or restart a rejected gate. An owner-approved retry uses a new outside root;
