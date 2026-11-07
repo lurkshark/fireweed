@@ -1,9 +1,11 @@
 package evals_test
 
 import (
+	"slices"
 	"strings"
 	"testing"
 
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
@@ -71,11 +73,45 @@ func Test_RUN_027_RUN_028_RecoversAgentCommitsAcrossLifecycle(t *testing.T) {
 	if count := nextGit(t, f.root, "rev-list", "--count", base+"..HEAD"); count != "3" {
 		t.Errorf("branch has %s commits after three checked phases, want 3", count)
 	}
-	messages := strings.Split(nextGit(t, f.root, "log", "--reverse", "--format=%s", base+"..HEAD"), "\n")
-	if len(messages) != 3 || !strings.Contains(messages[0], "evals") || !strings.Contains(messages[1], "audit") || !strings.Contains(messages[2], "apply") || strings.Contains(strings.Join(messages, "\n"), "fixture agent") {
-		t.Errorf("branch phase commits = %q", messages)
+	commits := strings.Fields(nextGit(t, f.root, "rev-list", "--reverse", base+"..HEAD"))
+	phaseCommits, commitsErr := workflow.Commits(f.root, "next")
+	if commitsErr != nil || len(commits) != 3 || !slices.Equal(phaseCommits, []string{commits[2], commits[1], commits[0]}) {
+		t.Fatalf("checked phase commits = %v; branch commits = %v; error = %v", phaseCommits, commits, commitsErr)
 	}
-	for _, marker := range []string{"phase: applied", "No findings", "- evals ", "- audit ", "- impl "} {
+	for i, want := range []struct{ path, phase string }{
+		{nextChange, "audit"},
+		{nextChange, "impl"},
+		{"changes/archive/0001-next.md", "applied"},
+	} {
+		document, parseErr := contracts.ParseDocument(nextGit(t, f.root, "show", commits[i]+":"+want.path))
+		if parseErr != nil || document.Frontmatter["phase"] != want.phase {
+			t.Errorf("phase commit %s phase = %v, parse error = %v; want %s", commits[i], document.Frontmatter["phase"], parseErr, want.phase)
+		}
+	}
+	fixtureCommits := strings.Split(strings.TrimSpace(nextRead(t, f.logDir, "fixture-commits")), "\n")
+	reachable := strings.Fields(nextGit(t, f.root, "rev-list", "HEAD"))
+	for i, label := range []string{"evals-first", "evals-second", "audit", "impl-first"} {
+		if i >= len(fixtureCommits) {
+			t.Errorf("fixture agent commit %s was not recorded", label)
+			continue
+		}
+		parts := strings.Fields(fixtureCommits[i])
+		if len(parts) != 2 || parts[0] != label || len(parts[1]) != 40 {
+			t.Errorf("fixture agent commit %d = %q, want %s and a full OID", i, fixtureCommits[i], label)
+			continue
+		}
+		if slices.Contains(reachable, parts[1]) {
+			t.Errorf("fixture agent commit %s (%s) is reachable from final HEAD", label, parts[1])
+		}
+	}
+	if len(fixtureCommits) != 4 {
+		t.Errorf("fixture agent commits = %q, want four", fixtureCommits)
+	}
+	archive, parseErr := contracts.ParseDocument(nextRead(t, f.root, "changes/archive/0001-next.md"))
+	if parseErr != nil || archive.Frontmatter["phase"] != "applied" {
+		t.Errorf("archive phase = %v, parse error = %v; want applied", archive.Frontmatter["phase"], parseErr)
+	}
+	for _, marker := range []string{"No findings", "- evals ", "- audit ", "- impl "} {
 		if !strings.Contains(nextRead(t, f.root, "changes/archive/0001-next.md"), marker) {
 			t.Errorf("archive omitted %q", marker)
 		}

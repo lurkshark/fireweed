@@ -4,6 +4,8 @@ eval_fix:
     - RUN-027
     - RUN-028
 module: runner
+phase: audit
+run: 20261107T221733-fb228e7c7daa959ddbf7af9e
 ---
 
 ## Motivation
@@ -77,3 +79,5 @@ authorized validation of the clean corrected subject, verified controller update
 then one native workflow drill with the new controller. No worker launches a drill,
 promotes a controller or pushes. Stop after that separately owned final drill.
 ## Audit
+## Provenance
+- evals 2026-11-07T22:37:44.975531Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=159 failing=0 passing=159

@@ -174,11 +174,13 @@ esac
 if [ "$2" = commit-success ]; then
   git add -A
   git commit -q -m "fixture agent $phase first commit"
+  printf '%s %s\n' "$phase-first" "$(git rev-parse HEAD)" >> "$1/fixture-commits"
   case "$phase" in
     evals)
       printf 'package evals\n// SECOND_AGENT_COMMIT\n' > packages/alpha/evals/second_test.go
       git add packages/alpha/evals/second_test.go
       git commit -q -m 'fixture agent evals second commit'
+      printf '%s %s\n' 'evals-second' "$(git rev-parse HEAD)" >> "$1/fixture-commits"
       printf 'package evals\n// STAGED_EVAL_WORK\n' > packages/alpha/evals/staged_test.go
       git add packages/alpha/evals/staged_test.go
       printf '// TRACKED_EVAL_WORK\n' >> packages/alpha/evals/next_test.go
@@ -201,6 +203,7 @@ AUDIT
 if [ -f "$1/commit-success" ]; then
   git add changes/0001-next.md
   git -c user.name=Fixture -c user.email=fixture@example.invalid commit -q -m 'fixture agent audit commit'
+  printf '%s %s\n' 'audit' "$(git rev-parse HEAD)" >> "$1/fixture-commits"
 fi
 printf 'auditor'
 `)
