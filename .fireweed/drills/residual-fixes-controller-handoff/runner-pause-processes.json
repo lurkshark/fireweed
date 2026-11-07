@@ -1,0 +1,85 @@
+{
+  "owner": {
+    "pid": 36179,
+    "slug": "recovery-history-assertions",
+    "argv": [
+      "/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed",
+      "next",
+      "--allow-unmerged",
+      "--json"
+    ],
+    "pin_sha256": "c9167d3878a1344719574d3ee1179d42295596f2f994c31c556ca25df8aaaada",
+    "start": "2026-11-07T22:17:31.289719+00:00"
+  },
+  "owned_descendants": [
+    [
+      36179,
+      36092,
+      36179,
+      "/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed"
+    ],
+    [
+      36400,
+      36179,
+      36400,
+      "node"
+    ],
+    [
+      36401,
+      36400,
+      36400,
+      "/Users/joel/.nvm/versions/node/v24.13.0/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex"
+    ],
+    [
+      37216,
+      36401,
+      37216,
+      "/Users/joel/.nvm/versions/node/v24.13.0/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex-code-mode-host"
+    ],
+    [
+      49084,
+      36401,
+      49084,
+      "/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed"
+    ],
+    [
+      49488,
+      49084,
+      49488,
+      "go"
+    ],
+    [
+      49492,
+      49488,
+      49488,
+      "/tmp/fireweed-rebuild-cache/fe/fed25805ca65337fd31ade7f8c4b4150c58091f40fed8c4b3be5f82ee60ae6e2-d/hooks"
+    ],
+    [
+      49493,
+      49492,
+      49488,
+      "go"
+    ],
+    [
+      49499,
+      49493,
+      49488,
+      "/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/go-build2680157190/b147/evals.test"
+    ],
+    [
+      66199,
+      49499,
+      66199,
+      "(git)"
+    ]
+  ],
+  "groups": [
+    36179,
+    36400,
+    37216,
+    49084,
+    49488,
+    66199
+  ],
+  "reason": "keep new phase assertions independent of YAML formatting before evals freeze"
+}

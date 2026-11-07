@@ -1,0 +1,9 @@
+{
+  "same_change": "0182-recovery-history-assertions",
+  "same_run": "20261107T221733-fb228e7c7daa959ddbf7af9e",
+  "phase": "evals",
+  "not_frozen_or_committed": true,
+  "adjustment": "parse frontmatter phase values rather than introduce YAML spelling assumptions",
+  "all_phase_and_archive_value_obligations_preserved": true,
+  "no_runtime_or_counter_change": true
+}

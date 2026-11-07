@@ -1,50 +1,33 @@
-# Apply the two residual fixes, update the controller, then drill
+# Run the single authorized corrected-source workflow drill, then stop
 
-The owner replaced the unchanged diagnostic repeat with execution of the two
-[proposed fixes](../../.fireweed/drills/workflow-residual-investigation-20261107/proposal.md),
-a verified controller update after they complete, then one workflow drill using
-the new controller. The superseded invocation was rejected before any worker
-release/launch; [its limited report and cleanup](../../.fireweed/drills/workflow-superseded-repeat-20261107T213809/review.md)
-are retained. It produced no eval results or reconstruction ref.
+The two scoped fixes are applied and independently audited:
+[0181](../../changes/archive/0181-recorded-regenerate-preservation.md) and
+[0182](../../changes/archive/0182-recovery-history-assertions.md). Clean corrected
+subject/controller source is `ccd3d6b7732d613e80a027ba7969b65adc58bc0e`. The verified controller is pinned in
+PROGRESS; [handoff evidence](../../.fireweed/drills/residual-fixes-controller-handoff.md)
+records validation, actual invocations, cost limits, cleanup and preservation.
+The original 79cf33a is a preserved baseline, not the next drill subject.
 
-Apply exactly [0181](../../changes/0181-recorded-regenerate-preservation.md), a
-normal already_satisfied FLOW-081 clarification isolating recorded-phase file
-preservation from FLOW-083 Context selection, and
-[0182](../../changes/0182-recovery-history-assertions.md), a normal runner eval_fix
-for RUN-027/RUN-028 replacing uncontracted subject text with phase-content and
-fixture-commit ancestry evidence. Preserve every existing assertion/ID obligation.
-No runtime/interface/hook/configuration change or reconstruction import is needed.
-Use normal independent restricted audit and full phase verification; only the
-owning Fireweed controller commits, applies and archives. Workers run context
-before each step, verify, poll to terminal and return without lifecycle mutations.
-Keep all configured retry/audit counters and bounds intact.
+The owner's current instruction already authorizes the downstream single native
+workflow drill after this handoff. Use the prepared outside inspector and a fresh
+outside root, exact configured worker command/model/effort, existing deadline,
+original bounds/counters and every isolation/review/output-preservation/stop gate.
+Review actual corrected retained contracts/evals and permitted dependency public
+interfaces before first release. Review all full commands/scripts/incremental
+patches, native feedback and fresh output before any remaining configured release.
+Supply no private investigation, saved reconstruction, implementation hint,
+bootstrap, binary or extra input to the worker. Do not run worker-local builds,
+tests or module setup; separate native verification owns them.
 
-Keep the current fixed pin in PROGRESS unchanged throughout BOTH normal changes.
-After both are archived and all run/claim processes exit, identify clean corrected
-source and validate applicable normal/race Go suites, vet, checks, hook doctor,
-explicit history/CI delta with valid prefixes reused, and relevant compiled CLI
-behavior. Then preserve the retiring pin and atomically install the validated
-controller, recording its source/hash. Never switch with a live run/shared claim.
+Monitor exactly one native invocation to terminal. Retain actual report/ref,
+case/coverage/Decisions/gap review, raw streams and exact forwarding receipts;
+clean owned scratch/processes, commit protected stopped evidence and stop.
+No extra correction, later drill, reconstructed-code application or push is
+approved. WF4 requires a passing independent proof and no unresolved checkpoint;
+full product completion remains open. Claims about native rejection/interruption
+reporting must stay limited to actual observations.
 
-The original `79cf33a7690082f28c06bf41a72719d282bc00fe` remains a preserved baseline
-object. The owner's new sequence authorizes a corrected subject containing these
-two applied changes for the final drill; do not silently run the old subject or
-hide corrections in setup. Update only outside candidate/pin metadata after clean
-validation. No new worker inputs beyond the corrected retained specs/evals and
-permitted interfaces, implementation hints, command interception or instrumentation.
-
-The owner has authorized the downstream drill after this concrete validation and
-handoff; a further approval request is not required for that bounded sequence.
-Use a fresh outside root, prepared inspector, exact configured worker command/
-model/effort and all original isolation/review/output-preservation/stop gates.
-Read actual retained inputs before release and the full first trace/output/native
-feedback before any remaining configured release. Keep investigation and saved
-reconstruction contents outside the new worker tree/prompt. Monitor exactly one
-final native invocation to terminal, retain actual report/ref and complete evidence,
-clean up owned scratch, commit a protected stopped handoff and stop afterward.
-
-The current deadline stays **2026-11-10 22:51:05 UTC** with no further extension.
-Preserve all prior reports/archives/proof/attempt refs, old phase counters,
-controller recovery executables and unrelated worktrees. No extra change, later
-module drill, reconstructed-code application, unvalidated promotion or push.
-WF4/full completion remain open until the final actual gates and review pass.
+The existing deadline remains **2026-11-10 22:51:05 UTC**. Preserve original
+candidate, prior archives/reports/proof/attempt refs, existing counters, recovery
+executables and unrelated worktrees. Never switch controllers with a live run or
+shared claim or resume another controller's claim.

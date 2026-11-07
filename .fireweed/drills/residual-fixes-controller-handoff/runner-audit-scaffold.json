@@ -1,0 +1,6 @@
+{
+  "before_active_change": true,
+  "empty_audit_header_only": true,
+  "no_provenance_or_runtime_fields_authored": true,
+  "reason": "avoid outside-Audit insertion whitespace; independent auditor still required"
+}

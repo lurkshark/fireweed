@@ -78,63 +78,21 @@ gc, migrate, agents-md --write
 
 ## Planned milestone — Workflow contracts and regeneration proof (WF1–WF4)
 
-**WF3 safer retry failed native verification; WF4 remains open.** The approved
-Current absence contract and FLOW-002 audit-zone assertion are applied as
-[0178](../../changes/archive/0178-current-absence-contract.md) and
-[0179](../../changes/archive/0179-audit-zone-assertion.md). WF1/WF2 validation of
-candidate `79cf33a7690082f28c06bf41a72719d282bc00fe` is unchanged. The complete
-[earlier workflow evidence](../../.fireweed/drills/workflow-before-retry-a79f34c.md)
-is retained byte-for-byte, including preparation, the independence-stopped
-invocation and safer external wrapper/fake rehearsals.
+**Residual fixes and verified controller handoff complete; one final drill authorized.**
+The two scoped proposals are applied in normal independently audited archives
+[0181](../../changes/archive/0181-recorded-regenerate-preservation.md) and
+[0182](../../changes/archive/0182-recovery-history-assertions.md). The
+[clean corrected-source validation and handoff](../../.fireweed/drills/residual-fixes-controller-handoff.md)
+identify the exact subject, new pin, valid history prefixes/delta and compiled CLI
+regressions. Original 79cf33a, prior failed reports/refs and the valid checks proof
+remain preserved. No reconstructed source was imported.
 
-After separate owner approval, exactly one retry used the prepared
-[external wrapper/inspector](workflow-drill/README.md), unchanged pin/deadline/bounds
-and two configured workers. Both completed with full durable streams and exact
-native log forwarding. Actual isolation passed before both releases, full observed
-commands/patches were reviewed and no independence violation was observed. Native
-verification failed in workflow, runner and app with PackageFailure/C11 and
-missing-coverage C10 diagnostics; the native own/dependent case sections are empty.
-The [failed native report and review](../../.fireweed/drills/workflow.md) and its
-reconstruction ref are retained. No passing independent workflow proof is claimed.
-Native reporting after rejection/interruption was not exercised. All owned scratch
-and processes are cleaned up; no correction, source application, promotion or push
-occurred. Stop for owner review before another drill or any correction. Workflow
-remains next in the proof order, followed by runner and app.
-
-The separately owner-authorized CHK-034 diagnostics fix and verified controller
-handoff are complete, with normal audited provenance in
-[0180](../../changes/archive/0180-retain-failed-hook-output.md) and protected
-[handoff evidence](../../.fireweed/drills/chk034-controller-handoff.md). Subject
-candidate `79cf33a7690082f28c06bf41a72719d282bc00fe` remains unchanged. This closes
-only that follow-up; WF4 remains open and no further native drill or unrelated
-correction is authorized. [GOAL](GOAL.md) is the stopped, restartable handoff.
-
-The separately approved retry with the fixed controller is now complete and
-failed native verification: app passed; workflow still fails FLOW-083 and runner
-still fails RUN-027/RUN-028. The [current report](../../.fireweed/drills/workflow.md)
-and [complete review](../../.fireweed/drills/workflow-fixed-controller-retry-20261107T202952/review.md)
-retain native cases, coverage, feedback, raw streams, failed ref and cleanup.
-The owner-added 72-hour deadline extension remains in PROGRESS; all other bounds
-and gates remain unchanged. This approval is consumed. WF4 remains open. Stop
-for owner review; no further drill, correction, promotion or push is authorized.
-
-The owner subsequently requested residual investigation/proposals and one more
-unchanged-input diagnostic workflow invocation. The
-[scoped proposals](../../.fireweed/drills/workflow-residual-investigation-20261107/proposal.md)
-are not applied. This repeat uses the frozen subject and pin; it is not a check
-of those proposals, and the retained-eval checkpoint remains open even if the
-native result passes. Preserve all gates and bounds, retain evidence and stop.
-
-The owner's latest instruction supersedes that unchanged diagnostic repeat:
-apply the two scoped residual fixes normally, then validate and update the pinned
-controller, then run one workflow drill on the clean corrected subject with the
-new controller. The superseded invocation stopped before worker release and its
-[limited evidence](../../.fireweed/drills/workflow-superseded-repeat-20261107T213809/review.md)
-is retained. Original 79cf33a remains a baseline; the newly authorized corrected
-subject will contain only the two applied changes plus protected author evidence.
-Existing WF2 validation gates apply; the owner has already authorized the
-subsequent single drill after verified handoff. No additional approval prompt is
-needed for this specific sequence. Keep bounds, audit and isolation intact.
+The owner's latest sequence already authorizes one downstream workflow drill with
+the new controller after these gates, superseding the usual separate WF2 approval
+stop for this concrete sequence. Follow GOAL/PROGRESS and every existing outside
+inspection, output and isolation gate. Retain terminal evidence, clean owned
+scratch and stop. WF4/full completion remain open until actual native proof and
+review pass. No later correction, module drill or push is authorized.
 
 **Entry.** Follow SYSTEM and the pin/deadline in PROGRESS. Read AGENTS,
 DECISIONS, the relevant unchanged design clauses and projected workflow
@@ -204,8 +162,8 @@ between active runs.
    needed, live unapproved count and any remaining checkpoint. Stop at WF4.
 
 The requirement/command inventories and all full-completion gates remain.
-Real regenerate changes, rebuilt-code import, controller promotion, later module
-drills, unrelated cleanup, publication and push remain outside this milestone.
+Real regenerate changes, rebuilt-code import, further controller promotion, later
+module drills, unrelated cleanup, publication and push remain outside this milestone.
 
 ## Completed milestones
 

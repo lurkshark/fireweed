@@ -1,26 +1,17 @@
-# Prepared workflow retry (outside tooling)
+# Prepared workflow drill wrapper and inspector
 
-This package is protected author infrastructure for candidate
-`79cf33a7690082f28c06bf41a72719d282bc00fe`. Preparation and fake rehearsals
-authorize no native invocation. The stopped invocation in `ea245a7` remains
-invalid; WF4 remains open. No controller or product change is required by this
-preparation. A native reporting problem discovered later is an owner checkpoint,
-not permission to repair the pin or product.
+The owner-approved residual fixes and verified controller handoff are complete.
+PROGRESS records the exact corrected subject and new pin;
+[handoff evidence](../../../.fireweed/drills/residual-fixes-controller-handoff.md)
+retains validation and preservation. Original 79cf33a remains a baseline. Only
+outside candidate/expected-pin metadata changed; supervisor behavior, worker
+command/model/effort, input policy, isolation and stop gates are unchanged.
 
-The owner subsequently authorized the scoped CHK-034 fix and verified controller
-handoff, now complete; see PROGRESS and the committed handoff evidence. The two
-outside expected-pin hashes now match that controller. Candidate, worker inputs,
-command/model/effort, isolation and supervisor behavior are unchanged. The earlier
-retry approval is consumed; the commands below require separate new approval.
-
-The owner-approved fixed-controller retry is complete and failed; its approval
-is consumed. PROGRESS and the current workflow report retain the outcome. The
-owner added exactly 72 hours to the original deadline; the current deadline is
-**2026-11-10 22:51:05 UTC**. The fixed pin remains in PROGRESS. Preserve candidate,
-configuration bounds/counters, archives, reports/proof/attempt refs, recovery
-executables and unrelated worktrees. No further native launch, correction,
-reconstructed-code import, controller promotion or push is authorized. A newly
-approved retry must use a new outside root and fresh live gates.
+The current owner instruction authorizes exactly one downstream native workflow
+invocation after this handoff, then terminal evidence/cleanup and stop. Use a new
+outside root. No extra approval prompt is needed for this specific sequence; the
+commands below do not authorize any later invocation. Existing deadline remains
+**2026-11-10 22:51:05 UTC**. No correction, reconstructed-code import or push.
 
 `guard.py` is an `agent.wrap` prefix. Its CLI accepts only the exact configured
 command/model/effort from SYSTEM, with the original prompt as its last argument.
@@ -89,7 +80,7 @@ whole-controller emergency cleanup, and production command rejection. Raw binary
 payloads include NUL/non-UTF-8/CRLF bytes and exceed pipe capacity. Logs and native
 forwarded files must match byte for byte, including live prefixes before exit.
 
-## Restart only after separate owner approval
+## Execute the single owner-authorized retry
 
 Read AGENTS, SYSTEM, PROGRESS, GOAL and ACCEPTANCE; inspect live pinned status,
 queue, shared claims, process metadata and worktrees. Run context before each
@@ -111,7 +102,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 docs/rebuild/workflow-drill/inspector.py prepa
 
 Inspect that clean setup child and `expected.json`, recheck the live gates and
 approval, then launch the staged inspector alongside the single native controller
-invocation. **This command is for the separately approved retry only:**
+invocation. **This command is for the currently approved single retry only:**
 
 ```sh
 PYTHONDONTWRITEBYTECODE=1 python3 /private/tmp/OWNER_SELECTED_NEW_ROOT/tooling/inspector.py launch /private/tmp/OWNER_SELECTED_NEW_ROOT
@@ -120,7 +111,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 /private/tmp/OWNER_SELECTED_NEW_ROOT/tooling/i
 The inspector starts the pinned `drill workflow --json`, holds actual readiness,
 and writes outside preflight logs. It releases nothing until an outside reviewer
 atomically writes `gate/reviewed-1.json` with `result: "pass"`, the exact `input`
-path from `ready-1.json`, the candidate SHA above, and
+path from `ready-1.json`, the candidate SHA in control.py, and
 `actual_retained_inputs_reviewed: true`. This is an attestation after actual
 retained-input review, never a substitute for it. The inspector repeats preflight
 and requires the ready record to remain unchanged.

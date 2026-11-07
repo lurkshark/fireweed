@@ -1,0 +1,65 @@
+[
+  {
+    "stage": "clone",
+    "argv": [
+      "git",
+      "clone",
+      "--no-hardlinks",
+      "--no-checkout",
+      "/Users/joel/Workspace/fireweed",
+      "/private/tmp/fireweed-residual-fixes-27wddhxj/validation/source"
+    ],
+    "cwd": "/Users/joel/Workspace/fireweed",
+    "bound_seconds": 120,
+    "start": "2026-11-07T22:46:02.999661+00:00",
+    "finish": "2026-11-07T22:46:03.940455+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "checkout",
+    "argv": [
+      "git",
+      "checkout",
+      "--detach",
+      "ccd3d6b7732d613e80a027ba7969b65adc58bc0e"
+    ],
+    "cwd": "/private/tmp/fireweed-residual-fixes-27wddhxj/validation/source",
+    "bound_seconds": 120,
+    "start": "2026-11-07T22:46:03.940839+00:00",
+    "finish": "2026-11-07T22:46:04.181064+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "build",
+    "argv": [
+      "go",
+      "build",
+      "-trimpath",
+      "-o",
+      "/private/tmp/fireweed-residual-fixes-27wddhxj/validation/fireweed",
+      "."
+    ],
+    "cwd": "/private/tmp/fireweed-residual-fixes-27wddhxj/validation/source",
+    "bound_seconds": 180,
+    "start": "2026-11-07T22:46:04.226392+00:00",
+    "finish": "2026-11-07T22:46:05.389177+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "normal",
+    "argv": [
+      "go",
+      "test",
+      "./..."
+    ],
+    "cwd": "/private/tmp/fireweed-residual-fixes-27wddhxj/validation/source",
+    "bound_seconds": 900,
+    "start": "2026-11-07T22:46:05.390048+00:00",
+    "finish": "2026-11-07T22:51:56.776472+00:00",
+    "exit": 1,
+    "expected": 0
+  }
+]

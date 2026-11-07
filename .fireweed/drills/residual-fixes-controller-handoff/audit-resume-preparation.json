@@ -1,0 +1,22 @@
+{
+  "rejected_reason": "native audit workspace modified change outside Audit",
+  "submission_not_manually_accepted": true,
+  "change_run": "20261107T214650-d187de5ae2adf49791730c83",
+  "held_phase": "audit",
+  "same_controller": true,
+  "first_agent_attempt_log_preserved": true,
+  "added_empty_audit_section_only": true,
+  "rounds_or_phase_counters_reset": false,
+  "retiring_owner": {
+    "pid": 33539,
+    "slug": "recorded-regenerate-preservation",
+    "argv": [
+      "/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed",
+      "next",
+      "--allow-unmerged",
+      "--json"
+    ],
+    "pin_sha256": "c9167d3878a1344719574d3ee1179d42295596f2f994c31c556ca25df8aaaada",
+    "start": "2026-11-07T21:46:47.225096+00:00"
+  }
+}

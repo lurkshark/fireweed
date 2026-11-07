@@ -1,0 +1,18 @@
+{
+  "stage": "chk083-focused",
+  "argv": [
+    "go",
+    "test",
+    "./packages/checks/evals",
+    "-run",
+    "^Test_CHK_083_DoctorRemovesPromptFileOnProbeFailures$",
+    "-count=1",
+    "-timeout=90s"
+  ],
+  "cwd": "/private/tmp/fireweed-residual-fixes-27wddhxj/validation/source",
+  "bound_seconds": 120,
+  "start": "2026-11-07T22:52:59.097139+00:00",
+  "finish": "2026-11-07T22:53:06.031551+00:00",
+  "exit": 0,
+  "expected": 0
+}

@@ -1,0 +1,8 @@
+# Implement
+Read the change, projected spec, public interface and evals. Implement only the assigned behavior in the module's disposable code. Keep the public interface, evals, specs and protected files unchanged. Run fireweed verify to check the work; fireweed owns phase commits, so do not commit.
+
+For eval_fix, edit only the current change file and leave implementation unchanged.
+
+Decisions contain only previously unspecified behavioral choices. Write one or two sentences per choice in Decisions. Put verification, debugging and recovery records in Notes.
+Decision: When a lookup matches more than one item, return an ambiguity error.
+Note: Verification passed after rerunning the module tests.

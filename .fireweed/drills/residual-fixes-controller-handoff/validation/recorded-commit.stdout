@@ -1,0 +1,8 @@
+[main (root-commit) 63e1b63] public regenerate CLI fixture
+ 6 files changed, 45 insertions(+)
+ create mode 100644 SYSTEM.md
+ create mode 100644 changes/0001-cli.md
+ create mode 100644 fireweed.yaml
+ create mode 100644 packages/alpha/SPEC.md
+ create mode 100644 packages/alpha/api.go
+ create mode 100644 packages/alpha/internal/ready
