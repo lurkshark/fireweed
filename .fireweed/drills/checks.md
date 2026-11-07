@@ -37731,3 +37731,126 @@ diagnostics. Existing testcase-budget warnings remain outside this change.
 Main and the candidate were clean after validation with no live claims or
 linked scratch worktrees from this work. Prior proof and attempt refs, the
 unrelated worktree, the controller pin and configured bounds were preserved.
+
+## Workflow preparation — WF1 contract review and WF2 candidate validation
+
+This appended preparation evidence preserves the native checks result, trace and
+review above. WF3 awaits separate owner approval on the candidate identified
+below; the independent workflow proof remains open.
+
+### WF1 conclusion
+
+Reviewed the unchanged design's Change lifecycle, Regeneration, Git behavior,
+Specs/Decisions, cost reporting and context obligations against workflow's
+projected SPEC, its Decisions, api.go and model interfaces, and all public eval
+files. The queue was empty, so the projected workflow contract equaled the
+committed contract. The retained public facade exposes the held approved graph,
+claim/phase base, reports and causes needed by runner and app without requiring
+private imports. No demonstrated defect, missing behavioral choice or necessary
+product/eval correction was found. No change was authored and no lifecycle or
+audit counter was consumed.
+
+The focused review checked the assertions, including rejection behavior:
+
+| Contract area | Retained evidence reviewed |
+| --- | --- |
+| Atomic claim ownership, canonical worktree, late IDs/run, approved graph and approval bound | FLOW-001, 006–021 and 053–058 in lifecycle_test.go; linked worktrees race for one claim, foreign Current is rejected, and frozen fields reject before hooks. |
+| Projected zones, mapped fail-first, full Done checks and transitions | FLOW-002–004, 022–033 and 044–050 in lifecycle_test.go; quick skips dependents/boundaries, full Done rejects their failures, all/direct/none selection is asserted, and failed Done preserves phase/HEAD. Reuse CK1 and the passing checks proof for checks-owned JUnit and zone enforcement. |
+| Audit submission, convergence, rounds and blocking | FLOW-034–043 and 059–060 in lifecycle_test.go and selector_audit_validation_test.go; exact clauses/checked IDs, discarded new re-audit IDs, default/configured round bounds, Questions and release are asserted. |
+| Apply/archive/provenance and context | FLOW-004–005, 028, 044–053 in lifecycle_test.go; one committed application contains metadata, spec/Decision edits, archive and provenance, preserves unrelated claims, and retains reports/output. Context asserts projected text, interfaces, SYSTEM/playbook and path/size/full contents. |
+| Blocked queue, saved attempts, resume and release | FLOW-063–076 and 084–096 in block, eligible, resume, release, abandon and commits evals; staged/deleted/untracked work is saved, approved committed content survives, later independent work remains, and foreign/stale ownership is rejected. |
+| eval_fix, maintenance and regeneration | FLOW-036 and 077–083 in their lifecycle/start evals; eval_fix preserves coverage and passes all own evals, forbids interface/impl edits, and audits listed IDs; maintenance starts directly in impl; regeneration deletes only projected disposable files and retains contract zones, with provenance-date drill warning and regenerate playbook. |
+| Costs, status, PR body and local ref retention | FLOW-097–132 in costs, status, pr_body and gc evals; retained measurements/thresholds, projected waiting reasons, endpoint history, artifact warnings and selective ref pruning are asserted through public inputs. |
+
+The review includes the existing FLOW-055 recovery archived in
+`0177-prioritize-unsupported-phase`: both Verify and Done reject a held review
+phase with P01 before a protected edit can produce Z01, preserving phase/claim
+and HEAD. FLOW-062 retains the `0171-boundary-cause-eval` eval_fix and
+`0175-preserve-x02-boundary-cause` recovery: public checks supplies the real
+missing/unlaunchable-hook cause, and workflow must retain it exactly with one
+X02 prefix and all structured diagnostics. The other static, stale-base,
+coverage, report, fail-first, E01, Z01 and X01 assertions remain intact.
+
+The checks proof at `refs/fireweed/drills/checks/20261107T002339.020159000`
+remains valid. Candidate product code, interfaces, specs, evals, manifests,
+hooks and configuration are unchanged from the validated CK2 source
+`db735ba26270473dc92787ab9e02c23615f0adb8`; intervening commits contain protected
+planning/evidence only. No new CLI correction fixture was necessary. Reuse the
+reviewed CK2 Verify/Done CLI proof and CK4 checks proof; validation below checks
+the selected committed candidate.
+
+### WF2 candidate and validation
+
+Selected committed source:
+`3d7d210fb7300a3cf48406247ce08db7a14e11fe`.
+A fresh local clone checked out that source detached and clean. Built a separate
+subject with `go build -trimpath`, Go 1.27.2 on darwin/arm64; build metadata names
+that exact revision and `vcs.modified=false`. The subject and pinned controller
+were separate executables. The validation checkout's controller copy matched
+the unchanged pin and its .fireweed/bin was first on PATH; all Go work used
+`GOCACHE=/tmp/fireweed-rebuild-cache`.
+
+The resolved explicit nonempty history range was
+`be35552b706aa3000ff8f11306d129ff1d701b85..3d7d210fb7300a3cf48406247ce08db7a14e11fe`
+(1,191 commits). Both candidate history commands used those exact endpoints.
+
+| Gate | Command | Exit | Seconds |
+| --- | --- | ---: | ---: |
+| Build | `go build -trimpath -o <separate-subject> .` | 0 | 1.50 |
+| Candidate check | `subject check --json` | 0 | 0.55 |
+| Candidate hook doctor | `subject doctor --no-agent --json` | 0 | 11.67 |
+| Normal Go suite | `go test ./...` | 0 | 390.82 |
+| Race Go suite | `go test -race ./...` | 0 | 394.49 |
+| Vet | `go vet ./...` | 0 | 0.54 |
+| Candidate explicit history | `subject check-commits <full-range> --json` | 0 | 1660.22 |
+| Candidate CI with hook doctor | `subject ci <full-range> --json` | 0 | 2431.74 |
+
+CI ran with hook doctor enabled; its normal behavior skips real agent probes.
+It enforced coverage and passing evals in every discovered module, plus static,
+history and boundary checks. Current enforced spec coverage was:
+
+| Module | Current enforced IDs covered |
+| --- | ---: |
+| app | 155 |
+| assets | 58 |
+| checks | 83 |
+| contracts | 19 |
+| gitstore | 10 |
+| project | 68 |
+| runner | 67 |
+| workflow | 132 |
+
+The standalone doctor detected failing_eval, missing_id, undeclared import and
+internal_eval canaries and verified recovery. Isolated setup checks selected
+both the pinned controller and the candidate subject as FIREWEED_BIN; each
+scratch .fireweed/bin/fireweed copied its selected invoker byte for byte, ran
+version 0.1.0, and survived a same-path setup invocation unchanged. The setup
+fixtures cleaned up.
+
+Candidate check, doctor, explicit history and CI returned no diagnostics.
+The successful build emitted the same sandbox Go module stat-cache write warning
+recorded during CK2; the build and clean-source metadata checks succeeded.
+Main status reported an empty queue and zero unapproved changes. Its existing
+saved B02 warnings were CHK-055 (16 cases), APP-103 (17) and APP-104 (19), each
+against limit 15. No tests or limits were changed to suppress them. The pinned
+controller's Verify returned expected P02, "worktree holds no change"; no active
+worker phase required phase verification.
+
+Before evidence authoring, main and the candidate were clean, both had no
+claims, and process inspection found no live controller run or ephemeral worker.
+Doctor left no scratch worktree or linked registration. The clean validation
+clone was removed after validation. The original worktree registrations,
+including the unrelated worktree and its HEAD, matched entry state. All entry
+proof/attempt refs and the archive tree were unchanged. The shared base remained
+the selected candidate, retaining the zero unapproved count. The configured
+bounds, audit counters, deadline, controller pin and recovery executables were
+preserved. The native checks report above remains unchanged byte for byte;
+this workflow preparation section is appended after it.
+
+WF1–WF2 preparation is complete. No product, contract, Decision, interface or eval
+correction was needed, so no new scoped change or lifecycle archive was created.
+The evidence/handoff commit follows the validated source and changes protected
+planning/evidence only. WF3 requires separate explicit owner approval for one
+native workflow invocation on exactly the candidate above, under the unchanged
+controller, attempt/retry bounds and live isolation/inspection requirements.
+The native workflow proof and WF4 remain open.

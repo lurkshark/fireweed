@@ -78,11 +78,12 @@ gc, migrate, agents-md --write
 
 ## Planned milestone — Workflow contracts and regeneration proof (WF1–WF4)
 
-**Planning selected after CK4 completion.** Workflow is next in the dependency
-order, followed by runner and app. Review workflow's contracts and identify a
-clean validated candidate before requesting approval for a native drill.
-This planning update performs neither review nor candidate validation.
-WF3 requires separate explicit owner authorization on the identified candidate.
+**WF1–WF2 preparation complete.** The appended workflow preparation in the
+[reviewed checks report](../../.fireweed/drills/checks.md) records the focused
+review and clean validation of candidate
+`3d7d210fb7300a3cf48406247ce08db7a14e11fe`. No correction was needed.
+WF3 requires separate explicit owner authorization on that exact candidate.
+Workflow is next in the proof dependency order, followed by runner and app.
 
 **Entry.** Follow SYSTEM and the pin/deadline in PROGRESS. Read AGENTS,
 DECISIONS, the relevant unchanged design clauses and projected workflow

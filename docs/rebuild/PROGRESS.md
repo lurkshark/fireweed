@@ -1,10 +1,18 @@
 # Rebuild handoff
 
-Workflow proof preparation is the next target. WF1 contract review and WF2
-clean candidate validation remain pending. Follow the
+WF1–WF2 workflow preparation is complete for candidate
+`3d7d210fb7300a3cf48406247ce08db7a14e11fe`. The focused review found no
+necessary correction. The appended workflow preparation section in the
+[reviewed checks report](../../.fireweed/drills/checks.md) records the review,
+exact history range and clean candidate validation, preserving its native
+checks result and proof.
+
+WF3 awaits explicit owner approval for one native workflow invocation on that
+exact candidate with the unchanged pinned controller and WF3 isolation and
+inspection gates. No native workflow drill ran during preparation. Follow the
 [ordered plan](ACCEPTANCE.md#planned-milestone--workflow-contracts-and-regeneration-proof-wf1wf4)
-and use the [restart prompt](GOAL.md). Stop for owner agreement before
-corrections and for explicit candidate approval before a native workflow drill.
+and use the [restart prompt](GOAL.md). Stop for owner agreement before any
+correction. Workflow proof and full product completion remain open.
 
 Preparation retains the deadline **2026-11-07 22:51:05 UTC** (14:51:05 PST).
 The completed checks budget began 2026-11-04 22:51:05 UTC. It and the earlier
@@ -18,9 +26,11 @@ archived as `0177-prioritize-unsupported-phase`. Earlier reports, recoveries and
 handoffs remain in committed history. Preserve prior proof/attempt refs and
 unrelated worktrees. Full product completion remains open.
 
-At the completed CK4 handoff, main and the candidate were clean, native scratch
-cleanup passed and no live run/shared claim remained. Recheck live state before
-execution. Existing testcase-budget warnings remain outside scoped cleanup.
+At the WF2 handoff, main and the candidate were clean before evidence authoring,
+doctor scratch cleanup passed and no live run/shared claim remained. The clean
+validation clone was removed; prior refs, counters and the unrelated worktree
+were preserved. Recheck live state before execution. Existing testcase-budget
+warnings remain outside scoped cleanup.
 
 **Controller pin** `/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed`,
 version 0.1.0, source `193634686aa6a1c4eb32e69df1c85e1d5ce48bd7`, SHA-256
