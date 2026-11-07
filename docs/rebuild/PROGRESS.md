@@ -1,97 +1,26 @@
 # Rebuild handoff
 
-**FLOW-055 recovery validated.** The owner-approved change
-`0177-prioritize-unsupported-phase` was applied and archived at `db735ba`.
-Fail-first evidence, independent audit and full implementation verification
-passed. The clean candidate passed affected CK2 validation, including Verify
-and Done through the candidate CLI and explicit-range CI with hook doctor
-enabled. The range includes the pulled README title merge. The
-[reviewed checks report](../../.fireweed/drills/checks.md) records the exact
-candidate and results. The pinned controller and bounds remain in place.
-Stop before another drill. CK4 remains open pending a passing independent
-proof, and another native invocation needs separate owner authorization.
+**CK1–CK4 complete.** The independent checks drill on validated candidate
+`db735ba` passed its second configured attempt. Checks, app, runner and
+workflow passed enforced evals and coverage. The
+[reviewed native report](../../.fireweed/drills/checks.md) records CK1,
+the exact CK2 validation range and candidate, and the live isolation and
+trace review. The passing proof is
+`refs/fireweed/drills/checks/20261107T002339.020159000`.
 
-**Stopped at CK3.** The latest owner-authorized native checks drill on
-validated source `0e2c84c638620df5a0393e95911eb7de9e00bce6` exhausted its
-configured attempts. Both workers passed live input and verifier isolation
-checks. Final checks, app and runner evals passed, and all four modules
-covered their current spec IDs. Workflow's FLOW-055 failed because Verify
-and Done returned Z01 for the unsupported phase instead of P01. The
-[reviewed report](../../.fireweed/drills/checks.md) and
-`refs/fireweed/drills/checks/20261106T205442.005371000` retain the result.
-The preceding compilation-failure report remains in commit `f37aa89`.
-CK4 remains open. A further invocation or correction requires separate
-owner authorization.
+The scoped FLOW-055 correction `0177-prioritize-unsupported-phase` is
+archived at `db735ba`. The candidate passed the affected CK2 gates,
+including direct Verify and Done CLI checks and explicit-range CI with hook
+doctor enabled. The validated range includes the pulled README title merge.
+Earlier native reports and scoped recoveries remain in committed history,
+including the preceding reviewed report at `e540462`. Prior proof and
+attempt refs are retained.
 
-The approved FLOW-062 fix
-`0175-preserve-x02-boundary-cause` is applied and archived. Fail-first,
-independent audit and full implementation verification passed. The clean
-candidate passed the affected CK2 gates, including both boundary-failure
-fixtures through the candidate CLI and explicit-range CI with hook doctor
-enabled. The [reviewed checks report](../../.fireweed/drills/checks.md)
-records the exact validation.
-
-## Prior CK3 workflow failure
-
-The previously authorized proof failed. The rehearsed
-gate checked live isolation and released the first worker. The second
-configured launch followed review of the first trace and verifier feedback
-and a fresh live isolation check. Final checks, app and runner evals passed.
-Workflow FLOW-062 failed because Verify duplicated the hook-launch detail.
-The [reviewed checks report](../../.fireweed/drills/checks.md) retains the
-native result and review. The rebuilt ref is
-`refs/fireweed/drills/checks/20261106T072400.155233000`.
-
-The owner-approved recovery is
-applied and archived in `0172-doctor-probe-assertions`,
-`0173-boundary-override-diagnostic` and `0174-boundary-hook-cause-contract`.
-The held 0172 audit recovered on its original run. The separate audits and
-required implementation verification passed. The fresh recovery candidate
-passed all CK2 gates, including explicit-range CI with hook doctor enabled.
-The [reviewed checks report](../../.fireweed/drills/checks.md) records the
-recovery and exact candidate validation.
-
-CK4 remains open. The retained proof passed the doctor canary and global
-boundary-baseline cases and retained coverage across all four modules in
-that earlier invocation.
-FLOW-062 was corrected on main and the candidate was validated. A passing
-independent proof is still required. Another native invocation needs
-separate owner authorization. Main and the validated candidate are clean,
-with no active run or shared claim. The controller pin, original deadline, audit/retry
-bounds, retained proofs and unrelated worktree remain in place.
-
-## Prior CK3 evidence
-
-The additional authorized proof exhausted its attempts and failed.
-The CHK-055 clarification and scoped workflow eval_fix remain applied and archived
-as `0170-doctor-baseline-scope` and `0171-boundary-cause-eval`. Their audits and
-required implementation verification passed. The clean recovery candidate passed
-normal/race/vet suites and actual candidate check, doctor --no-agent and explicit-
-baseline check-commits/CI with hook doctor enabled. Exact identity, range and
-results remain in the reviewed native checks report. No runtime implementation,
-interface, hook or configuration changes were made on main, and no reconstructed
-source was imported.
-
-After recovery validation, the owner separately authorized one additional native
-checks drill and CK4 review if it passed. That single invocation exhausted its
-configured attempts and failed enforced checks/app/workflow cases; runner passed.
-CK4's passing-proof/completion gate remains open. The reviewed native
-[checks report](../../.fireweed/drills/checks.md) preserves current attempts,
-cases, diagnostics, independence review and copied prior validation evidence.
-Its failed rebuilt ref is `refs/fireweed/drills/checks/20261105T051932.421753000`.
-The earlier failed ref `refs/fireweed/drills/checks/20261105T000910.693992000`
-remains unchanged; its complete report remains in committed history.
-
-**Owner checkpoint after that proof:** review missing_id detection, global boundary-baseline
-handling and doubled X02 cause propagation, together with the CHK-057 recovery
-check selection and CHK-060 diagnostic wording questions. No automatic fix or
-further drill is authorized. Owner agreement precedes scoped audited recovery;
-another real drill still needs separate explicit authorization. Preserve gates,
-obligations, counters and the exhausted attempts. Native input/verifier cleanup
-and local report/ref retention are complete; the task-owned invoking clone/gate
-were removed. No active run/shared claim remains. Main and validated candidate
-checkouts are clean. The pin, bounds, prior proof/attempt refs, unrelated worktree
-and original deadline remain unchanged.
+Main and the validated candidate are clean, with no active run or shared
+claim. Native input and verifier cleanup passed. The pin, configured bounds,
+original deadline and unrelated worktree were preserved. Stop at CK4. The
+next module in the planned drill order is workflow, pending separate owner
+selection. Full product completion remains open.
 
 [ACCEPTANCE](ACCEPTANCE.md#planned-milestone--checks-contracts-and-proof-ck1ck4)
 holds the ordered plan; [GOAL](GOAL.md) is its restart prompt.
@@ -124,24 +53,6 @@ and `.fireweed/bin/fireweed-bootstrap`. Use these only for explicit
 owner-directed recovery, with no automatic fallback or cross-controller
 claim resume. Worker PATH starts with the current tree's `.fireweed/bin`.
 Use the prescribed rebuild cache and exact agent argv in GOAL.
-
-**Recovery authorization (2026-11-04):** the owner approved clarifying CHK-055's
-baseline coverage as the throwaway canary modules used to prove hooks, and one
-scoped workflow eval_fix for FLOW-062's incidental boundary-error wording. Execute
-both through the normal audited lifecycle, preserving existing assertions,
-coverage, approval enforcement and counters. Main's passing doctor behavior and
-CHK-058/CHK-029/CON-004 remain unchanged; the failed reconstruction is not imported.
-Complete affected candidate validation from clean committed recovery source,
-including the original explicit history baseline and CI with hook doctor enabled.
-Then stop before another drill. Any further real drill needs separate explicit
-owner authorization. Do not restart the exhausted drill, reset attempts, promote
-another controller or broaden scope automatically. The original deadline remains
-unchanged.
-
-Native input/verifier worktrees and registrations were removed, with no live run
-or shared claim. The pin, configured bounds, prior refs and unrelated worktree
-remain unchanged. The original deadline still applies; full product completion
-and all remaining full-completion gates remain open.
 
 **Push authorization (2026-11-04):** the owner's separate one-time planning push
 is completed; it authorizes no future push, publication, tags or bookkeeping-ref
