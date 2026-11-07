@@ -1,0 +1,3 @@
+Rebuilt the workflow implementation under [packages/workflow/internal/lifecycle](/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-3995695177/packages/workflow/internal/lifecycle) and recorded remaining gaps in [DRILL_NOTES.md](/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-3995695177/DRILL_NOTES.md). The new code is formatted; retained inputs were not edited, and nothing was committed.
+
+I did not run builds or tests: `SYSTEM.md` explicitly reserves verification for the outside verifier. The notes identify two remaining limitations in Abandon and PRBody.

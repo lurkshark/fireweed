@@ -1,0 +1,63 @@
+COMMAND 35
+/bin/zsh -lc "rg -n 'IndexByte|262144' packages/workflow/internal/lifecycle/prbody.go"
+
+COMMAND 36
+/bin/zsh -lc "gofmt -w packages/workflow/internal/lifecycle/*.go && git status --short && rg -n 'TODO|FIXME|panic\\(' packages/workflow/internal/lifecycle || true"
+
+COMMAND 37
+/bin/zsh -lc "for f in packages/workflow/internal/lifecycle/*.go; do printf '%s\\n' \""'$f"; sed -n '"'1,/"'^)/p'"' \""'$f" | head -35; done'
+
+COMMAND 38
+/bin/zsh -lc "sed -n '160,205p' packages/workflow/internal/lifecycle/reports.go"
+
+COMMAND 39
+/bin/zsh -lc "sed -n '136,164p' packages/workflow/internal/lifecycle/reports.go"
+
+COMMAND 40
+/bin/zsh -lc "sed -n '108,156p' packages/workflow/internal/lifecycle/attempt.go"
+
+PATCH packages/workflow/internal/lifecycle/prbody.go 287cc6d40226c2e634758ff10aa4d2b007daabaac2ed1bd7542a516401654840
+--- packages/workflow/internal/lifecycle/prbody.go previous fresh version
++++ packages/workflow/internal/lifecycle/prbody.go next fresh version
+@@ -221,7 +221,9 @@
+ 			if e != nil {
+ 				continue
+ 			}
+-			if len(data) > 262144 || strings.IndexByte(string(data), 0) >= 0 {
++			numstat, _ := runGit(info.Root, "diff", "--numstat", start, end, "--", p)
++			binary := strings.HasPrefix(numstat, "-\t-\t")
++			if len(data) > 262144 || binary {
+ 				d := project.Diagnostic{Code: "B04", Message: fmt.Sprintf("%s %d bytes", p, len(data)), Warning: true}
+ 				diagnostics = append(diagnostics, d)
+ 				fmt.Fprintf(&b, "\nB04: %s\n", d.Message)
+
+
+PATCH DRILL_NOTES.md 88a31c1ec53d2c022afcb1f907f398e539d029ce2a22de6a424956beec66d53d
+--- DRILL_NOTES.md previous fresh version
++++ DRILL_NOTES.md next fresh version
+@@ -0,0 +1,10 @@
++## Contradicted Decisions
++
++None identified in the retained inputs.
++
++## Gaps
++
++- FLOW-073, workflow: `StartFromAttempt` checks preceding queued entries, but its resume eligibility logic does not fully recompute all projected waiting rules for the blocked change.
++- FLOW-089, workflow: `Abandon` uses sequential Git reverts. A conflicting intervening commit can leave an in-progress revert that needs manual resolution.
++- FLOW-117, workflow: `PRBody` gathers module files from the selected change's phase history, but concurrent changes to the same module can make attribution ambiguous.
++- FLOW-052, workflow: verification retains structured reports and process output; it does not retain the original JUnit XML bytes returned by hook execution.
+
+
+PATCH packages/workflow/internal/lifecycle/reports.go 0bd1fc855455c7164d3fb7aa16241142c67b54b7afb61766001e84467d1e2f2d
+--- packages/workflow/internal/lifecycle/reports.go previous fresh version
++++ packages/workflow/internal/lifecycle/reports.go next fresh version
+@@ -156,7 +156,7 @@
+ 		}
+ 		n := 0
+ 		for _, c := range archives {
+-			if c.Module == m.Name && frontString(c.Document, "phase") == "applied" && implDate(c).After(reportDate) {
++			if c.Module == m.Name && frontString(c.Document, "phase") == "applied" && (reportDate.IsZero() || implDate(c).After(reportDate)) {
+ 				n++
+ 			}
+ 		}
+

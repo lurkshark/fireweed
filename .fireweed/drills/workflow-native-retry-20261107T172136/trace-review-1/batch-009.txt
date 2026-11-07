@@ -1,0 +1,142 @@
+COMMAND 41
+/bin/zsh -lc "rg -n 'original' packages/workflow/internal/lifecycle/attempt.go"
+
+COMMAND 42
+/bin/zsh -lc "sed -n '69,91p' packages/workflow/internal/lifecycle/prbody.go"
+
+COMMAND 43
+/bin/zsh -lc "sed -n '60,72p' packages/workflow/internal/lifecycle/prbody.go"
+
+COMMAND 44
+/bin/zsh -lc "sed -n '125,148p' packages/workflow/internal/lifecycle/attempt.go"
+
+COMMAND 45
+/bin/zsh -lc 'gofmt -w packages/workflow/internal/lifecycle/*.go && git status --short && wc -l packages/workflow/internal/lifecycle/*.go DRILL_NOTES.md'
+
+PATCH packages/workflow/internal/lifecycle/attempt.go f3dee1609ce4b3a287995c636ca4e858a85b370d4599f3100e3777f999caeba6
+--- packages/workflow/internal/lifecycle/attempt.go previous fresh version
++++ packages/workflow/internal/lifecycle/attempt.go next fresh version
+@@ -119,33 +119,32 @@
+ 	} else if held {
+ 		return model.State{}, coded("P02", "claim already held: update-ref %s", claimRef(c.Slug))
+ 	}
+-	q, e := queue(info.Root)
+-	if e != nil {
+-		return model.State{}, e
+-	}
+-	for _, prior := range q {
+-		if prior.Path == c.Path {
+-			break
+-		}
+-		if frontString(prior.Document, "blocked") == "" {
+-			return model.State{}, coded("P01", "change is not eligible queue head")
+-		}
+-	}
+ 	c, e = parseChange(info.Root, c)
+ 	if e != nil {
+ 		return model.State{}, e
+ 	}
++	original := c.Document
+ 	delete(c.Document.Frontmatter, "blocked")
+ 	if e = renderChange(info.Root, c); e != nil {
+ 		return model.State{}, e
+ 	}
++	eligible, e := Eligible(info.Root)
++	if e != nil || len(eligible) == 0 || eligible[0].Path != c.Path {
++		_ = renderOriginal(info.Root, c.Path, original)
++		if e != nil {
++			return model.State{}, e
++		}
++		return model.State{}, coded("P01", "change is not eligible queue head")
++	}
+ 	snapshot, e := project.Project(info.Root, c.Slug)
+ 	if e != nil {
++		_ = renderOriginal(info.Root, c.Path, original)
+ 		return model.State{}, e
+ 	}
+ 	cl := claim{Owner: info.Root, Slug: c.Slug, Path: c.Path, Run: frontString(c.Document, "run"), Phase: frontString(c.Document, "phase"), Base: info.Head, Snapshot: snapshot, Approved: c.Document}
+ 	oid, e := saveClaim(info.Root, cl, "")
+ 	if e != nil {
++		_ = renderOriginal(info.Root, c.Path, original)
+ 		return model.State{}, coded("P02", "claim already held: update-ref %v", e)
+ 	}
+ 	s := state(info.Root, c, cl, oid)
+
+
+PATCH packages/workflow/internal/lifecycle/attempt.go 2fbd9ae4cd69560d923efa45a522b44089d52122e39ccf6e116bfc2ccb6bbdc1
+--- packages/workflow/internal/lifecycle/attempt.go previous fresh version
++++ packages/workflow/internal/lifecycle/attempt.go next fresh version
+@@ -123,7 +123,8 @@
+ 	if e != nil {
+ 		return model.State{}, e
+ 	}
+-	original := c.Document
++	originalText, _ := contracts.RenderDocument(c.Document)
++	original, _ := contracts.ParseDocument(originalText)
+ 	delete(c.Document.Frontmatter, "blocked")
+ 	if e = renderChange(info.Root, c); e != nil {
+ 		return model.State{}, e
+
+
+PATCH DRILL_NOTES.md 7227b95ce944b47532d5ce2874b06ca9a708b2a02107b05323da06c032fff8eb
+--- DRILL_NOTES.md previous fresh version
++++ DRILL_NOTES.md next fresh version
+@@ -4,7 +4,6 @@
+ 
+ ## Gaps
+ 
+-- FLOW-073, workflow: `StartFromAttempt` checks preceding queued entries, but its resume eligibility logic does not fully recompute all projected waiting rules for the blocked change.
+ - FLOW-089, workflow: `Abandon` uses sequential Git reverts. A conflicting intervening commit can leave an in-progress revert that needs manual resolution.
+ - FLOW-117, workflow: `PRBody` gathers module files from the selected change's phase history, but concurrent changes to the same module can make attribution ambiguous.
+ - FLOW-052, workflow: verification retains structured reports and process output; it does not retain the original JUnit XML bytes returned by hook execution.
+
+
+PATCH packages/workflow/internal/lifecycle/prbody.go 208b26e698ab472d9e67939049100338a8a2190fb352a6a5ef4a8fea7b275068
+--- packages/workflow/internal/lifecycle/prbody.go previous fresh version
++++ packages/workflow/internal/lifecycle/prbody.go next fresh version
+@@ -64,7 +64,7 @@
+ 	if e != nil {
+ 		return model.PRBodyReport{}, endpointConfigError{e}
+ 	}
+-	changed, _ := runGit(info.Root, "diff", "--name-only", start, end)
++	changed, _ := runGit(info.Root, "log", "--format=", "--name-only", start+".."+end, "--", "changes")
+ 	touched := map[string]bool{}
+ 	for _, p := range strings.Fields(changed) {
+ 		if strings.HasPrefix(p, "changes/") && strings.HasSuffix(p, ".md") {
+
+
+PATCH packages/workflow/internal/lifecycle/start.go 8f0c0b1a10aed437e97b42a2791ea3c28222ce60d9ad7297615da87fa1d4900b
+--- packages/workflow/internal/lifecycle/start.go previous fresh version
++++ packages/workflow/internal/lifecycle/start.go next fresh version
+@@ -233,6 +233,7 @@
+ 		}
+ 		return model.State{}, e
+ 	}
++	projected.Root = info.Root
+ 	c, e = parseChange(info.Root, c)
+ 	if e != nil {
+ 		return model.State{}, e
+
+
+PATCH packages/workflow/internal/lifecycle/attempt.go 04fe8e6b1304cadc16b921078da6e009e37d483f01a3ffc6f90d3e6d8978d5fd
+--- packages/workflow/internal/lifecycle/attempt.go previous fresh version
++++ packages/workflow/internal/lifecycle/attempt.go next fresh version
+@@ -142,6 +142,7 @@
+ 		_ = renderOriginal(info.Root, c.Path, original)
+ 		return model.State{}, e
+ 	}
++	snapshot.Root = info.Root
+ 	cl := claim{Owner: info.Root, Slug: c.Slug, Path: c.Path, Run: frontString(c.Document, "run"), Phase: frontString(c.Document, "phase"), Base: info.Head, Snapshot: snapshot, Approved: c.Document}
+ 	oid, e := saveClaim(info.Root, cl, "")
+ 	if e != nil {
+
+
+PATCH DRILL_NOTES.md cbf1629fed1271eab02421ecc03d4b72b4492f75372192da15aeb6b74abf7065
+--- DRILL_NOTES.md previous fresh version
++++ DRILL_NOTES.md next fresh version
+@@ -6,4 +6,3 @@
+ 
+ - FLOW-089, workflow: `Abandon` uses sequential Git reverts. A conflicting intervening commit can leave an in-progress revert that needs manual resolution.
+ - FLOW-117, workflow: `PRBody` gathers module files from the selected change's phase history, but concurrent changes to the same module can make attribution ambiguous.
+-- FLOW-052, workflow: verification retains structured reports and process output; it does not retain the original JUnit XML bytes returned by hook execution.
+

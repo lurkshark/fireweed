@@ -1,0 +1,28 @@
+COMMAND 25
+/bin/zsh -lc 'gofmt -w packages/workflow/internal/lifecycle/*.go && test -z "$(gofmt -l packages/workflow/internal/lifecycle/*.go)" && git status --short'
+
+PATCH packages/workflow/internal/lifecycle/history.go b27076b433baa3d86ec8e67f3d7af78394365de69d9658dca185c4cabf550daf
+--- packages/workflow/internal/lifecycle/history.go previous fresh version
++++ packages/workflow/internal/lifecycle/history.go next fresh version
+@@ -103,6 +103,8 @@
+ 	}
+ 	for _, commit := range commits {
+ 		if _, e = runGit(info.Root, "revert", "--no-commit", commit); e != nil {
++			_, _ = runGit(info.Root, "revert", "--abort")
++			_, _ = runGit(info.Root, "reset", "--hard", info.Head)
+ 			return "", e
+ 		}
+ 	}
+
+
+PATCH DRILL_NOTES.md ed90df24dd025630cb17fc4e5ebdcfbbfd6c6666a9bf4ca4a6e625d27212f93b
+--- DRILL_NOTES.md previous fresh version
++++ DRILL_NOTES.md next fresh version
+@@ -4,5 +4,5 @@
+ 
+ ## Gaps
+ 
+-- FLOW-089, workflow: `Abandon` uses sequential Git reverts. A conflicting intervening commit can leave an in-progress revert that needs manual resolution.
++- FLOW-089, workflow: `Abandon` uses sequential Git reverts. A conflicting intervening edit prevents the requested undo; the revert is aborted and the checkout is restored.
+ - FLOW-117, workflow: `PRBody` gathers module files from the selected change's phase history, but concurrent changes to the same module can make attribution ambiguous.
+

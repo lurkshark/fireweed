@@ -1,55 +1,47 @@
-# Prepared workflow retry awaiting approval
+# Failed workflow retry checkpoint
 
 [ACCEPTANCE](ACCEPTANCE.md#planned-milestone--workflow-contracts-and-regeneration-proof-wf1wf4)
-is the ordered plan. [PROGRESS](PROGRESS.md) records status, deadline and the
-controller pin. [SYSTEM](../../SYSTEM.md) defines execution rules and the exact
-agent command. [DECISIONS](DECISIONS.md) retains behavioral clarifications.
+is the ordered plan. [PROGRESS](PROGRESS.md) records status, the original deadline
+and controller pin; [SYSTEM](../../SYSTEM.md) defines execution rules, and
+[DECISIONS](DECISIONS.md) retains behavioral clarifications.
 
-The owner-approved Current absence-contract and FLOW-002 audit-zone assertion
-follow-ups are applied and independently audited as archives 0178 and 0179.
-Updated WF2 validation is complete for candidate
-`79cf33a7690082f28c06bf41a72719d282bc00fe`. Its exact preparation is appended to
-the [checks report](../../.fireweed/drills/checks.md) and
-[workflow report](../../.fireweed/drills/workflow.md), preserving earlier native
-results and proof refs. No new native workflow drill ran during preparation.
+The separately approved safer retry ran exactly one native workflow invocation on
+candidate `79cf33a7690082f28c06bf41a72719d282bc00fe`, with its two configured workers
+and the protected [external wrapper/inspector](workflow-drill/README.md). Both raw
+worker streams were durably preserved and forwarded unchanged. Full observed
+commands/scripts and incremental semantic patches were reviewed. No local build,
+product test, module setup, outside implementation/history read or retained-input
+edit was observed. The actual live isolation gates passed before both releases;
+only native verification feedback was added to the second prompt.
 
-The owner subsequently approved one native invocation on that exact candidate.
-The first native verification failed in workflow, runner and app. The second
-configured worker was released after full first-trace/native-feedback review and
-repeated live isolation checks. Its notes then disclosed a prohibited temporary
-`go.mod`. The outside inspector stopped the invocation at the independence gate.
-The controller was interrupted before publishing a new native report or proof ref;
-the appended workflow evidence records all available observations and review limits.
+The invocation **failed** and exited with status 1. Workflow, runner and app each
+reported PackageFailure/C11 and missing-coverage C10 diagnostics. Native own and
+dependent case sections are empty. Source review also found `project.Project`
+without a project import in the fresh `attempt.go`; this is a reconstruction
+compile defect, not a retained contract/eval finding. No additional build or
+correction was run. The [current native report and review](../../.fireweed/drills/workflow.md)
+and failed reconstruction ref
+`refs/fireweed/drills/workflow/20261107T172136.182088000` are retained.
+Normal failed-report publication was observed; native reporting after rejection
+or emergency interruption was not exercised and remains unestablished.
 
-The owner then authorized only safer external wrapper/inspector preparation.
-That preparation is complete, with restart instructions in the protected
-[tooling handoff](workflow-drill/README.md) and committed fake-only results and
-raw logs in the [appended workflow evidence](../../.fireweed/drills/workflow.md#safer-workflow-retry-preparation).
-The wrapper durably spools stdout/stderr outside reconstruction before forwarding
-identical bytes. A rejection latches across attempts, stops and drains the worker,
-and allows a bounded native reporting opportunity before whole-run escalation.
-The original deadline independently triggers bounded emergency cleanup. Workers
-are explicitly instructed to avoid local builds/tests/module setup, format fresh
-code and return it to the separate verifier. Command/model/effort and original
-isolation gates remain intact. No product/controller change was needed.
+Stop here for owner review. This approval is consumed; it permits no further
+native invocation or correction. WF4 and full product completion remain open.
+The worker's Abandon/PRBody notes authorize no retained-input fix. Any proposed
+change to the pinned controller, product, spec or evals requires a concrete scope
+and separate owner agreement before authoring. A further drill needs its own
+explicit approval; do not silently restart this invocation or add an attempt.
 
-Stop here for separate owner approval of a native retry on exactly candidate
-`79cf33a7690082f28c06bf41a72719d282bc00fe`. This preparation ran no native drill;
-neither the consumed invocation approval nor the fake rehearsals authorize one.
-Preserve the pin, original deadline **2026-11-07 22:51:05 UTC**, bounds/counters,
-prior reports/proof/attempt refs and unrelated worktree. After approval, stage a
-fresh isolated caller using the handoff, inspect its setup-only child, run the
-staged inspector alongside the single native invocation, and perform every actual
-input/trace/native-feedback review before each configured release. Use the
-worker-first rejection path and monitor that invocation to its terminal state.
-Record only native reporting actually observed; fake reports establish none of
-its fields, cases or proof publication. Any required pin/product change is a
-concrete owner proposal before authoring. Further invocations and corrections
-need separate agreement. No reconstructed code was imported, controller promoted
-or push performed. The queue is empty and no live run/shared claim remains.
+WF1/WF2 validation and approved follow-ups 0178/0179 remain valid evidence for the
+unchanged candidate and range
+`be35552b706aa3000ff8f11306d129ff1d701b85..79cf33a7690082f28c06bf41a72719d282bc00fe`.
+The entire [prior workflow report](../../.fireweed/drills/workflow-before-retry-a79f34c.md)
+is preserved byte-for-byte, including stopped-drill review limits and the safer
+preparation/fake rehearsals. Preserve it, the valid checks proof, every prior
+proof/attempt ref, archive counters, configured bounds, unrelated worktree and
+controller pin. The original deadline is still **2026-11-07 22:51:05 UTC**.
 
-The FLOW-023 gap alleged in the stopped worker's notes is a review-tag
-misinterpretation, not an established eval defect: the cited Added item is
-`[review]`, which the unchanged design exempts from eval enforcement. The Abandon
-conflict observation authorizes no correction. WF4 and full product completion
-remain open; the earlier failed workflow result and valid checks proof are preserved.
+The native input/verifier and owned caller clone are removed, all recorded owned
+processes exited, the queue is empty and no live run/shared claim remains. No
+reconstructed source was applied, controller promoted or push performed. Retain
+this clean protected-evidence handoff and await the owner's next decision.

@@ -1,0 +1,29 @@
+COMMAND 1
+/bin/zsh -lc "pwd && rg --files -g 'AGENTS.md' -g 'go.mod' -g 'packages/workflow/**' -g 'packages/project/**' -g 'packages/contracts/**' -g 'packages/gitstore/**' -g 'packages/assets/**' -g 'packages/checks/**' -g 'DRILL_NOTES.md' | sort"
+
+COMMAND 2
+/bin/zsh -lc 'cat packages/contracts/api.go packages/contracts/model/model.go packages/gitstore/api.go packages/gitstore/model/model.go'
+
+COMMAND 3
+/bin/zsh -lc 'cat packages/workflow/api.go packages/workflow/model/model.go'
+
+COMMAND 4
+/bin/zsh -lc "rg --files -g 'AGENTS.md' -g 'go.mod' -g 'go.work' -g 'Makefile' -g 'DRILL_NOTES.md' | sort && git status --short && wc -l packages/workflow/internal/lifecycle/*.go packages/workflow/api.go packages/workflow/model/model.go"
+
+COMMAND 5
+/bin/zsh -lc 'cat packages/assets/api.go packages/assets/model/model.go packages/project/api.go packages/project/model/model.go packages/checks/api.go packages/checks/model/model.go'
+
+COMMAND 6
+/bin/zsh -lc 'cat packages/workflow/internal/lifecycle/history.go packages/workflow/internal/lifecycle/reports.go packages/workflow/internal/lifecycle/prbody.go packages/workflow/internal/lifecycle/gc.go'
+
+COMMAND 7
+/bin/zsh -lc 'cat packages/workflow/internal/lifecycle/start.go packages/workflow/internal/lifecycle/verify.go'
+
+COMMAND 8
+/bin/zsh -lc 'cat packages/workflow/internal/lifecycle/done.go packages/workflow/internal/lifecycle/attempt.go'
+
+COMMAND 9
+/bin/zsh -lc 'ls -la && cat DRILL_NOTES.md && cat packages/workflow/internal/lifecycle/common.go'
+
+COMMAND 10
+/bin/zsh -lc "find . -maxdepth 3 -type f | sort && sed -n '1,240p' packages/workflow/internal/lifecycle/verify.go && sed -n '241,400p' packages/workflow/internal/lifecycle/verify.go"

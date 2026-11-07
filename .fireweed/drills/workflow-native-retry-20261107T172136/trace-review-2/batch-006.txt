@@ -1,0 +1,103 @@
+COMMAND 22
+/bin/zsh -lc "gofmt -w packages/workflow/internal/lifecycle/*.go && git status --short && sed -n '1,105p' packages/workflow/internal/lifecycle/attempt.go && sed -n '78,130p' packages/workflow/internal/lifecycle/prbody.go"
+
+COMMAND 23
+/bin/zsh -lc "sed -n '120,170p' packages/workflow/evals/status_test.go && sed -n '168,205p' packages/workflow/evals/regenerate_start_test.go && sed -n '1,78p' packages/workflow/evals/gc_test.go && cat DRILL_NOTES.md"
+
+COMMAND 24
+/bin/zsh -lc 'gofmt -w packages/workflow/internal/lifecycle/*.go && test -z "$(gofmt -l packages/workflow/internal/lifecycle/*.go)" && git status --short && find packages/workflow/internal -type f | sort && cat DRILL_NOTES.md'
+
+PATCH packages/workflow/internal/lifecycle/attempt.go 838a27ef46150337224c91711a11a8aa15ec537e92b6f0a8a980a0b17134d592
+--- packages/workflow/internal/lifecycle/attempt.go previous fresh version
++++ packages/workflow/internal/lifecycle/attempt.go next fresh version
+@@ -190,6 +190,26 @@
+ 		return model.State{}, e
+ 	}
+ 	snapshot.Root = info.Root
++	attemptBase, e := runGit(info.Root, "rev-parse", attempt+"^")
++	if e != nil {
++		_ = renderOriginal(info.Root, c.Path, original)
++		return model.State{}, e
++	}
++	paths := changedPaths(info.Root, attemptBase, attempt)
++	restored := map[string]restoredFile{}
++	for _, path := range paths {
++		if path == c.Path {
++			continue
++		}
++		file, needed, mergeErr := restoreAttemptFile(info.Root, attemptBase, attempt, info.Head, path)
++		if mergeErr != nil {
++			_ = renderOriginal(info.Root, c.Path, original)
++			return model.State{}, mergeErr
++		}
++		if needed {
++			restored[path] = file
++		}
++	}
+ 	cl := claim{Owner: info.Root, Slug: c.Slug, Path: c.Path, Run: frontString(c.Document, "run"), Phase: frontString(c.Document, "phase"), Base: info.Head, Snapshot: snapshot, Approved: c.Document}
+ 	oid, e := saveClaim(info.Root, cl, "")
+ 	if e != nil {
+@@ -197,8 +217,6 @@
+ 		return model.State{}, coded("P02", "claim already held: update-ref %v", e)
+ 	}
+ 	s := state(info.Root, c, cl, oid)
+-	attemptBase, _ := runGit(info.Root, "rev-parse", attempt+"^")
+-	paths := changedPaths(info.Root, attemptBase, attempt)
+ 	for _, p := range paths {
+ 		if p == c.Path {
+ 			saved, e := gitstore.ReadAt(info.Root, attempt, p)
+@@ -222,12 +240,15 @@
+ 			_ = renderChange(info.Root, s.Change)
+ 			continue
+ 		}
+-		data, e := gitstore.ReadAt(info.Root, attempt, p)
+-		if e != nil {
++		file, ok := restored[p]
++		if !ok {
++			continue
++		}
++		if file.remove {
+ 			_ = os.Remove(filepath.Join(info.Root, p))
+ 			continue
+ 		}
+-		_ = writeText(info.Root, p, string(data))
++		_ = writeText(info.Root, p, string(file.data))
+ 	}
+ 	return Current(info.Root, c.Slug)
+ }
+
+
+PATCH packages/workflow/internal/lifecycle/start.go ebb7363310ad5bd4c2d3598506c62c3f3cb8178cf14e1d922fdb0b3ca7bd28cd
+--- packages/workflow/internal/lifecycle/start.go previous fresh version
++++ packages/workflow/internal/lifecycle/start.go next fresh version
+@@ -135,9 +135,12 @@
+ 		used[n] = true
+ 		replacements[it.ID] = fmt.Sprintf("%s-%03d", prefix, n)
+ 	}
+-	for old, newID := range replacements {
+-		body = strings.ReplaceAll(body, old, newID)
+-	}
++	body = localID.ReplaceAllStringFunc(body, func(handle string) string {
++		if id, ok := replacements[handle]; ok {
++			return id
++		}
++		return handle
++	})
+ 	c.Document.Body = body
+ 	return nil
+ }
+
+
+PATCH packages/workflow/internal/lifecycle/prbody.go 1ff6098fa2833b6aec2d5154f6e2548841f95dbe00126975f1c867cb3a27bcfd
+--- packages/workflow/internal/lifecycle/prbody.go previous fresh version
++++ packages/workflow/internal/lifecycle/prbody.go next fresh version
+@@ -56,7 +56,7 @@
+ 				return "interface"
+ 			case "evals":
+ 				return "eval"
+-			case "preserve":
++			case "preserve", "preserved":
+ 				return "preserved"
+ 			case "disposable":
+ 				if added {
+

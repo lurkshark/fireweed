@@ -1,0 +1,10 @@
+{
+  "native_exit": 1,
+  "rejected": false,
+  "emergency": false,
+  "input_removed_by_native": true,
+  "verifier_removed_by_native": true,
+  "isolated_caller_removed_after_ref_and_evidence_retention": true,
+  "inspector_controller_and_workers_exited": true,
+  "unrelated_worktree_preserved": true
+}

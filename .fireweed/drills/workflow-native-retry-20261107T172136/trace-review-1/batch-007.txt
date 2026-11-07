@@ -1,0 +1,123 @@
+COMMAND 32
+/bin/zsh -lc "sed -n '277,330p' packages/workflow/internal/lifecycle/start.go"
+
+COMMAND 33
+/bin/zsh -lc "rg -n 'files, _|files,_|File:' packages/workflow/internal/lifecycle/prbody.go"
+
+COMMAND 34
+/bin/zsh -lc "sed -n '236,277p' packages/workflow/internal/lifecycle/start.go"
+
+PATCH packages/workflow/internal/lifecycle/start.go e2082958c0a345764bed8bcc1f0b0ee4c28ab5e3a10e65193ca8444b8c978fee
+--- packages/workflow/internal/lifecycle/start.go previous fresh version
++++ packages/workflow/internal/lifecycle/start.go next fresh version
+@@ -9,6 +9,7 @@
+ 	"regexp"
+ 	"strconv"
+ 	"strings"
++	"time"
+ 
+ 	"github.com/lurkshark/fireweed/packages/contracts"
+ 	"github.com/lurkshark/fireweed/packages/gitstore"
+@@ -321,6 +322,22 @@
+ 	return nil
+ }
+ func newerPassingDrill(root, module string) bool {
+-	refs, _ := gitRefList(root, "refs/fireweed/drills/"+module)
+-	return len(refs) > 0
+-}
++	latest := time.Time{}
++	for _, c := range archiveChanges(root) {
++		if c.Module == module && frontString(c.Document, "phase") == "applied" {
++			if t := implDate(c); t.After(latest) {
++				latest = t
++			}
++		}
++	}
++	b, e := os.ReadFile(filepath.Join(root, ".fireweed/drills", module+".md"))
++	if e != nil {
++		return false
++	}
++	d, e := contracts.ParseDocument(string(b))
++	if e != nil || frontString(d, "result") != "pass" {
++		return false
++	}
++	t, e := time.Parse(time.RFC3339Nano, frontString(d, "date"))
++	return e == nil && t.After(latest)
++}
+
+
+PATCH packages/workflow/internal/lifecycle/prbody.go e4ef5dccc32f7cb76fe6b2a7e2c09b0284d02ff22c0d17213254fb6e72223ebf
+--- packages/workflow/internal/lifecycle/prbody.go previous fresh version
++++ packages/workflow/internal/lifecycle/prbody.go next fresh version
+@@ -121,7 +121,28 @@
+ 				break
+ 			}
+ 		}
+-		files, _ := runGit(info.Root, "diff", "--name-only", start, end)
++		contextBase := start
++		log, _ := runGit(info.Root, "rev-list", "--reverse", end)
++		for _, oid := range strings.Fields(log) {
++			parent, _ := runGit(info.Root, "rev-parse", oid+"^")
++			if parent == "" {
++				continue
++			}
++			before, after := "", ""
++			for _, path := range []string{"changes/" + filepath.Base(c.Path), "changes/archive/" + filepath.Base(c.Path)} {
++				if p := phaseAt(info.Root, parent, path); p != "" {
++					before = p
++				}
++				if p := phaseAt(info.Root, oid, path); p != "" {
++					after = p
++				}
++			}
++			if after != "" && after != before {
++				contextBase = parent
++				break
++			}
++		}
++		files, _ := runGit(info.Root, "diff", "--name-only", contextBase, end)
+ 		for _, p := range strings.Fields(files) {
+ 			if strings.HasPrefix(p, "packages/"+c.Module+"/") || strings.HasSuffix(p, ".lock") {
+ 				fmt.Fprintf(&b, "\nFile: %s\n", p)
+
+
+PATCH packages/workflow/internal/lifecycle/start.go 0c7bfc95dd4243ab893313f56fef740bc578df730c0287a87cfc357a726b713c
+--- packages/workflow/internal/lifecycle/start.go previous fresh version
++++ packages/workflow/internal/lifecycle/start.go next fresh version
+@@ -251,8 +251,9 @@
+ 	}
+ 	s := state(info.Root, c, cl, oid)
+ 	if baseErr == nil && base != "" {
++		local := "refs/heads/" + frontConfig(snap, "base", "main")
+ 		if _, e := gitstore.ReadAt(info.Root, base, c.Path); e != nil {
+-			if _, e2 := gitstore.ReadAt(info.Root, "main", c.Path); e2 != nil {
++			if _, e2 := gitstore.ReadAt(info.Root, local, c.Path); e2 != nil {
+ 				s.Diagnostics = append(s.Diagnostics, project.Diagnostic{Code: "P04", Message: "change absent from local and shared base", Warning: true})
+ 			}
+ 		}
+
+
+PATCH packages/workflow/internal/lifecycle/start.go 3f4079414d7824c02d64080d7ce19d027c537bffc77b20ee2ad72cc527ce06cd
+--- packages/workflow/internal/lifecycle/start.go previous fresh version
++++ packages/workflow/internal/lifecycle/start.go next fresh version
+@@ -282,14 +282,12 @@
+ 	if e != nil {
+ 		return 0, "", e
+ 	}
+-	paths, e := filepath.Glob(filepath.Join(root, "changes/archive/*.md"))
+-	if e != nil {
+-		return 0, base, e
+-	}
+ 	n := 0
+-	for _, p := range paths {
+-		rel, _ := filepath.Rel(root, p)
+-		if _, e := gitstore.ReadAt(root, base, filepath.ToSlash(rel)); e != nil {
++	for _, c := range archiveChanges(root) {
++		if frontString(c.Document, "phase") != "applied" {
++			continue
++		}
++		if _, e := gitstore.ReadAt(root, base, c.Path); e != nil {
+ 			n++
+ 		}
+ 	}
+

@@ -1,0 +1,172 @@
+COMMAND 19
+/bin/zsh -lc "sed -n '120,275p' packages/workflow/evals/block_test.go && sed -n '185,280p' packages/workflow/evals/pr_body_test.go && sed -n '975,1060p' packages/workflow/evals/lifecycle_test.go"
+
+COMMAND 20
+/bin/zsh -lc "sed -n '265,335p' packages/workflow/evals/lifecycle_test.go && sed -n '160,226p' packages/workflow/evals/status_test.go && sed -n '385,445p' packages/workflow/evals/lifecycle_test.go && sed -n '1,125p' packages/workflow/evals/eligible_test.go"
+
+PATCH packages/workflow/internal/lifecycle/common.go 753b799b7eb1fc7fc3001d9ab695147d41087623c26d81530f39c7011ed0ff5b
+--- packages/workflow/internal/lifecycle/common.go previous fresh version
++++ packages/workflow/internal/lifecycle/common.go next fresh version
+@@ -268,18 +268,23 @@
+ 			return coded("P03", "unapproved author field %s", k)
+ 		}
+ 	}
+-	for _, name := range []string{"Motivation", "Interface", "Added", "Modified", "Removed", "Decisions", "Removed decisions", "Set"} {
++	for _, name := range []string{"Motivation", "Interface", "Added", "Modified", "Removed", "Removed decisions", "Set"} {
+ 		if section(a, name) != section(b, name) {
+-			return coded("P03", "unapproved author section %s", name)
+-		}
+-	}
+-	for _, key := range []string{"phase", "audit_rounds", "blocked", "run"} {
++			return coded("P03", "approved author metadata changed: %s", name)
++		}
++	}
++	for _, key := range []string{"phase", "run"} {
+ 		if frontString(a, key) != frontString(b, key) {
+-			return coded("P03", "unapproved runtime state %s", key)
++			return coded("P03", "approved run or phase changed: %s", key)
++		}
++	}
++	for _, key := range []string{"audit_rounds", "blocked"} {
++		if frontString(a, key) != frontString(b, key) {
++			return coded("P03", "approved audit state changed: %s", key)
+ 		}
+ 	}
+ 	if phase != "audit" && section(a, "Audit") != section(b, "Audit") {
+-		return coded("P03", "unapproved audit state")
++		return coded("P03", "approved audit state changed")
+ 	}
+ 	if section(a, "Provenance") != section(b, "Provenance") {
+ 		return coded("P03", "unapproved provenance")
+
+
+PATCH packages/workflow/internal/lifecycle/common.go d7062e6b1e6ef254bdfc8da0e2311a4e8299adb63fa816e138c31b17bac06f5e
+--- packages/workflow/internal/lifecycle/common.go previous fresh version
++++ packages/workflow/internal/lifecycle/common.go next fresh version
+@@ -260,12 +260,12 @@
+ 			continue
+ 		}
+ 		if fmt.Sprint(v) != fmt.Sprint(b.Frontmatter[k]) {
+-			return coded("P03", "unapproved author field %s", k)
++			return coded("P03", "approved author metadata changed: %s", k)
+ 		}
+ 	}
+ 	for k := range b.Frontmatter {
+ 		if _, ok := a.Frontmatter[k]; !ok && k != "phase" && k != "audit_rounds" && k != "blocked" && k != "run" {
+-			return coded("P03", "unapproved author field %s", k)
++			return coded("P03", "approved author metadata changed: %s", k)
+ 		}
+ 	}
+ 	for _, name := range []string{"Motivation", "Interface", "Added", "Modified", "Removed", "Removed decisions", "Set"} {
+
+
+PATCH packages/workflow/internal/lifecycle/done.go 63fd508c57df8720cf13ec997e82e57affc77add10d2eb2bc71c2fdfa372a493
+--- packages/workflow/internal/lifecycle/done.go previous fresh version
++++ packages/workflow/internal/lifecycle/done.go next fresh version
+@@ -41,7 +41,7 @@
+ 		if !strings.Contains(specs[x[2]], x[3]) {
+ 			continue
+ 		}
+-		if frontInt(c.Document, "audit_rounds") > 0 && len(prior) > 0 && !prior[x[2]] {
++		if frontInt(c.Document, "audit_rounds") > 0 && !prior[x[2]] {
+ 			continue
+ 		}
+ 		kept = append(kept, strings.TrimSpace(x[0]))
+@@ -54,7 +54,7 @@
+ 	}
+ 	match := checkedRE.FindStringSubmatch(body)
+ 	if len(match) < 2 {
+-		return nil, coded("P09", "No findings requires checked IDs")
++		return nil, coded("P09", "audit requires Checked IDs and No findings")
+ 	}
+ 	checked := map[string]bool{}
+ 	for _, part := range strings.FieldsFunc(match[1], func(r rune) bool { return r == ',' || r == ' ' || r == '\t' }) {
+@@ -62,7 +62,7 @@
+ 	}
+ 	for _, id := range targetIDs(c) {
+ 		if !checked[id] {
+-			return nil, coded("P09", "No findings missing checked ID %s", id)
++			return nil, coded("P09", "audit did not check %s", id)
+ 		}
+ 	}
+ 	return nil, nil
+@@ -72,14 +72,12 @@
+ 		c.Document.Body = contracts.ReplaceSection(c.Document.Body, "Audit", strings.Join(findings, "\n")+"\n")
+ 	} else {
+ 		body := section(c.Document, "Audit")
+-		lines := []string{}
+-		for _, line := range strings.Split(body, "\n") {
+-			if strings.HasPrefix(strings.TrimSpace(line), "-") {
+-				continue
+-			}
+-			lines = append(lines, line)
+-		}
+-		c.Document.Body = contracts.ReplaceSection(c.Document.Body, "Audit", strings.Join(lines, "\n")+"\n")
++		match := checkedRE.FindStringSubmatch(body)
++		checked := ""
++		if len(match) > 1 {
++			checked = strings.TrimSpace(match[1])
++		}
++		c.Document.Body = contracts.ReplaceSection(c.Document.Body, "Audit", "No findings; checked "+checked+"\n")
+ 	}
+ }
+ func provenance(c *project.Change, req model.Request, phase string, reports map[string]checks.Report) {
+
+
+PATCH packages/workflow/internal/lifecycle/attempt.go e74b3ab6c5af8d0a7bbbb75006ae60c0a244f54853a6a1444e79acd81173a05b
+--- packages/workflow/internal/lifecycle/attempt.go previous fresh version
++++ packages/workflow/internal/lifecycle/attempt.go next fresh version
+@@ -163,7 +163,10 @@
+ 				continue
+ 			}
+ 			current := s.Change.Document
+-			for _, name := range []string{"Audit", "Questions", "Implementation", "Evals"} {
++			for _, name := range []string{"Audit", "Questions", "Decisions", "Implementation", "Evals"} {
++				if name == "Audit" && cl.Phase != "audit" {
++					continue
++				}
+ 				if body, ok := contracts.Section(d.Body, name); ok {
+ 					current.Body = contracts.ReplaceSection(current.Body, name, body)
+ 				}
+
+
+PATCH packages/workflow/internal/lifecycle/verify.go 36783539b187a295aff4619d2486c67131f9a3eb3775a8356892090dfa0feefc
+--- packages/workflow/internal/lifecycle/verify.go previous fresh version
++++ packages/workflow/internal/lifecycle/verify.go next fresh version
+@@ -144,6 +144,9 @@
+ 	var firstErr error
+ 	for _, name := range names {
+ 		report, e := checks.Evaluate(ctx, checks.HookRequest{Snapshot: cl.Snapshot, Module: name, Bin: req.Bin, Timeout: req.Timeout})
++		if e != nil && len(report.Cases) == 0 && firstErr == nil {
++			firstErr = e
++		}
+ 		result.Reports[name] = report
+ 		_ = retainReport(cl.Owner, cl.Run, cl.Phase, name, report)
+ 		m, _ := module(cl.Snapshot, name)
+@@ -199,6 +202,9 @@
+ 		result.Diagnostics = append(result.Diagnostics, d...)
+ 		if e != nil && firstErr == nil {
+ 			firstErr = e
++			if len(d) > 0 && !strings.HasPrefix(e.Error(), d[0].Code+":") {
++				firstErr = fmt.Errorf("%s: %w", d[0].Code, e)
++			}
+ 		}
+ 		if de := diagnosticsError(d); de != nil && firstErr == nil {
+ 			firstErr = de
+
+
+PATCH packages/workflow/internal/lifecycle/attempt.go 402edca0a051338660999e6a09567249e1d4035fbd8d5d896aa37b75541a3cf2
+--- packages/workflow/internal/lifecycle/attempt.go previous fresh version
++++ packages/workflow/internal/lifecycle/attempt.go next fresh version
+@@ -80,6 +80,10 @@
+ 	c.Document = cl.Approved
+ 	c.Document.Frontmatter["blocked"] = req.Reason
+ 	if e = renderChange(cl.Owner, c); e != nil {
++		return model.BlockResult{}, e
++	}
++	c, e = parseChange(cl.Owner, c)
++	if e != nil {
+ 		return model.BlockResult{}, e
+ 	}
+ 	newHead, e := commitAll(cl.Owner, "fireweed: block "+c.Slug)
+

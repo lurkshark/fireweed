@@ -1,0 +1,14 @@
+{
+  "all_entry_tracked_bytes_unchanged_before_evidence_authoring": true,
+  "all_entry_refs_unchanged": true,
+  "only_new_ref": "refs/fireweed/drills/workflow/20261107T172136.182088000",
+  "new_ref_oid": "13fc60b42626928d27c748c94898ec6117978c8b",
+  "candidate": "79cf33a7690082f28c06bf41a72719d282bc00fe",
+  "controller_and_recovery_bytes_unchanged": true,
+  "worktrees_unchanged": true,
+  "queue": [],
+  "shared_claims": [],
+  "no_product_spec_eval_config_or_hook_change": true,
+  "no_reconstruction_applied": true,
+  "no_controller_promotion_or_push": true
+}

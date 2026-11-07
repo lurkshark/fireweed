@@ -78,30 +78,28 @@ gc, migrate, agents-md --write
 
 ## Planned milestone — Workflow contracts and regeneration proof (WF1–WF4)
 
-**WF3 stopped at the independence checkpoint; WF4 remains open.** The owner-approved
+**WF3 safer retry failed native verification; WF4 remains open.** The approved
 Current absence contract and FLOW-002 audit-zone assertion are applied as
 [0178](../../changes/archive/0178-current-absence-contract.md) and
-[0179](../../changes/archive/0179-audit-zone-assertion.md). The appended preparation
-in the [checks report](../../.fireweed/drills/checks.md) and
-[workflow report](../../.fireweed/drills/workflow.md) records review and clean
-validation of candidate `79cf33a7690082f28c06bf41a72719d282bc00fe`.
-The owner approved one native invocation on this exact candidate. Its first
-verification failed in workflow, runner and app. The second configured worker
-disclosed creating and removing a prohibited temporary `go.mod`; the outside
-inspector stopped the invocation. No new native result or proof ref was published.
-The appended workflow evidence preserves the available trace, native feedback,
-stopped-file observations and cleanup, with its review limits stated explicitly.
-The earlier failed invocation/report/ref and updated preparation are preserved.
-Further drills or corrections require separate owner agreement. Workflow remains
-next in the proof dependency order, followed by runner and app.
+[0179](../../changes/archive/0179-audit-zone-assertion.md). WF1/WF2 validation of
+candidate `79cf33a7690082f28c06bf41a72719d282bc00fe` is unchanged. The complete
+[earlier workflow evidence](../../.fireweed/drills/workflow-before-retry-a79f34c.md)
+is retained byte-for-byte, including preparation, the independence-stopped
+invocation and safer external wrapper/fake rehearsals.
 
-The separately owner-authorized external retry preparation is complete; see the
-[restartable wrapper/inspector handoff](workflow-drill/README.md) and
-[fake-only preparation evidence](../../.fireweed/drills/workflow.md#safer-workflow-retry-preparation).
-It improves durable output retention and bounded worker-first stopping, with the
-original isolation gates and candidate unchanged. It launches no native drill and
-closes no WF3/WF4 proof gate. A retry still requires separate explicit owner
-approval under the original pin, deadline and configured bounds.
+After separate owner approval, exactly one retry used the prepared
+[external wrapper/inspector](workflow-drill/README.md), unchanged pin/deadline/bounds
+and two configured workers. Both completed with full durable streams and exact
+native log forwarding. Actual isolation passed before both releases, full observed
+commands/patches were reviewed and no independence violation was observed. Native
+verification failed in workflow, runner and app with PackageFailure/C11 and
+missing-coverage C10 diagnostics; the native own/dependent case sections are empty.
+The [failed native report and review](../../.fireweed/drills/workflow.md) and its
+reconstruction ref are retained. No passing independent workflow proof is claimed.
+Native reporting after rejection/interruption was not exercised. All owned scratch
+and processes are cleaned up; no correction, source application, promotion or push
+occurred. Stop for owner review before another drill or any correction. Workflow
+remains next in the proof order, followed by runner and app.
 
 **Entry.** Follow SYSTEM and the pin/deadline in PROGRESS. Read AGENTS,
 DECISIONS, the relevant unchanged design clauses and projected workflow

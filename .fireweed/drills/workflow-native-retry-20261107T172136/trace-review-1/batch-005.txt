@@ -1,0 +1,828 @@
+COMMAND 26
+/bin/zsh -lc 'gofmt -w packages/workflow/internal/lifecycle/*.go'
+
+COMMAND 27
+/bin/zsh -lc "sed -n '1,115p' packages/workflow/evals/eligible_test.go && sed -n '1,115p' packages/workflow/evals/costs_test.go"
+
+COMMAND 28
+/bin/zsh -lc "rg -n 'phase.*blocked|blocked.*phase|Owner|func StartFromAttempt|func Done' packages/workflow/internal/lifecycle/*.go"
+
+PATCH packages/workflow/internal/lifecycle/prbody.go 46e5e675a48aa02b797aa0b45507f05bae36b7e8a40c7763bd55bd248475f65f
+--- packages/workflow/internal/lifecycle/prbody.go previous fresh version
+
++++ packages/workflow/internal/lifecycle/prbody.go next fresh version
+
+@@ -0,0 +1,24 @@
+
++package lifecycle
+
++
+
++import (
+
++ "errors"
+
++ "fmt"
+
++ "path/filepath"
+
++ "sort"
+
++ "strings"
+
++
+
++ "github.com/lurkshark/fireweed/packages/contracts"
+
++ "github.com/lurkshark/fireweed/packages/gitstore"
+
++ "github.com/lurkshark/fireweed/packages/project"
+
++ "github.com/lurkshark/fireweed/packages/workflow/model"
+
++)
+
++
+
++type endpointConfigError struct{cause error}
+
++func (e endpointConfigError) Error() string{return e.cause.Error()}
+
++func (e endpointConfigError) Unwrap() error{return e.cause}
+
++func IsEndpointConfigError(err error) bool {var target endpointConfigError;return errors.As(err,&target)}
+
++func endpointChanges(root,rev string) []project.Change {out:=[]project.Change{};s,e:=runGit(root,"ls-tree","-r","--name-only",rev,"changes");if e!=nil{return out};for _,p:=range strings.Fields(s) {if !strings.HasSuffix(p,".md")||!(strings.HasPrefix(p,"changes/archive/")||strings.Count(p,"/")==1){continue};b,e:=gitstore.ReadAt(root,rev,p);if e!=nil{continue};d,e:=contracts.ParseDocument(string(b));if e!=nil{continue};out=append(out,project.Change{Path:p,Slug:strings.TrimPrefix(strings.TrimSuffix(filepath.Base(p),".md"),numberPrefix(filepath.Base(p))),Module:frontString(d,"module"),Document:d})};return out}
+
++func PRBody(root,revisionRange string) (model.PRBodyReport,error) {info,e:=rootInfo(root);if e!=nil{return model.PRBodyReport{},e};parts:=strings.Split(revisionRange,"..");if len(parts)!=2||parts[0]==""||parts[1]=="" {return model.PRBodyReport{},coded("P01","invalid range %q",revisionRange)};start,e:=runGit(info.Root,"rev-parse","--verify",parts[0]+"^{commit}");if e!=nil{return model.PRBodyReport{},coded("P01","resolve %q: %v",revisionRange,e)};end,e:=runGit(info.Root,"rev-parse","--verify",parts[1]+"^{commit}");if e!=nil{return model.PRBodyReport{},coded("P01","resolve %q: %v",revisionRange,e)};snap,e:=project.LoadAt(info.Root,end);if e!=nil{return model.PRBodyReport{},endpointConfigError{e}};changed,_:=runGit(info.Root,"diff","--name-only",start,end);touched:=map[string]bool{};for _,p:=range strings.Fields(changed) {if strings.HasPrefix(p,"changes/")&&strings.HasSuffix(p,".md"){touched[filepath.Base(p)]=true}};selected:=[]project.Change{};for _,c:=range endpointChanges(info.Root,end) {if touched[filepath.Base(c.Path)]{selected=append(selected,c)}};sort.Slice(selected,func(i,j int)bool{return selected[i].Path<selected[j].Path});var b strings.Builder;fmt.Fprintf(&b,"# PR range\n\n%s..%s\n\n## Changes\n",start,end);if len(selected)==0 {b.WriteString("None selected.\n")};for _,c:=range selected {kind:="spec";if len(listFront(c.Document,"eval_fix"))>0{kind="eval_fix"}else if frontBool(c.Document,"regenerate"){kind="regenerate"}else if section(c.Document,"Added")==""&&section(c.Document,"Modified")==""&&section(c.Document,"Removed")==""{kind="maintenance"};fmt.Fprintf(&b,"\n### %s\n\nmodule: %s; kind: %s; audit_rounds: %d\n",c.Path,c.Module,kind,frontInt(c.Document,"audit_rounds"));fmt.Fprintf(&b,"\nProvenance: %s\n",section(c.Document,"Provenance"));fmt.Fprintf(&b,"\nDecisions added: %s\nDecisions removed: %s\n",section(c.Document,"Decisions"),section(c.Document,"Removed decisions"));for _,name:=range []string{"Added","Modified"} {items,_:=contracts.ParseItems(section(c.Document,name));for _,it:=range items{if strings.Contains(it.Tag,"review"){fmt.Fprintf(&b,"\n%s %s\n",it.ID,it.Body)}}};history,_:=runGit(info.Root,"rev-list",end);for _,oid:=range strings.Fields(history) {for _,p:=range []string{"changes/"+filepath.Base(c.Path),"changes/archive/"+filepath.Base(c.Path)} {data,e:=gitstore.ReadAt(info.Root,oid,p);if e!=nil{continue};d,e:=contracts.ParseDocument(string(data));if e!=nil{continue};audit:=section(d,"Audit");if strings.Contains(audit,"FINDING")||strings.Contains(audit,"untestable") {fmt.Fprintf(&b,"\nAudit finding: %s\n",audit)};break}};files,_:=runGit(info.Root,"diff","--name-only",start,end);for _,p:=range strings.Fields(files) {if strings.HasPrefix(p,"packages/"+c.Module+"/")||strings.HasSuffix(p,".lock") {fmt.Fprintf(&b,"\nFile: %s\n",p)}}}
+
++ b.WriteString("\n## Exceptions\n");for _,m:=range snap.Modules {for _,it:=range moduleSpecs(m) {if x:=quarantineRE.FindStringSubmatch(it.Tag);len(x)>1{fmt.Fprintf(&b,"\nQuarantine %s %s: %s\n",m.Name,it.ID,strings.TrimSpace(x[1]))}};if reason:=frontString(m.Document,"boundaries_opt_out");reason!=""{fmt.Fprintf(&b,"\nBoundary opt-out %s: %s\n",m.Name,reason)}};for _,c:=range endpointChanges(info.Root,end) {if !strings.Contains(c.Path,"archive/")&&frontString(c.Document,"blocked")!="" {fmt.Fprintf(&b,"\nBlocked %s: %s\n",c.Path,frontString(c.Document,"blocked"))}}
+
++ diagnostics:=[]project.Diagnostic{};costs,_:=Costs(info.Root);latest:=map[string]model.ModuleCost{};times:=map[string]int64{};saved:=map[string][]project.Diagnostic{};for _,s:=range costs {for _,c:=range s.Modules {if s.RecordedAt.UnixNano()>=times[c.Module]{latest[c.Module]=c;times[c.Module]=s.RecordedAt.UnixNano();saved[c.Module]=s.Diagnostics}}};b.WriteString("\n## Costs\n\n| Module | Seconds | Cases per spec | Eval lines | Disposable lines |\n|---|---:|---|---:|---:|\n");names:=[]string{};for name:=range latest{names=append(names,name)};sort.Strings(names);seen:=map[string]bool{};for _,name:=range names {c:=latest[name];ids:=[]string{};for id:=range c.CasesPerSpec{ids=append(ids,id)};sort.Strings(ids);counts:=[]string{};for _,id:=range ids{counts=append(counts,fmt.Sprintf("%s: %d",id,c.CasesPerSpec[id]))};fmt.Fprintf(&b,"| %s | %g | %s | %d | %d |\n",name,c.Seconds,strings.Join(counts,", "),c.EvalLines,c.DisposableLines);for _,d:=range saved[name] {key:=d.Code+d.Message;if !seen[key] {diagnostics=append(diagnostics,d);fmt.Fprintf(&b,"\n%s: %s\n",d.Code,d.Message);seen[key]=true}}}
+
++ additions,_:=runGit(info.Root,"diff","--name-only","--diff-filter=A",start,end);for _,p:=range strings.Fields(additions){for _,m:=range snap.Modules {if !strings.HasPrefix(p,m.Dir+"/"){continue};rel:=strings.TrimPrefix(p,m.Dir+"/");if contracts.ResolveZone(rel,m.Zones)!="disposable"{continue};data,e:=gitstore.ReadAt(info.Root,end,p);if e!=nil{continue};if len(data)>262144||strings.IndexByte(string(data),0)>=0 {d:=project.Diagnostic{Code:"B04",Message:fmt.Sprintf("%s %d bytes",p,len(data)),Warning:true};diagnostics=append(diagnostics,d);fmt.Fprintf(&b,"\nB04: %s\n",d.Message)}}};return model.PRBodyReport{Body:b.String(),Diagnostics:diagnostics},nil}
+
+
+PATCH packages/workflow/internal/lifecycle/start.go b3052c16cef062522007b0e09baf43d7be48a49135d3fa884917d2bebb9a93b4
+--- packages/workflow/internal/lifecycle/start.go previous fresh version
+
++++ packages/workflow/internal/lifecycle/start.go next fresh version
+
+@@ -1,57 +1,326 @@
+
+ package lifecycle
+
+ 
+
+ import (
+
+- "crypto/rand"
+
+- "encoding/hex"
+
+- "fmt"
+
+- "os"
+
+- "path/filepath"
+
+- "regexp"
+
+- "strconv"
+
+- "strings"
+
+-
+
+- "github.com/lurkshark/fireweed/packages/contracts"
+
+- "github.com/lurkshark/fireweed/packages/gitstore"
+
+- "github.com/lurkshark/fireweed/packages/project"
+
+- "github.com/lurkshark/fireweed/packages/workflow/model"
+
++	"crypto/rand"
+
++	"encoding/hex"
+
++	"fmt"
+
++	"os"
+
++	"path/filepath"
+
++	"regexp"
+
++	"strconv"
+
++	"strings"
+
++
+
++	"github.com/lurkshark/fireweed/packages/contracts"
+
++	"github.com/lurkshark/fireweed/packages/gitstore"
+
++	"github.com/lurkshark/fireweed/packages/project"
+
++	"github.com/lurkshark/fireweed/packages/workflow/model"
+
+ )
+
+ 
+
+-func dependency(modules []project.Module,from,to string,seen map[string]bool) bool {if from==to{return false};if seen[from]{return false};seen[from]=true;for _,m:=range modules {if m.Name!=from{continue};for _,d:=range m.DependsOn {if d==to||dependency(modules,d,to,seen){return true}}};return false}
+
+-func waitingFor(root string,q []project.Change,i int) (string,string) {
+
+- candidate:=q[i];snap,e:=project.Project(root,candidate.Slug);if e!=nil{return "",""}
+
+- for _,prior:=range q[:i] {if frontString(prior.Document,"phase")!="blocked" {continue};if candidate.Module==prior.Module{return prior.Slug,"same_module"};if dependency(snap.Modules,candidate.Module,prior.Module,map[string]bool{}) {return prior.Slug,"depends_on_blocked"};if section(candidate.Document,"Interface")!=""&&dependency(snap.Modules,prior.Module,candidate.Module,map[string]bool{}) {return prior.Slug,"interface_dependency"}}
+
+- return "",""
+
+-}
+
+-func Eligible(root string) ([]project.Change,error) {info,e:=rootInfo(root);if e!=nil{return nil,e};q,e:=queue(info.Root);if e!=nil{return nil,e};out:=[]project.Change{};for i,c:=range q {if frontString(c.Document,"phase")=="blocked" {continue};if on,_:=waitingFor(info.Root,q,i);on!="" {continue};out=append(out,c)};return out,nil}
+
+-func newRun() string {b:=make([]byte,16);_,_ = rand.Read(b);return hex.EncodeToString(b)}
+
+-var localID=regexp.MustCompile(`new:[A-Za-z][A-Za-z0-9_-]*`)
+
+-func allocateIDs(root string,c *project.Change) error {
+
+- snap,e:=project.Load(root);if e!=nil{return e};prefix:="";used:=map[int]bool{};for _,m:=range snap.Modules {if m.Name!=c.Module{continue};prefix=m.IDPrefix;s:=section(m.Document,"Specs");items,_:=contracts.ParseItems(s);for _,it:=range items {if strings.HasPrefix(it.ID,prefix+"-"){n,_:=strconv.Atoi(strings.TrimPrefix(it.ID,prefix+"-"));used[n]=true}}};if prefix=="" {return fmt.Errorf("module %s not found",c.Module)}
+
+- for _,q:=range mustQueue(root) {if q.Path==c.Path{continue};for _,it:=range q.Added {if strings.HasPrefix(it.ID,prefix+"-"){n,_:=strconv.Atoi(strings.TrimPrefix(it.ID,prefix+"-"));used[n]=true}}}
+
+- body:=c.Document.Body;replacements:=map[string]string{};for _,it:=range c.Added {if !localID.MatchString(it.ID){continue};if _,ok:=replacements[it.ID];ok{continue};n:=1;for used[n] {n++};used[n]=true;replacements[it.ID]=fmt.Sprintf("%s-%03d",prefix,n)}
+
+- for old,newID:=range replacements {body=strings.ReplaceAll(body,old,newID)};c.Document.Body=body;return nil
+
+-}
+
+-func mustQueue(root string) []project.Change {q,_:=queue(root);return q}
+
+-func startPreconditions(root,selector string) (gitstore.Repository,project.Change,error) {
+
+- info,e:=rootInfo(root);if e!=nil{return info,project.Change{},e};q,e:=queue(info.Root);if e!=nil{return info,project.Change{},e};if selector!="" {if _,e=selectChange(q,selector);e!=nil{return info,project.Change{},e}}
+
+- d,e:=dirty(info.Root);if e!=nil{return info,project.Change{},e};if d{return info,project.Change{},coded("P01","start requires clean worktree")}
+
+- eligible,e:=Eligible(info.Root);if e!=nil{return info,project.Change{},e};if len(eligible)==0{return info,project.Change{},coded("P01","no eligible change")};selected:=eligible[0];if selector!="" {wanted,_:=selectChange(q,selector);if wanted.Path!=selected.Path{return info,project.Change{},coded("P01","change is not eligible queue head")}}
+
+- if _,_,exists,e:=readClaim(info.Root,selected.Slug);e!=nil{return info,selected,e}else if exists{return info,selected,coded("P02","claim already held: update-ref %s",claimRef(selected.Slug))}
+
+- return info,selected,nil
+
+-}
+
+-func Start(root,selector string) (model.State,error) {
+
+- info,c,e:=startPreconditions(root,selector);if e!=nil{return model.State{},e};c,e=parseChange(info.Root,c);if e!=nil{return model.State{},e};if e=checkStale(info.Root,c);e!=nil{return model.State{},e}
+
+- snap,e:=project.Load(info.Root);if e!=nil{return model.State{},e};limit:=cfgInt(snap,"authoring","max_unapproved",5);unapproved,base,baseErr:=unapprovedCount(info.Root,snap);if baseErr==nil&&unapproved>=limit {d:=project.Diagnostic{Code:"P07",Message:fmt.Sprintf("unapproved archive count %d reaches limit %d",unapproved,limit)};return model.State{Diagnostics:[]project.Diagnostic{d}},coded("P07","%s",d.Message)}
+
+- original:=c.Document;wasUnstarted:=frontString(c.Document,"phase")=="";if wasUnstarted {if e=allocateIDs(info.Root,&c);e!=nil{return model.State{},e};phase:="evals";if len(c.Added)==0&&len(c.Modified)==0&&len(c.Removed)==0&&frontString(c.Document,"fixes")==""&&frontString(c.Document,"eval_fix")=="" {phase="impl"};if frontBool(c.Document,"regenerate") {phase="impl"};c.Document.Frontmatter["phase"]=phase;c.Document.Frontmatter["run"]=newRun()}
+
+- if e=renderChange(info.Root,c);e!=nil{return model.State{},e};projected,e:=project.Project(info.Root,c.Slug);if e!=nil { _=renderOriginal(info.Root,c.Path,original);if strings.Contains(e.Error(),"stale base"){return model.State{},coded("P05","%v",e)};return model.State{},e};c,e=parseChange(info.Root,c);if e!=nil{return model.State{},e}
+
+- cl:=claim{Owner:info.Root,Slug:c.Slug,Path:c.Path,Run:frontString(c.Document,"run"),Phase:frontString(c.Document,"phase"),Base:info.Head,Snapshot:projected,Approved:c.Document};if cl.Run=="" {cl.Run=newRun();c.Document.Frontmatter["run"]=cl.Run;cl.Approved=c.Document;_=renderChange(info.Root,c)}
+
+- oid,e:=saveClaim(info.Root,cl,"");if e!=nil {_=renderOriginal(info.Root,c.Path,original);return model.State{},coded("P02","claim already held: update-ref %v",e)}
+
+- s:=state(info.Root,c,cl,oid);if baseErr==nil&&base!="" {if _,e:=gitstore.ReadAt(info.Root,base,c.Path);e!=nil {if _,e2:=gitstore.ReadAt(info.Root,"main",c.Path);e2!=nil {s.Diagnostics=append(s.Diagnostics,project.Diagnostic{Code:"P04",Message:"change absent from local and shared base",Warning:true})}}}
+
+- if wasUnstarted&&frontBool(c.Document,"regenerate") {if e=deleteDisposable(info.Root,projected,c.Module);e!=nil{return s,e};if !newerPassingDrill(info.Root,c.Module) {s.Diagnostics=append(s.Diagnostics,project.Diagnostic{Code:"P10",Message:"no passing drill after latest implementation",Warning:true})}}
+
+- return s,nil
+
+-}
+
+-func renderOriginal(root,path string,d contracts.Document) error {s,e:=contracts.RenderDocument(d);if e!=nil{return e};return writeText(root,path,s)}
+
+-func unapprovedCount(root string,s project.Snapshot) (int,string,error) {baseName:=frontConfig(s,"base","main");remote:=frontConfig(s,"remote","origin");base,e:=gitstore.BaseRef(root,remote,baseName);if e!=nil{return 0,"",e};paths,e:=filepath.Glob(filepath.Join(root,"changes/archive/*.md"));if e!=nil{return 0,base,e};n:=0;for _,p:=range paths {rel,_:=filepath.Rel(root,p);if _,e:=gitstore.ReadAt(root,base,filepath.ToSlash(rel));e!=nil{n++}};return n,base,nil}
+
+-func frontConfig(s project.Snapshot,key,def string) string {if v:=s.Config[key];v!=nil{return fmt.Sprint(v)};return def}
+
+-func deleteDisposable(root string,s project.Snapshot,name string) error {for _,m:=range s.Modules {if m.Name!=name{continue};return filepath.WalkDir(filepath.Join(root,m.Dir),func(path string,d os.DirEntry,e error) error {if e!=nil{return e};if d.IsDir(){return nil};rel,_:=filepath.Rel(filepath.Join(root,m.Dir),path);if contracts.ResolveZone(filepath.ToSlash(rel),m.Zones)=="disposable" {return os.Remove(path)};return nil})};return nil}
+
+-func newerPassingDrill(root,module string) bool {refs,_:=gitRefList(root,"refs/fireweed/drills/"+module);return len(refs)>0}
+
++func dependency(modules []project.Module, from, to string, seen map[string]bool) bool {
+
++	if from == to {
+
++		return false
+
++	}
+
++	if seen[from] {
+
++		return false
+
++	}
+
++	seen[from] = true
+
++	for _, m := range modules {
+
++		if m.Name != from {
+
++			continue
+
++		}
+
++		for _, d := range m.DependsOn {
+
++			if d == to || dependency(modules, d, to, seen) {
+
++				return true
+
++			}
+
++		}
+
++	}
+
++	return false
+
++}
+
++func waitingFor(root string, q []project.Change, i int) (string, string) {
+
++	candidate := q[i]
+
++	snap, e := project.Project(root, candidate.Slug)
+
++	if e != nil {
+
++		return "", ""
+
++	}
+
++	for _, prior := range q[:i] {
+
++		if frontString(prior.Document, "blocked") == "" && frontString(prior.Document, "phase") != "blocked" {
+
++			continue
+
++		}
+
++		if candidate.Module == prior.Module {
+
++			return prior.Slug, "same_module"
+
++		}
+
++		if dependency(snap.Modules, candidate.Module, prior.Module, map[string]bool{}) {
+
++			return prior.Slug, "depends_on_blocked"
+
++		}
+
++		if section(candidate.Document, "Interface") != "" && dependency(snap.Modules, prior.Module, candidate.Module, map[string]bool{}) {
+
++			return prior.Slug, "interface_dependency"
+
++		}
+
++	}
+
++	return "", ""
+
++}
+
++func Eligible(root string) ([]project.Change, error) {
+
++	info, e := rootInfo(root)
+
++	if e != nil {
+
++		return nil, e
+
++	}
+
++	q, e := queue(info.Root)
+
++	if e != nil {
+
++		return nil, e
+
++	}
+
++	out := []project.Change{}
+
++	for i, c := range q {
+
++		if frontString(c.Document, "blocked") != "" || frontString(c.Document, "phase") == "blocked" {
+
++			continue
+
++		}
+
++		if on, _ := waitingFor(info.Root, q, i); on != "" {
+
++			continue
+
++		}
+
++		out = append(out, c)
+
++	}
+
++	return out, nil
+
++}
+
++func newRun() string { b := make([]byte, 16); _, _ = rand.Read(b); return hex.EncodeToString(b) }
+
++
+
++var localID = regexp.MustCompile(`new:[A-Za-z][A-Za-z0-9_-]*`)
+
++
+
++func allocateIDs(root string, c *project.Change) error {
+
++	snap, e := project.Load(root)
+
++	if e != nil {
+
++		return e
+
++	}
+
++	prefix := ""
+
++	used := map[int]bool{}
+
++	for _, m := range snap.Modules {
+
++		if m.Name != c.Module {
+
++			continue
+
++		}
+
++		prefix = m.IDPrefix
+
++		s := section(m.Document, "Specs")
+
++		items, _ := contracts.ParseItems(s)
+
++		for _, it := range items {
+
++			if strings.HasPrefix(it.ID, prefix+"-") {
+
++				n, _ := strconv.Atoi(strings.TrimPrefix(it.ID, prefix+"-"))
+
++				used[n] = true
+
++			}
+
++		}
+
++	}
+
++	if prefix == "" {
+
++		return fmt.Errorf("module %s not found", c.Module)
+
++	}
+
++	for _, q := range mustQueue(root) {
+
++		if q.Path == c.Path {
+
++			continue
+
++		}
+
++		for _, it := range q.Added {
+
++			if strings.HasPrefix(it.ID, prefix+"-") {
+
++				n, _ := strconv.Atoi(strings.TrimPrefix(it.ID, prefix+"-"))
+
++				used[n] = true
+
++			}
+
++		}
+
++	}
+
++	body := c.Document.Body
+
++	replacements := map[string]string{}
+
++	for _, it := range c.Added {
+
++		if !localID.MatchString(it.ID) {
+
++			continue
+
++		}
+
++		if _, ok := replacements[it.ID]; ok {
+
++			continue
+
++		}
+
++		n := 1
+
++		for used[n] {
+
++			n++
+
++		}
+
++		used[n] = true
+
++		replacements[it.ID] = fmt.Sprintf("%s-%03d", prefix, n)
+
++	}
+
++	for old, newID := range replacements {
+
++		body = strings.ReplaceAll(body, old, newID)
+
++	}
+
++	c.Document.Body = body
+
++	return nil
+
++}
+
++func mustQueue(root string) []project.Change { q, _ := queue(root); return q }
+
++func startPreconditions(root, selector string) (gitstore.Repository, project.Change, error) {
+
++	info, e := rootInfo(root)
+
++	if e != nil {
+
++		return info, project.Change{}, e
+
++	}
+
++	q, e := queue(info.Root)
+
++	if e != nil {
+
++		return info, project.Change{}, e
+
++	}
+
++	if selector != "" {
+
++		if _, e = selectChange(q, selector); e != nil {
+
++			return info, project.Change{}, e
+
++		}
+
++	}
+
++	d, e := dirty(info.Root)
+
++	if e != nil {
+
++		return info, project.Change{}, e
+
++	}
+
++	if d {
+
++		return info, project.Change{}, coded("P01", "start requires clean worktree")
+
++	}
+
++	eligible, e := Eligible(info.Root)
+
++	if e != nil {
+
++		return info, project.Change{}, e
+
++	}
+
++	if len(eligible) == 0 {
+
++		return info, project.Change{}, coded("P01", "no eligible change")
+
++	}
+
++	selected := eligible[0]
+
++	if selector != "" {
+
++		wanted, _ := selectChange(q, selector)
+
++		if wanted.Path != selected.Path {
+
++			return info, project.Change{}, coded("P01", "change is not eligible queue head")
+
++		}
+
++	}
+
++	if _, _, exists, e := readClaim(info.Root, selected.Slug); e != nil {
+
++		return info, selected, e
+
++	} else if exists {
+
++		return info, selected, coded("P02", "claim already held: update-ref %s", claimRef(selected.Slug))
+
++	}
+
++	return info, selected, nil
+
++}
+
++func Start(root, selector string) (model.State, error) {
+
++	info, c, e := startPreconditions(root, selector)
+
++	if e != nil {
+
++		return model.State{}, e
+
++	}
+
++	c, e = parseChange(info.Root, c)
+
++	if e != nil {
+
++		return model.State{}, e
+
++	}
+
++	if e = checkStale(info.Root, c); e != nil {
+
++		return model.State{}, e
+
++	}
+
++	snap, e := project.Load(info.Root)
+
++	if e != nil {
+
++		return model.State{}, e
+
++	}
+
++	limit := cfgInt(snap, "authoring", "max_unapproved", 5)
+
++	unapproved, base, baseErr := unapprovedCount(info.Root, snap)
+
++	if baseErr == nil && unapproved >= limit {
+
++		d := project.Diagnostic{Code: "P07", Message: fmt.Sprintf("unapproved archive count %d reaches limit %d", unapproved, limit)}
+
++		return model.State{Diagnostics: []project.Diagnostic{d}}, coded("P07", "%s", d.Message)
+
++	}
+
++	original := c.Document
+
++	wasUnstarted := frontString(c.Document, "phase") == ""
+
++	if wasUnstarted {
+
++		if e = allocateIDs(info.Root, &c); e != nil {
+
++			return model.State{}, e
+
++		}
+
++		phase := "evals"
+
++		if len(c.Added) == 0 && len(c.Modified) == 0 && len(c.Removed) == 0 && frontString(c.Document, "fixes") == "" && frontString(c.Document, "eval_fix") == "" {
+
++			phase = "impl"
+
++		}
+
++		if frontBool(c.Document, "regenerate") {
+
++			phase = "impl"
+
++		}
+
++		c.Document.Frontmatter["phase"] = phase
+
++		c.Document.Frontmatter["run"] = newRun()
+
++	}
+
++	if e = renderChange(info.Root, c); e != nil {
+
++		return model.State{}, e
+
++	}
+
++	projected, e := project.Project(info.Root, c.Slug)
+
++	if e != nil {
+
++		_ = renderOriginal(info.Root, c.Path, original)
+
++		if strings.Contains(e.Error(), "stale base") {
+
++			return model.State{}, coded("P05", "%v", e)
+
++		}
+
++		return model.State{}, e
+
++	}
+
++	c, e = parseChange(info.Root, c)
+
++	if e != nil {
+
++		return model.State{}, e
+
++	}
+
++	cl := claim{Owner: info.Root, Slug: c.Slug, Path: c.Path, Run: frontString(c.Document, "run"), Phase: frontString(c.Document, "phase"), Base: info.Head, Snapshot: projected, Approved: c.Document}
+
++	if cl.Run == "" {
+
++		cl.Run = newRun()
+
++		c.Document.Frontmatter["run"] = cl.Run
+
++		cl.Approved = c.Document
+
++		_ = renderChange(info.Root, c)
+
++	}
+
++	oid, e := saveClaim(info.Root, cl, "")
+
++	if e != nil {
+
++		_ = renderOriginal(info.Root, c.Path, original)
+
++		return model.State{}, coded("P02", "claim already held: update-ref %v", e)
+
++	}
+
++	s := state(info.Root, c, cl, oid)
+
++	if baseErr == nil && base != "" {
+
++		if _, e := gitstore.ReadAt(info.Root, base, c.Path); e != nil {
+
++			if _, e2 := gitstore.ReadAt(info.Root, "main", c.Path); e2 != nil {
+
++				s.Diagnostics = append(s.Diagnostics, project.Diagnostic{Code: "P04", Message: "change absent from local and shared base", Warning: true})
+
++			}
+
++		}
+
++	}
+
++	if wasUnstarted && frontBool(c.Document, "regenerate") {
+
++		if e = deleteDisposable(info.Root, projected, c.Module); e != nil {
+
++			return s, e
+
++		}
+
++		if !newerPassingDrill(info.Root, c.Module) {
+
++			s.Diagnostics = append(s.Diagnostics, project.Diagnostic{Code: "P10", Message: "no passing drill after latest implementation", Warning: true})
+
++		}
+
++	}
+
++	return s, nil
+
++}
+
++func renderOriginal(root, path string, d contracts.Document) error {
+
++	s, e := contracts.RenderDocument(d)
+
++	if e != nil {
+
++		return e
+
++	}
+
++	return writeText(root, path, s)
+
++}
+
++func unapprovedCount(root string, s project.Snapshot) (int, string, error) {
+
++	baseName := frontConfig(s, "base", "main")
+
++	remote := frontConfig(s, "remote", "origin")
+
++	base, e := gitstore.BaseRef(root, remote, baseName)
+
++	if e != nil {
+
++		return 0, "", e
+
++	}
+
++	paths, e := filepath.Glob(filepath.Join(root, "changes/archive/*.md"))
+
++	if e != nil {
+
++		return 0, base, e
+
++	}
+
++	n := 0
+
++	for _, p := range paths {
+
++		rel, _ := filepath.Rel(root, p)
+
++		if _, e := gitstore.ReadAt(root, base, filepath.ToSlash(rel)); e != nil {
+
++			n++
+
++		}
+
++	}
+
++	return n, base, nil
+
++}
+
++func frontConfig(s project.Snapshot, key, def string) string {
+
++	if v := s.Config[key]; v != nil {
+
++		return fmt.Sprint(v)
+
++	}
+
++	return def
+
++}
+
++func deleteDisposable(root string, s project.Snapshot, name string) error {
+
++	for _, m := range s.Modules {
+
++		if m.Name != name {
+
++			continue
+
++		}
+
++		return filepath.WalkDir(filepath.Join(root, m.Dir), func(path string, d os.DirEntry, e error) error {
+
++			if e != nil {
+
++				return e
+
++			}
+
++			if d.IsDir() {
+
++				return nil
+
++			}
+
++			rel, _ := filepath.Rel(filepath.Join(root, m.Dir), path)
+
++			if contracts.ResolveZone(filepath.ToSlash(rel), m.Zones) == "disposable" {
+
++				return os.Remove(path)
+
++			}
+
++			return nil
+
++		})
+
++	}
+
++	return nil
+
++}
+
++func newerPassingDrill(root, module string) bool {
+
++	refs, _ := gitRefList(root, "refs/fireweed/drills/"+module)
+
++	return len(refs) > 0
+
++}
+
