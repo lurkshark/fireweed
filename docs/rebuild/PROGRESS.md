@@ -1,5 +1,12 @@
 # Rebuild handoff
 
+The owner has now authorized one scoped CHK-034 fix through normal fail-first,
+independent restricted audit and full implementation verification, followed by a
+verified controller update after the fix is archived and no run/claim remains.
+The subject candidate stays `79cf33a7690082f28c06bf41a72719d282bc00fe`; the current
+pin below remains in force throughout the active change. No further native drill,
+dependency-import input expansion or push is authorized. Follow [GOAL](GOAL.md).
+
 The approved safer workflow retry is complete and **failed native verification**.
 Exactly one native invocation used candidate
 `79cf33a7690082f28c06bf41a72719d282bc00fe`, its two configured reconstruction
