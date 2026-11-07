@@ -95,6 +95,14 @@ The earlier failed invocation/report/ref and updated preparation are preserved.
 Further drills or corrections require separate owner agreement. Workflow remains
 next in the proof dependency order, followed by runner and app.
 
+The separately owner-authorized external retry preparation is complete; see the
+[restartable wrapper/inspector handoff](workflow-drill/README.md) and
+[fake-only preparation evidence](../../.fireweed/drills/workflow.md#safer-workflow-retry-preparation).
+It improves durable output retention and bounded worker-first stopping, with the
+original isolation gates and candidate unchanged. It launches no native drill and
+closes no WF3/WF4 proof gate. A retry still requires separate explicit owner
+approval under the original pin, deadline and configured bounds.
+
 **Entry.** Follow SYSTEM and the pin/deadline in PROGRESS. Read AGENTS,
 DECISIONS, the relevant unchanged design clauses and projected workflow
 contracts. Inspect live status, queue, runs and shared claims. Preserve prior

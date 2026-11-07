@@ -31,6 +31,17 @@ remain open. Follow the
 [ordered plan](ACCEPTANCE.md#planned-milestone--workflow-contracts-and-regeneration-proof-wf1wf4)
 and [owner checkpoint](GOAL.md). Stop before another drill or any correction.
 
+The owner-authorized safer retry preparation is complete. Protected external
+[wrapper/inspector tooling](workflow-drill/README.md) now durably logs worker
+stdout/stderr before forwarding their unchanged bytes, stops/drains the worker
+before controller escalation, and retains a bounded whole-run emergency stop.
+Worker instructions explicitly forbid local builds/tests/module setup. The
+[appended preparation evidence](../../.fireweed/drills/workflow.md#safer-workflow-retry-preparation)
+records passing bounded fake rehearsals and setup-only staging. No native drill
+ran in this preparation; fake reporting establishes no native publication
+behavior or passing workflow proof. Present this prepared retry for separate
+owner approval on the unchanged candidate, pin, original deadline and bounds.
+
 The deadline remains **2026-11-07 22:51:05 UTC** (14:51:05 PST).
 The completed checks budget began 2026-11-04 22:51:05 UTC. It and the earlier
 stabilization budget are closed. Preserve the deadline and enforcement bounds.
@@ -47,7 +58,8 @@ repeated-workflow warning are explained in the preparation evidence.
 At handoff, the stopped drill processes exited and its input tree, verifier
 worktree and isolated caller clone were removed. Main was clean before protected
 evidence authoring. No live run/shared claim or queued change remains. The live
-unapproved count is two; normal approval enforcement and its configured bound
+unapproved count is zero at this preparation handoff (historical stopped-drill
+evidence records two); normal approval enforcement and its configured bound
 are unchanged. Configuration, controller/recovery executables, all prior refs,
 archive contents/counters and the unrelated linked worktree were preserved.
 No product, spec or eval correction, reconstructed source import, controller

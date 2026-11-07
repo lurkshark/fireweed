@@ -1,4 +1,4 @@
-# Workflow independence checkpoint
+# Prepared workflow retry awaiting approval
 
 [ACCEPTANCE](ACCEPTANCE.md#planned-milestone--workflow-contracts-and-regeneration-proof-wf1wf4)
 is the ordered plan. [PROGRESS](PROGRESS.md) records status, deadline and the
@@ -21,12 +21,32 @@ repeated live isolation checks. Its notes then disclosed a prohibited temporary
 The controller was interrupted before publishing a new native report or proof ref;
 the appended workflow evidence records all available observations and review limits.
 
-Stop for owner agreement on this independence failure before any further drill
-or correction. No further execution is authorized by the consumed single-invocation
-approval. Preserve the pin, deadline, bounds/counters, prior reports/proof/attempt
-refs and unrelated worktree. No reconstructed code was imported or controller
-promoted. The drill scratch trees are removed, the queue is empty and no live
-run/shared claim remains. No push is authorized.
+The owner then authorized only safer external wrapper/inspector preparation.
+That preparation is complete, with restart instructions in the protected
+[tooling handoff](workflow-drill/README.md) and committed fake-only results and
+raw logs in the [appended workflow evidence](../../.fireweed/drills/workflow.md#safer-workflow-retry-preparation).
+The wrapper durably spools stdout/stderr outside reconstruction before forwarding
+identical bytes. A rejection latches across attempts, stops and drains the worker,
+and allows a bounded native reporting opportunity before whole-run escalation.
+The original deadline independently triggers bounded emergency cleanup. Workers
+are explicitly instructed to avoid local builds/tests/module setup, format fresh
+code and return it to the separate verifier. Command/model/effort and original
+isolation gates remain intact. No product/controller change was needed.
+
+Stop here for separate owner approval of a native retry on exactly candidate
+`79cf33a7690082f28c06bf41a72719d282bc00fe`. This preparation ran no native drill;
+neither the consumed invocation approval nor the fake rehearsals authorize one.
+Preserve the pin, original deadline **2026-11-07 22:51:05 UTC**, bounds/counters,
+prior reports/proof/attempt refs and unrelated worktree. After approval, stage a
+fresh isolated caller using the handoff, inspect its setup-only child, run the
+staged inspector alongside the single native invocation, and perform every actual
+input/trace/native-feedback review before each configured release. Use the
+worker-first rejection path and monitor that invocation to its terminal state.
+Record only native reporting actually observed; fake reports establish none of
+its fields, cases or proof publication. Any required pin/product change is a
+concrete owner proposal before authoring. Further invocations and corrections
+need separate agreement. No reconstructed code was imported, controller promoted
+or push performed. The queue is empty and no live run/shared claim remains.
 
 The FLOW-023 gap alleged in the stopped worker's notes is a review-tag
 misinterpretation, not an established eval defect: the cited Added item is

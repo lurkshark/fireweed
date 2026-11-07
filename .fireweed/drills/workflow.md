@@ -189901,3 +189901,141 @@ Complete observed cumulative fresh-file difference, losslessly JSON-encoded to p
 ````````````````json
 "--- DRILL_NOTES.md attempt1\n+++ DRILL_NOTES.md stopped-attempt2\n@@ -5,4 +5,5 @@\n ## Gaps\n \n - FLOW-089 — workflow: Abandon uses Git reverse patches. An overlapping later edit can cause a revert conflict instead of producing the single Abandon commit.\n-- no spec — workflow: Local Go tests could not compile in the supplied input tree because it intentionally has no `go.mod` or dependency implementations. Formatting and source inspection were performed here; the outside verifier must run the evals.\n+- FLOW-023 — workflow: Retained lifecycle evals expect evals Done to succeed for a change that adds ALP-003 while the fixture hook reports no ALP-003 testcase. FLOW-023 requires fail-first evidence for that enforced Added ID, so satisfying those particular eval expectations would weaken the specified rule.\n+- no spec — workflow: Local Go tests could not compile in the supplied input tree because `packages/assets/internal/content` is absent. A temporary `go.mod` was removed after the setup failure. The outside verifier must run the evals with dependent implementations available.\n--- packages/workflow/internal/lifecycle/gc.go attempt1\n+++ packages/workflow/internal/lifecycle/gc.go stopped-attempt2\n@@ -20,6 +20,9 @@\n \troot, e := canonical(req.Root)\n \tif e != nil {\n \t\treturn model.GCResult{}, e\n+\t}\n+\tif _, e = git(root, \"rev-parse\", \"--git-dir\"); e != nil {\n+\t\treturn model.GCResult{}, problem(\"P01\", \"GC requires a Git repository: %v\", e)\n \t}\n \ts, e := project.Load(root)\n \tif e != nil {\n--- packages/workflow/internal/lifecycle/queue.go attempt1\n+++ packages/workflow/internal/lifecycle/queue.go stopped-attempt2\n@@ -47,13 +47,13 @@\n \t\t\tcontinue\n \t\t}\n \t\tif b.Module == c.Module {\n-\t\t\treturn b.Slug, \"same_module\"\n+\t\t\treturn strings.TrimSuffix(filepath.Base(b.Path), \".md\"), \"same_module\"\n \t\t}\n \t\tif depends(modules, c.Module, b.Module) {\n-\t\t\treturn b.Slug, \"depends_on_blocked\"\n+\t\t\treturn strings.TrimSuffix(filepath.Base(b.Path), \".md\"), \"depends_on_blocked\"\n \t\t}\n \t\tif strings.TrimSpace(section(c.Document.Body, \"Interface\")) != \"\" && depends(modules, b.Module, c.Module) {\n-\t\t\treturn b.Slug, \"interface_dependency\"\n+\t\t\treturn strings.TrimSuffix(filepath.Base(b.Path), \".md\"), \"interface_dependency\"\n \t\t}\n \t}\n \treturn \"\", \"\"\n@@ -180,6 +180,9 @@\n \t\t}\n \t}\n \tbaseRef, e := gitstore.BaseRef(root, cfgString(s, \"remote\", \"origin\"), cfgString(s, \"base\", \"\"))\n+\tif e != nil {\n+\t\treturn r, problem(\"P01\", \"base ref unavailable: %v\", e)\n+\t}\n \tif e == nil {\n \t\tfor _, a := range all {\n \t\t\tbase := filepath.Base(a.path)\n--- packages/workflow/internal/lifecycle/core.go attempt1\n+++ packages/workflow/internal/lifecycle/core.go stopped-attempt2\n@@ -392,6 +392,13 @@\n \tif e = clean(root); e != nil {\n \t\treturn model.State{}, e\n \t}\n+\tvar requested project.Change\n+\tif selector != \"\" {\n+\t\trequested, e = queued(root, selector)\n+\t\tif e != nil {\n+\t\t\treturn model.State{}, e\n+\t\t}\n+\t}\n \teligible, e := Eligible(root)\n \tif e != nil {\n \t\tif strings.Contains(strings.ToLower(e.Error()), \"stale base\") {\n@@ -404,11 +411,7 @@\n \t}\n \tc := eligible[0]\n \tif selector != \"\" {\n-\t\tselected, se := queued(root, selector)\n-\t\tif se != nil {\n-\t\t\treturn model.State{}, se\n-\t\t}\n-\t\tif selected.Path != c.Path {\n+\t\tif requested.Path != c.Path {\n \t\t\treturn model.State{}, problem(\"P01\", \"change is not eligible queue head\")\n \t\t}\n \t}\n--- packages/workflow/internal/lifecycle/regenerate.go attempt1\n+++ packages/workflow/internal/lifecycle/regenerate.go stopped-attempt2\n@@ -22,6 +22,12 @@\n \t\trel, re := filepath.Rel(filepath.Join(root, m.Dir), path)\n \t\tif re != nil {\n \t\t\treturn re\n+\t\t}\n+\t\tfull := filepath.ToSlash(filepath.Join(m.Dir, rel))\n+\t\tfor _, protected := range asStrings(setting(s, \"protected\")) {\n+\t\t\tif contracts.MatchGlob(protected, full) {\n+\t\t\t\treturn nil\n+\t\t\t}\n \t\t}\n \t\tif contracts.ResolveZone(filepath.ToSlash(rel), m.Zones) == \"disposable\" {\n \t\t\treturn os.Remove(path)\n--- packages/workflow/internal/lifecycle/pr.go attempt1\n+++ packages/workflow/internal/lifecycle/pr.go stopped-attempt2\n@@ -62,7 +62,7 @@\n \t}\n \tsort.Strings(selected)\n \tif len(selected) == 0 {\n-\t\tb.WriteString(\"No selected changes.\\n\")\n+\t\tb.WriteString(\"No changes selected.\\n\")\n \t}\n \tfor _, path := range selected {\n \t\traw, _ := gitstore.ReadAt(root, end, path)\n@@ -213,6 +213,7 @@\n \t\tnumstat, _ := git(root, \"diff\", \"--numstat\", begin, end, \"--\", p)\n \t\tif strings.HasPrefix(numstat, \"-\\t-\\t\") || len(data) > 262144 {\n \t\t\td := diag(\"B04\", fmt.Sprintf(\"%s %d bytes\", p, len(data)), true)\n+\t\t\td.Path = p\n \t\t\tr.Diagnostics = append(r.Diagnostics, d)\n \t\t\tfmt.Fprintf(&b, \"B04: %s\\n\", d.Message)\n \t\t}\n--- packages/workflow/internal/lifecycle/context.go attempt1\n+++ packages/workflow/internal/lifecycle/context.go stopped-attempt2\n@@ -29,6 +29,7 @@\n \t\t\tspec, _ := read(root, filepath.ToSlash(filepath.Join(m.Dir, \"SPEC.md\")))\n \t\t\tfmt.Fprintf(&b, \"# Projected spec\\n%s\\n\", m.Document.Body)\n \t\t\t_ = spec\n+\t\t\tfmt.Fprintf(&b, \"\\n# Other relevant files\\n\")\n \t\t\t_ = filepath.Walk(filepath.Join(root, m.Dir), func(path string, info os.FileInfo, e error) error {\n \t\t\t\tif e != nil || info == nil || info.IsDir() {\n \t\t\t\t\treturn nil\n@@ -52,14 +53,14 @@\n \t\t}\n \t}\n \tsystem, _ := read(root, \"SYSTEM.md\")\n-\tfmt.Fprintf(&b, \"\\n# SYSTEM\\n%s\\n\", system)\n+\tfmt.Fprintf(&b, \"\\n# SYSTEM.md\\n%s\\n\", system)\n \tname := cl.Phase\n \tif name == \"impl\" && fmBool(c.Document.Frontmatter, \"regenerate\") {\n \t\tname = \"regenerate\"\n \t}\n \tplaybook, e := assets.Playbook(name)\n \tif e == nil {\n-\t\tfmt.Fprintf(&b, \"\\n%s\\n\", playbook)\n+\t\tfmt.Fprintf(&b, \"\\n# Playbook\\n%s\\n\", playbook)\n \t}\n \treturn b.String(), nil\n }\n--- packages/workflow/internal/lifecycle/verify.go attempt1\n+++ packages/workflow/internal/lifecycle/verify.go stopped-attempt2\n@@ -105,6 +105,36 @@\n \tif e = approvedError(cl, raw); e != nil {\n \t\treturn e\n \t}\n+\t// A held change's spec bases are tied to the phase base. Detect edits to\n+\t// those clauses before zone checks, which classify SPEC.md as protected.\n+\tif len(c.Modified)+len(c.Removed) > 0 {\n+\t\tm, ok := module(cl.Snapshot, c.Module)\n+\t\tif ok {\n+\t\t\tpath := filepath.ToSlash(filepath.Join(m.Dir, \"SPEC.md\"))\n+\t\t\tbase, be := gitstore.ReadAt(root, cl.Base, path)\n+\t\t\tcurrent, ce := read(root, path)\n+\t\t\tif be == nil && ce == nil && string(base) != current {\n+\t\t\t\toldDoc, oe := contracts.ParseDocument(string(base))\n+\t\t\t\tnowDoc, ne := contracts.ParseDocument(current)\n+\t\t\t\tif oe == nil && ne == nil {\n+\t\t\t\t\toldItems, _ := contracts.ParseItems(section(oldDoc.Body, \"Specs\"))\n+\t\t\t\t\tnowItems, _ := contracts.ParseItems(section(nowDoc.Body, \"Specs\"))\n+\t\t\t\t\tbefore, after := map[string]string{}, map[string]string{}\n+\t\t\t\t\tfor _, it := range oldItems {\n+\t\t\t\t\t\tbefore[it.ID] = contracts.SpecHash(it)\n+\t\t\t\t\t}\n+\t\t\t\t\tfor _, it := range nowItems {\n+\t\t\t\t\t\tafter[it.ID] = contracts.SpecHash(it)\n+\t\t\t\t\t}\n+\t\t\t\t\tfor _, it := range append(c.Modified, c.Removed...) {\n+\t\t\t\t\t\tif before[it.ID] != after[it.ID] {\n+\t\t\t\t\t\t\treturn problem(\"P05\", \"stale base for %s\", it.ID)\n+\t\t\t\t\t\t}\n+\t\t\t\t\t}\n+\t\t\t\t}\n+\t\t\t}\n+\t\t}\n+\t}\n \treturn stale(root, c)\n }\n func checkZones(root string, c project.Change, cl claim) error {\n@@ -323,6 +353,19 @@\n \t\tr.Diagnostics = append(r.Diagnostics, ds...)\n \t\tif be != nil && first == nil {\n \t\t\tfirst = be\n+\t\t\tmessages := []string{}\n+\t\t\tcode := \"\"\n+\t\t\tfor _, d := range ds {\n+\t\t\t\tif !d.Warning {\n+\t\t\t\t\tif code == \"\" {\n+\t\t\t\t\t\tcode = d.Code\n+\t\t\t\t\t}\n+\t\t\t\t\tmessages = append(messages, d.Message)\n+\t\t\t\t}\n+\t\t\t}\n+\t\t\tif code != \"\" {\n+\t\t\t\tfirst = fmt.Errorf(\"%s: %s: %w\", code, strings.Join(messages, \"; \"), be)\n+\t\t\t}\n \t\t}\n \t}\n \treturn r, surfaced(first, r.Diagnostics)\n@@ -334,12 +377,16 @@\n \t_ = os.WriteFile(filepath.Join(dir, name+\".json\"), b, 0644)\n \t_ = os.WriteFile(filepath.Join(dir, name+\".out\"), []byte(report.Stdout+report.Stderr), 0644)\n }\n-func provenance(req model.Request, phase string, reports map[string]checks.Report) string {\n+func provenance(req model.Request, phase string, regenerate bool, reports map[string]checks.Report) string {\n \tagent := req.Agent\n \tif agent == \"\" {\n \t\tagent = \"manual\"\n \t}\n-\tplaybook, _ := assets.Playbook(phase)\n+\tplaybookName := phase\n+\tif phase == \"impl\" && regenerate {\n+\t\tplaybookName = \"regenerate\"\n+\t}\n+\tplaybook, _ := assets.Playbook(playbookName)\n \thash := sha256.Sum256([]byte(playbook))\n \ttotal, passing, failing := 0, 0, 0\n \tfor _, r := range reports {\n--- packages/workflow/internal/lifecycle/done.go attempt1\n+++ packages/workflow/internal/lifecycle/done.go stopped-attempt2\n@@ -74,7 +74,7 @@\n \tif e != nil {\n \t\treturn r, e\n \t}\n-\traw = appendProvenance(raw, provenance(req, cl.Phase, r.Reports))\n+\traw = appendProvenance(raw, provenance(req, cl.Phase, fmBool(c.Document.Frontmatter, \"regenerate\"), r.Reports))\n \tswitch cl.Phase {\n \tcase \"evals\":\n \t\tnext := \"audit\"\n@@ -182,7 +182,9 @@\n \tfor _, it := range items {\n \t\trendered = append(rendered, strings.TrimSpace(contracts.RenderItem(it)))\n \t}\n-\tdoc.Body = contracts.ReplaceSection(doc.Body, \"Specs\", \"\\n\"+strings.Join(rendered, \"\\n\\n\")+\"\\n\")\n+\tif len(c.Added)+len(c.Modified)+len(c.Removed) > 0 {\n+\t\tdoc.Body = contracts.ReplaceSection(doc.Body, \"Specs\", \"\\n\"+strings.Join(rendered, \"\\n\\n\")+\"\\n\")\n+\t}\n \tif set := asMap(c.Document.Frontmatter[\"set\"]); len(set) > 0 {\n \t\tfor k, v := range set {\n \t\t\tdoc.Frontmatter[k] = v\n@@ -207,7 +209,9 @@\n \t\t\t}\n \t\t}\n \t}\n-\tdoc.Body = contracts.ReplaceSection(doc.Body, \"Decisions\", strings.TrimSpace(decisions)+\"\\n\")\n+\tif removed != \"\" || added != \"\" {\n+\t\tdoc.Body = contracts.ReplaceSection(doc.Body, \"Decisions\", strings.TrimSpace(decisions)+\"\\n\")\n+\t}\n \tnext, e := contracts.RenderDocument(doc)\n \tif e != nil {\n \t\treturn e\n"
 ````````````````
+
+
+## Safer workflow retry preparation
+
+### Authority and stopped-drill review
+
+The owner authorized only external wrapper/inspector preparation and bounded fake
+rehearsals, followed by a protected author commit and an approval handoff. No native
+product drill was invoked. Candidate `79cf33a7690082f28c06bf41a72719d282bc00fe`
+and its validated range
+`be35552b706aa3000ff8f11306d129ff1d701b85..79cf33a7690082f28c06bf41a72719d282bc00fe`
+remain unchanged. This preparation adds no product/spec/eval correction, imported
+reconstruction, controller promotion or push.
+
+Reviewed `ea245a7`'s stopped outcome, isolation/release attestations, native first
+verification feedback, second-worker disclosure, terminal/cleanup observations
+and stated review limits. Its second trace was unavailable because the native
+controller was interrupted before publishing buffered output. Its first native
+verification failed; the temporary-module disclosure invalidated independence.
+The complete earlier report remains the exact prefix of this report. No new
+native result, complete case report or passing proof is inferred here, and no
+stopped reconstruction is used as an implementation oracle or retry input.
+
+### External preparation
+
+Protected source and restart procedure are in
+[docs/rebuild/workflow-drill](../../docs/rebuild/workflow-drill/README.md).
+The production wrapper validates the exact SYSTEM command/model/effort and keeps
+the existing hold and configured two-attempt cap. Its diagnostics go only to
+outside gate records. Each raw stdout/stderr chunk is written and fsynced outside
+the input tree before being forwarded unchanged to the matching native pipe;
+separate disk spools permit drain while forwarding is backpressured. No stream
+merging, byte decoding/filtering, banner, command interception, filesystem/process
+instrumentation, implementation hint or additional worker input was introduced.
+
+Rejection is serialized with release/launch and latches across remaining attempts.
+A normal inspector stop requests worker-group TERM, allows five seconds before
+KILL, and bounds subsequent drain/forwarding by five more seconds. The wrapper
+records EOF and received/forwarded byte counts and returns failure. The inspector
+then permits at most 120 seconds for native failure publication. If the wrapper
+wedges, the reporting window expires, or the original deadline arrives, bounded
+whole-run cleanup stops owned worker groups before controller-group INT/KILL.
+The emergency path includes a bounded worker drain window instead of immediately
+interrupting its wrapper. This corrected the emergency sequencing race found by
+the fake rehearsal; no controller/product change was needed. Hard emergencies
+can still leave incomplete output; records must say so, with no assertion about
+unseen output or native publication. SYSTEM's escaped-process limit remains.
+
+The preserved isolation preflight differs from the retained outside preflight
+only by accepting its outside root explicitly. It still checks exact immutable
+inputs, symlink exclusion, one-commit input-only Git with no remote/alternate/old
+unreachable objects, separated verifier, all retained verifier bytes, deleted
+workflow implementation, required verifier manifests/hooks and dependency/dependent
+implementations, exact first fresh output before attempt two, and all pin copies.
+The inspector runs preflight on readiness and again before each release, requires
+actual-input review before release one, and full first command/script/incremental
+patch plus native-feedback review before release two. The second attestation also
+binds the completed first raw streams and fresh output to the reviewed trace.
+The only worker instruction clarification forbids local builds/tests/module setup,
+explains intentionally missing compilation infrastructure, and directs formatting
+of fresh code before returning it to the outside verifier.
+
+Preparation-only staging was exercised without any Fireweed invocation. The
+isolated no-hardlinks caller's setup child had the exact candidate as its parent,
+changed only SYSTEM and agent.wrap configuration, and was clean. All 31 expected
+immutable input identities/bytes, retained verifier hashes and staged outside
+tooling matched their source. No gate, controller process or native ref was
+created. The two owned staging clones were removed after inspection; unrelated
+worktrees and prior evidence/scratch locations were untouched.
+
+### Bounded fake rehearsal evidence
+
+Command: `PYTHONDONTWRITEBYTECODE=1 python3 docs/rebuild/workflow-drill/rehearse.py`.
+It uses explicit fake child argv through the same supervisor functions, with
+short fixture bounds; there is no PATH command shim, codex invocation, Fireweed
+invocation or native drill. All six final cases passed, as did the separate
+production command-rejection check. Initial harness errors and the emergency
+drain race were corrected solely in the external tooling before this final run.
+A subsequent tool-sandbox run denied a process-group signal during cleanup; the
+final run used ordinary host process permissions and passed without masking that
+error or changing the restricted worker command/sandbox. Host permission to signal
+owned child groups is required for the outside supervisor. Textual diff checks
+pass; the raw stream fixtures intentionally retain CRLF bytes and are not subject
+to whitespace normalization.
+
+| Case | Observed fake outcome |
+| --- | --- |
+| Normal completion | Live durable logs and live forwarding before exit; 262,416 raw bytes per stream, including NUL, non-UTF-8, CRLF and payloads larger than pipe capacity; exact byte equality; normal completion. |
+| Reviewed configured retry | Both workers held for review and repeated fake preflight, first raw trace identity checked, second released only after its attestation; both streams forwarded identically. |
+| Inspector interruption | Worker and ordinary descendant termination tails fully captured/forwarded; worker stopped, controller fixture wrote its failure record, attempted later worker refused without release. |
+| Review rejection | No worker launch/release; later controller attempt refused; a stale passing attestation could not reopen the gate. No worker logs are expected in this case. |
+| Reporting-window exhaustion | Worker/descendant output drained and forwarded; fake controller had its bounded opportunity and wrote a fixture record, then ignored INT and was KILLed. No later worker release. |
+| Whole-run emergency | Fake deadline stopped a TERM-ignoring worker with KILL; raw streams drained/forwarded before controller escalation; INT-ignoring fake controller KILLed. No second release. |
+
+Every launched case checked worker/native-controller/descendant process cleanup,
+removed its fake reconstruction input directory and reread surviving outside logs.
+Each captured stream equals the corresponding downstream fake-controller file
+byte for byte. Evidence retains the raw streams, independent forwarded copies,
+wrapper completion records and fixture terminal/report records:
+[results.json](workflow-wrapper-rehearsal/results.json),
+[normal](workflow-wrapper-rehearsal/normal/finished-1.json),
+[retry](workflow-wrapper-rehearsal/retry/finished-2.json),
+[interruption](workflow-wrapper-rehearsal/interruption/finished-1.json),
+[rejection](workflow-wrapper-rehearsal/rejection/fake-report.json),
+[reporting timeout](workflow-wrapper-rehearsal/reporting-timeout/finished-1.json),
+[emergency](workflow-wrapper-rehearsal/emergency/finished-1.json).
+
+These records establish only the external fake-process plumbing and bounded
+cleanup on this host. The fake preflight is a fixture acknowledgement, not a
+native isolation proof. Fake controller records are explicitly fixture-only:
+they establish no pinned-controller reporting behavior, native report fields,
+case/coverage totals, proof-ref publication, native cleanup outcome or passing
+independent workflow proof. A future native reporting defect requiring controller
+or product changes must stop with a concrete owner proposal before authoring.
+
+### Preservation and approval handoff
+
+Protected author preparation occurred with an empty queue and no live run/shared
+claim. Pinned `context workflow-retry-preparation --json` reports expected U02:
+there is no queued/held change for protected author work. Pinned `verify --json`
+reports expected P02, worktree holds no change; it is not product verification.
+The applicable checks are the passing fake rehearsals, preparation-only staging,
+syntax review and evidence/preservation checks, not another product suite or drill.
+
+Live pinned status reports queue empty, unapproved zero and unchanged P08/B02
+warnings. At this task's entry, origin/main already named `ea245a7`, as did main;
+the historical stopped handoff's count of two remains historical evidence. No
+approval ref, counter or bound was reset here. The final preservation check keeps
+all entry proof/attempt/other refs (apart from the normal main author commit),
+archive contents/counters, product/spec/eval/config/hook files, controller/recovery
+executables and unrelated worktree intact. Only outside tooling, fake evidence
+and protected handoff documents are authored.
+
+The original deadline remains **2026-11-07 22:51:05 UTC**. No native invocation is
+running, no passing workflow proof is claimed, and WF4 remains open. GOAL and the
+tooling README give a restartable fresh-root procedure and actual-review gates.
+Stop here with the prepared retry for the owner's separate approval; do not
+launch another native drill under this preparation authorization.
