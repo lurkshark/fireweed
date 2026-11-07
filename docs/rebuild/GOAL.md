@@ -1,19 +1,25 @@
-# Workflow proof approval handoff
+# Workflow failure owner checkpoint
 
 [ACCEPTANCE](ACCEPTANCE.md#planned-milestone--workflow-contracts-and-regeneration-proof-wf1wf4)
 is the ordered plan. [PROGRESS](PROGRESS.md) records status, deadline and the
 controller pin. [SYSTEM](../../SYSTEM.md) defines execution rules and the exact
 agent command. [DECISIONS](DECISIONS.md) retains behavioral clarifications.
 
-WF1 review and WF2 validation are complete for candidate
-`3d7d210fb7300a3cf48406247ce08db7a14e11fe`, with no correction needed.
-The appended workflow preparation in the [checks report](../../.fireweed/drills/checks.md)
-records the exact validation and history range. WF3 awaits separate explicit
-owner approval for one native workflow invocation on that exact candidate.
-No native workflow drill ran during preparation.
+WF1–WF2 preparation is complete for candidate
+`3d7d210fb7300a3cf48406247ce08db7a14e11fe`. The separately approved WF3
+invocation failed after its two configured attempts. The
+[reviewed workflow report](../../.fireweed/drills/workflow.md) retains the native
+result, full traces, failed reconstruction ref and exact preparation. No
+reconstructed source was imported. WF4 and full product completion remain open.
 
-After that approval, use this prompt to resume:
+Stop here for owner agreement before authoring corrections or running another
+drill. The report identifies two focused questions: the public no-held-claim
+protocol used by workflow/runner, and the missing workflow assertion for
+forbidden audit-phase edits. Native reconstruction mistakes do not automatically
+authorize product/eval/spec changes. Any approved follow-up must have an agreed
+scope, preserve the existing obligations/counters and use the normal audited
+lifecycle. The prior approval authorizes no further native invocation.
 
-```text
-/goal Execute WF3–WF4 in docs/rebuild/ACCEPTANCE.md on validated candidate 3d7d210fb7300a3cf48406247ce08db7a14e11fe after my separate explicit approval for one native workflow invocation. WF1–WF2 are complete; reuse their committed preparation evidence. Follow AGENTS.md, SYSTEM.md, PROGRESS.md and DECISIONS.md. Preserve the pinned controller, recorded deadline, configured bounds/counters, prior proofs and unrelated worktrees. Use the isolated clone, inspector and live isolation gates required by WF3, reviewing actual retained inputs, full commands/scripts/patches and native feedback before each permitted release. Monitor the same invocation to its terminal result. A native failure or owner decision stops the milestone; further drills and gap corrections require separate agreement. Commit the reviewed native evidence and clean handoff, then stop at WF4. Do not import rebuilt code, promote a controller or push.
-```
+Preserve the recorded deadline, pin, bounds, counters, prior proofs, failed native
+ref and unrelated worktrees. Controller promotion, code import, later module
+drills, publication and push remain outside the authorized work.

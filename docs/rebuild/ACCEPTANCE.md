@@ -81,9 +81,14 @@ gc, migrate, agents-md --write
 **WF1–WF2 preparation complete.** The appended workflow preparation in the
 [reviewed checks report](../../.fireweed/drills/checks.md) records the focused
 review and clean validation of candidate
-`3d7d210fb7300a3cf48406247ce08db7a14e11fe`. No correction was needed.
-WF3 requires separate explicit owner authorization on that exact candidate.
-Workflow is next in the proof dependency order, followed by runner and app.
+`3d7d210fb7300a3cf48406247ce08db7a14e11fe`. No correction was identified during preparation.
+The separately owner-approved WF3 invocation on that exact candidate failed
+within the existing two-attempt bound. The
+[reviewed workflow report](../../.fireweed/drills/workflow.md) retains the native
+failure, traces, reconstruction ref, carried-forward preparation and owner
+checkpoint. The milestone is stopped; WF4's passing independent proof remains
+open. Corrections and another drill require separate owner agreement.
+Workflow remains next in the proof dependency order, followed by runner and app.
 
 **Entry.** Follow SYSTEM and the pin/deadline in PROGRESS. Read AGENTS,
 DECISIONS, the relevant unchanged design clauses and projected workflow
