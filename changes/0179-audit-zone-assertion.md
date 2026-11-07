@@ -67,3 +67,6 @@ contract change. After both apply, validate the clean identified candidate,
 commit evidence and stop at the exact-candidate WF2 approval gate before
 another native workflow invocation. Preserve all prior reports/proof refs and
 unrelated worktrees. No source import, controller promotion or push.
+
+## Audit
+
