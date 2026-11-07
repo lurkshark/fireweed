@@ -29846,3 +29846,52 @@ the candidate are clean, with no active claim or scratch worktree. The pin,
 counters, prior proof and attempt refs, unrelated worktree and original
 deadline were preserved. This validation does not advance CK3 or CK4. The
 next independent drill needs separate owner authorization.
+
+
+## Reviewed FLOW-055 recovery and affected CK2 validation
+
+The owner authorized a scoped audited FLOW-055 correction and affected CK2
+validation, followed by a stop before another drill.
+`0177-prioritize-unsupported-phase` applied at `db735ba26270473dc92787ab9e02c23615f0adb8`.
+The pulled README title change was merged at `6c38d5a` before authoring and
+is included in the validated history range.
+
+The new public eval held a review-phase claim and introduced a protected edit.
+Before implementation, Verify and Done both returned Z01 and the original
+unsupported-phase eval still passed. The independent restricted audit found
+adequate coverage with no findings. Verify now rejects unsupported phases
+after claim, frozen-state and static project checks and before zone evaluation.
+Done inherits the P01 rejection from Verify. The controller verified the full
+implementation and archived the change with all 644 cases passing.
+
+The clean candidate was built with Go 1.27.2 and `-trimpath` on darwin/arm64,
+with embedded source `db735ba26270473dc92787ab9e02c23615f0adb8` and `vcs.modified=false`.
+Its SHA-256 was `8cfb3c35f36469777c98b19a7854d59d7fc97319e476641b6cad0bd1f7fd8707`. The pinned controller remained separate.
+
+The explicit history range was
+`be35552b706aa3000ff8f11306d129ff1d701b85..db735ba26270473dc92787ab9e02c23615f0adb8`
+(1187 commits).
+
+| Gate | Result | Seconds |
+| --- | --- | ---: |
+| Candidate check | Pass | 0.38 |
+| Candidate doctor --no-agent | Pass | 12.55 |
+| Candidate Verify and Done CLI fixtures | Pass | 2.81 |
+| go test ./... | Pass | 967.30 |
+| go test -race ./... | Pass | 1059.41 |
+| go vet ./... | Pass | 1.28 |
+| Candidate check-commits, explicit range | Pass | 1354.89 |
+| Candidate CI, same range, hook doctor enabled | Pass | 2336.93 |
+
+The candidate CLI fixtures verified P01 from Verify and Done in both clean
+and protected-edit cases. They checked that rejection preserved HEAD, the
+held claim and worktree status, then released the fixture claim. The
+successful build emitted a sandbox warning about a Go module stat-cache
+write. Candidate check, doctor, explicit history check and CI returned no
+diagnostics. Existing testcase-budget warnings remain outside this change.
+
+Main and the candidate were clean after validation with no live claims or
+linked scratch worktrees from this work. Prior proof and attempt refs, the
+unrelated worktree, the controller pin and configured bounds were preserved.
+The failed native proof remains the latest CK3 result. A fresh independent
+proof still requires separate owner authorization.

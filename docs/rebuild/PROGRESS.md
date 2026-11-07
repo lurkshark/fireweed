@@ -1,5 +1,16 @@
 # Rebuild handoff
 
+**FLOW-055 recovery validated.** The owner-approved change
+`0177-prioritize-unsupported-phase` was applied and archived at `db735ba`.
+Fail-first evidence, independent audit and full implementation verification
+passed. The clean candidate passed affected CK2 validation, including Verify
+and Done through the candidate CLI and explicit-range CI with hook doctor
+enabled. The range includes the pulled README title merge. The
+[reviewed checks report](../../.fireweed/drills/checks.md) records the exact
+candidate and results. The pinned controller and bounds remain in place.
+Stop before another drill. CK4 remains open pending a passing independent
+proof, and another native invocation needs separate owner authorization.
+
 **Stopped at CK3.** The latest owner-authorized native checks drill on
 validated source `0e2c84c638620df5a0393e95911eb7de9e00bce6` exhausted its
 configured attempts. Both workers passed live input and verifier isolation
