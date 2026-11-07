@@ -1,4 +1,4 @@
-# Workflow proof approval handoff
+# Workflow independence checkpoint
 
 [ACCEPTANCE](ACCEPTANCE.md#planned-milestone--workflow-contracts-and-regeneration-proof-wf1wf4)
 is the ordered plan. [PROGRESS](PROGRESS.md) records status, deadline and the
@@ -13,12 +13,23 @@ the [checks report](../../.fireweed/drills/checks.md) and
 [workflow report](../../.fireweed/drills/workflow.md), preserving earlier native
 results and proof refs. No new native workflow drill ran during preparation.
 
-Stop for separate explicit owner approval of one native workflow invocation on
-that exact candidate. After approval, resume with:
+The owner subsequently approved one native invocation on that exact candidate.
+The first native verification failed in workflow, runner and app. The second
+configured worker was released after full first-trace/native-feedback review and
+repeated live isolation checks. Its notes then disclosed a prohibited temporary
+`go.mod`. The outside inspector stopped the invocation at the independence gate.
+The controller was interrupted before publishing a new native report or proof ref;
+the appended workflow evidence records all available observations and review limits.
 
-```text
-/goal Execute WF3–WF4 in docs/rebuild/ACCEPTANCE.md on validated candidate 79cf33a7690082f28c06bf41a72719d282bc00fe after my separate explicit approval for one native workflow invocation. The approved follow-ups 0178/0179 and updated WF2 preparation are complete; reuse their committed evidence. Follow AGENTS.md, SYSTEM.md, PROGRESS.md and DECISIONS.md. Preserve the pinned controller, recorded deadline, configured bounds/counters, prior reports/proof/attempt refs and unrelated worktrees. Use the isolated clone, outside inspector and live isolation gates required by WF3. Inspect actual retained inputs and keep dependency/dependent implementations and manifests/hooks in the separate verifier. Exclude original/deleted implementation, old history, prior reports/reconstructions, binaries and bootstrap from worker inputs. Review every full command/script/incremental patch and native feedback before each permitted release. Monitor the same invocation to its terminal result. A native failure or unresolved owner decision stops the milestone; further drills and gap corrections require separate agreement. Commit reviewed native evidence and clean handoff, then stop at WF4. Do not import rebuilt code, promote a controller or push.
-```
+Stop for owner agreement on this independence failure before any further drill
+or correction. No further execution is authorized by the consumed single-invocation
+approval. Preserve the pin, deadline, bounds/counters, prior reports/proof/attempt
+refs and unrelated worktree. No reconstructed code was imported or controller
+promoted. The drill scratch trees are removed, the queue is empty and no live
+run/shared claim remains. No push is authorized.
 
-The prior failed native workflow result remains a failure. WF4 and full product
-completion remain open until a reviewed passing independent proof closes them.
+The FLOW-023 gap alleged in the stopped worker's notes is a review-tag
+misinterpretation, not an established eval defect: the cited Added item is
+`[review]`, which the unchanged design exempts from eval enforcement. The Abandon
+conflict observation authorizes no correction. WF4 and full product completion
+remain open; the earlier failed workflow result and valid checks proof are preserved.

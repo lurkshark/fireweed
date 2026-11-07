@@ -16,17 +16,26 @@ and [workflow report](../../.fireweed/drills/workflow.md) records candidate
 validation, the rejected audit submission and bounded independent retry, and
 initial timing-test failures with unchanged passing reruns.
 
-WF3 awaits explicit owner approval for one native workflow invocation on this
-exact candidate with the unchanged pin, bounds and live isolation/inspection
-gates. No further native workflow drill ran during preparation. WF4 and full
-product completion remain open. Follow the
+The owner approved one native workflow invocation on this exact candidate under
+the unchanged pin, deadline, bounds and live isolation gates. The first native
+verification failed in workflow and both transitive dependents, runner and app.
+After complete first-trace/native-feedback review and repeated live isolation
+checks, the second configured worker was released. It disclosed creating and
+removing a temporary `go.mod`, contrary to the explicit reconstruction write
+restrictions. The inspector stopped the invocation at the independence checkpoint.
+The controller exited by interruption before publishing a new native report,
+complete case report or proof ref. No passing independent proof is claimed.
+Available evidence and its limits are appended to the workflow report; its earlier
+native result and exact preparation remain intact. WF4 and full product completion
+remain open. Follow the
 [ordered plan](ACCEPTANCE.md#planned-milestone--workflow-contracts-and-regeneration-proof-wf1wf4)
-and [approval handoff](GOAL.md). Stop before another drill or additional correction.
+and [owner checkpoint](GOAL.md). Stop before another drill or any correction.
 
 The deadline remains **2026-11-07 22:51:05 UTC** (14:51:05 PST).
 The completed checks budget began 2026-11-04 22:51:05 UTC. It and the earlier
 stabilization budget are closed. Preserve the deadline and enforcement bounds.
-The selected two-change follow-up is complete; no later milestone is authorized.
+The selected two-change follow-up is complete. The single approved native
+invocation is stopped; further drills and corrections need separate agreement.
 
 CK1–CK4 remain complete. Their native report and proof ref
 `refs/fireweed/drills/checks/20261107T002339.020159000` are preserved. The previous
@@ -35,13 +44,14 @@ satisfy the passing workflow-proof gate. Preserve prior reports/proof/attempt
 refs and all earlier archive counters. Existing budget warnings and the scoped
 repeated-workflow warning are explained in the preparation evidence.
 
-At handoff, main and the candidate were clean before evidence authoring; candidate
-scratch cleanup passed and its validation clone was removed. No live run/shared
-claim or queued change remained. The live unapproved count is two; normal
-approval enforcement and its configured bound are unchanged. Configuration,
-controller/recovery executables, prior refs, old archive contents/counters and
-the unrelated linked worktree were preserved. Only the two new applied archives
-were added. Protected evidence is committed separately from worker work.
+At handoff, the stopped drill processes exited and its input tree, verifier
+worktree and isolated caller clone were removed. Main was clean before protected
+evidence authoring. No live run/shared claim or queued change remains. The live
+unapproved count is two; normal approval enforcement and its configured bound
+are unchanged. Configuration, controller/recovery executables, all prior refs,
+archive contents/counters and the unrelated linked worktree were preserved.
+No product, spec or eval correction, reconstructed source import, controller
+promotion or push occurred. Protected evidence is committed after the stop.
 
 **Controller pin** `/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed`,
 version 0.1.0, source `193634686aa6a1c4eb32e69df1c85e1d5ce48bd7`, SHA-256

@@ -78,18 +78,22 @@ gc, migrate, agents-md --write
 
 ## Planned milestone — Workflow contracts and regeneration proof (WF1–WF4)
 
-**Focused follow-ups and updated WF2 preparation complete.** The owner-approved
+**WF3 stopped at the independence checkpoint; WF4 remains open.** The owner-approved
 Current absence contract and FLOW-002 audit-zone assertion are applied as
 [0178](../../changes/archive/0178-current-absence-contract.md) and
 [0179](../../changes/archive/0179-audit-zone-assertion.md). The appended preparation
 in the [checks report](../../.fireweed/drills/checks.md) and
 [workflow report](../../.fireweed/drills/workflow.md) records review and clean
 validation of candidate `79cf33a7690082f28c06bf41a72719d282bc00fe`.
-WF3 requires separate explicit owner approval for one native workflow invocation
-on this exact candidate under the unchanged pin, bounds and live inspection gates.
-The earlier failed invocation/report/ref are preserved; WF4's passing independent
-proof remains open. Workflow remains next in the proof dependency order, followed
-by runner and app.
+The owner approved one native invocation on this exact candidate. Its first
+verification failed in workflow, runner and app. The second configured worker
+disclosed creating and removing a prohibited temporary `go.mod`; the outside
+inspector stopped the invocation. No new native result or proof ref was published.
+The appended workflow evidence preserves the available trace, native feedback,
+stopped-file observations and cleanup, with its review limits stated explicitly.
+The earlier failed invocation/report/ref and updated preparation are preserved.
+Further drills or corrections require separate owner agreement. Workflow remains
+next in the proof dependency order, followed by runner and app.
 
 **Entry.** Follow SYSTEM and the pin/deadline in PROGRESS. Read AGENTS,
 DECISIONS, the relevant unchanged design clauses and projected workflow
