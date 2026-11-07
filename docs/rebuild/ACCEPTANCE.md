@@ -84,16 +84,12 @@ clean validated candidate before requesting approval for a native drill.
 This planning update performs neither review nor candidate validation.
 WF3 requires separate explicit owner authorization on the identified candidate.
 
-**Budget and entry.** Preserve the controller path/source/hash in PROGRESS,
-the prescribed model/effort, P07, audit rounds, attempts, timeouts and usage
-bounds. Preparation retains the existing deadline of 2026-11-07 22:51:05 UTC
-as its ceiling. The completed CK budget remains closed; this plan grants no
-extension or fresh attempt allowance. Stop at that deadline and obtain owner
-agreement before later execution. Read AGENTS, SYSTEM, PROGRESS, DECISIONS,
-the relevant unchanged design clauses and the workflow projected contracts.
-Inspect live status, queue, runs and shared claims before execution. Preserve
-the completed checks report/ref, all prior proofs/counters and unrelated
-worktrees. Protected planning and evidence commits occur between active runs.
+**Entry.** Follow SYSTEM and the pin/deadline in PROGRESS. Read AGENTS,
+DECISIONS, the relevant unchanged design clauses and projected workflow
+contracts. Inspect live status, queue, runs and shared claims. Preserve prior
+evidence/refs, configured bounds/counters and unrelated worktrees. Stop at
+the recorded deadline or a SYSTEM stop. Protected author commits occur
+between active runs.
 
 1. **WF1 — Focused workflow contract review.** Review workflow's Specs,
    Decisions, retained interfaces and public evals against its existing design
@@ -159,152 +155,12 @@ The requirement/command inventories and all full-completion gates remain.
 Real regenerate changes, rebuilt-code import, controller promotion, later module
 drills, unrelated cleanup, publication and push remain outside this milestone.
 
-## Completed milestone — Checks contracts and proof (CK1–CK4)
-
-**Completed at CK4.** The reviewed native checks report and retained proof in
-PROGRESS close this milestone. The following gates preserve its approved scope
-and historical procedure; they authorize no repeated execution.
-Plan and execution were approved on 2026-11-04.
-The approved sequence was CK1 → CK2 → CK3 → CK4. This selected
-checks-owned obligations from the unchanged design (R07/R09–R11/R15/R18/R25/
-R28/R29) and its independent proof (R16/full gate 7); it adds no product scope.
-The requirement inventory, command inventory and every full-completion gate
-remain required. Planning does not perform CK1's contract review.
-
-**Historical approved plan budget:** three days from the authorized execution start,
-ending earlier at CK4 completion or a stop below. Record the
-new start/deadline in PROGRESS on execution and retain it on resume. The closed
-stabilization budget does not carry forward. Keep P07, audit/retry/time bounds
-and SYSTEM's correction limit unchanged; read live state/bounds at execution,
-without copying their values into planning documents.
-
-**Entry and controller:** read AGENTS, SYSTEM, PROGRESS, this plan, the affected
-design clauses and DECISIONS. Inspect live status/queue/runs/shared claims and
-preserve unrelated worktrees and proof refs. Commit approved planning/setup as
-separate protected author work with no active change/run/claim before product
-work. Keep the resulting controller path/source/hash in PROGRESS through the
-remaining CK work; confirm it matches before use and stop on a mismatch or
-missing pin. Each replacement requires a separate owner-authorized, verified
-handoff. No automatic fallback, cross-controller resume or switch during a run/claim.
-The owner separately authorized a verified handoff on 2026-11-04 after the prior
-pin proved to lack native drill support. That handoff requires all CK2 validation
-from clean committed current source, no active run or shared claim, an exact
-source/hash record in PROGRESS and a separate protected author commit. Preserve
-the previous executable for explicit recovery, with no automatic fallback, then
-freeze the resulting pin through the remaining CK work. This exception does not
-reset the original budget or any enforcement bounds.
-The freshly built candidate is the product under test, separate from that pin.
-The pinned controller owns every lifecycle operation and the drill; their scratch
-setup copies the invoking pin and workers put that tree's `.fireweed/bin` first
-on PATH. Isolated candidate CLI proofs copy their explicitly selected subject
-invoker instead; that never adopts it as the workflow controller. Use the
-rebuild cache and exact agent argv in GOAL.
-
-**Stops:** stop at the first blocked change, unresolved verification failure under
-SYSTEM's correction limit, access/independence failure, uncovered owner decision,
-budget deadline or CK4 completion. Findings that need an out-of-scope change or
-cannot be tested become owner questions. Do not reset attempts/rounds, create a
-replacement change to evade bounds, or start a fresh drill after exhausted
-attempts. Preserve work and native diagnostics through the controller's normal
-recovery. Any further drill or scope expansion needs owner authorization.
-
-1. **CK1 — Focused checks contract review and necessary corrections.** Review
-   checks' current spec/Decisions/interfaces/evals once against its existing
-   JUnit/evidence/coverage, zone, hook/boundary, doctor and history obligations.
-   Include genuine fail-first versus compile/collection/skip evidence,
-   unsuccessful boundary-hook suppression and merge/squash history semantics
-   where required by those contracts. Record concise conclusions; close only
-   concrete unmet clauses or demonstrated failures within checks. No
-   implementation or new eval is presumed needed. Put correction evidence in
-   change Notes/Provenance; when no correction is needed, record the review
-   conclusion in the reviewed native checks report at CK4, without inventing a
-   change or supplemental report.
-
-   Batch coherent corrections by module, one active change at a time. Read the
-   pinned author-change playbook and projected specs; use `new:` handles where
-   applicable, stamp, check and show --projected, then commit authoring separately
-   with no active run/claim. Run context before each worker step. Preserve normal
-   fail-first or legitimate already_satisfied, audited eval_fix for wrong frozen
-   evals, separate restricted independent audits and full phase verification.
-   Keep every existing assertion, case, ID coverage and behavior. Workers verify
-   and return; only the outside owning controller advances, commits and archives.
-   Workers never invoke lifecycle mutators or edit run/phase/Provenance. Re-audit
-   only IDs with findings and preserve counters. Review fixes only against
-   affected requirements. Ambiguity or required work outside checks, including
-   dependency interfaces or protected hook behavior, stops for owner agreement
-   before authoring. No speculative hardening or repository-wide spec rewrite.
-   Finish and archive scoped changes before CK2.
-
-2. **CK2 — Identified clean NEW candidate.** From the completed CK1 source in a
-   clean fresh checkout, build a separate product candidate and pass applicable
-   `go test ./...`, `go test -race ./...` and `go vet ./...` with the prescribed
-   cache. Validate that candidate's `check`, `doctor --no-agent`,
-   `check-commits <baseline>..HEAD` and `ci <baseline>..HEAD` with hook doctor
-   enabled. Use explicit subject paths and isolated candidate fixtures; setup
-   copies that proof's invoker. Never use the mutable candidate as the workflow
-   controller. Exercise actual candidate CLI paths affected by any correction.
-   Preserve baseline `be35552b706aa3000ff8f11306d129ff1d701b85`; resolve and record
-   the exact nonempty range and executable identity in applicable committed
-   evidence, with only the controller pin in planning. Reuse valid prefixes and
-   unaffected evidence without skipping required phase checks. Explain warnings
-   without unrelated cleanup or raised bounds. No live scoped change or claim
-   remains before CK3. A relevant source/setup correction invalidates the
-   affected candidate evidence; reassess it before proceeding.
-
-3. **CK3 — One independent checks drill.** Use an isolated clone of the verified
-   candidate source, governed by the unchanged pinned controller. Before the
-   real invocation, align instructions/setup/PATH, confirm setup copies the
-   invoker, and inspect the actual worker input and separate verifier. If the
-   pin and allowed setup cannot satisfy these isolation/reporting requirements,
-   stop before invoking the real agent; do not promote the candidate or weaken
-   independence to proceed.
-
-   Supply retained checks spec/Decisions/interfaces/evals and approved retained
-   files, plus only declared contracts/gitstore/assets/project public interfaces,
-   including model interfaces. Keep actual dependency/dependent implementations,
-   full manifests and hooks outside reconstruction inputs in the separate
-   verifier. Exclude old target disposable code/data, old history, saved attempts,
-   binaries, bootstrap and other-module internals. Input Git must expose no old
-   history, remotes or alternates. The invoking controller and verifier may be
-   used as opaque tools, never queried as implementation oracles.
-
-   Run exactly one native checks drill with the prescribed real agent/model/
-   effort and unchanged configured attempt/retry bounds. Inspect independence
-   again in the live worker/verifier; review every command, full script and
-   incremental patch. Checks and every transitive dependent (workflow, runner,
-   app) must pass enforced evals and coverage with retained inputs byte-unchanged.
-   Review all native report fields/cases, contradicted Decisions and gaps.
-   No automatic gap fixes; a gap/contradiction needing an owner decision stops
-   the milestone. Native bounded retries do not authorize a fresh drill.
-
-4. **CK4 — Reviewed evidence and clean handoff.** Completion requires CK1/CK2
-   and a passing independent checks proof with no unresolved owner checkpoint.
-   Owner-approved recovery follows the normal audited lifecycle, preserves
-   frozen obligations/counters and reassesses affected evidence; another drill
-   still needs owner authorization. Retain the reviewed native
-   `.fireweed/drills/checks.md` and `refs/fireweed/drills/checks/<date>`. Commit
-   the report as separate protected author evidence with no live run/claim.
-   Keep per-change evidence in archived Notes/Provenance and drill conclusions
-   in the committed native report, without supplemental reports, testcase
-   inventories, temporary paths or hash manifests in planning.
-
-   Verify clean checkouts, scratch cleanup, no active run/claim, unchanged
-   pin/bounds and preserved prior proofs/unrelated worktrees. Update PROGRESS
-   with current state, any remaining owner checkpoint and next work. Report
-   scoped change slugs/commits or why none were needed, exact validation results
-   and explicit history ranges, the native report/ref, blocked/skipped work and
-   reasons, and live status --json unapproved count. Stop at CK4; do not push.
-
-**Excluded:** rebuilt-code import/replacement on main, real regenerate changes,
-controller promotion as part of CK1–CK4,
-workflow/runner/app real drills, gc/migrate work, further
-recipe work, compatibility/file-format migration, unrelated warning cleanup,
-delivery, publication and push. Later drill order remains workflow → runner →
-app, each owner-selected. Remaining drills alone do not complete the product;
-all full gates below remain. Preserve existing reports/refs, assess only relevant
-invalidation, and do not rerun earlier module proofs automatically.
-
 ## Completed milestones
+
+Checks contracts and proof (CK1–CK4) are complete. The reviewed
+[checks report](../../.fireweed/drills/checks.md) contains the contract review,
+candidate validation and passing independent proof. The original CK procedure
+is retained in commit `c34c3cb`.
 
 Core cutover, drill support/contracts proof, foundation proofs, stale-change
 projection/project proof, and stabilization A → B → C1–C8 are complete. The
@@ -329,7 +185,7 @@ Use one design/inventory review, then check fixes against affected requirements.
 1. **Traceability:** map design requirements to specs, referencing evals and archives; SYSTEM conventions use prescribed review/eval evidence. Verify every R row within that scope. Legitimate already_satisfied changes reuse existing assertions; review, quarantine or maintenance cannot waive design obligations. No extra spec layer or testcase inventory is required.
 2. **Process:** the recorded controller owns fail-first/audit/impl/archive commits (bootstrap before EC6, pinned NEW after it) for behavioral work; immutable evals/interfaces during impl; separate protected setup/author commits; no pending/blocked rebuild changes or active claims.
 3. **Go:** with `GOCACHE=/tmp/fireweed-rebuild-cache`, a fresh checkout builds the new binary and passes `go test ./...`, `go test -race ./...`, `go vet ./...`. Permanent tests run with local fixtures/fake agents and without bootstrap/agent authentication. Cross-compilation is not platform runtime testing; report limits accurately.
-4. **Controller checks:** the recorded controller runs `check`, `doctor`, `check-commits <setup-sha>..HEAD`, and `ci <setup-sha>..HEAD` with doctor enabled. Use the stage-2 baseline in GOAL; retain the exact nonempty range and per-module coverage in committed evidence. Resolve errors. For warnings, make a scoped correction or record the reason/limitation; zero warnings is not a separate gate. An empty default range proves no history.
+4. **Controller checks:** the recorded controller runs `check`, `doctor`, `check-commits <setup-sha>..HEAD`, and `ci <setup-sha>..HEAD` with doctor enabled. Use the explicit baseline in WF2; retain the exact nonempty range and per-module coverage in committed evidence. Resolve errors. For warnings, make a scoped correction or record the reason/limitation; zero warnings is not a separate gate. An empty default range proves no history.
 5. **Product checks:** NEW binary in fresh repositories performs init/doctor, author/stamp/check, documented base approval, start/failing-evals/audit/impl/done, coverage/history/PR/CI. Exercise fixes, eval_fix, maintenance, blocked recovery and regenerate. Normal unattended approval rejection is tested without --allow-unmerged. Pin subject paths so bootstrap cannot be used accidentally.
 6. **Reference comparison (smoke):** one equivalent fixture lifecycle run with both binaries, comparing exit codes, JSON envelope shape and resulting commits/refs. Record intentional differences briefly. Reference bugs do not define acceptance, and per-edge-case equivalence is not required.
 7. **Real regeneration:** successful controller-driven drills for every rebuilt disposable module, dependency-first. Real agents reconstruct from retained specs/Decisions/interfaces/evals and permitted dependency interfaces, without old implementation/history, saved attempts, old binaries or bootstrap. Own/transitive dependent evals pass without preserved-contract edits. Commit reviewed reports/retain refs and clean scratch worktrees. Repeat only drills invalidated by relevant changes or unresolved failures. Gaps require human agreement before authored fixes; agent suggestions alone authorize none. Missing real-agent access blocks this gate.

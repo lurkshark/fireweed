@@ -2,15 +2,9 @@
 
 Retained design clarifications and intentional reference-smoke differences.
 These do not add milestone scope or replace the unchanged design. Standing
-process and fixture guidance is consolidated in SYSTEM.md; completed procedures
-and first-run lessons remain in git history, never reconstruction inputs.
-
-## D001–D004 — History (2026-10-26)
-
-The first run was retired; the owner accepted usability, merge-strategy and
-bounded-effort revisions now reflected in the design and ACCEPTANCE R22–R29.
-Bootstrap governed pre-cutover work only. PROGRESS records the current NEW pin;
-neither the old branch nor bootstrap source/tests are implementation oracles.
+process and fixture guidance is consolidated in SYSTEM.md. Historical cutover,
+controller comparisons and handoff notes remain in commit `c34c3cb`, never
+reconstruction inputs.
 
 ## D005 — Initial product diagnostic allocation
 
@@ -58,24 +52,3 @@ The regenerate lifecycle feature assigns P10 to the warning that its module
 lacks a passing drill dated after the latest applied implementation Provenance.
 This allocation grants no drill authorization; PROGRESS records current
 status and GOAL links the planned milestone.
-
-## D009 — Early core-loop cutover milestone (owner, 2026-10-30)
-
-The completed Go/current-format core-loop cutover preceded drills and remaining
-product work. It changed sequencing only: every design obligation and
-full-completion gate remains required. ACCEPTANCE summarizes completed milestones.
-
-## D010 — Held-change continuation
-
-NEW `next` resumes this worktree's held change directly. The pinned bootstrap
-instead rejects that live claim with P01; handing a manually advanced phase to
-its unattended loop requires releasing the owning checkout's claim first.
-This controller difference adds no product requirement.
-
-## D011 — Reference lifecycle output and audit metadata
-
-The reference smoke returns string data for bootstrap next --json; NEW returns
-the change/run/phase/empty object required by APP-079. Both use the schema-1
-envelope and complete the same three lifecycle commits and held ref shape.
-NEW's independent audit metadata has an input-only initial commit, while
-bootstrap uses empty metadata; neither exposes held history or saved attempts.

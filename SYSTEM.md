@@ -20,7 +20,7 @@ The independently built subject remains /Users/joel/Workspace/fireweed/bin/firew
 
 ## Agent configuration
 
-Use Codex CLI only, with `gpt-6-sol` and `model_reasoning_effort="high"`, for workers, separate restricted auditor invocations and regeneration. The exact argv is in GOAL.md. Check access with bounded doctor probes during initial setup or after an access failure; do not silently change the model or effort or retry indefinitely.
+Workers, separate restricted auditors and regeneration use exactly `codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`. Check access with bounded doctor probes during initial setup or after an access failure; do not silently change the model or effort or retry indefinitely.
 
 ## Author and worker policy
 
@@ -28,7 +28,7 @@ An authorized execution goal permits local authoring and commits, including exec
 
 ## Scope guardrails
 
-These rules bound GOAL.md and ACCEPTANCE.md. The selected planning target is workflow contracts and regeneration proof (WF1–WF4), following the completed checks milestone. Prepare contract review and clean candidate validation before the owner's drill approval checkpoint. Planning alone authorizes no product execution, and a native workflow drill requires separate explicit authorization. Full product completion remains open. PROGRESS holds current state, recorded execution budgets and the controller pin; DECISIONS retains design clarifications. Completed procedures and historical lessons remain in git history, not the execution queue.
+ACCEPTANCE defines the selected milestone and approval checkpoints. PROGRESS holds current state, deadline and controller pin; GOAL is the restart prompt and DECISIONS retains design clarifications. These rules govern execution across milestones. Completed procedures and historical lessons remain in git history.
 
 - **Scope and stops.** Implement only an owner request, demonstrated failure or concrete unmet design/spec clause within the selected milestone. Agent suggestions and drill gaps authorize no extra work. Stop on a blocked change, independence/access failure, an unresolved correction or a decision needing the owner. Each owner-selected milestone states a budget (changes or days); when it is reached, stop for owner review. Stop after the selected work even if budget remains. No push is authorized for this milestone.
 - **Reconstruction inputs.** Never use `rebuild-v1`, bootstrap source/tests or deleted code as implementation oracles; old spec IDs have no authority. Regeneration also excludes old implementation/history, binaries, saved attempts and dependency internals. Supply retained contracts/evals and permitted dependency interfaces; keep full verification implementations outside worker inputs.
