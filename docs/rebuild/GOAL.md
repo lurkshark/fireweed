@@ -1,25 +1,22 @@
-# Workflow failure owner checkpoint
+# Approved workflow follow-up
 
-[ACCEPTANCE](ACCEPTANCE.md#planned-milestone--workflow-contracts-and-regeneration-proof-wf1wf4)
-is the ordered plan. [PROGRESS](PROGRESS.md) records status, deadline and the
-controller pin. [SYSTEM](../../SYSTEM.md) defines execution rules and the exact
-agent command. [DECISIONS](DECISIONS.md) retains behavioral clarifications.
+Follow [ACCEPTANCE](ACCEPTANCE.md#planned-milestone--workflow-contracts-and-regeneration-proof-wf1wf4),
+[PROGRESS](PROGRESS.md), [SYSTEM](../../SYSTEM.md), AGENTS and
+[DECISIONS](DECISIONS.md). The owner approved the two focused questions retained
+in the [failed workflow report](../../.fireweed/drills/workflow.md).
 
-WF1–WF2 preparation is complete for candidate
-`3d7d210fb7300a3cf48406247ce08db7a14e11fe`. The separately approved WF3
-invocation failed after its two configured attempts. The
-[reviewed workflow report](../../.fireweed/drills/workflow.md) retains the native
-result, full traces, failed reconstruction ref and exact preparation. No
-reconstructed source was imported. WF4 and full product completion remain open.
+Execute only the queued workflow Current absence-contract change and FLOW-002
+audit-zone assertion eval_fix through the normal audited lifecycle. Document
+and test the existing P02 absence signal, using legitimate already_satisfied;
+add the missing public audit-zone rejection assertion without runtime changes.
+Preserve all existing obligations/assertions and normal frozen-phase enforcement.
+Stop on a blocked change, access failure or unresolved owner decision.
 
-Stop here for owner agreement before authoring corrections or running another
-drill. The report identifies two focused questions: the public no-held-claim
-protocol used by workflow/runner, and the missing workflow assertion for
-forbidden audit-phase edits. Native reconstruction mistakes do not automatically
-authorize product/eval/spec changes. Any approved follow-up must have an agreed
-scope, preserve the existing obligations/counters and use the normal audited
-lifecycle. The prior approval authorizes no further native invocation.
+After both apply, validate a clean identified candidate using applicable WF2
+gates, preserve the explicit history baseline and reuse unaffected prior
+evidence. Commit the preparation evidence and clean handoff, then stop at WF2's
+exact-candidate approval gate before another native workflow invocation.
 
-Preserve the recorded deadline, pin, bounds, counters, prior proofs, failed native
-ref and unrelated worktrees. Controller promotion, code import, later module
-drills, publication and push remain outside the authorized work.
+Preserve the deadline, pin, bounds/counters, prior reports/proof/attempt refs and
+unrelated worktrees. No failed-source import, controller promotion, later-module
+drill, publication or push. WF4 and full product completion remain open.

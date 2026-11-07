@@ -86,8 +86,11 @@ The separately owner-approved WF3 invocation on that exact candidate failed
 within the existing two-attempt bound. The
 [reviewed workflow report](../../.fireweed/drills/workflow.md) retains the native
 failure, traces, reconstruction ref, carried-forward preparation and owner
-checkpoint. The milestone is stopped; WF4's passing independent proof remains
-open. Corrections and another drill require separate owner agreement.
+checkpoint. The owner subsequently approved the two focused corrections:
+Current's existing absence protocol and a FLOW-002 audit-zone assertion.
+Execute only those normal audited changes, then validate and identify the updated
+candidate at WF2's approval gate. WF4's passing independent proof remains open;
+another drill requires explicit approval of that identified candidate.
 Workflow remains next in the proof dependency order, followed by runner and app.
 
 **Entry.** Follow SYSTEM and the pin/deadline in PROGRESS. Read AGENTS,
