@@ -292,7 +292,9 @@ Start MUST set phase to impl for an unstarted change with regenerate true.
 ### FLOW-081
 Before returning from successful Start of an unstarted regenerate change,
 Fireweed MUST delete only the target module's files classified as disposable
-by the approved projected zone map, retaining all other files.
+by the approved projected zone map, retaining all other files. When claiming a
+regenerate change with an already recorded phase, Start MUST retain its existing
+disposable files.
 
 ### FLOW-082
 For a regenerate change, Start MUST emit warning P10 when the module has no
