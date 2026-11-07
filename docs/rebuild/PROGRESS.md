@@ -1,5 +1,16 @@
 # Rebuild handoff
 
+**Next planning target — workflow proof (WF1–WF4).** The owner requested a
+workflow contract review and clean candidate validation plan before drill
+approval. [ACCEPTANCE](ACCEPTANCE.md#planned-milestone--workflow-contracts-and-regeneration-proof-wf1wf4)
+defines the ordered gates; [GOAL](GOAL.md) carries the preparation restart
+prompt. WF1 review and WF2 validation remain pending. Stop at the identified
+candidate handoff for explicit approval before any native workflow drill.
+Planning preserves the current controller pin and all enforcement bounds.
+Preparation retains 2026-11-07 22:51:05 UTC as its ceiling, with no budget
+extension. Product/eval corrections found during review need owner agreement
+before authoring.
+
 **CK1–CK4 complete.** The independent checks drill on validated candidate
 `db735ba` passed its second configured attempt. Checks, app, runner and
 workflow passed enforced evals and coverage. The
@@ -18,16 +29,14 @@ attempt refs are retained.
 
 Main and the validated candidate are clean, with no active run or shared
 claim. Native input and verifier cleanup passed. The pin, configured bounds,
-original deadline and unrelated worktree were preserved. Stop at CK4. The
-next module in the planned drill order is workflow, pending separate owner
-selection. Full product completion remains open.
+original deadline and unrelated worktree were preserved. The selected next
+planning target is workflow. Full product completion remains open.
 
-[ACCEPTANCE](ACCEPTANCE.md#planned-milestone--checks-contracts-and-proof-ck1ck4)
-holds the ordered plan; [GOAL](GOAL.md) is its restart prompt.
-Approved plan budget: **three days**, starting **2026-11-04 22:51:05 UTC**
+[ACCEPTANCE](ACCEPTANCE.md) holds the milestone plans and full completion gates.
+The completed checks budget was **three days**, starting **2026-11-04 22:51:05 UTC**
 (14:51:05 PST), with deadline **2026-11-07 22:51:05 UTC** (14:51:05 PST).
-Retain this original start/deadline on resume. The completed stabilization budget
-is closed. Full product completion remains open; every full-completion gate is
+Retain this historical start/deadline. The checks and stabilization budgets
+are closed. Full product completion remains open; every full-completion gate is
 retained. Prior proof refs and the unrelated worktree are preserved.
 
 **Handoff authorization (2026-11-04):** the previous pin returned U01 because

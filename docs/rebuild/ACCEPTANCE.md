@@ -76,17 +76,102 @@ drill <module>
 gc, migrate, agents-md --write
 ```
 
-## Planned milestone — Checks contracts and proof (CK1–CK4)
+## Planned milestone — Workflow contracts and regeneration proof (WF1–WF4)
 
-**Plan and execution approved on 2026-11-04.** PROGRESS records the execution
-budget and the separate, completed one-time planning push authorization.
-Execute CK1 → CK2 → CK3 → CK4 in order. This selects
+**Planning selected after CK4 completion.** Workflow is next in the dependency
+order, followed by runner and app. Review workflow's contracts and identify a
+clean validated candidate before requesting approval for a native drill.
+This planning update performs neither review nor candidate validation.
+WF3 requires separate explicit owner authorization on the identified candidate.
+
+**Budget and entry.** Preserve the controller path/source/hash in PROGRESS,
+the prescribed model/effort, P07, audit rounds, attempts, timeouts and usage
+bounds. Preparation retains the existing deadline of 2026-11-07 22:51:05 UTC
+as its ceiling. The completed CK budget remains closed; this plan grants no
+extension or fresh attempt allowance. Stop at that deadline and obtain owner
+agreement before later execution. Read AGENTS, SYSTEM, PROGRESS, DECISIONS,
+the relevant unchanged design clauses and the workflow projected contracts.
+Inspect live status, queue, runs and shared claims before execution. Preserve
+the completed checks report/ref, all prior proofs/counters and unrelated
+worktrees. Protected planning and evidence commits occur between active runs.
+
+1. **WF1 — Focused workflow contract review.** Review workflow's Specs,
+   Decisions, retained interfaces and public evals against its existing design
+   obligations. Cover claim ownership and approved state, projected zones,
+   fail-first/audit/impl transitions, verification error causes, full Done
+   verification, atomic apply/archive/provenance, blocked recovery and release,
+   context, eval_fix and regenerate behavior. Include the existing FLOW-055
+   and FLOW-062 corrections. Reuse the completed checks review and passing
+   independent proof. Record the conclusion in committed milestone evidence.
+   A demonstrated defect, uncovered behavioral choice or proposed product/eval
+   correction is an owner checkpoint before authoring. Any approved correction
+   follows the normal audited lifecycle with frozen obligations and counters.
+
+2. **WF2 — Identified clean candidate and approval handoff.** After WF1 closes,
+   use a fresh clean checkout of the selected committed source and build a
+   separate subject executable. Pass applicable normal/race Go suites and vet,
+   then that candidate's check, doctor --no-agent, explicit-range check-commits
+   and CI with hook doctor enabled. Preserve history baseline
+   `be35552b706aa3000ff8f11306d129ff1d701b85`; resolve and record the exact
+   nonempty range and candidate identity in committed evidence. Exercise actual
+   candidate CLI paths affected by any approved correction. Reuse valid
+   prefixes and unaffected evidence, while running required phase verification.
+   Keep the subject separate from the pinned controller and confirm setup
+   copies the selected invoker. Explain existing warnings without scope growth.
+   Verify clean checkouts, cleanup, no live run/claim and preserved pin/bounds.
+   Append the exact preparation evidence to the existing reviewed checks
+   report, clearly labeled workflow preparation and preserving its native
+   result. Update PROGRESS with the handoff state and use archived change
+   evidence for any approved correction. **Stop before invoking drill and request owner
+   approval for exactly the identified candidate.**
+
+3. **WF3 — Native workflow drill after approval.** Only a separate owner
+   authorization permits one native workflow invocation under the existing
+   attempt/retry bounds. Use an isolated clone of the validated source with
+   the unchanged pinned controller and rehearsed live isolation gate. Start
+   the inspector alongside the controller. Before release, inspect actual
+   workflow spec/Decisions/interfaces/evals and approved retained inputs, plus
+   only declared contracts/gitstore/assets/project/checks public interfaces,
+   including model interfaces. Keep dependency/dependent implementations,
+   manifests and hooks in the separate verifier. Exclude original disposable
+   code, old history, prior reports/reconstructions, binaries and bootstrap from
+   worker inputs. Input Git exposes no old objects, remotes or alternates.
+   Review every command, full script and incremental patch. Before a second
+   configured attempt, review the first full trace/native feedback and repeat
+   the live isolation check. Monitor the same invocation to its terminal result.
+   Enforce workflow and all transitive dependents, currently runner and app,
+   with retained inputs unchanged. A failed invocation or owner decision stops
+   the milestone with native evidence retained. Further drills and gap fixes
+   require separate authorization.
+
+4. **WF4 — Reviewed proof and clean handoff.** Completion requires WF1/WF2
+   and a passing independent workflow proof with no unresolved owner checkpoint.
+   Review all native fields/cases, coverage, Decisions, gaps and independence.
+   Retain the reviewed `.fireweed/drills/workflow.md` and native proof ref,
+   keeping older reports accessible by commit and carrying forward the
+   preparation evidence. Commit protected evidence with
+   no active run/claim. Confirm scratch cleanup, clean checkouts and preserved
+   pin/bounds/counters, prior proofs and unrelated worktrees. Update PROGRESS
+   with results, exact candidate/range, scoped change commits or why none were
+   needed, live unapproved count and any remaining checkpoint. Stop at WF4.
+
+The requirement/command inventories and all full-completion gates remain.
+Real regenerate changes, rebuilt-code import, controller promotion, later module
+drills, unrelated cleanup, publication and push remain outside this milestone.
+
+## Completed milestone — Checks contracts and proof (CK1–CK4)
+
+**Completed at CK4.** The reviewed native checks report and retained proof in
+PROGRESS close this milestone. The following gates preserve its approved scope
+and historical procedure; they authorize no repeated execution.
+Plan and execution were approved on 2026-11-04.
+The approved sequence was CK1 → CK2 → CK3 → CK4. This selected
 checks-owned obligations from the unchanged design (R07/R09–R11/R15/R18/R25/
 R28/R29) and its independent proof (R16/full gate 7); it adds no product scope.
 The requirement inventory, command inventory and every full-completion gate
 remain required. Planning does not perform CK1's contract review.
 
-**Approved plan budget:** three days from the next authorized execution start,
+**Historical approved plan budget:** three days from the authorized execution start,
 ending earlier at CK4 completion or a stop below. Record the
 new start/deadline in PROGRESS on execution and retain it on resume. The closed
 stabilization budget does not carry forward. Keep P07, audit/retry/time bounds
