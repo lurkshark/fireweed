@@ -1,8 +1,10 @@
 ---
-module: workflow
-bases: {}
 already_satisfied:
-  - new:current-absence
+    - FLOW-133
+bases: {}
+module: workflow
+phase: audit
+run: 20261107T070633-ab7b2c427b699e4414e4f973
 ---
 
 ## Motivation
@@ -23,7 +25,7 @@ existing unknown/foreign-claim behavior.
 
 ## Added
 
-### new:current-absence
+### FLOW-133
 For a valid queue, Current(root, "") MUST return an error whose text is `P02: worktree holds no change` when the calling worktree owns none of its change claims.
 
 ## Modified
@@ -66,3 +68,5 @@ separate FLOW-002 eval_fix. After both apply, validate a clean identified
 candidate and commit the evidence/handoff. Stop at the exact-candidate WF2
 approval gate before another native drill. Preserve prior reports and refs,
 the controller pin, recorded deadline and unrelated worktrees. No push.
+## Provenance
+- evals 2026-11-07T07:12:19.574456Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=166 failing=0 passing=166
