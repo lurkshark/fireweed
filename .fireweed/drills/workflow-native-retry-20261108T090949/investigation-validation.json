@@ -1,0 +1,96 @@
+{
+  "scope": "Static review of retained native evidence, retained reconstruction and matching public contracts/evals. No builds, eval replay, agents, fixes, drill, repin or source application.",
+  "start_head": "7763ecb33e788d621bb495fc8712cba2321fd91f",
+  "native_report_unchanged_sha256": "955d6dc5cc2a57e328226f0cf92625e494fcdedc2448006092e23da157be5da5",
+  "native_prefix_and_all_stream_digests_valid": true,
+  "proof_ref": "refs/fireweed/drills/workflow/20261108T090949.204125000",
+  "proof_oid": "e0dc010ce1b5a06cdb4f4d87a290b7bbb5016475",
+  "public_files_match_proof_ref": [
+    "packages/workflow/SPEC.md",
+    "packages/workflow/evals/lifecycle_test.go",
+    "packages/workflow/evals/gc_test.go",
+    "packages/app/SPEC.md",
+    "packages/app/evals/app_test.go",
+    "packages/app/evals/gc_cli_test.go",
+    "packages/app/evals/lifecycle_cli_test.go",
+    "packages/runner/SPEC.md",
+    "packages/runner/evals/audit_workspace_test.go",
+    "packages/runner/evals/retry_failure_details_test.go",
+    "packages/contracts/SPEC.md",
+    "packages/contracts/evals/contracts_test.go",
+    "packages/checks/SPEC.md"
+  ],
+  "pin_unchanged": true,
+  "fireweed_refs_digest": "62f2bcf049beadf4388fb25c77f8c756ab5a9b5191daa5ddc3c492eeea2f1dd6",
+  "worktrees": "worktree /Users/joel/Workspace/fireweed\nHEAD 7763ecb33e788d621bb495fc8712cba2321fd91f\nbranch refs/heads/main\n\nworktree /Users/joel/.codex/worktrees/stub-handoff-guidance/fireweed\nHEAD b59e9cc15a7d6c82f6436ef72fe5c2c3ccded211\nbranch refs/heads/codex/stub-handoff-guidance\n\n",
+  "fireweed_config_sha256": "87f95cc320bcc0f29d02362e5fbe40e78fb464ee4650e4fe6091acb87221eab5",
+  "status": {
+    "exit": 0,
+    "seconds": 45.476,
+    "queue": [],
+    "unapproved": 0,
+    "diagnostics": [
+      {
+        "code": "B02",
+        "message": "CHK-055: 16 testcases exceeds cases_per_spec limit 15",
+        "warning": true
+      },
+      {
+        "code": "B02",
+        "message": "APP-103: 17 testcases exceeds cases_per_spec limit 15",
+        "warning": true
+      },
+      {
+        "code": "B02",
+        "message": "APP-104: 19 testcases exceeds cases_per_spec limit 15",
+        "warning": true
+      }
+    ]
+  },
+  "checks": [
+    {
+      "command": [
+        "fireweed",
+        "context",
+        "workflow"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "U02: change \"workflow\" not found; no valid change slugs. Use a change held by this worktree and retry context.\n"
+    },
+    {
+      "command": [
+        "fireweed",
+        "verify"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "P02: worktree holds no change. Use the held change and correct its checks, then retry verify.\n"
+    },
+    {
+      "command": [
+        "fireweed",
+        "check",
+        "--json"
+      ],
+      "exit": 0,
+      "stdout": "{\"schema\":1,\"data\":\"Check passed\\n\",\"diagnostics\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "failed_rows_accounted_for": 17,
+  "findings_links_resolve": true,
+  "native_report_and_all_fireweed_refs_unchanged": true,
+  "unrelated_worktree_and_config_unchanged": true,
+  "queue_and_claims_empty": true
+}

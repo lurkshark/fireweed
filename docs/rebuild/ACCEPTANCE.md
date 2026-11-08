@@ -78,6 +78,12 @@ gc, migrate, agents-md --write
 
 ## Planned milestone — Workflow contracts and regeneration proof (WF1–WF4)
 
+The subsequent owner-authorized retained-evidence investigation is complete.
+Its [findings](../../.fireweed/drills/workflow-native-retry-20261108T090949/investigation.md)
+separate reconstruction defects from spec/eval assumption gaps. No correction,
+eval replay, new drill or repin occurred. The native failure and WF4/full-completion
+stop remain unchanged; further work requires owner selection. Follow GOAL/PROGRESS.
+
 The newly owner-authorized single supervised retry on current pinned source
 a26f7b9 is complete and failed. The final configured reconstruction compiled,
 but workflow and transitive app/runner evals failed. The

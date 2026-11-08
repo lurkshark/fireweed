@@ -21,6 +21,11 @@ cleanup receipts provide their identities without duplicate transcripts or sourc
 snapshots. Earlier reviews and refs remain intact, including the prior
 [rejected retry](workflow-contract-retry-20261108T055420/review.md).
 
+The subsequent [static failure investigation](workflow-native-retry-20261108T090949/investigation.md)
+accounts for every failed native row and distinguishes reconstruction defects
+from spec/eval assumptions. It changes no native report, proof ref, runtime,
+contract or eval; no replay, drill or repin was performed.
+
 ## Controller-pin attachments
 
 The owner authorized pruning the six expanded attachments under

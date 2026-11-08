@@ -1,4 +1,20 @@
-# Rebuild handoff — supervised workflow retry failed, stopped
+# Rebuild handoff — failure investigation complete, stopped
+
+The owner-authorized static investigation of the retained workflow drill failures
+is complete. The [findings](../../.fireweed/drills/workflow-native-retry-20261108T090949/investigation.md)
+distinguish reconstruction defects from provenance-format and dependent-report
+spec/eval assumptions requiring owner review. The native failure, report/ref,
+WF4/full-completion stop and earlier timing exceptions remain unchanged.
+No fix, eval replay, new agent/drill, source application or repin occurred.
+
+**Investigation scope consumed. Stop with no active run, queue or shared claim.**
+Only evidence and the handoff were authored. Product/spec/eval/interface, inspector,
+hooks, configuration, controller/recoveries, prior evidence/refs and unrelated
+worktrees remain preserved. No further correction, investigation/replay, retry,
+repin, later milestone or push is authorized. The existing
+**2026-11-10 22:51:05 UTC** deadline remains unchanged. Follow GOAL.
+
+## Completed native retry (historical)
 
 The newly owner-authorized single native workflow retry is complete on pinned
 source `a26f7b9909f6c311416a0706d1b16749d16b9146`. Its first reconstruction failed

@@ -1,22 +1,20 @@
-# Stop after the supervised native workflow retry
+# Stop after the retained-evidence investigation
 
-The owner-authorized single retry is complete on pinned source
-`a26f7b9909f6c311416a0706d1b16749d16b9146`. The first reconstruction failed
-compilation; the final configured reconstruction compiled but failed workflow,
-app and runner evals. The [native report](../../.fireweed/drills/workflow.md) and
-[review](../../.fireweed/drills/workflow-native-retry-20261108T090949/review.md)
-retain the exact outcome, stream/gate evidence, native ref and cleanup.
-No independence rejection or emergency escalation occurred, and no reconstructed
-code was applied to the product. WF4/full completion remain open; prior
-own-verification timing exceptions remain unresolved.
+The owner-authorized static investigation is complete. The
+[findings](../../.fireweed/drills/workflow-native-retry-20261108T090949/investigation.md)
+classify the retained native failures, separate reconstruction defects from
+spec/eval assumptions, and state the remaining owner interpretation checkpoints.
+No fixes, builds/eval replays, new agents/drill, source application or repin were
+performed. The [native report](../../.fireweed/drills/workflow.md), its exact streams
+and proof ref remain unchanged. WF4/full completion and prior timing exceptions
+remain open.
 
-**Stop with no active run, queued change or shared claim. Approval consumed.**
-No correction, further investigation/replay, drill, source application, controller
-promotion, later milestone or push is authorized. A new owner instruction must
-select further scope. Worker notes and native diagnostics authorize no fix.
+**Stop with no active run, queued change or shared claim. Investigation scope spent.**
+No correction, further investigation/replay, retry, controller promotion, later
+milestone or push is authorized. The findings do not authorize changing an eval
+or contract; a new owner instruction must select further work.
 
-PROGRESS records the unchanged controller pin and recoveries. Preserve all prior
+PROGRESS records the unchanged pinned source a26f7b9 and recoveries. Preserve all
 reports/archives/proof/attempt refs, candidate objects, bounds/counters and the
-unrelated worktree. The existing deadline remains **2026-11-10 22:51:05 UTC**,
-without extension. Read AGENTS, SYSTEM, PROGRESS and ACCEPTANCE before any newly
-authorized work and preserve normal approval/audit and independence enforcement.
+unrelated worktree. The deadline remains **2026-11-10 22:51:05 UTC**, without
+extension. Read AGENTS, SYSTEM, PROGRESS and ACCEPTANCE before newly authorized work.
