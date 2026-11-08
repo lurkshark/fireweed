@@ -5,7 +5,7 @@ eval_fix:
     - FLOW-124
     - FLOW-125
 module: workflow
-phase: audit
+phase: impl
 run: 20261108T072748-cb8f72c885753d9412fa663a
 ---
 
@@ -69,3 +69,7 @@ controller promotion, later work or push is authorized. The existing deadline
 2026-11-10 22:51:05 UTC remains unchanged.
 ## Provenance
 - evals 2026-11-08T07:34:49.588527Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=170 failing=0 passing=170
+- audit 2026-11-08T07:35:22.332268Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-astra -c model_reasoning_effort="medium" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+## Audit
+
+No findings; checked FLOW-115, FLOW-124, FLOW-125
