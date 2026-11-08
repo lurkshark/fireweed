@@ -286,7 +286,7 @@ func Test_FLOW_127_PRBodyUnresolvableRangeIsNotEndpointConfigError(t *testing.T)
 	}
 }
 
-func Test_FLOW_124_FLOW_125_PRBodyDisposableArtifactBoundaryAndRanges(t *testing.T) {
+func Test_FLOW_115_FLOW_124_FLOW_125_PRBodyDisposableArtifactBoundaryAndRanges(t *testing.T) {
 	root := fixture(t, "", "", "", "", "")
 	base := head(t, root)
 	for path, data := range map[string][]byte{
@@ -324,9 +324,11 @@ func Test_FLOW_124_FLOW_125_PRBodyDisposableArtifactBoundaryAndRanges(t *testing
 			t.Errorf("B04 count = %d, want 2: %#v", count, r.Diagnostics)
 		}
 	})
-	t.Run("FLOW_125_empty_and_invalid_ranges", func(t *testing.T) {
+	t.Run("FLOW_115_FLOW_125_empty_and_invalid_ranges", func(t *testing.T) {
 		empty := prBody(t, root, endpoint+".."+endpoint)
-		if strings.TrimSpace(empty.Body) == "" || !(strings.Contains(strings.ToLower(empty.Body), "none") || strings.Contains(strings.ToLower(empty.Body), "no change")) {
+		// FLOW-115: the empty statement must identify the change selection;
+		// an unrelated "None" in another report section is insufficient.
+		if !regexp.MustCompile(`(?i)\b(?:no (?:selected )?changes?|none selected|(?:selected )?changes\s*:?\s+none)\b`).MatchString(empty.Body) {
 			t.Errorf("empty range did not explicitly report no selected changes: %q", empty.Body)
 		}
 		if containsCode(empty.Diagnostics, "B04") {

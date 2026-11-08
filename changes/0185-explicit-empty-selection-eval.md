@@ -5,6 +5,8 @@ eval_fix:
     - FLOW-124
     - FLOW-125
 module: workflow
+phase: audit
+run: 20261108T072748-cb8f72c885753d9412fa663a
 ---
 
 ## Motivation
@@ -65,3 +67,5 @@ proof/attempt refs, bounds/counters, controller/recoveries and unrelated worktre
 Verify and stop after all three changes; no drill, reconstruction import,
 controller promotion, later work or push is authorized. The existing deadline
 2026-11-10 22:51:05 UTC remains unchanged.
+## Provenance
+- evals 2026-11-08T07:34:49.588527Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=170 failing=0 passing=170
