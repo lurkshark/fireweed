@@ -1,10 +1,12 @@
 ---
 already_satisfied:
     - FLOW-051
-    - new:complete-module-reports
+    - FLOW-134
 bases:
     FLOW-051: eb653782
 module: workflow
+phase: audit
+run: 20261108T212334-be5a8cfe12b0e6e2da5ae271
 ---
 
 ## Motivation
@@ -25,7 +27,7 @@ contract and archives it. Preserve all existing assertions and covered IDs.
 
 ## Added
 
-### new:complete-module-reports
+### FLOW-134
 During full impl Verify, mapped testcase failures in valid reports MUST NOT
 stop evaluation of the remaining selected modules.
 Verify MUST return every completed module's report in Result.Reports.
@@ -58,7 +60,7 @@ entry was appended. A blank line satisfies strings.TrimSpace(line) == ""; do not
 trim or normalize text in nonblank lines. Keep phase/date/manual/configured-agent,
 version, full playbook hash, report counts, retained output and context assertions.
 
-Add a focused public lifecycle eval for new:complete-module-reports using existing
+Add a focused public lifecycle eval for FLOW-134 using existing
 alpha -> beta -> gamma temporary fixtures and deterministic local hooks. Exercise
 these four selections: own fail/direct requires alpha and failing beta reports;
 own fail/all requires alpha plus failing beta and gamma reports; own fail/none
@@ -91,3 +93,5 @@ private investigation contents as implementation inputs. Preserve prior reports,
 archives/proof/attempt refs, controller/recoveries, bounds/counters, deadline
 2026-11-10 22:51:05 UTC and unrelated worktrees. Stop after these changes; no drill,
 repin, source import, later milestone or push is authorized.
+## Provenance
+- evals 2026-11-08T21:31:21.11835Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=175 failing=0 passing=175

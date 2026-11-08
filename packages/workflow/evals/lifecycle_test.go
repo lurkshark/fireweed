@@ -728,6 +728,104 @@ func Test_FLOW_002_FLOW_003_FLOW_022_FLOW_025_FLOW_026_FLOW_027_FLOW_029_FLOW_03
 	}
 }
 
+func Test_FLOW_134_FullImplVerifyReturnsAllSelectedReportsAfterMappedFailures(t *testing.T) {
+	for _, tc := range []struct {
+		name, mode string
+		ownPass    bool
+		selected   []string
+	}{
+		{"own fail/direct", "direct", false, []string{"alpha", "beta"}},
+		{"own fail/all", "all", false, []string{"alpha", "beta", "gamma"}},
+		{"own fail/none", "none", false, []string{"alpha"}},
+		{"own pass/all", "all", true, []string{"alpha", "beta", "gamma"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := fixture(t, "audit:\n  enabled: false\nverify_dependents: "+tc.mode+"\n", "", "", "", "")
+			invocations := filepath.Join(t.TempDir(), "invocations")
+			write(t, root, ".fireweed/eval.sh", fmt.Sprintf("#!/bin/sh\nprintf '%%s\\n' \"$1\" >> %q\n", invocations)+`case "$1" in
+  alpha)
+    if [ -f packages/alpha/internal/ready ]; then failure=''; code=0
+    else failure='<failure message="alpha-failure-sentinel">alpha-failure-sentinel</failure>'; code=1; fi
+    printf '<testsuite><testcase name="ALP-001 own" classname="fixture">%s</testcase><testcase name="ALP-002 retained" classname="fixture"/></testsuite>' "$failure" > "$2"
+    exit "$code"
+    ;;
+  beta) id=BET-001; sentinel=beta-failure-sentinel ;;
+  gamma) id=GAM-001; sentinel=gamma-failure-sentinel ;;
+  *) exit 2 ;;
+esac
+printf '<testsuite><testcase name="%s dependent" classname="fixture"><failure message="%s">%s</failure></testcase></testsuite>' "$id" "$sentinel" "$sentinel" > "$2"
+exit 1
+`)
+			commit(t, root, "approved mapped-failure reports and invocation observer")
+			start(t, root)
+			if _, err := done(root); err != nil {
+				t.Fatalf("fixture evals Done: %v", err)
+			}
+			held, err := workflow.Current(root, "manual")
+			if err != nil || held.Phase != "impl" {
+				t.Fatalf("fixture held impl state = %#v, %v", held, err)
+			}
+			if tc.ownPass {
+				write(t, root, "packages/alpha/internal/ready", "ready\n")
+			}
+			if err := os.WriteFile(invocations, nil, 0644); err != nil {
+				t.Fatal(err)
+			}
+			before := head(t, root)
+			result, err := verify(root, false)
+			if err == nil {
+				t.Error("full impl Verify accepted mapped testcase failures")
+			}
+			if len(result.Reports) != len(tc.selected) {
+				t.Errorf("returned reports = %#v; want exactly %v", result.Reports, tc.selected)
+			}
+			wantInvocations := map[string]int{}
+			for _, name := range tc.selected {
+				wantInvocations[name] = 1
+				report, ok := result.Reports[name]
+				count, id, caseName := 1, "BET-001", "BET-001 dependent"
+				if name == "alpha" {
+					count, id, caseName = 2, "ALP-001", "ALP-001 own"
+				} else if name == "gamma" {
+					id, caseName = "GAM-001", "GAM-001 dependent"
+				}
+				if !ok || len(report.Cases) != count {
+					t.Errorf("%s report = %#v, present %t; want %d mapped cases", name, report, ok, count)
+					continue
+				}
+				c := report.Cases[0]
+				wantResult, wantExit := "fail", 1
+				if name == "alpha" && tc.ownPass {
+					wantResult, wantExit = "pass", 0
+				}
+				if c.Name != caseName || c.Classname != "fixture" || !reflect.DeepEqual(c.IDs, []string{id}) || c.Result != wantResult || report.HookExit != wantExit {
+					t.Errorf("%s mapped case/ordinary hook exit = %#v / %d; want %s %s / %d", name, c, report.HookExit, id, wantResult, wantExit)
+				}
+				if wantResult == "fail" && !strings.Contains(c.Failure, name+"-failure-sentinel") {
+					t.Errorf("%s report lost failure text: %#v", name, c)
+				}
+				if name == "alpha" {
+					retained := report.Cases[1]
+					if retained.Name != "ALP-002 retained" || !reflect.DeepEqual(retained.IDs, []string{"ALP-002"}) || retained.Result != "pass" {
+						t.Errorf("alpha retained mapped passing case = %#v", retained)
+					}
+				}
+			}
+			gotInvocations := map[string]int{}
+			for _, name := range strings.Fields(readFile(t, "", invocations)) {
+				gotInvocations[name]++
+			}
+			if !reflect.DeepEqual(gotInvocations, wantInvocations) {
+				t.Errorf("hook invocations = %v; want only selected modules %v", gotInvocations, wantInvocations)
+			}
+			current, currentErr := workflow.Current(root, "manual")
+			if head(t, root) != before || currentErr != nil || current.Phase != "impl" || current.PhaseBase != held.PhaseBase || current.ClaimOID != held.ClaimOID || current.Run != held.Run {
+				t.Errorf("failed Verify changed HEAD or held impl state: before %#v, after %#v, error %v", held, current, currentErr)
+			}
+		})
+	}
+}
+
 func audit(t *testing.T, root, body string) {
 	t.Helper()
 	p := filepath.Join(root, "changes/0001-manual.md")
@@ -1036,7 +1134,43 @@ func Test_FLOW_003_FLOW_024_FLOW_048_FLOW_049_FailedDoneKeepsPhaseAndHead(t *tes
 }
 
 func Test_FLOW_005_FLOW_051_FLOW_052_FLOW_053_ContextAndProvenanceAndRetainedReports(t *testing.T) {
+	provenanceLines := func(root, path string) []string {
+		body, ok := contracts.Section(readFile(t, root, path), "Provenance")
+		if !ok {
+			t.Fatal("Provenance section missing")
+		}
+		var lines []string
+		for _, line := range strings.Split(body, "\n") {
+			if strings.TrimSpace(line) != "" {
+				lines = append(lines, line)
+			}
+		}
+		return lines
+	}
+	seedProvenance := func(root string) []string {
+		playbook, err := assets.Playbook("audit")
+		if err != nil {
+			t.Fatal(err)
+		}
+		hash := sha256.Sum256([]byte(playbook))
+		first := fmt.Sprintf("- audit 2026-01-01T00:00:00Z agent=manual fireweed=%s playbook=%x tests=0 failing=0 passing=0", assets.Version(), hash)
+		second := fmt.Sprintf("- audit 2026-01-02T00:00:00Z agent=prior-agent  fireweed=%s playbook=%x tests=0 failing=0 passing=0", assets.Version(), hash)
+		change := readFile(t, root, pendingCommitChange)
+		write(t, root, pendingCommitChange, contracts.ReplaceSection(change, "Provenance", "\n"+first+"\n\n \t\n"+second+"\n\n"))
+		return []string{first, second}
+	}
+	assertAppend := func(root, path string, previous []string) []string {
+		lines := provenanceLines(root, path)
+		if len(lines) != len(previous)+1 {
+			t.Fatalf("Done provenance lines = %q; want unchanged prefix %q and exactly one appended entry", lines, previous)
+		}
+		if !reflect.DeepEqual(lines[:len(previous)], previous) {
+			t.Errorf("Done changed nonblank provenance prefix: got %q, want %q", lines[:len(previous)], previous)
+		}
+		return lines
+	}
 	root := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
+	previous := seedProvenance(root)
 	write(t, root, "packages/alpha/internal/context-note.txt", "Full context content marker.\n")
 	commit(t, root, "context file")
 	state := start(t, root)
@@ -1069,11 +1203,13 @@ func Test_FLOW_005_FLOW_051_FLOW_052_FLOW_053_ContextAndProvenanceAndRetainedRep
 	if err != nil {
 		t.Fatalf("evals Done: %v", err)
 	}
+	previous = assertAppend(root, pendingCommitChange, previous)
 	write(t, root, "packages/alpha/internal/ready", "ready\n")
 	implResult, err := done(root)
 	if err != nil {
 		t.Fatalf("impl Done: %v", err)
 	}
+	assertAppend(root, archivedCommitChange, previous)
 	b, err := os.ReadFile(filepath.Join(root, "changes/archive/0001-manual.md"))
 	if err != nil {
 		t.Fatal(err)
@@ -1144,12 +1280,15 @@ func Test_FLOW_005_FLOW_051_FLOW_052_FLOW_053_ContextAndProvenanceAndRetainedRep
 		t.Errorf("reports/output missing under %s (%d files)", runRoot, count)
 	}
 	configured := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
+	configuredPrevious := seedProvenance(configured)
+	commit(t, configured, "approved prior configured-agent provenance")
 	start(t, configured)
 	req := request(configured)
 	req.Agent = "fixture-agent --model local"
 	if _, err := workflow.Done(context.Background(), req); err != nil {
 		t.Fatalf("configured-agent evals Done: %v", err)
 	}
+	assertAppend(configured, pendingCommitChange, configuredPrevious)
 	change, err := os.ReadFile(filepath.Join(configured, "changes/0001-manual.md"))
 	if err != nil || !strings.Contains(string(change), "fixture-agent --model local") {
 		t.Errorf("configured agent omitted from provenance: %v", err)
