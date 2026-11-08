@@ -1,9 +1,0 @@
-{
-  "time_utc": "2026-11-08T08:55:47.832622+00:00",
-  "owned_validation_root": "/private/tmp/fireweed-pin-latest-gve8w2_e",
-  "removed": true,
-  "source_clean_before_removal": true,
-  "no_source_claim_or_additional_worktree": true,
-  "candidate_checks_terminal": true,
-  "new_pin_and_recovery_verified_before_removal": true
-}

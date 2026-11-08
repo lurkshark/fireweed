@@ -17,9 +17,25 @@ The latest [workflow review](workflow-contract-retry-20261108T055420/review.md) 
 verification feedback and cleanup receipts. The handoff summaries and investigation
 findings retain the earlier conclusions; their archived attachments remain available.
 
+## Controller-pin attachments
+
+The owner authorized pruning the six expanded attachments under
+`controller-pin-a26f7b9/`. Keep the [compact handoff](controller-pin-a26f7b9.md),
+current pin metadata in PROGRESS and the recovery executable. Actual module
+drill reports and proof/attempt refs are preserved.
+
+The original expanded handoff, build metadata, input manifest, validation,
+promotion, post-install and cleanup receipts remain at commit
+`fb86abf44b5e525a7525503f9db9c763bd3d3b5e`. Retrieve an attachment with:
+
+```sh
+git show fb86abf:.fireweed/drills/controller-pin-a26f7b9/validation.json
+```
+
 ## Historical evidence
 
-Every removed file is retained at commit `d63c16ef3cfcd887a8969985f6cd5cdb4e1deba5`.
+Files removed in the original drill-retention pass are retained at commit
+`d63c16ef3cfcd887a8969985f6cd5cdb4e1deba5`.
 Retrieve exact historical bytes without checking out an old implementation:
 
 ```sh

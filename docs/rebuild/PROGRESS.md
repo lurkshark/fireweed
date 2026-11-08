@@ -95,3 +95,9 @@ full historical evidence is recoverable through the
 [drill retention index](../../.fireweed/drills/README.md). That retention-only
 sequence performed no drill, correction, controller update or ref pruning;
 the later pin update is recorded above.
+
+The owner-authorized controller-pin attachment cleanup is complete. The compact
+[handoff receipt](../../.fireweed/drills/controller-pin-a26f7b9.md), current pin
+metadata and recovery executable remain. Expanded attachments are recoverable
+through Git history; actual drill reports and proof refs are preserved. No
+controller change or drill was performed during this retention-only cleanup.
