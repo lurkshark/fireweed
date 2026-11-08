@@ -153,12 +153,13 @@ Built with Go 1.27.2 and -trimpath from clean darwin/arm64 source, with
 vcs.modified=false. Promoted only after idle validation; no fallback or
 cross-controller resume.
 
-Recovery executables remain `.fireweed/bin/fireweed-a26f7b9`,
-`.fireweed/bin/fireweed-9a206c5`,
-`.fireweed/bin/fireweed-ccd3d6b`,
-`.fireweed/bin/fireweed-12c571c`, `.fireweed/bin/fireweed-1936346`,
-`.fireweed/bin/fireweed-99a1d6d`, `.fireweed/bin/fireweed-pre-ck-handoff` and
-`.fireweed/bin/fireweed-bootstrap`. Use only for explicit owner-directed recovery.
+The immediate previous pin, `.fireweed/bin/fireweed-a26f7b9`, is available for
+explicit owner-directed recovery. The separately designated recovery executables
+`.fireweed/bin/fireweed-pre-ck-handoff` and `.fireweed/bin/fireweed-bootstrap`
+remain reserved for explicit owner direction.
+
+The owner requested removal of the five older pin copies: `9a206c5`, `ccd3d6b`,
+`12c571c`, `1936346` and `99a1d6d`.
 
 The owner authorized pruning superseded drill attachments. Current module reports,
 useful reviews, validation outcomes and cleanup receipts remain in the checkout;
