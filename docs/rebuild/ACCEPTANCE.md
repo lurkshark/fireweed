@@ -78,6 +78,12 @@ gc, migrate, agents-md --write
 
 ## Planned milestone — Workflow contracts and regeneration proof (WF1–WF4)
 
+The subsequent owner-requested single idle controller handoff to latest source
+a26f7b9 is complete; [verified pin evidence](../../.fireweed/drills/controller-pin-a26f7b9.md)
+records reused compiler/runtime/eval proof and fresh build/CLI/hook/history checks.
+PROGRESS holds the new pin. Stop: no drill/preparation, further correction,
+controller promotion, source import or push. Existing deadline and bounds remain.
+
 The owner-selected three normal audited eval_fix changes, 0185–0187, are complete:
 workflow empty-selection wording, runner context-content assertions and app
 optional B04 Path/empty wording. Behavioral coverage, independent audits and
@@ -85,7 +91,8 @@ required phase verification passed; the [handoff](../../.fireweed/drills/eval-co
 retains history/preservation checks and own-verification timing exceptions.
 Budget consumed; stop before another drill. No runtime/spec/interface, policy/
 tooling, controller promotion, source import, further retry or push. WF4 remains
-open. All prior gates, the unchanged pin, bounds and existing deadline remain.
+open. That correction sequence kept its then-current pin unchanged; the later
+promotion is recorded above. All prior gates, bounds and the deadline remain.
 
 The subsequently owner-approved single native retry on validated source 9a206c5
 is complete and failed. A prohibited worker-local go test caused running-worker

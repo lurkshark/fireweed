@@ -1,0 +1,24 @@
+{
+  "source": "a26f7b9909f6c311416a0706d1b16749d16b9146",
+  "installed_pin_hash_matches_candidate": true,
+  "version": {
+    "exit": 0,
+    "data": "0.1.0",
+    "diagnostics": []
+  },
+  "check": {
+    "exit": 0,
+    "data": "Check passed",
+    "diagnostics": []
+  },
+  "idle_context": {
+    "exit": 1,
+    "code": "U02"
+  },
+  "idle_verify": {
+    "exit": 1,
+    "code": "P02",
+    "message": "worktree holds no change"
+  },
+  "idle_diagnostics_are_not_product_validation": true
+}

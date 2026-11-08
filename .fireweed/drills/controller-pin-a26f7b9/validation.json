@@ -1,0 +1,58 @@
+{
+  "source": "a26f7b9909f6c311416a0706d1b16749d16b9146",
+  "runtime_input_count": 95,
+  "runtime_input_blobs_unchanged": true,
+  "toolchain_dependencies_build_flags_match_old_pin": true,
+  "cli": [
+    {
+      "name": "version",
+      "args": [
+        "version",
+        "--json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 1.502,
+      "stdout": "{\"schema\":1,\"data\":\"0.1.0\\n\",\"diagnostics\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "name": "check",
+      "args": [
+        "check",
+        "--json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.054,
+      "stdout": "{\"schema\":1,\"data\":\"Check passed\\n\",\"diagnostics\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "name": "history",
+      "args": [
+        "check-commits",
+        "9a206c558e8e5625c0ae55bb57c42ae8130b4f15..a26f7b9909f6c311416a0706d1b16749d16b9146",
+        "--json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 60.348,
+      "stdout": "{\"schema\":1,\"data\":{\"commits\":[\"618ecdefcc83d1a52312c25f489d3e98ce980e16\",\"52360ed0e13d17f88094115db6dc08f956c9ceb0\",\"d63c16ef3cfcd887a8969985f6cd5cdb4e1deba5\",\"d74c0d5f84e40d2ced258cc478f4477379106aae\",\"c4b5fd0a428d69ab5d59ca563e642d61d4c0d6f8\",\"39dfb9ba853964352d6a94b71dfe9fa9260c4acd\",\"7678b0bb192614ea0d61520b7de72e3687965bb1\",\"8ea82446be38daf31163ade446187f9d73047086\",\"aee58cccfd40e19d4bbe50986f14c5d958a5c426\",\"2c40c03b00ec12fe518d1df88f7c2456f6e04d6a\",\"ba3a28d85bb17abad94f6b0287d2a549b0da96a2\",\"61813e864187f37a75322cf71cfe3d112c46389c\",\"fbff84ca01b2d10a4c8a2a00995441823b50a9af\",\"f610ddceb7b4f9be793e4a5d530765b591dcbe41\",\"6b027b05dcfbded9692ff0f76d40fb9a5123eee2\",\"a26f7b9909f6c311416a0706d1b16749d16b9146\"],\"squashed\":[]},\"diagnostics\":[]}\n",
+      "stderr": ""
+    }
+  ],
+  "doctor": {
+    "args": [
+      "doctor",
+      "--no-agent",
+      "--json"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 16.033,
+    "stdout": "{\"schema\":1,\"data\":{\"checks\":[{\"name\":\"baseline\",\"module\":\"doctor4946bd743a\",\"passed\":true,\"detail\":\"baseline global eval: eval and coverage pass\"},{\"name\":\"failing_eval\",\"module\":\"doctor4946bd743a\",\"passed\":true,\"detail\":\"failing_eval global eval: eval detected failing_eval\"},{\"name\":\"recovery\",\"module\":\"doctor4946bd743a\",\"passed\":true,\"detail\":\"recovery global eval: failing_eval: eval and coverage pass\"},{\"name\":\"missing_id\",\"module\":\"doctor4946bd743a\",\"passed\":true,\"detail\":\"missing_id global eval: eval detected missing_id\"},{\"name\":\"recovery\",\"module\":\"doctor4946bd743a\",\"passed\":true,\"detail\":\"recovery global eval: missing_id: eval and coverage pass\"},{\"name\":\"baseline\",\"module\":\"doctor4946bd743a\",\"passed\":true,\"detail\":\"baseline global boundaries: boundaries pass\"},{\"name\":\"undeclared\",\"module\":\"doctor4946bd743a\",\"passed\":true,\"detail\":\"undeclared global boundaries: boundaries detected undeclared\"},{\"name\":\"recovery\",\"module\":\"doctor4946bd743a\",\"passed\":true,\"detail\":\"recovery global boundaries: undeclared: boundaries pass\"},{\"name\":\"internal_eval\",\"module\":\"doctorf23b22f2bb\",\"passed\":true,\"detail\":\"internal_eval global boundaries: boundaries detected internal_eval\"},{\"name\":\"recovery\",\"module\":\"doctorf23b22f2bb\",\"passed\":true,\"detail\":\"recovery global boundaries: internal_eval: boundaries pass\"}]},\"diagnostics\":[]}\n",
+    "stderr": ""
+  },
+  "main_status_exactly_unchanged": true,
+  "reused_runtime_validation": ".fireweed/drills/workflow-contract-diagnostics-handoff.md",
+  "reused_changed_eval_validation": ".fireweed/drills/eval-contract-corrections-handoff.md",
+  "build_info_raw": "/private/tmp/fireweed-pin-latest-gve8w2_e/fireweed-candidate: go1.27.2\n\tpath\tgithub.com/lurkshark/fireweed\n\tmod\tgithub.com/lurkshark/fireweed\tv0.0.0-20261108084338-a26f7b9909f6\t\n\tdep\tgopkg.in/yaml.v3\tv3.0.1\th1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=\n\tbuild\t-buildmode=exe\n\tbuild\t-compiler=gc\n\tbuild\t-trimpath=true\n\tbuild\tDefaultGODEBUG=containermaxprocs=0,cryptocustomrand=1,decoratemappings=0,gotestjsonbuildtext=1,httpcookiemaxnum=0,httpservecontentmaxranges=1,multipathtcp=0,randseednop=0,rsa1024min=0,tlsmlkem=0,tlssecpmlkem=0,tlssha1=1,tracebacklabels=0,updatemaxprocs=0,urlmaxqueryparams=0,urlstrictcolons=0,x509rsacrt=0,x509sha256skid=0,x509sslcertoverrideplatform=0,x509usepolicies=0\n\tbuild\tCGO_ENABLED=1\n\tbuild\tGOARCH=arm64\n\tbuild\tGOOS=darwin\n\tbuild\tGOARM64=v8.0\n\tbuild\tvcs=git\n\tbuild\tvcs.revision=a26f7b9909f6c311416a0706d1b16749d16b9146\n\tbuild\tvcs.time=2026-11-08T08:43:38Z\n\tbuild\tvcs.modified=false\n",
+  "build_info_text_trailing_whitespace_trimmed": true
+}
