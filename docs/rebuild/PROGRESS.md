@@ -1,3 +1,23 @@
+# Rebuild handoff — two owner-selected contract corrections active
+
+The owner authorized creating and executing exactly two normal audited changes:
+0188 clarifies successful Done provenance preservation and complete selected-module
+reports in workflow, with focused public evals and legitimate already_satisfied
+validation; 0189 corrects the runner Audit-copy preservation eval at the proper
+lifecycle stages. Use the pinned controller below with normal approval, fail-first
+exceptions, frozen phases, separate restricted audit and configured bounds intact.
+No runtime/interface/hook/configuration or unrelated reconstruction-defect fix is
+selected. Stop if unchanged behavior cannot support already_satisfied, either
+change blocks, independence/access fails, or an unresolved correction needs review.
+
+Run only these two changes and retain their committed archives and a compact
+handoff after no active run/claim remains. No drill, repin, source application,
+push or later milestone is authorized. Existing native failure/proof refs, WF4 and
+full-completion status, timing exceptions, bounds/counters and unrelated worktrees
+remain preserved. Deadline remains **2026-11-10 22:51:05 UTC**.
+
+## Previous investigation (historical)
+
 # Rebuild handoff — failure investigation complete, stopped
 
 The owner-authorized static investigation of the retained workflow drill failures
