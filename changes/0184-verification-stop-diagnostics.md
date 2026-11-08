@@ -3,6 +3,8 @@ bases: {}
 eval_fix:
     - RUN-037
 module: runner
+phase: audit
+run: 20261108T022045-f396635dcaaf7eeeec9c6ac0
 ---
 
 ## Motivation
@@ -74,3 +76,5 @@ update the pin and prepare a stopped retry handoff. No native drill or push is
 authorized in this sequence; a retry requires separate owner approval.
 
 ## Audit
+## Provenance
+- evals 2026-11-08T02:34:04.260227Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=159 failing=0 passing=159

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -175,17 +176,60 @@ fi
 	req := f.request(0, false)
 	req.For = 2 * time.Second
 	r, err := runner.Run(context.Background(), req)
+	invocations, invocationErr := os.ReadFile(filepath.Join(f.agents, "invocations"))
+	workPath := filepath.Join(f.root, "packages/alpha/evals/added_test.go")
+	workInfo, workStatErr := os.Stat(workPath)
+	work, workReadErr := os.ReadFile(workPath)
+	markerPath := filepath.Join(f.root, "packages/alpha/evals/time-work.txt")
+	markerInfo, markerStatErr := os.Stat(markerPath)
+	marker, markerReadErr := os.ReadFile(markerPath)
+	reportPath := filepath.Join(f.root, ".fireweed", "runs", original.Run, "evals", "alpha.json")
+	reportInfo, reportStatErr := os.Stat(reportPath)
+	report, reportReadErr := os.ReadFile(reportPath)
+	held, heldErr := workflow.Current(f.root, "alpha")
+	readGit := func(args ...string) (string, error) {
+		command := exec.Command("git", args...)
+		command.Dir = f.root
+		output, commandErr := command.Output()
+		return strings.TrimSpace(string(output)), commandErr
+	}
+	actualHead, headErr := readGit("rev-parse", "HEAD")
+	claimRef, claimErr := readGit("for-each-ref", "--format=%(refname)", "refs/fireweed/claims")
+	commits, commitsErr := readGit("rev-list", "--count", head+"..HEAD")
+	t.Logf("RUN-037 verification stop: result=%#v error=%v clean_time_stop=%t", r, err, runner.IsTimeStop(err))
+	t.Logf("agent invocations: read_error=%v content=%q", invocationErr, invocations)
+	t.Logf("agent work %s: exists=%t stat_error=%v read_error=%v content=%q", workPath, workStatErr == nil && workInfo != nil, workStatErr, workReadErr, work)
+	t.Logf("hook marker %s: exists=%t stat_error=%v read_error=%v content=%q", markerPath, markerStatErr == nil && markerInfo != nil, markerStatErr, markerReadErr, marker)
+	t.Logf("verification report %s: exists=%t stat_error=%v read_error=%v content=%q", reportPath, reportStatErr == nil && reportInfo != nil, reportStatErr, reportReadErr, report)
+	t.Logf("held identity: state=%#v read_error=%v original phase=%q run=%q claim=%q assigned=%#v HEAD=%q; actual HEAD=%q error=%v; claim refs=%q error=%v; commits=%q error=%v", held, heldErr, original.Phase, original.Run, original.ClaimOID, original.Change.Added, original.Head, actualHead, headErr, claimRef, claimErr, commits, commitsErr)
 	timeStop(t, err, "2s")
 	if len(r.Applied) != 0 {
 		t.Errorf("interrupted verification applied %d changes", len(r.Applied))
+	}
+	if markerReadErr != nil || !strings.Contains(string(marker), "TIME_HELD_WORK") {
+		t.Errorf("interrupted alpha work missing: marker=%q read_error=%v", marker, markerReadErr)
+	}
+	if workStatErr != nil {
+		t.Errorf("agent work lost before interrupted verification: %v", workStatErr)
+	}
+	if commitsErr != nil || commits != "0" {
+		t.Errorf("interrupted step committed %s times: %v", commits, commitsErr)
+	}
+	if heldErr != nil {
+		t.Errorf("held state: %v", heldErr)
 	} else {
-		held := timeHeldWork(t, f, "alpha", "evals", "packages/alpha/evals/time-work.txt", "TIME_HELD_WORK", head)
-		if held.Run != original.Run || held.ClaimOID != original.ClaimOID || held.Phase != original.Phase || held.Change.Added[0].ID != original.Change.Added[0].ID || held.Head != original.Head {
+		if held.Phase != "evals" || held.Run == "" || held.Head != head || held.ClaimOID == "" || held.Snapshot.Root != f.root || len(held.Change.Added) != 1 || (len(held.Change.Added) == 1 && held.Change.Added[0].ID != "ALP-002") {
+			t.Errorf("held identity changed: phase=%q run=%q head=%q claim=%q added=%#v snapshot=%q", held.Phase, held.Run, held.Head, held.ClaimOID, held.Change.Added, held.Snapshot.Root)
+		}
+		if held.Run != original.Run || held.ClaimOID != original.ClaimOID || held.Phase != original.Phase || len(held.Change.Added) != len(original.Change.Added) || (len(held.Change.Added) == 1 && len(original.Change.Added) == 1 && held.Change.Added[0].ID != original.Change.Added[0].ID) || held.Head != original.Head {
 			t.Errorf("interrupted verification identity changed: held=%#v, original=%#v", held, original)
 		}
 	}
-	if _, statErr := os.Stat(filepath.Join(f.root, "packages/alpha/evals/added_test.go")); statErr != nil {
-		t.Errorf("agent work lost before interrupted verification: %v", statErr)
+	if headErr != nil || actualHead != head {
+		t.Errorf("HEAD = %s, want %s: %v", actualHead, head, headErr)
+	}
+	if claimErr != nil || claimRef != "refs/fireweed/claims/alpha" {
+		t.Errorf("held claim ref = %q: %v", claimRef, claimErr)
 	}
 }
 
