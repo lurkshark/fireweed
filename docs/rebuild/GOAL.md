@@ -1,16 +1,15 @@
-# Stop after the two audited contract corrections
+# Stop after the verified controller handoff
 
-The owner-selected queued changes 0188 and 0189 are complete through normal
-verification, independent restricted audit, application and archive. The
-[retained handoff](../../.fireweed/drills/provenance-report-corrections-handoff.md)
-records contract/eval changes, reports, coverage/history checks and the final idle
-state. No runtime/interface/hook/configuration correction, reconstruction import,
-drill, repin or push occurred. The native failure and WF4/full-completion stop are
-unchanged; own-verification timing exceptions remain open.
+The owner-requested single controller update to clean committed source
+`75efa9a03c4eb7a17673a53bdd8058074e5bb7e1` is complete. PROGRESS records the
+installed pin and explicit recovery. The
+[handoff evidence](../../.fireweed/drills/controller-pin-75efa9a.md) records
+validation, idle promotion, preservation and cleanup. Audited changes 0188–0189
+remain complete; no product correction, drill, source import or push occurred.
 
-**Stop with no active run, queue or shared claim. Two-change scope consumed.**
-No further correction, investigation/replay, retry, controller promotion, later
-milestone or push is authorized. Obtain a new owner-selected scope before further
-work. Preserve reports/archives/proof/attempt refs, controller/recoveries,
-bounds/counters and unrelated worktrees. Deadline remains
-**2026-11-10 22:51:05 UTC**, without extension.
+**Stop with no active run, queue or shared claim. Pin-update scope consumed.**
+No further correction, investigation/replay, drill preparation or invocation,
+controller promotion, later milestone or push is authorized. Preserve the failed
+native report, proof/attempt refs, recoveries, bounds/counters and unrelated
+worktrees. WF4, full completion and own-verification timing exceptions remain open.
+The existing deadline remains **2026-11-10 22:51:05 UTC**.

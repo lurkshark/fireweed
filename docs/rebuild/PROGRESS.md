@@ -1,4 +1,18 @@
-# Rebuild handoff — contract corrections complete, stopped
+# Rebuild handoff — controller updated, stopped
+
+The owner-requested single pin update promoted clean committed source
+`75efa9a03c4eb7a17673a53bdd8058074e5bb7e1` after verified idle gates. The
+[handoff evidence](../../.fireweed/drills/controller-pin-75efa9a.md) records
+compiler input equivalence, reused runtime and audited eval proof, fresh candidate
+CLI/hook/history checks, matching live status and the installed pin checks.
+The retiring a26f7b9 executable is preserved for explicit owner-directed recovery.
+
+**Pin-update scope consumed. Stop with no active run, queue or claim.**
+No product correction, drill or push occurred. The failed workflow proof, WF4 and
+full-completion stop, timing exceptions, bounds and existing deadline remain
+unchanged. Follow GOAL before any newly authorized work.
+
+## Audited contract corrections (historical)
 
 The owner-authorized two normal audited changes are applied and archived:
 [0188](../../changes/archive/0188-provenance-and-complete-reports.md) clarifies
@@ -133,13 +147,14 @@ without another extension. Configured bounds and isolation/audit requirements st
 unchanged. Remaining time grants no further work after this completed invocation.
 
 **Controller pin** `/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed`, version
-0.1.0, source `a26f7b9909f6c311416a0706d1b16749d16b9146`, SHA-256
-`962149ff80fb5f6e396dbafda4f44fb47bb28840d96d37b3c7c9718444c7bf5a`.
+0.1.0, source `75efa9a03c4eb7a17673a53bdd8058074e5bb7e1`, SHA-256
+`fea9d492473bbb20883a74fc15ea5921b161727e4ea7096b42b3a5a909d60c65`.
 Built with Go 1.27.2 and -trimpath from clean darwin/arm64 source, with
 vcs.modified=false. Promoted only after idle validation; no fallback or
 cross-controller resume.
 
-Recovery executables remain `.fireweed/bin/fireweed-9a206c5`,
+Recovery executables remain `.fireweed/bin/fireweed-a26f7b9`,
+`.fireweed/bin/fireweed-9a206c5`,
 `.fireweed/bin/fireweed-ccd3d6b`,
 `.fireweed/bin/fireweed-12c571c`, `.fireweed/bin/fireweed-1936346`,
 `.fireweed/bin/fireweed-99a1d6d`, `.fireweed/bin/fireweed-pre-ck-handoff` and
