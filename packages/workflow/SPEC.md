@@ -35,7 +35,9 @@ Context MUST include the change, projected spec, interface contents, SYSTEM and 
 Start MUST include the approved projected project snapshot in its returned State.
 
 ### FLOW-007
-Start MUST replace each local Added handle throughout the change with the next available spec ID for its module.
+Start MUST replace each local Added handle throughout the change with the next
+available spec ID for its module. IDs of current and previously removed specs
+MUST remain reserved, including specs Removed by the starting change.
 
 ### FLOW-008
 Start MUST assign a unique run identifier when starting an unstarted change.
@@ -87,6 +89,7 @@ Whenever Verify runs the target module's evals it MUST require coverage of every
 ### FLOW-023
 During evals Verify for spec and fix changes MUST require genuine fail-first
 evidence for every enforced change ID that is not already_satisfied.
+Review-tagged specs MUST be excluded from fail-first requirements.
 
 ### FLOW-024
 During impl Verify MUST reject a failing current-module testcase that references a non-quarantined spec.
