@@ -1,14 +1,21 @@
-# Rebuild handoff — scoped eval corrections authorized
+# Rebuild handoff — three audited eval corrections complete, stopped
 
-The owner authorized exactly three normal audited eval_fix changes to correct
-the reviewed d63c16e mismatches: workflow explicit empty-selection wording,
-runner full-context content assertions and app optional B04 Path/empty wording.
-Preserve behavioral coverage and run required verification. Budget: three changes,
-then stop before another drill. This supersedes the correction stop below only
-for that scope. No runtime/spec/interface, policy/tooling, drill, controller
-promotion, reconstructed-source import, later work or push is authorized. The
-pin, existing extended deadline, bounds and independence requirements remain.
-Current authored scope is 0185–0187; historical failed proof remains failed.
+The three owner-selected normal audited eval_fix changes are complete and
+archived: [0185](../../changes/archive/0185-explicit-empty-selection-eval.md)
+corrects workflow empty-selection wording, [0186](../../changes/archive/0186-context-content-eval.md)
+checks full runner context contents, and [0187](../../changes/archive/0187-pr-body-contract-evals.md)
+permits optional B04 Path and compliant empty wording in app evals. Behavioral
+coverage is retained; independent restricted audits and required phase checks
+passed. The [verified handoff](../../.fireweed/drills/eval-contract-corrections-handoff.md)
+records phase commits, coverage, explicit history checks, preserved state and
+observed own-verification timing exceptions. No runtime/spec/interface, policy,
+tooling, configuration or hook change. The controller pin below is unchanged.
+
+**Three-change budget consumed. Stop before another drill.** No active owning
+controller, queue or shared claim remains. No further correction, performance
+work, replay, drill, source import, controller promotion, later work or push is
+authorized. The existing extended deadline and all bounds remain unchanged.
+The failed workflow proof below remains current; WF4/full completion stay open.
 
 The one owner-approved supervised workflow retry on validated source 9a206c5 is
 complete and failed. The second worker invoked local go test despite the supplied

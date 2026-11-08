@@ -1,23 +1,29 @@
-# Complete three audited eval corrections, then stop
+# Stop after three verified audited eval corrections
 
-Read AGENTS.md, SYSTEM.md, PROGRESS.md and the author-change playbook. The owner
-requests the three eval/contract mismatch fixes from review of rejected attempt
-d63c16e, through normal audited changes preserving behavioral coverage.
+The owner-selected three-change scope is complete: normal audited eval_fix
+[0185](../../changes/archive/0185-explicit-empty-selection-eval.md) fixes workflow
+empty-selection wording, [0186](../../changes/archive/0186-context-content-eval.md)
+checks runner context contents, and [0187](../../changes/archive/0187-pr-body-contract-evals.md)
+permits optional B04 Path and compliant empty wording in app evals.
 
-Budget: exactly three eval_fix changes, 0185–0187, one each for workflow, runner
-and app. Workflow accepts explicit empty-selection wording including "No selected
-changes." without losing range/artifact assertions. Runner asserts full context
-contents rather than unspecified heading spelling, retaining audit isolation and
-lifecycle checks. App accepts optional workflow B04 Path while verifying every
-returned diagnostic field, and accepts the compliant empty-selection wording.
-No spec, Decision, runtime, interface/model, hook/configuration, worker-policy or
-tooling correction. Workers obey context/zones and never commit or transition;
-the unchanged pinned controller owns phase verification, independent restricted
-audits, commits and archives. Preserve normal approval and enforcement bounds.
+All independent restricted audits and required phase evals passed. Behavioral
+coverage is retained. Read the [committed handoff](../../.fireweed/drills/eval-contract-corrections-handoff.md)
+for phase commits, coverage, exact history delta, warnings, preservation and the
+observed own-verification timing exceptions; the five-minute target is not claimed
+met. Specs, Decisions, runtime, public interfaces/models, hooks/configuration,
+worker policy and inspector tooling remain unchanged. The pin in PROGRESS was
+verified unchanged and was not promoted.
 
-Require all own evals in eval_fix, independent audit and full implementation-phase
-verification. Review coverage and resulting diffs, run affected static/history
-checks, record the handoff idle and stop. Preserve all prior evidence/refs and the
-failed workflow proof. No drill, reconstruction import, controller promotion,
-expanded milestone, later work or push. Another drill requires new owner approval.
-The existing deadline remains 2026-11-10 22:51:05 UTC; no extension.
+**Stop with no active run, queued change or shared claim. Budget consumed.**
+No further correction, performance work, diagnostic replay, drill, reconstruction
+import, controller promotion, later milestone or push is authorized. A new owner
+instruction must select any further scope. Read AGENTS.md, SYSTEM.md, PROGRESS.md
+and ACCEPTANCE.md before newly authorized work and retain normal approval/audit
+and independence enforcement.
+
+The rejected d63c16e workflow outcome and retained failure report/ref remain
+unchanged. No passing independent workflow proof or WF4/full-completion claim.
+Preserve all prior evidence/refs, original and corrected candidate objects,
+controller/recoveries, bounds/counters and unrelated worktrees. The existing
+deadline remains **2026-11-10 22:51:05 UTC**, with no extension. No drill was
+invoked or prepared in this correction sequence.
