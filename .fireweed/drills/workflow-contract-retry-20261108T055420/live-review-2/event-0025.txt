@@ -1,3 +1,0 @@
-
-EVENT 25 command raw_offset=180479 SHA256=f7eab0a2128cbf209a7aeb30383acaf69f7e5c1f1d188a91515c7131188a9ad2
-/bin/zsh -lc "rg -n 'drills/|worktree|GC_' packages/workflow/evals/gc_test.go | head -75; rg -n 'StartFromAttempt|restore' packages/workflow/evals/resume_test.go | head -45; rg -n 'Status.*base|BaseRef|invalid' packages/workflow/evals/status_test.go | tail -30; gofmt -w packages/workflow/internal/lifecycle; git status --short"

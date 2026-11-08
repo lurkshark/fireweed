@@ -100,9 +100,9 @@ reports. No publication outcome is inferred from preparation.
 
 Only inspector `prepare` ran. It made a clean caller at the identified source,
 committed setup child `644f51f1090f9c8e5669e133bb98a7248a68ef5d` changing only SYSTEM/agent.wrap,
-and copied the exact new pin. [Preparation](workflow-contract-diagnostics-handoff/preparation.json),
-[expected hashes](workflow-contract-diagnostics-handoff/prepared/expected.json) and
-[setup patch](workflow-contract-diagnostics-handoff/setup-child.patch) retain the
+and copied the exact new pin. [Preparation](README.md#historical-evidence) (`d63c16e:.fireweed/drills/workflow-contract-diagnostics-handoff/preparation.json`),
+[expected hashes](README.md#historical-evidence) (`d63c16e:.fireweed/drills/workflow-contract-diagnostics-handoff/prepared/expected.json`) and
+[setup patch](README.md#historical-evidence) (`d63c16e:.fireweed/drills/workflow-contract-diagnostics-handoff/setup-child.patch`) retain the
 result. Primary/caller hashes and retained bytes matched; removing only the wrap
 line recovers exact source configuration. No gate, verifier, worker or native
 drill invocation was created. The verifier's third pin copy and actual input

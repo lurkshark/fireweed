@@ -1,3 +1,0 @@
-
-EVENT 4 command raw_offset=43354 SHA256=e80b3ae6f3d8e3f8413871924c3dd29b9b60792436de82fd8dff30f4881925a0
-/bin/zsh -lc 'git status --short && find packages/workflow/internal -type f -maxdepth 3 -print'

@@ -1,5 +1,9 @@
 # Corrected-source workflow drill: terminal review
 
+> Retention update: this review describes the evidence at `d63c16e`.
+> Superseded attachments are recoverable from [Git history](../README.md#historical-evidence);
+> current module reports and selected outcome receipts remain in this checkout.
+
 The owner's requested sequence is complete: two normal audited fixes, clean-source
 validation, an idle verified controller update, then exactly one native workflow
 invocation on corrected subject `ccd3d6b7732d613e80a027ba7969b65adc58bc0e`. It **failed native verification** after its
@@ -31,10 +35,10 @@ The invoker and both scratch controller copies matched the current pin.
 
 ## Native result and case review
 
-The [exact native report](native-report.md) records date
+The [exact native report](../README.md#historical-evidence) (`d63c16e:.fireweed/drills/workflow-corrected-controller-retry-20261107T232508/native-report.md`) records date
 2026-11-07T23:25:08.80161Z, that setup base, agent codex, model gpt-6-sol and result
 fail. The native controller exited 1 normally, with rejection/emergency false.
-[Case review](native-case-review.json) checks every case identity/ID/result and
+[Case review](../README.md#historical-evidence) (`d63c16e:.fireweed/drills/workflow-corrected-controller-retry-20261107T232508/native-case-review.json`) checks every case identity/ID/result and
 full published failure text/module output. There are 650 unique cases: 646 pass,
 4 fail, no skips or unknown/duplicate entries. Workflow is 165 pass/3 fail, app
 323 pass, runner 158 pass/1 fail. All 355 enforced IDs are represented: workflow
@@ -52,11 +56,11 @@ The four actual failures are:
 | runner | Test_RUN_037_VerificationDeadlineRetainsHeldWork | time_limit_test.go:182: held `packages/alpha/evals/time-work.txt` cannot be read because it is missing. No timeout root cause is inferred from that message alone. |
 
 The first native verification failed in all three modules and its full
-[feedback](native-feedback-1.txt) was reviewed before the second release. The
+[feedback](../README.md#historical-evidence) (`d63c16e:.fireweed/drills/workflow-corrected-controller-retry-20261107T232508/native-feedback-1.txt`) was reviewed before the second release. The
 second worker received exactly the original prompt plus that controller-produced
 feedback. No outside finding, proposed repair or implementation hint was added.
 Final stdout/stderr and actual assertion text are retained in the report;
-[non-case fields](native-noncase-fields.txt) make those fields easy to inspect.
+[non-case fields](../README.md#historical-evidence) (`d63c16e:.fireweed/drills/workflow-corrected-controller-retry-20261107T232508/native-noncase-fields.txt`) make those fields easy to inspect.
 Both attempts compiled and produced actual case reports; no compiler error was
 reported, so this invocation adds no compiler-error-path claim to earlier CHK-034
 validation.
@@ -100,7 +104,7 @@ first trace, fresh-output and native-feedback review plus repeated isolation.
 The first trace has 77 full commands/scripts and 190 cumulative patch snapshots;
 the second has 24 commands and 25 snapshots. The outside reviewer displayed every
 incremental change while suppressing repeated content and normalizing Go format
-for comparison. [First](output-review-1.json) and [second](output-review-2.json)
+for comparison. [First](../README.md#historical-evidence) (`d63c16e:.fireweed/drills/workflow-corrected-controller-retry-20261107T232508/output-review-1.json`) and [second](../README.md#historical-evidence) (`d63c16e:.fireweed/drills/workflow-corrected-controller-retry-20261107T232508/output-review-2.json`)
 receipts match all actual fresh files, including notes, to that complete trace and
 formatting. The final proof's four Go files match the second receipt. Reviewer
 helper `stderr_bytes` display counts decoded characters; authoritative byte counts

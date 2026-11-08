@@ -1,9 +1,0 @@
-[main (root-commit) 2dfbff7] approved public CLI fixture
- 7 files changed, 78 insertions(+)
- create mode 100644 .fireweed/eval.sh
- create mode 100644 SYSTEM.md
- create mode 100644 changes/0001-cli.md
- create mode 100644 changes/archive/0000-prior.md
- create mode 100644 fireweed.yaml
- create mode 100644 packages/alpha/SPEC.md
- create mode 100644 packages/alpha/api.go

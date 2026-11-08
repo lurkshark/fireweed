@@ -1,8 +1,0 @@
---- packages/workflow/internal/lifecycle/verify.go before (format normalized)
-+++ packages/workflow/internal/lifecycle/verify.go after (format normalized)
-@@ -348,2 +348,5 @@
- 		return result, coded("P01", "unsupported phase "+a.Phase)
-+	}
-+	if s.Head != a.Base {
-+		return result, coded("P05", "HEAD changed since phase base")
- 	}

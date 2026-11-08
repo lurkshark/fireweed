@@ -1,4 +1,0 @@
-=== RUN   Test_RUN_037_VerificationDeadlineRetainsHeldWork
---- PASS: Test_RUN_037_VerificationDeadlineRetainsHeldWork (2.56s)
-PASS
-ok  	github.com/lurkshark/fireweed/packages/runner/evals	2.868s

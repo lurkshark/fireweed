@@ -1,7 +1,0 @@
---- packages/workflow/internal/lifecycle/core.go before (format normalized)
-+++ packages/workflow/internal/lifecycle/core.go after (format normalized)
-@@ -647,3 +647,3 @@
- 	ref := "refs/fireweed/attempts/" + ch.Slug + "/" + strconv.Itoa(n)
--	files, e := git(root, "diff", "--name-only", "HEAD", ref)
-+	files, e := git(root, "diff", "--name-only", ref+"^1", ref)
- 	if e != nil {

@@ -1,8 +1,0 @@
-{
-  "initial_document_helper_guard_exit": 1,
-  "reason": "document helper required preservation receipt which is generated after final status/documents; halted before writing",
-  "resolution": "require completed validation/cleanup/preparation for document authoring; require final preservation before evidence collection",
-  "product_or_phase_changes": false,
-  "validation_gate_retry": false,
-  "native_workflow_invocations": 0
-}

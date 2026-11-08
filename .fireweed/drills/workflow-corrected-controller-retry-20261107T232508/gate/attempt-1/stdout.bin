@@ -1,3 +1,0 @@
-Rebuilt the workflow implementation in [packages/workflow/internal/lifecycle](/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-3431589947/packages/workflow/internal/lifecycle). Three remaining report gaps are recorded in [DRILL_NOTES.md](/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-3431589947/DRILL_NOTES.md).
-
-I formatted the new code. I did not run builds or tests, as the supplied `SYSTEM.md` prohibits local verification. No retained inputs were edited, and I made no commit.

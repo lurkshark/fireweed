@@ -1,6 +1,0 @@
---- packages/workflow/internal/lifecycle/core.go before (format normalized)
-+++ packages/workflow/internal/lifecycle/core.go after (format normalized)
-@@ -54,2 +54,3 @@
- 	c.Dir = root
-+	c.Env = append(os.Environ(), "GIT_AUTHOR_NAME=Fireweed", "GIT_AUTHOR_EMAIL=fireweed@localhost", "GIT_COMMITTER_NAME=Fireweed", "GIT_COMMITTER_EMAIL=fireweed@localhost")
- 	b, e := c.CombinedOutput()

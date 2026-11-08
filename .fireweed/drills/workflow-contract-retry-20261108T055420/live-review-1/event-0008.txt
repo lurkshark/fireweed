@@ -1,3 +1,0 @@
-
-EVENT 8 command raw_offset=153226 SHA256=a8d53267571adea3929ea2d505c8e4859bb57d1cfaf96925b2e2449ee081b173
-/bin/zsh -lc "sed -n '920,1410p' packages/workflow/evals/lifecycle_test.go"

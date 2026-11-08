@@ -1,3 +1,0 @@
-
-EVENT 15 command raw_offset=131085 SHA256=03343c8938a7c1e4849bbb78621605b59a65efbbd1673a000fcc9040bce91296
-/bin/zsh -lc "sed -n '1040,1075p' packages/workflow/evals/lifecycle_test.go; sed -n '20,58p' packages/workflow/evals/regenerate_start_test.go; cat packages/workflow/api.go; rg -n 'Projected spec|SYSTEM.md|Other relevant files' packages/runner/evals packages/app/evals"

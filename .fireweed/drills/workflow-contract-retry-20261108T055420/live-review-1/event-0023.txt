@@ -1,3 +1,0 @@
-
-EVENT 23 command raw_offset=284051 SHA256=7e3878f2e46a49ef8077a93e66207a74382cdc807bdf0d37f19e3ee62a15c891
-/bin/zsh -lc "sed -n '1,230p' packages/workflow/evals/gc_test.go"

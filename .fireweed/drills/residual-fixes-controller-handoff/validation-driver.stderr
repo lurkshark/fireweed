@@ -1,7 +1,0 @@
-Traceback (most recent call last):
-  File "/private/tmp/fireweed-residual-fixes-27wddhxj/validate-controller.py", line 22, in <module>
-    run('normal',['go','test','./...'],SRC,900)
-  File "/private/tmp/fireweed-residual-fixes-27wddhxj/validate-controller.py", line 15, in run
-    steps.append({'stage':stage,'argv':argv,'cwd':str(cwd),'bound_seconds':bound,'start':start,'finish':datetime.datetime.now(datetime.timezone.utc).isoformat(),'exit':code,'expected':expected});(V/'results.json').write_text(json.dumps(steps,indent=2));(V/'active.json').unlink();assert code==expected,(stage,code,expected);print(stage+' passed',flush=True)
-                                                                                                                                                                                                                                                                                               ^^^^^^^^^^^^^^
-AssertionError: ('normal', 1, 0)

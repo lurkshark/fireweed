@@ -1,3 +1,0 @@
-
-EVENT 11 command raw_offset=26944 SHA256=76ba817309922e952819c25d6c5283d4fad0b4c3f40846cc77edbaaef30d92e3
-/bin/zsh -lc 'cat SYSTEM.md packages/workflow/api.go packages/workflow/model/model.go'

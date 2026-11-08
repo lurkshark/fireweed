@@ -1,9 +1,0 @@
-{
-  "pid": 32361,
-  "argv": [
-    "/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed",
-    "drill",
-    "workflow",
-    "--json"
-  ]
-}

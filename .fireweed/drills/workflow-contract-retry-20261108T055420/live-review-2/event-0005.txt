@@ -1,3 +1,0 @@
-
-EVENT 5 command raw_offset=46157 SHA256=ee60dc949d98779d5a36e4bad0500be3f57aa95f86d12cf5a6ec8c01a1760ef1
-/bin/zsh -lc 'cat packages/workflow/internal/lifecycle/verify.go'

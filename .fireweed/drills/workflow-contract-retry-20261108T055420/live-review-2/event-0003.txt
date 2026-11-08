@@ -1,3 +1,0 @@
-
-EVENT 3 command raw_offset=43100 SHA256=a8b5c1747baeae51ac7b66c827d5671b2d08b55762f7fb65731892d031d391fa
-/bin/zsh -lc 'wc -l packages/workflow/internal/lifecycle/*.go packages/workflow/api.go packages/workflow/model/model.go DRILL_NOTES.md && cat DRILL_NOTES.md'

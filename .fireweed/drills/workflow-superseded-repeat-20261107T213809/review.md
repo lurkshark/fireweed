@@ -1,5 +1,9 @@
 # Superseded diagnostic repeat
 
+> Retention update: this review describes the evidence at `d63c16e`.
+> Superseded attachments are recoverable from [Git history](../README.md#historical-evidence);
+> current module reports and selected outcome receipts remain in this checkout.
+
 The owner changed the task to applying the two proposed fixes, then validating
 and updating the controller, then running a corrected-subject drill. The already
 started unchanged-input diagnostic invocation was rejected through the prepared

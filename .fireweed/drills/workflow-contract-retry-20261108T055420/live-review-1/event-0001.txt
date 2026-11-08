@@ -1,3 +1,0 @@
-
-EVENT 1 command raw_offset=25005 SHA256=bfd407cf275ac4e13692468335a2de8d046e483697557bbc1e702f81c6b0d32c
-/bin/zsh -lc 'rg --files packages/workflow .fireweed 2>/dev/null'

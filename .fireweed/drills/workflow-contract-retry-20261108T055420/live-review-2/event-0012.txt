@@ -1,3 +1,0 @@
-
-EVENT 12 command raw_offset=108943 SHA256=2f5b7c93173383c441c586039227c57e1f07fac9a7cc73f9d493c2e0722b8d60
-/bin/zsh -lc "sed -n '400,475p' packages/workflow/evals/lifecycle_test.go && sed -n '1010,1045p' packages/workflow/evals/lifecycle_test.go && sed -n '1300,1323p' packages/workflow/evals/lifecycle_test.go && sed -n '540,570p' packages/workflow/evals/lifecycle_test.go"

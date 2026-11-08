@@ -1,5 +1,9 @@
 # Residual workflow drill failures: evidence and scoped proposals
 
+> Retention update: this review describes the evidence at `d63c16e`.
+> Superseded attachments are recoverable from [Git history](../README.md#historical-evidence);
+> current module reports and selected outcome receipts remain in this checkout.
+
 The owner requested investigation and fix proposals, followed by one further
 drill while keeping candidate `79cf33a7690082f28c06bf41a72719d282bc00fe` and the
 fixed pinned controller unchanged. This document proposes corrections; it applies

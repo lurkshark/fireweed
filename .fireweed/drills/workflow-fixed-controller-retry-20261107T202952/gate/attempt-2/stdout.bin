@@ -1,3 +1,0 @@
-Updated the workflow implementation in `packages/workflow/internal/lifecycle/` to address the reported lifecycle, status, context, and PR body failures. I recorded remaining gaps in [DRILL_NOTES.md](/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-2127954535/DRILL_NOTES.md).
-
-I formatted the disposable Go code. I did not run builds or tests because the supplied `SYSTEM.md` prohibits local verification; the changes remain uncommitted for the outside verifier.

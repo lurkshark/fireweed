@@ -1,6 +1,0 @@
-# Regenerate
-Read the module spec, Decisions, public interface and evals. Rebuild disposable implementation files from those sources after the controller removes the old files. Run the module's evals and dependent evals through fireweed verify. Do not consult deleted code, prior implementations or history, and do not commit.
-
-Decisions contain only previously unspecified behavioral choices. Write one or two sentences per choice in Decisions. Put verification, debugging and recovery records in Notes.
-Decision: When a lookup matches more than one item, return an ambiguity error.
-Note: Verification passed after rerunning the module tests.

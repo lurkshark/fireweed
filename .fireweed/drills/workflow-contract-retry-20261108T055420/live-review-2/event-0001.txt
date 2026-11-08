@@ -1,3 +1,0 @@
-
-EVENT 1 command raw_offset=41381 SHA256=598bb6dabb6c314dc1f90d6dad6624e3fe0494a6ca2dbefbd6ca854f0d0599a7
-/bin/zsh -lc "pwd && rg --files -g 'AGENTS.md' -g 'packages/workflow/**' -g 'go.mod' -g 'DRILL_NOTES.md' | head -100"

@@ -1,3 +1,0 @@
-
-EVENT 20 command raw_offset=151168 SHA256=959ccbb21d689374631ff847d223f67829b4d2f56d3080b5ed1b0e585e8696e5
-/bin/zsh -lc 'rg --files | head -80; rg --files packages/project packages/contracts packages/checks packages/gitstore packages/assets | head -65'

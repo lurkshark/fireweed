@@ -1,9 +1,0 @@
---- packages/workflow/internal/lifecycle/reports.go before (format normalized)
-+++ packages/workflow/internal/lifecycle/reports.go after (format normalized)
-@@ -308,4 +308,4 @@
- 				if e == nil {
--					audit := section(d.Body, "Audit")
--					if strings.Contains(audit, "finding") || strings.Contains(audit, "FINDING") {
-+					audit := strings.TrimSpace(section(d.Body, "Audit"))
-+					if strings.HasPrefix(audit, "-") {
- 						b.WriteString("\n" + audit + "\n")

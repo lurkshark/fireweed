@@ -1,3 +1,0 @@
-Rebuilt the workflow implementation in [packages/workflow/internal/lifecycle](/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-2127954535/packages/workflow/internal/lifecycle) and recorded known gaps in [DRILL_NOTES.md](/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-2127954535/DRILL_NOTES.md).
-
-I formatted the new code and confirmed the retained inputs were untouched. I did not build, test, or commit: `SYSTEM.md` prohibits local builds and tests, so the rebuild remains unverified pending the outside verifier.

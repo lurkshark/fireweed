@@ -39,7 +39,7 @@ Public regressions assert exact stdout/stderr/exit, unchanged diagnostic causes,
 zero accepted cases/time from invalid reports, and continued coverage/fail-first
 failure after an unmapped case even when a valid case precedes it. Timeout is
 bounded and checks retained output/nonzero exit. Existing assertions remain intact.
-Raw [phase reports](chk034-controller-handoff/impl/checks.json) and archived
+Raw [phase reports](README.md#historical-evidence) (`d63c16e:.fireweed/drills/chk034-controller-handoff/impl/checks.json`) and archived
 Provenance retain the result. The owning process exited zero and released its claim. Existing B02 testcase-count
 warnings for CHK-055 (16), APP-103 (17) and APP-104 (19), against limit 15,
 remain visible in status. These IDs and their tests are unchanged; no bound was
@@ -97,7 +97,7 @@ Outside control.py and preflight.py changed only their expected pin hashes.
 The preparation-only staging check copied the new pin, retained 31 input files,
 394 verifier files and 16 disposable deletion paths, and changed only SYSTEM and
 agent.wrap in its isolated setup child. No gate/native invocation was started.
-[Preparation receipt](chk034-controller-handoff/preparation.json) and expected
+[Preparation receipt](README.md#historical-evidence) (`d63c16e:.fireweed/drills/chk034-controller-handoff/preparation.json`) and expected
 hashes are retained. Wrapper behavior, exact command/model/effort, worker-system
 instructions, candidate, original deadline and every isolation gate are unchanged;
 the earlier fake supervisor rehearsals remain valid for unchanged behavior.

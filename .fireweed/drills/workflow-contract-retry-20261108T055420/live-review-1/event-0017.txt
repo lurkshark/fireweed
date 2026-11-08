@@ -1,3 +1,0 @@
-
-EVENT 17 command raw_offset=228083 SHA256=f45cfe06f92228dc998688c9d6197e2c97e3ac288cec4b0aebeb1969c9e8e8ec
-/bin/zsh -lc "sed -n '1,260p' packages/workflow/evals/eval_fix_lifecycle_test.go"

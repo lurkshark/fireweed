@@ -1,7 +1,0 @@
---- DRILL_NOTES.md before (format normalized)
-+++ DRILL_NOTES.md after (format normalized)
-@@ -8,2 +8,4 @@
- 
-+- FLOW-022 — workflow: The retained `Test_FLOW_004_FLOW_028_FLOW_044_FLOW_045_FLOW_046_FLOW_047_FLOW_050_ImplDoneAppliesSpecsSetAndDecisionsAndArchives` fixture removes coverage for the current enforced ALP-002 but expects evals Done to succeed. FLOW-022 requires coverage of every enforced current spec.
-+- FLOW-023 — workflow: The retained implementation and audit lifecycle fixtures add ALP-002 or ALP-003 without a fail-first testcase for those Added IDs, then expect evals Done to succeed. FLOW-023 requires fail-first evidence for each enforced Added ID.
- - FLOW-115 — workflow: PRBody selects endpoint identities touched by range commits, but a rename with a changed basename may not be connected to its endpoint identity.

@@ -1,3 +1,0 @@
-
-EVENT 6 command raw_offset=128282 SHA256=c520e30ca24c8e0b4707159637e2f4e1825ff6ceb4a3f41bddbb619b21d7956f
-/bin/zsh -lc "rg '"'^func Test|''^func fixture|''^func start|''^func done|''^func verify|''^func toAudit|''^func audit|''^const '"' packages/workflow/evals/*.go"

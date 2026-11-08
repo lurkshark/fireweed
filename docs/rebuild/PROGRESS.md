@@ -11,7 +11,7 @@ emergency path. No further invocation occurred.
 
 The [current native report](../../.fireweed/drills/workflow.md) retains its exact
 native prefix followed by owner review. The
-[complete evidence/review](../../.fireweed/drills/workflow-contract-retry-20261108T055420/review.md)
+[review and retained evidence](../../.fireweed/drills/workflow-contract-retry-20261108T055420/review.md)
 records first-attempt verification failures, all cases/coverage and assertions,
 actual inputs, exact first feedback, both traces, rejected local command, durable
 unchanged stream forwarding, published ref, process/scratch cleanup and limitations.
@@ -22,7 +22,7 @@ The focused RUN-037 case passed; its preceding native timing cause remains unres
 Retained failed ref: `refs/fireweed/drills/workflow/20261108T055420.712886000`.
 It identifies first verified reconstruction only; no reconstruction was applied
 to the product. The preceding workflow report is
-[byte-preserved](../../.fireweed/drills/workflow-before-contract-diagnostics-retry-618ecde.md).
+[recoverable from Git history](../../.fireweed/drills/workflow-before-contract-diagnostics-retry-618ecde.md).
 All older reports/archives/proof/attempt refs, original 79cf33a and prior corrected
 ccd3d6b/9a206c5 objects, bounds/counters, recoveries and the unrelated worktree remain.
 Live counts/warnings are retained in evidence, not reset. The valid checks proof
@@ -55,3 +55,9 @@ Recovery executables remain `.fireweed/bin/fireweed-ccd3d6b`,
 `.fireweed/bin/fireweed-12c571c`, `.fireweed/bin/fireweed-1936346`,
 `.fireweed/bin/fireweed-99a1d6d`, `.fireweed/bin/fireweed-pre-ck-handoff` and
 `.fireweed/bin/fireweed-bootstrap`. Use only for explicit owner-directed recovery.
+
+The owner authorized pruning superseded drill attachments. Current module reports,
+useful reviews, validation outcomes and cleanup receipts remain in the checkout;
+full historical evidence is recoverable through the
+[drill retention index](../../.fireweed/drills/README.md). No drill, correction,
+controller update or ref pruning was performed.

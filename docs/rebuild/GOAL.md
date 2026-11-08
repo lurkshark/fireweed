@@ -7,12 +7,13 @@ path. All received output was preserved/forwarded; the native controller publish
 a failure report/ref and exited. No emergency escalation or additional invocation.
 
 Read AGENTS, SYSTEM, PROGRESS and ACCEPTANCE before any newly authorized work.
-The [complete reviewed evidence](../../.fireweed/drills/workflow-contract-retry-20261108T055420/review.md)
+The [review and retained evidence](../../.fireweed/drills/workflow-contract-retry-20261108T055420/review.md)
 contains exact source/pin/setup, actual retained-input review, all native cases/
 assertions/coverage, full first feedback, traces, rejection/publication, retained
 ref, limitations and cleanup. The [workflow report](../../.fireweed/drills/workflow.md)
 preserves the full native prefix before owner review. Its preceding report and
-all earlier evidence/refs remain accessible. No passing independent proof or
+pruned historical attachments remain accessible through Git history; all proof/attempt
+refs remain unchanged. See the [retention index](../../.fireweed/drills/README.md). No passing independent proof or
 WF4/full-completion claim. Cases retained in that report are first verification;
 rejected second partial code was not reverified. RUN-037's preceding native timing
 cause remains unresolved, although this invocation's focused case passed.

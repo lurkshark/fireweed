@@ -1,5 +1,0 @@
-Traceback (most recent call last):
-  File "/private/tmp/fireweed-residual-fixes-27wddhxj/run-changes.py", line 18, in <module>
-    result={'slug':slug,'exit':p.returncode,'start':start,'finish':datetime.datetime.now(datetime.timezone.utc).isoformat(),'head':git('rev-parse','HEAD')};results.append(result);(OUT/'owner-results.json').write_text(json.dumps(results,indent=2));assert p.returncode==0,result
-                                                                                                                                                                                                                                                              ^^^^^^^^^^^^^^^
-AssertionError: {'slug': 'recorded-regenerate-preservation', 'exit': 1, 'start': '2026-11-07T21:46:47.225096+00:00', 'finish': '2026-11-07T21:53:26.719665+00:00', 'head': 'f77441015050f5df685fa41b6bb36ea5b9b1bbf7'}

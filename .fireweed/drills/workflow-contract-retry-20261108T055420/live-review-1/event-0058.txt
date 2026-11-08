@@ -1,3 +1,0 @@
-
-EVENT 58 command raw_offset=572422 SHA256=70ca8bf21a5254c6b9dabc1961e7c7bd7311e19c8af5f5b902b3104fe415222c
-/bin/zsh -lc "gofmt -w packages/workflow/internal/lifecycle/*.go && rg -n 'var _|TODO|FIXME|_ = baseRef|sDiag' packages/workflow/internal/lifecycle/*.go"

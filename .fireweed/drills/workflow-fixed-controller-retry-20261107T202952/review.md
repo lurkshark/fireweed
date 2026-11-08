@@ -1,5 +1,9 @@
 # Fixed-controller workflow retry review
 
+> Retention update: this review describes the evidence at `d63c16e`.
+> Superseded attachments are recoverable from [Git history](../README.md#historical-evidence);
+> current module reports and selected outcome receipts remain in this checkout.
+
 One owner-approved real native workflow invocation used frozen subject
 `79cf33a7690082f28c06bf41a72719d282bc00fe`, the fixed pinned controller and the
 prepared outside inspector. It completed normally with native exit 1 and result
@@ -23,8 +27,8 @@ and E01 testcase identities; no unpublished final assertion text is claimed.
 Neither attempt produced a compilation failure, so this invocation does not
 establish compiler-error-path behavior; the earlier CHK-034 fixture is separate.
 
-The exact [native report](native-report.md), [CLI result](native.stdout),
-[terminal record](terminal.json) and [case review](case-review.json) are retained.
+The exact [native report](../README.md#historical-evidence) (`d63c16e:.fireweed/drills/workflow-fixed-controller-retry-20261107T202952/native-report.md`), [CLI result](../README.md#historical-evidence) (`d63c16e:.fireweed/drills/workflow-fixed-controller-retry-20261107T202952/native.stdout`),
+[terminal record](terminal.json) and [case review](../README.md#historical-evidence) (`d63c16e:.fireweed/drills/workflow-fixed-controller-retry-20261107T202952/case-review.json`) are retained.
 The failed reconstruction ref is
 `refs/fireweed/drills/workflow/20261107T202952.649365000`, object
 `50bd33c5526fb495d541e3290868d198ed010b78`. It is retained locally, not applied to
@@ -95,7 +99,7 @@ Native cleanup removed the input and verifier worktree. The inspector and native
 controller exited; both worker groups and the controller group were absent.
 The owned caller was removed only after retaining the report, full outside
 artifacts and native reconstruction ref. No queued change or shared claim remains.
-[Cleanup](cleanup.json), [entry snapshot](entry.json), final status and preservation
+[Cleanup](cleanup.json), [entry snapshot](../README.md#historical-evidence) (`d63c16e:.fireweed/drills/workflow-fixed-controller-retry-20261107T202952/entry.json`), final status and preservation
 receipts retain the checks. Final status retains the existing B02 testcase-count
 warnings for CHK-055 (16), APP-103 (17) and APP-104 (19), against limit 15.
 Their tests and bounds are unchanged; no unrelated correction was undertaken.

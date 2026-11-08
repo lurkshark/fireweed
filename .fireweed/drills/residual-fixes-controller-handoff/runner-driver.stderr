@@ -1,5 +1,0 @@
-Traceback (most recent call last):
-  File "/private/tmp/fireweed-residual-fixes-27wddhxj/run-runner.py", line 14, in <module>
-    result={'exit':p.returncode,'start':start,'finish':datetime.datetime.now(datetime.timezone.utc).isoformat(),'head':git('rev-parse','HEAD')};(OUT/'runner-owner-result.json').write_text(json.dumps(result,indent=2));assert p.returncode==0,result
-                                                                                                                                                                                                                                ^^^^^^^^^^^^^^^
-AssertionError: {'exit': -2, 'start': '2026-11-07T22:17:31.289719+00:00', 'finish': '2026-11-07T22:23:28.933415+00:00', 'head': '59d3b1301113383c13d808033de55bd9843673f4'}

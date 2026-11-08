@@ -1,3 +1,0 @@
-
-EVENT 7 command raw_offset=46486 SHA256=d1bd45ae34293d7d9a0320b84c277c15c23381fc8f9908c3dbcc8d020d885d92
-/bin/zsh -lc 'cat packages/workflow/internal/lifecycle/done.go'

@@ -1,8 +1,0 @@
---- packages/workflow/internal/lifecycle/core.go before (format normalized)
-+++ packages/workflow/internal/lifecycle/core.go after (format normalized)
-@@ -478,2 +478,5 @@
- 		_ = writeFile(r, ch.Path, original)
-+		if strings.Contains(e.Error(), "stale base") {
-+			return model.State{}, code("P05", "%v", e)
-+		}
- 		return model.State{}, e

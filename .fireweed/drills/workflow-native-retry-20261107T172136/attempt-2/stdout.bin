@@ -1,3 +1,0 @@
-Rebuilt and formatted the disposable [workflow internals](/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-3995695177/packages/workflow/internal/lifecycle). The changes address claim and attempt handling, audit submissions, verification errors, and reporting. Remaining gaps are recorded in [DRILL_NOTES.md](/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-3995695177/DRILL_NOTES.md).
-
-Only the permitted paths changed. No commit was made. Local builds and tests were not run because `SYSTEM.md` reserves verification for the outside controller; the previous verification failures remain unverified.

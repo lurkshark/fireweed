@@ -1,5 +1,9 @@
 # Investigation of the four corrected-source drill failures
 
+> Retention update: this review describes the evidence at `d63c16e`.
+> Superseded attachments are recoverable from [Git history](../README.md#historical-evidence);
+> current module reports and selected outcome receipts remain in this checkout.
+
 The owner authorized investigation only. The subject and controller remain
 ccd3d6b7732d613e80a027ba7969b65adc58bc0e; original 79cf33a remains preserved.
 The failed reconstruction remains at
@@ -40,13 +44,13 @@ ref (2.868s). No retained assertion was edited for these comparisons.
 Because RUN-037 originally failed within a package run, one full failed-ref
 runner replay followed, bounded by Go's 8m timeout and an external 600s limit.
 It passed all 159 cases, no failures/skips, in 263.121s. Its
-[result](full-runner-result.json) and complete output are retained. No further
+[result](../README.md#historical-evidence) (`d63c16e:.fireweed/drills/workflow-failure-investigation-20261108/full-runner-result.json`) and complete output are retained. No further
 full-suite repetition or stress/load simulation was performed.
 
 Temporary public-API probes reused the existing ordinary fixtures and fake
 hooks/workers; they imported no private implementation package. Their complete
-sources are [workflow-probe.txt](workflow-probe.txt) and
-[runner-probe.txt](runner-probe.txt), with [commands](probe-results.json) and
+sources are [workflow-probe.txt](../README.md#historical-evidence) (`d63c16e:.fireweed/drills/workflow-failure-investigation-20261108/workflow-probe.txt`) and
+[runner-probe.txt](../README.md#historical-evidence) (`d63c16e:.fireweed/drills/workflow-failure-investigation-20261108/runner-probe.txt`), with [commands](probe-results.json) and
 [structured observations](observations.json). Probe files were added only to the
 owned temporary clones, then removed. Original tracked tests/source stayed intact.
 Every held probe claim was released through public Release.
@@ -125,7 +129,7 @@ correction or reconstructed-source application is authorized by the investigatio
 
 ## Preservation and stop
 
-The [entry](entry.json), [cleanup](cleanup.json), integrity receipt and author checks
+The [entry](../README.md#historical-evidence) (`d63c16e:.fireweed/drills/workflow-failure-investigation-20261108/entry.json`), [cleanup](cleanup.json), integrity receipt and author checks
 retain the source/ref/pin/worktree identities and bounded commands. The candidate,
 primary pin and recoveries, all prior reports/archive/proof/attempt refs,
 configuration/bounds/counters, existing deadline and unrelated worktree are

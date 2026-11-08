@@ -1,8 +1,0 @@
-{
-  "DRILL_NOTES.md": "bc0484da9e3fa4d73eb4ade34699aa50a8798294219e4fa30d1b36148efb6b52",
-  "packages/workflow/internal/lifecycle/core.go": "4af6b2779e9ab1d8153a7c2d6ae47248cc13cc3017cfeabf68279b68127e5fc9",
-  "packages/workflow/internal/lifecycle/reports.go": "d583ec5a6563f510f601abf0ec7dc798e2e36f488983cf6f2c56113ac08e5a1f",
-  "packages/workflow/internal/lifecycle/history.go": "6448db2fdeb1e0cce4335c20e4b2ee8abfa8ee745c89e716fc8df20247e512ae",
-  "packages/workflow/internal/lifecycle/verify.go": "40ef1383098dd2a64f1fa7efd4da1cc643552b67e3261f9091328f8779849971",
-  "packages/workflow/internal/lifecycle/done.go": "78117cb5f8fa3b8decda98b87f679f36d86eaed37808f7229d1cdf862da00f7d"
-}

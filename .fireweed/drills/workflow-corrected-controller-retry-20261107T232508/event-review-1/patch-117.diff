@@ -1,9 +1,0 @@
---- packages/workflow/internal/lifecycle/report.go before (format normalized)
-+++ packages/workflow/internal/lifecycle/report.go after (format normalized)
-@@ -112,2 +112,6 @@
- 	if ok {
-+		if current, err := os.ReadFile(filepath.Join(s.Snapshot.Root, m.Dir, "SPEC.md")); err == nil {
-+			out.WriteString("\n# Current spec\n")
-+			out.Write(current)
-+		}
- 		out.WriteString("\n# Projected spec\n")

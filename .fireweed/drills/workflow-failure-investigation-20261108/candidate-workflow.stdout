@@ -1,8 +1,0 @@
-=== RUN   Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_FLOW_046_AuditFindingsConvergeAndPersistTwoRoundBound
---- PASS: Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_FLOW_046_AuditFindingsConvergeAndPersistTwoRoundBound (7.23s)
-=== RUN   Test_FLOW_004_FLOW_028_FLOW_044_FLOW_045_FLOW_046_FLOW_047_FLOW_050_ImplDoneAppliesSpecsSetAndDecisionsAndArchives
---- PASS: Test_FLOW_004_FLOW_028_FLOW_044_FLOW_045_FLOW_046_FLOW_047_FLOW_050_ImplDoneAppliesSpecsSetAndDecisionsAndArchives (1.71s)
-=== RUN   Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses
---- PASS: Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses (5.63s)
-PASS
-ok  	github.com/lurkshark/fireweed/packages/workflow/evals	15.164s

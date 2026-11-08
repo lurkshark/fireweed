@@ -1,5 +1,9 @@
 # Contract-diagnostics controller retry — rejected and stopped
 
+> Retention update: this review describes the evidence at `d63c16e`.
+> Superseded attachments are recoverable from [Git history](../README.md#historical-evidence);
+> current module reports and selected outcome receipts remain in this checkout.
+
 The single owner-approved native workflow invocation on validated source
 `9a206c558e8e5625c0ae55bb57c42ae8130b4f15` is complete and failed. The second
 reconstruction worker invoked prohibited local `go test`; the inspector rejected
@@ -19,7 +23,7 @@ agent.wrap. Removing the wrap line recovers exact source configuration. Worker
 command/model/effort, attempts, timeout, limits, audit configuration, all isolation
 and output/stop gates, and **2026-11-10 22:51:05 UTC** deadline stayed unchanged.
 
-The controller published the exact [native report](native-workflow.md) and
+The controller published the exact [native report](../workflow.md) and
 `refs/fireweed/drills/workflow/20261108T055420.712886000` at
 `8859d4433b16bf721907009e58b269937b8af4fe`. The native CLI returned exit 1,
 P01, data null and cause `reconstruction agent: exit status 130`, naming both
@@ -77,7 +81,7 @@ reconstruction failed. The second partial edits were **not reverified**.
 | Total | 630 | 22 | 652 |
 
 All 652 case rows/names/ID mappings/results were reviewed in the
-[case catalog](case-catalog.txt); all failure bodies match the reviewed first
+[case catalog](../README.md#historical-evidence) (`d63c16e:.fireweed/drills/workflow-contract-retry-20261108T055420/case-catalog.txt`); all failure bodies match the reviewed first
 [native feedback](run/feedback-1.txt) and are retained in [failures.json](failures.json).
 Coverage includes all 355 current IDs (workflow 133, app 155, runner 67), with no
 unknown/missing IDs, duplicate case names, skips or error-result cases. Failure
