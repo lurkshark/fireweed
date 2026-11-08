@@ -1,4 +1,17 @@
-# Prepared workflow wrapper and inspector — stopped
+# Single approved workflow retry
+
+The owner separately approved exactly one supervised native workflow retry on
+validated source `9a206c558e8e5625c0ae55bb57c42ae8130b4f15`, using the unchanged pin below
+and prepared outside inspector. Reuse the committed clean-source validation and
+unchanged supervisor rehearsals. Use a fresh isolated caller and fresh live gates;
+review actual retained inputs before release and every command/script/incremental
+patch, full first native feedback and fresh output before any remaining configured
+release. Keep exact worker command/model/effort, input policy, bounds/counters and
+**2026-11-10 22:51:05 UTC** deadline unchanged. Retain the actual terminal evidence/ref,
+review the result, clean only owned scratch, commit protected evidence idle and
+stop. Failure/gaps authorize no correction, additional invocation, source import,
+controller update, later work or push. This approval supersedes only the previous
+native approval stop; all preservation and independence requirements remain.
 
 The owner-selected FLOW-007/FLOW-023 contract clarification and RUN-037 diagnostic
 change are applied and independently audited. Clean-source validation and the

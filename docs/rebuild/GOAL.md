@@ -1,4 +1,4 @@
-# Prepared workflow retry — stopped for separate approval
+# Run the single owner-approved workflow retry
 
 The two owner-selected normal audited changes are complete:
 [0183](../../changes/archive/0183-reserved-ids-review-fail-first.md) clarifies
@@ -19,15 +19,24 @@ is recorded in PROGRESS. The
 records exact source, commands/results, phase reports, warnings/cost limits,
 promotion, expected hashes, preparation-only setup and cleanup.
 
-**No native drill was launched in this sequence. Stop for separate owner approval
-of one workflow retry on the identified source and pin.** No active run, queue or
-shared claim remains. Owned validation/preparation clones are removed. All prior
-native results/reports/proof/attempt refs, original 79cf33a and prior corrected
-ccd3d6b objects, bounds/counters, recovery executables and unrelated worktree remain
-preserved. The existing deadline is **2026-11-10 22:51:05 UTC**, with no extension.
-The preceding native workflow failure remains current; WF4/full completion stay open.
+The owner separately approved exactly one supervised native workflow retry on
+validated source `9a206c558e8e5625c0ae55bb57c42ae8130b4f15`, using the unchanged pin below
+and prepared outside inspector. Reuse the committed clean-source validation and
+unchanged supervisor rehearsals. Use a fresh isolated caller and fresh live gates;
+review actual retained inputs before release and every command/script/incremental
+patch, full first native feedback and fresh output before any remaining configured
+release. Keep exact worker command/model/effort, input policy, bounds/counters and
+**2026-11-10 22:51:05 UTC** deadline unchanged. Retain the actual terminal evidence/ref,
+review the result, clean only owned scratch, commit protected evidence idle and
+stop. Failure/gaps authorize no correction, additional invocation, source import,
+controller update, later work or push. This approval supersedes only the previous
+native approval stop; all preservation and independence requirements remain.
 
-After explicit approval, follow
+Original 79cf33a, prior corrected ccd3d6b, all prior evidence/refs, counters/bounds,
+recoveries and unrelated worktrees remain preserved. WF4 remains open until actual
+passing evidence is reviewed. RUN-037 diagnostics do not establish a timing fix.
+
+For this approved invocation, follow
 [the prepared inspector README](workflow-drill/README.md), using a fresh outside
 root and the exact candidate/expected pin in control.py. Recheck live queue,
 claims, deadline, bounds and pin; run context for the applicable step. Prepare
