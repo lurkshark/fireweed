@@ -1,0 +1,148 @@
+
+EVENT 35 file-patch raw_offset=355065 SHA256=7333687de9174ad1ac435f287984e3aeb25878dd2ead60bf72ee9e269d42b9fd
+patch: completed
+/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-811464561/packages/workflow/internal/lifecycle/reports.go
+diff --git a/packages/workflow/internal/lifecycle/maintenance.go b/packages/workflow/internal/lifecycle/maintenance.go
+index 22e20b23705a40fa94bd4113f238d4d95f6f44f3..49aff33b90ed7ffe3bc7bf80f8cf33a4385327dd
+--- a/packages/workflow/internal/lifecycle/maintenance.go
++++ b/packages/workflow/internal/lifecycle/maintenance.go
+@@ -2,6 +2,7 @@
+ 
+ import (
+ 	"context"
++	"encoding/json"
+ 	"fmt"
+ 	"os"
+ 	"path/filepath"
+@@ -10,6 +11,7 @@
+ 	"strings"
+ 	"time"
+ 
++	"github.com/lurkshark/fireweed/packages/assets"
+ 	"github.com/lurkshark/fireweed/packages/contracts"
+ 	"github.com/lurkshark/fireweed/packages/gitstore"
+ 	"github.com/lurkshark/fireweed/packages/project"
+@@ -274,12 +276,20 @@
+ 			if json.Unmarshal(blob, &cl) != nil {
+ 				continue
+ 			}
++			if cl.Owner == "" {
++				var legacy map[string]string
++				_ = json.Unmarshal(blob, &legacy)
++				cl.Owner = legacy["worktree"]
++			}
+ 			owner, er := gitstore.Inspect(cl.Owner)
+ 			prune = er != nil || owner.CommonDir != repo.CommonDir
+ 		} else if strings.HasPrefix(ref, "refs/fireweed/attempts/") {
+ 			parts := strings.Split(ref, "/")
+-			if len(parts) >= 5 {
++			if len(parts) == 5 {
+ 				slug := parts[3]
++				if _, err := strconv.Atoi(parts[4]); err != nil {
++					continue
++				}
+ 				ents, _ := os.ReadDir(filepath.Join(r.Root, "changes/archive"))
+ 				for _, ent := range ents {
+ 					if slugOf(ent.Name()) == slug {
+@@ -289,9 +299,12 @@
+ 				}
+ 			}
+ 		} else if strings.HasPrefix(ref, "refs/fireweed/drills/") {
+-			date := filepath.Base(ref)
+-			date = strings.TrimSuffix(date, "Z")
+-			for _, layout := range []string{"20060102T150405", "20060102-150405", "2006-01-02T15-04-05"} {
++			parts := strings.Split(ref, "/")
++			if len(parts) != 5 {
++				continue
++			}
++			date := parts[4]
++			for _, layout := range []string{"20060102T150405.000000000"} {
+ 				if t, er := time.Parse(layout, date); er == nil {
+ 					prune = t.Before(now.Add(-age))
+ 					break
+@@ -308,4 +321,3 @@
+ 	return model.GCResult{Pruned: out}, nil
+ }
+ 
+-var _ = strconv.Itoa
+diff --git a/packages/workflow/internal/lifecycle/reports.go b/packages/workflow/internal/lifecycle/reports.go
+index 30fe662a62bf00d5884518e17bb0a4067b368795..9111365b3b47078d5e56065c7239e479f55d1e23
+--- a/packages/workflow/internal/lifecycle/reports.go
++++ b/packages/workflow/internal/lifecycle/reports.go
+@@ -151,7 +151,10 @@
+ 		}
+ 		p := c.Path
+ 		if _, er := gitstore.ReadAt(root, ref, p); er != nil {
+-			r.Unapproved++
++			pending := "changes/" + filepath.Base(p)
++			if _, pendingError := gitstore.ReadAt(root, ref, pending); pendingError != nil {
++				r.Unapproved++
++			}
+ 		}
+ 	}
+ 	count := 0
+@@ -170,7 +173,8 @@
+ 	if count >= 3 {
+ 		r.Diagnostics = append(r.Diagnostics, diag("P08", fmt.Sprintf("%s has %d consecutive applied changes", name, count), true))
+ 	}
+-	r.Costs, ds := latestCosts(root)
++	var ds []project.Diagnostic
++	r.Costs, ds = latestCosts(root)
+ 	r.Diagnostics = append(r.Diagnostics, ds...)
+ 	return r, nil
+ }
+diff --git a/packages/workflow/internal/lifecycle/start.go b/packages/workflow/internal/lifecycle/start.go
+index 619cd22d671ca85e12382cdbea0bf033a6ef673c..08975a1b6028b0b72475bd87e01e3271fd58376b
+--- a/packages/workflow/internal/lifecycle/start.go
++++ b/packages/workflow/internal/lifecycle/start.go
+@@ -289,11 +289,15 @@
+ 			if m.Name != c.Module {
+ 				continue
+ 			}
+-			_ = filepath.Walk(m.Dir, func(p string, info os.FileInfo, err error) error {
++			dir := m.Dir
++			if !filepath.IsAbs(dir) {
++				dir = filepath.Join(root, dir)
++			}
++			_ = filepath.Walk(dir, func(p string, info os.FileInfo, err error) error {
+ 				if err != nil || info == nil || info.IsDir() {
+ 					return nil
+ 				}
+-				rel, _ := filepath.Rel(m.Dir, p)
++				rel, _ := filepath.Rel(dir, p)
+ 				if contracts.ResolveZone(filepath.ToSlash(rel), m.Zones) == "disposable" {
+ 					_ = os.Remove(p)
+ 				}
+diff --git a/packages/workflow/internal/lifecycle/verify.go b/packages/workflow/internal/lifecycle/verify.go
+index fadf69b00ed557e7bbd932049885354c91737bf8..133b527e3c568264b8ae6078e848d618e32bd8a0
+--- a/packages/workflow/internal/lifecycle/verify.go
++++ b/packages/workflow/internal/lifecycle/verify.go
+@@ -193,7 +193,7 @@
+ 		specs := sectionItems(m.Document, "Specs")
+ 		cost := moduleCost(root, m, report)
+ 		result.Costs = append(result.Costs, cost)
+-		if er != nil && failure == nil {
++		if er != nil && len(report.Cases) == 0 && failure == nil {
+ 			failure = er
+ 		}
+ 		if name == s.Change.Module {
+@@ -283,11 +283,15 @@
+ 			c.CasesPerSpec[id]++
+ 		}
+ 	}
+-	_ = filepath.Walk(m.Dir, func(path string, info os.FileInfo, err error) error {
++	dir := m.Dir
++	if !filepath.IsAbs(dir) {
++		dir = filepath.Join(root, dir)
++	}
++	_ = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+ 		if err != nil || info == nil || !info.Mode().IsRegular() {
+ 			return nil
+ 		}
+-		rel, e := filepath.Rel(m.Dir, path)
++		rel, e := filepath.Rel(dir, path)
+ 		if e != nil {
+ 			return nil
+ 		}
+
+

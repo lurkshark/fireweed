@@ -1,0 +1,3 @@
+
+EVENT 18 command raw_offset=150469 SHA256=3e4fe7d5aec246833fc99de22da77df436810e98791c9bfe4fce5f25a45cc5b5
+/bin/zsh -lc 'gofmt -w packages/workflow/internal/lifecycle && go test ./packages/workflow/internal/lifecycle ./packages/workflow'

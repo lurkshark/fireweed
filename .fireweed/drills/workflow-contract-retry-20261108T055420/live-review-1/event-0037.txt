@@ -1,0 +1,3 @@
+
+EVENT 37 command raw_offset=373075 SHA256=3e022c1497c7d07b237bcdbd69ef81431cf5fa77b4fdbcb68cfbe61dc8d4ba78
+/bin/zsh -lc "gofmt -w packages/workflow/internal/lifecycle/*.go && rg -n '"'^import|"github.com|r.Costs,|var _'"' packages/workflow/internal/lifecycle/*.go"

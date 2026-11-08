@@ -1,0 +1,3 @@
+
+EVENT 10 command raw_offset=25168 SHA256=656abd75ab23a5a5d6295264b8c774923d711c3313b2f24738956b33689e2024
+/bin/zsh -lc "pwd && rg --files -g 'AGENTS.md' -g '"'!**/.git/**'"' -g '"'!**/vendor/**'"' ."

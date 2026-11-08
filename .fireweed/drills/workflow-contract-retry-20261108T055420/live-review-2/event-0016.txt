@@ -1,0 +1,137 @@
+
+EVENT 16 file-patch raw_offset=135942 SHA256=af1b525129ca1a8d451a8c97f4a8a1c2359e43f894b058911c21798266bba90f
+patch: completed
+/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-811464561/packages/workflow/internal/lifecycle/common.go
+/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-811464561/packages/workflow/internal/lifecycle/maintenance.go
+/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-811464561/packages/workflow/internal/lifecycle/start.go
+diff --git a/packages/workflow/internal/lifecycle/common.go b/packages/workflow/internal/lifecycle/common.go
+index c4fe7bb713e46b3a2504d03f1a9ea683f9cf441d..1817cda3f64caef94999ed66130e84f80a0da2a3
+--- a/packages/workflow/internal/lifecycle/common.go
++++ b/packages/workflow/internal/lifecycle/common.go
+@@ -189,6 +189,14 @@
+ 			q = append(q, project.Change{Slug: slug, Path: p, Module: fmString(d, "module"), Document: d, Added: sectionItems(d, "Added"), Modified: sectionItems(d, "Modified"), Removed: sectionItems(d, "Removed")})
+ 		}
+ 	}
++	// A path identifies one document even when several documents share a slug.
++	if strings.Contains(sel, "/") {
++		for _, c := range q {
++			if sel == c.Path {
++				return c, nil
++			}
++		}
++	}
+ 	matches := []project.Change{}
+ 	for _, c := range q {
+ 		if sel == "" || sel == c.Slug || sel == filepath.Base(c.Path) || sel == c.Path {
+diff --git a/packages/workflow/internal/lifecycle/maintenance.go b/packages/workflow/internal/lifecycle/maintenance.go
+index b85b7f96fa2230b3f41730b2101d02f791967a0f..ec53f178507f80f8338da1606355194a755ee244
+--- a/packages/workflow/internal/lifecycle/maintenance.go
++++ b/packages/workflow/internal/lifecycle/maintenance.go
+@@ -33,7 +33,7 @@
+ 		return out.String(), nil
+ 	}
+ 	render, _ := contracts.RenderDocument(m.Document)
+-	out.WriteString("\n# Projected SPEC\n" + render)
++	out.WriteString("\n# Projected spec\n" + render)
+ 	pb := s.Phase
+ 	if pb == "impl" && fmBool(s.Change.Document, "regenerate") {
+ 		pb = "regenerate"
+@@ -42,8 +42,9 @@
+ 		out.WriteString("\n# Playbook\n" + text)
+ 	}
+ 	if sys, er := os.ReadFile(filepath.Join(root, "SYSTEM.md")); er == nil {
+-		out.WriteString("\n# SYSTEM\n" + string(sys))
++		out.WriteString("\n# SYSTEM.md\n" + string(sys))
+ 	}
++	out.WriteString("\n# Other relevant files\n")
+ 	dir := m.Dir
+ 	if !filepath.IsAbs(dir) {
+ 		dir = filepath.Join(root, dir)
+@@ -226,7 +227,15 @@
+ 		}
+ 	}
+ 	_ = os.Remove(filepath.Join(root, c.Path))
+-	newOID, e := gitstore.Commit(root, "fireweed abandon "+c.Slug, []string{c.Path})
++	if _, e = git(root, "add", "-A"); e != nil {
++		return "", e
++	}
++	newOID, e := git(root, "commit", "-m", "fireweed abandon "+c.Slug)
++	if e != nil {
++		return "", e
++	}
++	// git commit prints a summary; return the full object ID.
++	newOID, e = git(root, "rev-parse", "HEAD")
+ 	if e != nil {
+ 		return "", e
+ 	}
+diff --git a/packages/workflow/internal/lifecycle/start.go b/packages/workflow/internal/lifecycle/start.go
+index 21026a5cf22b2e0275fbdfff42520f86a20ff3c3..196530efe82bd6179efe891ee6bf77ce0254b775
+--- a/packages/workflow/internal/lifecycle/start.go
++++ b/packages/workflow/internal/lifecycle/start.go
+@@ -46,15 +46,16 @@
+ 		if fmString(b.Document, "blocked") == "" {
+ 			continue
+ 		}
++		blocker := strings.TrimSuffix(filepath.Base(b.Path), ".md")
+ 		if b.Module == c.Module {
+-			return b.Slug, "same_module"
++			return blocker, "same_module"
+ 		}
+ 		if depends(snap.Modules, c.Module, b.Module) {
+-			return b.Slug, "depends_on_blocked"
++			return blocker, "depends_on_blocked"
+ 		}
+ 		interfaceText, _ := contracts.Section(c.Document.Body, "Interface")
+ 		if strings.TrimSpace(interfaceText) != "" && depends(snap.Modules, b.Module, c.Module) {
+-			return b.Slug, "interface_dependency"
++			return blocker, "interface_dependency"
+ 		}
+ 	}
+ 	return "", ""
+@@ -182,6 +183,14 @@
+ 		return model.State{}, e
+ 	}
+ 	if !resume {
++		for _, d := range project.Check(root) {
++			if !d.Warning {
++				if strings.Contains(d.Message, "stale base") {
++					return model.State{}, code("P05", d.Message)
++				}
++				return model.State{}, code(d.Code, d.Message)
++			}
++		}
+ 		stale, e := project.StaleSpecs(root, c.Path)
+ 		if e != nil {
+ 			return model.State{}, wrapStale(e)
+@@ -191,14 +200,6 @@
+ 				return model.State{}, code("P05", "stale base for "+x.ID)
+ 			}
+ 		}
+-		for _, d := range project.Check(root) {
+-			if !d.Warning {
+-				if strings.Contains(d.Message, "stale base") {
+-					return model.State{}, code("P05", d.Message)
+-				}
+-				return model.State{}, code(d.Code, d.Message)
+-			}
+-		}
+ 	}
+ 	s, e := project.Load(root)
+ 	if e != nil {
+@@ -324,7 +325,13 @@
+ 					return nil
+ 				}
+ 				rel, _ := filepath.Rel(dir, p)
+-				if contracts.ResolveZone(filepath.ToSlash(rel), m.Zones) == "disposable" {
++				protected := false
++				for _, pattern := range stringList(snapshot.Config["protected"]) {
++					if match, _ := filepath.Match(pattern, filepath.ToSlash(strings.TrimPrefix(p, root+string(filepath.Separator)))); match {
++						protected = true
++					}
++				}
++				if !protected && contracts.ResolveZone(filepath.ToSlash(rel), m.Zones) == "disposable" {
+ 					_ = os.Remove(p)
+ 				}
+ 				return nil
+
+

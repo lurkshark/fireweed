@@ -1,0 +1,3 @@
+
+EVENT 13 command raw_offset=127968 SHA256=dc0280446711a04af92fa8aef39326d14e8679e16b412dcf8bc144726c46afe1
+/bin/zsh -lc 'for f in packages/{contracts,gitstore,assets,project,checks}/api.go packages/{contracts,gitstore,assets,project,checks}/model/*.go; do if test -f "$f"; then echo "$f"; sed -n '"'1,260p' \""'$f"; fi; done'

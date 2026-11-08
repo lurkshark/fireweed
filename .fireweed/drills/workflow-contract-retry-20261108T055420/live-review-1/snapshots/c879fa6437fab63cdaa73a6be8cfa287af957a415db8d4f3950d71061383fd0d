@@ -1,0 +1,8 @@
+## Contradicted Decisions
+
+None identified in the supplied workflow Decisions.
+
+## Gaps
+
+- FLOW-089 (workflow): Abandon relies on Git revert for phase commits; a conflict with later edits can leave an in-progress revert for manual resolution rather than completing atomically.
+- FLOW-117 (workflow): PRBody labels historical files using endpoint zone declarations; it does not fully reconstruct each edit's phase-specific zone metadata or prove that every reported disposable stub was introduced during evals.

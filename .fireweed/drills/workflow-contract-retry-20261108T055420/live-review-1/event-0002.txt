@@ -1,0 +1,3 @@
+
+EVENT 2 command raw_offset=25357 SHA256=f673c6ceb421467b8583d5b695c6d628c95ae3cebcaa98e1053765d37f674f3f
+/bin/zsh -lc 'ls -la && find packages/workflow -maxdepth 2 -type d -print'

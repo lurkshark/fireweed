@@ -1,0 +1,3 @@
+
+EVENT 13 command raw_offset=109307 SHA256=9337608aabb0d5411e80f1f7d9dff0bde7a3885ae79180ddbd51e31091616897
+/bin/zsh -lc "sed -n '70,130p' packages/workflow/evals/regenerate_start_test.go && sed -n '105,140p' packages/workflow/evals/abandon_test.go && sed -n '270,300p' packages/workflow/evals/abandon_test.go && sed -n '125,145p' packages/workflow/evals/commits_test.go"

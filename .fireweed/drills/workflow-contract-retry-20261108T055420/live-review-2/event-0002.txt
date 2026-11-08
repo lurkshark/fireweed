@@ -1,0 +1,3 @@
+
+EVENT 2 command raw_offset=42810 SHA256=e1a0eb459aa1a22f2db3240cbbb3082f88d650f8b7d64f03330ac654c6acea10
+/bin/zsh -lc "rg -n 'func (Abandon|Commits|Start|Done|Verify|Context|Status|PRBody|Current)|func .*abandon|func .*commits|func .*status|func .*prBody' packages/workflow/internal/lifecycle/*.go"

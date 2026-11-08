@@ -1,0 +1,201 @@
+
+EVENT 38 file-patch raw_offset=376707 SHA256=57125b07256147a5564628a15871e84ea6b616cae89a36da709e736e6fd195f8
+patch: completed
+/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-811464561/packages/workflow/internal/lifecycle/start.go
+diff --git a/packages/workflow/internal/lifecycle/maintenance.go b/packages/workflow/internal/lifecycle/maintenance.go
+index 22e20b23705a40fa94bd4113f238d4d95f6f44f3..49aff33b90ed7ffe3bc7bf80f8cf33a4385327dd
+--- a/packages/workflow/internal/lifecycle/maintenance.go
++++ b/packages/workflow/internal/lifecycle/maintenance.go
+@@ -2,6 +2,7 @@
+ 
+ import (
+ 	"context"
++	"encoding/json"
+ 	"fmt"
+ 	"os"
+ 	"path/filepath"
+@@ -10,6 +11,7 @@
+ 	"strings"
+ 	"time"
+ 
++	"github.com/lurkshark/fireweed/packages/assets"
+ 	"github.com/lurkshark/fireweed/packages/contracts"
+ 	"github.com/lurkshark/fireweed/packages/gitstore"
+ 	"github.com/lurkshark/fireweed/packages/project"
+@@ -274,12 +276,20 @@
+ 			if json.Unmarshal(blob, &cl) != nil {
+ 				continue
+ 			}
++			if cl.Owner == "" {
++				var legacy map[string]string
++				_ = json.Unmarshal(blob, &legacy)
++				cl.Owner = legacy["worktree"]
++			}
+ 			owner, er := gitstore.Inspect(cl.Owner)
+ 			prune = er != nil || owner.CommonDir != repo.CommonDir
+ 		} else if strings.HasPrefix(ref, "refs/fireweed/attempts/") {
+ 			parts := strings.Split(ref, "/")
+-			if len(parts) >= 5 {
++			if len(parts) == 5 {
+ 				slug := parts[3]
++				if _, err := strconv.Atoi(parts[4]); err != nil {
++					continue
++				}
+ 				ents, _ := os.ReadDir(filepath.Join(r.Root, "changes/archive"))
+ 				for _, ent := range ents {
+ 					if slugOf(ent.Name()) == slug {
+@@ -289,9 +299,12 @@
+ 				}
+ 			}
+ 		} else if strings.HasPrefix(ref, "refs/fireweed/drills/") {
+-			date := filepath.Base(ref)
+-			date = strings.TrimSuffix(date, "Z")
+-			for _, layout := range []string{"20060102T150405", "20060102-150405", "2006-01-02T15-04-05"} {
++			parts := strings.Split(ref, "/")
++			if len(parts) != 5 {
++				continue
++			}
++			date := parts[4]
++			for _, layout := range []string{"20060102T150405.000000000"} {
+ 				if t, er := time.Parse(layout, date); er == nil {
+ 					prune = t.Before(now.Add(-age))
+ 					break
+@@ -308,4 +321,3 @@
+ 	return model.GCResult{Pruned: out}, nil
+ }
+ 
+-var _ = strconv.Itoa
+diff --git a/packages/workflow/internal/lifecycle/reports.go b/packages/workflow/internal/lifecycle/reports.go
+index 30fe662a62bf00d5884518e17bb0a4067b368795..5e8c074c0b75033f6fe5bc8715a82bfbfe8dfdf9
+--- a/packages/workflow/internal/lifecycle/reports.go
++++ b/packages/workflow/internal/lifecycle/reports.go
+@@ -151,7 +151,10 @@
+ 		}
+ 		p := c.Path
+ 		if _, er := gitstore.ReadAt(root, ref, p); er != nil {
+-			r.Unapproved++
++			pending := "changes/" + filepath.Base(p)
++			if _, pendingError := gitstore.ReadAt(root, ref, pending); pendingError != nil {
++				r.Unapproved++
++			}
+ 		}
+ 	}
+ 	count := 0
+@@ -170,7 +173,8 @@
+ 	if count >= 3 {
+ 		r.Diagnostics = append(r.Diagnostics, diag("P08", fmt.Sprintf("%s has %d consecutive applied changes", name, count), true))
+ 	}
+-	r.Costs, ds := latestCosts(root)
++	var ds []project.Diagnostic
++	r.Costs, ds = latestCosts(root)
+ 	r.Diagnostics = append(r.Diagnostics, ds...)
+ 	return r, nil
+ }
+@@ -230,6 +234,8 @@
+ 		selected = append(selected, project.Change{Slug: slugOf(filepath.Base(p)), Path: p, Module: fmString(d, "module"), Document: d, Added: sectionItems(d, "Added"), Modified: sectionItems(d, "Modified"), Removed: sectionItems(d, "Removed")})
+ 	}
+ 	var body strings.Builder
++	historicalFiles, _ := git(root, "log", "--first-parent", "--name-only", "--pretty=format:", to)
++	historyCommits, _ := git(root, "rev-list", "--first-parent", to)
+ 	fmt.Fprintf(&body, "# Changes %s..%s\n\n", from, to)
+ 	if len(selected) == 0 {
+ 		body.WriteString("No selected changes.\n")
+@@ -251,12 +257,33 @@
+ 				fmt.Fprintf(&body, "\n### %s\n%s\n", sec, text)
+ 			}
+ 		}
++		seenAudit := map[string]bool{}
++		for _, commit := range strings.Split(historyCommits, "\n") {
++			if commit == "" {
++				continue
++			}
++			for _, path := range []string{"changes/" + filepath.Base(c.Path), "changes/archive/" + filepath.Base(c.Path)} {
++				b, er := gitstore.ReadAt(root, commit, path)
++				if er != nil {
++					continue
++				}
++				d, er := contracts.ParseDocument(string(b))
++				if er != nil {
++					continue
++				}
++				audit, ok := contracts.Section(d.Body, "Audit")
++				if ok && strings.TrimSpace(audit) != "" && !seenAudit[audit] {
++					seenAudit[audit] = true
++					fmt.Fprintf(&body, "\n### Earlier audit\n%s\n", audit)
++				}
++			}
++		}
+ 		for _, it := range append(append([]contracts.Item{}, c.Added...), c.Modified...) {
+ 			if it.Tag == "review" {
+ 				fmt.Fprintf(&body, "\n%s %s\n", it.ID, strings.TrimSpace(it.Body))
+ 			}
+ 		}
+-		for _, p := range strings.Split(names, "\n") {
++		for _, p := range strings.Split(historicalFiles, "\n") {
+ 			if strings.HasPrefix(p, "packages/"+c.Module+"/") || strings.HasPrefix(p, "workspace.") {
+ 				fmt.Fprintf(&body, "\n- %s", p)
+ 			}
+diff --git a/packages/workflow/internal/lifecycle/start.go b/packages/workflow/internal/lifecycle/start.go
+index 619cd22d671ca85e12382cdbea0bf033a6ef673c..dfe416989480fcac0c7efebfb7e46de58f495185
+--- a/packages/workflow/internal/lifecycle/start.go
++++ b/packages/workflow/internal/lifecycle/start.go
+@@ -254,7 +254,7 @@
+ 		if evalFix == "" {
+ 			evalFix, _ = contracts.Section(d.Body, "Eval Fix")
+ 		}
+-		if fmBool(d, "regenerate") || (len(c.Added) == 0 && len(c.Modified) == 0 && len(c.Removed) == 0 && strings.TrimSpace(fix) == "" && strings.TrimSpace(evalFix) == "") {
++		if fmBool(d, "regenerate") || (len(c.Added) == 0 && len(c.Modified) == 0 && len(c.Removed) == 0 && strings.TrimSpace(fix) == "" && strings.TrimSpace(evalFix) == "" && len(evalFixIDs(d)) == 0 && len(stringList(d.Frontmatter["fixes"])) == 0) {
+ 			phase = "impl"
+ 		}
+ 		d.Frontmatter["phase"] = phase
+@@ -289,11 +289,15 @@
+ 			if m.Name != c.Module {
+ 				continue
+ 			}
+-			_ = filepath.Walk(m.Dir, func(p string, info os.FileInfo, err error) error {
++			dir := m.Dir
++			if !filepath.IsAbs(dir) {
++				dir = filepath.Join(root, dir)
++			}
++			_ = filepath.Walk(dir, func(p string, info os.FileInfo, err error) error {
+ 				if err != nil || info == nil || info.IsDir() {
+ 					return nil
+ 				}
+-				rel, _ := filepath.Rel(m.Dir, p)
++				rel, _ := filepath.Rel(dir, p)
+ 				if contracts.ResolveZone(filepath.ToSlash(rel), m.Zones) == "disposable" {
+ 					_ = os.Remove(p)
+ 				}
+diff --git a/packages/workflow/internal/lifecycle/verify.go b/packages/workflow/internal/lifecycle/verify.go
+index fadf69b00ed557e7bbd932049885354c91737bf8..133b527e3c568264b8ae6078e848d618e32bd8a0
+--- a/packages/workflow/internal/lifecycle/verify.go
++++ b/packages/workflow/internal/lifecycle/verify.go
+@@ -193,7 +193,7 @@
+ 		specs := sectionItems(m.Document, "Specs")
+ 		cost := moduleCost(root, m, report)
+ 		result.Costs = append(result.Costs, cost)
+-		if er != nil && failure == nil {
++		if er != nil && len(report.Cases) == 0 && failure == nil {
+ 			failure = er
+ 		}
+ 		if name == s.Change.Module {
+@@ -283,11 +283,15 @@
+ 			c.CasesPerSpec[id]++
+ 		}
+ 	}
+-	_ = filepath.Walk(m.Dir, func(path string, info os.FileInfo, err error) error {
++	dir := m.Dir
++	if !filepath.IsAbs(dir) {
++		dir = filepath.Join(root, dir)
++	}
++	_ = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+ 		if err != nil || info == nil || !info.Mode().IsRegular() {
+ 			return nil
+ 		}
+-		rel, e := filepath.Rel(m.Dir, path)
++		rel, e := filepath.Rel(dir, path)
+ 		if e != nil {
+ 			return nil
+ 		}
+
+

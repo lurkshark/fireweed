@@ -1,0 +1,3 @@
+
+EVENT 71 command raw_offset=699682 SHA256=b8df13367330d77039492b0f44e2658719ee40ea3e753cd4f77821a96fa77de7
+/bin/zsh -lc 'gofmt -w packages/workflow/internal/lifecycle/*.go'

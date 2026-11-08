@@ -1,0 +1,3 @@
+
+EVENT 3 command raw_offset=26805 SHA256=0751feaf7da30e3c6172c08e03531dd4415609088d520089748b9ab5517a6456
+/bin/zsh -lc 'rg --files packages | sort'

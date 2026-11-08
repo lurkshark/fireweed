@@ -1,0 +1,3 @@
+
+EVENT 11 command raw_offset=108646 SHA256=d5d5adb000e47e2126358eeddfcab86fcb9032e02feb8ebdf6f4bba36f1b9420
+/bin/zsh -lc "sed -n '215,395p' packages/workflow/internal/lifecycle/reports.go && rg -n 'func StaleSpecs|func Check\\(|func BaseRef|func Commit\\(' packages/project packages/gitstore packages/checks"

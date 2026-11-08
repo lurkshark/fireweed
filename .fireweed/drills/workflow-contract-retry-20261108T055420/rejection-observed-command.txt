@@ -1,0 +1,7 @@
+
+exec
+/bin/zsh -lc 'gofmt -w packages/workflow/internal/lifecycle && go test ./packages/workflow/internal/lifecycle ./packages/workflow' in /private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-811464561
+ exited 1 in 669ms:
+go: cannot find main module, but found .git/config in /private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-811464561
+	to create a module there, run:
+	go mod init

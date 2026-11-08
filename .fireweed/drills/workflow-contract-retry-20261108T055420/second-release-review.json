@@ -1,0 +1,15 @@
+{
+  "attempt": 2,
+  "first_full_commands_scripts_applied_patches_reviewed": true,
+  "full_native_feedback_reviewed": true,
+  "feedback_bytes": 16412,
+  "feedback_sha256": "1d8ebe5faebc1b62e492139c47683f3932f9bc1191af0c9615e4387c7f58ee0b",
+  "prompt_only_original_plus_native_feedback": true,
+  "fresh_output_matches_reviewed_first_trace": true,
+  "first_streams_sha256": {
+    "stdout": "e1ee364f762a834e7136d9158b245a4773dcfb8e8bb5c01b04e1661998482ba2",
+    "stderr": "cf6c00c2d6da6e32ce2da9ef6a92f26f97dece91638a56e3b411005b2220bd2e"
+  },
+  "live_preflight_pass": true,
+  "time": "2026-11-08T06:21:48.444474+00:00"
+}

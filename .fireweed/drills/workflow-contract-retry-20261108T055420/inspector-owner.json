@@ -1,0 +1,11 @@
+{
+  "pid": 27285,
+  "argv": [
+    "python3",
+    "/private/tmp/fireweed-workflow-contract-retry-g_xej_m5/run/tooling/inspector.py",
+    "launch",
+    "/private/tmp/fireweed-workflow-contract-retry-g_xej_m5/run"
+  ],
+  "start": "2026-11-08T05:54:20.549027+00:00",
+  "single_invocation": true
+}

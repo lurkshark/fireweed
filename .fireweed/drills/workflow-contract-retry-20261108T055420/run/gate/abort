@@ -1,0 +1,4 @@
+{
+  "reason": "Second worker invoked prohibited local go test; reconstruction SYSTEM reserves builds/tests for the separate verifier.",
+  "time": 1794119071.792021
+}

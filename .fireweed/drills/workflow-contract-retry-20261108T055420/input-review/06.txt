@@ -1,0 +1,484 @@
+ = %v, want %v", got, want)
+	}
+}
+
+func Test_FLOW_068_EligibleOrderAndEmptyQueues(t *testing.T) {
+	t.Run("skips waiting and retains independent order", func(t *testing.T) {
+		root := eligibilityBase(t, "alpha")
+		eligibilityChange(t, root, 2, "waiting", "beta", "", "")
+		eligibilityChange(t, root, 3, "independent", "delta", "", "")
+		eligibilityChange(t, root, 4, "transitive-wait", "gamma", "", "")
+		eligibilityChange(t, root, 5, "second-independent", "delta", "", "")
+		readyEligibilityFixture(t, root)
+		assertEligible(t, root, "independent", "second-independent")
+	})
+	t.Run("empty queue", func(t *testing.T) {
+		root := blockFixture(t, "", "", "", "", "")
+		if err := os.Remove(filepath.Join(root, "changes/0001-manual.md")); err != nil {
+			t.Fatal(err)
+		}
+		readyEligibilityFixture(t, root)
+		assertEligible(t, root)
+	})
+	t.Run("all waiting", func(t *testing.T) {
+		root := eligibilityBase(t, "alpha")
+		eligibilityChange(t, root, 2, "waiting", "beta", "", "")
+		readyEligibilityFixture(t, root)
+		assertEligible(t, root)
+	})
+}
+
+func Test_FLOW_069_EligibleWaitsForSameModule(t *testing.T) {
+	root := eligibilityBase(t, "alpha")
+	eligibilityChange(t, root, 2, "same-module", "alpha", "", "")
+	eligibilityChange(t, root, 3, "independent", "delta", "", "")
+	readyEligibilityFixture(t, root)
+	assertEligible(t, root, "independent")
+}
+
+func Test_FLOW_070_EligibleWaitsForDirectAndTransitiveDependents(t *testing.T) {
+	root := eligibilityBase(t, "alpha")
+	eligibilityChange(t, root, 2, "direct", "beta", "", "")
+	eligibilityChange(t, root, 3, "transitive", "gamma", "", "")
+	eligibilityChange(t, root, 4, "independent", "delta", "", "")
+	readyEligibilityFixture(t, root)
+	assertEligible(t, root, "independent")
+}
+
+func Test_FLOW_071_EligibleInterfaceChangeWaitsForBlockedDependent(t *testing.T) {
+	root := eligibilityBase(t, "gamma")
+	eligibilityChange(t, root, 2, "direct-interface", "beta", "", "Public beta API changes.\n")
+	eligibilityChange(t, root, 3, "direct-internal", "beta", "", "")
+	eligibilityChange(t, root, 4, "transitive-interface", "alpha", "", "Public alpha API changes.\n")
+	eligibilityChange(t, root, 5, "transitive-internal", "alpha", "", "")
+	readyEligibilityFixture(t, root)
+	assertEligible(t, root, "direct-internal", "transitive-internal")
+}
+
+func Test_FLOW_072_EligibleUsesPrecedingAndOwnProjectedSet(t *testing.T) {
+	t.Run("preceding set removes dependency", func(t *testing.T) {
+		root := eligibilityBase(t, "alpha")
+		eligibilityChange(t, root, 2, "detach-beta", "beta", "set:\n  depends_on: []\n", "")
+		eligibilityChange(t, root, 3, "gamma-after-detach", "gamma", "", "")
+		readyEligibilityFixture(t, root)
+		assertEligible(t, root, "detach-beta", "gamma-after-detach")
+	})
+	t.Run("own set adds or removes dependency", func(t *testing.T) {
+		root := eligibilityBase(t, "alpha")
+		eligibilityChange(t, root, 2, "delta-now-dependent", "delta", "set:\n  depends_on: [alpha]\n", "")
+		eligibilityChange(t, root, 3, "gamma-now-independent", "gamma", "set:\n  depends_on: []\n", "")
+		readyEligibilityFixture(t, root)
+		assertEligible(t, root, "gamma-now-independent")
+	})
+}
+
+func Test_FLOW_011_StartSelectsFirstEligiblePastWaitingHead(t *testing.T) {
+	makeQueue := func(t *testing.T) string {
+		t.Helper()
+		root := eligibilityBase(t, "alpha")
+		eligibilityChange(t, root, 2, "waiting", "beta", "", "")
+		eligibilityChange(t, root, 3, "first-eligible", "delta", "", "")
+		eligibilityChange(t, root, 4, "later-eligible", "delta", "", "")
+		readyEligibilityFixture(t, root)
+		return root
+	}
+	t.Run("empty target selects first eligible", func(t *testing.T) {
+		root := makeQueue(t)
+		s, err := workflow.Start(root, "")
+		if err != nil || s.Change.Slug != "first-eligible" {
+			t.Errorf("Start(empty) selected %q: %v", s.Change.Slug, err)
+		}
+	})
+	t.Run("explicit first eligible", func(t *testing.T) {
+		root := makeQueue(t)
+		s, err := workflow.Start(root, "first-eligible")
+		if err != nil || s.Change.Slug != "first-eligible" {
+			t.Errorf("Start(first-eligible) selected %q: %v", s.Change.Slug, err)
+		}
+	})
+	for _, target := range []string{"waiting", "later-eligible"} {
+		t.Run("reject "+target, func(t *testing.T) {
+			root := makeQueue(t)
+			if _, err := workflow.Start(root, target); err == nil || !strings.HasPrefix(err.Error(), "P01") {
+				t.Errorf("Start(%s) = %v, want P01 rejection", target, err)
+			}
+		})
+	}
+	t.Run("no eligible change", func(t *testing.T) {
+		root := eligibilityBase(t, "alpha")
+		eligibilityChange(t, root, 2, "waiting", "beta", "", "")
+		readyEligibilityFixture(t, root)
+		if _, err := workflow.Start(root, ""); err == nil || !strings.HasPrefix(err.Error(), "P01") {
+			t.Errorf("Start(empty) = %v, want P01 rejection", err)
+		}
+	})
+}
+
+FILE packages/workflow/evals/eval_fix_lifecycle_test.go SHA256 b418f8d7331bf727c781be805ee00b7bfbc26f4397e10e32626f710268a0c792
+package evals_test
+
+import (
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+
+	"github.com/lurkshark/fireweed/packages/project"
+)
+
+// The approved hook reports the assertion in alpha_test.go as a real testcase.
+// The initially wrong assertion fails although alpha's implementation is ready.
+func evalFixFixture(t *testing.T, interfaceBody string) string {
+	t.Helper()
+	root := fixture(t, "", "", "", "", "")
+	write(t, root, "changes/0001-manual.md", `---
+module: alpha
+eval_fix: [ALP-001]
+---
+
+## Motivation
+Correct the wrong ALP-001 eval while retaining the contract and implementation.
+
+## Interface
+`+interfaceBody+`
+## Added
+
+## Modified
+
+## Removed
+
+## Decisions
+
+`)
+	write(t, root, "packages/alpha/internal/ready", "existing implementation\n")
+	write(t, root, "packages/alpha/evals/alpha_test.go", "package alpha_test\n\n// wrong assertion\n")
+	hook := readFile(t, root, ".fireweed/eval.sh")
+	want := "if [ -f packages/alpha/internal/ready ]; then"
+	replacement := "if [ -f packages/alpha/internal/ready ] && grep -q 'correct assertion' packages/alpha/evals/alpha_test.go; then"
+	if !strings.Contains(hook, want) {
+		t.Fatal("fixture hook condition missing")
+	}
+	write(t, root, ".fireweed/eval.sh", strings.Replace(hook, want, replacement, 1))
+	commit(t, root, "approved eval_fix fixture")
+	for _, d := range project.Check(root) {
+		if !d.Warning {
+			t.Fatalf("invalid eval_fix fixture: %#v", d)
+		}
+	}
+	return root
+}
+
+func correctEvalFix(t *testing.T, root string) {
+	t.Helper()
+	write(t, root, "packages/alpha/evals/alpha_test.go", "package alpha_test\n\n// correct assertion\n")
+}
+
+func Test_FLOW_078_FLOW_079_FLOW_036_EvalFixCorrectsEvalAndArchivesWithoutContractOrImplementationEdits(t *testing.T) {
+	root := evalFixFixture(t, "\n")
+	retained := map[string]string{}
+	for _, name := range []string{"packages/alpha/SPEC.md", "packages/alpha/api.go", "packages/alpha/internal/ready"} {
+		retained[name] = readFile(t, root, name)
+	}
+	approved := head(t, root)
+	s := start(t, root)
+	if s.Phase != "evals" || s.PhaseBase != approved || head(t, root) != approved {
+		t.Fatalf("eval_fix Start = %#v, HEAD %s", s, head(t, root))
+	}
+	correctEvalFix(t, root)
+	checked, err := verify(root, true)
+	if err != nil || len(checked.Reports["alpha"].Cases) != 2 || head(t, root) != approved {
+		t.Fatalf("corrected eval Verify = %#v, %v; HEAD %s", checked, err, head(t, root))
+	}
+	evals, err := done(root)
+	if err != nil || evals.State.Phase != "audit" || head(t, root) == approved {
+		t.Fatalf("eval_fix evals Done = %#v, %v", evals, err)
+	}
+	if got := readFile(t, root, "packages/alpha/evals/alpha_test.go"); !strings.Contains(got, "correct assertion") {
+		t.Errorf("corrected eval was not committed: %q", got)
+	}
+	audit(t, root, "Checked IDs: ALP-001\nNo findings\n")
+	impl, err := done(root)
+	if err != nil || impl.State.Phase != "impl" {
+		t.Fatalf("eval_fix audit Done = %#v, %v", impl, err)
+	}
+	beforeImpl := head(t, root)
+	applied, err := done(root)
+	if err != nil || applied.State.Phase != "applied" || head(t, root) == beforeImpl {
+		t.Fatalf("eval_fix impl Done = %#v, %v", applied, err)
+	}
+	if _, err := os.Stat(filepath.Join(root, "changes/0001-manual.md")); !os.IsNotExist(err) {
+		t.Errorf("pending eval_fix change remains: %v", err)
+	}
+	archive := readFile(t, root, "changes/archive/0001-manual.md")
+	if !strings.Contains(archive, "phase: applied") || !strings.Contains(archive, "No findings; checked ALP-001") {
+		t.Errorf("archive lacks applied phase or checked ID: %s", archive)
+	}
+	for name, want := range retained {
+		if got := readFile(t, root, name); got != want {
+			t.Errorf("eval_fix changed retained %s: %q", name, got)
+		}
+	}
+}
+
+func Test_FLOW_079_EvalFixRejectsFailingAndMissingListedEvals(t *testing.T) {
+	for _, scenario := range []string{"failing", "missing-listed-coverage"} {
+		t.Run(scenario, func(t *testing.T) {
+			root := evalFixFixture(t, "\n")
+			if scenario == "missing-listed-coverage" {
+				correctEvalFix(t, root)
+				hook := readFile(t, root, ".fireweed/eval.sh")
+				// The hook remains approved fixture infrastructure; only its report
+				// selection is changed before Start.
+				write(t, root, ".fireweed/eval.sh", strings.ReplaceAll(hook, `name="ALP-001"`, `name="ALP-002"`))
+				commit(t, root, "approved hook omits listed ID")
+			}
+			start(t, root)
+			before := head(t, root)
+			r, err := verify(root, true)
+			if err == nil || head(t, root) != before || len(r.Reports["alpha"].Cases) == 0 {
+				t.Fatalf("%s Verify: err=%v, target cases=%#v, HEAD=%s want %s", scenario, err, r.Reports["alpha"].Cases, head(t, root), before)
+			}
+			if scenario == "failing" && r.Reports["alpha"].Cases[0].Result != "fail" {
+				t.Errorf("fixture did not produce a failing target eval: %#v", r.Reports["alpha"])
+			}
+			if _, err := done(root); err == nil || head(t, root) != before {
+				t.Errorf("%s Done advanced: %v", scenario, err)
+			}
+		})
+	}
+}
+
+func Test_FLOW_078_EvalFixRejectsInterfaceAndImplementationEditsBeforeHooks(t *testing.T) {
+	t.Run("evals interface", func(t *testing.T) {
+		root := evalFixFixture(t, "\nThe public alpha interface may be revised.\n")
+		marker := hookMarker(t, root)
+		start(t, root)
+		correctEvalFix(t, root)
+		write(t, root, "packages/alpha/api.go", "package alpha // revised public interface\n")
+		before := head(t, root)
+		if _, err := verify(root, true); err == nil || head(t, root) != before {
+			t.Errorf("eval_fix interface Verify = %v", err)
+		}
+		if _, err := done(root); err == nil || head(t, root) != before {
+			t.Errorf("eval_fix interface Done = %v", err)
+		}
+		if _, err := os.Stat(marker); !os.IsNotExist(err) {
+			t.Errorf("hook ran before evals interface rejection: %v", err)
+		}
+	})
+	t.Run("impl implementation", func(t *testing.T) {
+		root := evalFixFixture(t, "\n")
+		marker := hookMarker(t, root)
+		start(t, root)
+		correctEvalFix(t, root)
+		evals, err := done(root)
+		if err != nil || evals.State.Phase != "audit" {
+			t.Fatalf("evals Done = %#v, %v", evals, err)
+		}
+		audit(t, root, "Checked IDs: ALP-001\nNo findings\n")
+		impl, err := done(root)
+		if err != nil || impl.State.Phase != "impl" {
+			t.Fatalf("audit Done = %#v, %v", impl, err)
+		}
+		if err := os.Remove(marker); err != nil {
+			t.Fatal(err)
+		}
+		write(t, root, "packages/alpha/internal/ready", "unapproved implementation change\n")
+		before := head(t, root)
+		if _, err := verify(root, true); err == nil || head(t, root) != before {
+			t.Errorf("eval_fix impl Verify = %v", err)
+		}
+		if _, err := done(root); err == nil || head(t, root) != before {
+			t.Errorf("eval_fix impl Done = %v", err)
+		}
+		if _, err := os.Stat(marker); !os.IsNotExist(err) {
+			t.Errorf("hook ran before impl implementation rejection: %v", err)
+		}
+	})
+}
+
+func Test_FLOW_036_EvalFixAuditRequiresListedIDBeforeCommit(t *testing.T) {
+	root := evalFixFixture(t, "\n")
+	start(t, root)
+	correctEvalFix(t, root)
+	evals, err := done(root)
+	if err != nil || evals.State.Phase != "audit" {
+		t.Fatalf("evals Done = %#v, %v", evals, err)
+	}
+	audit(t, root, "Checked IDs: ALP-002\nNo findings\n")
+	before := head(t, root)
+	if _, err := done(root); err == nil || head(t, root) != before {
+		t.Errorf("incomplete eval_fix audit advanced: %v", err)
+	}
+}
+
+FILE packages/workflow/evals/gc_test.go SHA256 2b914ccb56fc42ab65b08661a16a9e73d12421720ce5577ac7898ab3b783c233
+package evals_test
+
+import (
+	"context"
+	"encoding/json"
+	"os"
+	"path/filepath"
+	"reflect"
+	"sort"
+	"strings"
+	"testing"
+	"time"
+
+	"github.com/lurkshark/fireweed/packages/gitstore"
+	"github.com/lurkshark/fireweed/packages/workflow"
+)
+
+var gcNow = time.Date(2026, 11, 4, 12, 0, 0, 0, time.UTC)
+
+func gcCall(t *testing.T, root string, now time.Time) workflow.GCResult {
+	t.Helper()
+	r, err := workflow.GC(context.Background(), workflow.GCRequest{Root: root, Now: now})
+	if err != nil {
+		t.Fatalf("GC: %v", err)
+	}
+	return r
+}
+
+func gcRef(t *testing.T, root, name, oid string) {
+	t.Helper()
+	if err := gitstore.CASRef(root, name, "", oid); err != nil {
+		t.Fatalf("create %s: %v", name, err)
+	}
+}
+
+func gcClaim(t *testing.T, root, name, worktree string) {
+	t.Helper()
+	data, err := json.Marshal(map[string]string{"worktree": worktree, "change": name})
+	if err != nil {
+		t.Fatal(err)
+	}
+	oid, err := gitstore.WriteBlob(root, data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	gcRef(t, root, "refs/fireweed/claims/"+name, oid)
+}
+
+func gcPresent(t *testing.T, root, name string, want bool) {
+	t.Helper()
+	_, found, err := gitstore.Ref(root, name)
+	if err != nil || found != want {
+		t.Errorf("ref %s present=%t, error=%v; want present=%t", name, found, err, want)
+	}
+}
+
+func gcNames(t *testing.T, root string) []string {
+	t.Helper()
+	out := git(t, root, "for-each-ref", "--format=%(refname)", "refs/fireweed")
+	if out == "" {
+		return nil
+	}
+	return strings.Split(out, "\n")
+}
+
+func gcPruned(t *testing.T, got, want []string) {
+	t.Helper()
+	sort.Strings(want)
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("GC Pruned = %v, want sorted %v", got, want)
+	}
+}
+
+func Test_FLOW_128_GCPrunesMissingAndUnregisteredClaimsOnly(t *testing.T) {
+	root := fixture(t, "", "", "", "", "")
+	linked := filepath.Join(t.TempDir(), "linked")
+	git(t, root, "worktree", "add", "-b", "linked", linked, "HEAD")
+	gcClaim(t, root, "main-live", root)
+	gcClaim(t, root, "linked-live", linked)
+	missing := filepath.Join(t.TempDir(), "removed")
+	gcClaim(t, root, "missing", missing)
+	unregistered := filepath.Join(t.TempDir(), "unregistered")
+	if err := os.Mkdir(unregistered, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	gcClaim(t, root, "unregistered", unregistered)
+	foreign, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	git(t, foreign, "init")
+	if got := git(t, foreign, "worktree", "list", "--porcelain"); !strings.Contains(got, "worktree "+foreign) {
+		t.Fatalf("foreign repository does not register its worktree: %s", got)
+	}
+	gcClaim(t, root, "foreign", foreign)
+	gcRef(t, root, "refs/fireweed/other/keep", head(t, root))
+
+	r := gcCall(t, root, gcNow)
+	gcPruned(t, r.Pruned, []string{"refs/fireweed/claims/missing", "refs/fireweed/claims/unregistered", "refs/fireweed/claims/foreign"})
+	for _, name := range []string{"missing", "unregistered", "foreign"} {
+		gcPresent(t, root, "refs/fireweed/claims/"+name, false)
+	}
+	for _, name := range []string{"main-live", "linked-live"} {
+		gcPresent(t, root, "refs/fireweed/claims/"+name, true)
+	}
+	gcPresent(t, root, "refs/fireweed/other/keep", true)
+}
+
+func Test_FLOW_129_GCPrunesOnlyArchivedChangeAttempts(t *testing.T) {
+	root := fixture(t, "", "", "", "", "")
+	write(t, root, "changes/archive/0002-finished.md", "---\nmodule: alpha\nphase: applied\n---\n")
+	write(t, root, "changes/0003-pending.md", "---\nmodule: alpha\n---\n")
+	oid := head(t, root)
+	archived := []string{"refs/fireweed/attempts/finished/1", "refs/fireweed/attempts/finished/2"}
+	for _, name := range append(archived, "refs/fireweed/attempts/pending/1", "refs/fireweed/attempts/unknown/1", "refs/fireweed/attempts/finished/not-an-attempt") {
+		gcRef(t, root, name, oid)
+	}
+	r := gcCall(t, root, gcNow)
+	gcPruned(t, r.Pruned, archived)
+	for _, name := range archived {
+		gcPresent(t, root, name, false)
+	}
+	for _, name := range []string{"refs/fireweed/attempts/pending/1", "refs/fireweed/attempts/unknown/1", "refs/fireweed/attempts/finished/not-an-attempt"} {
+		gcPresent(t, root, name, true)
+	}
+}
+
+func Test_FLOW_130_FLOW_131_GCDrillAgeUsesConfiguredDurationAndNativeUTCDate(t *testing.T) {
+	for _, tc := range []struct {
+		name, config      string
+		old, equal, newer string
+	}{
+		{"configured", "gc:\n  drill_max_age: 24h\n", "20261103T115959.999999999", "20261103T120000.000000000", "20261103T120000.000000001"},
+		{"default", "", "20261005T115959.999999999", "20261005T120000.000000000", "20261005T120000.000000001"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := fixture(t, tc.config, "", "", "", "")
+			oid := head(t, root)
+			prefix := "refs/fireweed/drills/alpha/"
+			for _, date := range []string{tc.old, tc.equal, tc.newer} {
+				gcRef(t, root, prefix+date, oid)
+			}
+			gcRef(t, root, prefix+"unrecognized", oid)
+			gcRef(t, root, "refs/fireweed/drills/alpha/not-a-date/extra", oid)
+			r := gcCall(t, root, gcNow)
+			gcPruned(t, r.Pruned, []string{prefix + tc.old})
+			gcPresent(t, root, prefix+tc.old, false)
+			for _, name := range []string{prefix + tc.equal, prefix + tc.newer, prefix + "unrecognized", "refs/fireweed/drills/alpha/not-a-date/extra"} {
+				gcPresent(t, root, name, true)
+			}
+		})
+	}
+	// With zero Now, a native date far in the past is expired against any
+	// current clock, while a future date stays live.
+	root := fixture(t, "", "", "", "", "")
+	old := "refs/fireweed/drills/alpha/20200101T000000.000000000"
+	future := "refs/fireweed/drills/alpha/20990101T000000.000000000"
+	gcRef(t, root, old, head(t, root))
+	gcRef(t, root, future, head(t, root))
+	gcPruned(t, gcCall(t, root, time.Time{}).Pruned, []string{old})
+	gcPresent(t, root, future, true)
+}
+
+func Test_FLOW_131_GCInvalidDurationFailsBeforeAnyPruning(t *testing.T) {
+	for _, value := range []string{"0s", "-1h", "invalid"} {
+		t.Run(value, func(t *testing.T) {
+			root := fixture(t, "gc:\n  drill_max_age: "+value+"\n", "", "", "", "")
+			claim := "refs/fireweed/claims/stale"
+			old 

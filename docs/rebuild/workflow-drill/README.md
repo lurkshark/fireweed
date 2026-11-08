@@ -1,41 +1,26 @@
-# Single approved workflow retry
+# Workflow inspector — rejected retry, stopped
 
-The owner separately approved exactly one supervised native workflow retry on
-validated source `9a206c558e8e5625c0ae55bb57c42ae8130b4f15`, using the unchanged pin below
-and prepared outside inspector. Reuse the committed clean-source validation and
-unchanged supervisor rehearsals. Use a fresh isolated caller and fresh live gates;
-review actual retained inputs before release and every command/script/incremental
-patch, full first native feedback and fresh output before any remaining configured
-release. Keep exact worker command/model/effort, input policy, bounds/counters and
-**2026-11-10 22:51:05 UTC** deadline unchanged. Retain the actual terminal evidence/ref,
-review the result, clean only owned scratch, commit protected evidence idle and
-stop. Failure/gaps authorize no correction, additional invocation, source import,
-controller update, later work or push. This approval supersedes only the previous
-native approval stop; all preservation and independence requirements remain.
+The one approved native workflow invocation on validated source 9a206c5 is complete.
+Its second worker invoked forbidden local go test. The inspector rejected it,
+stopped the worker first, drained/forwarded all received output and allowed the
+native controller to publish failure evidence/ref. It did so and exited without
+emergency escalation. [Complete review/evidence](../../../.fireweed/drills/workflow-contract-retry-20261108T055420/review.md)
+records the actual result and cleanup. No passing independent workflow proof;
+WF4 stays open. Second partial code was not reverified or applied.
 
-The owner-selected FLOW-007/FLOW-023 contract clarification and RUN-037 diagnostic
-change are applied and independently audited. Clean-source validation and the
-idle controller handoff are recorded in the
-[preparation evidence](../../../.fireweed/drills/workflow-contract-diagnostics-handoff.md).
-PROGRESS records the current pin; `control.py` identifies the validated candidate.
-The original 79cf33a, prior corrected ccd3d6b, all preceding native reports/refs,
-recovery executables, configured bounds/counters and unrelated worktree are preserved.
+**Approval consumed. Do not launch another drill.** The restart commands below
+require new explicit owner authorization, a fresh outside root and fresh live
+review/isolation gates. No correction, policy/tooling change, source application,
+controller update, extra invocation or push is authorized now. Existing deadline
+remains **2026-11-10 22:51:05 UTC**. PROGRESS records the unchanged pin. Original
+79cf33a, corrected ccd3d6b/9a206c5, all earlier reports/refs, recovery copies,
+configuration/bounds/counters and unrelated worktrees remain preserved.
 
-**Prepared only. Do not launch a native drill without separate owner approval.**
-This sequence exercised inspector preparation and matching primary/caller copies,
-then removed its owned idle clones. No live gate, verifier or reconstruction
-worker was created. The commands below require a new outside root and fresh live
-isolation/input/output review. No further correction, reconstructed-code import,
-worker-input expansion or push is authorized. The existing deadline remains
-**2026-11-10 22:51:05 UTC**.
-
-The preceding native workflow invocation failed verification; its
-[complete evidence](../../../.fireweed/drills/workflow-corrected-controller-retry-20261107T232508/review.md)
-remains the current result. WF4 stays open. RUN-037's native timing cause remains
-unresolved; richer diagnostics are not a runtime timing fix. Wrapper/inspector
-behavior, exact worker command/model/effort, worker SYSTEM and all gates remain
-unchanged. Earlier fake rehearsals remain valid for that behavior and establish
-no native reporting behavior on rejection/interruption/emergency stop.
+Supervisor/inspector behavior, worker SYSTEM and exact command/model/effort are
+unchanged. Existing fake rehearsals still establish only their wrapper outcomes.
+This actual invocation additionally observed native publication after its
+running-worker rejection; it establishes no generic native reporting guarantee
+for other interruption/storage/broken-pipe/emergency outcomes.
 
 `guard.py` is an `agent.wrap` prefix. Its CLI accepts only the exact configured
 command/model/effort from SYSTEM, with the original prompt as its last argument.

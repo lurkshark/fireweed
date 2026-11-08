@@ -1,0 +1,45 @@
+
+EVENT 1 command raw_offset=41381 SHA256=598bb6dabb6c314dc1f90d6dad6624e3fe0494a6ca2dbefbd6ca854f0d0599a7
+/bin/zsh -lc "pwd && rg --files -g 'AGENTS.md' -g 'packages/workflow/**' -g 'go.mod' -g 'DRILL_NOTES.md' | head -100"
+
+EVENT 2 command raw_offset=42810 SHA256=e1a0eb459aa1a22f2db3240cbbb3082f88d650f8b7d64f03330ac654c6acea10
+/bin/zsh -lc "rg -n 'func (Abandon|Commits|Start|Done|Verify|Context|Status|PRBody|Current)|func .*abandon|func .*commits|func .*status|func .*prBody' packages/workflow/internal/lifecycle/*.go"
+
+EVENT 3 command raw_offset=43100 SHA256=a8b5c1747baeae51ac7b66c827d5671b2d08b55762f7fb65731892d031d391fa
+/bin/zsh -lc 'wc -l packages/workflow/internal/lifecycle/*.go packages/workflow/api.go packages/workflow/model/model.go DRILL_NOTES.md && cat DRILL_NOTES.md'
+
+EVENT 4 command raw_offset=43354 SHA256=e80b3ae6f3d8e3f8413871924c3dd29b9b60792436de82fd8dff30f4881925a0
+/bin/zsh -lc 'git status --short && find packages/workflow/internal -type f -maxdepth 3 -print'
+
+EVENT 5 command raw_offset=46157 SHA256=ee60dc949d98779d5a36e4bad0500be3f57aa95f86d12cf5a6ec8c01a1760ef1
+/bin/zsh -lc 'cat packages/workflow/internal/lifecycle/verify.go'
+
+EVENT 6 command raw_offset=46319 SHA256=04e3ab84c80576cdbbbd5a6a4ca5c35d82160c74fbbba924148706039877d793
+/bin/zsh -lc 'cat packages/workflow/internal/lifecycle/maintenance.go'
+
+EVENT 7 command raw_offset=46486 SHA256=d1bd45ae34293d7d9a0320b84c277c15c23381fc8f9908c3dbcc8d020d885d92
+/bin/zsh -lc 'cat packages/workflow/internal/lifecycle/done.go'
+
+EVENT 8 command raw_offset=75790 SHA256=d9d4abcb547201afc09e197e3af773f891f6dafe894b2897f63bcbf9c8af6c6f
+/bin/zsh -lc "sed -n '1,215p' packages/workflow/internal/lifecycle/reports.go && sed -n '1,130p' packages/workflow/evals/maintenance_start_test.go && sed -n '310,345p' packages/workflow/evals/pr_body_test.go"
+
+EVENT 9 command raw_offset=76095 SHA256=09b94386bf2e51dc30e0c59e50b082ce49eb1ad75ef944b4685e8c41a64dcae3
+/bin/zsh -lc 'cat packages/workflow/internal/lifecycle/common.go'
+
+EVENT 10 command raw_offset=76257 SHA256=358381f92f4dd7a91bebc2e32e3c11a10c4aea0d664f503272406c036f08762c
+/bin/zsh -lc 'cat packages/workflow/internal/lifecycle/start.go'
+
+EVENT 11 command raw_offset=108646 SHA256=d5d5adb000e47e2126358eeddfcab86fcb9032e02feb8ebdf6f4bba36f1b9420
+/bin/zsh -lc "sed -n '215,395p' packages/workflow/internal/lifecycle/reports.go && rg -n 'func StaleSpecs|func Check\\(|func BaseRef|func Commit\\(' packages/project packages/gitstore packages/checks"
+
+EVENT 12 command raw_offset=108943 SHA256=2f5b7c93173383c441c586039227c57e1f07fac9a7cc73f9d493c2e0722b8d60
+/bin/zsh -lc "sed -n '400,475p' packages/workflow/evals/lifecycle_test.go && sed -n '1010,1045p' packages/workflow/evals/lifecycle_test.go && sed -n '1300,1323p' packages/workflow/evals/lifecycle_test.go && sed -n '540,570p' packages/workflow/evals/lifecycle_test.go"
+
+EVENT 13 command raw_offset=109307 SHA256=9337608aabb0d5411e80f1f7d9dff0bde7a3885ae79180ddbd51e31091616897
+/bin/zsh -lc "sed -n '70,130p' packages/workflow/evals/regenerate_start_test.go && sed -n '105,140p' packages/workflow/evals/abandon_test.go && sed -n '270,300p' packages/workflow/evals/abandon_test.go && sed -n '125,145p' packages/workflow/evals/commits_test.go"
+
+EVENT 14 command raw_offset=129968 SHA256=83339ce7c341a5721b13079bd3e32ec368c77d543d76f623d4ac4bbcf6651ce6
+/bin/zsh -lc "rg -n 'Projected spec|SYSTEM.md|Other relevant files|Context\\(' packages/workflow/evals/lifecycle_test.go packages/runner/evals/next_test.go && sed -n '1045,1105p' packages/workflow/evals/lifecycle_test.go && sed -n '20,55p' packages/workflow/evals/regenerate_start_test.go && cat packages/workflow/api.go"
+
+EVENT 15 command raw_offset=131085 SHA256=03343c8938a7c1e4849bbb78621605b59a65efbbd1673a000fcc9040bce91296
+/bin/zsh -lc "sed -n '1040,1075p' packages/workflow/evals/lifecycle_test.go; sed -n '20,58p' packages/workflow/evals/regenerate_start_test.go; cat packages/workflow/api.go; rg -n 'Projected spec|SYSTEM.md|Other relevant files' packages/runner/evals packages/app/evals"

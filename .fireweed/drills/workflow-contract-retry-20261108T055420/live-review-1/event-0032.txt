@@ -1,0 +1,47 @@
+
+EVENT 32 file-patch raw_offset=343224 SHA256=e50907afef6286e2d99833f9633873d90b89f820ee8211cc764de5dd52efb087
+patch: completed
+/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-811464561/packages/workflow/internal/lifecycle/maintenance.go
+/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-811464561/packages/workflow/internal/lifecycle/reports.go
+diff --git a/packages/workflow/internal/lifecycle/maintenance.go b/packages/workflow/internal/lifecycle/maintenance.go
+index 22e20b23705a40fa94bd4113f238d4d95f6f44f3..8188629a7843f30dff8af00cc9d28d591b27fdf6
+--- a/packages/workflow/internal/lifecycle/maintenance.go
++++ b/packages/workflow/internal/lifecycle/maintenance.go
+@@ -2,14 +2,15 @@
+ 
+ import (
+ 	"context"
++	"encoding/json"
+ 	"fmt"
+ 	"os"
+ 	"path/filepath"
+ 	"sort"
+-	"strconv"
+ 	"strings"
+ 	"time"
+ 
++	"github.com/lurkshark/fireweed/packages/assets"
+ 	"github.com/lurkshark/fireweed/packages/contracts"
+ 	"github.com/lurkshark/fireweed/packages/gitstore"
+ 	"github.com/lurkshark/fireweed/packages/project"
+@@ -308,4 +309,3 @@
+ 	return model.GCResult{Pruned: out}, nil
+ }
+ 
+-var _ = strconv.Itoa
+diff --git a/packages/workflow/internal/lifecycle/reports.go b/packages/workflow/internal/lifecycle/reports.go
+index 30fe662a62bf00d5884518e17bb0a4067b368795..ca8e346150b1f9d494b8c357256d97f25ea8e852
+--- a/packages/workflow/internal/lifecycle/reports.go
++++ b/packages/workflow/internal/lifecycle/reports.go
+@@ -170,7 +170,8 @@
+ 	if count >= 3 {
+ 		r.Diagnostics = append(r.Diagnostics, diag("P08", fmt.Sprintf("%s has %d consecutive applied changes", name, count), true))
+ 	}
+-	r.Costs, ds := latestCosts(root)
++	var ds []project.Diagnostic
++	r.Costs, ds = latestCosts(root)
+ 	r.Diagnostics = append(r.Diagnostics, ds...)
+ 	return r, nil
+ }
+
+

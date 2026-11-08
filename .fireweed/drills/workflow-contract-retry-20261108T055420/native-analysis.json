@@ -1,0 +1,149 @@
+{
+  "candidate": "9a206c558e8e5625c0ae55bb57c42ae8130b4f15",
+  "setup_child": "dee40749e8a0c803f1b699944bc99f968150011f",
+  "native_result": "fail",
+  "native_cli": {
+    "schema": 1,
+    "data": null,
+    "diagnostics": [
+      {
+        "code": "P01",
+        "message": "reconstruction agent: exit status 130. Retained report .fireweed/drills/workflow.md and rebuilt ref refs/fireweed/drills/workflow/20261108T055420.712886000. Use the reported cause to correct the drill inputs or checks, then retry drill.",
+        "warning": false
+      }
+    ]
+  },
+  "retained_ref": "refs/fireweed/drills/workflow/20261108T055420.712886000",
+  "retained_oid": "8859d4433b16bf721907009e58b269937b8af4fe",
+  "cases": 652,
+  "passing": 630,
+  "failing": 22,
+  "module_counts": {
+    "workflow": {
+      "pass": 155,
+      "fail": 15
+    },
+    "app": {
+      "fail": 6,
+      "pass": 317
+    },
+    "runner": {
+      "pass": 158,
+      "fail": 1
+    }
+  },
+  "coverage": {
+    "workflow": {
+      "expected": 133,
+      "covered": 133,
+      "missing": []
+    },
+    "app": {
+      "expected": 155,
+      "covered": 155,
+      "missing": []
+    },
+    "runner": {
+      "expected": 67,
+      "covered": 67,
+      "missing": []
+    }
+  },
+  "unknown_ids": {
+    "workflow": [],
+    "app": [],
+    "runner": []
+  },
+  "duplicate_case_names": {
+    "workflow": [],
+    "app": [],
+    "runner": []
+  },
+  "case_results": [
+    "fail",
+    "pass"
+  ],
+  "retained_reports_are_first_attempt_verification": true,
+  "second_attempt_reconstruction_rejected_not_reverified": true,
+  "compiler_errors_observed": false,
+  "feedback_review_complete_bytes": 16412,
+  "streams": {
+    "1": {
+      "finished": {
+        "exit": 0,
+        "worker_exit": 0,
+        "launched": true,
+        "stopped": false,
+        "complete_forwarding": true,
+        "streams": {
+          "stdout": {
+            "received": 573,
+            "forwarded": 573,
+            "eof": true
+          },
+          "stderr": {
+            "received": 700530,
+            "forwarded": 700530,
+            "eof": true
+          }
+        },
+        "errors": []
+      },
+      "streams": {
+        "stdout": {
+          "bytes": 573,
+          "sha256": "e1ee364f762a834e7136d9158b245a4773dcfb8e8bb5c01b04e1661998482ba2",
+          "native_report_contains_exact_stream": true
+        },
+        "stderr": {
+          "bytes": 700530,
+          "sha256": "cf6c00c2d6da6e32ce2da9ef6a92f26f97dece91638a56e3b411005b2220bd2e",
+          "native_report_contains_exact_stream": true
+        }
+      }
+    },
+    "2": {
+      "finished": {
+        "exit": 130,
+        "worker_exit": -15,
+        "launched": true,
+        "stopped": true,
+        "complete_forwarding": true,
+        "streams": {
+          "stdout": {
+            "received": 0,
+            "forwarded": 0,
+            "eof": true
+          },
+          "stderr": {
+            "received": 192056,
+            "forwarded": 192056,
+            "eof": true
+          }
+        },
+        "errors": []
+      },
+      "streams": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "native_report_contains_exact_stream": true
+        },
+        "stderr": {
+          "bytes": 192056,
+          "sha256": "738023b099f13a1f2f1b972aa17685e521c13f74e793dc8db2b3931d2f7b1637",
+          "native_report_contains_exact_stream": true
+        }
+      }
+    }
+  },
+  "terminal": {
+    "exit": 1,
+    "emergency": false,
+    "rejected": true
+  },
+  "native_invocations": 1,
+  "no_further_release_after_rejection": true,
+  "native_report_sha256": "4789ffd05dae480ed95834deaa7c872931fd82e104f656fdba0bd3286724c366",
+  "catalog_review_chunks": 4
+}

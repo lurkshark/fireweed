@@ -1,0 +1,80 @@
+{
+  "entry_head": "618ecdefcc83d1a52312c25f489d3e98ce980e16",
+  "approval_head": "52360ed0e13d17f88094115db6dc08f956c9ceb0",
+  "authorized_existing_paths_changed": [
+    ".fireweed/drills/workflow.md",
+    "docs/rebuild/ACCEPTANCE.md",
+    "docs/rebuild/GOAL.md",
+    "docs/rebuild/PROGRESS.md",
+    "docs/rebuild/workflow-drill/README.md"
+  ],
+  "other_entry_tracked_files_unchanged": 1302,
+  "all_controller_and_recovery_hashes_unchanged": {
+    ".fireweed/bin/fireweed-bootstrap": "ba14dfa072bfa72756d41e1fa0b13fec0df654a7ee629e654cbeb954df8d4683",
+    ".fireweed/bin/fireweed-ccd3d6b": "20278504a8ea89fcd5f23d1de9a6ec849389fd55707054992c59967eec65e2b1",
+    ".fireweed/bin/fireweed-12c571c": "c9167d3878a1344719574d3ee1179d42295596f2f994c31c556ca25df8aaaada",
+    ".fireweed/bin/fireweed": "cc22f47c7aa607c96a13273d29d5bf4ade4f912453840f621331d73dc385f112",
+    ".fireweed/bin/fireweed-pre-ck-handoff": "bf0dbc59b7fa7ce2ff957a6f21f34903655b6b054a10695cfeef5ece67fa3575",
+    ".fireweed/bin/fireweed-1936346": "23e87b00217ab1a6990352393311bd150b7d60d3a4c138b75e285f518fba117f",
+    ".fireweed/bin/fireweed-99a1d6d": "865eb02724a148068e343c79f084b36aab8a981ee9ae52082c76ccc17bdbd79b"
+  },
+  "all_prior_refs_preserved_except_author_head": true,
+  "new_refs": {
+    "refs/codex/turn-diffs/checkpoints/e07a2fea4cb6bf12f4b73d521956e091/f0a11e5bb991101f315e9b9ffdd11c62/1794118620648/63bfafcd-f469-40f9-9969-931f3d7b2003": "2c9aac49be63edf009d074917d3f8ebfc107c2dd",
+    "refs/fireweed/drills/workflow/20261108T055420.712886000": "8859d4433b16bf721907009e58b269937b8af4fe"
+  },
+  "worktrees": "worktree /Users/joel/Workspace/fireweed\nHEAD 52360ed0e13d17f88094115db6dc08f956c9ceb0\nbranch refs/heads/main\n\nworktree /Users/joel/.codex/worktrees/stub-handoff-guidance/fireweed\nHEAD b59e9cc15a7d6c82f6436ef72fe5c2c3ccded211\nbranch refs/heads/codex/stub-handoff-guidance",
+  "status_difference": {
+    "drift_since_drill": {
+      "entry": {
+        "app": 39,
+        "assets": 3,
+        "checks": 1,
+        "contracts": 1,
+        "gitstore": 1,
+        "project": 1,
+        "runner": 25,
+        "workflow": 1
+      },
+      "final": {
+        "app": 39,
+        "assets": 3,
+        "checks": 1,
+        "contracts": 1,
+        "gitstore": 1,
+        "project": 1,
+        "runner": 25,
+        "workflow": 0
+      }
+    }
+  },
+  "unapproved_and_phase_commits_unchanged": true,
+  "diagnostics_unchanged": [
+    {
+      "code": "B02",
+      "message": "CHK-055: 16 testcases exceeds cases_per_spec limit 15",
+      "warning": true
+    },
+    {
+      "code": "B02",
+      "message": "APP-103: 17 testcases exceeds cases_per_spec limit 15",
+      "warning": true
+    },
+    {
+      "code": "B02",
+      "message": "APP-104: 19 testcases exceeds cases_per_spec limit 15",
+      "warning": true
+    }
+  ],
+  "queue_empty": true,
+  "claims_empty": true,
+  "owned_trees_absent": true,
+  "known_owned_groups_exited_receipt": "process-cleanup.json",
+  "original_candidate_and_corrected_source_objects_preserved": true,
+  "native_prefix_exact": true,
+  "prior_report_byte_exact": true,
+  "no_product_spec_eval_tooling_configuration_change": true,
+  "no_manual_counter_reset": true,
+  "one_native_invocation": true,
+  "stopped": true
+}

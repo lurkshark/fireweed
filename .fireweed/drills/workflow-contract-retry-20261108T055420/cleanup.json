@@ -1,0 +1,11 @@
+{
+  "native_removed_input": "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-811464561",
+  "native_removed_verifier": "/private/tmp/fireweed-workflow-contract-retry-g_xej_m5/run/caller/.git/fireweed/worktrees/drill-103007277",
+  "owned_caller_removed": "/private/tmp/fireweed-workflow-contract-retry-g_xej_m5/run/caller",
+  "no_claim_or_linked_worktree_before_caller_removal": true,
+  "owned_groups_exited": true,
+  "retained_ref_verified_before_removal": true,
+  "native_invocations": 1,
+  "no_further_release_after_rejection": true,
+  "time": "2026-11-08T06:30:18.041125+00:00"
+}

@@ -1,0 +1,10 @@
+## Contradicted Decisions
+
+None identified in the supplied workflow Decisions.
+
+## Gaps
+
+- FLOW-074 (workflow): Attempt restoration recreates file contents and deletions, but does not preserve saved file modes or symbolic-link identity.
+- FLOW-089 (workflow): Abandon relies on Git revert for phase commits; a conflict with later edits can leave an in-progress revert for manual resolution rather than completing atomically.
+- FLOW-117 (workflow): PRBody collects historical file paths, but its phase-specific file categorization does not fully distinguish every declared zone and worker-writable edit.
+- FLOW-123 (workflow): PRBody selects locally retained cost snapshots by module, but it does not restrict measurements to modules represented at the requested endpoint.

@@ -1,0 +1,3 @@
+Rebuilt workflow’s disposable implementation in [packages/workflow/internal/lifecycle](/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-811464561/packages/workflow/internal/lifecycle) and recorded the remaining gaps in [DRILL_NOTES.md](/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-811464561/DRILL_NOTES.md).
+
+The new Go files are formatted. I did not run builds or tests because the supplied SYSTEM.md reserves verification for the outside verifier. No retained inputs were edited, and nothing was committed.

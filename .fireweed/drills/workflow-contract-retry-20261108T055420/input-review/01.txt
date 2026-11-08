@@ -1,0 +1,556 @@
+
+FILE SYSTEM.md SHA256 1fc838d4bf7acf99b812f2c2a529aaa5d6192d954453e3b3e3215671626855a1
+# Workflow reconstruction
+
+Reconstruct workflow from the supplied retained workflow SPEC (including Decisions), interface/model and public evals. Only the declared contracts, gitstore, assets, project and checks public api.go/model interfaces are provided as dependency inputs.
+
+Write only packages/workflow/internal/** and DRILL_NOTES.md. All supplied inputs are immutable. No go.mod, replacement dependency, hook, manifest, tests or root setup may be added. Do not run local builds, tests, or module setup, including temporary module setup. Missing compilation infrastructure is intentional. Format only the fresh code you write, then return it to the separate outside verifier; that verifier runs full builds, own evals and all transitive dependent evals.
+
+Read only this supplied input tree and the fresh disposable code you write here. Its Git history is input-only. Do not read original/deleted implementation, old history, refs/attempts/proofs/reports/reconstructions, bootstrap or rebuild-v1, outside repositories, verifier paths, binaries, or source caches. Do not search outside this tree, use controller queries as an oracle, run other agents, or contact the network. Do not infer any permission from a visible outside path or environment variable.
+
+Do not commit, change Git refs/history/config, invoke lifecycle mutators, modify retained inputs, or weaken any verification requirement. Return to the outside controller after reconstruction; it owns all transitions and commits. Use the configured workspace-write command and model/effort only.
+
+The current tree's .fireweed/bin is first on PATH and GOCACHE=/tmp/fireweed-rebuild-cache. Do not invoke any existing Fireweed binary to obtain behavior or implementation. No controller/model fallback is permitted. Record contradicted Decisions and targeted gaps in DRILL_NOTES.md, naming the nearest spec ID (or no spec) and owning module. A gap authorizes no correction of retained inputs.
+
+FILE packages/assets/api.go SHA256 08c30556e55c2768495ea4d1b08a4744bd57771e133ead57b046b13e07dff1d8
+package assets
+
+import "github.com/lurkshark/fireweed/packages/assets/internal/content"
+import "github.com/lurkshark/fireweed/packages/assets/internal/recipe"
+import "github.com/lurkshark/fireweed/packages/assets/model"
+
+type Recipe = model.Recipe
+
+func Version() string { return content.Version() }
+
+func Help() string { return content.Help() }
+
+func Playbook(name string) (string, error) { return content.Playbook(name) }
+
+func Explain(code string) (string, error) { return content.Explain(code) }
+
+func BuiltinRecipe(name string) (Recipe, error) { return recipe.BuiltinRecipe(name) }
+
+FILE packages/assets/model/model.go SHA256 058045c8bd2940d49678fb31aa1f7862f44d0848c175ea864dc8d6636ba0f28e
+package model
+
+import "github.com/lurkshark/fireweed/packages/contracts"
+
+// Recipe is the data copied into a project during setup.
+type Recipe struct {
+	Name           string
+	Instructions   string
+	ModuleDefaults contracts.Zones
+	Hooks          map[string]any
+	Protected      []string
+	WorkerWritable []string
+	Files          map[string]string
+}
+
+FILE packages/checks/api.go SHA256 17400b58517d9722cbc44378b5500ba534f15009e049519a1bf7b0bc07ea3d3f
+package checks
+
+import (
+	"context"
+
+	"github.com/lurkshark/fireweed/packages/checks/internal/engine"
+	"github.com/lurkshark/fireweed/packages/checks/model"
+	"github.com/lurkshark/fireweed/packages/contracts"
+	"github.com/lurkshark/fireweed/packages/project"
+)
+
+type Case = model.Case
+type Report = model.Report
+type HookRequest = model.HookRequest
+type BoundaryRequest = model.BoundaryRequest
+type ZoneRequest = model.ZoneRequest
+type DoctorRequest = model.DoctorRequest
+type DoctorCheck = model.DoctorCheck
+type DoctorReport = model.DoctorReport
+type HistoryReport = model.HistoryReport
+type SquashedChange = model.SquashedChange
+
+func ParseJUnit(data []byte, specs []contracts.Item) (Report, error) {
+	return engine.ParseJUnit(data, specs)
+}
+func RequireCoverage(report Report, specs []contracts.Item) error {
+	return engine.RequireCoverage(report, specs)
+}
+func RequireFailFirst(report Report, ids, already []string) error {
+	return engine.RequireFailFirst(report, ids, already)
+}
+func RequirePass(report Report, specs []contracts.Item) error {
+	return engine.RequirePass(report, specs)
+}
+func Evaluate(ctx context.Context, request HookRequest) (Report, error) {
+	return engine.Evaluate(ctx, request)
+}
+func Boundaries(ctx context.Context, request BoundaryRequest) ([]project.Diagnostic, error) {
+	return engine.Boundaries(ctx, request)
+}
+func Zones(request ZoneRequest) []project.Diagnostic { return engine.Zones(request) }
+func Doctor(ctx context.Context, request DoctorRequest) DoctorReport {
+	return engine.Doctor(ctx, request)
+}
+func History(root, revisionRange string) (HistoryReport, error) {
+	return engine.History(root, revisionRange)
+}
+
+FILE packages/checks/model/model.go SHA256 351996d8e78770ecf2b10710ae32eece23149f4d306704e23712042843210584
+package model
+
+import (
+	"time"
+
+	"github.com/lurkshark/fireweed/packages/gitstore"
+	"github.com/lurkshark/fireweed/packages/project"
+)
+
+type Case struct {
+	Name      string
+	Classname string
+	IDs       []string
+	Result    string
+	Failure   string
+	Seconds   float64
+}
+
+type Report struct {
+	Cases    []Case
+	Seconds  float64
+	HookExit int
+	Stdout   string
+	Stderr   string
+}
+
+type HookRequest struct {
+	Snapshot project.Snapshot
+	Module   string
+	Bin      string
+	Timeout  time.Duration
+}
+
+type BoundaryRequest struct {
+	Snapshot project.Snapshot
+	Bin      string
+	Timeout  time.Duration
+}
+
+type ZoneRequest struct {
+	Snapshot          project.Snapshot
+	Module            string
+	Phase             string
+	ChangePath        string
+	Base              string
+	InterfaceDeclared bool
+	Changes           []gitstore.Change
+}
+
+type DoctorRequest struct {
+	Root    string
+	Bin     string
+	NoAgent bool
+	Timeout time.Duration
+}
+
+type DoctorCheck struct {
+	Name   string
+	Module string
+	Passed bool
+	Detail string
+}
+
+type DoctorReport struct {
+	Checks      []DoctorCheck
+	Diagnostics []project.Diagnostic
+}
+
+type HistoryReport struct {
+	Commits     []string
+	Squashed    []SquashedChange
+	Diagnostics []project.Diagnostic
+}
+
+type SquashedChange struct {
+	Commit string
+	Change string
+}
+
+FILE packages/contracts/api.go SHA256 2a9a2c86d3394ba42fdd0a848caf53981c390e226055329070427214a4863e75
+package contracts
+
+import (
+	"github.com/lurkshark/fireweed/packages/contracts/internal/primitives"
+	"github.com/lurkshark/fireweed/packages/contracts/model"
+)
+
+type Document = model.Document
+type Item = model.Item
+type Zones = model.Zones
+type CodedError = model.CodedError
+
+// ErrorCode returns the first coded diagnostic in an error chain.
+func ErrorCode(err error) (code, subject string, ok bool) { return primitives.ErrorCode(err) }
+
+func ParseDocument(source string) (Document, error) { return primitives.ParseDocument(source) }
+func RenderDocument(doc Document) (string, error)   { return primitives.RenderDocument(doc) }
+
+// Section returns the section body without its level-two heading.
+func Section(markdown, name string) (string, bool) { return primitives.Section(markdown, name) }
+
+// ReplaceSection replaces the body of a level-two section, or appends it.
+func ReplaceSection(markdown, name, body string) string {
+	return primitives.ReplaceSection(markdown, name, body)
+}
+
+func ParseItems(section string) ([]Item, error) { return primitives.ParseItems(section) }
+func RenderItem(item Item) string               { return primitives.RenderItem(item) }
+func SpecHash(item Item) string                 { return primitives.SpecHash(item) }
+
+func MatchesID(id, testcaseName, classname string) bool {
+	return primitives.MatchesID(id, testcaseName, classname)
+}
+
+func MatchGlob(pattern, path string) bool { return primitives.MatchGlob(pattern, path) }
+
+// ResolveZone classifies a module-relative path.
+func ResolveZone(path string, zones Zones) string { return primitives.ResolveZone(path, zones) }
+
+FILE packages/contracts/model/model.go SHA256 13a8ffd3a338b105ab7677391372d87c0b37fc5aceca3b19ee5d5f456da551cf
+package model
+
+// Document is a Markdown document with YAML frontmatter.
+type Document struct {
+	Frontmatter map[string]any
+	Body        string
+}
+
+// Item is one level-three spec item. Body excludes the heading line.
+type Item struct {
+	ID   string
+	Tag  string
+	Body string
+}
+
+// CodedError carries a stable diagnostic code while preserving the cause's text.
+type CodedError struct {
+	Code    string
+	Subject string
+	Cause   error
+}
+
+func (e CodedError) Error() string {
+	if e.Cause != nil {
+		return e.Cause.Error()
+	}
+	return e.Code
+}
+
+func (e CodedError) Unwrap() error { return e.Cause }
+
+// Zones holds module-relative path patterns for each editable zone.
+type Zones struct {
+	Protected  []string
+	Evals      []string
+	Interface  []string
+	AppendOnly []string
+	Preserve   []string
+	Disposable []string
+}
+
+FILE packages/gitstore/api.go SHA256 a519d86c29c5b0f6c21d6a64852209f181d1b7c62567821ca4a2fa10ed59fc13
+package gitstore
+
+import (
+	"context"
+
+	"github.com/lurkshark/fireweed/packages/gitstore/internal/local"
+	"github.com/lurkshark/fireweed/packages/gitstore/model"
+)
+
+type Repository = model.Repository
+type Change = model.Change
+type Request = model.Request
+type Result = model.Result
+
+func Inspect(dir string) (Repository, error)             { return local.Inspect(dir) }
+func BaseRef(root, remote, base string) (string, error)  { return local.BaseRef(root, remote, base) }
+func Changes(root, base string) ([]Change, error)        { return local.Changes(root, base) }
+func ReadAt(root, revision, path string) ([]byte, error) { return local.ReadAt(root, revision, path) }
+func Commit(root, subject string, paths []string) (string, error) {
+	return local.Commit(root, subject, paths)
+}
+func WriteBlob(root string, data []byte) (string, error)       { return local.WriteBlob(root, data) }
+func ReadBlob(root, oid string) ([]byte, error)                { return local.ReadBlob(root, oid) }
+func Ref(root, name string) (string, bool, error)              { return local.Ref(root, name) }
+func CASRef(root, name, old, new string) error                 { return local.CASRef(root, name, old, new) }
+func Run(ctx context.Context, request Request) (Result, error) { return local.Run(ctx, request) }
+
+FILE packages/gitstore/model/model.go SHA256 9416b2e9aecc0fa41ed5f92995401b390ce8edf1b6ad3fc8086985351266e936
+package model
+
+import "time"
+
+type Repository struct {
+	Root      string
+	CommonDir string
+	Head      string
+	Branch    string
+}
+
+type Change struct {
+	Path    string
+	OldPath string
+	Status  string
+}
+
+type Request struct {
+	Args    []string
+	Dir     string
+	Env     map[string]string
+	Input   []byte
+	Timeout time.Duration
+}
+
+type Result struct {
+	Stdout   string
+	Stderr   string
+	ExitCode int
+}
+
+FILE packages/project/api.go SHA256 5ed9814e3cc746aa9bfeccd7ff16fa22a24746bff1f25f482cbd900cc866d21f
+package project
+
+import (
+	"github.com/lurkshark/fireweed/packages/project/internal/fixture"
+	"github.com/lurkshark/fireweed/packages/project/internal/history"
+	"github.com/lurkshark/fireweed/packages/project/internal/queue"
+	"github.com/lurkshark/fireweed/packages/project/model"
+)
+
+type Snapshot = model.Snapshot
+type Module = model.Module
+type Change = model.Change
+type SpecHistoryEntry = model.SpecHistoryEntry
+type StaleSpec = model.StaleSpec
+type Diagnostic = model.Diagnostic
+
+func Load(root string) (Snapshot, error) { return fixture.Load(root) }
+
+func LoadAt(root, revision string) (Snapshot, error) { return fixture.LoadAt(root, revision) }
+
+func ValidateGraph(modules []Module) error { return fixture.ValidateGraph(modules) }
+
+func NewChange(root, module, slug string) (string, error) {
+	return fixture.NewChange(root, module, slug)
+}
+
+func Queue(root string) ([]Change, error) { return queue.Queue(root) }
+
+func Project(root, through string) (Snapshot, error) { return queue.Project(root, through) }
+
+func Stamp(root, change string) error { return queue.Stamp(root, change) }
+
+func StampMissing(root, change string) error { return queue.StampMissing(root, change) }
+
+func StaleSpecs(root, change string) ([]StaleSpec, error) { return queue.StaleSpecs(root, change) }
+
+func Check(root string) []Diagnostic { return queue.Check(root) }
+
+func SpecHistory(root, module, id string) ([]SpecHistoryEntry, error) {
+	return history.SpecHistory(root, module, id)
+}
+
+FILE packages/project/model/model.go SHA256 c4aea379c049b6d8a5b5d07087b6a6f203421396652bfd0eda744bc1dfce72cb
+package model
+
+import (
+	"time"
+
+	"github.com/lurkshark/fireweed/packages/contracts"
+)
+
+// Snapshot is the project data read from a repository root.
+type Snapshot struct {
+	Root    string
+	Config  map[string]any
+	Modules []Module
+}
+
+// Module is a discovered module and its declared document and zones.
+type Module struct {
+	Name      string
+	IDPrefix  string
+	Dir       string
+	DependsOn []string
+	Zones     contracts.Zones
+	Document  contracts.Document
+}
+
+// Change is one pending change document and its spec edits.
+type Change struct {
+	Number   int
+	Slug     string
+	Path     string
+	Module   string
+	Document contracts.Document
+	Added    []contracts.Item
+	Modified []contracts.Item
+	Removed  []contracts.Item
+}
+
+// SpecHistoryEntry describes one archived change affecting selected specs.
+type SpecHistoryEntry struct {
+	Path               string
+	Module             string
+	IDs                []string
+	Motivation         string
+	Decisions          string
+	RemovedDecisions   string
+	Provenance         string
+	ImplementationDate time.Time
+}
+
+// StaleSpec describes a recorded base that differs from the preceding projection.
+type StaleSpec struct {
+	ID           string
+	RecordedHash string
+	Before       string
+	Current      string
+	Recovered    bool
+}
+
+// Diagnostic reports a static authoring check.
+type Diagnostic struct {
+	Code    string
+	Message string
+	Path    string
+	Warning bool
+}
+
+FILE packages/workflow/SPEC.md SHA256 bbde86957b25ea1280df9dc4a96e32fb8f5d1f64b4e35d7f195971ee3c7c1f8c
+---
+depends_on:
+    - contracts
+    - gitstore
+    - assets
+    - project
+    - checks
+id_prefix: FLOW
+interface:
+    - api.go
+    - model/**
+name: workflow
+---
+
+# workflow
+
+## Specs
+
+### FLOW-001
+Start MUST atomically create the local claim for the selected queued change.
+
+### FLOW-002
+Verify MUST reject edits forbidden by the approved projected phase zones before running hooks, checking differences since the held phase base.
+
+### FLOW-003
+Done MUST require full verification to succeed before committing a phase transition.
+
+### FLOW-004
+Successful impl Done MUST apply Added, Modified and Removed spec edits to the module's SPEC.md.
+
+### FLOW-005
+Context MUST include the change, projected spec, interface contents, SYSTEM and matching playbook. It MUST list other relevant files by path and size, or include their contents when full is requested.
+
+### FLOW-006
+Start MUST include the approved projected project snapshot in its returned State.
+
+### FLOW-007
+Start MUST replace each local Added handle throughout the change with the next
+available spec ID for its module. IDs of current and previously removed specs
+MUST remain reserved, including specs Removed by the starting change.
+
+### FLOW-008
+Start MUST assign a unique run identifier when starting an unstarted change.
+
+### FLOW-009
+Start MUST report P04 as a warning when neither the local base nor the shared base contains the change file.
+
+### FLOW-010
+Start MUST reject a worktree containing uncommitted changes.
+
+### FLOW-011
+Start MUST reject a requested change unless it is the first change returned by
+Eligible. With no requested target, Start MUST start that first eligible
+change. When Eligible returns no change, Start MUST reject with P01.
+
+### FLOW-012
+Start MUST return the canonical absolute worktree root in State.Snapshot.Root.
+
+### FLOW-013
+Start MUST set phase to evals when starting an unstarted spec change.
+
+### FLOW-014
+Start MUST leave HEAD unchanged.
+
+### FLOW-015
+Start MUST reject with P07 when the shared-base unapproved archive count reaches authoring.max_unapproved, whose default is 5.
+
+### FLOW-016
+Start MUST reject a competing worktree that attempts to claim the same change.
+
+### FLOW-017
+Current MUST resolve only a claim owned by the calling worktree.
+
+### FLOW-018
+Start MUST use the current HEAD as the initial phase base of its claim.
+
+### FLOW-019
+While a claim is held, Current MUST return the project snapshot approved at Start.
+
+### FLOW-020
+Verify MUST reject an unapproved alteration of the active change's author fields before running a hook.
+
+### FLOW-021
+Verify MUST reject an unapproved alteration of the active change's recorded runtime state before running a hook.
+
+### FLOW-022
+Whenever Verify runs the target module's evals it MUST require coverage of every enforced current spec.
+
+### FLOW-023
+During evals Verify for spec and fix changes MUST require genuine fail-first
+evidence for every enforced change ID that is not already_satisfied.
+Review-tagged specs MUST be excluded from fail-first requirements.
+
+### FLOW-024
+During impl Verify MUST reject a failing current-module testcase that references a non-quarantined spec.
+
+### FLOW-025
+Full impl Verify MUST use verify_dependents with a default of direct to select dependent modules.
+
+### FLOW-026
+Full impl Verify MUST reject a failed enforced testcase from a selected dependent module.
+
+### FLOW-027
+Full impl Verify MUST require boundary verification to succeed.
+
+### FLOW-028
+Verify MUST select hooks from the held approved projected project snapshot.
+
+### FLOW-029
+Quick Verify MUST skip dependent-module evals.
+
+### FLOW-030
+Quick Verify MUST skip boundary verification.
+
+### FLOW-031
+Verify MUST leave HEAD unchanged.
+
+### FLOW-032
+Done MUST commit a successfully verified evals phase and advance it to audit when audit is enabled.
+
+### FLOW-033
+Done MUST commit a successfully verified evals phase and advance it to impl when audit.enabled is false.
+
+### FLOW-034
+Audit Done MUST di

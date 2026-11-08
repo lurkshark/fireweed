@@ -1,0 +1,3 @@
+
+EVENT 4 command raw_offset=27126 SHA256=5a76e2c7808f20110c7a4e3dc9c0bfd812d41b99e5115a9206559eaac1474633
+/bin/zsh -lc 'cat packages/workflow/SPEC.md'

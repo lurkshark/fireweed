@@ -1,0 +1,3 @@
+
+EVENT 5 command raw_offset=127752 SHA256=dc9a1d7dcc8b57167d677a92d4b9cd7bb737adc650e8be7f0dbd485faf40aa9f
+/bin/zsh -lc 'rg --files packages/contracts packages/gitstore packages/assets packages/project packages/checks | sort'

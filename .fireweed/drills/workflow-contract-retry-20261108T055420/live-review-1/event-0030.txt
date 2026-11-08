@@ -1,0 +1,3 @@
+
+EVENT 30 command raw_offset=344928 SHA256=30e5e6ec8c4c1e4c3c99a4baf1f566e2b3f73f24a88e049f922c282975044855
+/bin/zsh -lc "rg -n 'checks.Evaluate|HookExit|RequireFailFirst|RequirePass' packages/workflow/evals packages/checks/evals 2>/dev/null | head -80"

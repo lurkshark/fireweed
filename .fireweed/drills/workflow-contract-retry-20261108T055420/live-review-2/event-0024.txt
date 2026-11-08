@@ -1,0 +1,283 @@
+
+EVENT 24 file-patch raw_offset=170190 SHA256=e49d99628d16d8889c96bcc7c9951ce4419438c7cde1f3c940784d95546fa59a
+patch: completed
+/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-811464561/packages/workflow/internal/lifecycle/reports.go
+/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-811464561/packages/workflow/internal/lifecycle/verify.go
+diff --git a/packages/workflow/internal/lifecycle/common.go b/packages/workflow/internal/lifecycle/common.go
+index c4fe7bb713e46b3a2504d03f1a9ea683f9cf441d..1817cda3f64caef94999ed66130e84f80a0da2a3
+--- a/packages/workflow/internal/lifecycle/common.go
++++ b/packages/workflow/internal/lifecycle/common.go
+@@ -189,6 +189,14 @@
+ 			q = append(q, project.Change{Slug: slug, Path: p, Module: fmString(d, "module"), Document: d, Added: sectionItems(d, "Added"), Modified: sectionItems(d, "Modified"), Removed: sectionItems(d, "Removed")})
+ 		}
+ 	}
++	// A path identifies one document even when several documents share a slug.
++	if strings.Contains(sel, "/") {
++		for _, c := range q {
++			if sel == c.Path {
++				return c, nil
++			}
++		}
++	}
+ 	matches := []project.Change{}
+ 	for _, c := range q {
+ 		if sel == "" || sel == c.Slug || sel == filepath.Base(c.Path) || sel == c.Path {
+diff --git a/packages/workflow/internal/lifecycle/done.go b/packages/workflow/internal/lifecycle/done.go
+index 08280ffda739d397ce98bc0b5906a41d474bd3b1..bba695b5843c49680fec0e75743dc0505b7be1db
+--- a/packages/workflow/internal/lifecycle/done.go
++++ b/packages/workflow/internal/lifecycle/done.go
+@@ -155,6 +155,21 @@
+ 	d.Body = contracts.ReplaceSection(d.Body, "Decisions", decisions)
+ 	return p, writeDoc(p, d)
+ }
++func needsSpecApplication(c project.Change) bool {
++	if len(c.Added)+len(c.Modified)+len(c.Removed) > 0 {
++		return true
++	}
++	if len(configMap(project.Snapshot{Config: c.Document.Frontmatter}, "set")) > 0 {
++		return true
++	}
++	for _, section := range []string{"Decisions", "Removed decisions"} {
++		text, _ := contracts.Section(c.Document.Body, section)
++		if strings.TrimSpace(text) != "" {
++			return true
++		}
++	}
++	return false
++}
+ func Done(ctx context.Context, r model.Request) (model.Result, error) {
+ 	r.Quick = false
+ 	result, e := verify(ctx, r)
+@@ -218,15 +233,24 @@
+ 		return result, e
+ 	}
+ 	if phase == "impl" {
++		for _, check := range project.Check(root) {
++			if !check.Warning {
++				_ = os.WriteFile(filepath.Join(root, s.Change.Path), originalChange, 0644)
++				return result, code(check.Code, check.Message)
++			}
++		}
+ 		m, _ := module(s.Snapshot, s.Change.Module)
+ 		moduleSpec := filepath.Join(root, m.Dir, "SPEC.md")
+ 		originalSpec, _ := os.ReadFile(moduleSpec)
+-		specPath, er := applySpec(root, s)
+-		if er != nil {
+-			return result, er
++		if needsSpecApplication(s.Change) {
++			specPath, er := applySpec(root, s)
++			if er != nil {
++				_ = os.WriteFile(filepath.Join(root, s.Change.Path), originalChange, 0644)
++				return result, er
++			}
++			relSpec, _ := filepath.Rel(root, specPath)
++			paths = append(paths, filepath.ToSlash(relSpec))
+ 		}
+-		relSpec, _ := filepath.Rel(root, specPath)
+-		paths = append(paths, filepath.ToSlash(relSpec))
+ 		archive := "changes/archive/" + filepath.Base(s.Change.Path)
+ 		if er = os.MkdirAll(filepath.Dir(filepath.Join(root, archive)), 0755); er != nil {
+ 			return result, er
+diff --git a/packages/workflow/internal/lifecycle/maintenance.go b/packages/workflow/internal/lifecycle/maintenance.go
+index b85b7f96fa2230b3f41730b2101d02f791967a0f..ec53f178507f80f8338da1606355194a755ee244
+--- a/packages/workflow/internal/lifecycle/maintenance.go
++++ b/packages/workflow/internal/lifecycle/maintenance.go
+@@ -33,7 +33,7 @@
+ 		return out.String(), nil
+ 	}
+ 	render, _ := contracts.RenderDocument(m.Document)
+-	out.WriteString("\n# Projected SPEC\n" + render)
++	out.WriteString("\n# Projected spec\n" + render)
+ 	pb := s.Phase
+ 	if pb == "impl" && fmBool(s.Change.Document, "regenerate") {
+ 		pb = "regenerate"
+@@ -42,8 +42,9 @@
+ 		out.WriteString("\n# Playbook\n" + text)
+ 	}
+ 	if sys, er := os.ReadFile(filepath.Join(root, "SYSTEM.md")); er == nil {
+-		out.WriteString("\n# SYSTEM\n" + string(sys))
++		out.WriteString("\n# SYSTEM.md\n" + string(sys))
+ 	}
++	out.WriteString("\n# Other relevant files\n")
+ 	dir := m.Dir
+ 	if !filepath.IsAbs(dir) {
+ 		dir = filepath.Join(root, dir)
+@@ -226,7 +227,15 @@
+ 		}
+ 	}
+ 	_ = os.Remove(filepath.Join(root, c.Path))
+-	newOID, e := gitstore.Commit(root, "fireweed abandon "+c.Slug, []string{c.Path})
++	if _, e = git(root, "add", "-A"); e != nil {
++		return "", e
++	}
++	newOID, e := git(root, "commit", "-m", "fireweed abandon "+c.Slug)
++	if e != nil {
++		return "", e
++	}
++	// git commit prints a summary; return the full object ID.
++	newOID, e = git(root, "rev-parse", "HEAD")
+ 	if e != nil {
+ 		return "", e
+ 	}
+diff --git a/packages/workflow/internal/lifecycle/reports.go b/packages/workflow/internal/lifecycle/reports.go
+index 47a83552dec602659192b79a1826b0db56d12e37..7c7302f8b4c754f8ba738b5f7634dc4414c70fa4
+--- a/packages/workflow/internal/lifecycle/reports.go
++++ b/packages/workflow/internal/lifecycle/reports.go
+@@ -148,6 +148,9 @@
+ 			ref = "HEAD"
+ 		}
+ 	}
++	if _, verifyErr := git(root, "rev-parse", "--verify", ref+"^{commit}"); verifyErr != nil {
++		return model.StatusReport{}, verifyErr
++	}
+ 	for _, c := range archives {
+ 		if fmString(c.Document, "phase") != "applied" {
+ 			continue
+@@ -241,7 +244,7 @@
+ 	historyCommits, _ := git(root, "rev-list", "--first-parent", to)
+ 	fmt.Fprintf(&body, "# Changes %s..%s\n\n", from, to)
+ 	if len(selected) == 0 {
+-		body.WriteString("No selected changes.\n")
++		body.WriteString("No changes selected.\n")
+ 	}
+ 	report := model.PRBodyReport{}
+ 	for _, c := range selected {
+@@ -380,6 +383,7 @@
+ 				binary := strings.HasPrefix(numstat, "-\t-")
+ 				if len(b) > 262144 || binary {
+ 					d := diag("B04", fmt.Sprintf("%s %d bytes", p, len(b)), true)
++					d.Path = p
+ 					report.Diagnostics = append(report.Diagnostics, d)
+ 					fmt.Fprintf(&body, "\n- B04 %s", d.Message)
+ 				}
+diff --git a/packages/workflow/internal/lifecycle/start.go b/packages/workflow/internal/lifecycle/start.go
+index 21026a5cf22b2e0275fbdfff42520f86a20ff3c3..196530efe82bd6179efe891ee6bf77ce0254b775
+--- a/packages/workflow/internal/lifecycle/start.go
++++ b/packages/workflow/internal/lifecycle/start.go
+@@ -46,15 +46,16 @@
+ 		if fmString(b.Document, "blocked") == "" {
+ 			continue
+ 		}
++		blocker := strings.TrimSuffix(filepath.Base(b.Path), ".md")
+ 		if b.Module == c.Module {
+-			return b.Slug, "same_module"
++			return blocker, "same_module"
+ 		}
+ 		if depends(snap.Modules, c.Module, b.Module) {
+-			return b.Slug, "depends_on_blocked"
++			return blocker, "depends_on_blocked"
+ 		}
+ 		interfaceText, _ := contracts.Section(c.Document.Body, "Interface")
+ 		if strings.TrimSpace(interfaceText) != "" && depends(snap.Modules, b.Module, c.Module) {
+-			return b.Slug, "interface_dependency"
++			return blocker, "interface_dependency"
+ 		}
+ 	}
+ 	return "", ""
+@@ -182,6 +183,14 @@
+ 		return model.State{}, e
+ 	}
+ 	if !resume {
++		for _, d := range project.Check(root) {
++			if !d.Warning {
++				if strings.Contains(d.Message, "stale base") {
++					return model.State{}, code("P05", d.Message)
++				}
++				return model.State{}, code(d.Code, d.Message)
++			}
++		}
+ 		stale, e := project.StaleSpecs(root, c.Path)
+ 		if e != nil {
+ 			return model.State{}, wrapStale(e)
+@@ -191,14 +200,6 @@
+ 				return model.State{}, code("P05", "stale base for "+x.ID)
+ 			}
+ 		}
+-		for _, d := range project.Check(root) {
+-			if !d.Warning {
+-				if strings.Contains(d.Message, "stale base") {
+-					return model.State{}, code("P05", d.Message)
+-				}
+-				return model.State{}, code(d.Code, d.Message)
+-			}
+-		}
+ 	}
+ 	s, e := project.Load(root)
+ 	if e != nil {
+@@ -324,7 +325,13 @@
+ 					return nil
+ 				}
+ 				rel, _ := filepath.Rel(dir, p)
+-				if contracts.ResolveZone(filepath.ToSlash(rel), m.Zones) == "disposable" {
++				protected := false
++				for _, pattern := range stringList(snapshot.Config["protected"]) {
++					if match, _ := filepath.Match(pattern, filepath.ToSlash(strings.TrimPrefix(p, root+string(filepath.Separator)))); match {
++						protected = true
++					}
++				}
++				if !protected && contracts.ResolveZone(filepath.ToSlash(rel), m.Zones) == "disposable" {
+ 					_ = os.Remove(p)
+ 				}
+ 				return nil
+diff --git a/packages/workflow/internal/lifecycle/verify.go b/packages/workflow/internal/lifecycle/verify.go
+index 3bb43d7ec64ac9e270f15c523ec973208ccd075b..cf2b7cc9973d086456d548ce074016a38e1ccbe2
+--- a/packages/workflow/internal/lifecycle/verify.go
++++ b/packages/workflow/internal/lifecycle/verify.go
+@@ -5,6 +5,7 @@
+ 	"encoding/json"
+ 	"fmt"
+ 	"os"
++	"os/exec"
+ 	"path/filepath"
+ 	"sort"
+ 	"strconv"
+@@ -79,6 +80,7 @@
+ 		}
+ 	}
+ 	ids = append(ids, evalFixIDs(c.Document)...)
++	ids = append(ids, stringList(c.Document.Frontmatter["fixes"])...)
+ 	return uniqueStrings(ids)
+ }
+ func allowedEvalFix(s model.State, changes []gitstore.Change) error {
+@@ -133,6 +135,16 @@
+ 	if e = validateApproved(d, approved, s.Phase); e != nil {
+ 		return result, e
+ 	}
++	// A changed contract base is stale even if the edit also violates a zone.
++	stale, e := project.StaleSpecs(root, s.Change.Path)
++	if e != nil {
++		return result, wrapStale(e)
++	}
++	for _, item := range stale {
++		if !item.Recovered {
++			return result, code("P05", "stale base for "+item.ID)
++		}
++	}
+ 	s.Change = changeFromDoc(s.Change, d)
+ 	result.State = s
+ 	changes, e := changed(root, cl.Base)
+@@ -237,10 +249,20 @@
+ 		ds, er := checks.Boundaries(ctx, checks.BoundaryRequest{Snapshot: s.Snapshot, Bin: r.Bin, Timeout: r.Timeout})
+ 		result.Diagnostics = append(result.Diagnostics, ds...)
+ 		if er != nil && failure == nil {
++			cause := er.Error()
++			if hooks, ok := s.Snapshot.Config["hooks"].(map[string]any); ok {
++				if argv := stringList(hooks["boundaries"]); len(argv) > 0 {
++					cmd := exec.CommandContext(ctx, argv[0], argv[1:]...)
++					cmd.Dir = root
++					if output, runErr := cmd.CombinedOutput(); runErr != nil && strings.TrimSpace(string(output)) != "" {
++						cause += ": " + strings.TrimSpace(string(output))
++					}
++				}
++			}
+ 			if len(ds) > 0 && !strings.HasPrefix(er.Error(), ds[0].Code+":") {
+-				failure = code(ds[0].Code, er.Error())
++				failure = code(ds[0].Code, cause)
+ 			} else {
+-				failure = er
++				failure = fmt.Errorf("%s", cause)
+ 			}
+ 		}
+ 	}
+
+

@@ -1,0 +1,21 @@
+{
+  "owned_groups": {
+    "inspector": {
+      "pid": 27285,
+      "group_exists": false
+    },
+    "native_controller": {
+      "pid": 27288,
+      "group_exists": false
+    },
+    "worker-1": {
+      "pid": 28374,
+      "group_exists": false
+    },
+    "worker-2": {
+      "pid": 95463,
+      "group_exists": false
+    }
+  },
+  "escaped_or_reparented_processes_not_certified": true
+}

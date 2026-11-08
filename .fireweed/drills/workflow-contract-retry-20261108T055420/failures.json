@@ -1,0 +1,178 @@
+[
+  {
+    "module": "workflow",
+    "name": "Test_FLOW_089_FLOW_091_FLOW_094_AbandonCleanOwnedSteppedChange",
+    "ids": "FLOW-089, FLOW-091, FLOW-094",
+    "result": "fail",
+    "failure": "=== RUN   Test_FLOW_089_FLOW_091_FLOW_094_AbandonCleanOwnedSteppedChange\n    abandon_test.go:118: Abandon left dirty worktree: D  packages/alpha/evals/step_test.go\n    abandon_test.go:120: stepped Abandon effects = \"D\\tchanges/0001-manual.md\"; want pending change and committed eval removed\n--- FAIL: Test_FLOW_089_FLOW_091_FLOW_094_AbandonCleanOwnedSteppedChange (1.89s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "workflow",
+    "name": "Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal",
+    "ids": "FLOW-096",
+    "result": "fail",
+    "failure": "=== RUN   Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal\n    abandon_test.go:290: fixture slug is not ambiguous to Commits: ambiguous change slug \"manual\"\n--- FAIL: Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal (1.52s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "workflow",
+    "name": "Test_FLOW_088_CommitsRejectMissingAndAmbiguousSelectors",
+    "ids": "FLOW-088",
+    "result": "fail",
+    "failure": "=== RUN   Test_FLOW_088_CommitsRejectMissingAndAmbiguousSelectors\n    commits_test.go:136: ambiguous slug error = ambiguous change slug \"manual\", want U02\n    commits_test.go:138: Commits(\"changes/0001-manual.md\"): ambiguous change slug \"manual\"\n--- FAIL: Test_FLOW_088_CommitsRejectMissingAndAmbiguousSelectors (0.12s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "workflow",
+    "name": "Test_FLOW_078_FLOW_079_FLOW_036_EvalFixCorrectsEvalAndArchivesWithoutContractOrImplementationEdits",
+    "ids": "FLOW-036, FLOW-078, FLOW-079",
+    "result": "fail",
+    "failure": "=== RUN   Test_FLOW_078_FLOW_079_FLOW_036_EvalFixCorrectsEvalAndArchivesWithoutContractOrImplementationEdits\n    eval_fix_lifecycle_test.go:101: eval_fix changed retained packages/alpha/SPEC.md: \"---\\ndepends_on: []\\nid_prefix: ALP\\nname: alpha\\n---\\n# Alpha\\n\\n## Specs\\n### ALP-001\\nAlpha MUST return the old value.\\n\\n\\n### ALP-002\\nAlpha MUST retain the second behavior.\\n\\n\\n## Decisions\\nRetain old policy.\\n\"\n--- FAIL: Test_FLOW_078_FLOW_079_FLOW_036_EvalFixCorrectsEvalAndArchivesWithoutContractOrImplementationEdits (1.72s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "workflow",
+    "name": "Test_FLOW_058_FLOW_062_StaleLifecycleBaseKeepsCauseAndMissingBaseKeepsC08",
+    "ids": "FLOW-058, FLOW-062",
+    "result": "fail",
+    "failure": "=== RUN   Test_FLOW_058_FLOW_062_StaleLifecycleBaseKeepsCauseAndMissingBaseKeepsC08\n    lifecycle_test.go:455: missing-base static cause = P05: stale base for ALP-001\n    lifecycle_test.go:464: stale Verify = Z01: protected module path packages/alpha/SPEC.md\n    lifecycle_test.go:467: stale Done = Z01: protected module path packages/alpha/SPEC.md\n--- FAIL: Test_FLOW_058_FLOW_062_StaleLifecycleBaseKeepsCauseAndMissingBaseKeepsC08 (1.30s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "workflow",
+    "name": "Test_FLOW_022_FLOW_023_FLOW_031_EvalsRequireCoverageAndPerIDFailFirst",
+    "ids": "FLOW-022, FLOW-023, FLOW-031",
+    "result": "fail",
+    "failure": "=== RUN   Test_FLOW_022_FLOW_023_FLOW_031_EvalsRequireCoverageAndPerIDFailFirst\n--- FAIL: Test_FLOW_022_FLOW_023_FLOW_031_EvalsRequireCoverageAndPerIDFailFirst (2.14s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "workflow",
+    "name": "Test_FLOW_022_FLOW_023_FLOW_031_EvalsRequireCoverageAndPerIDFailFirst/fixes",
+    "ids": "FLOW-022, FLOW-023, FLOW-031",
+    "result": "fail",
+    "failure": "=== RUN   Test_FLOW_022_FLOW_023_FLOW_031_EvalsRequireCoverageAndPerIDFailFirst/fixes\n    lifecycle_test.go:563: Verify = model.Result{State:model.State{Change:model.Change{Number:1, Slug:\"manual\", Path:\"changes/0001-manual.md\", Module:\"alpha\", Document:model.Document{Frontmatter:map[string]interface {}{\"bases\":map[string]interface {}{\"ALP-001\":\"4305e676\"}, \"fixes\":[]interface {}{\"ALP-002\"}, \"module\":\"alpha\", \"phase\":\"evals\", \"run\":\"20261108T061016-50ff031fa4cf05d920b19db0\"}, Body:\"\\n## Motivation\\nUsers need a revised alpha value.\\n\\n## Interface\\nAlpha public value is revised.\\n\\n## Added\\n\\n## Modified\\n### ALP-001\\nAlpha MUST return the revised value.\\n\\n## Removed\\n\\n## Decisions\\nUse the revised policy.\\n\\n## Removed decisions\\nRetain old policy.\\n\"}, Added:[]model.Item(nil), Modified:[]model.Item{model.Item{ID:\"ALP-001\", Tag:\"\", Body:\"Alpha MUST return the revised value.\\n\\n\"}}, Removed:[]model.Item(nil)}, Snapshot:model.Snapshot{Root:\"/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_FLOW_022_FLOW_023_FLOW_031_EvalsRequireCoverageAndPerIDFail162640445/001\", Config:map[string]interface {}{\"base\":\"main\", \"fireweed\":\">=0.1, <0.2\", \"hooks\":map[string]interface {}{\"boundaries\":[]interface {}{\"sh\", \".fireweed/boundaries.sh\"}, \"eval\":[]interface {}{\"sh\", \".fireweed/eval.sh\", \"{module}\", \"{report}\"}}, \"module_defaults\":map[string]interface {}{\"disposable\":[]interface {}{\"internal/**\"}, \"evals\":[]interface {}{\"evals/**\"}, \"interface\":[]interface {}{\"api.go\"}}, \"modules\":[]interface {}{\"packages/*\"}, \"version\":1}, Modules:[]model.Module{model.Module{Name:\"alpha\", IDPrefix:\"ALP\", Dir:\"packages/alpha\", DependsOn:[]string{}, Zones:model.Zones{Protected:[]string(nil), Evals:[]string{\"evals/**\"}, Interface:[]string{\"api.go\"}, AppendOnly:[]string(nil), Preserve:[]string(nil), Disposable:[]string{\"internal/**\"}}, Document:model.Document{Frontmatter:map[string]interface {}{\"depends_on\":[]interface {}{}, \"id_prefix\":\"ALP\", \"name\":\"alpha\"}, Body:\"# Alpha\\n\\n## Specs\\n\\n### ALP-001\\nAlpha MUST return the revised value.\\n\\n### ALP-002\\nAlpha MUST retain the second behavior.\\n\\n## Decisions\\nRetain old policy.\\n\"}}, model.Module{Name:\"beta\", IDPrefix:\"BET\", Dir:\"packages/beta\", DependsOn:[]string{\"alpha\"}, Zones:model.Zones{Protected:[]string(nil), Evals:[]string{\"evals/**\"}, Interface:[]string{\"api.go\"}, AppendOnly:[]string(nil), Preserve:[]string(nil), Disposable:[]string{\"internal/**\"}}, Document:model.Document{Frontmatter:map[string]interface {}{\"depends_on\":[]interface {}{\"alpha\"}, \"id_prefix\":\"BET\", \"name\":\"beta\"}, Body:\"# Beta\\n\\n## Specs\\n\\n### BET-001\\nBeta MUST follow alpha.\\n\"}}, model.Module{Name:\"gamma\", IDPrefix:\"GAM\", Dir:\"packages/gamma\", DependsOn:[]string{\"beta\"}, Zones:model.Zones{Protected:[]string(nil), Evals:[]string{\"evals/**\"}, Interface:[]string{\"api.go\"}, AppendOnly:[]string(nil), Preserve:[]string(nil), Disposable:[]string{\"internal/**\"}}, Document:model.Document{Frontmatter:map[string]interface {}{\"depends_on\":[]interface {}{\"beta\"}, \"id_prefix\":\"GAM\", \"name\":\"gamma\"}, Body:\"# Gamma\\n\\n## Specs\\n\\n### GAM-001\\nGamma MUST follow beta.\\n\"}}}}, Run:\"20261108T061016-50ff031fa4cf05d920b19db0\", Phase:\"evals\", Head:\"eeb02f573523ca6b3a21b7a47d4087c1d76a0195\", PhaseBase:\"eeb02f573523ca6b3a21b7a47d4087c1d76a0195\", ClaimOID:\"99a64a8dc76bf71edcca00113ba166630d25fc2e\", Diagnostics:[]model.Diagnostic(nil)}, Reports:map[string]model.Report{\"alpha\":model.Report{Cases:[]model.Case{model.Case{Name:\"ALP-001\", Classname:\"fixture\", IDs:[]string{\"ALP-001\"}, Result:\"fail\", Failure:\"expected before implementation\", Seconds:0}, model.Case{Name:\"ALP-002\", Classname:\"fixture\", IDs:[]string{\"ALP-002\"}, Result:\"pass\", Failure:\"\", Seconds:0}}, Seconds:0, HookExit:1, Stdout:\"fixture-hook-output\\n\", Stderr:\"\"}}, Costs:[]model.ModuleCost{model.ModuleCost{Module:\"alpha\", Seconds:0, CasesPerSpec:map[string]int{\"ALP-001\":1, \"ALP-002\":1}, EvalLines:0, DisposableLines:0}}, Diagnostics:[]model.Diagnostic(nil)}, <nil>; want pass false\n--- FAIL: Test_FLOW_022_FLOW_023_FLOW_031_EvalsRequireCoverageAndPerIDFailFirst/fixes (0.45s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "workflow",
+    "name": "Test_FLOW_003_FLOW_024_FLOW_048_FLOW_049_FailedDoneKeepsPhaseAndHead",
+    "ids": "FLOW-003, FLOW-024, FLOW-048, FLOW-049",
+    "result": "fail",
+    "failure": "=== RUN   Test_FLOW_003_FLOW_024_FLOW_048_FLOW_049_FailedDoneKeepsPhaseAndHead\n    lifecycle_test.go:1034: failed static validation advanced pending phase: \"---\\nbases:\\n    ALP-001: 4305e676\\nmodule: alpha\\nphase: applied\\nrun: 20261108T061034-245c7a5826b9c03fdd6e0bc8\\n---\\n\\n## Motivation\\nUsers need a revised alpha value.\\n\\n## Interface\\nAlpha public value is revised.\\n\\n## Added\\n\\n## Modified\\n### ALP-001\\nAlpha MUST return the revised value.\\n\\n## Removed\\n\\n## Decisions\\nUse the revised policy.\\n\\n## Removed decisions\\nRetain old policy.\\n## Provenance\\n\\n- evals 2026-11-08T06:10:35.09701Z agent=manual fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=2 failing=1 passing=1\\n- impl 2026-11-08T06:10:36.063285Z agent=manual fireweed=0.1.0 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=3 failing=0 passing=3\\n\", <nil>\n--- FAIL: Test_FLOW_003_FLOW_024_FLOW_048_FLOW_049_FailedDoneKeepsPhaseAndHead (1.47s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "workflow",
+    "name": "Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses",
+    "ids": "FLOW-062",
+    "result": "fail",
+    "failure": "=== RUN   Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses\n    lifecycle_test.go:1317: boundary cause = X01: 1 boundary violation(s)\n--- FAIL: Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses (4.61s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "workflow",
+    "name": "Test_FLOW_077_MaintenanceStartsInImplAndArchivesDirectly",
+    "ids": "FLOW-077",
+    "result": "fail",
+    "failure": "=== RUN   Test_FLOW_077_MaintenanceStartsInImplAndArchivesDirectly\n    maintenance_start_test.go:98: retained packages/alpha/SPEC.md changed: \"---\\ndepends_on: []\\nid_prefix: ALP\\nname: alpha\\n---\\n# Alpha\\n\\n## Specs\\n### ALP-001\\nAlpha MUST return the old value.\\n\\n\\n### ALP-002\\nAlpha MUST retain the second behavior.\\n\\n\\n## Decisions\\nRetain old policy.\\n\", <nil>\n--- FAIL: Test_FLOW_077_MaintenanceStartsInImplAndArchivesDirectly (0.98s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "workflow",
+    "name": "Test_FLOW_124_FLOW_125_PRBodyDisposableArtifactBoundaryAndRanges",
+    "ids": "FLOW-124, FLOW-125",
+    "result": "fail",
+    "failure": "=== RUN   Test_FLOW_124_FLOW_125_PRBodyDisposableArtifactBoundaryAndRanges\n--- FAIL: Test_FLOW_124_FLOW_125_PRBodyDisposableArtifactBoundaryAndRanges (0.59s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "workflow",
+    "name": "Test_FLOW_124_FLOW_125_PRBodyDisposableArtifactBoundaryAndRanges/FLOW_125_empty_and_invalid_ranges",
+    "ids": "FLOW-124, FLOW-125",
+    "result": "fail",
+    "failure": "=== RUN   Test_FLOW_124_FLOW_125_PRBodyDisposableArtifactBoundaryAndRanges/FLOW_125_empty_and_invalid_ranges\n    pr_body_test.go:330: empty range did not explicitly report no selected changes: \"# Changes ba6ea27531716f253a9d74c6853c553e98b99203..ba6ea27531716f253a9d74c6853c553e98b99203\\n\\nNo selected changes.\\n\\n## Exceptions\\n\\n\\n## Costs\\n\\n| Module | Seconds | Cases per spec | Eval lines | Disposable lines |\\n|---|---:|---|---:|---:|\\n\"\n--- FAIL: Test_FLOW_124_FLOW_125_PRBodyDisposableArtifactBoundaryAndRanges/FLOW_125_empty_and_invalid_ranges (0.19s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "workflow",
+    "name": "Test_FLOW_080_FLOW_081_FLOW_083_RegenerateDeletesProjectedDisposableAndRebuildsThroughArchive",
+    "ids": "FLOW-080, FLOW-081, FLOW-083",
+    "result": "fail",
+    "failure": "=== RUN   Test_FLOW_080_FLOW_081_FLOW_083_RegenerateDeletesProjectedDisposableAndRebuildsThroughArchive\n    regenerate_start_test.go:115: open /private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_FLOW_080_FLOW_081_FLOW_083_RegenerateDeletesProjectedDispos41190958/001/packages/alpha/internal/global.go: no such file or directory\n--- FAIL: Test_FLOW_080_FLOW_081_FLOW_083_RegenerateDeletesProjectedDisposableAndRebuildsThroughArchive (0.34s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "workflow",
+    "name": "Test_FLOW_101_FLOW_102_FLOW_103_StatusQueueAndForwardWaiting",
+    "ids": "FLOW-101, FLOW-102, FLOW-103",
+    "result": "fail",
+    "failure": "=== RUN   Test_FLOW_101_FLOW_102_FLOW_103_StatusQueueAndForwardWaiting\n    status_test.go:81: 0002-same waiting = \"manual\"/\"same_module\", want \"0001-manual\"/\"same_module\"\n    status_test.go:82: 0003-direct waiting = \"manual\"/\"depends_on_blocked\", want \"0001-manual\"/\"depends_on_blocked\"\n    status_test.go:83: 0004-transitive waiting = \"manual\"/\"depends_on_blocked\", want \"0001-manual\"/\"depends_on_blocked\"\n--- FAIL: Test_FLOW_101_FLOW_102_FLOW_103_StatusQueueAndForwardWaiting (0.72s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "workflow",
+    "name": "Test_FLOW_104_FLOW_105_StatusInterfaceAndProjectedWaiting",
+    "ids": "FLOW-104, FLOW-105",
+    "result": "fail",
+    "failure": "=== RUN   Test_FLOW_104_FLOW_105_StatusInterfaceAndProjectedWaiting\n    status_test.go:96: 0002-interface-direct waiting = \"manual\"/\"interface_dependency\", want \"0001-manual\"/\"interface_dependency\"\n    status_test.go:98: 0004-interface-transitive waiting = \"manual\"/\"interface_dependency\", want \"0001-manual\"/\"interface_dependency\"\n    status_test.go:108: 0002-own-add waiting = \"manual\"/\"depends_on_blocked\", want \"0001-manual\"/\"depends_on_blocked\"\n--- FAIL: Test_FLOW_104_FLOW_105_StatusInterfaceAndProjectedWaiting (1.46s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "app",
+    "name": "Test_APP_097_APP_099_AbandonNestedRootPlainAndJSON",
+    "ids": "APP-097, APP-099",
+    "result": "fail",
+    "failure": "=== RUN   Test_APP_097_APP_099_AbandonNestedRootPlainAndJSON\n--- FAIL: Test_APP_097_APP_099_AbandonNestedRootPlainAndJSON (2.10s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "app",
+    "name": "Test_APP_097_APP_099_AbandonNestedRootPlainAndJSON/json-owned",
+    "ids": "APP-097, APP-099",
+    "result": "fail",
+    "failure": "=== RUN   Test_APP_097_APP_099_AbandonNestedRootPlainAndJSON/json-owned\n    abandon_cli_test.go:111: abandon left dirty worktree: D  packages/alpha/extra.go\n--- FAIL: Test_APP_097_APP_099_AbandonNestedRootPlainAndJSON/json-owned (1.63s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "app",
+    "name": "Test_APP_127_APP_128_APP_129_PRBodyExplicitHistoricalEndpoint",
+    "ids": "APP-127, APP-128, APP-129",
+    "result": "fail",
+    "failure": "=== RUN   Test_APP_127_APP_128_APP_129_PRBodyExplicitHistoricalEndpoint\n    pr_body_cli_test.go:128: B04 path=\"\"; want opaque artifact path\n--- FAIL: Test_APP_127_APP_128_APP_129_PRBodyExplicitHistoricalEndpoint (1.03s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "app",
+    "name": "Test_APP_128_APP_129_PRBodyValidEmptyRange",
+    "ids": "APP-128, APP-129",
+    "result": "fail",
+    "failure": "=== RUN   Test_APP_128_APP_129_PRBodyValidEmptyRange\n    pr_body_cli_test.go:133: B04 path=\"\"; want opaque artifact path\n    pr_body_cli_test.go:140: public PRBody empty range lacks no-selection text: \"# Changes bd06681dac6a1e015b34b3bb3d2b250a2cd6afa2..bd06681dac6a1e015b34b3bb3d2b250a2cd6afa2\\n\\nNo selected changes.\\n\\n## Exceptions\\n\\n\\n## Costs\\n\\n| Module | Seconds | Cases per spec | Eval lines | Disposable lines |\\n|---|---:|---|---:|---:|\\n| alpha | 2.5 | ALP-001: 4 | 15 | 7 |\\n\\n- B01 SAVED B01 time\\n- B02 ALP-001: SAVED B02 cases\\n- B03 alpha: SAVED B03 ratio\"\n--- FAIL: Test_APP_128_APP_129_PRBodyValidEmptyRange (0.63s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "app",
+    "name": "Test_APP_130_APP_131_PRBodyFailures",
+    "ids": "APP-130, APP-131",
+    "result": "fail",
+    "failure": "=== RUN   Test_APP_130_APP_131_PRBodyFailures\n    pr_body_cli_test.go:146: B04 path=\"\"; want opaque artifact path\n--- FAIL: Test_APP_130_APP_131_PRBodyFailures (0.81s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "app",
+    "name": "Test_APP_126_StatusUsageConfigurationAndOperationalFailures",
+    "ids": "APP-126",
+    "result": "fail",
+    "failure": "=== RUN   Test_APP_126_StatusUsageConfigurationAndOperationalFailures\n    status_cli_test.go:504: public Status accepted unavailable base ref\n--- FAIL: Test_APP_126_StatusUsageConfigurationAndOperationalFailures (0.18s)",
+    "present_in_full_first_feedback": true
+  },
+  {
+    "module": "runner",
+    "name": "Test_RUN_013_RUN_014_CompleteSpecChange",
+    "ids": "RUN-013, RUN-014",
+    "result": "fail",
+    "failure": "=== RUN   Test_RUN_013_RUN_014_CompleteSpecChange\n    next_test.go:479: evals worker context omitted \"# Projected spec\"\n    next_test.go:479: evals worker context omitted \"# SYSTEM.md\"\n    next_test.go:479: evals worker context omitted \"# Other relevant files\"\n    next_test.go:479: impl worker context omitted \"# Projected spec\"\n    next_test.go:479: impl worker context omitted \"# SYSTEM.md\"\n    next_test.go:479: impl worker context omitted \"# Other relevant files\"\n--- FAIL: Test_RUN_013_RUN_014_CompleteSpecChange (4.75s)",
+    "present_in_full_first_feedback": true
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "exit": 130,
+  "worker_exit": -15,
+  "launched": true,
+  "stopped": true,
+  "complete_forwarding": true,
+  "streams": {
+    "stdout": {
+      "received": 0,
+      "forwarded": 0,
+      "eof": true
+    },
+    "stderr": {
+      "received": 192056,
+      "forwarded": 192056,
+      "eof": true
+    }
+  },
+  "errors": []
+}

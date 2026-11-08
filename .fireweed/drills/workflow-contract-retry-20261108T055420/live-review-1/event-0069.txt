@@ -1,0 +1,3 @@
+
+EVENT 69 command raw_offset=677706 SHA256=6cb981027a9c48b41cbc21c13757606e9a34371844fd2ced82c734732fbb8807
+/bin/zsh -lc 'gofmt -w packages/workflow/internal/lifecycle/*.go && git status --short && cat DRILL_NOTES.md'

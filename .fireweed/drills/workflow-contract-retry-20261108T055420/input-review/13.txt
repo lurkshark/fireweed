@@ -1,0 +1,411 @@
+_ := contracts.Section(committed.Body, "Audit")
+	audit(t, root, "Checked IDs: ALP-001\nNo findings\n")
+	worker, err := contracts.ParseDocument(readFile(t, root, path))
+	if err != nil {
+		t.Fatal(err)
+	}
+	savedAudit, ok := contracts.Section(worker.Body, "Audit")
+	if !ok || savedAudit == committedAudit || !strings.Contains(savedAudit, "No findings") {
+		t.Fatalf("fixture lacks distinct worker Audit body: saved=%q, committed=%q", savedAudit, committedAudit)
+	}
+	saved := block(t, root, "audit attempt exhausted")
+	if saved.AttemptRef != "refs/fireweed/attempts/manual/1" || saved.AttemptOID == "" {
+		t.Fatalf("Block did not save audit attempt: %#v", saved)
+	}
+	unblockAttempt(t, root)
+	before, err := contracts.ParseDocument(readFile(t, root, path))
+	if err != nil {
+		t.Fatal(err)
+	}
+	currentAudit, _ := contracts.Section(before.Body, "Audit")
+	currentProvenance, hasProvenance := contracts.Section(before.Body, "Provenance")
+	if currentAudit == savedAudit || !hasProvenance || strings.TrimSpace(currentProvenance) == "" {
+		t.Fatalf("fixture lacks separate committed Audit or controller provenance: Audit=%q, Provenance=%q", currentAudit, currentProvenance)
+	}
+	got, err := workflow.StartFromAttempt(root, "manual", 1)
+	if err != nil {
+		t.Fatalf("audit StartFromAttempt(%s): %v", saved.AttemptRef, err)
+	}
+	if got.Phase != auditState.Phase || got.Run != auditState.Run {
+		t.Errorf("audit resume changed phase or run: %#v", got)
+	}
+	resumed, err := contracts.ParseDocument(readFile(t, root, path))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if body, _ := contracts.Section(resumed.Body, "Audit"); body != savedAudit {
+		t.Errorf("restored Audit = %q, want saved worker body %q", body, savedAudit)
+	}
+	for _, name := range []string{"Motivation", "Interface", "Added", "Modified", "Removed", "Removed decisions", "Provenance"} {
+		want, _ := contracts.Section(before.Body, name)
+		actual, _ := contracts.Section(resumed.Body, name)
+		if actual != want {
+			t.Errorf("current %s changed: got %q, want %q", name, actual, want)
+		}
+	}
+	if !reflect.DeepEqual(resumed.Frontmatter, before.Frontmatter) {
+		t.Errorf("audit resume changed current author/runtime frontmatter: got %#v, want %#v", resumed.Frontmatter, before.Frontmatter)
+	}
+}
+
+func Test_FLOW_073_StartFromAttemptRequiresCleanEligibleUnblockedAndUnclaimedChange(t *testing.T) {
+	t.Run("dirty", func(t *testing.T) {
+		root, _, _ := savedEvalsAttempt(t)
+		unblockAttempt(t, root)
+		write(t, root, "uncommitted.txt", "dirty\n")
+		if _, err := workflow.StartFromAttempt(root, "manual", 1); err == nil || !strings.HasPrefix(err.Error(), "P01") {
+			t.Errorf("dirty resume = %v, want P01", err)
+		}
+		if got := git(t, root, "for-each-ref", "--format=%(objectname)", "refs/fireweed/claims/manual"); got != "" {
+			t.Errorf("dirty resume created claim: %s", got)
+		}
+	})
+	t.Run("still blocked", func(t *testing.T) {
+		root, _, _ := savedEvalsAttempt(t)
+		beforeHead, before := head(t, root), readFile(t, root, "changes/0001-manual.md")
+		if _, err := workflow.StartFromAttempt(root, "manual", 1); err == nil || !strings.HasPrefix(err.Error(), "P01") {
+			t.Errorf("blocked resume = %v, want P01", err)
+		}
+		assertNoResumeMutation(t, root, beforeHead, before)
+	})
+	t.Run("not first eligible", func(t *testing.T) {
+		root, _, _ := savedEvalsAttempt(t)
+		unblockAttempt(t, root)
+		write(t, root, "changes/0000-first.md", "---\nmodule: alpha\n---\n## Motivation\nEarlier approved work.\n\n## Interface\n\n## Added\n\n## Modified\n\n## Removed\n\n## Decisions\n")
+		commit(t, root, "earlier eligible change")
+		beforeHead, before := head(t, root), readFile(t, root, "changes/0001-manual.md")
+		if _, err := workflow.StartFromAttempt(root, "manual", 1); err == nil || !strings.HasPrefix(err.Error(), "P01") {
+			t.Errorf("waiting resume = %v, want P01", err)
+		}
+		assertNoResumeMutation(t, root, beforeHead, before)
+	})
+	t.Run("foreign claim", func(t *testing.T) {
+		root, _, _ := savedEvalsAttempt(t)
+		unblockAttempt(t, root)
+		other := filepath.Join(t.TempDir(), "linked")
+		git(t, root, "worktree", "add", "-b", "linked", other, "HEAD")
+		owner := start(t, root)
+		beforeHead, before := head(t, other), readFile(t, other, "changes/0001-manual.md")
+		if _, err := workflow.StartFromAttempt(other, "manual", 1); err == nil || !strings.HasPrefix(err.Error(), "P02") {
+			t.Errorf("foreign claim resume = %v, want P02", err)
+		}
+		if head(t, other) != beforeHead || readFile(t, other, "changes/0001-manual.md") != before {
+			t.Error("foreign resume changed other worktree")
+		}
+		if current, err := workflow.Current(root, "manual"); err != nil || current.ClaimOID != owner.ClaimOID {
+			t.Errorf("foreign resume changed owner's claim: %#v, %v", current, err)
+		}
+	})
+}
+
+func Test_FLOW_076_StartFromAttemptRejectsInvalidOrMissingAttemptBeforeMutation(t *testing.T) {
+	root, _, _ := savedEvalsAttempt(t)
+	unblockAttempt(t, root)
+	beforeHead, before := head(t, root), readFile(t, root, "changes/0001-manual.md")
+	for _, attempt := range []int{0, -1, 2} {
+		if _, err := workflow.StartFromAttempt(root, "manual", attempt); err == nil || !strings.HasPrefix(err.Error(), "P01") {
+			t.Errorf("attempt %d = %v, want P01", attempt, err)
+		}
+		assertNoResumeMutation(t, root, beforeHead, before)
+	}
+}
+
+FILE packages/workflow/evals/selector_audit_validation_test.go SHA256 e47579ed0521791f46d527b121d2dc0a71d43fa36aa560d24af743d19d01955c
+package evals_test
+
+import (
+	"context"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+
+	"github.com/lurkshark/fireweed/packages/workflow"
+)
+
+func Test_FLOW_059_AuditVerifyChecksSubmissionWithoutAdvancing(t *testing.T) {
+	root := fixture(t, "", "", "", "", "")
+	toAudit(t, root)
+	base := head(t, root)
+	current, err := workflow.Current(root, "manual")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct{ body, want string }{
+		{"No findings\n", "P09: audit requires Checked IDs and No findings"},
+		{"Checked IDs: ALP-002\nNo findings\n", "P09: audit did not check ALP-001"},
+	} {
+		audit(t, root, tc.body)
+		before := readFile(t, root, pendingCommitChange)
+		for _, quick := range []bool{true, false} {
+			result, err := verify(root, quick)
+			if err == nil || !strings.HasPrefix(err.Error(), tc.want) {
+				t.Errorf("audit Verify(quick=%t, %q) = phase %q, error %v; want %s", quick, tc.body, result.State.Phase, err, tc.want)
+			}
+		}
+		if got := readFile(t, root, pendingCommitChange); got != before {
+			t.Errorf("rejected Verify changed audit submission: %q", got)
+		}
+		if head(t, root) != base {
+			t.Error("rejected Verify committed")
+		}
+		if now, err := workflow.Current(root, "manual"); err != nil || now.ClaimOID != current.ClaimOID || now.Phase != "audit" || now.PhaseBase != base {
+			t.Errorf("rejected Verify changed claim or phase: %#v, %v", now, err)
+		}
+	}
+
+	// Findings that Done can process must also pass Verify without being filtered or written.
+	audit(t, root, "- ALP-001: \""+newClause+"\" — missing assertion\n- ALP-999: \"Unknown MUST work.\" — invalid finding\n")
+	beforeFinding := readFile(t, root, pendingCommitChange)
+	if result, err := verify(root, true); err != nil || result.State.Phase != "audit" {
+		t.Errorf("finding audit Verify = phase %q, error %v", result.State.Phase, err)
+	}
+	if got := readFile(t, root, pendingCommitChange); got != beforeFinding || head(t, root) != base {
+		t.Error("finding audit Verify normalized submission or committed")
+	}
+
+	// A complete submission is accepted by Verify without Done's normalization.
+	audit(t, root, "Checked IDs: ALP-001\nNo findings\n")
+	before := readFile(t, root, pendingCommitChange)
+	if result, err := verify(root, true); err != nil || result.State.Phase != "audit" {
+		t.Errorf("complete audit Verify = phase %q, error %v", result.State.Phase, err)
+	}
+	if got := readFile(t, root, pendingCommitChange); got != before || head(t, root) != base {
+		t.Error("successful audit Verify wrote the submission or committed")
+	}
+	if now, err := workflow.Current(root, "manual"); err != nil || now.ClaimOID != current.ClaimOID || now.Phase != "audit" || now.PhaseBase != base {
+		t.Errorf("successful Verify changed claim or phase: %#v, %v", now, err)
+	}
+	if result, err := done(root); err != nil || result.State.Phase != "impl" {
+		t.Errorf("complete audit Done = phase %q, error %v", result.State.Phase, err)
+	}
+}
+
+func Test_FLOW_002_AuditRejectsForbiddenEditBeforeHooks(t *testing.T) {
+	root := fixture(t, "", "", "", "", "")
+	marker := hookMarker(t, root)
+	auditState := toAudit(t, root)
+	if auditState.Phase != "audit" {
+		t.Fatalf("held phase = %q, want audit", auditState.Phase)
+	}
+	if err := os.Remove(marker); err != nil {
+		t.Fatalf("clear evals Done hook marker: %v", err)
+	}
+	audit(t, root, "Checked IDs: ALP-001\nNo findings\n")
+	submission := readFile(t, root, pendingCommitChange)
+	forbidden := "packages/alpha/evals/audit_zone_test.go"
+	write(t, root, forbidden, "package alpha_test\n")
+	base := head(t, root)
+
+	for _, operation := range []struct {
+		name string
+		call func() (workflow.Result, error)
+	}{
+		{"quick Verify", func() (workflow.Result, error) { return verify(root, true) }},
+		{"full Verify", func() (workflow.Result, error) { return verify(root, false) }},
+		{"Done", func() (workflow.Result, error) { return done(root) }},
+	} {
+		result, err := operation.call()
+		if err == nil || !strings.HasPrefix(err.Error(), "Z01:") || !strings.Contains(err.Error(), forbidden) {
+			t.Errorf("%s = phase %q, error %v; want Z01 naming %s", operation.name, result.State.Phase, err, forbidden)
+		}
+		if got := head(t, root); got != base {
+			t.Errorf("%s advanced HEAD: %s -> %s", operation.name, base, got)
+		}
+		if got := readFile(t, root, pendingCommitChange); got != submission {
+			t.Errorf("%s changed the valid audit submission", operation.name)
+		}
+		current, currentErr := workflow.Current(root, "manual")
+		if currentErr != nil || current.Phase != "audit" || current.PhaseBase != base || current.ClaimOID != auditState.ClaimOID {
+			t.Errorf("%s changed held audit phase or claim: %#v, %v", operation.name, current, currentErr)
+		}
+		if _, markerErr := os.Stat(marker); !os.IsNotExist(markerErr) {
+			t.Errorf("%s ran the eval hook before zone rejection: %v", operation.name, markerErr)
+		}
+	}
+}
+
+func Test_FLOW_061_UnknownLifecycleSelectorsNameValidSlugs(t *testing.T) {
+	root := fixture(t, "", "", "", "", "")
+	request := workflow.Request{Root: root, Change: "ghost"}
+	operations := []struct {
+		name string
+		call func(string) error
+	}{
+		{"Start", func(s string) error { _, err := workflow.Start(root, s); return err }},
+		{"StartFromAttempt", func(s string) error { _, err := workflow.StartFromAttempt(root, s, 1); return err }},
+		{"Current", func(s string) error { _, err := workflow.Current(root, s); return err }},
+		{"Context", func(s string) error { _, err := workflow.Context(root, s, false); return err }},
+		{"Verify", func(s string) error {
+			request.Change = s
+			_, err := workflow.Verify(context.Background(), request)
+			return err
+		}},
+		{"Done", func(s string) error {
+			request.Change = s
+			_, err := workflow.Done(context.Background(), request)
+			return err
+		}},
+		{"Release", func(s string) error { return workflow.Release(root, s) }},
+		{"Commits", func(s string) error { _, err := workflow.Commits(root, s); return err }},
+		{"Abandon", func(s string) error { _, err := workflow.Abandon(root, s); return err }},
+	}
+	before := head(t, root)
+	for _, selector := range []string{"ghost", "0009-ghost.md"} {
+		for _, op := range operations {
+			err := op.call(selector)
+			if err == nil || !strings.HasPrefix(err.Error(), "U02:") || !strings.Contains(err.Error(), selector) || !strings.Contains(err.Error(), "manual") {
+				t.Errorf("%s(%q) = %v; want U02 with rejected selector and valid slug manual", op.name, selector, err)
+			}
+		}
+	}
+	if head(t, root) != before || git(t, root, "status", "--porcelain=v1", "--untracked-files=all") != "" {
+		t.Error("unknown selector changed HEAD or working tree")
+	}
+
+	// Commits and Abandon also look up archived documents.
+	archive := filepath.Join(root, archivedCommitChange)
+	if err := os.MkdirAll(filepath.Dir(archive), 0755); err != nil {
+		t.Fatal(err)
+	}
+	git(t, root, "mv", pendingCommitChange, archivedCommitChange)
+	commit(t, root, "archive fixture change")
+	for _, op := range operations[len(operations)-2:] {
+		err := op.call("ghost")
+		if err == nil || !strings.HasPrefix(err.Error(), "U02:") || !strings.Contains(err.Error(), "ghost") || !strings.Contains(err.Error(), "manual") {
+			t.Errorf("archived %s(ghost) = %v; want U02 with archive slug manual", op.name, err)
+		}
+	}
+}
+
+FILE packages/workflow/evals/status_test.go SHA256 e972385e83679105dea1944500635ab01de474bc879844a95d81c93a6db872d8
+package evals_test
+
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+	"reflect"
+	"strings"
+	"testing"
+
+	"github.com/lurkshark/fireweed/packages/project"
+	"github.com/lurkshark/fireweed/packages/workflow"
+)
+
+func status(t *testing.T, root string) workflow.StatusReport {
+	t.Helper()
+	r, err := workflow.Status(root)
+	if err != nil {
+		t.Fatalf("Status: %v", err)
+	}
+	return r
+}
+
+func statusEntry(t *testing.T, r workflow.StatusReport, numberedSlug string) workflow.StatusEntry {
+	t.Helper()
+	for _, entry := range r.Queue {
+		if strings.TrimSuffix(filepath.Base(entry.Path), ".md") == numberedSlug {
+			return entry
+		}
+	}
+	t.Fatalf("Status queue has no %s: %#v", numberedSlug, r.Queue)
+	return workflow.StatusEntry{}
+}
+
+func waiting(t *testing.T, r workflow.StatusReport, slug, on, rule string) {
+	t.Helper()
+	e := statusEntry(t, r, slug)
+	if e.WaitingOn != on || e.WaitingRule != rule {
+		t.Errorf("%s waiting = %q/%q, want %q/%q", slug, e.WaitingOn, e.WaitingRule, on, rule)
+	}
+}
+
+func Test_FLOW_101_FLOW_102_FLOW_103_StatusQueueAndForwardWaiting(t *testing.T) {
+	root := eligibilityBase(t, "alpha")
+	eligibilityChange(t, root, 2, "same", "alpha", "", "")
+	eligibilityChange(t, root, 3, "direct", "beta", "", "")
+	eligibilityChange(t, root, 4, "transitive", "gamma", "", "")
+	eligibilityChange(t, root, 5, "free", "delta", "", "")
+	eligibilityChange(t, root, 6, "also-blocked", "beta", "", "")
+	readyEligibilityFixture(t, root)
+	freeFile := readFile(t, root, "changes/0005-free.md")
+	write(t, root, "changes/0005-free.md", strings.Replace(freeFile, "module: delta\n", "module: delta\nphase: audit\naudit_rounds: 2\n", 1))
+	blockedFile := readFile(t, root, "changes/0006-also-blocked.md")
+	write(t, root, "changes/0006-also-blocked.md", strings.Replace(blockedFile, "module: beta\n", "module: beta\nblocked: separately blocked\n", 1))
+	r := status(t, root)
+	q, err := project.Queue(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(r.Queue) != len(q) {
+		t.Fatalf("queue length = %d, want %d", len(r.Queue), len(q))
+	}
+	for i, ch := range q {
+		e := r.Queue[i]
+		if e.Slug != ch.Slug || e.Path != ch.Path || e.Module != ch.Module {
+			t.Errorf("queue[%d] identity = %#v, want %#v", i, e, ch)
+		}
+	}
+	blocked := statusEntry(t, r, "0001-manual")
+	if blocked.Phase != "impl" || blocked.Blocked != "fixture blocked" || blocked.AuditRounds != 0 {
+		t.Errorf("blocked state = %#v", blocked)
+	}
+	free := statusEntry(t, r, "0005-free")
+	if free.Phase != "audit" || free.Blocked != "" || free.AuditRounds != 2 {
+		t.Errorf("authored state = %#v", free)
+	}
+	if same := statusEntry(t, r, "0002-same"); same.Phase != "queued" || same.Blocked != "" || same.AuditRounds != 0 {
+		t.Errorf("default state = %#v", same)
+	}
+	waiting(t, r, "0001-manual", "", "")
+	waiting(t, r, "0002-same", "0001-manual", "same_module")
+	waiting(t, r, "0003-direct", "0001-manual", "depends_on_blocked")
+	waiting(t, r, "0004-transitive", "0001-manual", "depends_on_blocked")
+	waiting(t, r, "0005-free", "", "")
+	waiting(t, r, "0006-also-blocked", "", "")
+}
+
+func Test_FLOW_104_FLOW_105_StatusInterfaceAndProjectedWaiting(t *testing.T) {
+	root := eligibilityBase(t, "gamma")
+	eligibilityChange(t, root, 2, "interface-direct", "beta", "", "Beta API changes.\n")
+	eligibilityChange(t, root, 3, "internal-direct", "beta", "", "")
+	eligibilityChange(t, root, 4, "interface-transitive", "alpha", "", "Alpha API changes.\n")
+	eligibilityChange(t, root, 5, "internal-transitive", "alpha", "", "")
+	readyEligibilityFixture(t, root)
+	r := status(t, root)
+	waiting(t, r, "0002-interface-direct", "0001-manual", "interface_dependency")
+	waiting(t, r, "0003-internal-direct", "", "")
+	waiting(t, r, "0004-interface-transitive", "0001-manual", "interface_dependency")
+	waiting(t, r, "0005-internal-transitive", "", "")
+
+	projected := eligibilityBase(t, "alpha")
+	eligibilityChange(t, projected, 2, "own-add", "delta", "set:\n  depends_on: [alpha]\n", "")
+	eligibilityChange(t, projected, 3, "detach-beta", "beta", "set:\n  depends_on: []\n", "")
+	eligibilityChange(t, projected, 4, "after-detach", "gamma", "", "")
+	eligibilityChange(t, projected, 5, "own-remove", "delta", "set:\n  depends_on: []\n", "")
+	readyEligibilityFixture(t, projected)
+	r = status(t, projected)
+	waiting(t, r, "0002-own-add", "0001-manual", "depends_on_blocked")
+	waiting(t, r, "0003-detach-beta", "", "")
+	waiting(t, r, "0004-after-detach", "", "")
+	waiting(t, r, "0005-own-remove", "", "")
+}
+
+func Test_FLOW_106_FLOW_107_FLOW_108_StatusModuleMetadata(t *testing.T) {
+	root := fixture(t, "", "", "", "", "")
+	alpha := readFile(t, root, "packages/alpha/SPEC.md")
+	alpha = strings.Replace(alpha, "depends_on: []\n", "depends_on: []\nboundaries_opt_out: approved fixture exception\n", 1)
+	alpha = strings.Replace(alpha, "### ALP-002\n", "### ALP-002 [quarantine: intermittent fixture]\n", 1)
+	write(t, root, "packages/alpha/SPEC.md", alpha)
+	write(t, root, "packages/delta/SPEC.md", "---\nname: delta\nid_prefix: DEL\ndepends_on: []\n---\n# Delta\n\n## Specs\n\n### DEL-001 [quarantine: unavailable service]\nDelta MUST work.\n")
+	commit(t, root, "module metadata")
+	snapshot, err := project.Load(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	r := status(t, root)
+	if !reflect.DeepEqual(r.Modules, snapshot.Modules) {
+		t.Errorf("modules = %#v, want discovered %#v", r.Modules, snapshot.Modules)
+	}
+	byName := map[string]projec

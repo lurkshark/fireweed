@@ -1,0 +1,286 @@
+package lifecycle
+
+import (
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
+	"os"
+	"path/filepath"
+	"regexp"
+	"sort"
+	"strings"
+	"time"
+
+	"github.com/lurkshark/fireweed/packages/assets"
+	"github.com/lurkshark/fireweed/packages/contracts"
+	"github.com/lurkshark/fireweed/packages/gitstore"
+	"github.com/lurkshark/fireweed/packages/project"
+	"github.com/lurkshark/fireweed/packages/workflow/model"
+)
+
+type finding struct {
+	ID, Clause, Line string
+	Untestable       bool
+}
+
+var findingRE = regexp.MustCompile(`(?m)^- (\[untestable\] )?([A-Z][A-Z0-9]*-[0-9]+): "([^"]+)".*$`)
+
+func auditSubmission(c project.Change, previous contracts.Document) ([]finding, string, error) {
+	body := auditBody(c.Document)
+	findings := []finding{}
+	specs := map[string]string{}
+	m := c.Document
+	for _, sec := range []string{"Added", "Modified"} {
+		for _, it := range sectionItems(m, sec) {
+			specs[it.ID] = it.Body
+		}
+	}
+	for _, match := range findingRE.FindAllStringSubmatch(body, -1) {
+		f := finding{ID: match[2], Clause: match[3], Line: match[0], Untestable: match[1] != ""}
+		if text, ok := specs[f.ID]; ok && strings.Contains(text, f.Clause) {
+			findings = append(findings, f)
+		}
+	}
+	if fmInt(previous, "audit_rounds") > 0 {
+		prevIDs := map[string]bool{}
+		for _, f := range findingRE.FindAllStringSubmatch(auditBody(previous), -1) {
+			prevIDs[f[2]] = true
+		}
+		filtered := []finding{}
+		for _, f := range findings {
+			if prevIDs[f.ID] {
+				filtered = append(filtered, f)
+			}
+		}
+		findings = filtered
+	}
+	if len(findings) > 0 {
+		return findings, "", nil
+	}
+	if !strings.Contains(body, "No findings") || !strings.Contains(body, "Checked IDs:") {
+		return nil, "", code("P09", "audit requires Checked IDs and No findings")
+	}
+	checkedLine := ""
+	for _, l := range strings.Split(body, "\n") {
+		if strings.HasPrefix(strings.TrimSpace(l), "Checked IDs:") {
+			checkedLine = strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(l), "Checked IDs:"))
+			break
+		}
+	}
+	for _, id := range idsForChange(c) {
+		if !strings.Contains(checkedLine, id) {
+			return nil, "", code("P09", "audit did not check "+id)
+		}
+	}
+	return nil, checkedLine, nil
+}
+func provenance(phase string, r model.Request, result model.Result, regenerate bool) string {
+	play := phase
+	if phase == "impl" && regenerate {
+		play = "regenerate"
+	}
+	pb, _ := assets.Playbook(play)
+	hash := sha256.Sum256([]byte(pb))
+	total, passing, failing := 0, 0, 0
+	for _, rep := range result.Reports {
+		for _, tc := range rep.Cases {
+			total++
+			if tc.Result == "pass" {
+				passing++
+			} else if tc.Result == "fail" || tc.Result == "error" {
+				failing++
+			}
+		}
+	}
+	agent := r.Agent
+	if agent == "" {
+		agent = "manual"
+	}
+	return fmt.Sprintf("- %s %s agent=%s fireweed=%s playbook=%s tests=%d failing=%d passing=%d", phase, time.Now().UTC().Format(time.RFC3339Nano), agent, assets.Version(), hex.EncodeToString(hash[:]), total, failing, passing)
+}
+func applySpec(root string, s model.State) (string, error) {
+	m, ok := module(s.Snapshot, s.Change.Module)
+	if !ok {
+		return "", fmt.Errorf("module %s missing", s.Change.Module)
+	}
+	p := filepath.Join(root, m.Dir, "SPEC.md")
+	d, _, e := readDoc(p)
+	if e != nil {
+		return "", e
+	}
+	specs := sectionItems(d, "Specs")
+	replacement := map[string]contracts.Item{}
+	removed := map[string]bool{}
+	for _, it := range s.Change.Modified {
+		replacement[it.ID] = it
+	}
+	for _, it := range s.Change.Removed {
+		removed[it.ID] = true
+	}
+	out := []contracts.Item{}
+	for _, it := range specs {
+		if removed[it.ID] {
+			continue
+		}
+		if v, ok := replacement[it.ID]; ok {
+			it = v
+		}
+		out = append(out, it)
+	}
+	out = append(out, s.Change.Added...)
+	var body strings.Builder
+	for _, it := range out {
+		body.WriteString(contracts.RenderItem(it))
+		body.WriteString("\n")
+	}
+	d.Body = contracts.ReplaceSection(d.Body, "Specs", body.String())
+	// Apply set metadata exactly as authored in the change.
+	if set, ok := s.Change.Document.Frontmatter["set"].(map[string]any); ok {
+		for k, v := range set {
+			d.Frontmatter[k] = v
+		}
+	}
+	decisions, _ := contracts.Section(d.Body, "Decisions")
+	added, _ := contracts.Section(s.Change.Document.Body, "Decisions")
+	removedDecisions, _ := contracts.Section(s.Change.Document.Body, "Removed decisions")
+	for _, line := range strings.Split(removedDecisions, "\n") {
+		line = strings.TrimSpace(line)
+		if line != "" {
+			decisions = strings.ReplaceAll(decisions, line, "")
+		}
+	}
+	if strings.TrimSpace(added) != "" {
+		decisions = strings.TrimRight(decisions, "\n") + "\n\n- " + s.Change.Slug + ": " + strings.TrimSpace(added) + "\n"
+	}
+	d.Body = contracts.ReplaceSection(d.Body, "Decisions", decisions)
+	return p, writeDoc(p, d)
+}
+func Done(ctx context.Context, r model.Request) (model.Result, error) {
+	r.Quick = false
+	result, e := verify(ctx, r)
+	if e != nil {
+		return result, e
+	}
+	s := result.State
+	root := s.Snapshot.Root
+	cl, _, e := readClaim(root, s.Change.Slug)
+	if e != nil {
+		return result, e
+	}
+	d, _, e := readDoc(filepath.Join(root, s.Change.Path))
+	if e != nil {
+		return result, e
+	}
+	phase := s.Phase
+	paths := []string{s.Change.Path}
+	originalChange, _ := os.ReadFile(filepath.Join(root, s.Change.Path))
+	if phase == "audit" {
+		previous, _ := contracts.ParseDocument(cl.Approved)
+		findings, checked, er := auditSubmission(s.Change, previous)
+		if er != nil {
+			return result, er
+		}
+		if len(findings) > 0 {
+			lines := []string{}
+			untestable := false
+			for _, f := range findings {
+				lines = append(lines, f.Line)
+				untestable = untestable || f.Untestable
+			}
+			d.Body = contracts.ReplaceSection(d.Body, "Audit", strings.Join(lines, "\n")+"\n")
+			round := fmInt(d, "audit_rounds")
+			if untestable || round >= configInt(s.Snapshot, "audit", "max_rounds", 2) {
+				d.Frontmatter["blocked"] = "audit findings"
+				d.Body = contracts.ReplaceSection(d.Body, "Questions", strings.Join(lines, "\n")+"\n")
+				d.Frontmatter["phase"] = "audit"
+			} else {
+				d.Frontmatter["audit_rounds"] = round + 1
+				d.Frontmatter["phase"] = "evals"
+			}
+		} else {
+			d.Body = contracts.ReplaceSection(d.Body, "Audit", "No findings; checked "+checked+"\n")
+			d.Frontmatter["phase"] = "impl"
+		}
+	} else if phase == "evals" {
+		if configBool(s.Snapshot, "audit", "enabled", true) {
+			d.Frontmatter["phase"] = "audit"
+		} else {
+			d.Frontmatter["phase"] = "impl"
+		}
+	} else if phase == "impl" {
+		d.Frontmatter["phase"] = "applied"
+	} else {
+		return result, code("P01", "unsupported phase "+phase)
+	}
+	prov, _ := contracts.Section(d.Body, "Provenance")
+	d.Body = contracts.ReplaceSection(d.Body, "Provenance", strings.TrimRight(prov, "\n")+"\n"+provenance(phase, r, result, fmBool(d, "regenerate"))+"\n")
+	if e = writeDoc(filepath.Join(root, s.Change.Path), d); e != nil {
+		return result, e
+	}
+	if phase == "impl" {
+		m, _ := module(s.Snapshot, s.Change.Module)
+		moduleSpec := filepath.Join(root, m.Dir, "SPEC.md")
+		originalSpec, _ := os.ReadFile(moduleSpec)
+		specPath, er := applySpec(root, s)
+		if er != nil {
+			return result, er
+		}
+		relSpec, _ := filepath.Rel(root, specPath)
+		paths = append(paths, filepath.ToSlash(relSpec))
+		archive := "changes/archive/" + filepath.Base(s.Change.Path)
+		if er = os.MkdirAll(filepath.Dir(filepath.Join(root, archive)), 0755); er != nil {
+			return result, er
+		}
+		if er = os.Rename(filepath.Join(root, s.Change.Path), filepath.Join(root, archive)); er != nil {
+			return result, er
+		}
+		paths = append(paths, archive)
+		for _, diag := range project.Check(root) {
+			if !diag.Warning {
+				_ = os.Rename(filepath.Join(root, archive), filepath.Join(root, s.Change.Path))
+				_ = os.WriteFile(filepath.Join(root, s.Change.Path), originalChange, 0644)
+				_ = os.WriteFile(moduleSpec, originalSpec, 0644)
+				return result, code(diag.Code, diag.Message)
+			}
+		}
+	}
+	changes, _ := gitstore.Changes(root, cl.Base)
+	for _, ch := range changes {
+		p := ch.Path
+		if p == "" {
+			p = ch.OldPath
+		}
+		if p != "" {
+			paths = append(paths, p)
+		}
+	}
+	paths = uniqueStrings(paths)
+	sort.Strings(paths)
+	oid, e := gitstore.Commit(root, fmt.Sprintf("fireweed %s %s", phase, s.Change.Slug), paths)
+	if e != nil {
+		return result, e
+	}
+	if phase == "impl" || fmString(d, "blocked") != "" {
+		_ = dropClaim(root, s.Change.Slug, result.State.ClaimOID)
+		result.State.Change = changeFromDoc(s.Change, d)
+		result.State.Phase = fmString(d, "phase")
+		result.State.Head = oid
+		result.State.PhaseBase = oid
+		result.State.ClaimOID = ""
+		if fmString(d, "blocked") != "" {
+			return result, code("P06", "change blocked")
+		}
+		return result, nil
+	}
+	cl.Base = oid
+	cl.Phase = fmString(d, "phase")
+	b, _ := os.ReadFile(filepath.Join(root, s.Change.Path))
+	cl.Approved = string(b)
+	newOID, e := putClaim(root, s.Change.Slug, result.State.ClaimOID, cl)
+	if e != nil {
+		return result, e
+	}
+	result.State = state(root, changeFromDoc(s.Change, d), cl, newOID)
+	return result, nil
+}

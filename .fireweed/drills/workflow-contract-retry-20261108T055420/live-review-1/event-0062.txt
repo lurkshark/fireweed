@@ -1,0 +1,3 @@
+
+EVENT 62 command raw_offset=595967 SHA256=2c67c3ff71a41a45ed8d227019f26e4f56137f8fb193d5280be2662c70c85dd8
+/bin/zsh -lc 'git status --short && rg --files packages/workflow/internal | sort && wc -l packages/workflow/internal/lifecycle/*.go DRILL_NOTES.md'

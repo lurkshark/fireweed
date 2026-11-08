@@ -78,19 +78,17 @@ gc, migrate, agents-md --write
 
 ## Planned milestone — Workflow contracts and regeneration proof (WF1–WF4)
 
-The owner separately approved exactly one supervised native workflow retry on
-validated source `9a206c558e8e5625c0ae55bb57c42ae8130b4f15`, using the unchanged pin below
-and prepared outside inspector. Reuse the committed clean-source validation and
-unchanged supervisor rehearsals. Use a fresh isolated caller and fresh live gates;
-review actual retained inputs before release and every command/script/incremental
-patch, full first native feedback and fresh output before any remaining configured
-release. Keep exact worker command/model/effort, input policy, bounds/counters and
-**2026-11-10 22:51:05 UTC** deadline unchanged. Retain the actual terminal evidence/ref,
-review the result, clean only owned scratch, commit protected evidence idle and
-stop. Failure/gaps authorize no correction, additional invocation, source import,
-controller update, later work or push. This approval supersedes only the previous
-native approval stop; all preservation and independence requirements remain.
-
+The subsequently owner-approved single native retry on validated source 9a206c5
+is complete and failed. A prohibited worker-local go test caused running-worker
+rejection. The native controller published its failure report/ref after the
+prepared worker-first stop/drain. The
+[reviewed terminal evidence](../../.fireweed/drills/workflow-contract-retry-20261108T055420/review.md)
+records all first-attempt cases/failures, coverage, actual input/trace review,
+rejection/publication and cleanup; second partial code was not reverified. No
+passing independent proof, WF4 closure, correction, extra invocation, source
+application, repin or push. Approval consumed; stop with no active run/claim.
+Further work requires owner selection; all prior gates/evidence and preservation
+requirements remain. Follow current GOAL/PROGRESS.
 
 **Residual fixes/controller handoff and single retry complete; native verification failed.**
 Normal audited [0181](../../changes/archive/0181-recorded-regenerate-preservation.md)
@@ -123,8 +121,8 @@ RUN-037 eval_fix. FLOW-062, runtime/interfaces/hooks/configuration and existing
 bounds remain unchanged. The
 [clean-source validation, idle pin update and stopped preparation](../../.fireweed/drills/workflow-contract-diagnostics-handoff.md)
 are complete with no native invocation or active run/claim. RUN-037's native
-timing cause remains unresolved. This budget is exhausted; stop for separate
-owner approval of one retry on the identified source/pin. No source import,
+timing cause remains unresolved. That preparation budget is exhausted. The separately approved retry is now
+complete and stopped as recorded above. No source import,
 expanded worker inputs, raised/reset bound or counter, extra correction, later
 work or push. Follow GOAL/PROGRESS; all prior native results and WF4/full-completion
 gates remain intact.

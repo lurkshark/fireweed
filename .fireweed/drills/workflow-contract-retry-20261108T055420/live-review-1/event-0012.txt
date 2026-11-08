@@ -1,0 +1,3 @@
+
+EVENT 12 command raw_offset=27268 SHA256=e9254124dfcf30b1144c4aa56edf1ffb70619a1cc76393a7ca46be7dfdb8c9f9
+/bin/zsh -lc 'cat packages/workflow/evals/lifecycle_test.go packages/workflow/evals/maintenance_start_test.go packages/workflow/evals/selector_audit_validation_test.go'

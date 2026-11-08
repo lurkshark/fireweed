@@ -1,0 +1,3 @@
+
+EVENT 27 command raw_offset=333070 SHA256=7678ae510885e9d497cebabe17b6aafa36785e52ba28bb198426fe3313613fb2
+/bin/zsh -lc 'git status --short'

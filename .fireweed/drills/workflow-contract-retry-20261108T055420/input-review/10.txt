@@ -1,0 +1,424 @@
+e\n")
+	before := head(t, root)
+	if _, err := done(root); err == nil || !strings.HasPrefix(err.Error(), "P06: change blocked") {
+		t.Errorf("blocked Done = %v", err)
+	}
+	b, err := os.ReadFile(filepath.Join(root, "changes/0001-manual.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	questions, ok := contracts.Section(string(b), "Questions")
+	if head(t, root) == before || !strings.Contains(string(b), "blocked:") || !ok || !strings.Contains(questions, newClause) {
+		t.Errorf("blocking state missing from commit: %s", b)
+	}
+	if _, err := workflow.Current(root, "manual"); err == nil {
+		t.Error("blocked claim remained held")
+	}
+}
+
+func Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses(t *testing.T) {
+	evalRoot := fixture(t, "", "", "", "", "")
+	p := filepath.Join(evalRoot, ".fireweed/eval.sh")
+	b, err := os.ReadFile(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	write(t, evalRoot, ".fireweed/eval.sh", strings.ReplaceAll(string(b), `name="ALP-001"`, `name="ALP-002"`))
+	commit(t, evalRoot, "hook omits target")
+	start(t, evalRoot)
+	if _, err := verify(evalRoot, true); err == nil || !strings.HasPrefix(err.Error(), "C10: no coverage for ALP-001") {
+		t.Errorf("coverage cause = %v", err)
+	}
+	before := head(t, evalRoot)
+	if _, err := done(evalRoot); err == nil || !strings.HasPrefix(err.Error(), "C10: no coverage for ALP-001") || head(t, evalRoot) != before {
+		t.Errorf("Done coverage cause = %v", err)
+	}
+	missingReport := fixture(t, "", "", "", "", "")
+	write(t, missingReport, ".fireweed/eval.sh", "#!/bin/sh\nexit 0\n")
+	commit(t, missingReport, "hook omits JUnit report")
+	start(t, missingReport)
+	if _, err := verify(missingReport, true); err == nil || !strings.HasPrefix(err.Error(), "C11: read JUnit report:") {
+		t.Errorf("missing JUnit cause = %v", err)
+	}
+	failFirst := fixture(t, "", "", "", "", "")
+	write(t, failFirst, ".fireweed/unrelated", "yes\n")
+	commit(t, failFirst, "unrelated failing case")
+	start(t, failFirst)
+	write(t, failFirst, "packages/alpha/internal/ready", "ready\n")
+	if _, err := verify(failFirst, true); err == nil || !strings.HasPrefix(err.Error(), "P2-01: no fail-first case for ALP-001") {
+		t.Errorf("fail-first cause = %v", err)
+	}
+	implFailure := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
+	start(t, implFailure)
+	if _, err := done(implFailure); err != nil {
+		t.Fatalf("evals Done: %v", err)
+	}
+	if _, err := verify(implFailure, true); err == nil || !strings.HasPrefix(err.Error(), "E01: failed case") || !strings.Contains(err.Error(), "ALP-001") {
+		t.Errorf("impl testcase cause = %v", err)
+	}
+
+	zoneRoot := fixture(t, "", "", "", "", "")
+	write(t, zoneRoot, "packages/alpha/internal/existing.go", "package internal\n")
+	commit(t, zoneRoot, "existing implementation")
+	start(t, zoneRoot)
+	write(t, zoneRoot, "packages/alpha/internal/existing.go", "package internal // changed in evals\n")
+	if _, err := verify(zoneRoot, true); err == nil || !strings.HasPrefix(err.Error(), "Z01:") {
+		t.Errorf("zone cause = %v", err)
+	}
+
+	boundaryRoot := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
+	write(t, boundaryRoot, ".fireweed/boundary-fail", "yes\n")
+	commit(t, boundaryRoot, "failing boundary fixture")
+	start(t, boundaryRoot)
+	if _, err := done(boundaryRoot); err != nil {
+		t.Fatalf("evals Done: %v", err)
+	}
+	write(t, boundaryRoot, "packages/alpha/internal/ready", "ready\n")
+	if _, err := verify(boundaryRoot, false); err == nil || !strings.HasPrefix(err.Error(), "X01:") || !strings.Contains(err.Error(), "forbidden dependency") {
+		t.Errorf("boundary cause = %v", err)
+	}
+	boundaryHook := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
+	config, err := os.ReadFile(filepath.Join(boundaryHook, "fireweed.yaml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	write(t, boundaryHook, "fireweed.yaml", strings.Replace(string(config), "boundaries: [sh, .fireweed/boundaries.sh]", "boundaries: [/missing/fireweed-boundary-hook]", 1))
+	commit(t, boundaryHook, "unlaunchable boundary hook")
+	start(t, boundaryHook)
+	if _, err := done(boundaryHook); err != nil {
+		t.Fatalf("evals Done: %v", err)
+	}
+	write(t, boundaryHook, "packages/alpha/internal/ready", "ready\n")
+	snapshot, err := project.Load(boundaryHook)
+	if err != nil {
+		t.Fatal(err)
+	}
+	req := request(boundaryHook)
+	boundaryDiagnostics, boundaryErr := checks.Boundaries(context.Background(), checks.BoundaryRequest{
+		Snapshot: snapshot, Bin: req.Bin, Timeout: req.Timeout,
+	})
+	if boundaryErr == nil || !strings.Contains(boundaryErr.Error(), "/missing/fireweed-boundary-hook") ||
+		len(boundaryDiagnostics) != 1 || boundaryDiagnostics[0].Code != "X02" ||
+		!strings.Contains(boundaryDiagnostics[0].Message, "/missing/fireweed-boundary-hook") {
+		t.Fatalf("unlaunchable boundary fixture = diagnostics %#v, error %v; want X02 naming missing executable", boundaryDiagnostics, boundaryErr)
+	}
+	want := boundaryErr.Error()
+	if !strings.HasPrefix(want, "X02: ") {
+		want = "X02: " + want
+	}
+	if strings.Count(want, "X02:") != 1 {
+		t.Fatalf("boundary cause has repeated X02: %q", want)
+	}
+	if _, err := verify(boundaryHook, false); err == nil || err.Error() != want {
+		t.Errorf("boundary hook cause = %v, want exactly %q", err, want)
+	}
+}
+
+func Test_FLOW_062_MissingRequiredBoundaryHookKeepsCauseAndAllDiagnostics(t *testing.T) {
+	root := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
+	config := readFile(t, root, "fireweed.yaml")
+	withoutHook := strings.Replace(config, "  boundaries: [sh, .fireweed/boundaries.sh]\n", "", 1)
+	if withoutHook == config {
+		t.Fatal("fixture did not remove the required boundary hook")
+	}
+	write(t, root, "fireweed.yaml", withoutHook)
+	commit(t, root, "approved fixture without boundary hook")
+	start(t, root)
+	if _, err := done(root); err != nil {
+		t.Fatalf("evals Done: %v", err)
+	}
+	write(t, root, "packages/alpha/internal/ready", "ready\n")
+	current, err := workflow.Current(root, "manual")
+	if err != nil || current.Phase != "impl" {
+		t.Fatalf("impl state = %#v, %v", current, err)
+	}
+	req := request(root)
+	boundaryDiagnostics, boundaryErr := checks.Boundaries(context.Background(), checks.BoundaryRequest{
+		Snapshot: current.Snapshot, Bin: req.Bin, Timeout: req.Timeout,
+	})
+	if boundaryErr == nil || strings.TrimSpace(boundaryErr.Error()) == "" {
+		t.Fatalf("checks boundary cause = %v; want nonempty cause", boundaryErr)
+	}
+	wantModules := map[string]bool{"alpha": true, "beta": true, "gamma": true}
+	if len(boundaryDiagnostics) != len(wantModules) {
+		t.Fatalf("boundary diagnostics = %#v; want one per affected module", boundaryDiagnostics)
+	}
+	for _, d := range boundaryDiagnostics {
+		message := strings.ToLower(d.Message)
+		if d.Code != "X02" || d.Warning || !strings.Contains(message, "missing") ||
+			!strings.Contains(message, "boundar") || !strings.Contains(message, "hook") {
+			t.Fatalf("unexpected boundary diagnostic: %#v", d)
+		}
+		matched := false
+		for module := range wantModules {
+			if strings.Contains(d.Message, module) {
+				delete(wantModules, module)
+				matched = true
+				break
+			}
+		}
+		if !matched {
+			t.Fatalf("boundary diagnostic has no remaining affected module: %#v", d)
+		}
+	}
+	if len(wantModules) != 0 {
+		t.Fatalf("boundary diagnostics omitted modules: %v", wantModules)
+	}
+	result, err := verify(root, false)
+	want := boundaryErr.Error()
+	if !strings.HasPrefix(want, "X02: ") {
+		want = "X02: " + want
+	}
+	if strings.Count(want, "X02:") != 1 {
+		t.Fatalf("checks boundary cause has repeated X02: %q", want)
+	}
+	if err == nil || err.Error() != want || strings.Count(err.Error(), "X02:") != 1 {
+		t.Errorf("full Verify cause = %v; want exactly %q", err, want)
+	}
+	if !reflect.DeepEqual(result.Diagnostics, boundaryDiagnostics) {
+		t.Errorf("full Verify diagnostics = %#v; want %#v", result.Diagnostics, boundaryDiagnostics)
+	}
+}
+
+FILE packages/workflow/evals/maintenance_start_test.go SHA256 0c6d974bcfb7bb3cc7b6eb640dcfa02f6dead3d0e5d4688823008dbcb5c4bc74
+package evals_test
+
+import (
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+
+	"github.com/lurkshark/fireweed/packages/project"
+	"github.com/lurkshark/fireweed/packages/workflow"
+)
+
+func Test_FLOW_077_MaintenanceStartsInImplAndArchivesDirectly(t *testing.T) {
+	root := fixture(t, "", "", "", "", "")
+	write(t, root, "changes/0001-manual.md", `---
+module: alpha
+bases: {}
+---
+
+## Motivation
+Simplify the existing alpha implementation while keeping its behavior.
+
+## Interface
+
+## Added
+
+## Modified
+
+## Removed
+
+## Decisions
+
+`)
+	write(t, root, "packages/alpha/internal/ready", "original implementation\n")
+	write(t, root, "packages/alpha/evals/alpha_test.go", "package alpha_test\n\n// Retained coverage fixture.\n")
+	marker := hookMarker(t, root)
+	for _, d := range project.Check(root) {
+		if !d.Warning {
+			t.Fatalf("invalid maintenance fixture: %#v", d)
+		}
+	}
+	retained := map[string]string{}
+	for _, name := range []string{"packages/alpha/SPEC.md", "packages/alpha/api.go", "packages/alpha/evals/alpha_test.go"} {
+		b, err := os.ReadFile(filepath.Join(root, name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		retained[name] = string(b)
+	}
+	before := head(t, root)
+	s := start(t, root)
+	if s.Phase != "impl" || s.Run == "" || s.ClaimOID == "" || s.PhaseBase != before || head(t, root) != before {
+		t.Fatalf("maintenance Start state = %#v; HEAD before %s after %s", s, before, head(t, root))
+	}
+	if _, err := os.Stat(marker); !os.IsNotExist(err) {
+		t.Errorf("Start ran an eval hook: %v", err)
+	}
+	current, err := workflow.Current(root, "manual")
+	if err != nil || current.Phase != "impl" || current.Run != s.Run || current.ClaimOID != s.ClaimOID {
+		t.Fatalf("persisted maintenance state = %#v, %v", current, err)
+	}
+	pending, err := os.ReadFile(filepath.Join(root, "changes/0001-manual.md"))
+	if err != nil || !strings.Contains(string(pending), "phase: impl") {
+		t.Fatalf("pending maintenance phase = %q, %v", pending, err)
+	}
+	write(t, root, "packages/alpha/internal/ready", "simplified implementation\n")
+	checked, err := verify(root, false)
+	if err != nil {
+		t.Fatalf("full maintenance Verify: %v, reports: %#v", err, checked.Reports)
+	}
+	if len(checked.Reports["alpha"].Cases) != 2 || len(checked.Reports["beta"].Cases) != 1 {
+		t.Errorf("full Verify did not run current and direct dependent coverage: %#v", checked.Reports)
+	}
+	if head(t, root) != before {
+		t.Fatal("Verify changed HEAD")
+	}
+	applied, err := done(root)
+	if err != nil || applied.State.Phase != "applied" {
+		t.Fatalf("maintenance Done = %#v, %v", applied, err)
+	}
+	after := head(t, root)
+	if after == before || git(t, root, "rev-parse", "HEAD^") != before {
+		t.Errorf("maintenance archive was not one commit: before %s after %s", before, after)
+	}
+	if _, err := os.Stat(filepath.Join(root, "changes/0001-manual.md")); !os.IsNotExist(err) {
+		t.Errorf("pending maintenance change remains: %v", err)
+	}
+	archive, err := os.ReadFile(filepath.Join(root, "changes/archive/0001-manual.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(archive), "phase: applied") || !strings.Contains(string(archive), "- impl ") || strings.Contains(string(archive), "- evals ") || strings.Contains(string(archive), "- audit ") {
+		t.Errorf("maintenance archive has unexpected phase history: %s", archive)
+	}
+	for name, want := range retained {
+		got, err := os.ReadFile(filepath.Join(root, name))
+		if err != nil || string(got) != want {
+			t.Errorf("retained %s changed: %q, %v", name, got, err)
+		}
+	}
+	if _, err := workflow.Current(root, "manual"); err == nil {
+		t.Error("applied maintenance claim remained held")
+	}
+}
+
+FILE packages/workflow/evals/pr_body_test.go SHA256 0bc639e3461aa7e4442d352c248ea9169995099e796aa49515fffa2ed462287f
+package evals_test
+
+import (
+	"encoding/json"
+	"os"
+	"path/filepath"
+	"regexp"
+	"strings"
+	"testing"
+	"time"
+
+	"github.com/lurkshark/fireweed/packages/project"
+	"github.com/lurkshark/fireweed/packages/workflow"
+)
+
+func prBody(t *testing.T, root, revisionRange string) workflow.PRBodyReport {
+	t.Helper()
+	r, err := workflow.PRBody(root, revisionRange)
+	if err != nil {
+		t.Fatalf("PRBody(%q): %v", revisionRange, err)
+	}
+	return r
+}
+
+func prRequire(t *testing.T, body string, terms ...string) {
+	t.Helper()
+	for _, term := range terms {
+		if !strings.Contains(body, term) {
+			t.Errorf("PR body lacks %q:\n%s", term, body)
+		}
+	}
+}
+
+func prReject(t *testing.T, body string, terms ...string) {
+	t.Helper()
+	for _, term := range terms {
+		if strings.Contains(body, term) {
+			t.Errorf("PR body unexpectedly contains %q:\n%s", term, body)
+		}
+	}
+}
+
+func prPhase(t *testing.T, root, phase string) {
+	t.Helper()
+	path := "changes/0001-manual.md"
+	before := readFile(t, root, path)
+	after := before
+	for _, old := range []string{"evals", "audit", "impl"} {
+		if strings.Contains(after, "phase: "+old+"\n") {
+			after = strings.Replace(after, "phase: "+old+"\n", "phase: "+phase+"\n", 1)
+			break
+		}
+	}
+	if after == before {
+		t.Fatalf("fixture phase missing in %s", path)
+	}
+	write(t, root, path, after)
+}
+
+// The earlier phase commits stay reachable when the requested range contains
+// only the final implementation commit. The final commit also archives the
+// selected identity, as a real Done does.
+func prHistoryFixture(t *testing.T) (root, base, finalPhase, endpoint string) {
+	t.Helper()
+	root = fixture(t, "worker_writable: [workspace.lock]\n", "", "### ALP-003 [review]\nAdded review clause MUST be inspected.\n", "", "")
+	alpha := readFile(t, root, "packages/alpha/SPEC.md")
+	alpha = strings.Replace(alpha, "depends_on: []\n", "depends_on: []\npreserve: [internal/keep.go]\n", 1)
+	alpha = strings.Replace(alpha, "### ALP-002\n", "### ALP-002 [review]\n", 1)
+	write(t, root, "packages/alpha/SPEC.md", alpha)
+	manual := readFile(t, root, "changes/0001-manual.md")
+	manual = strings.Replace(manual, "### ALP-001\n", "### ALP-001 [review]\n", 1)
+	manual = strings.Replace(manual, "module: alpha\n", "module: alpha\nphase: evals\nrun: pr-fixture\naudit_rounds: 0\n", 1)
+	write(t, root, "changes/0001-manual.md", manual)
+	write(t, root, "packages/alpha/internal/keep.go", "package alpha // preserved baseline\n")
+	write(t, root, "packages/alpha/internal/existing.go", "package alpha // existing disposable\n")
+	write(t, root, "changes/0003-outside.md", "---\nmodule: gamma\n---\n\n## Motivation\nOutside range change.\n\n## Interface\n\n## Added\n\n## Modified\n\n## Removed\n\n## Decisions\n\n")
+	write(t, root, "changes/0004-removed.md", "---\nmodule: beta\n---\n\n## Motivation\nRemoved identity.\n\n## Interface\n\n## Added\n\n## Modified\n\n## Removed\n\n## Decisions\n\n")
+	commit(t, root, "fixture phase base")
+	base = head(t, root)
+
+	// Evals: an interface edit, one new disposable stub, an eval file, a
+	// module manifest, an ordinary module file and a shared writable lockfile.
+	write(t, root, "packages/alpha/api.go", "package alpha // RANGE INTERFACE EDIT\n")
+	write(t, root, "packages/alpha/evals/report_test.go", "package alpha_test // RANGE EVAL EDIT\n")
+	write(t, root, "packages/alpha/internal/new_stub.go", "package alpha // RANGE STUB ADDITION\n")
+	write(t, root, "packages/alpha/go.mod", "module fixture.invalid/alpha\n")
+	write(t, root, "packages/alpha/other.txt", "RANGE OTHER EDIT\n")
+	write(t, root, "workspace.lock", "RANGE SHARED EDIT\n")
+	write(t, root, "changes/0002-pending.md", "---\nmodule: beta\neval_fix: [BET-001]\nphase: audit\nrun: beta-pr-fixture\naudit_rounds: 0\n---\n\n## Motivation\nSelected pending identity.\n\n## Interface\n\n## Added\n\n## Modified\n\n## Removed\n\n## Decisions\n\n## Provenance\n- evals 2026-10-30T12:00:00Z tests=7 failing=2 passing=5\n")
+	manual = readFile(t, root, "changes/0001-manual.md")
+	manual = strings.Replace(manual, "phase: evals\n", "phase: audit\n", 1)
+	manual += "\n## Provenance\n- evals 2026-10-30T12:00:00Z tests=11 failing=3 passing=8\n"
+	write(t, root, "changes/0001-manual.md", manual)
+	commit(t, root, "evals phase with selected pending change")
+
+	manual = readFile(t, root, "changes/0001-manual.md")
+	manual = strings.Replace(manual, "phase: audit\n", "phase: evals\n", 1)
+	manual = strings.Replace(manual, "audit_rounds: 0\n", "audit_rounds: 1\n", 1)
+	manual += "\n## Audit\n- ALP-001: \"" + newClause + "\" — PRIOR AUDIT FINDING missing assertion\n"
+	write(t, root, "changes/0001-manual.md", manual)
+	commit(t, root, "audit finding round one")
+
+	write(t, root, "packages/alpha/evals/report_test.go", "package alpha_test // CORRECTED EVAL EDIT\n")
+	prPhase(t, root, "audit")
+	commit(t, root, "corrected eval phase")
+
+	manual = readFile(t, root, "changes/0001-manual.md")
+	manual = strings.Replace(manual, "phase: audit\n", "phase: impl\n", 1)
+	manual = strings.Replace(manual, "\n## Audit\n- ALP-001: \""+newClause+"\" — PRIOR AUDIT FINDING missing assertion\n", "\n## Audit\nNo findings\nChecked IDs: ALP-001\n", 1)
+	write(t, root, "changes/0001-manual.md", manual)
+	commit(t, root, "clean audit phase")
+	finalPhase = head(t, root)
+
+	write(t, root, "packages/alpha/internal/keep.go", "package alpha // PRESERVED IMPLEMENTATION EDIT\n")
+	write(t, root, "packages/alpha/internal/existing.go", "package alpha // IMPLEMENTATION EDIT\n")
+	manual = readFile(t, root, "changes/0001-manual.md")
+	manual = strings.Replace(manual, "phase: impl\n", "phase: applied\n", 1)
+	manual += "- impl 2026-10-30T12:30:00Z tests=13 failing=0 passing=13\n"
+	write(t, root, "changes/archive/0001-manual.md", manual)
+	if err := os.Remove(filepath.Join(root, "changes/0001-manual.md")); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Remove(filepath.Join(root, "changes/0004-removed.md")); err != nil {
+		t.Fatal(err)
+	}
+	commit(t, root, "implementation and archive")
+	endpoint = head(t, root)
+	return
+}
+
+func Test_FLOW_114_FLOW_115_FLOW_116_FLOW_117_FLOW_118_FLOW_119_FLOW_120_FLOW_121_PRBodySelectedHistoryAndEndpoint(t *testing.T) {
+	root, base, finalPhase, endpoint := prHistoryFixture(t)
+	// Later committed and dirty edits must not change the requested endpoint.
+	write(t, root, "fireweed.yaml", strings.Replace(readFile(t, root, "fireweed.yaml"), "modules: [\"packages/*\"]", "modules: [] # LATER HEAD CONFIG MARKER", 1))
+	write(t, root, "packages/alpha

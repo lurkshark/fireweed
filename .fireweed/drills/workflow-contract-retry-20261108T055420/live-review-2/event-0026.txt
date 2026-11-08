@@ -1,0 +1,3 @@
+
+EVENT 26 command raw_offset=184045 SHA256=07b11bdfa027aecacde4a7849ac79e2d4606e8d7f48b804d765ad177b45727d7
+/bin/zsh -lc "sed -n '972,1042p' packages/workflow/evals/lifecycle_test.go; sed -n '70,120p' packages/workflow/evals/eval_fix_lifecycle_test.go; sed -n '60,115p' packages/workflow/evals/gc_test.go"
