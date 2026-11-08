@@ -78,6 +78,14 @@ gc, migrate, agents-md --write
 
 ## Planned milestone — Workflow contracts and regeneration proof (WF1–WF4)
 
+The owner now authorizes exactly three normal audited eval_fix changes, 0185–0187,
+for the reviewed rejected-attempt mismatches: workflow empty-selection wording,
+runner context-content assertions and app optional B04 Path/empty wording. Preserve
+behavioral coverage, verify and stop before another drill. This bounded correction
+scope supersedes the historical correction stop below; no runtime/spec/interface,
+policy/tooling, controller promotion, source import, further retry or push. All
+prior gates, the unchanged pin, bounds and existing deadline remain.
+
 The subsequently owner-approved single native retry on validated source 9a206c5
 is complete and failed. A prohibited worker-local go test caused running-worker
 rejection. The native controller published its failure report/ref after the

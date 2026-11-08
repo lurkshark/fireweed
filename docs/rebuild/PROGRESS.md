@@ -1,4 +1,14 @@
-# Rebuild handoff — rejected retry, stopped
+# Rebuild handoff — scoped eval corrections authorized
+
+The owner authorized exactly three normal audited eval_fix changes to correct
+the reviewed d63c16e mismatches: workflow explicit empty-selection wording,
+runner full-context content assertions and app optional B04 Path/empty wording.
+Preserve behavioral coverage and run required verification. Budget: three changes,
+then stop before another drill. This supersedes the correction stop below only
+for that scope. No runtime/spec/interface, policy/tooling, drill, controller
+promotion, reconstructed-source import, later work or push is authorized. The
+pin, existing extended deadline, bounds and independence requirements remain.
+Current authored scope is 0185–0187; historical failed proof remains failed.
 
 The one owner-approved supervised workflow retry on validated source 9a206c5 is
 complete and failed. The second worker invoked local go test despite the supplied
