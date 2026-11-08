@@ -1,0 +1,24 @@
+{
+  "result": "pass",
+  "fresh_paths": [
+    "DRILL_NOTES.md",
+    "packages/workflow/internal/lifecycle/attempts.go",
+    "packages/workflow/internal/lifecycle/core.go",
+    "packages/workflow/internal/lifecycle/costs.go",
+    "packages/workflow/internal/lifecycle/done.go",
+    "packages/workflow/internal/lifecycle/gc.go",
+    "packages/workflow/internal/lifecycle/history.go",
+    "packages/workflow/internal/lifecycle/prbody.go",
+    "packages/workflow/internal/lifecycle/queue.go",
+    "packages/workflow/internal/lifecycle/reports.go",
+    "packages/workflow/internal/lifecycle/start.go",
+    "packages/workflow/internal/lifecycle/verify.go"
+  ],
+  "all_fresh_bytes_match_reviewed_emitted_patches_after_gofmt": true,
+  "streams": {
+    "stdout": "e77c7c75245080a450027ea1d80e6ed5619d294f2927fcd9eb8582aaddf6058b",
+    "stderr": "f5c2a1f798dd52835c8226c3654d9d0bd22ea9c1e04b77a0aaf0f212bdfde85d"
+  },
+  "commands_and_all_incremental_patches_reviewed": true,
+  "review_note": "Retained read-command outputs were inspected with the original actual inputs; repeated emitted file diffs were compared incrementally. Raw streams remain unchanged."
+}

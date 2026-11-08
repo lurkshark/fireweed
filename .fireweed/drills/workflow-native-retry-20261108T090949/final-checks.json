@@ -1,0 +1,59 @@
+[
+  {
+    "command": [
+      "fireweed",
+      "status",
+      "--json"
+    ],
+    "exit": 0,
+    "seconds": 42.219
+  },
+  {
+    "command": [
+      "fireweed",
+      "context",
+      "workflow"
+    ],
+    "exit": 1,
+    "seconds": 0.089
+  },
+  {
+    "command": [
+      "fireweed",
+      "verify"
+    ],
+    "exit": 1,
+    "seconds": 0.076
+  },
+  {
+    "command": [
+      "fireweed",
+      "check",
+      "--json"
+    ],
+    "exit": 0,
+    "seconds": 0.033
+  },
+  {
+    "command": [
+      "fireweed",
+      "check-commits",
+      "5cf1ba4e53c72d68c1e913d6f4680c28328a4286..368bafb",
+      "--json"
+    ],
+    "exit": 0,
+    "seconds": 4.872
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "--",
+      "docs",
+      ".fireweed/drills/README.md"
+    ],
+    "exit": 0,
+    "note": "Full diff whitespace findings are confined to exact native transcript/diff bytes, which must remain unchanged."
+  }
+]

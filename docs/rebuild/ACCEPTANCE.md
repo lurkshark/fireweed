@@ -78,6 +78,16 @@ gc, migrate, agents-md --write
 
 ## Planned milestone — Workflow contracts and regeneration proof (WF1–WF4)
 
+The newly owner-authorized single supervised retry on current pinned source
+a26f7b9 is complete and failed. The final configured reconstruction compiled,
+but workflow and transitive app/runner evals failed. The
+[reviewed native evidence](../../.fireweed/drills/workflow-native-retry-20261108T090949/review.md)
+retains the report/ref, all cases and coverage, independence review and cleanup.
+No reconstruction was applied, no further correction/replay/retry is authorized,
+and WF4/full completion remain open. Approval consumed; stop with no active
+run/queue/claim. Pin, existing bounds/deadline and prior evidence remain unchanged.
+Follow current GOAL/PROGRESS; the handoffs below are historical.
+
 The subsequent owner-requested single idle controller handoff to latest source
 a26f7b9 is complete; [verified pin evidence](../../.fireweed/drills/controller-pin-a26f7b9.md)
 records reused compiler/runtime/eval proof and fresh build/CLI/hook/history checks.

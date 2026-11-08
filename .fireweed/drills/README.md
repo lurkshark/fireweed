@@ -13,9 +13,13 @@ spec, eval, controller, configuration, proof/attempt ref or unrelated worktree.
 No native drill or history rewrite was run. Existing failed/open milestone status
 and unresolved findings remain unchanged.
 
-The latest [workflow review](workflow-contract-retry-20261108T055420/review.md) links the retained rejection,
-verification feedback and cleanup receipts. The handoff summaries and investigation
-findings retain the earlier conclusions; their archived attachments remain available.
+The latest [workflow review](workflow-native-retry-20261108T090949/review.md)
+records the completed supervised native retry, which failed after compilation
+succeeded on its final attempt. The single current native report preserves all
+four raw worker streams byte-for-byte; compact extraction/gate, result, proof and
+cleanup receipts provide their identities without duplicate transcripts or source
+snapshots. Earlier reviews and refs remain intact, including the prior
+[rejected retry](workflow-contract-retry-20261108T055420/review.md).
 
 ## Controller-pin attachments
 

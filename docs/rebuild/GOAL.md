@@ -1,28 +1,22 @@
-# Stop after the latest controller pin update
+# Stop after the supervised native workflow retry
 
-The owner-requested single idle handoff is complete. The pinned controller now
-comes from `a26f7b9909f6c311416a0706d1b16749d16b9146`, the latest committed source
-at the request. PROGRESS records its path/version/hash and recovery copies. The
-[committed handoff](../../.fireweed/drills/controller-pin-a26f7b9.md) records the
-clean build, unchanged compiler inputs/settings, reused runtime and audited-eval
-proof, fresh CLI/hook/history checks, unchanged live status and atomic promotion.
-Retiring source 9a206c5 remains explicit recovery only; no automatic fallback.
+The owner-authorized single retry is complete on pinned source
+`a26f7b9909f6c311416a0706d1b16749d16b9146`. The first reconstruction failed
+compilation; the final configured reconstruction compiled but failed workflow,
+app and runner evals. The [native report](../../.fireweed/drills/workflow.md) and
+[review](../../.fireweed/drills/workflow-native-retry-20261108T090949/review.md)
+retain the exact outcome, stream/gate evidence, native ref and cleanup.
+No independence rejection or emergency escalation occurred, and no reconstructed
+code was applied to the product. WF4/full completion remain open; prior
+own-verification timing exceptions remain unresolved.
 
-**Stop with no active run, queued change or shared claim. Pin-update scope spent.**
-No further correction, performance work, diagnostic replay, drill/preparation,
-reconstruction import, controller promotion, later milestone or push is authorized.
-A new owner instruction must select any further scope. Read AGENTS.md, SYSTEM.md,
-PROGRESS.md and ACCEPTANCE.md before newly authorized work and retain normal
-approval/audit, bounds and independence enforcement.
+**Stop with no active run, queued change or shared claim. Approval consumed.**
+No correction, further investigation/replay, drill, source application, controller
+promotion, later milestone or push is authorized. A new owner instruction must
+select further scope. Worker notes and native diagnostics authorize no fix.
 
-The three audited eval corrections 0185–0187 remain complete. Their
-[handoff](../../.fireweed/drills/eval-contract-corrections-handoff.md) retains
-behavioral coverage, phase/history evidence and own-verification timing exceptions;
-the five-minute target is not claimed met. No inspector preparation or metadata
-update was performed for this pin-only request. Any future drill needs fresh
-source/pin/command gates under its newly selected scope.
-
-The rejected workflow outcome/report/ref remains unchanged. No passing independent
-workflow proof or WF4/full-completion claim. Preserve all prior evidence/refs,
-candidate objects, controller/recoveries, bounds/counters and unrelated worktrees.
-The existing deadline remains **2026-11-10 22:51:05 UTC**, without extension.
+PROGRESS records the unchanged controller pin and recoveries. Preserve all prior
+reports/archives/proof/attempt refs, candidate objects, bounds/counters and the
+unrelated worktree. The existing deadline remains **2026-11-10 22:51:05 UTC**,
+without extension. Read AGENTS, SYSTEM, PROGRESS and ACCEPTANCE before any newly
+authorized work and preserve normal approval/audit and independence enforcement.

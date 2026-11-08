@@ -1,0 +1,209 @@
+{
+  "native_prefix_bytes": 1317572,
+  "native_prefix_sha256": "36c7bd3fc74ac22f82137f70df58b3d098a5b92e093ce254e7d12d123747db91",
+  "raw_streams": {
+    "attempt-1/stdout.bin": {
+      "native_report_byte_offset": 77914,
+      "bytes": 336,
+      "sha256": "e77c7c75245080a450027ea1d80e6ed5619d294f2927fcd9eb8582aaddf6058b"
+    },
+    "attempt-1/stderr.bin": {
+      "native_report_byte_offset": 78251,
+      "bytes": 1175774,
+      "sha256": "f5c2a1f798dd52835c8226c3654d9d0bd22ea9c1e04b77a0aaf0f212bdfde85d"
+    },
+    "attempt-2/stdout.bin": {
+      "native_report_byte_offset": 1254050,
+      "bytes": 269,
+      "sha256": "93bb5d96db7a5eb353f8d0c5757a2fb39b6c06dd796eefd387b893d5c96b7287"
+    },
+    "attempt-2/stderr.bin": {
+      "native_report_byte_offset": 1254320,
+      "bytes": 62902,
+      "sha256": "8afb5acd282c0d9fcc3d9341f15adca899f88a30ff8df44a3e59c48d13bc5663"
+    }
+  },
+  "gate_records": {
+    "finished-1.json": {
+      "record": {
+        "exit": 0,
+        "worker_exit": 0,
+        "launched": true,
+        "stopped": false,
+        "complete_forwarding": true,
+        "streams": {
+          "stdout": {
+            "received": 336,
+            "forwarded": 336,
+            "eof": true
+          },
+          "stderr": {
+            "received": 1175774,
+            "forwarded": 1175774,
+            "eof": true
+          }
+        },
+        "errors": []
+      },
+      "original_json_sha256": "87d65d159ca925f5932d79a80a12ada0637fea66ab4df2bedaf2d39a87159943"
+    },
+    "finished-2.json": {
+      "record": {
+        "exit": 0,
+        "worker_exit": 0,
+        "launched": true,
+        "stopped": false,
+        "complete_forwarding": true,
+        "streams": {
+          "stdout": {
+            "received": 269,
+            "forwarded": 269,
+            "eof": true
+          },
+          "stderr": {
+            "received": 62902,
+            "forwarded": 62902,
+            "eof": true
+          }
+        },
+        "errors": []
+      },
+      "original_json_sha256": "c4ccf3178495cc057b8b637ee454d82bc8596028e69a8354caca4b1c5fbb9540"
+    },
+    "preflight-1.json": {
+      "record": {
+        "input": "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-2462280610",
+        "verifier": "/private/tmp/fireweed-workflow-native-20261108T0912/caller/.git/fireweed/worktrees/drill-2664695694",
+        "files": 31,
+        "retained_verifier_files": 536,
+        "deleted_disposable_paths": 16,
+        "input_git_commits": 1,
+        "pin": "962149ff80fb5f6e396dbafda4f44fb47bb28840d96d37b3c7c9718444c7bf5a",
+        "invocation": 1,
+        "result": "pass"
+      },
+      "original_json_sha256": "49219329b5fb78333f03286b9fe1ea6d323bd866246101c554ed17bf97805042"
+    },
+    "preflight-2.json": {
+      "record": {
+        "input": "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-2462280610",
+        "verifier": "/private/tmp/fireweed-workflow-native-20261108T0912/caller/.git/fireweed/worktrees/drill-2664695694",
+        "files": 43,
+        "retained_verifier_files": 536,
+        "deleted_disposable_paths": 16,
+        "input_git_commits": 1,
+        "pin": "962149ff80fb5f6e396dbafda4f44fb47bb28840d96d37b3c7c9718444c7bf5a",
+        "invocation": 2,
+        "result": "pass"
+      },
+      "original_json_sha256": "53289443df2b32965a0ff7cf3b5f966362fe3a3e1dd6b4daa5101e2c436aa9f8"
+    },
+    "ready-1.json": {
+      "record": {
+        "input": "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-2462280610",
+        "argv": [
+          "codex",
+          "exec",
+          "--ephemeral",
+          "--ignore-user-config",
+          "-m",
+          "gpt-6.1-sol",
+          "-c",
+          "model_reasoning_effort=\"high\"",
+          "-s",
+          "workspace-write",
+          {
+            "native_report_byte_offset": 78633,
+            "bytes": 24419,
+            "sha256": "1ccd26d9aff8dbc385694e69cc81e77c7025bb573b63aed20ec761ed0652648c"
+          }
+        ],
+        "fireweed_bin": "/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed"
+      },
+      "original_json_sha256": "105bd82ce2a98c649005977a78b9c53a4bad0bdb7d54fedba424531513198ad0"
+    },
+    "ready-2.json": {
+      "record": {
+        "input": "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-2462280610",
+        "argv": [
+          "codex",
+          "exec",
+          "--ephemeral",
+          "--ignore-user-config",
+          "-m",
+          "gpt-6.1-sol",
+          "-c",
+          "model_reasoning_effort=\"high\"",
+          "-s",
+          "workspace-write",
+          {
+            "native_report_byte_offset": 1254702,
+            "bytes": 26353,
+            "sha256": "0dfa532a57b806143cc62278eac73041d367ca942d662425d70920a310e145af"
+          }
+        ],
+        "fireweed_bin": "/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed"
+      },
+      "original_json_sha256": "45fe6566606bc5160d6a960fbd60d3ebb570ace0d1390191aca065f219e75e5a"
+    },
+    "reviewed-1.json": {
+      "record": {
+        "result": "pass",
+        "input": "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-2462280610",
+        "candidate": "a26f7b9909f6c311416a0706d1b16749d16b9146",
+        "actual_retained_inputs_reviewed": true
+      },
+      "original_json_sha256": "a83e0afa474a7f4522f71455533cf9285d465660346b02e4cc4d3f9b15d819a8"
+    },
+    "reviewed-2.json": {
+      "record": {
+        "result": "pass",
+        "input": "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-2462280610",
+        "candidate": "a26f7b9909f6c311416a0706d1b16749d16b9146",
+        "full_first_commands_scripts_patches_reviewed": true,
+        "full_native_feedback_reviewed": true,
+        "second_prompt_only_original_plus_native_feedback": true,
+        "fresh_output_matches_reviewed_trace": true,
+        "first_streams_sha256": {
+          "stdout": "e77c7c75245080a450027ea1d80e6ed5619d294f2927fcd9eb8582aaddf6058b",
+          "stderr": "f5c2a1f798dd52835c8226c3654d9d0bd22ea9c1e04b77a0aaf0f212bdfde85d"
+        }
+      },
+      "original_json_sha256": "752d0e09323854cfe97c4b176b9ce218d6d4ece243f0fdd171c5976c9b1be027"
+    },
+    "worker-1.json": {
+      "record": {
+        "pid": 78427
+      },
+      "original_json_sha256": "7226570c29c0046a23b1460d29b6f630f4275637afcdd44094f39698a9e7f3a4"
+    },
+    "worker-2.json": {
+      "record": {
+        "pid": 98520
+      },
+      "original_json_sha256": "feb8594fb0766643e1ca119b9c137c7149f302056e3f8a7b1a9c0e28016c66ed"
+    },
+    "release-1": {
+      "record": {
+        "reviewed": true
+      },
+      "original_json_sha256": "0b078324d1a7dd238a10088380ff5cd6b4efc0f4987c2edbbb5b1adc915c5de6"
+    },
+    "release-2": {
+      "record": {
+        "reviewed": true
+      },
+      "original_json_sha256": "0b078324d1a7dd238a10088380ff5cd6b4efc0f4987c2edbbb5b1adc915c5de6"
+    }
+  },
+  "readiness_recovery": "For each ready record, recover argv[-1] as UTF-8 bytes at its native report offset; json.dumps(record, indent=2) plus newline reconstructs its original JSON. Other record values are retained verbatim.",
+  "controller": {
+    "pid": 77759,
+    "argv": [
+      "/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed",
+      "drill",
+      "workflow",
+      "--json"
+    ]
+  }
+}

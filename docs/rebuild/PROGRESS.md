@@ -1,4 +1,22 @@
-# Rebuild handoff — latest controller pinned, stopped
+# Rebuild handoff — supervised workflow retry failed, stopped
+
+The newly owner-authorized single native workflow retry is complete on pinned
+source `a26f7b9909f6c311416a0706d1b16749d16b9146`. Its first reconstruction failed
+compilation; the second compiled but failed workflow and transitive app/runner
+evals. No independence rejection or emergency escalation occurred. The
+[current native report](../../.fireweed/drills/workflow.md) and
+[review/cleanup evidence](../../.fireweed/drills/workflow-native-retry-20261108T090949/review.md)
+retain the actual outcome and native ref. No reconstruction was applied.
+WF4 and full completion remain open; prior timing exceptions remain unresolved.
+
+**Single retry consumed. Stop with no active run, queued change or shared claim.**
+The native input/verifier, owned caller and outside staging are cleaned up;
+prior evidence/refs, controller/recoveries, configuration/bounds/counters and the
+unrelated worktree are preserved. No correction, investigation/replay, further
+retry, source application, repin, later milestone or push is authorized.
+The existing deadline remains **2026-11-10 22:51:05 UTC**. Follow GOAL.
+
+# Previous controller handoff (historical)
 
 The owner-requested single idle controller update is complete. The latest committed
 source at the request, `a26f7b9909f6c311416a0706d1b16749d16b9146`, was built clean,

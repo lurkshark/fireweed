@@ -1,26 +1,27 @@
-# Workflow inspector — rejected retry, stopped
+# Workflow inspector — native retry failed, stopped
 
-The one approved native workflow invocation on validated source 9a206c5 is complete.
-Its second worker invoked forbidden local go test. The inspector rejected it,
-stopped the worker first, drained/forwarded all received output and allowed the
-native controller to publish failure evidence/ref. It did so and exited without
-emergency escalation. [Complete review/evidence](../../../.fireweed/drills/workflow-contract-retry-20261108T055420/review.md)
-records the actual result and cleanup. No passing independent workflow proof;
-WF4 stays open. Second partial code was not reverified or applied.
+The owner's newly authorized single native workflow retry on current pinned
+source a26f7b9 is complete. Its final configured reconstruction compiled but
+failed workflow and transitive app/runner evals. Both workers followed the supplied
+isolation policy; no supervisor rejection or emergency escalation occurred.
+The [native report](../../../.fireweed/drills/workflow.md) and
+[complete review](../../../.fireweed/drills/workflow-native-retry-20261108T090949/review.md)
+retain the outcome, exact raw streams, gate records, proof ref and cleanup.
+No reconstruction was applied. WF4/full completion remain open.
 
-**Approval consumed. Do not launch another drill.** The restart commands below
-require new explicit owner authorization, a fresh outside root and fresh live
-review/isolation gates. No correction, policy/tooling change, source application,
-controller update, extra invocation or push is authorized now. Existing deadline
-remains **2026-11-10 22:51:05 UTC**. PROGRESS records the unchanged pin. Original
-79cf33a, corrected ccd3d6b/9a206c5, all earlier reports/refs, recovery copies,
+**Approval consumed. Do not launch another drill.** Restart commands below require
+new explicit owner authorization and fresh live gates. No correction, further
+investigation/replay, source application, repin, later work or push is authorized.
+PROGRESS records the unchanged pin; the existing deadline remains
+**2026-11-10 22:51:05 UTC**. All previous evidence/refs, recoveries,
 configuration/bounds/counters and unrelated worktrees remain preserved.
 
-Supervisor/inspector behavior, worker SYSTEM and exact command/model/effort are
-unchanged. Existing fake rehearsals still establish only their wrapper outcomes.
-This actual invocation additionally observed native publication after its
-running-worker rejection; it establishes no generic native reporting guarantee
-for other interruption/storage/broken-pipe/emergency outcomes.
+The preparation aligned only candidate/pin/command metadata with current SYSTEM.
+Supervisor behavior, worker policy and all timing/attempt bounds are unchanged.
+The actual completed invocation published its native failure report/ref without
+interruption; it proves no generic reporting guarantee for interruption,
+storage, broken-pipe or emergency outcomes. The prior rejected-run evidence
+remains historical and accessible.
 
 `guard.py` is an `agent.wrap` prefix. Its CLI accepts only the exact configured
 command/model/effort from SYSTEM, with the original prompt as its last argument.

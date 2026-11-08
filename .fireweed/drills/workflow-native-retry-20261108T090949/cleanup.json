@@ -1,0 +1,23 @@
+{
+  "owned_process_groups": {
+    "77759": "absent",
+    "98520": "absent",
+    "78427": "absent"
+  },
+  "native_input_removed": true,
+  "native_verifier_removed": true,
+  "caller_queue_empty": true,
+  "caller_claims_empty": true,
+  "prior_fireweed_refs_unchanged": true,
+  "added_ref": [
+    "refs/fireweed/drills/workflow/20261108T090949.204125000"
+  ],
+  "config_and_pin_unchanged": true,
+  "unrelated_worktree_unchanged": true,
+  "caller_worktrees_before_removal": "worktree /private/tmp/fireweed-workflow-native-20261108T0912/caller\nHEAD 2e515d11bf83a721f576f788df3d44a1255e1ed4\ndetached\n\n",
+  "owned_caller_removed": true,
+  "outside_staging_removed": true,
+  "owned_rehearsal_staging_removed": true,
+  "final_queue_empty": true,
+  "final_shared_claims_empty": true
+}
