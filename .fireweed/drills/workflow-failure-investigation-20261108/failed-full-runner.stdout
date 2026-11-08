@@ -1,0 +1,320 @@
+=== RUN   Test_RUN_063_InvokeAgentPersistsStreamsOnFailureTimeoutCancellationAndAppend
+=== RUN   Test_RUN_063_InvokeAgentPersistsStreamsOnFailureTimeoutCancellationAndAppend/failure
+=== RUN   Test_RUN_063_InvokeAgentPersistsStreamsOnFailureTimeoutCancellationAndAppend/timeout
+=== RUN   Test_RUN_063_InvokeAgentPersistsStreamsOnFailureTimeoutCancellationAndAppend/cancellation
+=== RUN   Test_RUN_063_InvokeAgentPersistsStreamsOnFailureTimeoutCancellationAndAppend/append
+--- PASS: Test_RUN_063_InvokeAgentPersistsStreamsOnFailureTimeoutCancellationAndAppend (0.46s)
+    --- PASS: Test_RUN_063_InvokeAgentPersistsStreamsOnFailureTimeoutCancellationAndAppend/failure (0.05s)
+    --- PASS: Test_RUN_063_InvokeAgentPersistsStreamsOnFailureTimeoutCancellationAndAppend/timeout (0.20s)
+    --- PASS: Test_RUN_063_InvokeAgentPersistsStreamsOnFailureTimeoutCancellationAndAppend/cancellation (0.08s)
+    --- PASS: Test_RUN_063_InvokeAgentPersistsStreamsOnFailureTimeoutCancellationAndAppend/append (0.05s)
+=== RUN   Test_RUN_064_NextLogsHeldRunPhaseAndOneBasedAttemptsOutsideAuditInput
+--- PASS: Test_RUN_064_NextLogsHeldRunPhaseAndOneBasedAttemptsOutsideAuditInput (5.69s)
+=== RUN   Test_RUN_065_DrillLogRunIsStableAcrossUsageAndReconstructionRetries
+=== RUN   Test_RUN_065_DrillLogRunIsStableAcrossUsageAndReconstructionRetries/usage_once
+=== RUN   Test_RUN_065_DrillLogRunIsStableAcrossUsageAndReconstructionRetries/agent_retry
+--- PASS: Test_RUN_065_DrillLogRunIsStableAcrossUsageAndReconstructionRetries (1.77s)
+    --- PASS: Test_RUN_065_DrillLogRunIsStableAcrossUsageAndReconstructionRetries/usage_once (0.90s)
+    --- PASS: Test_RUN_065_DrillLogRunIsStableAcrossUsageAndReconstructionRetries/agent_retry (0.88s)
+=== RUN   Test_RUN_066_InvokeAgentLogContextDefaultsAndExplicitFields
+--- PASS: Test_RUN_066_InvokeAgentLogContextDefaultsAndExplicitFields (0.19s)
+=== RUN   Test_RUN_041_UnapprovedChangeRequiresApproval
+--- PASS: Test_RUN_041_UnapprovedChangeRequiresApproval (0.21s)
+=== RUN   Test_RUN_042_OtherNextErrorsDoNotRequireApproval
+=== RUN   Test_RUN_042_OtherNextErrorsDoNotRequireApproval/start_failure
+=== RUN   Test_RUN_042_OtherNextErrorsDoNotRequireApproval/agent_failure
+--- PASS: Test_RUN_042_OtherNextErrorsDoNotRequireApproval (0.75s)
+    --- PASS: Test_RUN_042_OtherNextErrorsDoNotRequireApproval/start_failure (0.18s)
+    --- PASS: Test_RUN_042_OtherNextErrorsDoNotRequireApproval/agent_failure (0.57s)
+=== RUN   Test_RUN_013_RUN_045_RUN_046_AuditUsesOnlyProjectedInputsAndIndependentGit
+--- PASS: Test_RUN_013_RUN_045_RUN_046_AuditUsesOnlyProjectedInputsAndIndependentGit (4.47s)
+=== RUN   Test_RUN_013_AuditRetryUsesApprovedAgentConfiguration
+--- PASS: Test_RUN_013_AuditRetryUsesApprovedAgentConfiguration (2.52s)
+=== RUN   Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificationRetry
+--- PASS: Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificationRetry (4.63s)
+=== RUN   Test_RUN_046_AuditCommitDoesNotEnterHeldGit
+--- PASS: Test_RUN_046_AuditCommitDoesNotEnterHeldGit (4.57s)
+=== RUN   Test_RUN_047_RUN_048_FirstAuditBeforeProvenanceIsImported
+--- PASS: Test_RUN_047_RUN_048_FirstAuditBeforeProvenanceIsImported (4.29s)
+=== RUN   Test_RUN_045_RUN_049_SeparateAuditsUseFreshWorkspaces
+--- PASS: Test_RUN_045_RUN_049_SeparateAuditsUseFreshWorkspaces (5.98s)
+=== RUN   Test_RUN_047_InvalidAuditWorkspaceEditsAreRejectedAtomically
+=== RUN   Test_RUN_047_InvalidAuditWorkspaceEditsAreRejectedAtomically/change_outside_Audit
+=== RUN   Test_RUN_047_InvalidAuditWorkspaceEditsAreRejectedAtomically/projected_spec
+=== RUN   Test_RUN_047_InvalidAuditWorkspaceEditsAreRejectedAtomically/eval
+=== RUN   Test_RUN_047_InvalidAuditWorkspaceEditsAreRejectedAtomically/added_file
+=== RUN   Test_RUN_047_InvalidAuditWorkspaceEditsAreRejectedAtomically/deleted_file
+=== RUN   Test_RUN_047_InvalidAuditWorkspaceEditsAreRejectedAtomically/committed_invalid_edit
+--- PASS: Test_RUN_047_InvalidAuditWorkspaceEditsAreRejectedAtomically (14.38s)
+    --- PASS: Test_RUN_047_InvalidAuditWorkspaceEditsAreRejectedAtomically/change_outside_Audit (2.38s)
+    --- PASS: Test_RUN_047_InvalidAuditWorkspaceEditsAreRejectedAtomically/projected_spec (2.40s)
+    --- PASS: Test_RUN_047_InvalidAuditWorkspaceEditsAreRejectedAtomically/eval (2.53s)
+    --- PASS: Test_RUN_047_InvalidAuditWorkspaceEditsAreRejectedAtomically/added_file (2.32s)
+    --- PASS: Test_RUN_047_InvalidAuditWorkspaceEditsAreRejectedAtomically/deleted_file (2.36s)
+    --- PASS: Test_RUN_047_InvalidAuditWorkspaceEditsAreRejectedAtomically/committed_invalid_edit (2.39s)
+=== RUN   Test_RUN_048_RUN_049_PermittedAuditWorkSurvivesFailureAndStops
+=== RUN   Test_RUN_048_RUN_049_PermittedAuditWorkSurvivesFailureAndStops/agent_failure
+=== RUN   Test_RUN_048_RUN_049_PermittedAuditWorkSurvivesFailureAndStops/usage_stop
+=== RUN   Test_RUN_048_RUN_049_PermittedAuditWorkSurvivesFailureAndStops/time_stop
+--- PASS: Test_RUN_048_RUN_049_PermittedAuditWorkSurvivesFailureAndStops (8.13s)
+    --- PASS: Test_RUN_048_RUN_049_PermittedAuditWorkSurvivesFailureAndStops/agent_failure (2.42s)
+    --- PASS: Test_RUN_048_RUN_049_PermittedAuditWorkSurvivesFailureAndStops/usage_stop (2.45s)
+    --- PASS: Test_RUN_048_RUN_049_PermittedAuditWorkSurvivesFailureAndStops/time_stop (3.26s)
+=== RUN   Test_RUN_027_RUN_028_RecoversAgentCommitsAcrossLifecycle
+--- PASS: Test_RUN_027_RUN_028_RecoversAgentCommitsAcrossLifecycle (4.87s)
+=== RUN   Test_RUN_027_RUN_028_RecoversCommitBeforeInvocationFailure
+--- PASS: Test_RUN_027_RUN_028_RecoversCommitBeforeInvocationFailure (0.80s)
+=== RUN   Test_RUN_050_DrillPreflightRejectsWithoutEffects
+=== RUN   Test_RUN_050_DrillPreflightRejectsWithoutEffects/unknown
+=== RUN   Test_RUN_050_DrillPreflightRejectsWithoutEffects/dirty
+=== RUN   Test_RUN_050_DrillPreflightRejectsWithoutEffects/claim
+--- PASS: Test_RUN_050_DrillPreflightRejectsWithoutEffects (0.69s)
+    --- PASS: Test_RUN_050_DrillPreflightRejectsWithoutEffects/unknown (0.18s)
+    --- PASS: Test_RUN_050_DrillPreflightRejectsWithoutEffects/dirty (0.25s)
+    --- PASS: Test_RUN_050_DrillPreflightRejectsWithoutEffects/claim (0.26s)
+=== RUN   Test_RUN_051_SetupRunsDetachedAtHeadAndFailureStops
+--- PASS: Test_RUN_051_SetupRunsDetachedAtHeadAndFailureStops (0.29s)
+=== RUN   Test_RUN_052_RUN_053_RUN_054_RestrictedInputsAndPrompt
+--- PASS: Test_RUN_052_RUN_053_RUN_054_RestrictedInputsAndPrompt (0.58s)
+=== RUN   Test_RUN_052_RUN_053_ProjectProtectedDisposableIsRetainedInputAndVerifierFile
+--- PASS: Test_RUN_052_RUN_053_ProjectProtectedDisposableIsRetainedInputAndVerifierFile (0.58s)
+=== RUN   Test_RUN_055_ProjectProtectedAdditionAndDependencyInterfaceEditAreRejected
+=== RUN   Test_RUN_055_ProjectProtectedAdditionAndDependencyInterfaceEditAreRejected/add_project_protected
+=== RUN   Test_RUN_055_ProjectProtectedAdditionAndDependencyInterfaceEditAreRejected/change_protected_dependency_interface
+--- PASS: Test_RUN_055_ProjectProtectedAdditionAndDependencyInterfaceEditAreRejected (1.00s)
+    --- PASS: Test_RUN_055_ProjectProtectedAdditionAndDependencyInterfaceEditAreRejected/add_project_protected (0.50s)
+    --- PASS: Test_RUN_055_ProjectProtectedAdditionAndDependencyInterfaceEditAreRejected/change_protected_dependency_interface (0.50s)
+=== RUN   Test_RUN_055_ReconstructionSubmissionAllowsOnlyDisposableAndNotes
+=== RUN   Test_RUN_055_ReconstructionSubmissionAllowsOnlyDisposableAndNotes/change_api
+=== RUN   Test_RUN_055_ReconstructionSubmissionAllowsOnlyDisposableAndNotes/delete_eval
+=== RUN   Test_RUN_055_ReconstructionSubmissionAllowsOnlyDisposableAndNotes/add_foreign
+=== RUN   Test_RUN_055_ReconstructionSubmissionAllowsOnlyDisposableAndNotes/add_other
+=== RUN   Test_RUN_055_ReconstructionSubmissionAllowsOnlyDisposableAndNotes/change_preserved
+--- PASS: Test_RUN_055_ReconstructionSubmissionAllowsOnlyDisposableAndNotes (2.41s)
+    --- PASS: Test_RUN_055_ReconstructionSubmissionAllowsOnlyDisposableAndNotes/change_api (0.49s)
+    --- PASS: Test_RUN_055_ReconstructionSubmissionAllowsOnlyDisposableAndNotes/delete_eval (0.48s)
+    --- PASS: Test_RUN_055_ReconstructionSubmissionAllowsOnlyDisposableAndNotes/add_foreign (0.48s)
+    --- PASS: Test_RUN_055_ReconstructionSubmissionAllowsOnlyDisposableAndNotes/add_other (0.48s)
+    --- PASS: Test_RUN_055_ReconstructionSubmissionAllowsOnlyDisposableAndNotes/change_preserved (0.48s)
+=== RUN   Test_RUN_056_DrillRetriesAgentAndVerificationWithinOneBound
+=== RUN   Test_RUN_056_DrillRetriesAgentAndVerificationWithinOneBound/agent_retry
+=== RUN   Test_RUN_056_DrillRetriesAgentAndVerificationWithinOneBound/verify_retry
+--- PASS: Test_RUN_056_DrillRetriesAgentAndVerificationWithinOneBound (2.25s)
+    --- PASS: Test_RUN_056_DrillRetriesAgentAndVerificationWithinOneBound/agent_retry (0.58s)
+    --- PASS: Test_RUN_056_DrillRetriesAgentAndVerificationWithinOneBound/verify_retry (0.63s)
+=== RUN   Test_RUN_056_ConfiguredTimeoutBoundsDrillWorker
+--- PASS: Test_RUN_056_ConfiguredTimeoutBoundsDrillWorker (0.66s)
+=== RUN   Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted
+--- PASS: Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted (3.08s)
+=== RUN   Test_RUN_058_RUN_059_DrillReturnsAllReportsEvenWhenEvalsFail
+--- PASS: Test_RUN_058_RUN_059_DrillReturnsAllReportsEvenWhenEvalsFail (1.15s)
+=== RUN   Test_RUN_058_OwnCoverageRequiredAfterPassingCases
+--- PASS: Test_RUN_058_OwnCoverageRequiredAfterPassingCases (0.61s)
+=== RUN   Test_RUN_059_DependentCoverageRequiredAfterPassingCases
+--- PASS: Test_RUN_059_DependentCoverageRequiredAfterPassingCases (0.60s)
+=== RUN   Test_RUN_060_RUN_061_DrillReportAndRetainedRef
+--- PASS: Test_RUN_060_RUN_061_DrillReportAndRetainedRef (0.61s)
+=== RUN   Test_RUN_060_RUN_061_FailedDrillReportsFailuresAndRetainsCode
+--- PASS: Test_RUN_060_RUN_061_FailedDrillReportsFailuresAndRetainsCode (1.08s)
+=== RUN   Test_RUN_062_CleanupOnSuccessAndFailures
+=== RUN   Test_RUN_062_CleanupOnSuccessAndFailures/success
+=== RUN   Test_RUN_062_CleanupOnSuccessAndFailures/agent_retry
+=== RUN   Test_RUN_062_CleanupOnSuccessAndFailures/change_api
+=== RUN   Test_RUN_062_CleanupOnSuccessAndFailures/usage_always
+=== RUN   Test_RUN_062_CleanupOnSuccessAndFailures/timeout
+--- PASS: Test_RUN_062_CleanupOnSuccessAndFailures (2.58s)
+    --- PASS: Test_RUN_062_CleanupOnSuccessAndFailures/success (0.50s)
+    --- PASS: Test_RUN_062_CleanupOnSuccessAndFailures/agent_retry (0.57s)
+    --- PASS: Test_RUN_062_CleanupOnSuccessAndFailures/change_api (0.42s)
+    --- PASS: Test_RUN_062_CleanupOnSuccessAndFailures/usage_always (0.54s)
+    --- PASS: Test_RUN_062_CleanupOnSuccessAndFailures/timeout (0.55s)
+=== RUN   Test_RUN_062_CleanupFailureCannotPass
+--- PASS: Test_RUN_062_CleanupFailureCannotPass (0.54s)
+=== RUN   Test_RUN_001_RUN_002_RUN_005_RUN_006_CommandSelectionDirectoryEnvAndOutput
+=== RUN   Test_RUN_001_RUN_002_RUN_005_RUN_006_CommandSelectionDirectoryEnvAndOutput/worker
+=== RUN   Test_RUN_001_RUN_002_RUN_005_RUN_006_CommandSelectionDirectoryEnvAndOutput/audit
+=== RUN   Test_RUN_001_RUN_002_RUN_005_RUN_006_CommandSelectionDirectoryEnvAndOutput/audit_fallback
+--- PASS: Test_RUN_001_RUN_002_RUN_005_RUN_006_CommandSelectionDirectoryEnvAndOutput (0.72s)
+    --- PASS: Test_RUN_001_RUN_002_RUN_005_RUN_006_CommandSelectionDirectoryEnvAndOutput/worker (0.31s)
+    --- PASS: Test_RUN_001_RUN_002_RUN_005_RUN_006_CommandSelectionDirectoryEnvAndOutput/audit (0.29s)
+    --- PASS: Test_RUN_001_RUN_002_RUN_005_RUN_006_CommandSelectionDirectoryEnvAndOutput/audit_fallback (0.07s)
+=== RUN   Test_RUN_003_ShellAndArgvExpandOnceAndPreserveValues
+=== RUN   Test_RUN_003_ShellAndArgvExpandOnceAndPreserveValues/shell
+=== RUN   Test_RUN_003_ShellAndArgvExpandOnceAndPreserveValues/argv
+--- PASS: Test_RUN_003_ShellAndArgvExpandOnceAndPreserveValues (0.47s)
+    --- PASS: Test_RUN_003_ShellAndArgvExpandOnceAndPreserveValues/shell (0.30s)
+    --- PASS: Test_RUN_003_ShellAndArgvExpandOnceAndPreserveValues/argv (0.07s)
+=== RUN   Test_RUN_003_RUN_004_WrapperPrefixForBothRoles
+=== RUN   Test_RUN_003_RUN_004_WrapperPrefixForBothRoles/worker
+=== RUN   Test_RUN_003_RUN_004_WrapperPrefixForBothRoles/audit
+--- PASS: Test_RUN_003_RUN_004_WrapperPrefixForBothRoles (0.89s)
+    --- PASS: Test_RUN_003_RUN_004_WrapperPrefixForBothRoles/worker (0.50s)
+    --- PASS: Test_RUN_003_RUN_004_WrapperPrefixForBothRoles/audit (0.29s)
+=== RUN   Test_RUN_006_RUN_009_NonzeroExitRetainsStreamsAndCode
+--- PASS: Test_RUN_006_RUN_009_NonzeroExitRetainsStreamsAndCode (0.13s)
+=== RUN   Test_RUN_007_RUN_009_TimeoutSelectionAndCapturedOutput
+=== RUN   Test_RUN_007_RUN_009_TimeoutSelectionAndCapturedOutput/configured
+=== RUN   Test_RUN_007_RUN_009_TimeoutSelectionAndCapturedOutput/request
+--- PASS: Test_RUN_007_RUN_009_TimeoutSelectionAndCapturedOutput (0.80s)
+    --- PASS: Test_RUN_007_RUN_009_TimeoutSelectionAndCapturedOutput/configured (0.17s)
+    --- PASS: Test_RUN_007_RUN_009_TimeoutSelectionAndCapturedOutput/request (0.19s)
+=== RUN   Test_RUN_007_RUN_009_TimeoutAndCancellationKillOrdinaryDescendant
+=== RUN   Test_RUN_007_RUN_009_TimeoutAndCancellationKillOrdinaryDescendant/timeout
+=== RUN   Test_RUN_007_RUN_009_TimeoutAndCancellationKillOrdinaryDescendant/cancel
+--- PASS: Test_RUN_007_RUN_009_TimeoutAndCancellationKillOrdinaryDescendant (13.64s)
+    --- PASS: Test_RUN_007_RUN_009_TimeoutAndCancellationKillOrdinaryDescendant/timeout (8.25s)
+    --- PASS: Test_RUN_007_RUN_009_TimeoutAndCancellationKillOrdinaryDescendant/cancel (5.30s)
+=== RUN   Test_RUN_008_UsageLimitOnlyForNonzeroMatchInLastTwentyLines
+=== RUN   Test_RUN_008_UsageLimitOnlyForNonzeroMatchInLastTwentyLines/late_stderr_match
+=== RUN   Test_RUN_008_UsageLimitOnlyForNonzeroMatchInLastTwentyLines/late_stdout_match
+=== RUN   Test_RUN_008_UsageLimitOnlyForNonzeroMatchInLastTwentyLines/successful_match
+=== RUN   Test_RUN_008_UsageLimitOnlyForNonzeroMatchInLastTwentyLines/outside_last_twenty
+=== RUN   Test_RUN_008_UsageLimitOnlyForNonzeroMatchInLastTwentyLines/stdout_before_stderr_window
+=== RUN   Test_RUN_008_UsageLimitOnlyForNonzeroMatchInLastTwentyLines/literal_substring
+--- PASS: Test_RUN_008_UsageLimitOnlyForNonzeroMatchInLastTwentyLines (0.37s)
+    --- PASS: Test_RUN_008_UsageLimitOnlyForNonzeroMatchInLastTwentyLines/late_stderr_match (0.05s)
+    --- PASS: Test_RUN_008_UsageLimitOnlyForNonzeroMatchInLastTwentyLines/late_stdout_match (0.05s)
+    --- PASS: Test_RUN_008_UsageLimitOnlyForNonzeroMatchInLastTwentyLines/successful_match (0.05s)
+    --- PASS: Test_RUN_008_UsageLimitOnlyForNonzeroMatchInLastTwentyLines/outside_last_twenty (0.05s)
+    --- PASS: Test_RUN_008_UsageLimitOnlyForNonzeroMatchInLastTwentyLines/stdout_before_stderr_window (0.05s)
+    --- PASS: Test_RUN_008_UsageLimitOnlyForNonzeroMatchInLastTwentyLines/literal_substring (0.05s)
+=== RUN   Test_RUN_009_LaunchFailureReturnsError
+--- PASS: Test_RUN_009_LaunchFailureReturnsError (0.10s)
+=== RUN   Test_RUN_010_EmptyQueue
+--- PASS: Test_RUN_010_EmptyQueue (0.12s)
+=== RUN   Test_RUN_010_AllBlockedQueue
+--- PASS: Test_RUN_010_AllBlockedQueue (0.16s)
+=== RUN   Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents
+=== RUN   Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents/unmerged
+=== RUN   Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents/start_failure
+=== RUN   Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents/first_unblocked
+=== RUN   Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents/unapproved_archive_bound
+=== RUN   Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents/shared_base_approval
+=== RUN   Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents/allow_unmerged
+--- PASS: Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents (2.77s)
+    --- PASS: Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents/unmerged (0.24s)
+    --- PASS: Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents/start_failure (0.18s)
+    --- PASS: Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents/first_unblocked (0.71s)
+    --- PASS: Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents/unapproved_archive_bound (0.31s)
+    --- PASS: Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents/shared_base_approval (0.69s)
+    --- PASS: Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents/allow_unmerged (0.64s)
+=== RUN   Test_RUN_011_WaitingHeadSelectsIndependent
+--- PASS: Test_RUN_011_WaitingHeadSelectsIndependent (6.82s)
+=== RUN   Test_RUN_010_EntirelyWaitingQueue
+--- PASS: Test_RUN_010_EntirelyWaitingQueue (2.04s)
+=== RUN   Test_RUN_013_RUN_014_CompleteSpecChange
+--- PASS: Test_RUN_013_RUN_014_CompleteSpecChange (4.34s)
+=== RUN   Test_RUN_015_InvocationFailureRetainsHeldPhase
+--- PASS: Test_RUN_015_InvocationFailureRetainsHeldPhase (0.68s)
+=== RUN   Test_RUN_023_RUN_024_DefaultEvalsExhaustionBlocks
+--- PASS: Test_RUN_023_RUN_024_DefaultEvalsExhaustionBlocks (2.01s)
+=== RUN   Test_RUN_021_RUN_022_DefaultRetriesRetainWorkAndFeedbackPerPhase
+--- PASS: Test_RUN_021_RUN_022_DefaultRetriesRetainWorkAndFeedbackPerPhase (5.76s)
+=== RUN   Test_RUN_021_ConfiguredThreeAttempts
+--- PASS: Test_RUN_021_ConfiguredThreeAttempts (5.89s)
+=== RUN   Test_RUN_023_RUN_024_ImplExhaustionSavesWorkAndBlocks
+--- PASS: Test_RUN_023_RUN_024_ImplExhaustionSavesWorkAndBlocks (4.82s)
+=== RUN   Test_RUN_003_PromptFileExpansionInShellAndArgvPreservesValuesOnce
+=== RUN   Test_RUN_003_PromptFileExpansionInShellAndArgvPreservesValuesOnce/worker_shell
+=== RUN   Test_RUN_003_PromptFileExpansionInShellAndArgvPreservesValuesOnce/worker_argv
+=== RUN   Test_RUN_003_PromptFileExpansionInShellAndArgvPreservesValuesOnce/audit_shell
+=== RUN   Test_RUN_003_PromptFileExpansionInShellAndArgvPreservesValuesOnce/audit_argv
+--- PASS: Test_RUN_003_PromptFileExpansionInShellAndArgvPreservesValuesOnce (0.58s)
+    --- PASS: Test_RUN_003_PromptFileExpansionInShellAndArgvPreservesValuesOnce/worker_shell (0.30s)
+    --- PASS: Test_RUN_003_PromptFileExpansionInShellAndArgvPreservesValuesOnce/worker_argv (0.07s)
+    --- PASS: Test_RUN_003_PromptFileExpansionInShellAndArgvPreservesValuesOnce/audit_shell (0.05s)
+    --- PASS: Test_RUN_003_PromptFileExpansionInShellAndArgvPreservesValuesOnce/audit_argv (0.05s)
+=== RUN   Test_RUN_003_RUN_067_WrapperUsesOnePromptFileForBothRolesAndFallback
+=== RUN   Test_RUN_003_RUN_067_WrapperUsesOnePromptFileForBothRolesAndFallback/worker
+=== RUN   Test_RUN_003_RUN_067_WrapperUsesOnePromptFileForBothRolesAndFallback/audit
+=== RUN   Test_RUN_003_RUN_067_WrapperUsesOnePromptFileForBothRolesAndFallback/audit_fallback
+--- PASS: Test_RUN_003_RUN_067_WrapperUsesOnePromptFileForBothRolesAndFallback (0.95s)
+    --- PASS: Test_RUN_003_RUN_067_WrapperUsesOnePromptFileForBothRolesAndFallback/worker (0.50s)
+    --- PASS: Test_RUN_003_RUN_067_WrapperUsesOnePromptFileForBothRolesAndFallback/audit (0.29s)
+    --- PASS: Test_RUN_003_RUN_067_WrapperUsesOnePromptFileForBothRolesAndFallback/audit_fallback (0.05s)
+=== RUN   Test_RUN_067_WrapperOnlyPlaceholderCreatesPromptFile
+--- PASS: Test_RUN_067_WrapperOnlyPlaceholderCreatesPromptFile (0.36s)
+=== RUN   Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure
+=== RUN   Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/success
+=== RUN   Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/nonzero
+=== RUN   Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/timeout
+=== RUN   Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/cancellation
+=== RUN   Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/launch_failure
+--- PASS: Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure (0.73s)
+    --- PASS: Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/success (0.13s)
+    --- PASS: Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/nonzero (0.11s)
+    --- PASS: Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/timeout (0.26s)
+    --- PASS: Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/cancellation (0.14s)
+    --- PASS: Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/launch_failure (0.10s)
+=== RUN   Test_RUN_067_UnselectedTemplateDoesNotRequirePromptFileIO
+--- PASS: Test_RUN_067_UnselectedTemplateDoesNotRequirePromptFileIO (0.27s)
+=== RUN   Test_RUN_043_RetryIncludesJUnitOnlyCasesFromOwnAndDependentModules
+--- PASS: Test_RUN_043_RetryIncludesJUnitOnlyCasesFromOwnAndDependentModules (3.31s)
+=== RUN   Test_RUN_044_RetryBoundsUnicodeFailureExcerptsAndMarksOmissions
+--- PASS: Test_RUN_044_RetryBoundsUnicodeFailureExcerptsAndMarksOmissions (3.24s)
+=== RUN   Test_RUN_016_UnlimitedQueueOrder
+--- PASS: Test_RUN_016_UnlimitedQueueOrder (14.10s)
+=== RUN   Test_RUN_016_NegativeMaxIsUnlimited
+--- PASS: Test_RUN_016_NegativeMaxIsUnlimited (4.55s)
+=== RUN   Test_RUN_017_RUN_018_RUN_019_BoundedContinuationAndForwarding
+--- PASS: Test_RUN_017_RUN_018_RUN_019_BoundedContinuationAndForwarding (12.93s)
+=== RUN   Test_RUN_018_InitialEmptyAndExactLimit
+=== RUN   Test_RUN_018_InitialEmptyAndExactLimit/initial_empty
+=== RUN   Test_RUN_018_InitialEmptyAndExactLimit/exact_limit
+--- PASS: Test_RUN_018_InitialEmptyAndExactLimit (8.91s)
+    --- PASS: Test_RUN_018_InitialEmptyAndExactLimit/initial_empty (0.12s)
+    --- PASS: Test_RUN_018_InitialEmptyAndExactLimit/exact_limit (8.79s)
+=== RUN   Test_RUN_020_HeldFailureRetainsEarlierResults
+--- PASS: Test_RUN_020_HeldFailureRetainsEarlierResults (5.02s)
+=== RUN   Test_RUN_016_RUN_025_RUN_026_BlockThenApplyIndependent
+--- PASS: Test_RUN_016_RUN_025_RUN_026_BlockThenApplyIndependent (6.56s)
+=== RUN   Test_RUN_025_RUN_026_PositiveMaxRetainsBlock
+--- PASS: Test_RUN_025_RUN_026_PositiveMaxRetainsBlock (6.43s)
+=== RUN   Test_RUN_036_RUN_037_OneBudgetAcrossChangesRetainsApplied
+--- PASS: Test_RUN_036_RUN_037_OneBudgetAcrossChangesRetainsApplied (10.36s)
+=== RUN   Test_RUN_036_ZeroForKeepsOrdinaryRunUnbounded
+--- PASS: Test_RUN_036_ZeroForKeepsOrdinaryRunUnbounded (3.05s)
+=== RUN   Test_RUN_037_RUN_039_AgentDeadlineRetainsHeldWork
+--- PASS: Test_RUN_037_RUN_039_AgentDeadlineRetainsHeldWork (2.55s)
+=== RUN   Test_RUN_037_VerificationDeadlineRetainsHeldWork
+--- PASS: Test_RUN_037_VerificationDeadlineRetainsHeldWork (2.52s)
+=== RUN   Test_RUN_038_UsageWaitPreflightStopsBeforeWaiting
+--- PASS: Test_RUN_038_UsageWaitPreflightStopsBeforeWaiting (0.83s)
+=== RUN   Test_RUN_039_ClassifierAndParentCancellation
+--- PASS: Test_RUN_039_ClassifierAndParentCancellation (2.88s)
+=== RUN   Test_RUN_040_EarlierBlockRetainsCauseBeforeTimeStop
+--- PASS: Test_RUN_040_EarlierBlockRetainsCauseBeforeTimeStop (8.43s)
+=== RUN   Test_RUN_029_InvalidUsagePolicyPrecedesFreshStart
+=== RUN   Test_RUN_029_InvalidUsagePolicyPrecedesFreshStart/bad_wait
+=== RUN   Test_RUN_029_InvalidUsagePolicyPrecedesFreshStart/bad_budget
+=== RUN   Test_RUN_029_InvalidUsagePolicyPrecedesFreshStart/zero_wait
+=== RUN   Test_RUN_029_InvalidUsagePolicyPrecedesFreshStart/negative_budget
+--- PASS: Test_RUN_029_InvalidUsagePolicyPrecedesFreshStart (0.89s)
+    --- PASS: Test_RUN_029_InvalidUsagePolicyPrecedesFreshStart/bad_wait (0.20s)
+    --- PASS: Test_RUN_029_InvalidUsagePolicyPrecedesFreshStart/bad_budget (0.23s)
+    --- PASS: Test_RUN_029_InvalidUsagePolicyPrecedesFreshStart/zero_wait (0.26s)
+    --- PASS: Test_RUN_029_InvalidUsagePolicyPrecedesFreshStart/negative_budget (0.21s)
+=== RUN   Test_RUN_029_RUN_031_DefaultUsageDurationsStopImmediately
+=== RUN   Test_RUN_029_RUN_031_DefaultUsageDurationsStopImmediately/default_wait
+=== RUN   Test_RUN_029_RUN_031_DefaultUsageDurationsStopImmediately/default_budget
+--- PASS: Test_RUN_029_RUN_031_DefaultUsageDurationsStopImmediately (1.64s)
+    --- PASS: Test_RUN_029_RUN_031_DefaultUsageDurationsStopImmediately/default_wait (0.93s)
+    --- PASS: Test_RUN_029_RUN_031_DefaultUsageDurationsStopImmediately/default_budget (0.71s)
+=== RUN   Test_RUN_030_RUN_031_RUN_033_ShortBudgetResumeOwnedStep
+--- PASS: Test_RUN_030_RUN_031_RUN_033_ShortBudgetResumeOwnedStep (5.89s)
+=== RUN   Test_RUN_033_OwnedResumeUsesApprovedUsageBudget
+--- PASS: Test_RUN_033_OwnedResumeUsesApprovedUsageBudget (1.41s)
+=== RUN   Test_RUN_030_UsageRetryPreservesVerificationFeedback
+--- PASS: Test_RUN_030_UsageRetryPreservesVerificationFeedback (5.27s)
+=== RUN   Test_RUN_030_RUN_031_WaitBudgetSharedAcrossNextPhases
+--- PASS: Test_RUN_030_RUN_031_WaitBudgetSharedAcrossNextPhases (3.30s)
+=== RUN   Test_RUN_032_RunSharesWaitAcrossChangesAndRetainsApplied
+--- PASS: Test_RUN_032_RunSharesWaitAcrossChangesAndRetainsApplied (5.34s)
+=== RUN   Test_RUN_034_UsageStopClassifierWrapping
+--- PASS: Test_RUN_034_UsageStopClassifierWrapping (0.64s)
+=== RUN   Test_RUN_035_EarlierBlockMakesLaterUsageStopFailure
+--- PASS: Test_RUN_035_EarlierBlockMakesLaterUsageStopFailure (2.65s)
+=== RUN   Test_RUN_031_CancelledUsageWaitRetainsHeldWork
+--- PASS: Test_RUN_031_CancelledUsageWaitRetainsHeldWork (2.27s)
+PASS
+ok  	github.com/lurkshark/fireweed/packages/runner/evals	263.121s

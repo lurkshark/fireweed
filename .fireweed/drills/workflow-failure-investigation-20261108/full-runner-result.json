@@ -1,0 +1,16 @@
+{
+  "stage": "failed-full-runner",
+  "argv": [
+    "go",
+    "test",
+    "./packages/runner/evals",
+    "-count=1",
+    "-timeout=8m",
+    "-v"
+  ],
+  "cwd": "/private/tmp/fireweed-failure-investigation-yc1k5hbd/failed",
+  "bound_seconds": 600,
+  "start": "2026-11-08T00:57:18.119887+00:00",
+  "finish": "2026-11-08T01:01:42.164005+00:00",
+  "exit": 0
+}

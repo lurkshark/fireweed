@@ -95,6 +95,13 @@ reconstructed-code application or push requires new authorization. Original
 79cf33a, prior evidence/refs, recoveries, bounds/counters and unrelated worktree
 are preserved. Worker notes authorize no new change. Full-completion gates remain.
 
+The separately owner-authorized [remaining-failure investigation](../../.fireweed/drills/workflow-failure-investigation-20261108/findings.md)
+is complete without corrections, repinning or another native workflow invocation.
+It confirms reconstruction defects for the workflow failures; RUN-037 remains
+unreproduced in bounded focused/full-context replay. Proposed follow-ups need
+owner selection before normal audited authoring. The native failure and WF4 stop
+remain unchanged.
+
 **Entry.** Follow SYSTEM and the pin/deadline in PROGRESS. Read AGENTS,
 DECISIONS, the relevant unchanged design clauses and projected workflow
 contracts. Inspect live status, queue, runs and shared claims. Preserve prior

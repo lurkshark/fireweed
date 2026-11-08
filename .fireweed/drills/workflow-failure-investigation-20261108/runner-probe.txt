@@ -1,0 +1,25 @@
+package evals_test
+
+import (
+ "context"
+ "encoding/json"
+ "fmt"
+ "os"
+ "path/filepath"
+ "strings"
+ "testing"
+ "time"
+ "github.com/lurkshark/fireweed/packages/runner"
+ "github.com/lurkshark/fireweed/packages/workflow"
+)
+func Test_Investigation_RUN037StageEvidence(t *testing.T) {
+ for _,limit:=range []time.Duration{time.Nanosecond,2*time.Second}{
+  t.Run(limit.String(),func(t *testing.T){
+   f:=newRunFixture(t,1,false,false);timeFastHook(t,f);hook:=nextRead(t,f.root,".fireweed/eval.sh");anchor:="if [ \"$phase\" = evals ]; then result=";addition:=`if [ "$phase" = evals ]; then
+  printf 'TIME_HELD_WORK\n' > packages/alpha/evals/time-work.txt
+  sleep 4
+fi
+`;if !strings.Contains(hook,anchor){t.Fatal("existing fixture anchor missing")};nextWrite(t,f.root,".fireweed/eval.sh",strings.Replace(hook,anchor,addition+anchor,1));nextCommit(t,f.root,"probe original verification deadline fixture");before,e:=workflow.Start(f.root,"alpha");if e!=nil{t.Fatal(e)};defer func(){if e:=workflow.Release(f.root,"alpha");e!=nil{t.Error(e)}}();req:=f.request(0,false);req.For=limit;start:=time.Now();r,err:=runner.Run(context.Background(),req);elapsed:=time.Since(start);held,e:=workflow.Current(f.root,"alpha");if e!=nil{t.Fatal(e)};exists:=func(path string)bool{_,e:=os.Stat(filepath.Join(f.root,path));return e==nil};text:="";if err!=nil{text=err.Error()};data:=map[string]any{"limit":limit.String(),"elapsed_ms":elapsed.Milliseconds(),"clean_time_stop":runner.IsTimeStop(err),"error":text,"applied":len(r.Applied),"agent_invocations":runInvocations(t,f),"agent_added_work_exists":exists("packages/alpha/evals/added_test.go"),"verification_marker_exists":exists("packages/alpha/evals/time-work.txt"),"held_identity_unchanged":held.Run==before.Run&&held.ClaimOID==before.ClaimOID&&held.Phase==before.Phase&&held.Head==before.Head};b,e:=json.Marshal(data);if e!=nil{t.Fatal(e)};fmt.Println("INVESTIGATION_JSON "+string(b))
+  })
+ }
+}

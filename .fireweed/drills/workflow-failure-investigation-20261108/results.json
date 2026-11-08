@@ -1,0 +1,134 @@
+[
+  {
+    "stage": "candidate-clone",
+    "argv": [
+      "git",
+      "clone",
+      "--no-hardlinks",
+      "--no-checkout",
+      "/Users/joel/Workspace/fireweed",
+      "/private/tmp/fireweed-failure-investigation-yc1k5hbd/candidate"
+    ],
+    "cwd": "/Users/joel/Workspace/fireweed",
+    "bound_seconds": 120,
+    "start": "2026-11-08T00:54:23.790676+00:00",
+    "finish": "2026-11-08T00:54:24.955887+00:00",
+    "exit": 0
+  },
+  {
+    "stage": "candidate-checkout",
+    "argv": [
+      "git",
+      "checkout",
+      "--detach",
+      "ccd3d6b7732d613e80a027ba7969b65adc58bc0e"
+    ],
+    "cwd": "/private/tmp/fireweed-failure-investigation-yc1k5hbd/candidate",
+    "bound_seconds": 60,
+    "start": "2026-11-08T00:54:24.956456+00:00",
+    "finish": "2026-11-08T00:54:25.240938+00:00",
+    "exit": 0
+  },
+  {
+    "stage": "candidate-workflow",
+    "argv": [
+      "go",
+      "test",
+      "./packages/workflow/evals",
+      "-run",
+      "^(Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_FLOW_046_AuditFindingsConvergeAndPersistTwoRoundBound|Test_FLOW_004_FLOW_028_FLOW_044_FLOW_045_FLOW_046_FLOW_047_FLOW_050_ImplDoneAppliesSpecsSetAndDecisionsAndArchives|Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses)$",
+      "-count=1",
+      "-timeout=90s",
+      "-v"
+    ],
+    "cwd": "/private/tmp/fireweed-failure-investigation-yc1k5hbd/candidate",
+    "bound_seconds": 120,
+    "start": "2026-11-08T00:54:25.241257+00:00",
+    "finish": "2026-11-08T00:54:41.948489+00:00",
+    "exit": 0
+  },
+  {
+    "stage": "candidate-runner",
+    "argv": [
+      "go",
+      "test",
+      "./packages/runner/evals",
+      "-run",
+      "^Test_RUN_037_VerificationDeadlineRetainsHeldWork$",
+      "-count=1",
+      "-timeout=90s",
+      "-v"
+    ],
+    "cwd": "/private/tmp/fireweed-failure-investigation-yc1k5hbd/candidate",
+    "bound_seconds": 120,
+    "start": "2026-11-08T00:54:41.950530+00:00",
+    "finish": "2026-11-08T00:54:46.133629+00:00",
+    "exit": 0
+  },
+  {
+    "stage": "failed-clone",
+    "argv": [
+      "git",
+      "clone",
+      "--no-hardlinks",
+      "--no-checkout",
+      "/Users/joel/Workspace/fireweed",
+      "/private/tmp/fireweed-failure-investigation-yc1k5hbd/failed"
+    ],
+    "cwd": "/Users/joel/Workspace/fireweed",
+    "bound_seconds": 120,
+    "start": "2026-11-08T00:54:46.370736+00:00",
+    "finish": "2026-11-08T00:54:47.318024+00:00",
+    "exit": 0
+  },
+  {
+    "stage": "failed-checkout",
+    "argv": [
+      "git",
+      "checkout",
+      "--detach",
+      "21039de866b8f03d9803b6fe7f80e744e8ad55c9"
+    ],
+    "cwd": "/private/tmp/fireweed-failure-investigation-yc1k5hbd/failed",
+    "bound_seconds": 60,
+    "start": "2026-11-08T00:54:47.318658+00:00",
+    "finish": "2026-11-08T00:54:47.557252+00:00",
+    "exit": 0
+  },
+  {
+    "stage": "failed-workflow",
+    "argv": [
+      "go",
+      "test",
+      "./packages/workflow/evals",
+      "-run",
+      "^(Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_FLOW_046_AuditFindingsConvergeAndPersistTwoRoundBound|Test_FLOW_004_FLOW_028_FLOW_044_FLOW_045_FLOW_046_FLOW_047_FLOW_050_ImplDoneAppliesSpecsSetAndDecisionsAndArchives|Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses)$",
+      "-count=1",
+      "-timeout=90s",
+      "-v"
+    ],
+    "cwd": "/private/tmp/fireweed-failure-investigation-yc1k5hbd/failed",
+    "bound_seconds": 120,
+    "start": "2026-11-08T00:54:47.557673+00:00",
+    "finish": "2026-11-08T00:54:56.141903+00:00",
+    "exit": 1
+  },
+  {
+    "stage": "failed-runner",
+    "argv": [
+      "go",
+      "test",
+      "./packages/runner/evals",
+      "-run",
+      "^Test_RUN_037_VerificationDeadlineRetainsHeldWork$",
+      "-count=1",
+      "-timeout=90s",
+      "-v"
+    ],
+    "cwd": "/private/tmp/fireweed-failure-investigation-yc1k5hbd/failed",
+    "bound_seconds": 120,
+    "start": "2026-11-08T00:54:56.143701+00:00",
+    "finish": "2026-11-08T00:55:00.041711+00:00",
+    "exit": 0
+  }
+]

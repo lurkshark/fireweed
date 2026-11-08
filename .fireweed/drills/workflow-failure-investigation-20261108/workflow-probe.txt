@@ -1,0 +1,31 @@
+package evals_test
+
+import (
+ "context"
+ "encoding/json"
+ "fmt"
+ "strings"
+ "testing"
+ "github.com/lurkshark/fireweed/packages/checks"
+ "github.com/lurkshark/fireweed/packages/contracts"
+ "github.com/lurkshark/fireweed/packages/workflow"
+)
+func investigationError(err error) string { if err==nil{return ""};return err.Error() }
+func investigationPrint(t *testing.T, v any) { t.Helper(); b,e:=json.Marshal(v);if e!=nil{t.Fatal(e)};fmt.Println("INVESTIGATION_JSON "+string(b)) }
+func Test_Investigation_PublicLifecycleEvidence(t *testing.T) {
+ for _,remove:=range []bool{false,true}{
+  t.Run(fmt.Sprintf("review_removed_%t",remove),func(t *testing.T){
+   removed:="";if remove{removed="### ALP-002\n"}
+   root:=fixture(t,"audit:\n  enabled: false\nverify_dependents: none\n","","### new:extra [review]\nExtra MUST be visible.\n","",removed)
+   if remove { hook:=readFile(t,root,".fireweed/eval.sh");hook=strings.Replace(hook,`<testcase name="ALP-002" classname="fixture">%s</testcase>`,"",1);hook=strings.Replace(hook,`"$result" "$other" > "$report"`,`"$result" > "$report"`,1);write(t,root,".fireweed/eval.sh",hook);commit(t,root,"probe original removed-ID report selection") }
+   s:=start(t,root);defer func(){if e:=workflow.Release(root,"manual");e!=nil{t.Error(e)}}()
+   r,e:=verify(root,true);var items []contracts.Item
+   for _,m:=range s.Snapshot.Modules {if m.Name=="alpha"{section,_:=contracts.Section(m.Document.Body,"Specs");items,_=contracts.ParseItems(section)}}
+   report:=r.Reports["alpha"]
+   investigationPrint(t,map[string]any{"kind":"review_and_allocation","removed":remove,"added":s.Change.Added,"removed_items":s.Change.Removed,"projected_specs":items,"cases":report.Cases,"workflow_verify_error":investigationError(e),"direct_coverage_error":investigationError(checks.RequireCoverage(report,items)),"direct_nonreview_fail_first_error":investigationError(checks.RequireFailFirst(report,[]string{"ALP-001"},nil))})
+  })
+ }
+ t.Run("boundary_cause",func(t *testing.T){
+  root:=fixture(t,"audit:\n  enabled: false\n","","","","");write(t,root,".fireweed/boundary-fail","yes\n");commit(t,root,"probe original boundary fixture");start(t,root);defer func(){if e:=workflow.Release(root,"manual");e!=nil{t.Error(e)}}();if _,e:=done(root);e!=nil{t.Fatal(e)};write(t,root,"packages/alpha/internal/ready","ready\n");s,e:=workflow.Current(root,"manual");if e!=nil{t.Fatal(e)};q:=request(root);ds,cause:=checks.Boundaries(context.Background(),checks.BoundaryRequest{Snapshot:s.Snapshot,Bin:q.Bin,Timeout:q.Timeout});_,returned:=verify(root,false);investigationPrint(t,map[string]any{"kind":"boundary_cause","boundary_error":investigationError(cause),"boundary_diagnostics":ds,"workflow_error":investigationError(returned)})
+ })
+}

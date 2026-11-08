@@ -1,28 +1,27 @@
-# Stopped after the corrected-source workflow retry
+# Stopped after the remaining-failure investigation
 
-The owner's full sequence is complete: normal independently audited fixes
-[0181](../../changes/archive/0181-recorded-regenerate-preservation.md) and
-[0182](../../changes/archive/0182-recovery-history-assertions.md),
-[clean-source validation and verified controller update](../../.fireweed/drills/residual-fixes-controller-handoff.md),
-then exactly one native workflow invocation on corrected subject `ccd3d6b7732d613e80a027ba7969b65adc58bc0e`.
-It failed native verification; app passed, workflow and runner have remaining
-failures. The focused recorded-phase/Context and recovery-history cases pass.
+The owner-authorized investigation is complete. Read its
+[findings, bounded replays and scoped proposals](../../.fireweed/drills/workflow-failure-investigation-20261108/findings.md).
+The workflow failures are confirmed reconstruction defects in review fail-first
+selection, ID reservation and boundary-cause preservation. RUN-037 passed focused
+and full-runner replay and remains an unresolved native observation; do not infer
+loss of existing work from its missing hook marker alone.
 
-The [exact native report and owner review](../../.fireweed/drills/workflow.md) and
-[complete evidence](../../.fireweed/drills/workflow-corrected-controller-retry-20261107T232508/review.md)
-retain the failed ref, actual assertions, coverage, worker gap limits, durable
-streams, exact forwarding and cleanup. No reconstruction was applied. Worker
-claims about retained eval conflicts are not accepted fixes or permission to
-weaken tests. WF4 and full completion remain open.
+The normal fixes 0181/0182, clean-source controller handoff and failed native
+workflow retry remain committed and unchanged. Corrected subject/controller source
+is ccd3d6b7732d613e80a027ba7969b65adc58bc0e; original 79cf33a remains preserved.
+The [native report](../../.fireweed/drills/workflow.md) and failed reconstruction
+ref remain evidence, not applied implementation. PROGRESS records the current pin.
 
-**Stop for owner review. This approval is consumed.** No further correction,
-diagnostic replay, drill, controller promotion, source application or push is
-authorized. Any later scoped action requires a new owner instruction. Read
-AGENTS, SYSTEM, PROGRESS and ACCEPTANCE before that work; preserve all evidence,
-refs, bounds/counters, recoveries and unrelated worktrees. Do not infer a new
-execution goal from the remaining failures or worker notes.
+**Stop for owner review.** This investigation authorizes no product/spec/eval
+correction, new diagnostic run, native drill, controller update, reconstruction
+import or push. No change was queued. Proposed contract/eval clarifications and
+any RUN-037 follow-up need a new owner instruction and the normal audited workflow.
+Do not supply this private investigation or saved reconstruction as worker inputs.
+WF4 and full completion remain open.
 
-No active normal/native/validation run or shared claim remains; the queue is
-empty and owned scratch is cleaned up. The pin in PROGRESS stays unchanged.
-Original 79cf33a remains a preserved baseline. The existing deadline is still
-**2026-11-10 22:51:05 UTC**, with no further extension.
+The queue/shared claims are empty; all owned investigation clones/processes are
+cleaned up or terminal. Preserve prior archives/reports/proof/attempt refs,
+existing counters/bounds, recoveries and unrelated worktrees. The existing deadline
+remains **2026-11-10 22:51:05 UTC**, without a further extension. Read AGENTS, SYSTEM,
+PROGRESS and ACCEPTANCE before any newly authorized work.

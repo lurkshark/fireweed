@@ -1,5 +1,15 @@
 # Rebuild handoff
 
+The owner subsequently authorized investigation of the remaining native failures.
+The [bounded investigation](../../.fireweed/drills/workflow-failure-investigation-20261108/findings.md)
+is complete: the workflow failures reproduce only on the failed reconstruction,
+with review-ID fail-first selection, removed-ID allocation and boundary-cause
+loss confirmed by public probes. RUN-037 did not reproduce in focused comparison
+or a full failed-ref runner replay; its native cause remains unresolved. No
+product/spec/eval correction was made. Candidate and controller stay unchanged.
+Scoped follow-up proposals are evidence for owner consideration, not approval to
+author them or retry. Investigation scratch is cleaned up; stop for owner review.
+
 The owner-requested sequence is complete and stopped. The two scoped fixes are
 applied and independently audited in [0181](../../changes/archive/0181-recorded-regenerate-preservation.md)
 and [0182](../../changes/archive/0182-recovery-history-assertions.md). No runtime
@@ -22,7 +32,8 @@ records every case, actual assertion text, coverage, full first feedback and bot
 traces, worker gap limitations, durable streams/exact forwarding, retained failed
 ref and cleanup. Gap claims are not approved corrections. Normal native failure
 publication was observed; rejection/interruption/emergency reporting was not used.
-Neither attempt reported a compiler error. No extra diagnostic replay followed.
+Neither attempt reported a compiler error. Subsequent owner-authorized diagnostic
+replays are recorded above and do not change that native result.
 
 Failed ref: `refs/fireweed/drills/workflow/20261107T232508.801610000`. It was retained locally; reconstructed code was not
 applied. The previous complete workflow report remains

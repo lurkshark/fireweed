@@ -1,0 +1,8 @@
+candidate-clone 0
+candidate-checkout 0
+candidate-workflow 0
+candidate-runner 0
+failed-clone 0
+failed-checkout 0
+failed-workflow 1
+failed-runner 0

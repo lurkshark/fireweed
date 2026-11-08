@@ -1,0 +1,20 @@
+{
+  "removed_owned_clones": [
+    {
+      "clone": "candidate",
+      "head": "ccd3d6b7732d613e80a027ba7969b65adc58bc0e",
+      "clean_before_removal": true,
+      "no_claim_or_extra_worktree": true
+    },
+    {
+      "clone": "failed",
+      "head": "21039de866b8f03d9803b6fe7f80e744e8ad55c9",
+      "clean_before_removal": true,
+      "no_claim_or_extra_worktree": true
+    }
+  ],
+  "temporary_probe_files_removed_before_clean_check": true,
+  "all_diagnostic_subprocesses_returned": true,
+  "no_native_drill_or_real_agent_invoked": true,
+  "time": "2026-11-08T01:03:56.541007+00:00"
+}
