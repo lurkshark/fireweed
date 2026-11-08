@@ -35,7 +35,7 @@ agent:
         - --ephemeral
         - --ignore-user-config
         - -m
-        - gpt-6-sol
+        - gpt-6.1-sol
         - -c
         - model_reasoning_effort="high"
         - -s
@@ -50,9 +50,9 @@ audit:
         - --ephemeral
         - --ignore-user-config
         - -m
-        - gpt-6-sol
+        - gpt-6-astra
         - -c
-        - model_reasoning_effort="high"
+        - model_reasoning_effort="medium"
         - -s
         - workspace-write
         - '{prompt}'

@@ -20,7 +20,7 @@ The independently built subject remains /Users/joel/Workspace/fireweed/bin/firew
 
 ## Agent configuration
 
-Workers, separate restricted auditors and regeneration use exactly `codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`. Check access with bounded doctor probes during initial setup or after an access failure; do not silently change the model or effort or retry indefinitely.
+Workers and regeneration use exactly `codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`. Separate restricted auditors use exactly `codex exec --ephemeral --ignore-user-config -m gpt-6-astra -c 'model_reasoning_effort="medium"' -s workspace-write {prompt}`. Check access with bounded doctor probes during initial setup or after an access failure; do not silently change the model or effort or retry indefinitely.
 
 ## Author and worker policy
 
