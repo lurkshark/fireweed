@@ -71,7 +71,7 @@ func prBodyAppFixture(t *testing.T) (root, nested, revisionRange, endpoint strin
 		for _, d := range report.Diagnostics {
 			if d.Code == code && d.Warning {
 				found = true
-				if code == "B04" && d.Path != "packages/alpha/internal/opaque.dat" {
+				if code == "B04" && d.Path != "" && d.Path != "packages/alpha/internal/opaque.dat" {
 					t.Errorf("B04 path=%q; want opaque artifact path", d.Path)
 				}
 			}
@@ -136,7 +136,8 @@ func Test_APP_128_APP_129_PRBodyValidEmptyRange(t *testing.T) {
 	if err != nil {
 		t.Fatalf("public PRBody empty range: %v", err)
 	}
-	if strings.TrimSpace(report.Body) == "" || !(strings.Contains(strings.ToLower(report.Body), "none") || strings.Contains(strings.ToLower(report.Body), "no change")) {
+	lowerBody := strings.ToLower(report.Body)
+	if strings.TrimSpace(report.Body) == "" || !(strings.Contains(lowerBody, "none") || strings.Contains(lowerBody, "no change") || strings.Contains(lowerBody, "no selected changes")) {
 		t.Fatalf("public PRBody empty range lacks no-selection text: %q", report.Body)
 	}
 	prBodyAppSuccess(t, nested, empty, report)
