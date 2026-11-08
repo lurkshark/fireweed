@@ -1,0 +1,91 @@
+{
+  "coverage": [
+    {
+      "module": "workflow",
+      "source_run": "20261108T212334-be5a8cfe12b0e6e2da5ae271",
+      "case_rows": 175,
+      "current_ids": 134,
+      "covered_ids": 134,
+      "missing": [],
+      "unknown": [],
+      "nonpassing": 0,
+      "duplicate_case_names": []
+    },
+    {
+      "module": "runner",
+      "source_run": "20261108T213829-a3f8bb244d3dde95398de65e",
+      "case_rows": 159,
+      "current_ids": 67,
+      "covered_ids": 67,
+      "missing": [],
+      "unknown": [],
+      "nonpassing": 0,
+      "duplicate_case_names": []
+    },
+    {
+      "module": "app",
+      "source_run": "20261108T213829-a3f8bb244d3dde95398de65e",
+      "case_rows": 323,
+      "current_ids": 155,
+      "covered_ids": 155,
+      "missing": [],
+      "unknown": [],
+      "nonpassing": 0,
+      "duplicate_case_names": []
+    }
+  ],
+  "worker_quick_checks": [
+    {
+      "run": "20261108T212334-be5a8cfe12b0e6e2da5ae271",
+      "phase": "evals",
+      "command": "pinned fireweed verify --quick",
+      "elapsed_ms": [
+        176838
+      ],
+      "worker_model": "gpt-6.1-sol",
+      "worker_effort": "high",
+      "exit": 0
+    },
+    {
+      "run": "20261108T212334-be5a8cfe12b0e6e2da5ae271",
+      "phase": "impl",
+      "command": "pinned fireweed verify --quick",
+      "elapsed_ms": [
+        179394
+      ],
+      "worker_model": "gpt-6.1-sol",
+      "worker_effort": "high",
+      "exit": 0
+    },
+    {
+      "run": "20261108T213829-a3f8bb244d3dde95398de65e",
+      "phase": "evals",
+      "command": "pinned fireweed verify --quick",
+      "elapsed_ms": [
+        293596
+      ],
+      "worker_model": "gpt-6.1-sol",
+      "worker_effort": "high",
+      "exit": 0
+    },
+    {
+      "run": "20261108T213829-a3f8bb244d3dde95398de65e",
+      "phase": "impl",
+      "command": "pinned fireweed verify --quick",
+      "elapsed_ms": [
+        303486
+      ],
+      "worker_model": "gpt-6.1-sol",
+      "worker_effort": "high",
+      "exit": 0
+    }
+  ],
+  "audit": {
+    "model": "gpt-6-astra",
+    "effort": "medium",
+    "findings": [],
+    "round_trips": 0,
+    "second_auditor_local_verify_exit": 127,
+    "second_auditor_local_verify_note": "Relative controller absent in the intentionally restricted workspace; owning controller validated audit and advanced normally."
+  }
+}

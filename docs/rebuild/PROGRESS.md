@@ -1,20 +1,22 @@
-# Rebuild handoff — two owner-selected contract corrections active
+# Rebuild handoff — contract corrections complete, stopped
 
-The owner authorized creating and executing exactly two normal audited changes:
-0188 clarifies successful Done provenance preservation and complete selected-module
-reports in workflow, with focused public evals and legitimate already_satisfied
-validation; 0189 corrects the runner Audit-copy preservation eval at the proper
-lifecycle stages. Use the pinned controller below with normal approval, fail-first
-exceptions, frozen phases, separate restricted audit and configured bounds intact.
-No runtime/interface/hook/configuration or unrelated reconstruction-defect fix is
-selected. Stop if unchanged behavior cannot support already_satisfied, either
-change blocks, independence/access fails, or an unresolved correction needs review.
+The owner-authorized two normal audited changes are applied and archived:
+[0188](../../changes/archive/0188-provenance-and-complete-reports.md) clarifies
+successful Done provenance preservation and complete selected-module reports,
+with unchanged runtime proven already_satisfied; [0189](../../changes/archive/0189-provenance-preservation-eval.md)
+corrects the runner Audit-copy eval at the proper lifecycle stages. Both independent
+restricted audits and all required phase checks passed. The
+[retained handoff](../../.fireweed/drills/provenance-report-corrections-handoff.md)
+records exact results, reports, coverage, history and cleanup. Runner impl quick
+Verify exceeded the five-minute target; prior timing exceptions remain open.
 
-Run only these two changes and retain their committed archives and a compact
-handoff after no active run/claim remains. No drill, repin, source application,
-push or later milestone is authorized. Existing native failure/proof refs, WF4 and
-full-completion status, timing exceptions, bounds/counters and unrelated worktrees
-remain preserved. Deadline remains **2026-11-10 22:51:05 UTC**.
+**Two-change scope consumed. Stop with no active run, queued change or shared claim.**
+No runtime/interface/hook/configuration or unrelated reconstruction-defect fix,
+drill, source import, repin or push occurred. Existing native failure/proof refs,
+WF4/full-completion stop, controller/recoveries, bounds/counters and unrelated
+worktrees remain preserved. No further correction, replay, drill, repin, later
+milestone or push is authorized. Deadline remains **2026-11-10 22:51:05 UTC**.
+Follow GOAL.
 
 ## Previous investigation (historical)
 

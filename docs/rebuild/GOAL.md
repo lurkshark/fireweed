@@ -1,18 +1,16 @@
-# Complete two owner-selected normal audited changes, then stop
+# Stop after the two audited contract corrections
 
-The owner authorized authoring and executing queued changes 0188 and 0189:
-workflow provenance/complete-report contract clarification with public evals,
-then runner Audit-copy preservation eval_fix. Follow AGENTS, SYSTEM, PROGRESS,
-ACCEPTANCE and each change's Notes using the unchanged pinned controller.
+The owner-selected queued changes 0188 and 0189 are complete through normal
+verification, independent restricted audit, application and archive. The
+[retained handoff](../../.fireweed/drills/provenance-report-corrections-handoff.md)
+records contract/eval changes, reports, coverage/history checks and the final idle
+state. No runtime/interface/hook/configuration correction, reconstruction import,
+drill, repin or push occurred. The native failure and WF4/full-completion stop are
+unchanged; own-verification timing exceptions remain open.
 
-Budget: exactly two changes. Keep normal approval and independent restricted
-audit, frozen phases and configured bounds. Validate already_satisfied against
-unchanged runtime; stop if unsupported, blocked, independence/access fails, or
-an unresolved correction needs owner review. No runtime/interface/hook/config,
-unrelated defect, tooling or Decision change is selected.
-
-After completion retain committed archives and a compact evidence handoff, verify
-idle queue/claims and stop. No drill, repin, reconstruction import, later milestone
-or push. Preserve native reports/proof/attempt refs, recoveries, counters/bounds,
-unrelated worktrees and deadline **2026-11-10 22:51:05 UTC**. WF4/full completion
-and prior timing exceptions remain open.
+**Stop with no active run, queue or shared claim. Two-change scope consumed.**
+No further correction, investigation/replay, retry, controller promotion, later
+milestone or push is authorized. Obtain a new owner-selected scope before further
+work. Preserve reports/archives/proof/attempt refs, controller/recoveries,
+bounds/counters and unrelated worktrees. Deadline remains
+**2026-11-10 22:51:05 UTC**, without extension.
