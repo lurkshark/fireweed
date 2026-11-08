@@ -1,0 +1,3510 @@
+{
+  "Cases": [
+    {
+      "Name": "Test_APP_097_APP_099_AbandonNestedRootPlainAndJSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-097",
+        "APP-099"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_097_APP_099_AbandonNestedRootPlainAndJSON/plain-queued",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-097",
+        "APP-099"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_097_APP_099_AbandonNestedRootPlainAndJSON/json-owned",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-097",
+        "APP-099"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_098_APP_099_AbandonFailures",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-098",
+        "APP-099"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_098_APP_099_AbandonFailures/missing",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-098",
+        "APP-099"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_098_APP_099_AbandonFailures/extra-json",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-098",
+        "APP-099"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_098_APP_099_AbandonFailures/unsupported-option",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-098",
+        "APP-099"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_098_APP_099_AbandonFailures/unknown-selector",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-098",
+        "APP-099"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_001_StandaloneBinary",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-001"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_001_StandaloneBinary/outside-project/help",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-001"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_001_StandaloneBinary/outside-project/version",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-001"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_001_StandaloneBinary/outside-project/explain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-001"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_001_StandaloneBinary/outside-project/playbook",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-001"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_001_StandaloneBinary/invalid-config/help",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-001"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_001_StandaloneBinary/invalid-config/version",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-001"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_001_StandaloneBinary/invalid-config/explain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-001"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_001_StandaloneBinary/invalid-config/playbook",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-001"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_002_InformationJSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-002"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_002_InformationJSON/help",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-002"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_002_InformationJSON/version",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-002"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_002_InformationJSON/explain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-002"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_002_InformationJSON/playbook",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-002"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_003_InvalidRequests",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-003"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_003_InvalidRequests/unknown-command",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-003"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_003_InvalidRequests/unknown-option",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-003"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_003_InvalidRequests/missing-argument",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-003"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_003_InvalidRequests/extra-argument",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-003"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_003_InvalidRequests/new-change-arity",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-003"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_003_InvalidRequests/stamp-arity",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-003"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_003_InvalidRequests/check-arity",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-003"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_003_InvalidRequests/show-arity",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-003"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_003_InvalidRequests/start-arity",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-003"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_003_InvalidRequests/context-arity",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-003"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_003_InvalidRequests/coverage-arity",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-003"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_003_InvalidRequests/verify-arity",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-003"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_003_InvalidRequests/APP_013_unknown-explanation",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-003",
+        "APP-013"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_003_InvalidRequests/APP_013_unknown-playbook",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-003",
+        "APP-013"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_014_MaintenanceCommandsDispatch",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-014"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_014_MaintenanceCommandsDispatch/gc",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-014"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_014_MaintenanceCommandsDispatch/migrate",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-014"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_015_FailedJSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-015"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_001_ReadCommandsDoNotInvokeGitHooksOrAgents",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-001"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_006_APP_022_StampAliasesAndUnassignedHandles",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-006",
+        "APP-022"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_006_APP_022_StampAliasesAndUnassignedHandles/revise",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-006",
+        "APP-022"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_006_APP_022_StampAliasesAndUnassignedHandles/0001-revise.md",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-006",
+        "APP-022"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_006_APP_022_StampAliasesAndUnassignedHandles/changes/0001-revise.md",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-006",
+        "APP-022"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_021_APP_022_StampErrorExits",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-021",
+        "APP-022"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_021_APP_022_StampErrorExits/missing-argument",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-021",
+        "APP-022"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_021_APP_022_StampErrorExits/extra-argument",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-021",
+        "APP-022"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_021_APP_022_StampErrorExits/invalid-config",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-021",
+        "APP-022"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_021_APP_022_StampErrorExits/missing-change",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-021",
+        "APP-022"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_021_APP_022_StampErrorExits/absent-modified-ID",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-021",
+        "APP-022"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_007_APP_024_CheckValidAndAllDiagnostics",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-007",
+        "APP-024"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_023_APP_024_CheckUsageAndConfiguration",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-023",
+        "APP-024"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_023_APP_024_CheckUsageAndConfiguration/extra-argument",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-023",
+        "APP-024"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_023_APP_024_CheckUsageAndConfiguration/invalid-config",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-023",
+        "APP-024"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_008_APP_025_ShowCurrentProjectedAndJSONParity",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-008",
+        "APP-025"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_008_APP_025_ShowCurrentProjectedAndJSONParity/current-full",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-008",
+        "APP-025"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_008_APP_025_ShowCurrentProjectedAndJSONParity/current-item",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-008",
+        "APP-025"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_008_APP_025_ShowCurrentProjectedAndJSONParity/projected-full",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-008",
+        "APP-025"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_008_APP_025_ShowCurrentProjectedAndJSONParity/projected-item",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-008",
+        "APP-025"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_026_ShowNamedErrors",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-026"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_026_ShowNamedErrors/unknown-module",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-026"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_026_ShowNamedErrors/unknown-item",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-026"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_026_ShowNamedErrors/ambiguous-item",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-026"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_026_ShowNamedErrors/ambiguous-module",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-026"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_026_ShowNamedErrors/missing-module",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-026"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_026_ShowNamedErrors/extra-argument",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-026"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_026_ShowNamedErrors/invalid-config",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-026"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_105_APP_108_CheckCommitsRangesAndRecordedAuthorWork",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-105",
+        "APP-108"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_105_APP_108_CheckCommitsSquashAndEmptyJSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-105",
+        "APP-108"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_106_APP_108_CheckCommitsReportsEveryHistoryRule",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-106",
+        "APP-108"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_107_APP_108_CheckCommitsFailures",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-107",
+        "APP-108"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_107_APP_108_CheckCommitsFailures/extra",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-107",
+        "APP-108"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_107_APP_108_CheckCommitsFailures/option",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-107",
+        "APP-108"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_107_APP_108_CheckCommitsFailures/bad-range",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-107",
+        "APP-108"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_147_APP_148_CheckFixAcrossQueuePreservesRecordedBases",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-147",
+        "APP-148"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_147_APP_148_CheckFixMissingOnlySuccessAndNoOp",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-147",
+        "APP-148"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_148_APP_149_CheckFixRejectsBeforeMutation",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-148",
+        "APP-149"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_109_APP_110_APP_112_APP_113_CIHistoryAndAllModules",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-109",
+        "APP-110",
+        "APP-112",
+        "APP-113"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_110_APP_112_APP_113_CIEvalAndBoundaryFailures",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-110",
+        "APP-112",
+        "APP-113"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_109_APP_112_APP_113_CIStaticUsageAndConfiguration",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-109",
+        "APP-112",
+        "APP-113"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_111_APP_112_APP_113_CIDoctorCanariesNoAgentAndSkip",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-111",
+        "APP-112",
+        "APP-113"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_094_APP_096_CommitsPendingAndArchivedOrder",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-094",
+        "APP-096"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_095_APP_096_CommitsFailures",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-095",
+        "APP-096"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_095_APP_096_CommitsFailures/missing",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-095",
+        "APP-096"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_095_APP_096_CommitsFailures/extra-json",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-095",
+        "APP-096"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_095_APP_096_CommitsFailures/unsupported-option",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-095",
+        "APP-096"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_095_APP_096_CommitsFailures/unknown-selector",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-095",
+        "APP-096"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_037_StaticCauses",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-037"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_037_StaticCauses/configuration",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-037"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_037_StaticCauses/graph",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-037"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_037_StaticCauses/syntax",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-037"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_037_StaticCauses/normative",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-037"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_037_StaticCauses/identity",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-037"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_037_StaticCauses/tag",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-037"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_037_StaticCauses/structure",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-037"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_037_StaticCauses/base",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-037"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_037_StaticCauses/handle",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-037"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_037_StaticCauses/metadata",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-037"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_037_StaticCauses/queue-identity",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-037"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_037_APP_038_ShowStaticCauses",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-037",
+        "APP-038"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_037_APP_038_ShowStaticCauses/duplicate-graph-name",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-037",
+        "APP-038"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_037_APP_038_ShowStaticCauses/duplicate-fixed-spec-id",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-037",
+        "APP-038"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_038_LookupCauses",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-038"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_038_LookupCauses/author-module",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-038"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_038_LookupCauses/stamp-change",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-038"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_038_LookupCauses/show-module",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-038"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_038_LookupCauses/show-item",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-038"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_038_LookupCauses/show-ambiguous-item",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-038"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_038_LookupCauses/coverage-module",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-038"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_038_LookupCauses/coverage-change",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-038"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_039_BlockedNewChangeOutputPath",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-039"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_040_ForwardedCheckCode",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-040"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_062_APP_063_APP_064_APP_065_APP_066_APP_067_DoctorCLI",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-062",
+        "APP-063",
+        "APP-064",
+        "APP-065",
+        "APP-066",
+        "APP-067"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_062_DoctorUsesCloserProject",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-062"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_065_APP_066_APP_067_DoctorFailures",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-065",
+        "APP-066",
+        "APP-067"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_065_APP_066_APP_067_DoctorFailures/extra",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-065",
+        "APP-066",
+        "APP-067"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_065_APP_066_APP_067_DoctorFailures/unknown-flag",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-065",
+        "APP-066",
+        "APP-067"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_065_APP_066_APP_067_DoctorFailures/wrong-command-flag",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-065",
+        "APP-066",
+        "APP-067"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_068_APP_069_APP_070_APP_071_APP_072_APP_073_AgentsMDWrite",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-068",
+        "APP-069",
+        "APP-070",
+        "APP-071",
+        "APP-072",
+        "APP-073"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_068_APP_069_APP_070_APP_071_APP_072_APP_073_AgentsMDWrite/no-block",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-068",
+        "APP-069",
+        "APP-070",
+        "APP-071",
+        "APP-072",
+        "APP-073"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_068_APP_069_APP_070_APP_071_APP_072_APP_073_AgentsMDWrite/missing-file",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-068",
+        "APP-069",
+        "APP-070",
+        "APP-071",
+        "APP-072",
+        "APP-073"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_136_APP_137_DrillPlainNearestProjectAndInvokingBin",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-136",
+        "APP-137"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_138_DrillJSONSuccess",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-138"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_139_DrillArgumentAndModuleRejectionsDoNotInvokeHooks",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-139"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_140_DrillProjectAndConfigurationFailures",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-140"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-141"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/own-plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-141"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/dependent-json",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-141"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_141_DrillSetupFailureHasNoArtifacts",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-141"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_142_DrillCleanUsageStopPlainAndJSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-142"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_136_DrillUsesConfiguredTimeout",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-136"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-150",
+        "APP-151"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty/plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-150",
+        "APP-151"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty/JSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-150",
+        "APP-151"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_150_APP_152_GCRejectsUsageBeforePruning",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-150",
+        "APP-152"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_152_GCConfigurationAndGitFailures",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-152"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_152_GCConfigurationAndGitFailures/malformed-config",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-152"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_152_GCConfigurationAndGitFailures/invalid-retention",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-152"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_041_APP_042_APP_043_APP_044_APP_045_APP_046_APP_050_APP_053_APP_054_APP_059_GoInit",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-041",
+        "APP-042",
+        "APP-043",
+        "APP-044",
+        "APP-045",
+        "APP-046",
+        "APP-050",
+        "APP-053",
+        "APP-054",
+        "APP-059"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_043_APP_044_APP_047_APP_051_NoneInit",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-043",
+        "APP-044",
+        "APP-047",
+        "APP-051"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_050_APP_052_NoneDefaultApp",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-050",
+        "APP-052"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_053_InitFileOnlyWorkerCommand",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-053"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_054_InitFileOnlyAuditCommand",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-054"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_042_APP_048_APP_049_APP_050_APP_053_APP_054_APP_060_LocalInit",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-042",
+        "APP-048",
+        "APP-049",
+        "APP-050",
+        "APP-053",
+        "APP-054",
+        "APP-060"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_055_APP_056_APP_061_InitUsageAndRecipeErrors",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-055",
+        "APP-056",
+        "APP-061"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_055_APP_056_APP_061_InitUsageAndRecipeErrors/missing-recipe",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-055",
+        "APP-056",
+        "APP-061"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_055_APP_056_APP_061_InitUsageAndRecipeErrors/missing-agent",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-055",
+        "APP-056",
+        "APP-061"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_055_APP_056_APP_061_InitUsageAndRecipeErrors/missing-value",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-055",
+        "APP-056",
+        "APP-061"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_055_APP_056_APP_061_InitUsageAndRecipeErrors/invalid-agent",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-055",
+        "APP-056",
+        "APP-061"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_055_APP_056_APP_061_InitUsageAndRecipeErrors/malformed-option",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-055",
+        "APP-056",
+        "APP-061"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_055_APP_056_APP_061_InitUsageAndRecipeErrors/extra-position",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-055",
+        "APP-056",
+        "APP-061"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_055_APP_056_APP_061_InitUsageAndRecipeErrors/unknown-recipe",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-055",
+        "APP-056",
+        "APP-061"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_055_APP_056_APP_061_InitUsageAndRecipeErrors/malformed-document",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-055",
+        "APP-056",
+        "APP-061"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_055_APP_056_APP_061_InitUsageAndRecipeErrors/missing-document",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-055",
+        "APP-056",
+        "APP-061"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_055_APP_056_APP_061_InitUsageAndRecipeErrors/invalid-metadata-type",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-055",
+        "APP-056",
+        "APP-061"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_057_APP_058_InitConflicts",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-057",
+        "APP-058"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_057_APP_058_InitConflicts/config",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-057",
+        "APP-058"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_057_APP_058_InitConflicts/recipe",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-057",
+        "APP-058"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_057_APP_058_InitConflicts/module",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-057",
+        "APP-058"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_061_InitJSONSuccess",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-061"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_009_APP_027_APP_028_StartContextAssignmentAndRejection",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-009",
+        "APP-027",
+        "APP-028"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_009_APP_027_APP_028_APP_040_StartPreservesApprovalWarning",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-009",
+        "APP-027",
+        "APP-028",
+        "APP-040"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_004_HeldModulesUseApprovedProjection",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-004"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_011_APP_032_APP_033_ContextCompactFullAndErrors",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-011",
+        "APP-032",
+        "APP-033"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_012_APP_034_APP_035_APP_036_CoverageCurrentProjectionAndErrors",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-012",
+        "APP-034",
+        "APP-035",
+        "APP-036"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_010_APP_029_APP_030_APP_031_VerifyDoneAuditAndFullChecks",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-010",
+        "APP-029",
+        "APP-030",
+        "APP-031"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_010_APP_029_APP_030_APP_031_VerifyRejectsFalseFailFirstAndFrozenEdits",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-010",
+        "APP-029",
+        "APP-030",
+        "APP-031"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_010_APP_029_APP_031_DoneReportsBlockedAudit",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-010",
+        "APP-029",
+        "APP-031"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_114_APP_115_APP_117_ListQueueOrderAndFields",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-114",
+        "APP-115",
+        "APP-117"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_114_APP_117_ListNearestRootAndEmptyQueue",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-114",
+        "APP-117"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_116_APP_117_ListUsageConfigurationAndQueueErrors",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-116",
+        "APP-117"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_153_APP_154_MigrateNearestRootAndRepeatedNoOp",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-153",
+        "APP-154"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_153_APP_154_MigrateEmptyCurrentProject",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-153",
+        "APP-154"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_154_APP_155_MigrateStaticDiagnosticsAndFailures",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-154",
+        "APP-155"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_154_APP_155_MigrateStaticDiagnosticsAndFailures/static-check",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-154",
+        "APP-155"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_154_APP_155_MigrateStaticDiagnosticsAndFailures/malformed-config",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-154",
+        "APP-155"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_154_APP_155_MigrateStaticDiagnosticsAndFailures/malformed-module",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-154",
+        "APP-155"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_154_APP_155_MigrateStaticDiagnosticsAndFailures/unsupported-version",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-154",
+        "APP-155"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_154_APP_155_MigrateStaticDiagnosticsAndFailures/missing-version",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-154",
+        "APP-155"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_155_MigrateRejectsArgumentsBeforeMutation",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-155"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_100_APP_101_APP_104_NewModuleFromNearestProjectTemplates",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-100",
+        "APP-101",
+        "APP-104"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_102_APP_103_APP_104_NewModuleConflictsPreserveContents",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-102",
+        "APP-103",
+        "APP-104"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_102_APP_103_APP_104_NewModuleConflictsPreserveContents/existing-name",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-102",
+        "APP-103",
+        "APP-104"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_102_APP_103_APP_104_NewModuleConflictsPreserveContents/existing-prefix",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-102",
+        "APP-103",
+        "APP-104"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_102_APP_103_APP_104_NewModuleConflictsPreserveContents/occupied-directory",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-102",
+        "APP-103",
+        "APP-104"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-103",
+        "APP-104"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/missing-name",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-103",
+        "APP-104"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/missing-prefix",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-103",
+        "APP-104"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/invalid-name",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-103",
+        "APP-104"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/invalid-prefix",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-103",
+        "APP-104"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/repeated-prefix",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-103",
+        "APP-104"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/extra-argument",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-103",
+        "APP-104"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/unknown-option",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-103",
+        "APP-104"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/missing-template",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-103",
+        "APP-104"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/malformed-template",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-103",
+        "APP-104"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/invalid-configuration",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-103",
+        "APP-104"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/invalid-existing-graph",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-103",
+        "APP-104"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/no-configured-destination",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-103",
+        "APP-104"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_101_APP_104_NewModuleEmptyGoModule",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-101",
+        "APP-104"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_074_APP_076_APP_077_NextDiscoversRootAndAppliesChange",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-074",
+        "APP-076",
+        "APP-077"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_075_NextAllowUnmergedAndUsage",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-075"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_076_NextPlainEmptyQueue",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-076"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_077_NextExitClasses",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-077"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_078_NextWrappedCauseAndAction",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-078"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_079_NextJSONSuccessAndFailure",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-079"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_127_APP_128_APP_129_PRBodyExplicitHistoricalEndpoint",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-127",
+        "APP-128",
+        "APP-129"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_128_APP_129_PRBodyValidEmptyRange",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-128",
+        "APP-129"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_130_APP_131_PRBodyFailures",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-130",
+        "APP-131"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_130_APP_131_PRBodyFailures/missing-range",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-130",
+        "APP-131"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_130_APP_131_PRBodyFailures/extra-range",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-130",
+        "APP-131"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_130_APP_131_PRBodyFailures/invalid-option",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-130",
+        "APP-131"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_130_APP_131_PRBodyFailures/absent-project",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-130",
+        "APP-131"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_130_APP_131_PRBodyFailures/bad-endpoint-config",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-130",
+        "APP-131"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_130_APP_131_PRBodyFailures/unavailable-range",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-130",
+        "APP-131"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_004_APP_016_APP_017_APP_018_ModulesGraphAndNearestAncestor",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-004",
+        "APP-016",
+        "APP-017",
+        "APP-018"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_004_APP_016_APP_017_APP_018_ModulesGraphAndNearestAncestor/plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-004",
+        "APP-016",
+        "APP-017",
+        "APP-018"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_004_APP_016_APP_017_APP_018_ModulesGraphAndNearestAncestor/JSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-004",
+        "APP-016",
+        "APP-017",
+        "APP-018"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_004_APP_016_APP_017_APP_018_ModulesGraphAndNearestAncestor/nearest-ancestor",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-004",
+        "APP-016",
+        "APP-017",
+        "APP-018"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_018_ModulesConfigurationErrors",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-018"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_018_ModulesConfigurationErrors/missing/plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-018"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_018_ModulesConfigurationErrors/missing/JSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-018"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_018_ModulesConfigurationErrors/malformed/plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-018"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_018_ModulesConfigurationErrors/malformed/JSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-018"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_018_ModulesConfigurationErrors/invalid-graph/plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-018"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_018_ModulesConfigurationErrors/invalid-graph/JSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-018"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_018_ModulesConfigurationErrors/invalid-document/plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-018"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_018_ModulesConfigurationErrors/invalid-document/JSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-018"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_018_ModulesConfigurationErrors/invalid-metadata/plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-018"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_018_ModulesConfigurationErrors/invalid-metadata/JSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-018"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_005_APP_020_NewChangePlainAndJSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-005",
+        "APP-020"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_019_NewChangeErrorsPreserveFiles",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-019"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_019_NewChangeErrorsPreserveFiles/missing-argument/plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-019"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_019_NewChangeErrorsPreserveFiles/missing-argument/JSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-019"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_019_NewChangeErrorsPreserveFiles/extra-argument/plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-019"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_019_NewChangeErrorsPreserveFiles/extra-argument/JSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-019"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_019_NewChangeErrorsPreserveFiles/invalid-module/plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-019"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_019_NewChangeErrorsPreserveFiles/invalid-module/JSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-019"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_019_NewChangeErrorsPreserveFiles/invalid-slug/plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-019"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_019_NewChangeErrorsPreserveFiles/invalid-slug/JSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-019"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_019_NewChangeErrorsPreserveFiles/duplicate-pending/plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-019"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_019_NewChangeErrorsPreserveFiles/duplicate-pending/JSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-019"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_019_NewChangeErrorsPreserveFiles/duplicate-archived/plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-019"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_019_NewChangeErrorsPreserveFiles/duplicate-archived/JSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-019"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_020_NewChangeJSONFailureEnvelope",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-020"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_091_APP_092_APP_093_ReleaseOwnedClaimRetainsDirtyWork",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-091",
+        "APP-092",
+        "APP-093"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_091_APP_092_APP_093_ReleaseOwnedClaimRetainsDirtyWork/plain-path",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-091",
+        "APP-092",
+        "APP-093"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_091_APP_092_APP_093_ReleaseOwnedClaimRetainsDirtyWork/json-filename",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-091",
+        "APP-092",
+        "APP-093"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_092_APP_093_ReleaseForeignClaimKeepsOwner",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-092",
+        "APP-093"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_092_APP_093_ReleaseUsageAndConfiguration",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-092",
+        "APP-093"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_092_APP_093_ReleaseUsageAndConfiguration/missing-argument",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-092",
+        "APP-093"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_092_APP_093_ReleaseUsageAndConfiguration/extra-argument-json",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-092",
+        "APP-093"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_080_APP_081_APP_083_APP_084_RunBoundedContinuation",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-080",
+        "APP-081",
+        "APP-083",
+        "APP-084"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_081_APP_084_APP_086_RunUnlimitedAndJSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-081",
+        "APP-084",
+        "APP-086"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_083_RunPlainMultiple",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-083"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_086_RunJSONLimited",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-086"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_082_RunAllowUnmerged",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-082"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_081_APP_084_RunUsageAndConfiguration",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-081",
+        "APP-084"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_084_APP_085_APP_086_RunWrappedFailure",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-084",
+        "APP-085",
+        "APP-086"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_089_APP_090_APP_084_RunForJSONRetainsAppliedAndResumes",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-084",
+        "APP-089",
+        "APP-090"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_090_APP_084_RunForPlainStop",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-084",
+        "APP-090"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_084_RunForPriorBlockStillFails",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-084"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_089_RunForInvalidOptionsBeforeMutation",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-089"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_089_RunForInvalidOptionsBeforeMutation/missing",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-089"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_089_RunForInvalidOptionsBeforeMutation/malformed",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-089"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_089_RunForInvalidOptionsBeforeMutation/zero",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-089"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_089_RunForInvalidOptionsBeforeMutation/negative",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-089"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_089_RunForInvalidOptionsBeforeMutation/repeated",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-089"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_089_RunForInvalidOptionsBeforeMutation/next",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-089"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_087_StartFromRequestedAttemptRestoresWorkAndContext",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-087"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_087_StartFromRequestedAttemptRestoresWorkAndContext/plain-second-ref",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-087"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_087_StartFromRequestedAttemptRestoresWorkAndContext/json-first-ref",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-087"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_087_MissingSavedAttemptRetainsLifecycleFailureShape",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-087"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_088_FromAttemptUsageRejectsBeforeMutation",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-088"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_088_FromAttemptUsageRejectsBeforeMutation/missing",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-088"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_088_FromAttemptUsageRejectsBeforeMutation/noninteger",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-088"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_088_FromAttemptUsageRejectsBeforeMutation/zero",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-088"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_088_FromAttemptUsageRejectsBeforeMutation/negative",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-088"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_088_FromAttemptUsageRejectsBeforeMutation/repeated",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-088"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_088_FromAttemptUsageRejectsBeforeMutation/context",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-088"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_088_FromAttemptUsageRejectsBeforeMutation/help",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-088"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_132_APP_133_ShowHistoryOrderedMetadataAndFilter",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-132",
+        "APP-133"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_132_APP_133_ShowHistoryOrderedMetadataAndFilter/selected-ID",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-132",
+        "APP-133"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_132_APP_133_ShowHistoryOrderedMetadataAndFilter/module-wide",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-132",
+        "APP-133"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_132_APP_133_ShowHistoryNearestRootAndEmpty",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-132",
+        "APP-133"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_134_ShowHistoryOptionMisuse",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-134"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_134_ShowHistoryOptionMisuse/other-command/plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-134"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_134_ShowHistoryOptionMisuse/other-command/JSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-134"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_134_ShowHistoryOptionMisuse/projected-combination/plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-134"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_134_ShowHistoryOptionMisuse/projected-combination/JSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-134"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_135_ShowHistoryLookupAndArchiveFailures",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-135"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_135_ShowHistoryLookupAndArchiveFailures/unknown-module/plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-135"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_135_ShowHistoryLookupAndArchiveFailures/unknown-module/JSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-135"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_135_ShowHistoryLookupAndArchiveFailures/unknown-ID/plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-135"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_135_ShowHistoryLookupAndArchiveFailures/unknown-ID/JSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-135"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_135_ShowHistoryLookupAndArchiveFailures/missing-config/plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-135"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_135_ShowHistoryLookupAndArchiveFailures/missing-config/JSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-135"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_135_ShowHistoryLookupAndArchiveFailures/malformed-config/plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-135"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_135_ShowHistoryLookupAndArchiveFailures/malformed-config/JSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-135"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_135_ShowHistoryLookupAndArchiveFailures/malformed-archive/plain",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-135"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_135_ShowHistoryLookupAndArchiveFailures/malformed-archive/JSON",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-135"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_143_APP_144_StaleRecoveryDiffAndReadOnly",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-143",
+        "APP-144"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_144_StaleUnavailableHistoryAndEmptyView",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-144"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_143_StaleViewChoosesNearestProject",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-143"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-145",
+        "APP-146"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures/unknown",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-145",
+        "APP-146"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures/ambiguous",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-145",
+        "APP-146"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures/bad-bases",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-145",
+        "APP-146"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures/missing-config",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-145",
+        "APP-146"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures/malformed-config",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-145",
+        "APP-146"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures/invalid-graph",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-145",
+        "APP-146"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_118_APP_119_APP_120_APP_121_APP_122_APP_123_APP_124_APP_125_StatusRichReport",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-118",
+        "APP-119",
+        "APP-120",
+        "APP-121",
+        "APP-122",
+        "APP-123",
+        "APP-124",
+        "APP-125"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_118_APP_119_APP_122_StatusNearestRootEmptyContainers",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-118",
+        "APP-119",
+        "APP-122"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_126_StatusUsageConfigurationAndOperationalFailures",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-126"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-076",
+        "APP-077",
+        "APP-079"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_076_APP_077_NextPlainUsageStop",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-076",
+        "APP-077"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-083",
+        "APP-084",
+        "APP-086"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_083_APP_084_RunPlainSharedUsageStop",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-083",
+        "APP-084"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_084_APP_086_EarlierBlockPrecedesUsageStop",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-084",
+        "APP-086"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_077_APP_079_APP_084_APP_086_InvalidUsagePolicyBeforeMutation",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-077",
+        "APP-079",
+        "APP-084",
+        "APP-086"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_077_APP_079_APP_084_APP_086_InvalidUsagePolicyBeforeMutation/next",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-077",
+        "APP-079",
+        "APP-084",
+        "APP-086"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    },
+    {
+      "Name": "Test_APP_077_APP_079_APP_084_APP_086_InvalidUsagePolicyBeforeMutation/run",
+      "Classname": "github.com/lurkshark/fireweed/packages/app/evals",
+      "IDs": [
+        "APP-077",
+        "APP-079",
+        "APP-084",
+        "APP-086"
+      ],
+      "Result": "pass",
+      "Failure": "",
+      "Seconds": 0
+    }
+  ],
+  "Seconds": 0,
+  "HookExit": 0,
+  "Stdout": "?   \tgithub.com/lurkshark/fireweed/packages/app\t[no test files]\n?   \tgithub.com/lurkshark/fireweed/packages/app/internal/entry\t[no test files]\nPASS\nok  \tgithub.com/lurkshark/fireweed/packages/app/evals\t(cached)\n",
+  "Stderr": ""
+}

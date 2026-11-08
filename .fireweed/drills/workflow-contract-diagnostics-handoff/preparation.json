@@ -1,0 +1,14 @@
+{
+  "candidate": "9a206c558e8e5625c0ae55bb57c42ae8130b4f15",
+  "setup_child": "644f51f1090f9c8e5669e133bb98a7248a68ef5d",
+  "changed_paths": [
+    "SYSTEM.md",
+    "fireweed.yaml"
+  ],
+  "primary_and_caller_pin_match": true,
+  "expected_retained_hashes_match": true,
+  "gate_created": false,
+  "native_invocation": false,
+  "verifier_copy_not_exercised": true,
+  "future_live_review_still_required": true
+}

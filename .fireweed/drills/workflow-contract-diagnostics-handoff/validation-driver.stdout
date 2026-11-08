@@ -1,0 +1,27 @@
+clone passed
+checkout passed
+build passed
+normal passed
+race passed
+vet passed
+check passed
+doctor passed
+history-delta passed
+ci passed
+version passed
+build-info passed
+current-removed-init passed
+current-removed-stamp passed
+current-removed-add passed
+current-removed-commit passed
+current-removed-start passed
+current-removed-verify passed
+current-removed-release passed
+prior-removed-init passed
+prior-removed-stamp passed
+prior-removed-add passed
+prior-removed-commit passed
+prior-removed-start passed
+prior-removed-verify passed
+prior-removed-release passed
+{"source": "9a206c558e8e5625c0ae55bb57c42ae8130b4f15", "candidate": "9a206c558e8e5625c0ae55bb57c42ae8130b4f15", "previous_subject": "ccd3d6b7732d613e80a027ba7969b65adc58bc0e", "original_baseline": "79cf33a7690082f28c06bf41a72719d282bc00fe", "history_delta": "ccd3d6b7732d613e80a027ba7969b65adc58bc0e..9a206c558e8e5625c0ae55bb57c42ae8130b4f15", "reused_valid_prefix": "be35552b706aa3000ff8f11306d129ff1d701b85..ccd3d6b7732d613e80a027ba7969b65adc58bc0e (composed committed WF2, CHK-034 and residual-fix delta evidence; history runtime unchanged)", "sha256": "cc22f47c7aa607c96a13273d29d5bf4ade4f912453840f621331d73dc385f112", "all_checks_passed": true, "compiled_cli_current_and_prior_removed_ids_reserved_review_no_fail_first": true, "all_fixture_claims_released": true, "pin_not_yet_changed": true, "native_workflow_drills": 0}

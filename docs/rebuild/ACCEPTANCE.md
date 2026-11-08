@@ -98,18 +98,22 @@ are preserved. Worker notes authorize no new change. Full-completion gates remai
 The separately owner-authorized [remaining-failure investigation](../../.fireweed/drills/workflow-failure-investigation-20261108/findings.md)
 is complete without corrections, repinning or another native workflow invocation.
 It confirms reconstruction defects for the workflow failures; RUN-037 remains
-unreproduced in bounded focused/full-context replay. Proposed follow-ups need
-owner selection before normal audited authoring. The native failure and WF4 stop
-remain unchanged.
+unreproduced in bounded focused/full-context replay. The native failure and WF4
+stop remain unchanged.
 
-The owner now selected two follow-ups for normal audited execution: FLOW-007/
-FLOW-023 already_satisfied clarification and RUN-037 diagnostic-only eval_fix.
-Keep FLOW-062 unchanged. After both archive, validate clean source, perform an
-idle verified controller update and prepare the stopped retry handoff. The budget
-is exactly these two changes plus validation/preparation. Native retry remains a
-separate approval; no source import, expanded worker inputs, raised/reset bound
-or counter, extra correction or push. Follow current GOAL/PROGRESS; previous
-native results and all WF4/full-completion gates remain intact.
+The two subsequently owner-selected follow-ups are complete through normal
+independent audit and archive: [0183](../../changes/archive/0183-reserved-ids-review-fail-first.md)
+clarifies FLOW-007/FLOW-023 as already_satisfied and
+[0184](../../changes/archive/0184-verification-stop-diagnostics.md) is a diagnostic-only
+RUN-037 eval_fix. FLOW-062, runtime/interfaces/hooks/configuration and existing
+bounds remain unchanged. The
+[clean-source validation, idle pin update and stopped preparation](../../.fireweed/drills/workflow-contract-diagnostics-handoff.md)
+are complete with no native invocation or active run/claim. RUN-037's native
+timing cause remains unresolved. This budget is exhausted; stop for separate
+owner approval of one retry on the identified source/pin. No source import,
+expanded worker inputs, raised/reset bound or counter, extra correction, later
+work or push. Follow GOAL/PROGRESS; all prior native results and WF4/full-completion
+gates remain intact.
 
 **Entry.** Follow SYSTEM and the pin/deadline in PROGRESS. Read AGENTS,
 DECISIONS, the relevant unchanged design clauses and projected workflow

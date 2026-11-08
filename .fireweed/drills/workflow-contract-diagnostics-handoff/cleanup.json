@@ -1,0 +1,30 @@
+{
+  "removed_owned_clones": [
+    {
+      "path": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/prepared-retry/caller",
+      "head": "644f51f1090f9c8e5669e133bb98a7248a68ef5d",
+      "no_claim": true,
+      "single_worktree": true
+    },
+    {
+      "path": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/source",
+      "head": "9a206c558e8e5625c0ae55bb57c42ae8130b4f15",
+      "no_claim": true,
+      "single_worktree": true
+    },
+    {
+      "path": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/cli-current-removed",
+      "head": "1e7655b1e9e2c285f99509e4147e469f49e3f4a9",
+      "no_claim": true,
+      "single_worktree": true
+    },
+    {
+      "path": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/cli-prior-removed",
+      "head": "2dfbff720ca702a33590c32a292f5dc38070c88c",
+      "no_claim": true,
+      "single_worktree": true
+    }
+  ],
+  "validated_subject_copy_removed_after_promotion": true,
+  "native_workflow_drills": 0
+}

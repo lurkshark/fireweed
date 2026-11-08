@@ -1,37 +1,50 @@
-# Apply the approved contract and diagnostic changes, then prepare a retry
+# Prepared workflow retry — stopped for separate approval
 
-The owner approved two normal audited changes:
-[0183](../../changes/0183-reserved-ids-review-fail-first.md), an already_satisfied
-workflow clarification for FLOW-007 ID reservation and FLOW-023 review fail-first
-exclusion with focused public assertions; and
-[0184](../../changes/0184-verification-stop-diagnostics.md), a diagnostic-only
-RUN-037 eval_fix preserving the two-second budget and every assertion. Keep
-FLOW-062 and its boundary cause-text test unchanged. No runtime/interface/hook/
-configuration correction or reconstructed-source import is authorized.
+The two owner-selected normal audited changes are complete:
+[0183](../../changes/archive/0183-reserved-ids-review-fail-first.md) clarifies
+FLOW-007 reserved IDs and FLOW-023 review fail-first exclusion as already_satisfied;
+[0184](../../changes/archive/0184-verification-stop-diagnostics.md) improves RUN-037
+failure evidence while preserving its two-second budget, four-second hook sleep
+and all assertions. No runtime/interface/hook/configuration correction was made.
+FLOW-062 and its boundary cause-text test are unchanged. RUN-037's native timing
+cause remains unresolved; diagnostics do not establish a timing fix.
 
-Keep the current pin in PROGRESS unchanged through both normal changes. Use the
-exact configured command/model/effort, independent restricted audit, normal
-frozen phases and all existing retry/audit/unapproved bounds. Only the owning
-controller commits phases and applies/archives Specs. Workers run context before
-each held step and pinned verify --quick, poll to terminal and return without
-lifecycle mutations. Authors edit protected infrastructure/evidence separately
-between active changes. Stop if the approved already_satisfied behavior cannot
-be supported or another correction/owner decision is needed.
+Both changes passed normal phase verification and independent restricted audit,
+were applied/archived by the old pinned controller and released all claims.
+Identified clean source passed normal/race Go suites, vet, check, hook doctor,
+explicit history/CI delta with valid prefixes reused, and compiled CLI allocation/
+review-enforcement fixtures. The retiring pin is preserved; the verified new pin
+is recorded in PROGRESS. The
+[committed preparation evidence](../../.fireweed/drills/workflow-contract-diagnostics-handoff.md)
+records exact source, commands/results, phase reports, warnings/cost limits,
+promotion, expected hashes, preparation-only setup and cleanup.
 
-After both changes are archived, all normal processes exit and shared claims are
-empty, identify clean source and pass applicable normal/race Go suites, vet,
-check, hook doctor, explicit history/CI delta with valid prefixes reused, and
-compiled CLI allocation/review-enforcement behavior. Preserve the retiring pin,
-then atomically install the verified controller only while idle. Update only
-outside candidate/expected-pin metadata and prepare the restartable retry tooling.
-Retain preparation-only evidence, remove owned staging/validation scratch, commit
-a stopped protected handoff with no active run/claim and stop for approval.
+**No native drill was launched in this sequence. Stop for separate owner approval
+of one workflow retry on the identified source and pin.** No active run, queue or
+shared claim remains. Owned validation/preparation clones are removed. All prior
+native results/reports/proof/attempt refs, original 79cf33a and prior corrected
+ccd3d6b objects, bounds/counters, recovery executables and unrelated worktree remain
+preserved. The existing deadline is **2026-11-10 22:51:05 UTC**, with no extension.
+The preceding native workflow failure remains current; WF4/full completion stay open.
 
-**Do not launch a native drill in this sequence.** The next single workflow retry
-requires separate owner approval of the identified source/pin and fresh live
-isolation/output/review gates. No extra worker inputs, import inventory, hints,
-command interception, instrumentation, source-cache/old-code access or later work.
-No push. The original 79cf33a and corrected ccd3d6b baseline objects, all prior
-reports/archives/proof/attempt refs, counters/bounds, recovery executables and
-unrelated worktrees are preserved. The existing deadline remains
-**2026-11-10 22:51:05 UTC**, with no further extension. WF4 stays open.
+After explicit approval, follow
+[the prepared inspector README](workflow-drill/README.md), using a fresh outside
+root and the exact candidate/expected pin in control.py. Recheck live queue,
+claims, deadline, bounds and pin; run context for the applicable step. Prepare
+fresh caller setup, then launch only the single approved invocation. Review actual
+retained inputs and all live isolation gates before releasing the first worker;
+review all commands/scripts/incremental patches and full native feedback before
+any remaining configured release. Repeat preflight and fresh-output identity
+checks. Exact worker command/model/effort, worker SYSTEM, input exclusions and all
+isolation/output/stop gates remain unchanged. No import inventory, hints,
+instrumentation, command interception or expanded inputs are authorized.
+
+Keep received streams durable outside reconstruction, forwarding identical bytes.
+On rejection/interruption use the prepared worker-first bounded stop/drain path,
+give the native controller its bounded publication opportunity, and retain the
+whole-run emergency stop. Earlier fake rehearsals prove wrapper behavior only;
+this preparation establishes no new native reporting behavior. Preserve whatever
+terminal evidence/ref is actually published, record absence honestly, clean only
+owned scratch and commit protected evidence idle. Stop afterward. A failure/gap
+authorizes neither another correction nor another drill. No reconstruction import,
+further pin update, later work or push is authorized now.

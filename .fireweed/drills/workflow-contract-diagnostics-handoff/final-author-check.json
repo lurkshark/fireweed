@@ -1,0 +1,10 @@
+{
+  "argv": [
+    "/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed",
+    "check",
+    "--json"
+  ],
+  "exit": 0,
+  "bound_seconds": 30,
+  "native_workflow_drills": 0
+}

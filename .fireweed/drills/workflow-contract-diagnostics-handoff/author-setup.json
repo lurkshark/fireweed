@@ -1,0 +1,11 @@
+{
+  "head": "19bf83e202e438d969010b7adbd8fc57a1d0c56b",
+  "changes": [
+    "changes/0183-reserved-ids-review-fail-first.md",
+    "changes/0184-verification-stop-diagnostics.md"
+  ],
+  "source_corrections": 0,
+  "native_drills": 0,
+  "pin_update_only_after_both_complete_and_clean_validation": true,
+  "native_retry_requires_separate_approval": true
+}

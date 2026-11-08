@@ -1,19 +1,28 @@
 # Prepared workflow wrapper and inspector — stopped
 
-The two normal audited residual fixes and verified controller update are complete.
-Exactly one approved native workflow retry on corrected subject `ccd3d6b7732d613e80a027ba7969b65adc58bc0e` then failed
-verification. PROGRESS records the current unchanged pin;
-[complete retry evidence](../../../.fireweed/drills/workflow-corrected-controller-retry-20261107T232508/review.md)
-retains output, actual failures, failed ref and cleanup. The focused corrected
-cases passed; WF4 remains open. Original 79cf33a and all prior evidence are preserved.
+The owner-selected FLOW-007/FLOW-023 contract clarification and RUN-037 diagnostic
+change are applied and independently audited. Clean-source validation and the
+idle controller handoff are recorded in the
+[preparation evidence](../../../.fireweed/drills/workflow-contract-diagnostics-handoff.md).
+PROGRESS records the current pin; `control.py` identifies the validated candidate.
+The original 79cf33a, prior corrected ccd3d6b, all preceding native reports/refs,
+recovery executables, configured bounds/counters and unrelated worktree are preserved.
 
-**Approval consumed. Do not launch another drill.** The commands below describe a
-restart only after a new owner instruction, a new outside root and fresh live
-gates. No further correction, source application, controller update or push is
-currently authorized. The existing deadline remains **2026-11-10 22:51:05 UTC**.
-Supervisor behavior, exact worker command/model/effort, input policy and every
-isolation/output/stop gate are unchanged; earlier fake rehearsals remain valid
-for that behavior, not proof of native reporting on rejection/interruption.
+**Prepared only. Do not launch a native drill without separate owner approval.**
+This sequence exercised inspector preparation and matching primary/caller copies,
+then removed its owned idle clones. No live gate, verifier or reconstruction
+worker was created. The commands below require a new outside root and fresh live
+isolation/input/output review. No further correction, reconstructed-code import,
+worker-input expansion or push is authorized. The existing deadline remains
+**2026-11-10 22:51:05 UTC**.
+
+The preceding native workflow invocation failed verification; its
+[complete evidence](../../../.fireweed/drills/workflow-corrected-controller-retry-20261107T232508/review.md)
+remains the current result. WF4 stays open. RUN-037's native timing cause remains
+unresolved; richer diagnostics are not a runtime timing fix. Wrapper/inspector
+behavior, exact worker command/model/effort, worker SYSTEM and all gates remain
+unchanged. Earlier fake rehearsals remain valid for that behavior and establish
+no native reporting behavior on rejection/interruption/emergency stop.
 
 `guard.py` is an `agent.wrap` prefix. Its CLI accepts only the exact configured
 command/model/effort from SYSTEM, with the original prompt as its last argument.
@@ -60,7 +69,7 @@ Preflight runs on first readiness and again immediately before each release.
 Actual retained-input review precedes release one. Full first commands/scripts,
 every incremental patch, native feedback and repeated live isolation review
 precede release two. Inspection supplies no reconstruction hints or extra inputs.
-Only the worker SYSTEM wording changes: no local builds/tests/module setup;
+The worker SYSTEM policy is unchanged: no local builds/tests/module setup;
 missing compilation infrastructure is intentional; format fresh code and return
 it to the separate verifier. There are no command shims, interceptors or observers.
 

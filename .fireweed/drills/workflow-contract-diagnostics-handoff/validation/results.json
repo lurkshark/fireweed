@@ -1,0 +1,397 @@
+[
+  {
+    "stage": "clone",
+    "argv": [
+      "git",
+      "clone",
+      "--no-hardlinks",
+      "--no-checkout",
+      "/Users/joel/Workspace/fireweed",
+      "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/source"
+    ],
+    "cwd": "/Users/joel/Workspace/fireweed",
+    "bound_seconds": 120,
+    "start": "2026-11-08T02:42:10.104501+00:00",
+    "finish": "2026-11-08T02:42:11.266146+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "checkout",
+    "argv": [
+      "git",
+      "checkout",
+      "--detach",
+      "9a206c558e8e5625c0ae55bb57c42ae8130b4f15"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/source",
+    "bound_seconds": 120,
+    "start": "2026-11-08T02:42:11.266534+00:00",
+    "finish": "2026-11-08T02:42:11.776535+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "build",
+    "argv": [
+      "go",
+      "build",
+      "-trimpath",
+      "-o",
+      "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/fireweed",
+      "."
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/source",
+    "bound_seconds": 180,
+    "start": "2026-11-08T02:42:11.878323+00:00",
+    "finish": "2026-11-08T02:42:13.761836+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "normal",
+    "argv": [
+      "go",
+      "test",
+      "./..."
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/source",
+    "bound_seconds": 900,
+    "start": "2026-11-08T02:42:13.762781+00:00",
+    "finish": "2026-11-08T02:47:45.474365+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "race",
+    "argv": [
+      "go",
+      "test",
+      "-race",
+      "./..."
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/source",
+    "bound_seconds": 900,
+    "start": "2026-11-08T02:47:45.479797+00:00",
+    "finish": "2026-11-08T02:53:41.945986+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "vet",
+    "argv": [
+      "go",
+      "vet",
+      "./..."
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/source",
+    "bound_seconds": 180,
+    "start": "2026-11-08T02:53:41.953645+00:00",
+    "finish": "2026-11-08T02:53:42.635002+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "check",
+    "argv": [
+      "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/fireweed",
+      "check",
+      "--json"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/source",
+    "bound_seconds": 60,
+    "start": "2026-11-08T02:53:42.635472+00:00",
+    "finish": "2026-11-08T02:53:43.055332+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "doctor",
+    "argv": [
+      "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/fireweed",
+      "doctor",
+      "--no-agent",
+      "--json"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/source",
+    "bound_seconds": 180,
+    "start": "2026-11-08T02:53:43.056459+00:00",
+    "finish": "2026-11-08T02:53:52.888530+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "history-delta",
+    "argv": [
+      "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/fireweed",
+      "check-commits",
+      "ccd3d6b7732d613e80a027ba7969b65adc58bc0e..9a206c558e8e5625c0ae55bb57c42ae8130b4f15",
+      "--json"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/source",
+    "bound_seconds": 300,
+    "start": "2026-11-08T02:53:52.889661+00:00",
+    "finish": "2026-11-08T02:54:18.800467+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "ci",
+    "argv": [
+      "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/fireweed",
+      "ci",
+      "ccd3d6b7732d613e80a027ba7969b65adc58bc0e..9a206c558e8e5625c0ae55bb57c42ae8130b4f15",
+      "--json"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/source",
+    "bound_seconds": 1500,
+    "start": "2026-11-08T02:54:18.801820+00:00",
+    "finish": "2026-11-08T03:11:17.461978+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "version",
+    "argv": [
+      "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/fireweed",
+      "version"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/source",
+    "bound_seconds": 30,
+    "start": "2026-11-08T03:11:17.467623+00:00",
+    "finish": "2026-11-08T03:11:17.474157+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "build-info",
+    "argv": [
+      "go",
+      "version",
+      "-m",
+      "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/fireweed"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/source",
+    "bound_seconds": 30,
+    "start": "2026-11-08T03:11:17.474546+00:00",
+    "finish": "2026-11-08T03:11:17.487592+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "current-removed-init",
+    "argv": [
+      "git",
+      "init",
+      "-b",
+      "main"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/cli-current-removed",
+    "bound_seconds": 120,
+    "start": "2026-11-08T03:11:17.489001+00:00",
+    "finish": "2026-11-08T03:11:17.510740+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "current-removed-stamp",
+    "argv": [
+      "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/fireweed",
+      "stamp",
+      "cli",
+      "--json"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/cli-current-removed",
+    "bound_seconds": 60,
+    "start": "2026-11-08T03:11:17.511116+00:00",
+    "finish": "2026-11-08T03:11:17.516532+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "current-removed-add",
+    "argv": [
+      "git",
+      "add",
+      "-A"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/cli-current-removed",
+    "bound_seconds": 120,
+    "start": "2026-11-08T03:11:17.516827+00:00",
+    "finish": "2026-11-08T03:11:17.540391+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "current-removed-commit",
+    "argv": [
+      "git",
+      "-c",
+      "user.name=Fireweed Fixture",
+      "-c",
+      "user.email=fixture@localhost",
+      "commit",
+      "-m",
+      "approved public CLI fixture"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/cli-current-removed",
+    "bound_seconds": 120,
+    "start": "2026-11-08T03:11:17.540845+00:00",
+    "finish": "2026-11-08T03:11:17.587073+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "current-removed-start",
+    "argv": [
+      "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/fireweed",
+      "start",
+      "cli",
+      "--json"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/cli-current-removed",
+    "bound_seconds": 60,
+    "start": "2026-11-08T03:11:17.587558+00:00",
+    "finish": "2026-11-08T03:11:17.832065+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "current-removed-verify",
+    "argv": [
+      "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/fireweed",
+      "verify",
+      "--quick",
+      "--json"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/cli-current-removed",
+    "bound_seconds": 90,
+    "start": "2026-11-08T03:11:17.833229+00:00",
+    "finish": "2026-11-08T03:11:18.026955+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "current-removed-release",
+    "argv": [
+      "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/fireweed",
+      "release",
+      "cli",
+      "--json"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/cli-current-removed",
+    "bound_seconds": 60,
+    "start": "2026-11-08T03:11:18.027758+00:00",
+    "finish": "2026-11-08T03:11:18.223532+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "prior-removed-init",
+    "argv": [
+      "git",
+      "init",
+      "-b",
+      "main"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/cli-prior-removed",
+    "bound_seconds": 120,
+    "start": "2026-11-08T03:11:18.242137+00:00",
+    "finish": "2026-11-08T03:11:18.265367+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "prior-removed-stamp",
+    "argv": [
+      "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/fireweed",
+      "stamp",
+      "cli",
+      "--json"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/cli-prior-removed",
+    "bound_seconds": 60,
+    "start": "2026-11-08T03:11:18.265857+00:00",
+    "finish": "2026-11-08T03:11:18.271180+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "prior-removed-add",
+    "argv": [
+      "git",
+      "add",
+      "-A"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/cli-prior-removed",
+    "bound_seconds": 120,
+    "start": "2026-11-08T03:11:18.271583+00:00",
+    "finish": "2026-11-08T03:11:18.294449+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "prior-removed-commit",
+    "argv": [
+      "git",
+      "-c",
+      "user.name=Fireweed Fixture",
+      "-c",
+      "user.email=fixture@localhost",
+      "commit",
+      "-m",
+      "approved public CLI fixture"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/cli-prior-removed",
+    "bound_seconds": 120,
+    "start": "2026-11-08T03:11:18.294916+00:00",
+    "finish": "2026-11-08T03:11:18.341698+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "prior-removed-start",
+    "argv": [
+      "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/fireweed",
+      "start",
+      "cli",
+      "--json"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/cli-prior-removed",
+    "bound_seconds": 60,
+    "start": "2026-11-08T03:11:18.342290+00:00",
+    "finish": "2026-11-08T03:11:18.631220+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "prior-removed-verify",
+    "argv": [
+      "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/fireweed",
+      "verify",
+      "--quick",
+      "--json"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/cli-prior-removed",
+    "bound_seconds": 90,
+    "start": "2026-11-08T03:11:18.632078+00:00",
+    "finish": "2026-11-08T03:11:18.842484+00:00",
+    "exit": 0,
+    "expected": 0
+  },
+  {
+    "stage": "prior-removed-release",
+    "argv": [
+      "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/fireweed",
+      "release",
+      "cli",
+      "--json"
+    ],
+    "cwd": "/private/tmp/fireweed-contract-diagnostics-1qxbmhkn/validation/cli-prior-removed",
+    "bound_seconds": 60,
+    "start": "2026-11-08T03:11:18.843398+00:00",
+    "finish": "2026-11-08T03:11:19.038811+00:00",
+    "exit": 0,
+    "expected": 0
+  }
+]
