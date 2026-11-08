@@ -1,14 +1,27 @@
 # Rebuild handoff
 
-The owner subsequently authorized investigation of the remaining native failures.
-The [bounded investigation](../../.fireweed/drills/workflow-failure-investigation-20261108/findings.md)
-is complete: the workflow failures reproduce only on the failed reconstruction,
-with review-ID fail-first selection, removed-ID allocation and boundary-cause
-loss confirmed by public probes. RUN-037 did not reproduce in focused comparison
-or a full failed-ref runner replay; its native cause remains unresolved. No
-product/spec/eval correction was made. Candidate and controller stay unchanged.
-Scoped follow-up proposals are evidence for owner consideration, not approval to
-author them or retry. Investigation scratch is cleaned up; stop for owner review.
+The owner now approved exactly two further normal audited changes:
+[0183](../../changes/0183-reserved-ids-review-fail-first.md) clarifies FLOW-007
+reserved IDs and FLOW-023 review fail-first exclusion as already_satisfied;
+[0184](../../changes/0184-verification-stop-diagnostics.md) improves RUN-037
+diagnostics while retaining its two-second budget and every assertion. Keep
+FLOW-062 and its boundary test unchanged. No runtime/interface/hook/configuration
+correction, saved-source import or worker-input expansion is authorized.
+
+Keep the current pin below through both changes. After their full verification,
+audits, application/archive and complete claim/process release, validate identified
+clean source, preserve the retiring controller and perform an idle verified pin
+update. Prepare only the outside retry tooling and stopped handoff, with all
+existing gates/bounds intact. **No native drill is authorized now; stop for its
+separate approval.** The budget is these two changes and this validation/preparation
+handoff, with no extra correction or push. Follow GOAL for the exact sequence.
+
+The [remaining-failure investigation](../../.fireweed/drills/workflow-failure-investigation-20261108/findings.md)
+confirmed workflow reconstruction defects; RUN-037's native failure did not
+reproduce. These approved clarifications/diagnostics do not apply reconstructed
+code or assert a new runtime timing root cause. Prior native failure, evidence,
+source objects, refs, counters/bounds, recoveries and unrelated worktree remain
+preserved. WF4/full completion stay open.
 
 The owner-requested sequence is complete and stopped. The two scoped fixes are
 applied and independently audited in [0181](../../changes/archive/0181-recorded-regenerate-preservation.md)
@@ -43,13 +56,10 @@ attempt refs, old phase counters, recoveries and unrelated worktree are preserve
 Final live counter/warning details are in evidence; no limits were raised or reset.
 The valid checks proof and WF1/WF2 history prefixes remain valid.
 
-**Stop for owner review. The approval is consumed.** No further correction,
-diagnostic replay, drill, source application, controller update or push is
-currently authorized. Follow [GOAL](GOAL.md) and [ACCEPTANCE](ACCEPTANCE.md).
-The owning native controller, inspector and both workers exited; input/verifier/
-caller scratch is cleaned up. The queue/shared claims are empty and no owned
-normal/native/validation run remains active. Protected final evidence is committed
-separately after terminal cleanup.
+The previous native approval is consumed. Its owning controller, inspector and
+workers exited; owned scratch is cleaned up. Only the newly approved two-change
+validation/preparation sequence above supersedes that stopped state. The next
+native invocation remains a separate approval; no push is authorized.
 
 The owner added exactly 72 hours to the original 2026-11-07 22:51:05 UTC deadline.
 The existing deadline remains **2026-11-10 22:51:05 UTC** (14:51:05 PST), with no

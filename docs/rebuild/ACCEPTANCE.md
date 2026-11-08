@@ -102,6 +102,15 @@ unreproduced in bounded focused/full-context replay. Proposed follow-ups need
 owner selection before normal audited authoring. The native failure and WF4 stop
 remain unchanged.
 
+The owner now selected two follow-ups for normal audited execution: FLOW-007/
+FLOW-023 already_satisfied clarification and RUN-037 diagnostic-only eval_fix.
+Keep FLOW-062 unchanged. After both archive, validate clean source, perform an
+idle verified controller update and prepare the stopped retry handoff. The budget
+is exactly these two changes plus validation/preparation. Native retry remains a
+separate approval; no source import, expanded worker inputs, raised/reset bound
+or counter, extra correction or push. Follow current GOAL/PROGRESS; previous
+native results and all WF4/full-completion gates remain intact.
+
 **Entry.** Follow SYSTEM and the pin/deadline in PROGRESS. Read AGENTS,
 DECISIONS, the relevant unchanged design clauses and projected workflow
 contracts. Inspect live status, queue, runs and shared claims. Preserve prior
