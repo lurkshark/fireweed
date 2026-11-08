@@ -4,6 +4,8 @@ eval_fix:
     - RUN-013
     - RUN-014
 module: runner
+phase: audit
+run: 20261108T075131-cbdedb2ab362b8e130de4c91
 ---
 
 ## Motivation
@@ -68,3 +70,5 @@ proof/attempt refs, bounds/counters, controller/recoveries and unrelated worktre
 Verify and stop after all three changes; no drill, reconstruction import,
 controller promotion, later work or push is authorized. The existing deadline
 2026-11-10 22:51:05 UTC remains unchanged.
+## Provenance
+- evals 2026-11-08T08:03:53.984567Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=159 failing=0 passing=159

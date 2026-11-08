@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/lurkshark/fireweed/packages/assets"
 	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/runner"
 	"github.com/lurkshark/fireweed/packages/workflow"
@@ -472,20 +473,52 @@ func Test_RUN_013_RUN_014_CompleteSpecChange(t *testing.T) {
 	if len(lines) != 3 || lines[0] != "evals|"+f.root+"|/fixture/next-bin" || !strings.HasPrefix(lines[1], "audit|") || !strings.HasSuffix(lines[1], "|/fixture/next-bin") || lines[2] != "impl|"+f.root+"|/fixture/next-bin" {
 		t.Errorf("invocations = %#v", lines)
 	}
-	for _, phase := range []string{"evals", "impl"} {
-		prompt := nextRead(t, f.logDir, "worker-"+phase+".prompt")
-		for _, marker := range []string{"# Change", "# Projected spec", "# Interface", "# SYSTEM.md", "# Playbook", "# Other relevant files", "FULL_INTERNAL_SECRET", "SYSTEM_CONTEXT_MARKER", "Alpha MUST return the new value."} {
-			if !strings.Contains(prompt, marker) {
-				t.Errorf("%s worker context omitted %q", phase, marker)
+	assertContent := func(prompt, category, content string) {
+		t.Helper()
+		if !strings.Contains(strings.Join(strings.Fields(prompt), " "), strings.Join(strings.Fields(content), " ")) {
+			t.Errorf("%s omitted content %q", category, content)
+		}
+	}
+	assertPlaybook := func(prompt, phase string) {
+		t.Helper()
+		playbook, err := assets.Playbook(phase)
+		if err != nil {
+			t.Fatalf("load %s playbook: %v", phase, err)
+		}
+		// Check the public playbook's instructions without requiring its headings
+		// or the context command's presentation and whitespace.
+		for _, line := range strings.Split(playbook, "\n") {
+			line = strings.TrimSpace(line)
+			if line != "" && !strings.HasPrefix(line, "#") {
+				assertContent(prompt, phase+" playbook", line)
 			}
 		}
 	}
-	audit := nextRead(t, f.logDir, "audit.prompt")
-	for _, marker := range []string{nextChange, "Alpha MUST return the new value.", "### ALP-002", "EVAL_CONTENT_MARKER", "# Audit evals"} {
-		if !strings.Contains(audit, marker) {
-			t.Errorf("audit context omitted %q", marker)
+	for _, phase := range []string{"evals", "impl"} {
+		prompt := nextRead(t, f.logDir, "worker-"+phase+".prompt")
+		for _, want := range []struct{ category, content string }{
+			{"change", "One new value is needed."},
+			{"change interface description", "Existing Value function."},
+			{"added spec", "Alpha MUST return the new value."},
+			// This retained spec occurs only in the projected spec, not the change.
+			{"projected spec", "Alpha MUST return its value."},
+			{"interface contents", "func Value() string { return internal.Value() }"},
+			{"SYSTEM", "SYSTEM_CONTEXT_MARKER"},
+			{"other implementation contents", "FULL_INTERNAL_SECRET"},
+			{"other eval contents", "func Test_ALP_001_Value"},
+		} {
+			assertContent(prompt, phase+" worker "+want.category, want.content)
+		}
+		assertPlaybook(prompt, phase)
+		if phase == "impl" {
+			assertContent(prompt, "impl worker added eval contents", "EVAL_CONTENT_MARKER")
 		}
 	}
+	audit := nextRead(t, f.logDir, "audit.prompt")
+	for _, marker := range []string{nextChange, "One new value is needed.", "Alpha MUST return the new value.", "Alpha MUST return its value.", "ALP-002", "EVAL_CONTENT_MARKER", "func Test_ALP_001_Value"} {
+		assertContent(audit, "audit context", marker)
+	}
+	assertPlaybook(audit, "audit")
 	for _, secret := range []string{"FULL_INTERNAL_SECRET", "SYSTEM_CONTEXT_MARKER"} {
 		if strings.Contains(audit, secret) {
 			t.Errorf("audit context exposed %q", secret)
