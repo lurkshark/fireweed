@@ -174,7 +174,10 @@ Impl Done MUST require the applied project to pass static validation before comm
 Successful impl Done MUST move the active change to the archive with phase applied and commit it together with the application.
 
 ### FLOW-051
-Each successful Done MUST append provenance containing phase, date, manual or configured agent, version, playbook hash and result counts.
+Each successful Done MUST append one provenance line containing phase, date,
+manual or configured agent, version, playbook hash and result counts.
+It MUST preserve existing nonblank provenance lines unchanged and in order.
+It MAY normalize blank lines within the Provenance section.
 
 ### FLOW-052
 Successful Done MUST retain verification reports and process output under the run directory.
@@ -485,6 +488,13 @@ GC MUST return the sorted full names of only its successfully deleted refs. It M
 
 ### FLOW-133
 For a valid queue, Current(root, "") MUST return an error whose text is `P02: worktree holds no change` when the calling worktree owns none of its change claims.
+
+### FLOW-134
+During full impl Verify, mapped testcase failures in valid reports MUST NOT
+stop evaluation of the remaining selected modules.
+Verify MUST return every completed module's report in Result.Reports.
+Cancellation, timeouts, hook execution errors, and invalid or missing reports
+MAY stop further evaluation.
 
 ## Decisions
 
