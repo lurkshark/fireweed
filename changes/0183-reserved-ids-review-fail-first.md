@@ -6,6 +6,8 @@ bases:
     FLOW-007: fcf4408d
     FLOW-023: 4849e489
 module: workflow
+phase: audit
+run: 20261108T020656-6bd845e9af54ab3537d4deea
 ---
 
 ## Motivation
@@ -87,3 +89,5 @@ No worker launches a native drill, promotes a controller or pushes. The next
 native workflow retry still requires separate owner approval.
 
 ## Audit
+## Provenance
+- evals 2026-11-08T02:13:49.686743Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=170 failing=0 passing=170

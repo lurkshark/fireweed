@@ -202,6 +202,50 @@ func Test_FLOW_001_FLOW_006_FLOW_007_FLOW_008_FLOW_012_FLOW_013_FLOW_014_FLOW_01
 	}
 }
 
+func Test_FLOW_007_StartReservesCurrentAndPreviouslyRemovedIDs(t *testing.T) {
+	root := fixture(t, "", "", "### new:reserved\nNew new:reserved behavior MUST work.\n", "", "### ALP-002\n")
+	write(t, root, "changes/archive/0000-prior.md", `---
+module: alpha
+phase: applied
+---
+
+## Motivation
+Retire the earlier third behavior.
+
+## Interface
+
+## Added
+
+## Modified
+
+## Removed
+### ALP-003
+
+## Decisions
+
+`)
+	change := readFile(t, root, "changes/0001-manual.md")
+	write(t, root, "changes/0001-manual.md", strings.Replace(change, "Alpha public value is revised.", "Alpha public value is revised for new:reserved.", 1))
+	commit(t, root, "approved reserved-ID fixture")
+
+	s := start(t, root)
+	if len(s.Change.Added) != 1 || s.Change.Added[0].ID != "ALP-004" {
+		t.Fatalf("Start assigned Added = %#v; want ALP-004 after current ALP-001/002 and archived removal ALP-003", s.Change.Added)
+	}
+	if len(s.Change.Removed) != 1 || s.Change.Removed[0].ID != "ALP-002" {
+		t.Fatalf("Start lost the removal of current ALP-002: %#v", s.Change.Removed)
+	}
+	recorded := readFile(t, root, "changes/0001-manual.md")
+	for _, want := range []string{"### ALP-004", "New ALP-004 behavior MUST work.", "revised for ALP-004.", "### ALP-002"} {
+		if !strings.Contains(recorded, want) {
+			t.Errorf("recorded change lacks %q: %s", want, recorded)
+		}
+	}
+	if strings.Contains(recorded, "new:reserved") {
+		t.Errorf("Start left an Added handle in the recorded change: %s", recorded)
+	}
+}
+
 func Test_FLOW_010_FLOW_011_RequiresCleanEligibleQueueHead(t *testing.T) {
 	clean := fixture(t, "", "", "", "", "")
 	if _, err := workflow.Start(clean, "manual"); err != nil {
@@ -559,6 +603,26 @@ func Test_FLOW_023_AddedIDRequiresMappedFailingCase(t *testing.T) {
 	}
 	if len(r.Reports["alpha"].Cases) != 3 {
 		t.Errorf("added ID was not reported: %#v", r.Reports["alpha"])
+	}
+}
+
+func Test_FLOW_023_ReviewTaggedAdditionNeedsNoFailFirstCase(t *testing.T) {
+	root := fixture(t, "", "", "### new:review [review]\nReview judgment MUST be recorded.\n", "", "")
+	s := start(t, root)
+	if s.Phase != "evals" || len(s.Change.Added) != 1 || s.Change.Added[0].ID != "ALP-003" || s.Change.Added[0].Tag != "review" {
+		t.Fatalf("fixture lacks an assigned review-tagged change in evals: %#v", s)
+	}
+	before := head(t, root)
+	r, err := verify(root, true)
+	if err != nil {
+		t.Fatalf("evals Verify rejected review item without a failing case: %#v, %v", r.Reports["alpha"], err)
+	}
+	if head(t, root) != before {
+		t.Error("Verify committed the review fixture")
+	}
+	cases := r.Reports["alpha"].Cases
+	if len(cases) != 2 || cases[0].Result != "fail" || !reflect.DeepEqual(cases[0].IDs, []string{"ALP-001"}) || cases[1].Result != "pass" || !reflect.DeepEqual(cases[1].IDs, []string{"ALP-002"}) {
+		t.Errorf("fixture needs genuine fail-first for enforced ALP-001 and no fabricated review case: %#v", cases)
 	}
 }
 
