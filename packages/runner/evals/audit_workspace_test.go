@@ -219,7 +219,13 @@ func Test_RUN_046_AuditCommitDoesNotEnterHeldGit(t *testing.T) {
 func Test_RUN_047_RUN_048_FirstAuditBeforeProvenanceIsImported(t *testing.T) {
 	f := newNextFixture(t, true, true, "normal")
 	const inserted = "## Audit\nNo findings\nChecked IDs: ALP-002\n\n"
-	auditBeforeEdit(t, f, `cp changes/0001-next.md "$1/audit.original"
+	auditBeforeEdit(t, f, `if [ -f "$1/audit.original" ]; then
+  cp changes/0001-next.md "$1/audit.retry-input"
+  printf auditor
+  exit 0
+fi
+cp changes/0001-next.md "$1/audit.original"
+cp "$1/audit.cwd" "$1/first-audit.cwd"
 awk '
   /^## Provenance$/ && !inserted {
     printf "## Audit\nNo findings\nChecked IDs: ALP-002\n\n"
@@ -230,11 +236,28 @@ awk '
 ' "$1/audit.original" > changes/0001-next.md || exit 8
 cp changes/0001-next.md "$1/audit.candidate"
 printf auditor
-exit 0
+exit 9
 `)
+	first, firstErr := f.run(false)
+	if firstErr == nil || first.State.Phase != "audit" || first.State.ClaimOID == "" || len(first.Steps) != 2 {
+		t.Fatalf("first audit failure = %#v, %v", first, firstErr)
+	}
+	auditWorkspaceGone(t, f)
 	r, err := f.run(false)
-	if err != nil || r.State.Phase != "applied" || len(r.Steps) != 3 {
+	steps := append(first.Steps, r.Steps...)
+	if err != nil || r.State.Phase != "applied" || len(steps) != 4 {
 		t.Fatalf("audit before Provenance lifecycle = %#v, %v", r, err)
+	}
+	for i, want := range []struct {
+		phase, role string
+		exit        int
+	}{{"evals", "worker", 0}, {"audit", "audit", 9}, {"audit", "audit", 0}, {"impl", "worker", 0}} {
+		if step := steps[i]; step.Phase != want.phase || step.Role != want.role || step.Agent.ExitCode != want.exit {
+			t.Errorf("step %d = %#v, want %#v", i, step, want)
+		}
+	}
+	if cwd := nextRead(t, f.logDir, "first-audit.cwd"); cwd == nextRead(t, f.logDir, "audit.cwd") {
+		t.Errorf("audit retry reused workspace %q", cwd)
 	}
 	original := nextRead(t, f.logDir, "audit.original")
 	candidate := nextRead(t, f.logDir, "audit.candidate")
@@ -242,6 +265,15 @@ exit 0
 		strings.Replace(candidate, inserted, "", 1) != original ||
 		strings.Index(candidate, "## Audit\n") > strings.Index(candidate, "## Provenance\n") {
 		t.Errorf("auditor did not insert only the first Audit before Provenance")
+	}
+	beforeProvenance, hasOriginalProvenance := contracts.Section(original, "Provenance")
+	retryInput := nextRead(t, f.logDir, "audit.retry-input")
+	retryProvenance, hasRetryProvenance := contracts.Section(retryInput, "Provenance")
+	if !hasOriginalProvenance || !hasRetryProvenance || retryProvenance != beforeProvenance {
+		t.Errorf("Audit copying changed raw Provenance before successful Done: got %q, want %q", retryProvenance, beforeProvenance)
+	}
+	if audit, ok := contracts.Section(retryInput, "Audit"); !ok || !strings.Contains(audit, "No findings\nChecked IDs: ALP-002") {
+		t.Errorf("failed auditor's Audit was not imported before retry: %q", audit)
 	}
 	archived := nextRead(t, f.root, "changes/archive/0001-next.md")
 	for _, section := range []string{"Motivation", "Interface", "Added", "Modified", "Removed", "Decisions"} {
@@ -251,9 +283,25 @@ exit 0
 			t.Errorf("held %s changed outside Audit: got %q, want %q", section, got, want)
 		}
 	}
-	beforeProvenance, _ := contracts.Section(original, "Provenance")
 	afterProvenance, hasProvenance := contracts.Section(archived, "Provenance")
-	if !hasProvenance || !strings.HasPrefix(afterProvenance, beforeProvenance) {
+	nonblankLines := func(section string) []string {
+		var lines []string
+		for _, line := range strings.Split(section, "\n") {
+			if strings.TrimSpace(line) != "" {
+				lines = append(lines, line)
+			}
+		}
+		return lines
+	}
+	beforeLines, afterLines := nonblankLines(beforeProvenance), nonblankLines(afterProvenance)
+	preserved := hasProvenance && len(afterLines) >= len(beforeLines)
+	for i, line := range beforeLines {
+		if i >= len(afterLines) || afterLines[i] != line {
+			preserved = false
+			break
+		}
+	}
+	if !preserved {
 		t.Errorf("held Provenance lost existing contents: %q", afterProvenance)
 	}
 	if audit, ok := contracts.Section(archived, "Audit"); !ok || !strings.Contains(audit, "No findings; checked ALP-002") {

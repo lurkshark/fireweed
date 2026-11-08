@@ -4,6 +4,8 @@ eval_fix:
     - RUN-047
     - RUN-048
 module: runner
+phase: audit
+run: 20261108T213829-a3f8bb244d3dde95398de65e
 ---
 
 ## Motivation
@@ -73,3 +75,5 @@ private investigation contents as implementation inputs. Preserve prior reports,
 archives/proof/attempt refs, controller/recoveries, bounds/counters, deadline
 2026-11-10 22:51:05 UTC and unrelated worktrees. Stop after these changes; no drill,
 repin, source import, later milestone or push is authorized.
+## Provenance
+- evals 2026-11-08T21:49:33.629417Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=159 failing=0 passing=159
