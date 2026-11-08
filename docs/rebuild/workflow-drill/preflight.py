@@ -9,7 +9,7 @@ try:
  inp=Path(record['input']).resolve()
  caller=(root/'caller').resolve()
  expected=json.loads((root/'expected.json').read_text())
- command=['codex','exec','--ephemeral','--ignore-user-config','-m','gpt-6-sol','-c','model_reasoning_effort="high"','-s','workspace-write']
+ command=['codex','exec','--ephemeral','--ignore-user-config','-m','gpt-6.1-sol','-c','model_reasoning_effort="high"','-s','workspace-write']
  assert record['argv'][:-1]==command
  assert record['fireweed_bin']=='/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed'
  def git(root,*args):return subprocess.check_output(['git','-C',str(root),*args],text=True).strip()
@@ -53,7 +53,7 @@ try:
   assert (verifier/p).is_file(),p
  for module in ['contracts','gitstore','assets','project','checks','runner','app']:
   assert list((verifier/'packages'/module/'internal').rglob('*.go')),module
- pinhash='cc22f47c7aa607c96a13273d29d5bf4ade4f912453840f621331d73dc385f112'
+ pinhash='962149ff80fb5f6e396dbafda4f44fb47bb28840d96d37b3c7c9718444c7bf5a'
  for p in [Path(record['fireweed_bin']),caller/'.fireweed/bin/fireweed',verifier/'.fireweed/bin/fireweed']:
   assert sha(p)==pinhash,str(p)
  summary={'input':str(inp),'verifier':str(verifier),'files':len(paths),'retained_verifier_files':len(expected['retained']),'deleted_disposable_paths':len(expected['deleted']),'input_git_commits':1,'pin':pinhash,'invocation':n,'result':'pass'}
