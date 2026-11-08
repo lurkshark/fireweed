@@ -1,0 +1,26 @@
+--- packages/workflow/internal/lifecycle/core.go before (format normalized)
++++ packages/workflow/internal/lifecycle/core.go after (format normalized)
+@@ -361,10 +361,11 @@
+ 		}
++		blockedName := strings.TrimSuffix(filepath.Base(b.Path), ".md")
+ 		if c.Module == b.Module {
+-			return b.Slug, "same_module"
++			return blockedName, "same_module"
+ 		}
+ 		if depends(snap, c.Module, b.Module) {
+-			return b.Slug, "depends_on_blocked"
++			return blockedName, "depends_on_blocked"
+ 		}
+ 		if isInterface(c) && depends(snap, b.Module, c.Module) {
+-			return b.Slug, "interface_dependency"
++			return blockedName, "interface_dependency"
+ 		}
+@@ -587,2 +588,8 @@
+ 				rel, _ := filepath.Rel(filepath.Join(r, m.Dir), path)
++				fullRel := filepath.ToSlash(filepath.Join(m.Dir, rel))
++				for _, protected := range stringsOf(snap.Config["protected"]) {
++					if contracts.MatchGlob(protected, fullRel) {
++						return nil
++					}
++				}
+ 				if contracts.ResolveZone(filepath.ToSlash(rel), m.Zones) == "disposable" {

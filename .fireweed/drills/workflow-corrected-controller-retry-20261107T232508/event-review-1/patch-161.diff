@@ -1,0 +1,8 @@
+--- DRILL_NOTES.md before (format normalized)
++++ DRILL_NOTES.md after (format normalized)
+@@ -9,3 +9,3 @@
+ - FLOW-115 — workflow: PRBody selects endpoint identities touched by range commits, but a rename with a changed basename may not be connected to its endpoint identity.
+-- FLOW-116 — workflow: PRBody collects file edits from phase commits that touch a selected change; a commit touching multiple changes may attribute the same file edit to each.
+-- FLOW-117 — workflow: PRBody lists associated paths without separate interface, stub, manifest, other, and worker-writable labels based on each phase's declarations.
++- FLOW-116 — workflow: PRBody associates module paths with a selected change through phase-changing commits; a shared `worker_writable` edit in a commit touching multiple changes may be attributed to each.
++- FLOW-117 — workflow: PRBody categorizes files with endpoint zones; a historical phase whose declared zones differ from the endpoint may be categorized incorrectly.

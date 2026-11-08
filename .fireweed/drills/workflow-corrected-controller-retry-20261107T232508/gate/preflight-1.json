@@ -1,0 +1,11 @@
+{
+  "input": "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-3431589947",
+  "verifier": "/private/tmp/fireweed-workflow-corrected-controller-20261107-ngrr5qf_/run/caller/.git/fireweed/worktrees/drill-120667255",
+  "files": 31,
+  "retained_verifier_files": 765,
+  "deleted_disposable_paths": 16,
+  "input_git_commits": 1,
+  "pin": "20278504a8ea89fcd5f23d1de9a6ec849389fd55707054992c59967eec65e2b1",
+  "invocation": 1,
+  "result": "pass"
+}

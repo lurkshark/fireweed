@@ -1,0 +1,35 @@
+--- packages/workflow/internal/lifecycle/core.go before (format normalized)
++++ packages/workflow/internal/lifecycle/core.go after (format normalized)
+@@ -267,11 +267,4 @@
+ func approval(root string, c project.Change, snap project.Snapshot) ([]project.Diagnostic, error) {
+-	base, _ := snap.Config["base"].(string)
+-	if base == "" {
+-		base = "main"
+-	}
++	base, remote := configuredBase(root, snap)
+ 	local, localErr := git(root, "rev-parse", "--verify", base)
+-	remote, _ := snap.Config["remote"].(string)
+-	if remote == "" {
+-		remote = "origin"
+-	}
+ 	shared, sharedErr := git(root, "rev-parse", "--verify", "refs/remotes/"+remote+"/"+base)
+@@ -313,2 +306,19 @@
+ 	return ds, nil
++}
++
++func configuredBase(root string, s project.Snapshot) (string, string) {
++	remote, _ := s.Config["remote"].(string)
++	if remote == "" {
++		remote = "origin"
++	}
++	base, _ := s.Config["base"].(string)
++	if base == "" {
++		if ref, err := git(root, "symbolic-ref", "--short", "refs/remotes/"+remote+"/HEAD"); err == nil {
++			base = strings.TrimPrefix(ref, remote+"/")
++		}
++	}
++	if base == "" {
++		base = "main"
++	}
++	return base, remote
+ }

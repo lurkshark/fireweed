@@ -1,0 +1,104 @@
+
+
+# Previous verification failed
+workflow eval: E01: failed case "Test_FLOW_004_FLOW_028_FLOW_044_FLOW_045_FLOW_046_FLOW_047_FLOW_050_ImplDoneAppliesSpecsSetAndDecisionsAndArchives" for FLOW-004
+app eval: E01: failed case "Test_APP_126_StatusUsageConfigurationAndOperationalFailures" for APP-126
+runner eval: E01: failed case "Test_RUN_013_RUN_014_CompleteSpecChange" for RUN-013
+workflow stdout: ?   	github.com/lurkshark/fireweed/packages/workflow	[no test files]
+?   	github.com/lurkshark/fireweed/packages/workflow/internal/lifecycle	[no test files]
+?   	github.com/lurkshark/fireweed/packages/workflow/model	[no test files]
+FAIL
+FAIL	github.com/lurkshark/fireweed/packages/workflow/evals	130.848s
+
+workflow stderr: exit status 1
+
+workflow github.com/lurkshark/fireweed/packages/workflow/evals Test_FLOW_087_CommitsUseFirstParentOfMerge: === RUN   Test_FLOW_087_CommitsUseFirstParentOfMerge
+    commits_test.go:113: Commits after merge = [1ee74213db2126de5ccf859d9188ab64b5bfccfe 84d90ed8bf00f236d7facc8c790cc2af04a31f30], want three phase changes
+    commits_test.go:122: Commits omitted reachable phase change d4c0e5de1b4f43bd467c47b2336ad1f1163a5bf9
+--- FAIL: Test_FLOW_087_CommitsUseFirstParentOfMerge (0.44s)
+workflow github.com/lurkshark/fireweed/packages/workflow/evals Test_FLOW_088_CommitsRejectMissingAndAmbiguousSelectors: === RUN   Test_FLOW_088_CommitsRejectMissingAndAmbiguousSelectors
+    commits_test.go:138: Commits("changes/0001-manual.md"): U02: change "changes/0001-manual.md" not found or ambiguous; valid slugs: 
+--- FAIL: Test_FLOW_088_CommitsRejectMissingAndAmbiguousSelectors (0.13s)
+workflow github.com/lurkshark/fireweed/packages/workflow/evals Test_FLOW_078_FLOW_079_FLOW_036_EvalFixCorrectsEvalAndArchivesWithoutContractOrImplementationEdits: === RUN   Test_FLOW_078_FLOW_079_FLOW_036_EvalFixCorrectsEvalAndArchivesWithoutContractOrImplementationEdits
+    eval_fix_lifecycle_test.go:101: eval_fix changed retained packages/alpha/SPEC.md: "---\ndepends_on: []\nid_prefix: ALP\nname: alpha\n---\n# Alpha\n\n## Specs\n### ALP-001\nAlpha MUST return the old value.\n\n\n### ALP-002\nAlpha MUST retain the second behavior.\n## Decisions\nRetain old policy.\n"
+--- FAIL: Test_FLOW_078_FLOW_079_FLOW_036_EvalFixCorrectsEvalAndArchivesWithoutContractOrImplementationEdits (1.84s)
+workflow github.com/lurkshark/fireweed/packages/workflow/evals Test_FLOW_129_GCPrunesOnlyArchivedChangeAttempts: === RUN   Test_FLOW_129_GCPrunesOnlyArchivedChangeAttempts
+    gc_test.go:119: GC Pruned = [refs/fireweed/attempts/finished/1 refs/fireweed/attempts/finished/2 refs/fireweed/attempts/finished/not-an-attempt], want sorted [refs/fireweed/attempts/finished/1 refs/fireweed/attempts/finished/2]
+    gc_test.go:124: ref refs/fireweed/attempts/finished/not-an-attempt present=false, error=<nil>; want present=true
+--- FAIL: Test_FLOW_129_GCPrunesOnlyArchivedChangeAttempts (0.35s)
+workflow github.com/lurkshark/fireweed/packages/workflow/evals Test_FLOW_058_FLOW_062_StaleLifecycleBaseKeepsCauseAndMissingBaseKeepsC08: === RUN   Test_FLOW_058_FLOW_062_StaleLifecycleBaseKeepsCauseAndMissingBaseKeepsC08
+    lifecycle_test.go:420: stale Verify = Z01: protected module path packages/alpha/SPEC.md
+    lifecycle_test.go:423: stale Done = Z01: protected module path packages/alpha/SPEC.md
+--- FAIL: Test_FLOW_058_FLOW_062_StaleLifecycleBaseKeepsCauseAndMissingBaseKeepsC08 (1.38s)
+workflow github.com/lurkshark/fireweed/packages/workflow/evals Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_FLOW_046_AuditFindingsConvergeAndPersistTwoRoundBound: === RUN   Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_FLOW_046_AuditFindingsConvergeAndPersistTwoRoundBound
+    lifecycle_test.go:735: evals Done = model.Result{State:model.State{Change:model.Change{Number:1, Slug:"manual", Path:"changes/0001-manual.md", Module:"alpha", Document:model.Document{Frontmatter:map[string]interface {}{"bases":map[string]interface {}{"ALP-001":"4305e676"}, "module":"alpha", "phase":"evals", "run":"5d50354de3d422992946fe2daf0cfbaa"}, Body:"\n## Motivation\nUsers need a revised alpha value.\n\n## Interface\nAlpha public value is revised.\n\n## Added\n### ALP-003 [review]\nExtra MUST be visible.\n\n## Modified\n### ALP-001\nAlpha MUST return the revised value.\n\n## Removed\n\n## Decisions\nUse the revised policy.\n\n## Removed decisions\nRetain old policy.\n"}, Added:[]model.Item{model.Item{ID:"ALP-003", Tag:"review", Body:"Extra MUST be visible.\n\n"}}, Modified:[]model.Item{model.Item{ID:"ALP-001", Tag:"", Body:"Alpha MUST return the revised value.\n\n"}}, Removed:[]model.Item(nil)}, Snapshot:model.Snapshot{Root:"/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_FLOW_1309085200/001", Config:map[string]interface {}{"base":"main", "fireweed":">=0.1, <0.2", "hooks":map[string]interface {}{"boundaries":[]interface {}{"sh", ".fireweed/boundaries.sh"}, "eval":[]interface {}{"sh", ".fireweed/eval.sh", "{module}", "{report}"}}, "module_defaults":map[string]interface {}{"disposable":[]interface {}{"internal/**"}, "evals":[]interface {}{"evals/**"}, "interface":[]interface {}{"api.go"}}, "modules":[]interface {}{"packages/*"}, "version":1}, Modules:[]model.Module{model.Module{Name:"alpha", IDPrefix:"ALP", Dir:"packages/alpha", DependsOn:[]string{}, Zones:model.Zones{Protected:[]string(nil), Evals:[]string{"evals/**"}, Interface:[]string{"api.go"}, AppendOnly:[]string(nil), Preserve:[]string(nil), Disposable:[]string{"internal/**"}}, Document:model.Document{Frontmatter:map[string]interface {}{"depends_on":[]interface {}{}, "id_prefix":"ALP", "name":"alpha"}, Body:"# Alpha\n\n## Specs\n\n### ALP-001\nAlpha MUST return the revised value.\n\n### ALP-002\nAlpha MUST retain the second behavior.\n\n### ALP-003 [review]\nExtra MUST be visible.\n\n## Decisions\nRetain old policy.\n"}}, model.Module{Name:"beta", IDPrefix:"BET", Dir:"packages/beta", DependsOn:[]string{"alpha"}, Zones:model.Zones{Protected:[]string(nil), Evals:[]string{"evals/**"}, Interface:[]string{"api.go"}, AppendOnly:[]string(nil), Preserve:[]string(nil), Disposable:[]string{"internal/**"}}, Document:model.Document{Frontmatter:map[string]interface {}{"depends_on":[]interface {}{"alpha"}, "id_prefix":"BET", "name":"beta"}, Body:"# Beta\n\n## Specs\n\n### BET-001\nBeta MUST follow alpha.\n"}}, model.Module{Name:"gamma", IDPrefix:"GAM", Dir:"packages/gamma", DependsOn:[]string{"beta"}, Zones:model.Zones{Protected:[]string(nil), Evals:[]string{"evals/**"}, Interface:[]string{"api.go"}, AppendOnly:[]string(nil), Preserve:[]string(nil), Disposable:[]string{"internal/**"}}, Document:model.Document{Frontmatter:map[string]interface {}{"depends_on":[]interface {}{"beta"}, "id_prefix":"GAM", "name":"gamma"}, Body:"# Gamma\n\n## Specs\n\n### GAM-001\nGamma MUST follow beta.\n"}}}}, Run:"5d50354de3d422992946fe2daf0cfbaa", Phase:"evals", Head:"cc1d07f9fb4efcaec27626b763c016eb86877887", PhaseBase:"cc1d07f9fb4efcaec27626b763c016eb86877887", ClaimOID:"3ebea0cd3a3721f0561cde02f880946be3b5fe3b", Diagnostics:[]model.Diagnostic(nil)}, Reports:map[string]model.Report{"alpha":model.Report{Cases:[]model.Case{model.Case{Name:"ALP-001", Classname:"fixture", IDs:[]string{"ALP-001"}, Result:"fail", Failure:"expected before implementation", Seconds:0}, model.Case{Name:"ALP-002", Classname:"fixture", IDs:[]string{"ALP-002"}, Result:"pass", Failure:"", Seconds:0}}, Seconds:0, HookExit:1, Stdout:"fixture-hook-output\n", Stderr:""}}, Costs:[]model.ModuleCost{model.ModuleCost{Module:"alpha", Seconds:0, CasesPerSpec:map[string]int{"ALP-001":1, "ALP-002":1}, EvalLines:0, DisposableLines:0}}, Diagnostics:[]model.Diagnostic{}}, P2-01: no fail-first case for ALP-003
+--- FAIL: Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_FLOW_046_AuditFindingsConvergeAndPersistTwoRoundBound (0.52s)
+workflow github.com/lurkshark/fireweed/packages/workflow/evals Test_FLOW_004_FLOW_028_FLOW_044_FLOW_045_FLOW_046_FLOW_047_FLOW_050_ImplDoneAppliesSpecsSetAndDecisionsAndArchives: === RUN   Test_FLOW_004_FLOW_028_FLOW_044_FLOW_045_FLOW_046_FLOW_047_FLOW_050_ImplDoneAppliesSpecsSetAndDecisionsAndArchives
+    lifecycle_test.go:835: evals transition = model.Result{State:model.State{Change:model.Change{Number:1, Slug:"manual", Path:"changes/0001-manual.md", Module:"alpha", Document:model.Document{Frontmatter:map[string]interface {}{"bases":map[string]interface {}{"ALP-001":"4305e676", "ALP-002":"321a28df"}, "module":"alpha", "phase":"evals", "run":"b6db3c1f15efd46133a4bb2021eb59c4", "set":map[string]interface {}{"hooks":map[string]interface {}{"eval":[]interface {}{"sh", ".fireweed/eval.sh", "{module}", "{report}"}}, "interface":[]interface {}{"api.go", "extra.go"}}}, Body:"\n## Motivation\nUsers need a revised alpha value.\n\n## Interface\nAlpha public value is revised.\n\n## Added\n### ALP-002 [review]\nExtra MUST be visible.\n\n## Modified\n### ALP-001\nAlpha MUST return the revised value.\n\n## Removed\n### ALP-002\n\n## Decisions\nUse the revised policy.\n\n## Removed decisions\nRetain old policy.\n"}, Added:[]model.Item{model.Item{ID:"ALP-002", Tag:"review", Body:"Extra MUST be visible.\n\n"}}, Modified:[]model.Item{model.Item{ID:"ALP-001", Tag:"", Body:"Alpha MUST return the revised value.\n\n"}}, Removed:[]model.Item{model.Item{ID:"ALP-002", Tag:"", Body:"\n"}}}, Snapshot:model.Snapshot{Root:"/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_FLOW_004_FLOW_028_FLOW_044_FLOW_045_FLOW_046_FLOW_047_FLOW_631361969/001", Config:map[string]interface {}{"audit":map[string]interface {}{"enabled":false}, "base":"main", "fireweed":">=0.1, <0.2", "hooks":map[string]interface {}{"boundaries":[]interface {}{"sh", ".fireweed/boundaries.sh"}, "eval":[]interface {}{"sh", ".fireweed/global-eval.sh", "{module}", "{report}"}}, "module_defaults":map[string]interface {}{"disposable":[]interface {}{"internal/**"}, "evals":[]interface {}{"evals/**"}, "interface":[]interface {}{"api.go"}}, "modules":[]interface {}{"packages/*"}, "verify_dependents":"none", "version":1}, Modules:[]model.Module{model.Module{Name:"alpha", IDPrefix:"ALP", Dir:"packages/alpha", DependsOn:[]string{}, Zones:model.Zones{Protected:[]string(nil), Evals:[]string{"evals/**"}, Interface:[]string{"api.go", "extra.go"}, AppendOnly:[]string(nil), Preserve:[]string(nil), Disposable:[]string{"internal/**"}}, Document:model.Document{Frontmatter:map[string]interface {}{"depends_on":[]interface {}{}, "hooks":map[string]interface {}{"eval":[]interface {}{"sh", ".fireweed/eval.sh", "{module}", "{report}"}}, "id_prefix":"ALP", "interface":[]interface {}{"api.go", "extra.go"}, "name":"alpha"}, Body:"# Alpha\n\n## Specs\n\n### ALP-001\nAlpha MUST return the revised value.\n\n### ALP-002 [review]\nExtra MUST be visible.\n\n## Decisions\nRetain old policy.\n"}}, model.Module{Name:"beta", IDPrefix:"BET", Dir:"packages/beta", DependsOn:[]string{"alpha"}, Zones:model.Zones{Protected:[]string(nil), Evals:[]string{"evals/**"}, Interface:[]string{"api.go"}, AppendOnly:[]string(nil), Preserve:[]string(nil), Disposable:[]string{"internal/**"}}, Document:model.Document{Frontmatter:map[string]interface {}{"depends_on":[]interface {}{"alpha"}, "id_prefix":"BET", "name":"beta"}, Body:"# Beta\n\n## Specs\n\n### BET-001\nBeta MUST follow alpha.\n"}}, model.Module{Name:"gamma", IDPrefix:"GAM", Dir:"packages/gamma", DependsOn:[]string{"beta"}, Zones:model.Zones{Protected:[]string(nil), Evals:[]string{"evals/**"}, Interface:[]string{"api.go"}, AppendOnly:[]string(nil), Preserve:[]string(nil), Disposable:[]string{"internal/**"}}, Document:model.Document{Frontmatter:map[string]interface {}{"depends_on":[]interface {}{"beta"}, "id_prefix":"GAM", "name":"gamma"}, Body:"# Gamma\n\n## Specs\n\n### GAM-001\nGamma MUST follow beta.\n"}}}}, Run:"b6db3c1f15efd46133a4bb2021eb59c4", Phase:"evals", Head:"4768f1d0915e95b2a6c300bbc4859185cd64fc16", PhaseBase:"4768f1d0915e95b2a6c300bbc4859185cd64fc16", ClaimOID:"d9f4d43e985f3e70be42b2534a74bd0a3bc18804", Diagnostics:[]model.Diagnostic(nil)}, Reports:map[string]model.Report{"alpha":model.Report{Cases:[]model.Case{model.Case{Name:"ALP-001", Classname:"fixture", IDs:[]string{"ALP-001"}, Result:"fail", Failure:"expected before implementation", Seconds:0}}, Seconds:0, HookExit:1, Stdout:"fixture-hook-output\n", Stderr:""}}, Costs:[]model.ModuleCost{model.ModuleCost{Module:"alpha", Seconds:0, CasesPerSpec:map[string]int{"ALP-001":1}, EvalLines:0, DisposableLines:0}}, Diagnostics:[]model.Diagnostic{}}, P2-01: no fail-first case for ALP-002
+--- FAIL: Test_FLOW_004_FLOW_028_FLOW_044_FLOW_045_FLOW_046_FLOW_047_FLOW_050_ImplDoneAppliesSpecsSetAndDecisionsAndArchives (0.56s)
+workflow github.com/lurkshark/fireweed/packages/workflow/evals Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses: === RUN   Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses
+    lifecycle_test.go:1253: boundary cause = 1 boundary violation(s)
+    lifecycle_test.go:1288: boundary hook cause = boundary hook: run hook: fork/exec /missing/fireweed-boundary-hook: no such file or directory, want exactly "X02: boundary hook: run hook: fork/exec /missing/fireweed-boundary-hook: no such file or directory"
+--- FAIL: Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses (5.10s)
+workflow github.com/lurkshark/fireweed/packages/workflow/evals Test_FLOW_062_MissingRequiredBoundaryHookKeepsCauseAndAllDiagnostics: === RUN   Test_FLOW_062_MissingRequiredBoundaryHookKeepsCauseAndAllDiagnostics
+    lifecycle_test.go:1351: full Verify cause = missing required boundaries hook; want exactly "X02: missing required boundaries hook"
+--- FAIL: Test_FLOW_062_MissingRequiredBoundaryHookKeepsCauseAndAllDiagnostics (1.03s)
+workflow github.com/lurkshark/fireweed/packages/workflow/evals Test_FLOW_077_MaintenanceStartsInImplAndArchivesDirectly: === RUN   Test_FLOW_077_MaintenanceStartsInImplAndArchivesDirectly
+    maintenance_start_test.go:98: retained packages/alpha/SPEC.md changed: "---\ndepends_on: []\nid_prefix: ALP\nname: alpha\n---\n# Alpha\n\n## Specs\n### ALP-001\nAlpha MUST return the old value.\n\n\n### ALP-002\nAlpha MUST retain the second behavior.\n## Decisions\nRetain old policy.\n", <nil>
+--- FAIL: Test_FLOW_077_MaintenanceStartsInImplAndArchivesDirectly (1.15s)
+workflow github.com/lurkshark/fireweed/packages/workflow/evals Test_FLOW_080_FLOW_081_FLOW_083_RegenerateDeletesProjectedDisposableAndRebuildsThroughArchive: === RUN   Test_FLOW_080_FLOW_081_FLOW_083_RegenerateDeletesProjectedDisposableAndRebuildsThroughArchive
+    regenerate_start_test.go:115: open /private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_FLOW_080_FLOW_081_FLOW_083_RegenerateDeletesProjectedDispos3622241838/001/packages/alpha/internal/global.go: no such file or directory
+--- FAIL: Test_FLOW_080_FLOW_081_FLOW_083_RegenerateDeletesProjectedDisposableAndRebuildsThroughArchive (0.40s)
+workflow github.com/lurkshark/fireweed/packages/workflow/evals Test_FLOW_082_RegenerateWarningUsesLatestTargetImplProvenanceAndReportDate: === RUN   Test_FLOW_082_RegenerateWarningUsesLatestTargetImplProvenanceAndReportDate
+--- FAIL: Test_FLOW_082_RegenerateWarningUsesLatestTargetImplProvenanceAndReportDate (1.46s)
+workflow github.com/lurkshark/fireweed/packages/workflow/evals Test_FLOW_082_RegenerateWarningUsesLatestTargetImplProvenanceAndReportDate/newer_passing: === RUN   Test_FLOW_082_RegenerateWarningUsesLatestTargetImplProvenanceAndReportDate/newer_passing
+    regenerate_start_test.go:188: P10 warning = true; want false; diagnostics = []model.Diagnostic{model.Diagnostic{Code:"P10", Message:"no passing drill newer than latest applied implementation for alpha", Path:"", Warning:true}}
+--- FAIL: Test_FLOW_082_RegenerateWarningUsesLatestTargetImplProvenanceAndReportDate/newer_passing (0.37s)
+workflow github.com/lurkshark/fireweed/packages/workflow/evals Test_FLOW_101_FLOW_102_FLOW_103_StatusQueueAndForwardWaiting: === RUN   Test_FLOW_101_FLOW_102_FLOW_103_StatusQueueAndForwardWaiting
+    status_test.go:81: 0002-same waiting = "manual"/"same_module", want "0001-manual"/"same_module"
+    status_test.go:82: 0003-direct waiting = "manual"/"depends_on_blocked", want "0001-manual"/"depends_on_blocked"
+    status_test.go:83: 0004-transitive waiting = "manual"/"depends_on_blocked", want "0001-manual"/"depends_on_blocked"
+--- FAIL: Test_FLOW_101_FLOW_102_FLOW_103_StatusQueueAndForwardWaiting (0.73s)
+workflow github.com/lurkshark/fireweed/packages/workflow/evals Test_FLOW_104_FLOW_105_StatusInterfaceAndProjectedWaiting: === RUN   Test_FLOW_104_FLOW_105_StatusInterfaceAndProjectedWaiting
+    status_test.go:96: 0002-interface-direct waiting = "manual"/"interface_dependency", want "0001-manual"/"interface_dependency"
+    status_test.go:98: 0004-interface-transitive waiting = "manual"/"interface_dependency", want "0001-manual"/"interface_dependency"
+    status_test.go:108: 0002-own-add waiting = "manual"/"depends_on_blocked", want "0001-manual"/"depends_on_blocked"
+--- FAIL: Test_FLOW_104_FLOW_105_StatusInterfaceAndProjectedWaiting (1.77s)
+workflow github.com/lurkshark/fireweed/packages/workflow/evals Test_FLOW_109_FLOW_111_StatusProvenanceDriftAndRecentModuleWarning: === RUN   Test_FLOW_109_FLOW_111_StatusProvenanceDriftAndRecentModuleWarning
+    status_test.go:161: drift alpha = 4, present true; want 3
+    status_test.go:161: drift beta = 1, present true; want 0
+--- FAIL: Test_FLOW_109_FLOW_111_StatusProvenanceDriftAndRecentModuleWarning (0.89s)
+workflow github.com/lurkshark/fireweed/packages/workflow/evals Test_FLOW_110_StatusSharedBaseUsesSameArchivedDocumentIdentity: === RUN   Test_FLOW_110_StatusSharedBaseUsesSameArchivedDocumentIdentity
+    status_test.go:205: pending base identity unapproved = 2, want 1
+--- FAIL: Test_FLOW_110_StatusSharedBaseUsesSameArchivedDocumentIdentity (1.77s)
+
+app stdout: ?   	github.com/lurkshark/fireweed/packages/app	[no test files]
+?   	github.com/lurkshark/fireweed/packages/app/internal/entry	[no test files]
+FAIL
+FAIL	github.com/lurkshark/fireweed/packages/app/evals	278.337s
+
+app stderr: exit status 1
+
+app github.com/lurkshark/fireweed/packages/app/evals Test_APP_126_StatusUsageConfigurationAndOperationalFailures: === RUN   Test_APP_126_StatusUsageConfigurationAndOperationalFailures
+    status_cli_test.go:504: public Status accepted unavailable base ref
+--- FAIL: Test_APP_126_StatusUsageConfigurationAndOperationalFailures (0.15s)
+
+runner stdout: ?   	github.com/lurkshark/fireweed/packages/runner	[no test files]
+?   	github.com/lurkshark/fireweed/packages/runner/internal/drill	[no test files]
+?   	github.com/lurkshark/fireweed/packages/runner/internal/invoke	[no test files]
+?   	github.com/lurkshark/fireweed/packages/runner/internal/next	[no test files]
+?   	github.com/lurkshark/fireweed/packages/runner/internal/run	[no test files]
+?   	github.com/lurkshark/fireweed/packages/runner/model	[no test files]
+FAIL
+FAIL	github.com/lurkshark/fireweed/packages/runner/evals	303.556s
+
+runner stderr: exit status 1
+
+runner github.com/lurkshark/fireweed/packages/runner/evals Test_RUN_013_RUN_014_CompleteSpecChange: === RUN   Test_RUN_013_RUN_014_CompleteSpecChange
+    next_test.go:479: evals worker context omitted "# SYSTEM.md"
+    next_test.go:479: evals worker context omitted "# Other relevant files"
+    next_test.go:479: impl worker context omitted "# SYSTEM.md"
+    next_test.go:479: impl worker context omitted "# Other relevant files"
+    next_test.go:516: first phase commit = "fireweed: next phase transition"
+    next_test.go:519: second phase commit = "fireweed: next phase transition"
+--- FAIL: Test_RUN_013_RUN_014_CompleteSpecChange (5.14s)

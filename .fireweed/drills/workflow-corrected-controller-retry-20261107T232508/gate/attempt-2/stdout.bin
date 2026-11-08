@@ -1,0 +1,3 @@
+Updated the disposable workflow implementation to address phase commit discovery, status and base-ref reporting, regenerate cleanup, protected SPEC formatting, and boundary error codes. The retained inputs were not edited, and no commit was made.
+
+[DRILL_NOTES.md](/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/fireweed-drill-input-3431589947/DRILL_NOTES.md) records two retained eval expectations that conflict with FLOW-022 and FLOW-023. Formatting passed; builds and tests were not run because `SYSTEM.md` reserves verification for the outside verifier.

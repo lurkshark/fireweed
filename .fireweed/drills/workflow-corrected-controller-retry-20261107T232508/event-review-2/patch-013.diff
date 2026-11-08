@@ -1,0 +1,6 @@
+--- packages/workflow/internal/lifecycle/report.go before (format normalized)
++++ packages/workflow/internal/lifecycle/report.go after (format normalized)
+@@ -10,2 +10,3 @@
+ 	"sort"
++	"strconv"
+ 	"strings"

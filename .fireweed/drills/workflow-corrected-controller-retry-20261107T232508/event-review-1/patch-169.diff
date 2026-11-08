@@ -1,0 +1,11 @@
+--- packages/workflow/internal/lifecycle/report.go before (format normalized)
++++ packages/workflow/internal/lifecycle/report.go after (format normalized)
+@@ -10,3 +10,2 @@
+ 	"sort"
+-	"strconv"
+ 	"strings"
+@@ -882,4 +881 @@
+ }
+-
+-var _ = context.Background
+-var _ = strconv.Itoa

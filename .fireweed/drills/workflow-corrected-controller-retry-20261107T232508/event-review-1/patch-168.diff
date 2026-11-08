@@ -1,0 +1,25 @@
+--- packages/workflow/internal/lifecycle/core.go before (format normalized)
++++ packages/workflow/internal/lifecycle/core.go after (format normalized)
+@@ -3,8 +3,5 @@
+ import (
+-	"context"
+ 	"crypto/rand"
+-	"crypto/sha256"
+ 	"encoding/hex"
+ 	"encoding/json"
+-	"errors"
+ 	"fmt"
+@@ -18,4 +15,2 @@
+ 
+-	"github.com/lurkshark/fireweed/packages/assets"
+-	"github.com/lurkshark/fireweed/packages/checks"
+ 	"github.com/lurkshark/fireweed/packages/contracts"
+@@ -645,8 +640 @@
+ }
+-
+-var _ = errors.Is
+-var _ = context.Background
+-var _ = sha256.Sum256
+-var _ = assets.Version
+-var _ = checks.RequirePass
+-var _ = time.Now

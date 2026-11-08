@@ -1,0 +1,7 @@
+--- packages/workflow/internal/lifecycle/core.go before (format normalized)
++++ packages/workflow/internal/lifecycle/core.go after (format normalized)
+@@ -213,3 +213,3 @@
+ 	b, _ := json.Marshal(f)
+-	names := []string{"Motivation", "Interface", "Added", "Modified", "Removed", "Decisions", "Removed decisions", "Questions"}
++	names := []string{"Motivation", "Interface", "Added", "Modified", "Removed", "Removed decisions"}
+ 	var out strings.Builder

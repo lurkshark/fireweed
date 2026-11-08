@@ -1,0 +1,7 @@
+--- packages/workflow/internal/lifecycle/core.go before (format normalized)
++++ packages/workflow/internal/lifecycle/core.go after (format normalized)
+@@ -243,3 +243,3 @@
+ func stale(root string, c project.Change) error {
+-	ss, e := project.StaleSpecs(root, c.Path)
++	ss, e := project.StaleSpecs(root, c.Slug)
+ 	if e != nil {

@@ -1,0 +1,33 @@
+--- packages/workflow/internal/lifecycle/core.go before (format normalized)
++++ packages/workflow/internal/lifecycle/core.go after (format normalized)
+@@ -527,2 +527,30 @@
+ 	s.Diagnostics = append(s.Diagnostics, approvalDS...)
++	if fmBool(chosen.Document, "regenerate") {
++		latest := time.Time{}
++		paths, _ := filepath.Glob(filepath.Join(r, "changes", "archive", "*.md"))
++		for _, path := range paths {
++			b, err := os.ReadFile(path)
++			if err != nil {
++				continue
++			}
++			d, err := contracts.ParseDocument(string(b))
++			if err != nil || fmString(d, "module") != chosen.Module || fmString(d, "phase") != "applied" {
++				continue
++			}
++			date := implDate(d)
++			if date.After(latest) {
++				latest = date
++			}
++		}
++		passing := false
++		if b, err := os.ReadFile(filepath.Join(r, ".fireweed", "drills", chosen.Module+".md")); err == nil {
++			if d, er := contracts.ParseDocument(string(b)); er == nil {
++				date := parseDate(fmt.Sprint(d.Frontmatter["date"]))
++				passing = date.After(latest) && fmString(d, "result") == "pass"
++			}
++		}
++		if !passing {
++			s.Diagnostics = append(s.Diagnostics, project.Diagnostic{Code: "P10", Message: "no passing drill newer than latest applied implementation for " + chosen.Module, Warning: true})
++		}
++	}
+ 	if fmBool(chosen.Document, "regenerate") && unstarted {

@@ -1,0 +1,11 @@
+from pathlib import Path
+import json,hashlib,subprocess,sys,re,datetime
+R=Path(__file__).resolve().parent;n=int(sys.argv[1]);ready=json.loads((R/f'gate/ready-{n}.json').read_text());finished=json.loads((R/f'gate/finished-{n}.json').read_text());assert finished['complete_forwarding'];I=Path(ready['input']);E=json.loads((R/'expected.json').read_text());review=R/f'event-review-{n}';S=json.loads((review/'state.json').read_text());assert not S.get('pending_diff');commands=json.loads((review/'commands.json').read_text());assert S['commands']==len(commands);snapshots=json.loads((review/'baseline.json').read_text()) if (review/'baseline.json').exists() else {};snapshots.update(S['snapshots']);actual={str(p.relative_to(I)):p for p in I.rglob('*') if p.is_file() and '.git' not in p.relative_to(I).parts and str(p.relative_to(I)) not in E['input']};assert set(actual)==set(snapshots),(set(actual)-set(snapshots),set(snapshots)-set(actual));assert all(k=='DRILL_NOTES.md' or k.startswith('packages/workflow/internal/') for k in actual);hashes={};baseline={}
+for name,path in actual.items():
+ text=snapshots[name]
+ if name.endswith('.go'):
+  p=subprocess.run(['gofmt'],input=text,text=True,capture_output=True,timeout=20);assert p.returncode==0,(name,p.stderr);text=p.stdout
+ assert path.read_bytes()==text.encode(),name;hashes[name]=hashlib.sha256(path.read_bytes()).hexdigest();baseline[name]=text
+assert all(hashlib.sha256((I/p).read_bytes()).hexdigest()==h for p,h in E['input'].items());streams={s:hashlib.sha256((R/f'gate/attempt-{n}/{s}.bin').read_bytes()).hexdigest() for s in ['stdout','stderr']};receipt={'attempt':n,'commands_reviewed':len(commands),'trace_snapshot_events_reviewed':S['events'],'fresh_output_sha256':hashes,'streams_sha256':streams,'actual_fresh_bytes_match_full_reviewed_trace_and_formatting':True,'retained_inputs_unchanged':True,'time':datetime.datetime.now(datetime.timezone.utc).isoformat()};(R/f'output-review-{n}.json').write_text(json.dumps(receipt,indent=2));print(json.dumps(receipt,indent=2))
+if n==1:
+ d=R/'event-review-2';d.mkdir(exist_ok=True);(d/'baseline.json').write_text(json.dumps(baseline,indent=2));(d/'state.json').write_text(json.dumps({'commands':0,'events':0,'snapshots':baseline},indent=2))

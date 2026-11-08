@@ -1,0 +1,10 @@
+--- packages/workflow/internal/lifecycle/report.go before (format normalized)
++++ packages/workflow/internal/lifecycle/report.go after (format normalized)
+@@ -332,3 +332,6 @@
+ 	if err != nil {
+-		ref, _ = git(r, "rev-parse", "--verify", base)
++		ref, err = git(r, "rev-parse", "--verify", base)
++		if err != nil {
++			return model.StatusReport{}, fmt.Errorf("base ref %s unavailable: %w", base, err)
++		}
+ 	}

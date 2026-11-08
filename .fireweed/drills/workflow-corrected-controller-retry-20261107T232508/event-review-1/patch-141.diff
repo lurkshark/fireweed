@@ -1,0 +1,6 @@
+--- DRILL_NOTES.md before (format normalized)
++++ DRILL_NOTES.md after (format normalized)
+@@ -8,3 +8,2 @@
+ 
+-- FLOW-005 — workflow: Context lists target-module files but does not enumerate project-level `worker_writable` files outside that module.
+ - FLOW-115 — workflow: PRBody selects endpoint identities touched by range commits, but a rename with a changed basename may not be connected to its endpoint identity.

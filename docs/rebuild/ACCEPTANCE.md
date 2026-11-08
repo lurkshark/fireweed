@@ -78,21 +78,22 @@ gc, migrate, agents-md --write
 
 ## Planned milestone — Workflow contracts and regeneration proof (WF1–WF4)
 
-**Residual fixes and verified controller handoff complete; one final drill authorized.**
-The two scoped proposals are applied in normal independently audited archives
-[0181](../../changes/archive/0181-recorded-regenerate-preservation.md) and
-[0182](../../changes/archive/0182-recovery-history-assertions.md). The
-[clean corrected-source validation and handoff](../../.fireweed/drills/residual-fixes-controller-handoff.md)
-identify the exact subject, new pin, valid history prefixes/delta and compiled CLI
-regressions. Original 79cf33a, prior failed reports/refs and the valid checks proof
-remain preserved. No reconstructed source was imported.
+**Residual fixes/controller handoff and single retry complete; native verification failed.**
+Normal audited [0181](../../changes/archive/0181-recorded-regenerate-preservation.md)
+and [0182](../../changes/archive/0182-recovery-history-assertions.md) are applied.
+The [corrected-source validation and verified pin handoff](../../.fireweed/drills/residual-fixes-controller-handoff.md)
+passed before the one owner-authorized native workflow invocation. The
+[current native report](../../.fireweed/drills/workflow.md) and
+[complete review](../../.fireweed/drills/workflow-corrected-controller-retry-20261107T232508/review.md)
+retain the actual failures, coverage, gap limitations, failed ref, full output and
+cleanup. The focused corrected cases passed, but workflow/runner still fail.
+No passing workflow proof or WF4 closure is claimed.
 
-The owner's latest sequence already authorizes one downstream workflow drill with
-the new controller after these gates, superseding the usual separate WF2 approval
-stop for this concrete sequence. Follow GOAL/PROGRESS and every existing outside
-inspection, output and isolation gate. Retain terminal evidence, clean owned
-scratch and stop. WF4/full completion remain open until actual native proof and
-review pass. No later correction, module drill or push is authorized.
+The owner's sequence approval is consumed. Stop for review with no active run or
+claim. Further correction, diagnostic replay, drill, controller promotion,
+reconstructed-code application or push requires new authorization. Original
+79cf33a, prior evidence/refs, recoveries, bounds/counters and unrelated worktree
+are preserved. Worker notes authorize no new change. Full-completion gates remain.
 
 **Entry.** Follow SYSTEM and the pin/deadline in PROGRESS. Read AGENTS,
 DECISIONS, the relevant unchanged design clauses and projected workflow

@@ -1,17 +1,19 @@
-# Prepared workflow drill wrapper and inspector
+# Prepared workflow wrapper and inspector — stopped
 
-The owner-approved residual fixes and verified controller handoff are complete.
-PROGRESS records the exact corrected subject and new pin;
-[handoff evidence](../../../.fireweed/drills/residual-fixes-controller-handoff.md)
-retains validation and preservation. Original 79cf33a remains a baseline. Only
-outside candidate/expected-pin metadata changed; supervisor behavior, worker
-command/model/effort, input policy, isolation and stop gates are unchanged.
+The two normal audited residual fixes and verified controller update are complete.
+Exactly one approved native workflow retry on corrected subject `ccd3d6b7732d613e80a027ba7969b65adc58bc0e` then failed
+verification. PROGRESS records the current unchanged pin;
+[complete retry evidence](../../../.fireweed/drills/workflow-corrected-controller-retry-20261107T232508/review.md)
+retains output, actual failures, failed ref and cleanup. The focused corrected
+cases passed; WF4 remains open. Original 79cf33a and all prior evidence are preserved.
 
-The current owner instruction authorizes exactly one downstream native workflow
-invocation after this handoff, then terminal evidence/cleanup and stop. Use a new
-outside root. No extra approval prompt is needed for this specific sequence; the
-commands below do not authorize any later invocation. Existing deadline remains
-**2026-11-10 22:51:05 UTC**. No correction, reconstructed-code import or push.
+**Approval consumed. Do not launch another drill.** The commands below describe a
+restart only after a new owner instruction, a new outside root and fresh live
+gates. No further correction, source application, controller update or push is
+currently authorized. The existing deadline remains **2026-11-10 22:51:05 UTC**.
+Supervisor behavior, exact worker command/model/effort, input policy and every
+isolation/output/stop gate are unchanged; earlier fake rehearsals remain valid
+for that behavior, not proof of native reporting on rejection/interruption.
 
 `guard.py` is an `agent.wrap` prefix. Its CLI accepts only the exact configured
 command/model/effort from SYSTEM, with the original prompt as its last argument.
@@ -80,7 +82,7 @@ whole-controller emergency cleanup, and production command rejection. Raw binary
 payloads include NUL/non-UTF-8/CRLF bytes and exceed pipe capacity. Logs and native
 forwarded files must match byte for byte, including live prefixes before exit.
 
-## Execute the single owner-authorized retry
+## Restart only after new owner authorization
 
 Read AGENTS, SYSTEM, PROGRESS, GOAL and ACCEPTANCE; inspect live pinned status,
 queue, shared claims, process metadata and worktrees. Run context before each
@@ -102,7 +104,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 docs/rebuild/workflow-drill/inspector.py prepa
 
 Inspect that clean setup child and `expected.json`, recheck the live gates and
 approval, then launch the staged inspector alongside the single native controller
-invocation. **This command is for the currently approved single retry only:**
+invocation. **This command requires a new explicit owner approval:**
 
 ```sh
 PYTHONDONTWRITEBYTECODE=1 python3 /private/tmp/OWNER_SELECTED_NEW_ROOT/tooling/inspector.py launch /private/tmp/OWNER_SELECTED_NEW_ROOT

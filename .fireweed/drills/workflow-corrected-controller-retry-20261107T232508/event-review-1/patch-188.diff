@@ -1,0 +1,22 @@
+--- packages/workflow/internal/lifecycle/core.go before (format normalized)
++++ packages/workflow/internal/lifecycle/core.go after (format normalized)
+@@ -579,5 +579,5 @@
+ 			}
+-			_ = filepath.WalkDir(filepath.Join(r, m.Dir), func(path string, d os.DirEntry, err error) error {
++			e = filepath.WalkDir(filepath.Join(r, m.Dir), func(path string, d os.DirEntry, err error) error {
+ 				if err != nil {
+-					return nil
++					return err
+ 				}
+@@ -588,3 +588,3 @@
+ 				if contracts.ResolveZone(filepath.ToSlash(rel), m.Zones) == "disposable" {
+-					_ = os.Remove(path)
++					return os.Remove(path)
+ 				}
+@@ -592,2 +592,6 @@
+ 			})
++			if e != nil {
++				_ = gitstore.CASRef(r, refName(chosen), oid, "")
++				return model.State{}, e
++			}
+ 		}

@@ -1,0 +1,124 @@
+--- packages/workflow/internal/lifecycle/report.go before (format normalized)
++++ packages/workflow/internal/lifecycle/report.go after (format normalized)
+@@ -229,3 +229,4 @@
+ 			if strings.Contains(it.Tag, "quarantine") {
+-				out.Quarantines = append(out.Quarantines, model.Quarantine{Module: m.Name, ID: it.ID, Reason: it.Body})
++				reason := strings.TrimSpace(strings.TrimPrefix(it.Tag, "quarantine:"))
++				out.Quarantines = append(out.Quarantines, model.Quarantine{Module: m.Name, ID: it.ID, Reason: reason})
+ 			}
+@@ -237,4 +238,74 @@
+ 	}
++	archives, _ := filepath.Glob(filepath.Join(r, "changes", "archive", "*.md"))
++	type applied struct {
++		module, path string
++		date         time.Time
++	}
++	all := []applied{}
++	for _, path := range archives {
++		b, err := os.ReadFile(path)
++		if err != nil {
++			continue
++		}
++		doc, err := contracts.ParseDocument(string(b))
++		if err != nil || fmString(doc, "phase") != "applied" {
++			continue
++		}
++		mod := fmString(doc, "module")
++		date := implDate(doc)
++		all = append(all, applied{module: mod, path: path, date: date})
++		name := strings.TrimSuffix(filepath.Base(path), ".md")
++		if commits, err := Commits(r, name); err == nil {
++			out.PhaseCommits[name] = len(commits)
++		}
++	}
++	sort.Slice(all, func(i, j int) bool {
++		if all[i].date.Equal(all[j].date) {
++			return all[i].path < all[j].path
++		}
++		return all[i].date.After(all[j].date)
++	})
++	if len(all) >= 3 {
++		count := 1
++		for count < len(all) && all[count].module == all[0].module {
++			count++
++		}
++		if count >= 3 {
++			out.Diagnostics = append(out.Diagnostics, project.Diagnostic{Code: "P08", Message: fmt.Sprintf("%s has %d consecutive applied changes", all[0].module, count), Warning: true})
++		}
++	}
++	for _, m := range s.Modules {
++		var drill time.Time
++		if b, err := os.ReadFile(filepath.Join(r, ".fireweed", "drills", m.Name+".md")); err == nil {
++			if d, er := contracts.ParseDocument(string(b)); er == nil {
++				drill = parseDate(fmt.Sprint(d.Frontmatter["date"]))
++			}
++		}
++		for _, x := range all {
++			if x.module == m.Name && (drill.IsZero() || x.date.After(drill)) {
++				out.DriftSinceDrill[m.Name]++
++			}
++		}
++	}
++	base, _ := s.Config["base"].(string)
++	if base == "" {
++		base = "main"
++	}
++	remote, _ := s.Config["remote"].(string)
++	if remote == "" {
++		remote = "origin"
++	}
++	ref, err := git(r, "rev-parse", "--verify", "refs/remotes/"+remote+"/"+base)
++	if err != nil {
++		ref, _ = git(r, "rev-parse", "--verify", base)
++	}
++	for _, x := range all {
++		rel, _ := filepath.Rel(r, x.path)
++		if _, err := gitBytes(r, "show", ref+":"+filepath.ToSlash(rel)); err != nil {
++			out.Unapproved++
++		}
++	}
+ 	costs, _ := Costs(r)
+ 	latest := map[string]model.ModuleCost{}
++	latestDiagnostics := map[string][]project.Diagnostic{}
+ 	for _, snap := range costs {
+@@ -242,2 +313,3 @@
+ 			latest[c.Module] = c
++			latestDiagnostics[c.Module] = snap.Diagnostics
+ 		}
+@@ -247,2 +319,17 @@
+ 			out.Costs = append(out.Costs, c)
++			for _, d := range latestDiagnostics[m.Name] {
++				if d.Code != "B01" && d.Code != "B02" && d.Code != "B03" {
++					continue
++				}
++				found := false
++				for _, existing := range out.Diagnostics {
++					if existing == d {
++						found = true
++						break
++					}
++				}
++				if !found {
++					out.Diagnostics = append(out.Diagnostics, d)
++				}
++			}
+ 		}
+@@ -250,2 +337,18 @@
+ 	return out, nil
++}
++
++func parseDate(s string) time.Time {
++	t, _ := time.Parse(time.RFC3339Nano, strings.TrimSpace(s))
++	return t
++}
++func implDate(doc contracts.Document) time.Time {
++	body, _ := contracts.Section(doc.Body, "Provenance")
++	var date time.Time
++	for _, line := range strings.Split(body, "\n") {
++		f := strings.Fields(line)
++		if len(f) >= 3 && f[0] == "-" && f[1] == "impl" {
++			date = parseDate(f[2])
++		}
++	}
++	return date
+ }

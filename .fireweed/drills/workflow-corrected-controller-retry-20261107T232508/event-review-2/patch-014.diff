@@ -1,0 +1,27 @@
+--- packages/workflow/internal/lifecycle/core.go before (format normalized)
++++ packages/workflow/internal/lifecycle/core.go after (format normalized)
+@@ -239,2 +239,16 @@
+ 	bases, _ := c.Document.Frontmatter["bases"].(map[string]any)
++	current, loadErr := project.Load(root)
++	if loadErr != nil {
++		return loadErr
++	}
++	currentSpecs := map[string]contracts.Item{}
++	for _, m := range current.Modules {
++		if m.Name == c.Module {
++			sec, _ := contracts.Section(m.Document.Body, "Specs")
++			items, _ := contracts.ParseItems(sec)
++			for _, item := range items {
++				currentSpecs[item.ID] = item
++			}
++		}
++	}
+ 	for _, it := range append(append([]contracts.Item{}, c.Modified...), c.Removed...) {
+@@ -242,2 +256,7 @@
+ 			return coded("C08", "missing base for "+it.ID)
++		}
++		base := strings.TrimSpace(fmt.Sprint(bases[it.ID]))
++		item, present := currentSpecs[it.ID]
++		if !present || !strings.HasPrefix(contracts.SpecHash(item), base) {
++			return coded("P05", "stale base for "+it.ID)
+ 		}

@@ -1,0 +1,13 @@
+--- packages/workflow/internal/lifecycle/verify.go before (format normalized)
++++ packages/workflow/internal/lifecycle/verify.go after (format normalized)
+@@ -332,3 +332,3 @@
+ 		costs = append(costs, measure(s.Snapshot.Root, m, report))
+-		if err != nil && first == nil {
++		if err != nil && first == nil && (a.Phase != "evals" || len(report.Cases) == 0) {
+ 			first = err
+@@ -486,2 +486,5 @@
+ 		}
++		if e = static(root); e != nil {
++			return result, e
++		}
+ 	}

@@ -1,0 +1,13 @@
+--- packages/workflow/internal/lifecycle/verify.go before (format normalized)
++++ packages/workflow/internal/lifecycle/verify.go after (format normalized)
+@@ -427,2 +427,10 @@
+ 			first = err
++			if !strings.HasPrefix(err.Error(), "X02:") && !strings.HasPrefix(err.Error(), "X01:") {
++				for _, d := range ds {
++					if d.Code == "X02" || d.Code == "X01" {
++						first = coded(d.Code, err.Error())
++						break
++					}
++				}
++			}
+ 		}

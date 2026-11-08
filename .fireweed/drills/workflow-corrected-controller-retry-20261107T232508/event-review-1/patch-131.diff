@@ -1,0 +1,16 @@
+--- DRILL_NOTES.md before (format normalized)
++++ DRILL_NOTES.md after (format normalized)
+@@ -0,0 +1,13 @@
++# Workflow drill notes
++
++## Contradicted Decisions
++
++None identified in the retained inputs.
++
++## Gaps
++
++- FLOW-005 — workflow: Context lists target-module files but does not enumerate project-level `worker_writable` files outside that module.
++- FLOW-115 — workflow: PRBody selects endpoint identities touched by range commits, but a rename with a changed basename may not be connected to its endpoint identity.
++- FLOW-116 — workflow: PRBody collects file edits from phase commits that touch a selected change; a commit touching multiple changes may attribute the same file edit to each.
++- FLOW-117 — workflow: PRBody lists associated paths without separate interface, stub, manifest, other, and worker-writable labels based on each phase's declarations.
++- FLOW-128 — workflow: GC checks that a claimed worktree has the same Git common directory, but does not independently confirm its path in `git worktree list`.

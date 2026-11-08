@@ -1,0 +1,5 @@
+--- DRILL_NOTES.md before (format normalized)
++++ DRILL_NOTES.md after (format normalized)
+@@ -11,2 +11 @@
+ - FLOW-117 — workflow: PRBody lists associated paths without separate interface, stub, manifest, other, and worker-writable labels based on each phase's declarations.
+-- FLOW-128 — workflow: GC checks that a claimed worktree has the same Git common directory, but does not independently confirm its path in `git worktree list`.

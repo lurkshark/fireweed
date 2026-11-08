@@ -1,0 +1,30 @@
+--- packages/workflow/internal/lifecycle/report.go before (format normalized)
++++ packages/workflow/internal/lifecycle/report.go after (format normalized)
+@@ -514,5 +514,19 @@
+ 	}
+-	changes, e := git(r, "diff", "--name-only", from, to)
+-	if e != nil {
+-		return model.PRBodyReport{}, e
++	commits, e := git(r, "rev-list", from+".."+to)
++	if e != nil {
++		return model.PRBodyReport{}, coded("P01", revisionRange+": "+e.Error())
++	}
++	changePaths := map[string]bool{}
++	for _, oid := range strings.Fields(commits) {
++		parent, err := git(r, "rev-parse", oid+"^")
++		if err != nil {
++			continue
++		}
++		paths, err := git(r, "diff", "--name-only", parent, oid, "--", "changes")
++		if err != nil {
++			continue
++		}
++		for _, path := range strings.Fields(paths) {
++			changePaths[path] = true
++		}
+ 	}
+@@ -529,3 +543,3 @@
+ 	selected := map[string]string{}
+-	for _, path := range strings.Fields(changes) {
++	for path := range changePaths {
+ 		if strings.HasPrefix(path, "changes/") {

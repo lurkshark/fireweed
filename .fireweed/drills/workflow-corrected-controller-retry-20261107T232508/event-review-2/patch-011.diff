@@ -1,0 +1,11 @@
+--- packages/workflow/internal/lifecycle/report.go before (format normalized)
++++ packages/workflow/internal/lifecycle/report.go after (format normalized)
+@@ -875,3 +875,7 @@
+ 			seg := strings.Split(ref, "/")
+-			if len(seg) >= 5 {
++			if len(seg) == 5 {
++				n, parseErr := strconv.Atoi(seg[4])
++				if parseErr != nil || n <= 0 {
++					continue
++				}
+ 				_, err := os.Stat(filepath.Join(r, "changes/archive", seg[3]+".md"))

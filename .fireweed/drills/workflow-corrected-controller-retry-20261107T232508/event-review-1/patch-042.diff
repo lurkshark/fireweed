@@ -1,0 +1,7 @@
+--- packages/workflow/internal/lifecycle/verify.go before (format normalized)
++++ packages/workflow/internal/lifecycle/verify.go after (format normalized)
+@@ -437,3 +437,3 @@
+ 	}
+-	return fmt.Sprintf("- %s date=%s agent=%s version=%s playbook=%s tests=%d failing=%d passing=%d", phase, time.Now().UTC().Format(time.RFC3339), agent, assets.Version(), hex.EncodeToString(sum[:]), tests, fail, pass)
++	return fmt.Sprintf("- %s %s agent=%s fireweed=%s playbook=%s tests=%d failing=%d passing=%d", phase, time.Now().UTC().Format(time.RFC3339Nano), agent, assets.Version(), hex.EncodeToString(sum[:]), tests, fail, pass)
+ }

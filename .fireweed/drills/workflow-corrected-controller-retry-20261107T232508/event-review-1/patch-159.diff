@@ -1,0 +1,51 @@
+--- packages/workflow/internal/lifecycle/report.go before (format normalized)
++++ packages/workflow/internal/lifecycle/report.go after (format normalized)
+@@ -623,3 +623,4 @@
+ 		logs, _ := git(r, "rev-list", to, "--", pending, archive)
+-		fileSet := map[string]bool{}
++		fileSet := map[string]string{}
++		selectedModule, _ := module(snap, fmString(doc, "module"))
+ 		for _, oid := range strings.Fields(logs) {
+@@ -650,3 +651,32 @@
+ 				}
+-				fileSet[file] = true
++				label := ""
++				for _, pattern := range stringsOf(snap.Config["worker_writable"]) {
++					if contracts.MatchGlob(pattern, file) {
++						label = "worker_writable"
++					}
++				}
++				if strings.HasPrefix(file, selectedModule.Dir+"/") {
++					rel := strings.TrimPrefix(file, selectedModule.Dir+"/")
++					zone := contracts.ResolveZone(rel, selectedModule.Zones)
++					switch zone {
++					case "interface":
++						label = "interface"
++					case "evals":
++						label = "eval"
++					case "preserve":
++						label = "preserved"
++					case "disposable":
++						label = "disposable"
++						if fmString(beforeDoc, "phase") == "evals" {
++							if _, err := gitBytes(r, "show", parent+":"+file); err != nil {
++								label = "new disposable stub"
++							}
++						}
++					default:
++						label = "manifest/other"
++					}
++				}
++				if label != "" {
++					fileSet[file] = label
++				}
+ 			}
+@@ -659,3 +689,7 @@
+ 		if len(files) > 0 {
+-			fmt.Fprintf(&b, "### Files\n\n%s\n\n", strings.Join(files, "\n"))
++			b.WriteString("### Files\n\n")
++			for _, file := range files {
++				fmt.Fprintf(&b, "- %s: %s\n", fileSet[file], file)
++			}
++			b.WriteString("\n")
+ 		}

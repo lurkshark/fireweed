@@ -1,0 +1,17 @@
+--- packages/workflow/internal/lifecycle/core.go before (format normalized)
++++ packages/workflow/internal/lifecycle/core.go after (format normalized)
+@@ -289,3 +289,3 @@
+ 	c := q[i]
+-	snap, e := project.Project(root, c.Path)
++	snap, e := project.Project(root, c.Slug)
+ 	if e != nil {
+@@ -340,3 +340,3 @@
+ 	}
+-	snap, e := project.Project(root, c.Path)
++	snap, e := project.Project(root, c.Slug)
+ 	if e != nil {
+@@ -455,3 +455,3 @@
+ 	}
+-	snap, e := project.Project(r, chosen.Path)
++	snap, e := project.Project(r, chosen.Slug)
+ 	if e != nil {

@@ -1,0 +1,27 @@
+{
+  "all_prior_archive_report_and_proof_attempt_refs_preserved": true,
+  "previous_complete_workflow_report_retained_byte_for_byte": ".fireweed/drills/workflow-before-corrected-controller-retry-3853f17.md",
+  "native_report_prefix_byte_exact": true,
+  "only_authorized_existing_paths_changed_since_entry": [
+    ".fireweed/drills/workflow.md",
+    "docs/rebuild/ACCEPTANCE.md",
+    "docs/rebuild/GOAL.md",
+    "docs/rebuild/PROGRESS.md",
+    "docs/rebuild/workflow-drill/README.md",
+    "docs/rebuild/workflow-drill/control.py",
+    "docs/rebuild/workflow-drill/preflight.py",
+    "packages/runner/evals/commit_recovery_test.go",
+    "packages/runner/evals/next_test.go",
+    "packages/workflow/SPEC.md",
+    "packages/workflow/evals/regenerate_start_test.go"
+  ],
+  "current_pin_sha256": "20278504a8ea89fcd5f23d1de9a6ec849389fd55707054992c59967eec65e2b1",
+  "all_recovery_copies_preserved_including_retiring_12c571c": true,
+  "original_baseline_object_unchanged": "79cf33a7690082f28c06bf41a72719d282bc00fe",
+  "new_archives_immutable_since_corrected_candidate": true,
+  "configuration_hooks_runtime_interfaces_worker_system_and_supervisor_behavior_unchanged": true,
+  "unrelated_worktree_identity_preserved": true,
+  "no_queue_or_shared_claim": true,
+  "worktrees": "worktree /Users/joel/Workspace/fireweed\nHEAD 3853f17d3a2d227867dc9368e7cd56e2a060b4b6\nbranch refs/heads/main\n\nworktree /Users/joel/.codex/worktrees/stub-handoff-guidance/fireweed\nHEAD b59e9cc15a7d6c82f6436ef72fe5c2c3ccded211\nbranch refs/heads/codex/stub-handoff-guidance",
+  "time": "2026-11-08T00:20:22.695033+00:00"
+}

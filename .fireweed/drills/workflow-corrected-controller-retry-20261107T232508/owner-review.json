@@ -1,0 +1,22 @@
+{
+  "all_native_frontmatter_case_rows_failure_text_module_output_and_gap_fields_reviewed": true,
+  "unique_native_cases": 650,
+  "passing": 646,
+  "failing": 4,
+  "all_355_enforced_ids_represented": true,
+  "unknown_or_duplicate_case_entries": false,
+  "focused_FLOW081_FLOW083_RUN027_RUN028_cases_passed": true,
+  "first_trace_commands": 77,
+  "first_trace_snapshots": 190,
+  "second_trace_commands": 24,
+  "second_trace_snapshots": 25,
+  "both_fresh_outputs_match_reviewed_trace": true,
+  "both_native_logs_match_raw_streams_byte_for_byte": true,
+  "second_relative_dependent_eval_path_lookups_failed_without_exposure": true,
+  "no_observed_independence_violation": true,
+  "no_reported_compiler_error_either_attempt": true,
+  "normal_native_failure_publication_observed": true,
+  "native_running_worker_rejection_interruption_emergency_reporting_not_exercised": true,
+  "worker_gap_claims_not_accepted_as_retained_eval_defects": true,
+  "no_extra_native_invocation_or_diagnostic_replay": true
+}

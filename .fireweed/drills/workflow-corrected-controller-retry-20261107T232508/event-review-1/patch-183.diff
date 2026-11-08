@@ -1,0 +1,11 @@
+--- packages/workflow/internal/lifecycle/core.go before (format normalized)
++++ packages/workflow/internal/lifecycle/core.go after (format normalized)
+@@ -238,2 +238,8 @@
+ func stale(root string, c project.Change) error {
++	bases, _ := c.Document.Frontmatter["bases"].(map[string]any)
++	for _, it := range append(append([]contracts.Item{}, c.Modified...), c.Removed...) {
++		if strings.TrimSpace(fmt.Sprint(bases[it.ID])) == "" || bases[it.ID] == nil {
++			return coded("C08", "missing base for "+it.ID)
++		}
++	}
+ 	ss, e := project.StaleSpecs(root, c.Slug)

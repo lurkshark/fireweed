@@ -1,0 +1,40 @@
+--- packages/workflow/internal/lifecycle/report.go before (format normalized)
++++ packages/workflow/internal/lifecycle/report.go after (format normalized)
+@@ -65,3 +65,5 @@
+ 	}
+-	d.Body = contracts.ReplaceSection(d.Body, "Specs", strings.TrimSpace(specs.String())+"\n")
++	if len(c.Added)+len(c.Modified)+len(c.Removed) > 0 {
++		d.Body = contracts.ReplaceSection(d.Body, "Specs", strings.TrimSpace(specs.String())+"\n")
++	}
+ 	if set, ok := c.Document.Frontmatter["set"].(map[string]any); ok {
+@@ -89,3 +91,8 @@
+ 	}
+-	d.Body = contracts.ReplaceSection(d.Body, "Decisions", strings.TrimSpace(dec)+"\n")
++	if strings.TrimSpace(added) != "" || strings.TrimSpace(removed) != "" {
++		d.Body = contracts.ReplaceSection(d.Body, "Decisions", strings.TrimSpace(dec)+"\n")
++	}
++	if len(c.Added)+len(c.Modified)+len(c.Removed) == 0 && c.Document.Frontmatter["set"] == nil && strings.TrimSpace(added) == "" && strings.TrimSpace(removed) == "" {
++		return nil
++	}
+ 	render, e := contracts.RenderDocument(d)
+@@ -120,3 +127,3 @@
+ 	sys, _ := os.ReadFile(filepath.Join(s.Snapshot.Root, "SYSTEM.md"))
+-	out.WriteString("\n# SYSTEM\n")
++	out.WriteString("\n# SYSTEM.md\n")
+ 	out.Write(sys)
+@@ -131,2 +138,3 @@
+ 	}
++	out.WriteString("\n# Other relevant files\n")
+ 	if ok {
+@@ -365,4 +373,9 @@
+ func parseDate(s string) time.Time {
+-	t, _ := time.Parse(time.RFC3339Nano, strings.TrimSpace(s))
+-	return t
++	s = strings.TrimSpace(s)
++	for _, layout := range []string{time.RFC3339Nano, "2006-01-02 15:04:05 -0700 MST", "2006-01-02 15:04:05 -0700"} {
++		if t, err := time.Parse(layout, s); err == nil {
++			return t
++		}
++	}
++	return time.Time{}
+ }

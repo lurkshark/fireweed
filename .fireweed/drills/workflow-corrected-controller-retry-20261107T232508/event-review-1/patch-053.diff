@@ -1,0 +1,16 @@
+--- packages/workflow/internal/lifecycle/report.go before (format normalized)
++++ packages/workflow/internal/lifecycle/report.go after (format normalized)
+@@ -381,3 +381,12 @@
+ 	if len(matches) != 1 {
+-		return "", "", coded("U02", fmt.Sprintf("change %q not found or ambiguous", selector))
++		valid := []string{}
++		for _, p := range paths {
++			name := strings.TrimSuffix(filepath.Base(p), ".md")
++			if i := strings.IndexByte(name, '-'); i >= 0 {
++				name = name[i+1:]
++			}
++			valid = append(valid, name)
++		}
++		sort.Strings(valid)
++		return "", "", coded("U02", fmt.Sprintf("change %q not found or ambiguous; valid slugs: %s", selector, strings.Join(valid, ", ")))
+ 	}

@@ -1,0 +1,14 @@
+--- packages/workflow/internal/lifecycle/report.go before (format normalized)
++++ packages/workflow/internal/lifecycle/report.go after (format normalized)
+@@ -289,10 +289,3 @@
+ 	}
+-	base, _ := s.Config["base"].(string)
+-	if base == "" {
+-		base = "main"
+-	}
+-	remote, _ := s.Config["remote"].(string)
+-	if remote == "" {
+-		remote = "origin"
+-	}
++	base, remote := configuredBase(r, s)
+ 	ref, err := git(r, "rev-parse", "--verify", "refs/remotes/"+remote+"/"+base)
