@@ -7,7 +7,7 @@ eval_fix:
     - APP-130
     - APP-131
 module: app
-phase: audit
+phase: impl
 run: 20261108T081712-dc9c6122b165e3c07cd35635
 ---
 
@@ -74,3 +74,7 @@ controller promotion, later work or push is authorized. The existing deadline
 2026-11-10 22:51:05 UTC remains unchanged.
 ## Provenance
 - evals 2026-11-08T08:28:07.969254Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=323 failing=0 passing=323
+- audit 2026-11-08T08:28:25.413553Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-astra -c model_reasoning_effort="medium" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+## Audit
+
+No findings; checked APP-127, APP-128, APP-129, APP-130, APP-131
