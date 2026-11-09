@@ -502,6 +502,54 @@ func selectedIDs(ch project.Change, projected []contracts.Item) []string {
 func evalFixIDs(ch project.Change) []string {
 	return list(ch.Document.Frontmatter["eval_fix"])
 }
+
+const runArtifactsDir = ".fireweed/runs/"
+
+func isRunArtifact(path string) bool {
+	return strings.HasPrefix(path, runArtifactsDir)
+}
+
+func stepChanges(root, base string) ([]gitstore.Change, error) {
+	diff, err := gitstore.Changes(root, base)
+	if err != nil {
+		return nil, err
+	}
+	step := diff[:0]
+	for _, change := range diff {
+		// A rename across the run directory still changes its ordinary endpoint.
+		switch {
+		case isRunArtifact(change.Path):
+			if change.OldPath == "" || isRunArtifact(change.OldPath) || change.Status != "R" {
+				continue
+			}
+			change = gitstore.Change{Path: change.OldPath, Status: "D"}
+		case isRunArtifact(change.OldPath):
+			change = gitstore.Change{Path: change.Path, Status: "A"}
+		}
+		step = append(step, change)
+	}
+	return step, nil
+}
+
+func stepPathspecs(diff []gitstore.Change, required ...string) []string {
+	seen := make(map[string]bool)
+	var pathspecs []string
+	add := func(path string) {
+		if path != "" && !seen[path] {
+			seen[path] = true
+			pathspecs = append(pathspecs, ":(literal)"+path)
+		}
+	}
+	for _, path := range required {
+		add(path)
+	}
+	for _, change := range diff {
+		add(change.OldPath)
+		add(change.Path)
+	}
+	return pathspecs
+}
+
 func evalFixZones(s model.State, c claim, diff []gitstore.Change) []project.Diagnostic {
 	if len(evalFixIDs(s.Change)) == 0 || c.Phase != "evals" && c.Phase != "impl" {
 		return nil
@@ -578,7 +626,7 @@ func Verify(ctx context.Context, req model.Request) (model.Result, error) {
 	if c.Phase != "evals" && c.Phase != "audit" && c.Phase != "impl" {
 		return r, fmt.Errorf("P01: unsupported phase %s", c.Phase)
 	}
-	diff, e := gitstore.Changes(s.Snapshot.Root, c.PhaseBase)
+	diff, e := stepChanges(s.Snapshot.Root, c.PhaseBase)
 	if e != nil {
 		return r, e
 	}
@@ -900,17 +948,12 @@ func apply(s model.State, c claim, ch project.Change, oid string) (model.State, 
 		rollbackFiles(root, originals)
 		return s, e
 	}
-	diff, e := gitstore.Changes(root, c.PhaseBase)
+	diff, e := stepChanges(root, c.PhaseBase)
 	if e != nil {
 		rollbackFiles(root, originals)
 		return s, e
 	}
-	paths := []string{specPath, ch.Path, archive}
-	for _, d := range diff {
-		if d.Path != ch.Path && d.Path != specPath && d.Path != archive {
-			paths = append(paths, d.Path)
-		}
-	}
+	paths := stepPathspecs(diff, specPath, ch.Path, archive)
 	head, e := gitstore.Commit(root, "feat("+ch.Module+"): apply "+ch.Slug, paths)
 	if e != nil {
 		rollbackFiles(root, originals)
@@ -955,7 +998,7 @@ func Done(ctx context.Context, req model.Request) (model.Result, error) {
 	if e = hard(project.Check(s.Snapshot.Root)); e != nil {
 		return result, e
 	}
-	diffAfter, e := gitstore.Changes(s.Snapshot.Root, c.PhaseBase)
+	diffAfter, e := stepChanges(s.Snapshot.Root, c.PhaseBase)
 	if e != nil {
 		return result, e
 	}
@@ -990,21 +1033,16 @@ func Done(ctx context.Context, req model.Request) (model.Result, error) {
 	if e != nil {
 		return result, e
 	}
+	if e = unstageRunArtifacts(s.Snapshot.Root, c.PhaseBase); e != nil {
+		return result, e
+	}
 	if next == "applied" {
 		result.State, e = apply(s, c, ch, oid)
 		return result, e
 	}
-	diff, e := gitstore.Changes(s.Snapshot.Root, c.PhaseBase)
-	if e != nil {
-		return result, e
-	}
-	paths := []string{ch.Path}
+	paths := stepPathspecs(nil, ch.Path)
 	if c.Phase == "evals" {
-		for _, d := range diff {
-			if d.Path != ch.Path {
-				paths = append(paths, d.Path)
-			}
-		}
+		paths = stepPathspecs(diffAfter, ch.Path)
 	}
 	subject := "test(" + ch.Module + "): evals " + ch.Slug
 	if c.Phase == "audit" {

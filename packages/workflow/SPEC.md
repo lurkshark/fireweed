@@ -229,12 +229,16 @@ phase base.
 
 ### FLOW-064
 Block MUST save the held step's tracked and untracked work as a commit at the
-next unused positive refs/fireweed/attempts/<slug>/<n>, preserving prior attempt
-refs. BlockResult MUST identify that ref and its commit OID.
+next unused positive refs/fireweed/attempts/<slug>/<n>, preserving prior
+attempt refs. It MUST exclude generated run artifacts under `.fireweed/runs/`
+even when Git does not ignore them. BlockResult MUST identify the ref and its
+commit OID.
 
 ### FLOW-065
-After saving the attempt, Block MUST restore the step's tracked files, untracked
-files and index to the phase base, removing the step's edits from the checkout.
+After saving the attempt, Block MUST restore the step's tracked files,
+untracked files and index to the phase base, removing the step's edits from
+the checkout. It MUST leave generated run artifacts under `.fireweed/runs/`
+on disk with their contents unchanged.
 
 ### FLOW-066
 Block MUST commit only the held change's assigned IDs, run, current phase and
@@ -243,7 +247,8 @@ the approved author and already-committed audit content and exclude step work.
 
 ### FLOW-067
 On successful blocking, Block MUST release the current claim and return the
-blocked State with no held ClaimOID. The resulting working tree MUST be clean.
+blocked State with no held ClaimOID. The resulting working tree MUST be clean
+apart from untracked generated run artifacts under `.fireweed/runs/`.
 
 ### FLOW-068
 Eligible MUST return unblocked queued changes not held back by earlier blocked
@@ -505,6 +510,10 @@ stop evaluation of the remaining selected modules.
 Verify MUST return every completed module's report in Result.Reports.
 Cancellation, timeouts, hook execution errors, and invalid or missing reports
 MAY stop further evaluation.
+
+### FLOW-135
+A phase commit created by Done MUST exclude generated run artifacts under
+`.fireweed/runs/`, including when Git does not ignore those files.
 
 ## Decisions
 

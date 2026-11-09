@@ -24,6 +24,12 @@ func blockGit(root string, input []byte, args ...string) (string, error) {
 	return strings.TrimSpace(result.Stdout), nil
 }
 
+// Reset only the index so even explicitly staged run artifacts stay on disk.
+func unstageRunArtifacts(root, base string) error {
+	_, err := blockGit(root, nil, "reset", "-q", base, "--", runArtifactsDir)
+	return err
+}
+
 // The phase base is the last committed approval. Start's assigned IDs, run,
 // and phase are held in the claim until the next phase commit.
 func blockDocument(root string, s model.State, c claim) (contracts.Document, error) {
@@ -119,7 +125,25 @@ func Block(request model.BlockRequest) (model.BlockResult, error) {
 	if err != nil {
 		return result, err
 	}
-	if _, err = blockGit(root, nil, "add", "-A"); err != nil {
+	// The index already contains staged work. Select only paths that still
+	// need staging so an ignored replacement for a staged deletion stays ignored.
+	unstaged, err := commitsGit(root, "ls-files", "--modified", "--others", "--exclude-standard", "-z")
+	if err != nil {
+		return result, err
+	}
+	var ordinary strings.Builder
+	for _, path := range strings.Split(unstaged, "\x00") {
+		if path != "" && !isRunArtifact(path) {
+			ordinary.WriteString(path)
+			ordinary.WriteByte(0)
+		}
+	}
+	if ordinary.Len() != 0 {
+		if _, err := blockGit(root, []byte(ordinary.String()), "--literal-pathspecs", "add", "-A", "--pathspec-from-file=-", "--pathspec-file-nul"); err != nil {
+			return result, err
+		}
+	}
+	if err := unstageRunArtifacts(root, c.PhaseBase); err != nil {
 		return result, err
 	}
 	tree, err := blockGit(root, nil, "write-tree")
@@ -135,10 +159,7 @@ func Block(request model.BlockRequest) (model.BlockResult, error) {
 		return result, err
 	}
 	result.AttemptRef, result.AttemptOID = attemptRef, attemptOID
-	if _, err = blockGit(root, nil, "reset", "--hard", c.PhaseBase); err != nil {
-		return result, err
-	}
-	if _, err = blockGit(root, nil, "clean", "-fd"); err != nil {
+	if _, err := blockGit(root, nil, "restore", "--source="+c.PhaseBase, "--staged", "--worktree", "--", ".", ":(exclude,literal)"+runArtifactsDir); err != nil {
 		return result, err
 	}
 	doc.Frontmatter["blocked"] = request.Reason
