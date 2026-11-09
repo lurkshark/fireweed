@@ -1,0 +1,43 @@
+{
+  "full_trace_reviewed": true,
+  "shell_commands": 30,
+  "native_log_matches": true,
+  "full_forwarding": true,
+  "raw_sha256": {
+    "stdout": "791dc8446e760dad3f5e0d4751831d801e08f536052b0fa0a723e6468e8cd304",
+    "stderr": "383f4ee36dfa41251d144a8e6f09dc495d83a1f2f8989da3c16ea972e7314fc2"
+  },
+  "output": {
+    "packages/workflow/internal/lifecycle/common.go": "64c9835a3ba69156fbfb9460fd7673a523ac1d2dfcd93e34ac9f05c156a17ee3",
+    "packages/workflow/internal/lifecycle/claim.go": "bc2c802907e84c24c28ac64f98cb844b028994d5082d10b9224a7ccfa84988ec",
+    "packages/workflow/internal/lifecycle/history.go": "472186714eaae3a20ffb5ba424ceca773d9391e30289c5bc07e5c0c774353ba9",
+    "packages/workflow/internal/lifecycle/verify.go": "63034be7a09eef8c2e05e90dc48bb7c4772ab2bc9e830b552ad5ea9dbf969d78",
+    "packages/workflow/internal/lifecycle/costs.go": "fc4629440d0402aae5711a891e19c1d98d9fb8a6733386cb11525f1f12332874",
+    "packages/workflow/internal/lifecycle/transition.go": "8cbde35d1046e5031594e6abd421dc0f197f529de8ba8f40e646ec71a25cfcea",
+    "packages/workflow/internal/lifecycle/attempt.go": "82984c1e87418504ce7585f761549e09ddcf5d5198c50129fcce4baafbe654d8",
+    "packages/workflow/internal/lifecycle/prbody.go": "d014fa1b0a9f3aa669cc6ae0da852da3a66b507024854f927772faae7426f26f",
+    "DRILL_NOTES.md": "3b5492d959f25aa7eca4b1ba8f130f38f439987854095ead0cfd84e2e963afed"
+  },
+  "native_feedback": {
+    "bytes": 240268,
+    "sha256": "ab818bca8b683e4a0fd293f3040e2b28887e77138493719103d284e13d68e519",
+    "lines": 776,
+    "original_plus_exact_suffix": true,
+    "failed_rows_by_module": {
+      "workflow": 49,
+      "app": 20,
+      "runner": 44
+    },
+    "full_feedback_reviewed": true,
+    "observations": [
+      "All three suites ran, with E01 eval failures and no compile failure.",
+      "Git staging attempted to include ignored .fireweed/runs and caused cascading phase and attempt failures.",
+      "Missing spec base produced P05 with recorded <nil> instead of C08.",
+      "Status accepted an unavailable base ref.",
+      "Waiting-queue fixtures returned ineligible changes.",
+      "Remaining feedback comprised the individual native fixture diagnostics, CLI envelopes and state dumps."
+    ],
+    "native_report_offset": 901160
+  },
+  "apply_patch_actions": 21
+}

@@ -1,16 +1,24 @@
-# Rebuild handoff — newest controller and supervised drill approved
+# Rebuild handoff — approved workflow drill failed, stopped
 
-The owner approved one controller promotion from newest committed source
-`a54f5da8d4faf9758f1a426cc7559c0726be8607` and one supervised native workflow
-invocation on `7d17a76186fd94d603a018713bdcc1005c89e020`. The separate
-[pin handoff](../../.fireweed/drills/controller-pin-a54f5da.md) records the
-compiler input equivalence, candidate checks and idle promotion. The prior
-[candidate validation](../../.fireweed/drills/workflow-report-boundary-corrections.md)
-remains applicable, including its timing observations.
+The single approved controller promotion and supervised native workflow
+invocation are complete. The installed pin is newest committed controller
+source a54f5da8d4faf9758f1a426cc7559c0726be8607. The isolated invocation used
+the separately approved candidate 7d17a76186fd94d603a018713bdcc1005c89e020,
+with identical controller compiler inputs. [Controller handoff](../../.fireweed/drills/controller-pin-a54f5da.md).
 
-The inspector uses the recorded pin and approved candidate with the existing
-bounds and deadline **2026-11-10 22:51:05 UTC**. Stop after the invocation,
-evidence retention and owned scratch cleanup.
+The first reconstruction compiled and reported 113 failing eval rows across
+workflow, app and runner. The second reconstruction failed to compile because
+claim.go used regexp without importing it. The native controller exited 1 and
+published its report and exact proof ref. Both worker traces and all native
+feedback were reviewed. The owned scratch trees were removed. The queue and
+shared claims are empty. The live unapproved count is two.
+[Native report](../../.fireweed/drills/workflow.md),
+[review and cleanup](../../.fireweed/drills/workflow-native-retry-20261109T032533/review.md).
+
+**Approval consumed. Stop here.** The existing deadline is 2026-11-10 22:51:05 UTC.
+WF4, full completion, and earlier timing exceptions remain open. Any new
+invocation, correction, or controller promotion requires separate authorization.
+Follow GOAL.
 
 ## Approved workflow changes (historical)
 
@@ -37,8 +45,7 @@ checkpoint remain open. The existing deadline remains
 The owner-authorized single native workflow retry on pinned candidate
 `75efa9a03c4eb7a17673a53bdd8058074e5bb7e1` is complete. Both reconstructions
 compiled. The final native verifier reported 22 failing rows across workflow,
-app and runner, with no supervisor rejection or emergency escalation. The
-[native report](../../.fireweed/drills/workflow.md) and
+app and runner, with no supervisor rejection or emergency escalation. The native report at 4b9cb0e:.fireweed/drills/workflow.md and its
 [review](../../.fireweed/drills/workflow-native-retry-20261108T233724/review.md)
 retain the ref, trace, verification and cleanup evidence. WF4, full completion
 and prior own-Verify timing exceptions remain open.

@@ -1,0 +1,61 @@
+{
+  "terminal": {
+    "exit": 1,
+    "emergency": false,
+    "rejected": false
+  },
+  "candidate": "7d17a76186fd94d603a018713bdcc1005c89e020",
+  "setup_child": "4cb2bc783f2ed97e5d407edb2015560a88007975",
+  "native_report_published": true,
+  "native_stdout": "{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C11\",\"message\":\"workflow eval: C11: testcase \\\"PackageFailure\\\" has no known spec ID\\nC10: no coverage for FLOW-001\\napp eval: C11: testcase \\\"PackageFailure\\\" has no known spec ID\\nC10: no coverage for APP-001\\nrunner eval: C11: testcase \\\"PackageFailure\\\" has no known spec ID\\nC10: no coverage for RUN-001. Retained report .fireweed/drills/workflow.md and rebuilt ref refs/fireweed/drills/workflow/20261109T032533.158401000. Use the reported cause to correct the drill inputs or checks, then retry drill.\",\"warning\":false}]}\n",
+  "native_stderr": "",
+  "native_report_bytes": 2004307,
+  "native_report_sha256": "220bc8dfcd6dee919b9b9d4b251e79534262b0f154b34bb73d8900267dd5d6bb",
+  "report_fields": {
+    "date": "2026-11-09T03:25:33.158401Z",
+    "base_commit": "4cb2bc783f2ed97e5d407edb2015560a88007975",
+    "agent": "codex",
+    "model": "gpt-6.1-sol",
+    "result": "fail"
+  },
+  "contradicted_decisions": "None identified in the retained specifications and evals.",
+  "gaps": "- **workflow, FLOW-007.** The allocation rule leaves gaps in an ID sequence unspecified. Allocation chooses the lowest free positive number after reserving current IDs and IDs recorded by pending and archived changes.\n- **workflow, FLOW-045.** The attribution format is unspecified. New decisions use the retained eval's `- slug: decision` format. Removal also recognizes the bracketed attribution in the retained SPEC.\n- **workflow, FLOW-052.** The public checks interface supplies eval stdout and stderr through `checks.Report`. Boundary verification supplies diagnostics and an error. Its raw process streams are unavailable through that interface.\n- **workflow, FLOW-074 and FLOW-089.** Conflict resolution is unspecified. Resume and abandon apply Git patches against the current checkout or a temporary index. A patch conflict aborts the operation and preserves later work.\n- **workflow, FLOW-075.** The retained evals establish Decisions and Questions as worker-editable, with Audit editable during the audit phase. The retained interface leaves any additional editable sections unspecified.\n- **workflow, FLOW-110.** The retained eval recognizes an approved numbered filename at either its pending or archived path on the base. The status count follows that identity across the move.\n- **workflow, no spec.** The reconstruction workspace supplies public interfaces and retained evals. Build and eval execution are assigned to the outside verifier by `SYSTEM.md`.",
+  "modules": {
+    "workflow": {
+      "rows": 0,
+      "results": {},
+      "enforced_ids": 134,
+      "referenced_enforced_ids": 0,
+      "reported_suite_times": [],
+      "nonpassing_cases": [],
+      "compilation_failed": true
+    },
+    "app": {
+      "rows": 0,
+      "results": {},
+      "enforced_ids": 155,
+      "referenced_enforced_ids": 0,
+      "reported_suite_times": [],
+      "nonpassing_cases": [],
+      "compilation_failed": true
+    },
+    "runner": {
+      "rows": 0,
+      "results": {},
+      "enforced_ids": 67,
+      "referenced_enforced_ids": 0,
+      "reported_suite_times": [],
+      "nonpassing_cases": [],
+      "compilation_failed": true
+    }
+  },
+  "final_build_errors": [
+    "packages/workflow/internal/lifecycle/claim.go:576:31: undefined: regexp",
+    "packages/workflow/internal/lifecycle/claim.go:578:19: undefined: regexp"
+  ],
+  "first_attempt_failed_rows_by_module": {
+    "workflow": 49,
+    "app": 20,
+    "runner": 44
+  }
+}

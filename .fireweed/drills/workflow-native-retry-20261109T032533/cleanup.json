@@ -1,0 +1,73 @@
+{
+  "terminal": {
+    "exit": 1,
+    "emergency": false,
+    "rejected": false
+  },
+  "controller_and_worker_groups_exited": true,
+  "checked_pids": [
+    82409,
+    83917,
+    63565
+  ],
+  "native_input_removed": true,
+  "native_verifier_removed": true,
+  "caller_single_detached_worktree": true,
+  "candidate": "7d17a76186fd94d603a018713bdcc1005c89e020",
+  "controller_source": "a54f5da8d4faf9758f1a426cc7559c0726be8607",
+  "controller_pin_sha256": "0b0ac4477e0c4b23466944f790309860fac101cce5818541526b6bdf29a7a71a",
+  "protected_preparation": "4b9cb0ea2e0aadd0fe10acd5eb882d4410f0bc47",
+  "native_ref": "refs/fireweed/drills/workflow/20261109T032533.158401000",
+  "native_ref_oid": "cc457c9d257233455f38400a06d11105f41a70e1",
+  "native_prefix_and_streams_preserved": true,
+  "prior_refs_preserved": true,
+  "origin_main": "3965218a62f26665b8ff77651839642255a8e4b0",
+  "unrelated_worktree_preserved": true,
+  "product_and_recovery_executable_metadata_preserved": true,
+  "product_contracts_hooks_config_and_phase_counts_preserved": true,
+  "queue": [],
+  "shared_claims": [],
+  "unapproved_before": 2,
+  "unapproved_after": 2,
+  "workflow_drift_before": 2,
+  "workflow_drift_after": 0,
+  "warnings": [
+    {
+      "code": "B02",
+      "message": "CHK-055: 16 testcases exceeds cases_per_spec limit 15",
+      "warning": true
+    },
+    {
+      "code": "B02",
+      "message": "APP-103: 17 testcases exceeds cases_per_spec limit 15",
+      "warning": true
+    },
+    {
+      "code": "B02",
+      "message": "APP-104: 19 testcases exceeds cases_per_spec limit 15",
+      "warning": true
+    }
+  ],
+  "idle_context": "U02",
+  "idle_verify": "P02",
+  "static_check": {
+    "schema": 1,
+    "data": "Check passed\n",
+    "diagnostics": []
+  },
+  "history_check_range": "7d17a76186fd94d603a018713bdcc1005c89e020..4b9cb0ea2e0aadd0fe10acd5eb882d4410f0bc47",
+  "history_check": {
+    "schema": 1,
+    "data": {
+      "commits": [
+        "a54f5da8d4faf9758f1a426cc7559c0726be8607",
+        "4b9cb0ea2e0aadd0fe10acd5eb882d4410f0bc47"
+      ],
+      "squashed": []
+    },
+    "diagnostics": []
+  },
+  "removed_caller_and_staging_root": "/private/tmp/fireweed-pin-workflow.93Qq47iM",
+  "removed_rehearsal_root": "/private/tmp/fireweed-wrapper-rehearsal-_v84m6ou",
+  "cleanup_completed_utc": "2026-11-09T04:20:31.377569+00:00"
+}

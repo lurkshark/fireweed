@@ -1,0 +1,17 @@
+{
+  "ref": "refs/fireweed/drills/workflow/20261109T032533.158401000",
+  "oid": "cc457c9d257233455f38400a06d11105f41a70e1",
+  "parent": "4cb2bc783f2ed97e5d407edb2015560a88007975",
+  "retained_files_identical": 577,
+  "fresh_files_match_reviewed_bytes": [
+    "packages/workflow/internal/lifecycle/attempt.go",
+    "packages/workflow/internal/lifecycle/claim.go",
+    "packages/workflow/internal/lifecycle/common.go",
+    "packages/workflow/internal/lifecycle/costs.go",
+    "packages/workflow/internal/lifecycle/history.go",
+    "packages/workflow/internal/lifecycle/prbody.go",
+    "packages/workflow/internal/lifecycle/transition.go",
+    "packages/workflow/internal/lifecycle/verify.go"
+  ],
+  "verified_attempt": 2
+}

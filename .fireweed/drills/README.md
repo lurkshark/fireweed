@@ -13,14 +13,16 @@ spec, eval, controller, configuration, proof/attempt ref or unrelated worktree.
 No native drill or history rewrite was run. Existing failed/open milestone status
 and unresolved findings remain unchanged.
 
-The latest [workflow review](workflow-native-retry-20261108T233724/review.md)
-records the supervised retry on pinned source `75efa9a`. The final verifier
-reported 22 failing rows across workflow, app and runner. The
-[current native report](workflow.md) preserves all four raw worker streams
-byte for byte and includes the first verification feedback. Receipts retain
-the stream offsets, result, native proof ref and cleanup. The preceding report
-is at `3965218:.fireweed/drills/workflow.md`.
-[Previous retry review](workflow-native-retry-20261108T090949/review.md),
+The latest [workflow review](workflow-native-retry-20261109T032533/review.md)
+records the supervised invocation on candidate 7d17a76 with controller pin
+a54f5da. The first reconstruction compiled and reported 113 failing eval rows.
+The second failed to compile. The [current native report](workflow.md)
+preserves both attempts' raw streams byte for byte and includes the complete
+first verification feedback. The receipts record the native proof ref,
+stream offsets, result and cleanup. The preceding native report is at
+4b9cb0e:.fireweed/drills/workflow.md.
+[Previous review](workflow-native-retry-20261108T233724/review.md),
+[earlier retry review](workflow-native-retry-20261108T090949/review.md),
 [rejected retry review](workflow-contract-retry-20261108T055420/review.md).
 
 The earlier [static failure investigation](workflow-native-retry-20261108T090949/investigation.md)

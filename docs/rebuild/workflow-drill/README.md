@@ -1,12 +1,13 @@
-# Workflow inspector — native retry failed, stopped
+# Workflow inspector — native drill failed, stopped
 
-The owner's single supervised retry on pinned candidate `75efa9a` is complete.
-Both attempts compiled. The final verifier reported 22 failing rows across
-workflow, app and runner. The native controller published the report and ref
-and removed its scratch trees. The inspector recorded no rejection or
-emergency escalation.
+The owner's single supervised invocation on candidate 7d17a76 with controller
+pin a54f5da is complete. The first reconstruction compiled and reported 113
+failing eval rows. The second failed to compile because claim.go used regexp
+without importing it. The native controller published its report and ref and
+removed its scratch trees. The inspector recorded no rejection or emergency
+escalation.
 [Native report](../../../.fireweed/drills/workflow.md),
-[review and cleanup evidence](../../../.fireweed/drills/workflow-native-retry-20261108T233724/review.md).
+[review and cleanup](../../../.fireweed/drills/workflow-native-retry-20261109T032533/review.md).
 
 **Approval consumed. Restart requires new explicit owner authorization and
 fresh live gates.** WF4 and full completion remain open. PROGRESS records the
