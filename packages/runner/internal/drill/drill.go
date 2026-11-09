@@ -1,7 +1,6 @@
 package drill
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -112,15 +111,22 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 	if err = removeDisposable(scratch, snapshot, *target); err != nil {
 		return result, err
 	}
-	input, err = makeInput(scratch, snapshot, *target)
+	input, err = makeInput(scratch, repo.Head, snapshot, *target)
 	if err != nil {
+		return result, err
+	}
+	if err = setup(ctx, input, snapshot.Config, request); err != nil {
 		return result, err
 	}
 	original, err := inventory(input)
 	if err != nil {
 		return result, err
 	}
-	prompt, err := reconstructionPrompt(*target, original)
+	eval, err := evalCommand(input, snapshot.Config, *target)
+	if err != nil {
+		return result, err
+	}
+	prompt, err := reconstructionPrompt(*target, original, eval)
 	if err != nil {
 		return result, err
 	}
@@ -150,7 +156,7 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 			LogRoot: repo.Root, Run: logRun, Phase: "drill", Attempt: attempt + 1,
 		})
 		result.Steps = append(result.Steps, step)
-		if validationErr := validateInput(input, snapshot, *target, original); validationErr != nil {
+		if validationErr := validateInput(input, original); validationErr != nil {
 			failure = fmt.Errorf("invalid reconstruction edits: %w", validationErr)
 			break
 		}
@@ -191,7 +197,7 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 			feedback = "\n\n# Previous reconstruction failure\n" + failure.Error() + "\n" + step.Stdout + "\n" + step.Stderr
 			continue
 		}
-		if err = importDisposable(input, scratch, snapshot, *target); err != nil {
+		if err = importDisposable(input, scratch, snapshot, *target, original); err != nil {
 			failure = err
 			break
 		}
@@ -290,12 +296,17 @@ func modelName(config map[string]any) string {
 }
 
 func git(root string, args ...string) (string, error) {
+	out, err := gitOutput(root, args...)
+	return strings.TrimSpace(out), err
+}
+
+func gitOutput(root string, args ...string) (string, error) {
 	argv := append([]string{"git", "-C", root, "-c", "core.hooksPath=/dev/null"}, args...)
 	r, err := gitstore.Run(context.Background(), gitstore.Request{Args: argv, Timeout: 30 * time.Second, Env: map[string]string{"GIT_NO_LAZY_FETCH": "1", "GIT_TERMINAL_PROMPT": "0"}})
 	if err != nil {
 		return "", fmt.Errorf("git %s: %w: %s", strings.Join(args, " "), err, strings.TrimSpace(r.Stderr))
 	}
-	return strings.TrimSpace(r.Stdout), nil
+	return r.Stdout, nil
 }
 
 func setup(ctx context.Context, root string, config map[string]any, request model.DrillRequest) error {
@@ -339,6 +350,9 @@ func walkFiles(root string, visit func(rel string, entry fs.DirEntry) error) err
 		if walkErr != nil {
 			return walkErr
 		}
+		if entry.IsDir() && path == filepath.Join(root, ".git") {
+			return filepath.SkipDir
+		}
 		if path == root || entry.IsDir() {
 			return nil
 		}
@@ -351,7 +365,7 @@ func walkFiles(root string, visit func(rel string, entry fs.DirEntry) error) err
 }
 
 // disposable applies module precedence and the approved project protection to
-// a target path. Dependency interfaces are selected by their declared zone.
+// a target path.
 func disposable(snapshot project.Snapshot, module project.Module, rel string) bool {
 	if contracts.ResolveZone(rel, module.Zones) != "disposable" {
 		return false
@@ -423,55 +437,49 @@ func dependents(snapshot project.Snapshot, target project.Module) []string {
 	sort.Strings(names)
 	return names
 }
-func copyFile(from, to string) error {
-	data, err := os.ReadFile(from)
-	if err != nil {
-		return err
-	}
-	if err = os.MkdirAll(filepath.Dir(to), 0755); err != nil {
-		return err
-	}
-	return os.WriteFile(to, data, 0644)
-}
-func makeInput(scratch string, snapshot project.Snapshot, target project.Module) (string, error) {
+func makeInput(scratch, base string, snapshot project.Snapshot, target project.Module) (string, error) {
 	root, err := os.MkdirTemp("", "fireweed-drill-input-")
 	if err != nil {
 		return "", err
 	}
-	fail := func(err error) (string, error) { _ = os.RemoveAll(root); return "", err }
-	if err = copyFile(filepath.Join(scratch, "SYSTEM.md"), filepath.Join(root, "SYSTEM.md")); err != nil {
-		return fail(err)
+	// Return the path even on failure so Run can clean it up.
+	tracked, err := gitOutput(scratch, "ls-tree", "-r", "--name-only", "-z", base)
+	if err != nil {
+		return root, err
 	}
-	deps := dependencies(snapshot, target)
-	for _, module := range snapshot.Modules {
-		if module.Name != target.Name && !deps[module.Name] {
+	excluded := []string{"changes", ".fireweed/drills"}
+	for _, name := range dependents(snapshot, target) {
+		excluded = append(excluded, findModule(snapshot, name).Dir)
+	}
+	for _, path := range strings.Split(strings.TrimSuffix(tracked, "\x00"), "\x00") {
+		if path == "" || excludedInput(path, excluded) {
 			continue
 		}
-		source := filepath.Join(scratch, filepath.FromSlash(module.Dir))
-		err = walkFiles(source, func(rel string, entry fs.DirEntry) error {
-			zone := contracts.ResolveZone(rel, module.Zones)
-			if module.Name != target.Name && zone != "interface" {
-				return nil
-			}
-			if module.Name == target.Name && disposable(snapshot, module, rel) {
-				return nil
-			}
-			if !entry.Type().IsRegular() {
-				return fmt.Errorf("nonregular reconstruction input %s/%s", module.Dir, rel)
-			}
-			return copyFile(filepath.Join(source, filepath.FromSlash(rel)), filepath.Join(root, filepath.FromSlash(module.Dir), filepath.FromSlash(rel)))
-		})
+		if rel, ok := strings.CutPrefix(path, target.Dir+"/"); ok && disposable(snapshot, target, rel) {
+			continue
+		}
+		file, err := readInputFile(scratch, path)
 		if err != nil {
-			return fail(err)
+			return root, fmt.Errorf("read reconstruction input %s: %w", path, err)
+		}
+		if err := file.write(root, path); err != nil {
+			return root, fmt.Errorf("copy reconstruction input %s: %w", path, err)
 		}
 	}
-	if err = independentGit(root); err != nil {
-		return fail(err)
-	}
-	return root, nil
+	return root, independentGit(root)
 }
+
+func excludedInput(path string, excluded []string) bool {
+	for _, dir := range excluded {
+		if path == dir || strings.HasPrefix(path, dir+"/") {
+			return true
+		}
+	}
+	return false
+}
+
 func independentGit(root string) error {
-	for _, args := range [][]string{{"init", "-q", "--template="}, {"add", "-A"}, {"-c", "user.name=Fireweed Drill", "-c", "user.email=drill@localhost", "commit", "-q", "-m", "reconstruction inputs"}} {
+	for _, args := range [][]string{{"init", "-q", "--template="}, {"add", "-f", "-A"}, {"-c", "user.name=Fireweed Drill", "-c", "user.email=drill@localhost", "commit", "-q", "-m", "reconstruction inputs"}} {
 		cmd := exec.Command("git", args...)
 		cmd.Dir = root
 		for _, v := range os.Environ() {
@@ -486,24 +494,105 @@ func independentGit(root string) error {
 	}
 	return nil
 }
-func inventory(root string) (map[string][]byte, error) {
-	files := map[string][]byte{}
-	err := walkFiles(root, func(rel string, entry fs.DirEntry) error {
-		if rel == ".git" || strings.HasPrefix(rel, ".git/") {
-			return nil
-		}
-		if !entry.Type().IsRegular() {
-			return fmt.Errorf("nonregular input %s", rel)
-		}
-		b, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(rel)))
+
+type inputFile struct {
+	mode    fs.FileMode
+	content string
+}
+
+func readInputFile(root, rel string) (inputFile, error) {
+	path := filepath.Join(root, filepath.FromSlash(rel))
+	info, err := os.Lstat(path)
+	if err != nil {
+		return inputFile{}, err
+	}
+	mode := info.Mode()
+	switch {
+	case mode.IsRegular():
+		data, err := os.ReadFile(path)
+		return inputFile{mode: mode, content: string(data)}, err
+	case mode.Type() == fs.ModeSymlink:
+		link, err := os.Readlink(path)
+		return inputFile{mode: mode, content: link}, err
+	default:
+		return inputFile{}, fmt.Errorf("unsupported file type at %s", rel)
+	}
+}
+
+func (file inputFile) write(root, rel string) error {
+	path := filepath.Join(root, filepath.FromSlash(rel))
+	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+		return err
+	}
+	if file.mode.Type() == fs.ModeSymlink {
+		return os.Symlink(file.content, path)
+	}
+	return os.WriteFile(path, []byte(file.content), file.mode.Perm())
+}
+
+func inventory(root string) (map[string]inputFile, error) {
+	files := map[string]inputFile{}
+	err := walkFiles(root, func(rel string, _ fs.DirEntry) error {
+		file, err := readInputFile(root, rel)
 		if err == nil {
-			files[rel] = b
+			files[rel] = file
 		}
 		return err
 	})
 	return files, err
 }
-func reconstructionPrompt(target project.Module, original map[string][]byte) (string, error) {
+
+func evalCommand(root string, config map[string]any, target project.Module) (string, error) {
+	hook := section(config, "hooks")["eval"]
+	if override, ok := section(target.Document.Frontmatter, "hooks")["eval"]; ok {
+		hook = override
+	}
+	const reportDir = ".fireweed/runs/drill"
+	const prefix = "mkdir -p " + reportDir + " && "
+	// Like checks.Evaluate, pass a path that remains valid if the hook changes directories.
+	reportPath, err := filepath.Abs(filepath.Join(root, reportDir, "report.xml"))
+	if err != nil {
+		return "", err
+	}
+	quote := func(value string) string {
+		return "'" + strings.ReplaceAll(value, "'", "'\"'\"'") + "'"
+	}
+	expansion := func(escape func(string) string) *strings.Replacer {
+		return strings.NewReplacer(
+			"{module}", escape(target.Name),
+			"{module_dir}", escape(target.Dir),
+			"{report}", escape(reportPath),
+		)
+	}
+	var args []string
+	switch command := hook.(type) {
+	case string:
+		if strings.TrimSpace(command) != "" {
+			return prefix + "sh -c " + quote(expansion(quote).Replace(command)), nil
+		}
+	case []string:
+		args = command
+	case []any:
+		for _, arg := range command {
+			value, ok := arg.(string)
+			if !ok {
+				return "", fmt.Errorf("C11: eval hook argv for %s contains non-string", target.Name)
+			}
+			args = append(args, value)
+		}
+	}
+	if len(args) == 0 || args[0] == "" {
+		return "", fmt.Errorf("C11: missing or invalid eval hook for %s", target.Name)
+	}
+	expand := expansion(func(value string) string { return value })
+	words := make([]string, len(args))
+	for i, arg := range args {
+		words[i] = quote(expand.Replace(arg))
+	}
+	return prefix + strings.Join(words, " "), nil
+}
+
+func reconstructionPrompt(target project.Module, original map[string]inputFile, eval string) (string, error) {
 	spec, err := contracts.RenderDocument(target.Document)
 	if err != nil {
 		return "", err
@@ -521,45 +610,86 @@ func reconstructionPrompt(target project.Module, original map[string][]byte) (st
 	}
 	sort.Strings(retained)
 	sort.Strings(evals)
-	return fmt.Sprintf("# Rebuild %s\n\nTarget spec and Decisions:\n%s\n\nRetained interfaces and files:\n%s\n\nRetained evals:\n%s\n\nRebuild only target disposable paths. Do not edit retained inputs. Do not read outside the supplied input workspace, external trees, old code, source history, binaries, saved attempts, or dependent internal implementation. Do not repair dependent internals. Write DRILL_NOTES.md with separate ## Contradicted Decisions and ## Gaps sections. Every gap must name the nearest spec ID or \"no spec\" and a target module. Do not commit.\n", target.Name, spec, strings.Join(retained, "\n"), strings.Join(evals, "\n")), nil
+	return fmt.Sprintf(`# Rebuild %s
+
+## Target spec and Decisions
+
+%s
+
+## Retained interfaces and files
+
+%s
+
+## Retained evals
+
+%s
+
+Rebuild only the target's disposable paths. Keep all retained inputs intact and do not read outside the input workspace. Do not commit.
+
+Run the target's eval hook from the workspace root as often as needed.
+
+~~~sh
+%s
+~~~
+
+Write DRILL_NOTES.md with separate ## Contradicted Decisions and ## Gaps sections. Every gap must name the nearest spec ID or "no spec" and a target module.
+`, target.Name, spec, strings.Join(retained, "\n"), strings.Join(evals, "\n"), eval), nil
 }
-func validateInput(root string, snapshot project.Snapshot, target project.Module, original map[string][]byte) error {
-	current, err := inventory(root)
-	if err != nil {
-		return err
+func validateInput(root string, original map[string]inputFile) error {
+	info, err := os.Lstat(root)
+	if err != nil || !info.IsDir() {
+		return fmt.Errorf("missing or replaced reconstruction input workspace")
 	}
-	for path, b := range original {
-		got, ok := current[path]
-		if !ok {
+	checkedDirs := make(map[string]bool)
+	for path, before := range original {
+		// A substituted directory symlink must not redirect retained reads.
+		for dir := filepath.Dir(path); dir != "." && !checkedDirs[dir]; dir = filepath.Dir(dir) {
+			info, err := os.Lstat(filepath.Join(root, dir))
+			if err != nil || !info.IsDir() {
+				return fmt.Errorf("missing or replaced retained directory %s", dir)
+			}
+			checkedDirs[dir] = true
+		}
+		after, err := readInputFile(root, path)
+		if errors.Is(err, fs.ErrNotExist) {
 			return fmt.Errorf("deleted retained file %s", path)
 		}
-		if !bytes.Equal(got, b) {
+		if err != nil || after != before {
 			return fmt.Errorf("modified retained file %s", path)
-		}
-	}
-	for path := range current {
-		if _, ok := original[path]; ok {
-			continue
-		}
-		if path == "DRILL_NOTES.md" {
-			continue
-		}
-		if !strings.HasPrefix(path, target.Dir+"/") || !disposable(snapshot, target, strings.TrimPrefix(path, target.Dir+"/")) {
-			return fmt.Errorf("unexpected file %s", path)
 		}
 	}
 	return nil
 }
-func importDisposable(input, scratch string, snapshot project.Snapshot, target project.Module) error {
+func importDisposable(input, scratch string, snapshot project.Snapshot, target project.Module, original map[string]inputFile) error {
+	inputModule := filepath.Join(input, filepath.FromSlash(target.Dir))
+	rebuilt := make(map[string]inputFile)
+	err := walkFiles(inputModule, func(rel string, entry fs.DirEntry) error {
+		path := target.Dir + "/" + rel
+		if _, retained := original[path]; retained || !disposable(snapshot, target, rel) {
+			return nil
+		}
+		if !entry.Type().IsRegular() {
+			return fmt.Errorf("nonregular reconstruction output %s", path)
+		}
+		file, err := readInputFile(inputModule, rel)
+		if err != nil {
+			return err
+		}
+		rebuilt[path] = file
+		return nil
+	})
+	if err != nil {
+		return err
+	}
 	if err := removeDisposable(scratch, snapshot, target); err != nil {
 		return err
 	}
-	return walkFiles(filepath.Join(input, filepath.FromSlash(target.Dir)), func(rel string, _ fs.DirEntry) error {
-		if !disposable(snapshot, target, rel) {
-			return nil
+	for path, file := range rebuilt {
+		if err := file.write(scratch, path); err != nil {
+			return err
 		}
-		return copyFile(filepath.Join(input, filepath.FromSlash(target.Dir), filepath.FromSlash(rel)), filepath.Join(scratch, filepath.FromSlash(target.Dir), filepath.FromSlash(rel)))
-	})
+	}
+	return nil
 }
 func specs(module project.Module) ([]contracts.Item, error) {
 	section, _ := contracts.Section(module.Document.Body, "Specs")
@@ -668,9 +798,9 @@ func writeReport(root, input string, result model.DrillResult, failure error) er
 	}
 	var contradicted, gaps string
 	if input != "" {
-		if data, err := os.ReadFile(filepath.Join(input, "DRILL_NOTES.md")); err == nil {
-			contradicted, _ = contracts.Section(string(data), "Contradicted Decisions")
-			gaps, _ = contracts.Section(string(data), "Gaps")
+		if notes, err := readInputFile(input, "DRILL_NOTES.md"); err == nil && notes.mode.IsRegular() {
+			contradicted, _ = contracts.Section(notes.content, "Contradicted Decisions")
+			gaps, _ = contracts.Section(notes.content, "Gaps")
 		}
 	}
 	fmt.Fprintf(&b, "\n## Contradicted Decisions\n%s\n## Gaps\n%s\n## Agent observations\n", strings.TrimSpace(contradicted), strings.TrimSpace(gaps))
