@@ -1,0 +1,180 @@
+{
+  "terminal": {
+    "exit": 1,
+    "emergency": false,
+    "rejected": false
+  },
+  "candidate": "75efa9a03c4eb7a17673a53bdd8058074e5bb7e1",
+  "setup_child": "68234aa118c7424ac497b7f3987adb21ce006909",
+  "native_report_published": true,
+  "native_stdout": "{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"E01\",\"message\":\"workflow eval: E01: failed case \\\"Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses\\\" for FLOW-062\\napp eval: E01: failed case \\\"Test_APP_074_APP_076_APP_077_NextDiscoversRootAndAppliesChange\\\" for APP-074\\nrunner eval: E01: failed case \\\"Test_RUN_013_RUN_014_CompleteSpecChange\\\" for RUN-013. Retained report .fireweed/drills/workflow.md and rebuilt ref refs/fireweed/drills/workflow/20261108T233724.098992000. Use the reported cause to correct the drill inputs or checks, then retry drill.\",\"warning\":false}]}\n",
+  "native_stderr": "",
+  "native_report_bytes": 994973,
+  "native_report_sha256": "7c30c04c9fc199f8e06b9e6c86c217c53523245d20799ee66307cd2a09b8eaa1",
+  "report_fields": {
+    "date": "2026-11-08T23:37:24.098992Z",
+    "base_commit": "68234aa118c7424ac497b7f3987adb21ce006909",
+    "agent": "codex",
+    "model": "gpt-6.1-sol",
+    "result": "fail"
+  },
+  "contradicted_decisions": "None found in the retained workflow Decisions.",
+  "gaps": "- FLOW-001 and FLOW-019 \u00b7 workflow. The claim payload format is left to the implementation. The rebuild stores the canonical worktree, change identity, phase base, approved document and projected snapshot in a JSON blob addressed by the claim ref.\n- FLOW-020 and FLOW-075 \u00b7 workflow. The spec leaves the complete list of worker-editable body sections open. The retained evals establish Decisions and Questions for evals and Decisions for impl, and Audit for audit. The rebuild also treats Questions as editable during impl.\n- FLOW-059 \u00b7 workflow. The spec leaves the audit submission grammar open. The rebuild uses the checked-ID line and quoted finding bullets from the retained evals, with an optional untestable marker.\n- FLOW-052 and FLOW-064 \u00b7 workflow. The spec does not describe how retained run output interacts with staging. Done and Block stage tracked paths and Git-visible untracked paths from a private index, excluding `.fireweed/runs` even when a project's ignore rules omit it.\n- FLOW-074 \u00b7 workflow. The spec leaves conflict resolution open when a saved attempt overlaps later commits. The rebuild applies the saved delta, tries Git's three-way merge when needed, and returns an error for unresolved conflicts.\n- FLOW-113 and FLOW-123 \u00b7 workflow. Saved budget diagnostics have no dedicated module field. The rebuild uses a module name or a path within a module, then the module or spec ID in the diagnostic text. Aggregate diagnostics and warnings without a usable module key stay associated with their selected snapshot.\n- FLOW-117 \u00b7 workflow. The spec leaves file classification open for historical commits that predate loadable project metadata. The rebuild retains their recorded findings and result counts and classifies files for commits with loadable metadata.\n- FLOW-128 \u00b7 workflow. The spec does not set a minimum Git version. GC falls back to line-delimited porcelain output when Git rejects `worktree list --porcelain -z`.",
+  "modules": {
+    "workflow": {
+      "rows": 175,
+      "results": {
+        "pass": 172,
+        "fail": 3
+      },
+      "enforced_ids": 134,
+      "referenced_enforced_ids": 134,
+      "missing_enforced_ids": [],
+      "reported_suite_times": [
+        "159.246s"
+      ],
+      "nonpassing_cases": [
+        {
+          "name": "Test_FLOW_089_FLOW_091_FLOW_094_AbandonCleanOwnedSteppedChange",
+          "ids": "FLOW-089, FLOW-091, FLOW-094",
+          "result": "fail"
+        },
+        {
+          "name": "Test_FLOW_092_AbandonAppliedRefusalThenGitRevertToPending",
+          "ids": "FLOW-092",
+          "result": "fail"
+        },
+        {
+          "name": "Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses",
+          "ids": "FLOW-062",
+          "result": "fail"
+        }
+      ]
+    },
+    "app": {
+      "rows": 323,
+      "results": {
+        "fail": 7,
+        "pass": 316
+      },
+      "enforced_ids": 155,
+      "referenced_enforced_ids": 155,
+      "missing_enforced_ids": [],
+      "reported_suite_times": [
+        "248.480s"
+      ],
+      "nonpassing_cases": [
+        {
+          "name": "Test_APP_097_APP_099_AbandonNestedRootPlainAndJSON",
+          "ids": "APP-097, APP-099",
+          "result": "fail"
+        },
+        {
+          "name": "Test_APP_097_APP_099_AbandonNestedRootPlainAndJSON/json-owned",
+          "ids": "APP-097, APP-099",
+          "result": "fail"
+        },
+        {
+          "name": "Test_APP_074_APP_076_APP_077_NextDiscoversRootAndAppliesChange",
+          "ids": "APP-074, APP-076, APP-077",
+          "result": "fail"
+        },
+        {
+          "name": "Test_APP_080_APP_081_APP_083_APP_084_RunBoundedContinuation",
+          "ids": "APP-080, APP-081, APP-083, APP-084",
+          "result": "fail"
+        },
+        {
+          "name": "Test_APP_089_APP_090_APP_084_RunForJSONRetainsAppliedAndResumes",
+          "ids": "APP-084, APP-089, APP-090",
+          "result": "fail"
+        },
+        {
+          "name": "Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume",
+          "ids": "APP-076, APP-077, APP-079",
+          "result": "fail"
+        },
+        {
+          "name": "Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume",
+          "ids": "APP-083, APP-084, APP-086",
+          "result": "fail"
+        }
+      ]
+    },
+    "runner": {
+      "rows": 159,
+      "results": {
+        "pass": 147,
+        "fail": 12
+      },
+      "enforced_ids": 67,
+      "referenced_enforced_ids": 67,
+      "missing_enforced_ids": [],
+      "reported_suite_times": [
+        "247.865s"
+      ],
+      "nonpassing_cases": [
+        {
+          "name": "Test_RUN_013_RUN_014_CompleteSpecChange",
+          "ids": "RUN-013, RUN-014",
+          "result": "fail"
+        },
+        {
+          "name": "Test_RUN_016_UnlimitedQueueOrder",
+          "ids": "RUN-016",
+          "result": "fail"
+        },
+        {
+          "name": "Test_RUN_016_NegativeMaxIsUnlimited",
+          "ids": "RUN-016",
+          "result": "fail"
+        },
+        {
+          "name": "Test_RUN_017_RUN_018_RUN_019_BoundedContinuationAndForwarding",
+          "ids": "RUN-017, RUN-018, RUN-019",
+          "result": "fail"
+        },
+        {
+          "name": "Test_RUN_018_InitialEmptyAndExactLimit",
+          "ids": "RUN-018",
+          "result": "fail"
+        },
+        {
+          "name": "Test_RUN_018_InitialEmptyAndExactLimit/exact_limit",
+          "ids": "RUN-018",
+          "result": "fail"
+        },
+        {
+          "name": "Test_RUN_020_HeldFailureRetainsEarlierResults",
+          "ids": "RUN-020",
+          "result": "fail"
+        },
+        {
+          "name": "Test_RUN_016_RUN_025_RUN_026_BlockThenApplyIndependent",
+          "ids": "RUN-016, RUN-025, RUN-026",
+          "result": "fail"
+        },
+        {
+          "name": "Test_RUN_025_RUN_026_PositiveMaxRetainsBlock",
+          "ids": "RUN-025, RUN-026",
+          "result": "fail"
+        },
+        {
+          "name": "Test_RUN_036_RUN_037_OneBudgetAcrossChangesRetainsApplied",
+          "ids": "RUN-036, RUN-037",
+          "result": "fail"
+        },
+        {
+          "name": "Test_RUN_036_ZeroForKeepsOrdinaryRunUnbounded",
+          "ids": "RUN-036",
+          "result": "fail"
+        },
+        {
+          "name": "Test_RUN_032_RunSharesWaitAcrossChangesAndRetainsApplied",
+          "ids": "RUN-032",
+          "result": "fail"
+        }
+      ]
+    }
+  }
+}

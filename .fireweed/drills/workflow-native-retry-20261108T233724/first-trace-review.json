@@ -1,0 +1,33 @@
+{
+  "result": "pass",
+  "commands_reviewed": 30,
+  "fresh_paths": [
+    "DRILL_NOTES.md",
+    "packages/workflow/internal/lifecycle/attempt.go",
+    "packages/workflow/internal/lifecycle/audit.go",
+    "packages/workflow/internal/lifecycle/claim.go",
+    "packages/workflow/internal/lifecycle/common.go",
+    "packages/workflow/internal/lifecycle/context.go",
+    "packages/workflow/internal/lifecycle/costs.go",
+    "packages/workflow/internal/lifecycle/done.go",
+    "packages/workflow/internal/lifecycle/git.go",
+    "packages/workflow/internal/lifecycle/history.go",
+    "packages/workflow/internal/lifecycle/pr.go",
+    "packages/workflow/internal/lifecycle/queue.go",
+    "packages/workflow/internal/lifecycle/status.go",
+    "packages/workflow/internal/lifecycle/verify.go"
+  ],
+  "fresh_output_matches_reviewed_trace": true,
+  "full_native_feedback_reviewed": true,
+  "feedback_sha256": "85444880b564be684c9b80ffa7dcf52e1afebe08efa5ee6b357692b759d0e8f7",
+  "feedback_bytes": 246768,
+  "native_feedback_failed_rows": {
+    "workflow": 51,
+    "app": 25,
+    "runner": 44
+  },
+  "first_streams_sha256": {
+    "stdout": "30ed0b610aa92ce407e8f1902c68e2633df7caf1ac56c3106e07e047f4f17148",
+    "stderr": "012b157076a348b0776892c26cdedd6d3d4060f728a2a25e4ea900b3f7ba9512"
+  }
+}

@@ -1,15 +1,13 @@
-# Stop after the verified controller handoff
+# Stop after the supervised native workflow retry
 
-The owner-requested single controller update to clean committed source
-`75efa9a03c4eb7a17673a53bdd8058074e5bb7e1` is complete. PROGRESS records the
-installed pin and explicit recovery. The
-[handoff evidence](../../.fireweed/drills/controller-pin-75efa9a.md) records
-validation, idle promotion, preservation and cleanup. Audited changes 0188–0189
-remain complete; no product correction, drill, source import or push occurred.
+The owner-authorized single workflow drill used both configured attempts on
+pinned candidate `75efa9a03c4eb7a17673a53bdd8058074e5bb7e1`. Final native
+verification failed across workflow, app and runner. The
+[review and evidence](../../.fireweed/drills/workflow-native-retry-20261108T233724/review.md)
+retain the result, report, proof ref and cleanup. PROGRESS records the pin and
+handoff.
 
-**Stop with no active run, queue or shared claim. Pin-update scope consumed.**
-No further correction, investigation/replay, drill preparation or invocation,
-controller promotion, later milestone or push is authorized. Preserve the failed
-native report, proof/attempt refs, recoveries, bounds/counters and unrelated
-worktrees. WF4, full completion and own-verification timing exceptions remain open.
-The existing deadline remains **2026-11-10 22:51:05 UTC**.
+**Invocation consumed. Stop with no active run, queue or shared claim.**
+WF4, full completion and earlier own-Verify timing exceptions remain open.
+New work requires explicit owner authorization. The existing deadline remains
+**2026-11-10 22:51:05 UTC**.

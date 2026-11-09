@@ -1,0 +1,69 @@
+{
+  "terminal": {
+    "exit": 1,
+    "emergency": false,
+    "rejected": false
+  },
+  "native_input_removed": true,
+  "native_verifier_removed": true,
+  "owned_controller_and_worker_groups_exited": true,
+  "native_ref": "refs/fireweed/drills/workflow/20261108T233724.098992000",
+  "native_ref_oid": "3f42938d7d8ded117cd40aa5e4ea6b5d984212bd",
+  "native_prefix_and_streams_preserved": true,
+  "prior_fireweed_refs_preserved": true,
+  "unrelated_worktree_preserved": true,
+  "controller_pin_verified": true,
+  "product_and_recovery_executable_metadata_preserved": true,
+  "product_contracts_hooks_config_and_phase_counts_preserved": true,
+  "queue": [],
+  "shared_claims": [],
+  "unapproved_before": 2,
+  "unapproved_after": 0,
+  "workflow_drift_before": 1,
+  "workflow_drift_after": 0,
+  "warnings": [
+    {
+      "code": "B02",
+      "message": "CHK-055: 16 testcases exceeds cases_per_spec limit 15",
+      "warning": true
+    },
+    {
+      "code": "B02",
+      "message": "APP-103: 17 testcases exceeds cases_per_spec limit 15",
+      "warning": true
+    },
+    {
+      "code": "B02",
+      "message": "APP-104: 19 testcases exceeds cases_per_spec limit 15",
+      "warning": true
+    }
+  ],
+  "external_origin_main_update": {
+    "before": "5cf1ba4e53c72d68c1e913d6f4680c28328a4286",
+    "after": "3965218a62f26665b8ff77651839642255a8e4b0",
+    "reflog": "3965218a62f26665b8ff77651839642255a8e4b0 update by push origin/main@{2026-11-08T15:41:07-08:00}"
+  },
+  "static_check": {
+    "schema": 1,
+    "data": "Check passed\n",
+    "diagnostics": []
+  },
+  "history_check_range": "75efa9a03c4eb7a17673a53bdd8058074e5bb7e1..3965218a62f26665b8ff77651839642255a8e4b0",
+  "history_check": {
+    "schema": 1,
+    "data": {
+      "commits": [
+        "ef0e92c628683e229ea4ab7fcfa97e9b5404afb6",
+        "f24e66cf86058c8b41596350f1a875ac168c5842",
+        "3965218a62f26665b8ff77651839642255a8e4b0"
+      ],
+      "squashed": []
+    },
+    "diagnostics": []
+  },
+  "idle_context": "U02",
+  "idle_verify": "P02",
+  "owned_caller_removed": true,
+  "outside_staging_removed": true,
+  "rehearsal_removed": true
+}

@@ -1,27 +1,22 @@
 # Workflow inspector — native retry failed, stopped
 
-The owner's newly authorized single native workflow retry on current pinned
-source a26f7b9 is complete. Its final configured reconstruction compiled but
-failed workflow and transitive app/runner evals. Both workers followed the supplied
-isolation policy; no supervisor rejection or emergency escalation occurred.
-The [native report](../../../.fireweed/drills/workflow.md) and
-[complete review](../../../.fireweed/drills/workflow-native-retry-20261108T090949/review.md)
-retain the outcome, exact raw streams, gate records, proof ref and cleanup.
-No reconstruction was applied. WF4/full completion remain open.
+The owner's single supervised retry on pinned candidate `75efa9a` is complete.
+Both attempts compiled. The final verifier reported 22 failing rows across
+workflow, app and runner. The native controller published the report and ref
+and removed its scratch trees. The inspector recorded no rejection or
+emergency escalation.
+[Native report](../../../.fireweed/drills/workflow.md),
+[review and cleanup evidence](../../../.fireweed/drills/workflow-native-retry-20261108T233724/review.md).
 
-**Approval consumed. Do not launch another drill.** Restart commands below require
-new explicit owner authorization and fresh live gates. No correction, further
-investigation/replay, source application, repin, later work or push is authorized.
-PROGRESS records the unchanged pin; the existing deadline remains
-**2026-11-10 22:51:05 UTC**. All previous evidence/refs, recoveries,
-configuration/bounds/counters and unrelated worktrees remain preserved.
+**Approval consumed. Restart requires new explicit owner authorization and
+fresh live gates.** WF4 and full completion remain open. PROGRESS records the
+pin and existing deadline of **2026-11-10 22:51:05 UTC**.
 
-The preparation aligned only candidate/pin/command metadata with current SYSTEM.
-Supervisor behavior, worker policy and all timing/attempt bounds are unchanged.
-The actual completed invocation published its native failure report/ref without
-interruption; it proves no generic reporting guarantee for interruption,
-storage, broken-pipe or emergency outcomes. The prior rejected-run evidence
-remains historical and accessible.
+Preparation aligned the candidate and expected pin with PROGRESS. Supervisor
+behavior, worker policy and all timing and attempt bounds were preserved. The
+observed publication outcome covers this completed invocation. Earlier runs,
+including the previous retry on a26f7b9, remain in the
+[drill retention index](../../../.fireweed/drills/README.md).
 
 `guard.py` is an `agent.wrap` prefix. Its CLI accepts only the exact configured
 command/model/effort from SYSTEM, with the original prompt as its last argument.
