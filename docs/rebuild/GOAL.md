@@ -1,13 +1,10 @@
-# Stop after the supervised native workflow retry
+# Apply the approved workflow contract changes and validate
 
-The owner-authorized single workflow drill used both configured attempts on
-pinned candidate `75efa9a03c4eb7a17673a53bdd8058074e5bb7e1`. Final native
-verification failed across workflow, app and runner. The
-[review and evidence](../../.fireweed/drills/workflow-native-retry-20261108T233724/review.md)
-retain the result, report, proof ref and cleanup. PROGRESS records the pin and
-handoff.
+The owner approved two normal audited workflow changes for retained report
+discovery and returned X01 detail, plus the worker Git compatibility guidance.
+See [PROGRESS](PROGRESS.md) and the
+[investigation](../../.fireweed/drills/workflow-native-retry-20261108T233724/investigation.md).
 
-**Invocation consumed. Stop with no active run, queue or shared claim.**
-WF4, full completion and earlier own-Verify timing exceptions remain open.
-New work requires explicit owner authorization. The existing deadline remains
-**2026-11-10 22:51:05 UTC**.
+Use the installed controller pin, preserve the existing gates and validate the
+affected candidate. Stop for owner review before a new native invocation.
+The deadline remains **2026-11-10 22:51:05 UTC**.

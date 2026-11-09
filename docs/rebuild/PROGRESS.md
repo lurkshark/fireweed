@@ -1,3 +1,15 @@
+# Rebuild handoff — report discovery and X01 scope approved
+
+The owner approved two audited workflow changes for retained report discovery
+and X01 error detail, plus the worker Git compatibility guidance. The report
+change preserves ordinary flat JSON paths and uses the phase's `reports/`
+directory for module names matching `costs` without regard to case. This
+keeps the report and cost snapshot separate on supported filesystems.
+
+Use the installed controller pin below and the normal audited lifecycle.
+Validate the affected candidate and stop for owner review before a native
+drill. The existing deadline remains **2026-11-10 22:51:05 UTC**.
+
 # Rebuild handoff — supervised workflow retry failed, stopped
 
 The owner-authorized single native workflow retry on pinned candidate
