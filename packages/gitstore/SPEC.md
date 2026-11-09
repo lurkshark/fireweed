@@ -25,7 +25,7 @@ Changes MUST report repository-relative staged and unstaged tracked edits and un
 WriteBlob MUST store a byte payload in local Git objects and return its object ID.
 
 ### GIT-005
-Run MUST launch argv in the requested directory with the supplied environment/stdin and return captured stdout, stderr and exit code. A nonzero exit MUST return an error while preserving output. Timeout or context cancellation MUST terminate the launched process group and return an error; processes escaping that group are outside the supported contract.
+Run MUST launch the complete argv in Args, whose first element names the executable, without prepending any command. It MUST use the requested directory and supplied environment/stdin and return captured stdout, stderr and exit code, returning an error with that output on nonzero exit. Timeout or context cancellation MUST terminate the launched process group and return an error.
 
 ### GIT-006
 ReadAt MUST return a revision's file bytes or an error for absent paths.
