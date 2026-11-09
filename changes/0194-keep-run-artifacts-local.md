@@ -1,0 +1,66 @@
+---
+bases:
+    FLOW-064: 82d7d776
+    FLOW-065: eeb380bc
+    FLOW-067: c0e89300
+module: workflow
+---
+
+## Motivation
+
+The design keeps per-run logs under the local `.fireweed/runs/` directory. In
+the supervised workflow drill, staging this directory prevented Done and
+Block from recording their normal commits. Make the distinction between
+step work and generated run artifacts explicit so staging and restoration
+work with or without a matching Git ignore rule.
+
+## Interface
+
+Keep existing report and attempt locations. Done and Block keep generated
+run artifacts local while recording the same phase and attempt history for
+ordinary step work.
+
+## Added
+
+### new:exclude-run-artifacts-from-done
+A phase commit created by Done MUST exclude generated run artifacts under
+`.fireweed/runs/`, including when Git does not ignore those files.
+
+## Modified
+
+### FLOW-064
+Block MUST save the held step's tracked and untracked work as a commit at the
+next unused positive refs/fireweed/attempts/<slug>/<n>, preserving prior
+attempt refs. It MUST exclude generated run artifacts under `.fireweed/runs/`
+even when Git does not ignore them. BlockResult MUST identify the ref and its
+commit OID.
+
+### FLOW-065
+After saving the attempt, Block MUST restore the step's tracked files,
+untracked files and index to the phase base, removing the step's edits from
+the checkout. It MUST leave generated run artifacts under `.fireweed/runs/`
+on disk with their contents unchanged.
+
+### FLOW-067
+On successful blocking, Block MUST release the current claim and return the
+blocked State with no held ClaimOID. The resulting working tree MUST be clean
+apart from untracked generated run artifacts under `.fireweed/runs/`.
+
+## Removed
+
+## Decisions
+
+## Notes
+
+Extend the existing Done and Block fixtures. Cover an ignored run directory
+and one with no matching ignore rule, with artifacts generated after Start.
+Check that the report or log stays readable on disk and ordinary staged and
+unstaged step edits appear in the
+appropriate trees, and no generated run artifact appears in Done's phase
+commit, Block's attempt, or the block commit. Keep the existing assertions
+for phase transition, the state-only block commit, and claim release.
+
+Prefer selecting the ordinary step paths before staging them and reusing
+the existing scoped Git operations. Check the selected commands on the
+supported verifier's stock Git. Avoid broad force-add or cleanup commands
+that would include or remove the run directory.
