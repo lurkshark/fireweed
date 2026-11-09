@@ -1,0 +1,55 @@
+{
+  "candidate": "7d17a76186fd94d603a018713bdcc1005c89e020",
+  "queue_commit": "efc8a892861e4a2fae0e7c8557c53f061d539366",
+  "phase_history": {
+    "schema": 1,
+    "data": {
+      "commits": [
+        "ccf08745cfadb89cd2224443bc552b346cf9c474",
+        "7ec0853d594a050fd0a2ebf24dc9fe5a1b495edd",
+        "ab4f19dc29d01227c1e5517b08bd2ca409987b01",
+        "0a402d12061f82a71b6bbe16bd482f290945b7ec",
+        "90e8882c56899738b01385d789aa0b0868749567",
+        "7d17a76186fd94d603a018713bdcc1005c89e020"
+      ],
+      "squashed": []
+    },
+    "diagnostics": []
+  },
+  "main_check": {
+    "schema": 1,
+    "data": "Check passed\n",
+    "diagnostics": []
+  },
+  "idle_context": "U02",
+  "idle_verify": "P02",
+  "unapproved_before": 0,
+  "unapproved_after": 2,
+  "warnings": [
+    {
+      "code": "B02",
+      "message": "CHK-055: 16 testcases exceeds cases_per_spec limit 15",
+      "warning": true
+    },
+    {
+      "code": "B02",
+      "message": "APP-103: 17 testcases exceeds cases_per_spec limit 15",
+      "warning": true
+    },
+    {
+      "code": "B02",
+      "message": "APP-104: 19 testcases exceeds cases_per_spec limit 15",
+      "warning": true
+    }
+  ],
+  "queue": [],
+  "claims": [],
+  "prior_proof_attempt_refs_and_native_report_preserved": true,
+  "configured_bounds_hooks_and_controller_preserved": true,
+  "unrelated_worktree_and_executable_metadata_preserved": true,
+  "candidate_and_cli_fixture_clean_before_removal": true,
+  "candidate_clone_and_compiled_subject_removed": true,
+  "cli_fixture_and_outside_staging_removed": true,
+  "checks_report_native_prefix_preserved": true,
+  "no_active_fireweed_process": true
+}

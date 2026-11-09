@@ -1,0 +1,491 @@
+{
+  "stages": [
+    {
+      "stage": "clone",
+      "argv": [
+        "git",
+        "clone",
+        "--no-hardlinks",
+        "--no-checkout",
+        "/Users/joel/Workspace/fireweed",
+        "[validation]/source"
+      ],
+      "bound_seconds": 120,
+      "start": "2026-11-09T02:25:52.093270+00:00",
+      "seconds": 1.362,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "checkout",
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "7d17a76186fd94d603a018713bdcc1005c89e020"
+      ],
+      "bound_seconds": 120,
+      "start": "2026-11-09T02:25:53.455823+00:00",
+      "seconds": 0.211,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "build",
+      "argv": [
+        "go",
+        "build",
+        "-trimpath",
+        "-o",
+        "[validation]/fireweed",
+        "."
+      ],
+      "bound_seconds": 180,
+      "start": "2026-11-09T02:25:53.752073+00:00",
+      "seconds": 1.596,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "build-info",
+      "argv": [
+        "go",
+        "version",
+        "-m",
+        "[validation]/fireweed"
+      ],
+      "bound_seconds": 90,
+      "start": "2026-11-09T02:25:55.349797+00:00",
+      "seconds": 0.014,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "version",
+      "argv": [
+        "[validation]/fireweed",
+        "version"
+      ],
+      "bound_seconds": 90,
+      "start": "2026-11-09T02:25:55.363906+00:00",
+      "seconds": 0.436,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "selected-setup-copy",
+      "argv": [
+        "sh",
+        ".fireweed/setup.sh"
+      ],
+      "bound_seconds": 90,
+      "start": "2026-11-09T02:25:55.802225+00:00",
+      "seconds": 0.051,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "fixture-init",
+      "argv": [
+        "git",
+        "init",
+        "-b",
+        "main"
+      ],
+      "bound_seconds": 90,
+      "start": "2026-11-09T02:25:55.958014+00:00",
+      "seconds": 0.025,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "fixture-name",
+      "argv": [
+        "git",
+        "config",
+        "user.name",
+        "Fireweed verification fixture"
+      ],
+      "bound_seconds": 90,
+      "start": "2026-11-09T02:25:55.983039+00:00",
+      "seconds": 0.025,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "fixture-email",
+      "argv": [
+        "git",
+        "config",
+        "user.email",
+        "verification@example.invalid"
+      ],
+      "bound_seconds": 90,
+      "start": "2026-11-09T02:25:56.008065+00:00",
+      "seconds": 0.025,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "fixture-setup-add",
+      "argv": [
+        "git",
+        "add",
+        "-A"
+      ],
+      "bound_seconds": 90,
+      "start": "2026-11-09T02:25:56.034540+00:00",
+      "seconds": 0.025,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "fixture-setup-commit",
+      "argv": [
+        "git",
+        "commit",
+        "-m",
+        "fixture baseline"
+      ],
+      "bound_seconds": 90,
+      "start": "2026-11-09T02:25:56.059855+00:00",
+      "seconds": 0.025,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "fixture-stamp",
+      "argv": [
+        "[validation]/fireweed",
+        "stamp",
+        "report"
+      ],
+      "bound_seconds": 90,
+      "start": "2026-11-09T02:25:56.085042+00:00",
+      "seconds": 0.006,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "fixture-check",
+      "argv": [
+        "[validation]/fireweed",
+        "check",
+        "--json"
+      ],
+      "bound_seconds": 90,
+      "start": "2026-11-09T02:25:56.091636+00:00",
+      "seconds": 0.006,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "fixture-add",
+      "argv": [
+        "git",
+        "add",
+        "-A"
+      ],
+      "bound_seconds": 90,
+      "start": "2026-11-09T02:25:56.098000+00:00",
+      "seconds": 0.024,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "fixture-commit",
+      "argv": [
+        "git",
+        "commit",
+        "-m",
+        "fixture approved collision report change"
+      ],
+      "bound_seconds": 90,
+      "start": "2026-11-09T02:25:56.122960+00:00",
+      "seconds": 0.025,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "fixture-start",
+      "argv": [
+        "[validation]/fireweed",
+        "start",
+        "report",
+        "--json"
+      ],
+      "bound_seconds": 90,
+      "start": "2026-11-09T02:25:56.147971+00:00",
+      "seconds": 0.258,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "fixture-evals-done",
+      "argv": [
+        "[validation]/fireweed",
+        "done",
+        "--json"
+      ],
+      "bound_seconds": 90,
+      "start": "2026-11-09T02:25:56.407220+00:00",
+      "seconds": 0.563,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "fixture-verify-x01",
+      "argv": [
+        "[validation]/fireweed",
+        "verify",
+        "--json"
+      ],
+      "bound_seconds": 90,
+      "start": "2026-11-09T02:25:56.985696+00:00",
+      "seconds": 0.21,
+      "exit": 1,
+      "expected": 1
+    },
+    {
+      "stage": "fixture-impl-done",
+      "argv": [
+        "[validation]/fireweed",
+        "done",
+        "--json"
+      ],
+      "bound_seconds": 90,
+      "start": "2026-11-09T02:25:57.211698+00:00",
+      "seconds": 0.566,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "go-normal",
+      "argv": [
+        "go",
+        "test",
+        "./..."
+      ],
+      "bound_seconds": 900,
+      "start": "2026-11-09T02:25:57.811128+00:00",
+      "seconds": 370.915,
+      "exit": 1,
+      "expected": 0
+    },
+    {
+      "stage": "go-normal-serial",
+      "argv": [
+        "go",
+        "test",
+        "-p",
+        "1",
+        "./..."
+      ],
+      "bound_seconds": 900,
+      "start": "2026-11-09T02:33:31.138872+00:00",
+      "seconds": 307.662,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "go-race-affected-serial",
+      "argv": [
+        "go",
+        "test",
+        "-race",
+        "-p",
+        "1",
+        "./packages/workflow/...",
+        "./packages/runner/...",
+        "./packages/app/..."
+      ],
+      "bound_seconds": 900,
+      "start": "2026-11-09T02:38:38.794778+00:00",
+      "seconds": 803.166,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "go-vet",
+      "argv": [
+        "go",
+        "vet",
+        "./..."
+      ],
+      "bound_seconds": 180,
+      "start": "2026-11-09T02:52:01.990113+00:00",
+      "seconds": 0.56,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "check",
+      "argv": [
+        "[validation]/fireweed",
+        "check",
+        "--json"
+      ],
+      "bound_seconds": 90,
+      "start": "2026-11-09T02:52:02.551389+00:00",
+      "seconds": 0.049,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "doctor",
+      "argv": [
+        "[validation]/fireweed",
+        "doctor",
+        "--no-agent",
+        "--json"
+      ],
+      "bound_seconds": 180,
+      "start": "2026-11-09T02:52:02.601129+00:00",
+      "seconds": 8.534,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "check-commits",
+      "argv": [
+        "[validation]/fireweed",
+        "check-commits",
+        "75efa9a03c4eb7a17673a53bdd8058074e5bb7e1..7d17a76186fd94d603a018713bdcc1005c89e020",
+        "--json"
+      ],
+      "bound_seconds": 300,
+      "start": "2026-11-09T02:52:11.135579+00:00",
+      "seconds": 32.746,
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "stage": "ci",
+      "argv": [
+        "[validation]/fireweed",
+        "ci",
+        "75efa9a03c4eb7a17673a53bdd8058074e5bb7e1..7d17a76186fd94d603a018713bdcc1005c89e020",
+        "--json"
+      ],
+      "bound_seconds": 1500,
+      "start": "2026-11-09T02:52:43.882078+00:00",
+      "seconds": 1016.231,
+      "exit": 0,
+      "expected": 0
+    }
+  ],
+  "default_normal_failure": {
+    "case": "Test_RUN_036_RUN_037_OneBudgetAcrossChangesRetainsApplied",
+    "fixture_deadline_seconds": 10,
+    "observed_elapsed_seconds": 11.22,
+    "expected_applied": 1,
+    "actual_applied": 0,
+    "agent_phases_observed": [
+      "alpha/evals",
+      "alpha/audit"
+    ],
+    "test_bounds_changed": false
+  },
+  "candidate_cli_checks": {
+    "check": {
+      "schema": 1,
+      "data": "Check passed\n",
+      "diagnostics": []
+    },
+    "doctor": {
+      "schema": 1,
+      "data": {
+        "checks": [
+          {
+            "name": "baseline",
+            "module": "doctor3b01f25c41",
+            "passed": true,
+            "detail": "baseline global eval: eval and coverage pass"
+          },
+          {
+            "name": "failing_eval",
+            "module": "doctor3b01f25c41",
+            "passed": true,
+            "detail": "failing_eval global eval: eval detected failing_eval"
+          },
+          {
+            "name": "recovery",
+            "module": "doctor3b01f25c41",
+            "passed": true,
+            "detail": "recovery global eval: failing_eval: eval and coverage pass"
+          },
+          {
+            "name": "missing_id",
+            "module": "doctor3b01f25c41",
+            "passed": true,
+            "detail": "missing_id global eval: eval detected missing_id"
+          },
+          {
+            "name": "recovery",
+            "module": "doctor3b01f25c41",
+            "passed": true,
+            "detail": "recovery global eval: missing_id: eval and coverage pass"
+          },
+          {
+            "name": "baseline",
+            "module": "doctor3b01f25c41",
+            "passed": true,
+            "detail": "baseline global boundaries: boundaries pass"
+          },
+          {
+            "name": "undeclared",
+            "module": "doctor3b01f25c41",
+            "passed": true,
+            "detail": "undeclared global boundaries: boundaries detected undeclared"
+          },
+          {
+            "name": "recovery",
+            "module": "doctor3b01f25c41",
+            "passed": true,
+            "detail": "recovery global boundaries: undeclared: boundaries pass"
+          },
+          {
+            "name": "internal_eval",
+            "module": "doctor5778372b7c",
+            "passed": true,
+            "detail": "internal_eval global boundaries: boundaries detected internal_eval"
+          },
+          {
+            "name": "recovery",
+            "module": "doctor5778372b7c",
+            "passed": true,
+            "detail": "recovery global boundaries: internal_eval: boundaries pass"
+          }
+        ]
+      },
+      "diagnostics": []
+    },
+    "check-commits": {
+      "schema": 1,
+      "data": {
+        "commits": [
+          "ef0e92c628683e229ea4ab7fcfa97e9b5404afb6",
+          "f24e66cf86058c8b41596350f1a875ac168c5842",
+          "3965218a62f26665b8ff77651839642255a8e4b0",
+          "b791608649fe9308baeef7cd84a336f68b79ec23",
+          "07f2beb417d4f2cd65d5be1f5b46a60c71ceb78e",
+          "5c2b61c4eb4fb7379b9b8e8f99459da5d2c3f13e",
+          "efc8a892861e4a2fae0e7c8557c53f061d539366",
+          "ccf08745cfadb89cd2224443bc552b346cf9c474",
+          "7ec0853d594a050fd0a2ebf24dc9fe5a1b495edd",
+          "ab4f19dc29d01227c1e5517b08bd2ca409987b01",
+          "0a402d12061f82a71b6bbe16bd482f290945b7ec",
+          "90e8882c56899738b01385d789aa0b0868749567",
+          "7d17a76186fd94d603a018713bdcc1005c89e020"
+        ],
+        "squashed": []
+      },
+      "diagnostics": []
+    },
+    "ci": {
+      "schema": 1,
+      "data": "CI passed",
+      "diagnostics": []
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "pass": true,
+  "collision_report_phases": [
+    "evals",
+    "impl"
+  ],
+  "flat_dependent_report": "impl/consumer.json",
+  "cost_snapshots_coexist": true,
+  "x01_diagnostic": {
+    "schema": 1,
+    "data": null,
+    "diagnostics": [
+      {
+        "code": "X01",
+        "message": "costs: candidate forbidden dependency",
+        "warning": false
+      },
+      {
+        "code": "X01",
+        "message": "costs: candidate forbidden dependency: 1 boundary violation(s). Use the held change and correct its checks, then retry verify.",
+        "warning": false
+      }
+    ]
+  },
+  "failed_verify_preserved_head": true,
+  "fixture_clean_and_claim_released": true
+}

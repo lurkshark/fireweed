@@ -38076,3 +38076,19 @@ pin/deadline/bounds and live isolation/inspection gates. WF4 and full product
 completion remain open. No further native drill, source import, controller
 promotion, later-module work, publication or push occurred during preparation.
 
+
+## Workflow preparation — report discovery and boundary detail
+
+The two approved workflow changes
+[0190](../../changes/archive/0190-retained-report-discovery.md) and
+[0191](../../changes/archive/0191-boundary-violation-detail.md) passed their
+independent audits and full phase verification. The clean candidate
+`7d17a76186fd94d603a018713bdcc1005c89e020` passed its compiled CLI checks,
+serialized normal and affected race suites, vet, static check, hook doctor,
+explicit-range history, and CI with hook doctor enabled. The default
+parallel Go attempt hit a runner timing failure. The
+[workflow validation handoff](workflow-report-boundary-corrections.md)
+retains that result, exact range, phase evidence, and cleanup.
+
+The existing checks proof is preserved. The workflow candidate awaits
+separate owner approval for a new supervised native invocation.

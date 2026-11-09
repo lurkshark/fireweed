@@ -1,16 +1,24 @@
-# Rebuild handoff — report discovery and X01 scope approved
+# Rebuild handoff — approved workflow changes applied and validated
 
-The owner approved two audited workflow changes for retained report discovery
-and X01 error detail, plus the worker Git compatibility guidance. The report
-change preserves ordinary flat JSON paths and uses the phase's `reports/`
-directory for module names matching `costs` without regard to case. This
-keeps the report and cost snapshot separate on supported filesystems.
+The owner-approved workflow changes
+[0190](../../changes/archive/0190-retained-report-discovery.md) and
+[0191](../../changes/archive/0191-boundary-violation-detail.md) are applied and
+archived with independent audits. The approved worker policy now identifies
+the verifier's Git baseline. The clean candidate is
+`7d17a76186fd94d603a018713bdcc1005c89e020`.
+The [validation handoff](../../.fireweed/drills/workflow-report-boundary-corrections.md)
+records the compiled CLI results, history range, full serial normal suite,
+affected race suites, and candidate CI. The default parallel suite's runner
+timing failure is retained. Earlier timing exceptions remain open.
 
-Use the installed controller pin below and the normal audited lifecycle.
-Validate the affected candidate and stop for owner review before a native
-drill. The existing deadline remains **2026-11-10 22:51:05 UTC**.
+**Approved scope consumed. Stop with no active run, queue or shared claim.**
+A new supervised native workflow invocation on the identified candidate
+requires separate owner approval. The installed controller remains the
+recorded pin below. The native workflow failure and WF4/full-completion
+checkpoint remain open. The existing deadline remains
+**2026-11-10 22:51:05 UTC**. Follow GOAL.
 
-# Rebuild handoff — supervised workflow retry failed, stopped
+## Previous supervised workflow retry (historical)
 
 The owner-authorized single native workflow retry on pinned candidate
 `75efa9a03c4eb7a17673a53bdd8058074e5bb7e1` is complete. Both reconstructions
