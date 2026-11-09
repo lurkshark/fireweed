@@ -1,4 +1,18 @@
-# Rebuild handoff — approved workflow changes applied and validated
+# Rebuild handoff — newest controller and supervised drill approved
+
+The owner approved one controller promotion from newest committed source
+`a54f5da8d4faf9758f1a426cc7559c0726be8607` and one supervised native workflow
+invocation on `7d17a76186fd94d603a018713bdcc1005c89e020`. The separate
+[pin handoff](../../.fireweed/drills/controller-pin-a54f5da.md) records the
+compiler input equivalence, candidate checks and idle promotion. The prior
+[candidate validation](../../.fireweed/drills/workflow-report-boundary-corrections.md)
+remains applicable, including its timing observations.
+
+The inspector uses the recorded pin and approved candidate with the existing
+bounds and deadline **2026-11-10 22:51:05 UTC**. Stop after the invocation,
+evidence retention and owned scratch cleanup.
+
+## Approved workflow changes (historical)
 
 The owner-approved workflow changes
 [0190](../../changes/archive/0190-retained-report-discovery.md) and
@@ -189,13 +203,13 @@ without another extension. Configured bounds and isolation/audit requirements st
 unchanged. Remaining time grants no further work after this completed invocation.
 
 **Controller pin** `/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed`, version
-0.1.0, source `75efa9a03c4eb7a17673a53bdd8058074e5bb7e1`, SHA-256
-`fea9d492473bbb20883a74fc15ea5921b161727e4ea7096b42b3a5a909d60c65`.
+0.1.0, source `a54f5da8d4faf9758f1a426cc7559c0726be8607`, SHA-256
+`0b0ac4477e0c4b23466944f790309860fac101cce5818541526b6bdf29a7a71a`.
 Built with Go 1.27.2 and -trimpath from clean darwin/arm64 source, with
 vcs.modified=false. Promoted only after idle validation; no fallback or
 cross-controller resume.
 
-The immediate previous pin, `.fireweed/bin/fireweed-a26f7b9`, is available for
+The named recovery copy `.fireweed/bin/fireweed-a26f7b9` is available for
 explicit owner-directed recovery. The separately designated recovery executables
 `.fireweed/bin/fireweed-pre-ck-handoff` and `.fireweed/bin/fireweed-bootstrap`
 remain reserved for explicit owner direction.
