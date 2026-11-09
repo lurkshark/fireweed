@@ -1,7 +1,0 @@
-{
-  "Cases": null,
-  "Seconds": 0,
-  "HookExit": 1,
-  "Stdout": "# example.test/diagnostic/packages/alpha\npackages/alpha/api.go:2:30: undefined: strings\nFAIL\texample.test/diagnostic/packages/alpha [build failed]\nFAIL\texample.test/diagnostic/packages/alpha/evals [build failed]\n",
-  "Stderr": "exit status 1\n"
-}

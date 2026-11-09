@@ -1,7 +1,6 @@
 # Rebuild decisions
 
-Retained design clarifications and intentional reference-smoke differences.
-These do not add milestone scope or replace the unchanged design. Standing
+Retained design clarifications. These do not add milestone scope or replace the unchanged design. Standing
 process and fixture guidance is consolidated in SYSTEM.md. Historical cutover,
 controller comparisons and handoff notes remain in commit `c34c3cb`, never
 reconstruction inputs.
@@ -10,15 +9,11 @@ reconstruction inputs.
 
 The design requires stable codes and explanations but does not assign a meaning
 to P2-01. AST-003 assigns it to missing genuine fail-first evidence.
-The bootstrap's operational `explain P2-01` instead describes a forbidden-zone
-edit. The completed controller/product smoke records this intentional difference;
-the authored product meaning remains authoritative. Bootstrap code assignments
-are not product authority.
 
 ## D006 — Diagnostic allocation (human review 3)
 
 Codes identify a stable cause. Their prefix does not determine severity; the
-diagnostic carries its warning status. Assignments below apply to the NEW
+diagnostic carries its warning status. Assignments below apply to the
 product. This allocation did not itself change the controller pin.
 
 | Range | Area and fixed assignments |

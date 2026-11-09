@@ -1,8 +1,0 @@
-{
-  "stdout_bytes": 492,
-  "stderr_bytes": 593781,
-  "stdout_sha256": "a967585ffbf452b5b5e6c100c96c38509cbeca06279266a6bf2fae2040aaba3b",
-  "stderr_sha256": "33773283a9de2647c051e8a12dc7258abac972a05f953aa57856fdeaabe73e6a",
-  "native_log_payloads_exact": true,
-  "complete_forwarding": true
-}

@@ -1,6 +1,6 @@
 # Fireweed
 
-Fireweed is a local, language-agnostic Go CLI for checked spec-driven development and regeneration. The unchanged fireweed-design-v1.md is product authority; docs/rebuild/GOAL.md is the restart prompt and ACCEPTANCE.md defines ordered milestones and gates, adding no product scope. Bootstrap supplied pre-cutover workflow control and one CLI smoke comparison; it remains an explicit recovery option, never implementation input or a product dependency. Record relevant discrepancies briefly in docs/rebuild/DECISIONS.md; add evals only for uncovered design behavior.
+Fireweed is a local, language-agnostic Go CLI for checked spec-driven development and regeneration. The unchanged fireweed-design-v1.md is product authority; docs/rebuild/GOAL.md is the restart prompt and ACCEPTANCE.md defines ordered milestones and gates, adding no product scope. Record relevant discrepancies briefly in docs/rebuild/DECISIONS.md; add evals only for uncovered design behavior.
 
 ## Modules
 
@@ -8,13 +8,13 @@ contracts owns public data, Markdown grammar, IDs, hashes and zones. gitstore ow
 
 ## Conventions
 
-Module path: github.com/lurkshark/fireweed. Thin api.go facades and public contracts are retained interfaces; all behavior belongs under internal/. Evals import public packages only and use temporary repositories, explicit fixture Git identities, deterministic local hooks and bounded fake agents. No runtime network calls, bootstrap delegation, or private implementation tests. Keep dependencies minimal (YAML parser only initially). Never import a public parent from its own internal implementation; shared data belongs in contracts.
+Module path: github.com/lurkshark/fireweed. Thin api.go facades and public contracts are retained interfaces; all behavior belongs under internal/. Evals import public packages only and use temporary repositories, explicit fixture Git identities, deterministic local hooks and bounded fake agents. No runtime network calls or private implementation tests. Keep dependencies minimal (YAML parser only initially). Never import a public parent from its own internal implementation; shared data belongs in contracts.
 
 Fixture notes: canonicalize macOS temporary paths before comparing symlinked locations; parse Git stdout separately from stderr and use `git --no-optional-locks status` for read-only status. Avoid case-only ref names on case-insensitive filesystems. Keep shared facade types in retained model packages to avoid import cycles. Accept the supplied macOS sh diagnosis: fixtures receiving long prompt arguments use Bash or stdin; do not reinterpret it as a timeout or investigate it again.
 
 ## Controller and product
 
-The controller is `.fireweed/bin/fireweed`, a separate build of this repository, so a worker's build of the product under test (`bin/fireweed`) never replaces the controller it runs under. PROGRESS records the commit it was built from. Rebuild it from clean committed main with `go build -trimpath -o .fireweed/bin/fireweed .` only when no run or claim is active, then record the commit in PROGRESS. Put `.fireweed/bin` first on worker PATH. FIREWEED_BIN names the executable invoking each hook, and scratch setup copies it into the scratch tree. `.fireweed/bin/fireweed-bootstrap` is for explicit owner-directed recovery only.
+The controller is `.fireweed/bin/fireweed`, a separate build of this repository, so a worker's build of the product under test (`bin/fireweed`) never replaces the controller it runs under. PROGRESS records the commit it was built from. Rebuild it from clean committed main with `go build -trimpath -o .fireweed/bin/fireweed .` only when no run or claim is active, then record the commit in PROGRESS. Put `.fireweed/bin` first on worker PATH. FIREWEED_BIN names the executable invoking each hook, and scratch setup copies it into the scratch tree.
 
 ## Agent configuration
 
@@ -27,7 +27,7 @@ Authors may commit change files and protected setup or docs on main, between act
 ## Scope guardrails
 
 - **Scope.** Implement only an owner request, a demonstrated failure or a concrete unmet design clause. Agent suggestions and drill gaps authorize nothing until the owner agrees. Stop and report on a blocked change, an access failure or a decision that needs the owner, and stop when the selected work is done.
-- **Reconstruction inputs.** Never use `rebuild-v1`, bootstrap source/tests or deleted code as implementation oracles; old spec IDs have no authority. Drills use exactly the input workspace the product builds (RUN-053); nothing else is added or policed.
+- **Reconstruction inputs.** Never use `rebuild-v1` or deleted code as implementation oracles; old spec IDs have no authority. Drills use exactly the input workspace the product builds (RUN-053); nothing else is added or policed.
 - **Conventions.** The product never contacts the network or runs fetch/push. Read commands run no hooks/agents and change no files, index or refs; output is deterministic. Check these by review and one app-level PATH-shim eval recording Git/hook/agent invocations, not module specs.
 - **Evals.** Use plain Go public-interface tests, temporary repositories, fixture hooks and fake agents. Inject faults through public inputs. No process instrumentation: cgo, syscall/I/O interposers, loader tricks, sandbox profiles, re-signed tools, argv-classifying Git proxies, fsmonitor traps or byte-coverage observers.
 - **Specs.** One observable behavior per item, at most three normative clauses and about 80 words. No aliasing, backing-storage, purity or syscall requirements, and no tuning constants or internal mechanics unless a caller can observe them.

@@ -1,9 +1,0 @@
-{
-  "failed_ref": "refs/fireweed/drills/workflow/20261107T202952.649365000",
-  "oid": "50bd33c5526fb495d541e3290868d198ed010b78",
-  "tracked_files_unchanged": true,
-  "native_drills": 0,
-  "configured_real_agents": 0,
-  "bounded_fake_fixture_agents_only": true,
-  "target_failures_reproduced": true
-}

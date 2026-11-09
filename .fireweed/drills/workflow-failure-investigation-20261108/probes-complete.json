@@ -1,9 +1,0 @@
-{
-  "public_apis_only": true,
-  "existing_fake_fixture_inputs_reused": true,
-  "original_two_second_test_bound_unchanged": true,
-  "one_nanosecond_counterexample_is_separate_diagnostic_not_native_failure_reproduction": true,
-  "all_probe_claims_released": "test defers public Release and Go fixtures were removed",
-  "all_temporary_probe_source_files_removed": true,
-  "tracked_sources_unmodified": true
-}

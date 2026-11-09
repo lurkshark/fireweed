@@ -48294,7 +48294,3 @@ app eval: C11: testcase "PackageFailure" has no known spec ID
 C10: no coverage for APP-001
 runner eval: C11: testcase "PackageFailure" has no known spec ID
 C10: no coverage for RUN-001
-
-## Independent review
-
-[Supervised run review and cleanup evidence](workflow-native-retry-20261109T032533/review.md)
