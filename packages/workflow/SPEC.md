@@ -215,7 +215,12 @@ Done MUST prefix its existing blocked-change error with P06 while preserving the
 Start MUST distinguish an explicit unknown change selector from queue eligibility. Lifecycle operations MUST return U02 for unknown explicit change selectors, naming the rejected value and listing valid slugs for the operation.
 
 ### FLOW-062
-Lifecycle operations MUST preserve assigned static, eval, zone and boundary causes when returning their existing failures, except for lifecycle stale-base classification P05.
+Lifecycle operations MUST preserve assigned static, eval, zone and boundary
+causes when returning their existing failures, except for lifecycle stale-base
+classification P05.
+When full implementation verification returns an X01 boundary failure, the
+error MUST include the selected unsuppressed violation's module-attributed
+message.
 
 ### FLOW-063
 Block MUST require the calling worktree's current claim with unchanged approved
