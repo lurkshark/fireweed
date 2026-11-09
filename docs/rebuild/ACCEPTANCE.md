@@ -76,159 +76,31 @@ drill <module>
 gc, migrate, agents-md --write
 ```
 
-## Planned milestone — Workflow contracts and regeneration proof (WF1–WF4)
+## Planned milestone — Workflow drill (WF1–WF4)
 
-The subsequent owner-authorized retained-evidence investigation is complete.
-Its [findings](../../.fireweed/drills/workflow-native-retry-20261108T090949/investigation.md)
-separate reconstruction defects from spec/eval assumption gaps. No correction,
-eval replay, new drill or repin occurred. The native failure and WF4/full-completion
-stop remain unchanged; further work requires owner selection. Follow GOAL/PROGRESS.
+The earlier workflow contract review and candidate validation are in git
+history (before `515516a`); their evidence stays valid where nothing it
+covered has changed.
 
-The newly owner-authorized single supervised retry on current pinned source
-a26f7b9 is complete and failed. The final configured reconstruction compiled,
-but workflow and transitive app/runner evals failed. The
-[reviewed native evidence](../../.fireweed/drills/workflow-native-retry-20261108T090949/review.md)
-retains the report/ref, all cases and coverage, independence review and cleanup.
-No reconstruction was applied, no further correction/replay/retry is authorized,
-and WF4/full completion remain open. Approval consumed; stop with no active
-run/queue/claim. Pin, existing bounds/deadline and prior evidence remain unchanged.
-Follow current GOAL/PROGRESS; the handoffs below are historical.
-
-The subsequent owner-requested single idle controller handoff to latest source
-a26f7b9 is complete; [verified pin evidence](../../.fireweed/drills/controller-pin-a26f7b9.md)
-records reused compiler/runtime/eval proof and fresh build/CLI/hook/history checks.
-PROGRESS holds the new pin. Stop: no drill/preparation, further correction,
-controller promotion, source import or push. Existing deadline and bounds remain.
-
-The owner-selected three normal audited eval_fix changes, 0185–0187, are complete:
-workflow empty-selection wording, runner context-content assertions and app
-optional B04 Path/empty wording. Behavioral coverage, independent audits and
-required phase verification passed; the [handoff](../../.fireweed/drills/eval-contract-corrections-handoff.md)
-retains history/preservation checks and own-verification timing exceptions.
-Budget consumed; stop before another drill. No runtime/spec/interface, policy/
-tooling, controller promotion, source import, further retry or push. WF4 remains
-open. That correction sequence kept its then-current pin unchanged; the later
-promotion is recorded above. All prior gates, bounds and the deadline remain.
-
-The subsequently owner-approved single native retry on validated source 9a206c5
-is complete and failed. A prohibited worker-local go test caused running-worker
-rejection. The native controller published its failure report/ref after the
-prepared worker-first stop/drain. The
-[reviewed terminal evidence](../../.fireweed/drills/workflow-contract-retry-20261108T055420/review.md)
-records all first-attempt cases/failures, coverage, actual input/trace review,
-rejection/publication and cleanup; second partial code was not reverified. No
-passing independent proof, WF4 closure, correction, extra invocation, source
-application, repin or push. Approval consumed; stop with no active run/claim.
-Further work requires owner selection; all prior gates/evidence and preservation
-requirements remain. Follow current GOAL/PROGRESS.
-
-**Residual fixes/controller handoff and single retry complete; native verification failed.**
-Normal audited [0181](../../changes/archive/0181-recorded-regenerate-preservation.md)
-and [0182](../../changes/archive/0182-recovery-history-assertions.md) are applied.
-The [corrected-source validation and verified pin handoff](../../.fireweed/drills/residual-fixes-controller-handoff.md)
-passed before the one owner-authorized native workflow invocation. The
-[current native report](../../.fireweed/drills/workflow.md) and
-[complete review](../../.fireweed/drills/workflow-corrected-controller-retry-20261107T232508/review.md)
-retain the actual failures, coverage, gap limitations, failed ref, full output and
-cleanup. The focused corrected cases passed, but workflow/runner still fail.
-No passing workflow proof or WF4 closure is claimed.
-
-The owner's sequence approval is consumed. Stop for review with no active run or
-claim. Further correction, diagnostic replay, drill, controller promotion,
-reconstructed-code application or push requires new authorization. Original
-79cf33a, prior evidence/refs, recoveries, bounds/counters and unrelated worktree
-are preserved. Worker notes authorize no new change. Full-completion gates remain.
-
-The separately owner-authorized [remaining-failure investigation](../../.fireweed/drills/workflow-failure-investigation-20261108/findings.md)
-is complete without corrections, repinning or another native workflow invocation.
-It confirms reconstruction defects for the workflow failures; RUN-037 remains
-unreproduced in bounded focused/full-context replay. The native failure and WF4
-stop remain unchanged.
-
-The two subsequently owner-selected follow-ups are complete through normal
-independent audit and archive: [0183](../../changes/archive/0183-reserved-ids-review-fail-first.md)
-clarifies FLOW-007/FLOW-023 as already_satisfied and
-[0184](../../changes/archive/0184-verification-stop-diagnostics.md) is a diagnostic-only
-RUN-037 eval_fix. FLOW-062, runtime/interfaces/hooks/configuration and existing
-bounds remain unchanged. The
-[clean-source validation, idle pin update and stopped preparation](../../.fireweed/drills/workflow-contract-diagnostics-handoff.md)
-are complete with no native invocation or active run/claim. RUN-037's native
-timing cause remains unresolved. That preparation budget is exhausted. The separately approved retry is now
-complete and stopped as recorded above. No source import,
-expanded worker inputs, raised/reset bound or counter, extra correction, later
-work or push. Follow GOAL/PROGRESS; all prior native results and WF4/full-completion
-gates remain intact.
-
-**Entry.** Follow SYSTEM and the pin/deadline in PROGRESS. Read AGENTS,
-DECISIONS, the relevant unchanged design clauses and projected workflow
-contracts. Inspect live status, queue, runs and shared claims. Preserve prior
-evidence/refs, configured bounds/counters and unrelated worktrees. Stop at
-the recorded deadline or a SYSTEM stop. Protected author commits occur
-between active runs.
-
-1. **WF1 — Focused workflow contract review.** Review workflow's Specs,
-   Decisions, retained interfaces and public evals against its existing design
-   obligations. Cover claim ownership and approved state, projected zones,
-   fail-first/audit/impl transitions, verification error causes, full Done
-   verification, atomic apply/archive/provenance, blocked recovery and release,
-   context, eval_fix and regenerate behavior. Include the existing FLOW-055
-   and FLOW-062 corrections. Reuse the completed checks review and passing
-   independent proof. Record the conclusion in committed milestone evidence.
-   A demonstrated defect, uncovered behavioral choice or proposed product/eval
-   correction is an owner checkpoint before authoring. Any approved correction
-   follows the normal audited lifecycle with frozen obligations and counters.
-
-2. **WF2 — Identified clean candidate and approval handoff.** After WF1 closes,
-   use a fresh clean checkout of the selected committed source and build a
-   separate subject executable. Pass applicable normal/race Go suites and vet,
-   then that candidate's check, doctor --no-agent, explicit-range check-commits
-   and CI with hook doctor enabled. Preserve history baseline
-   `be35552b706aa3000ff8f11306d129ff1d701b85`; resolve and record the exact
-   nonempty range and candidate identity in committed evidence. Exercise actual
-   candidate CLI paths affected by any approved correction. Reuse valid
-   prefixes and unaffected evidence, while running required phase verification.
-   Keep the subject separate from the pinned controller and confirm setup
-   copies the selected invoker. Explain existing warnings without scope growth.
-   Verify clean checkouts, cleanup, no live run/claim and preserved pin/bounds.
-   Append the exact preparation evidence to the existing reviewed checks
-   report, clearly labeled workflow preparation and preserving its native
-   result. Update PROGRESS with the handoff state and use archived change
-   evidence for any approved correction. **Stop before invoking drill and request owner
-   approval for exactly the identified candidate.**
-
-3. **WF3 — Native workflow drill after approval.** Only a separate owner
-   authorization permits one native workflow invocation under the existing
-   attempt/retry bounds. Use an isolated clone of the validated source with
-   the unchanged pinned controller and rehearsed live isolation gate. Start
-   the inspector alongside the controller. Before release, inspect actual
-   workflow spec/Decisions/interfaces/evals and approved retained inputs, plus
-   only declared contracts/gitstore/assets/project/checks public interfaces,
-   including model interfaces. Keep dependency/dependent implementations,
-   manifests and hooks in the separate verifier. Exclude original disposable
-   code, old history, prior reports/reconstructions, binaries and bootstrap from
-   worker inputs. Input Git exposes no old objects, remotes or alternates.
-   Review every command, full script and incremental patch. Before a second
-   configured attempt, review the first full trace/native feedback and repeat
-   the live isolation check. Monitor the same invocation to its terminal result.
-   Enforce workflow and all transitive dependents, currently runner and app,
-   with retained inputs unchanged. A failed invocation or owner decision stops
-   the milestone with native evidence retained. Further drills and gap fixes
-   require separate authorization.
-
-4. **WF4 — Reviewed proof and clean handoff.** Completion requires WF1/WF2
-   and a passing independent workflow proof with no unresolved owner checkpoint.
-   Review all native fields/cases, coverage, Decisions, gaps and independence.
-   Retain the reviewed `.fireweed/drills/workflow.md` and native proof ref,
-   keeping older reports accessible by commit and carrying forward the
-   preparation evidence. Commit protected evidence with
-   no active run/claim. Confirm scratch cleanup, clean checkouts and preserved
-   pin/bounds/counters, prior proofs and unrelated worktrees. Update PROGRESS
-   with results, exact candidate/range, scoped change commits or why none were
-   needed, live unapproved count and any remaining checkpoint. Stop at WF4.
+1. **WF1 — Simplified drill.** Run the queued
+   [0195](../../changes/0195-run-argv-contract.md) and
+   [0196](../../changes/0196-drill-self-checked-reconstruction.md) through the
+   normal lifecycle. 0196 gives the reconstruction worker a buildable input
+   workspace and its own eval hook, without the old implementation, history
+   or dependents.
+2. **WF2 — Controller.** With no run or claim active, rebuild
+   `.fireweed/bin/fireweed` from clean main and record its commit in PROGRESS.
+   `go test ./...`, `go vet ./...` and `fireweed ci` pass on that commit.
+3. **WF3 — Workflow drill.** Run `fireweed drill workflow` once with the
+   configured worker. Don't add wrappers, supervisors or extra prompts.
+4. **WF4 — Report reviewed and gaps triaged.** Commit
+   `.fireweed/drills/workflow.md`. Review its own and dependent eval results,
+   contradicted Decisions and gaps with the owner. Turn each agreed gap into
+   a queued change, or record why it is not one. A failing drill closes WF4
+   once its gaps are triaged; repeat the drill only after changes that
+   address its gaps have been applied.
 
 The requirement/command inventories and all full-completion gates remain.
-Real regenerate changes, rebuilt-code import, further controller promotion, later
-module drills, unrelated cleanup, publication and push remain outside this milestone.
 
 ## Completed milestones
 
@@ -260,10 +132,10 @@ Use one design/inventory review, then check fixes against affected requirements.
 1. **Traceability:** map design requirements to specs, referencing evals and archives; SYSTEM conventions use prescribed review/eval evidence. Verify every R row within that scope. Legitimate already_satisfied changes reuse existing assertions; review, quarantine or maintenance cannot waive design obligations. No extra spec layer or testcase inventory is required.
 2. **Process:** the recorded controller owns fail-first/audit/impl/archive commits (bootstrap before EC6, pinned NEW after it) for behavioral work; immutable evals/interfaces during impl; separate protected setup/author commits; no pending/blocked rebuild changes or active claims.
 3. **Go:** with `GOCACHE=/tmp/fireweed-rebuild-cache`, a fresh checkout builds the new binary and passes `go test ./...`, `go test -race ./...`, `go vet ./...`. Permanent tests run with local fixtures/fake agents and without bootstrap/agent authentication. Cross-compilation is not platform runtime testing; report limits accurately.
-4. **Controller checks:** the recorded controller runs `check`, `doctor`, `check-commits <setup-sha>..HEAD`, and `ci <setup-sha>..HEAD` with doctor enabled. Use the explicit baseline in WF2; retain the exact nonempty range and per-module coverage in committed evidence. Resolve errors. For warnings, make a scoped correction or record the reason/limitation; zero warnings is not a separate gate. An empty default range proves no history.
+4. **Controller checks:** the recorded controller runs `check`, `doctor`, `check-commits <setup-sha>..HEAD`, and `ci <setup-sha>..HEAD` with doctor enabled. Use the explicit history baseline `be35552b706aa3000ff8f11306d129ff1d701b85`; retain the exact nonempty range and per-module coverage in committed evidence. Resolve errors. For warnings, make a scoped correction or record the reason/limitation; zero warnings is not a separate gate. An empty default range proves no history.
 5. **Product checks:** NEW binary in fresh repositories performs init/doctor, author/stamp/check, documented base approval, start/failing-evals/audit/impl/done, coverage/history/PR/CI. Exercise fixes, eval_fix, maintenance, blocked recovery and regenerate. Normal unattended approval rejection is tested without --allow-unmerged. Pin subject paths so bootstrap cannot be used accidentally.
 6. **Reference comparison (smoke):** one equivalent fixture lifecycle run with both binaries, comparing exit codes, JSON envelope shape and resulting commits/refs. Record intentional differences briefly. Reference bugs do not define acceptance, and per-edge-case equivalence is not required.
-7. **Real regeneration:** successful controller-driven drills for every rebuilt disposable module, dependency-first. Real agents reconstruct from retained specs/Decisions/interfaces/evals and permitted dependency interfaces, without old implementation/history, saved attempts, old binaries or bootstrap. Own/transitive dependent evals pass without preserved-contract edits. Commit reviewed reports/retain refs and clean scratch worktrees. Repeat only drills invalidated by relevant changes or unresolved failures. Gaps require human agreement before authored fixes; agent suggestions alone authorize none. Missing real-agent access blocks this gate.
+7. **Real regeneration:** successful controller-driven drills for every rebuilt disposable module, dependency-first. Real agents reconstruct in the input workspace the product's drill builds (RUN-053), without old implementation/history, saved attempts, old binaries or bootstrap. Own/transitive dependent evals pass without preserved-contract edits. Commit reviewed reports/retain refs and clean scratch worktrees. Repeat only drills invalidated by relevant changes or unresolved failures. Gaps require human agreement before authored fixes; agent suggestions alone authorize none. Missing real-agent access blocks this gate.
 8. **Self-hosting:** in an isolated clone/fixture, the NEW binary governs a small real spec change and a real drill, with checked fail-first/audit/impl commits, archive/provenance, CI and scratch cleanup. Keep the original repository governed by its recorded controller; EC6 may already have promoted NEW. The real-drill portion remains required for full completion, separately from the earlier core self-hosting proof.
 9. **Delivery:** README build/test/use instructions, locally validated distribution/installer checksum behavior, clean committed target tree, concise restartable handoff and independent product executable. No product runtime read/import/command requires bootstrap. Report exact checks/commits/reports and limitations. Push only on explicit owner instruction; do not publish or tag.
 

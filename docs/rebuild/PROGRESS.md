@@ -1,238 +1,42 @@
-# Rebuild handoff — approved workflow drill failed, stopped
+# Rebuild progress
 
-The single approved controller promotion and supervised native workflow
-invocation are complete. The installed pin is newest committed controller
-source a54f5da8d4faf9758f1a426cc7559c0726be8607. The isolated invocation used
-the separately approved candidate 7d17a76186fd94d603a018713bdcc1005c89e020,
-with identical controller compiler inputs. [Controller handoff](../../.fireweed/drills/controller-pin-a54f5da.md).
+## Current state (2026-11-09)
 
-The first reconstruction compiled and reported 113 failing eval rows across
-workflow, app and runner. The second reconstruction failed to compile because
-claim.go used regexp without importing it. The native controller exited 1 and
-published its report and exact proof ref. Both worker traces and all native
-feedback were reviewed. The owned scratch trees were removed. The queue and
-shared claims are empty. The live unapproved count is two.
-[Native report](../../.fireweed/drills/workflow.md),
-[review and cleanup](../../.fireweed/drills/workflow-native-retry-20261109T032533/review.md).
+Main was reset to `515516a` to drop the drill-specific changes 0192
+(drill compile checkpoint) and 0193 (focused drill retries) and the
+supervised drill harness. Change 0194 (keep run artifacts local) is a
+general fix, so its original queue, evals, audit and apply commits were
+replayed on top. The previous head, `f35fc0f`, is kept on the local branch
+`backup/pre-drill-simplify`. `origin/main` still points at `f35fc0f`, so
+publishing this history needs an owner-approved force push.
 
-**Approval consumed. Stop here.** The existing deadline is 2026-11-10 22:51:05 UTC.
-WF4, full completion, and earlier timing exceptions remain open. Any new
-invocation, correction, or controller promotion requires separate authorization.
-Follow GOAL.
+The workflow drill was failing because the reconstruction worker could not
+compile or test its code, not because of spec gaps. The fix is to change
+the product's drill rather than supervise the worker. Two changes are
+queued and have not been run:
 
-## Approved workflow changes (historical)
+- [0195-run-argv-contract](../../changes/0195-run-argv-contract.md) states
+  that `gitstore.Request.Args[0]` is the executable. This was the gap the
+  last workflow drill exposed.
+- [0196-drill-self-checked-reconstruction](../../changes/0196-drill-self-checked-reconstruction.md)
+  gives the drill worker a buildable input workspace with dependency
+  implementations and its own eval hook, while leaving out the old
+  implementation, history and dependents.
 
-The owner-approved workflow changes
-[0190](../../changes/archive/0190-retained-report-discovery.md) and
-[0191](../../changes/archive/0191-boundary-violation-detail.md) are applied and
-archived with independent audits. The approved worker policy now identifies
-the verifier's Git baseline. The clean candidate is
-`7d17a76186fd94d603a018713bdcc1005c89e020`.
-The [validation handoff](../../.fireweed/drills/workflow-report-boundary-corrections.md)
-records the compiled CLI results, history range, full serial normal suite,
-affected race suites, and candidate CI. The default parallel suite's runner
-timing failure is retained. Earlier timing exceptions remain open.
+## Controller
 
-**Approved scope consumed. Stop with no active run, queue or shared claim.**
-A new supervised native workflow invocation on the identified candidate
-requires separate owner approval. The installed controller remains the
-recorded pin below. The native workflow failure and WF4/full-completion
-checkpoint remain open. The existing deadline remains
-**2026-11-10 22:51:05 UTC**. Follow GOAL.
+No `.fireweed/bin/fireweed` is installed in this checkout. Before running
+the queue, build one from clean main as SYSTEM.md describes and record the
+commit here.
 
-## Previous supervised workflow retry (historical)
+Controller source: _not yet built_
 
-The owner-authorized single native workflow retry on pinned candidate
-`75efa9a03c4eb7a17673a53bdd8058074e5bb7e1` is complete. Both reconstructions
-compiled. The final native verifier reported 22 failing rows across workflow,
-app and runner, with no supervisor rejection or emergency escalation. The native report at 4b9cb0e:.fireweed/drills/workflow.md and its
-[review](../../.fireweed/drills/workflow-native-retry-20261108T233724/review.md)
-retain the ref, trace, verification and cleanup evidence. WF4, full completion
-and prior own-Verify timing exceptions remain open.
+## Next steps
 
-The [failure investigation](../../.fireweed/drills/workflow-native-retry-20261108T233724/investigation.md)
-proposes explicit retained report discovery and X01 error detail. Report naming
-needs an owner decision on the `costs.json` collision. Abandon exposed a
-reconstruction compatibility defect on the verifier's Git. Review the
-proposed scope before authoring or preparing another drill.
+1. Run 0195 and 0196 through the normal lifecycle.
+2. Rebuild the controller from the result so the drill uses the new input
+   workspace.
+3. Run `fireweed drill workflow` once, commit the report and review its gaps
+   with the owner (ACCEPTANCE WF3–WF4).
 
-**Single invocation consumed. Stop with no active run, queue or shared claim.**
-The owned scratch trees are gone. The inspector metadata was aligned with the
-installed pin before the drill. The retained reconstruction is on its native
-ref. The existing deadline remains **2026-11-10 22:51:05 UTC**. Follow GOAL.
-
-## Controller update (historical)
-
-The owner-requested single pin update promoted clean committed source
-`75efa9a03c4eb7a17673a53bdd8058074e5bb7e1` after verified idle gates. The
-[handoff evidence](../../.fireweed/drills/controller-pin-75efa9a.md) records
-compiler input equivalence, reused runtime and audited eval proof, fresh candidate
-CLI/hook/history checks, matching live status and the installed pin checks.
-The retiring a26f7b9 executable is preserved for explicit owner-directed recovery.
-
-**Pin-update scope consumed. Stop with no active run, queue or claim.**
-No product correction, drill or push occurred. The failed workflow proof, WF4 and
-full-completion stop, timing exceptions, bounds and existing deadline remain
-unchanged. Follow GOAL before any newly authorized work.
-
-## Audited contract corrections (historical)
-
-The owner-authorized two normal audited changes are applied and archived:
-[0188](../../changes/archive/0188-provenance-and-complete-reports.md) clarifies
-successful Done provenance preservation and complete selected-module reports,
-with unchanged runtime proven already_satisfied; [0189](../../changes/archive/0189-provenance-preservation-eval.md)
-corrects the runner Audit-copy eval at the proper lifecycle stages. Both independent
-restricted audits and all required phase checks passed. The
-[retained handoff](../../.fireweed/drills/provenance-report-corrections-handoff.md)
-records exact results, reports, coverage, history and cleanup. Runner impl quick
-Verify exceeded the five-minute target; prior timing exceptions remain open.
-
-**Two-change scope consumed. Stop with no active run, queued change or shared claim.**
-No runtime/interface/hook/configuration or unrelated reconstruction-defect fix,
-drill, source import, repin or push occurred. Existing native failure/proof refs,
-WF4/full-completion stop, controller/recoveries, bounds/counters and unrelated
-worktrees remain preserved. No further correction, replay, drill, repin, later
-milestone or push is authorized. Deadline remains **2026-11-10 22:51:05 UTC**.
-Follow GOAL.
-
-## Previous investigation (historical)
-
-# Rebuild handoff — failure investigation complete, stopped
-
-The owner-authorized static investigation of the retained workflow drill failures
-is complete. The [findings](../../.fireweed/drills/workflow-native-retry-20261108T090949/investigation.md)
-distinguish reconstruction defects from provenance-format and dependent-report
-spec/eval assumptions requiring owner review. The native failure, report/ref,
-WF4/full-completion stop and earlier timing exceptions remain unchanged.
-No fix, eval replay, new agent/drill, source application or repin occurred.
-
-**Investigation scope consumed. Stop with no active run, queue or shared claim.**
-Only evidence and the handoff were authored. Product/spec/eval/interface, inspector,
-hooks, configuration, controller/recoveries, prior evidence/refs and unrelated
-worktrees remain preserved. No further correction, investigation/replay, retry,
-repin, later milestone or push is authorized. The existing
-**2026-11-10 22:51:05 UTC** deadline remains unchanged. Follow GOAL.
-
-## Completed native retry (historical)
-
-The newly owner-authorized single native workflow retry is complete on pinned
-source `a26f7b9909f6c311416a0706d1b16749d16b9146`. Its first reconstruction failed
-compilation; the second compiled but failed workflow and transitive app/runner
-evals. No independence rejection or emergency escalation occurred. The
-[current native report](../../.fireweed/drills/workflow.md) and
-[review/cleanup evidence](../../.fireweed/drills/workflow-native-retry-20261108T090949/review.md)
-retain the actual outcome and native ref. No reconstruction was applied.
-WF4 and full completion remain open; prior timing exceptions remain unresolved.
-
-**Single retry consumed. Stop with no active run, queued change or shared claim.**
-The native input/verifier, owned caller and outside staging are cleaned up;
-prior evidence/refs, controller/recoveries, configuration/bounds/counters and the
-unrelated worktree are preserved. No correction, investigation/replay, further
-retry, source application, repin, later milestone or push is authorized.
-The existing deadline remains **2026-11-10 22:51:05 UTC**. Follow GOAL.
-
-# Previous controller handoff (historical)
-
-The owner-requested single idle controller update is complete. The latest committed
-source at the request, `a26f7b9909f6c311416a0706d1b16749d16b9146`, was built clean,
-verified and atomically promoted to the pin below. The
-[handoff evidence](../../.fireweed/drills/controller-pin-a26f7b9.md) records compiler
-input equivalence, reused runtime/eval proof, fresh candidate CLI/hook/history
-checks, unchanged live status, idle promotion and preservation. Retiring source
-9a206c5 is retained as explicit recovery. No product correction or drill occurred.
-
-**Pin-update scope complete. Stop with no active run, queue or claim.** No further
-correction, performance work, drill/preparation, source import, controller update
-or push is authorized. The previous failed workflow proof and own-verification
-timing exceptions remain open; all bounds and the existing deadline are unchanged.
-
-The three owner-selected normal audited eval_fix changes are complete and
-archived: [0185](../../changes/archive/0185-explicit-empty-selection-eval.md)
-corrects workflow empty-selection wording, [0186](../../changes/archive/0186-context-content-eval.md)
-checks full runner context contents, and [0187](../../changes/archive/0187-pr-body-contract-evals.md)
-permits optional B04 Path and compliant empty wording in app evals. Behavioral
-coverage is retained; independent restricted audits and required phase checks
-passed. The [verified handoff](../../.fireweed/drills/eval-contract-corrections-handoff.md)
-records phase commits, coverage, explicit history checks, preserved state and
-observed own-verification timing exceptions. No runtime/spec/interface, policy,
-tooling, configuration or hook change. Their controller stayed unchanged during
-those changes; the separately authorized promotion is recorded above.
-
-**Three-change budget consumed. Stop before another drill.** No active owning
-controller, queue or shared claim remains. No further correction, performance
-work, replay, drill, source import, controller promotion, later work or push is
-authorized. The existing extended deadline and all bounds remain unchanged.
-The failed workflow proof below remains current; WF4/full completion stay open.
-
-The one owner-approved supervised workflow retry on validated source 9a206c5 is
-complete and failed. The second worker invoked local go test despite the supplied
-SYSTEM prohibition. The prepared inspector rejected it, stopped the worker first,
-drained/forwarded all received output and gave the native controller its bounded
-publication opportunity. The controller actually published failure evidence/ref
-and exited without emergency escalation. This observation establishes that
-reporting outcome for this running-worker rejection, not every interruption or
-emergency path. No further invocation occurred.
-
-The [current native report](../../.fireweed/drills/workflow.md) retains its exact
-native prefix followed by owner review. The
-[review and retained evidence](../../.fireweed/drills/workflow-contract-retry-20261108T055420/review.md)
-records first-attempt verification failures, all cases/coverage and assertions,
-actual inputs, exact first feedback, both traces, rejected local command, durable
-unchanged stream forwarding, published ref, process/scratch cleanup and limitations.
-Second partial edits were not reverified. No passing independent workflow proof;
-WF4 and full completion remain open. No compiler error occurred in native verification.
-The focused RUN-037 case passed; its preceding native timing cause remains unresolved.
-
-Retained failed ref: `refs/fireweed/drills/workflow/20261108T055420.712886000`.
-It identifies first verified reconstruction only; no reconstruction was applied
-to the product. The preceding workflow report is
-[recoverable from Git history](../../.fireweed/drills/workflow-before-contract-diagnostics-retry-618ecde.md).
-All older reports/archives/proof/attempt refs, original 79cf33a and prior corrected
-ccd3d6b/9a206c5 objects, bounds/counters, recoveries and the unrelated worktree remain.
-Live counts/warnings are retained in evidence, not reset. The valid checks proof
-and composed WF1/WF2/history prefixes remain valid.
-
-The [two audited changes and verified preparation](../../.fireweed/drills/workflow-contract-diagnostics-handoff.md)
-remain complete: FLOW-007/FLOW-023 clarification in 0183, diagnostic-only RUN-037
-in 0184, with no runtime/interface/hook/configuration correction. Prior residual
-fixes/handoff and the [remaining-failure investigation](../../.fireweed/drills/workflow-failure-investigation-20261108/findings.md)
-remain historical evidence. No worker Gap or native diagnostic authorizes a fix.
-
-**Approval consumed. Stop for owner review.** No active owning process, queued
-change or shared claim remains. Native input/verifier and owned caller are cleaned
-up; the required native ref and protected evidence are retained. Further correction,
-worker-policy/tooling change, replay, retry, controller promotion, source application,
-later work or push requires new owner authorization. Follow GOAL.
-
-The owner previously added exactly 72 hours to the original 2026-11-07 22:51:05 UTC
-deadline. The existing deadline remains **2026-11-10 22:51:05 UTC** (14:51:05 PST),
-without another extension. Configured bounds and isolation/audit requirements stay
-unchanged. Remaining time grants no further work after this completed invocation.
-
-**Controller pin** `/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed`, version
-0.1.0, source `a54f5da8d4faf9758f1a426cc7559c0726be8607`, SHA-256
-`0b0ac4477e0c4b23466944f790309860fac101cce5818541526b6bdf29a7a71a`.
-Built with Go 1.27.2 and -trimpath from clean darwin/arm64 source, with
-vcs.modified=false. Promoted only after idle validation; no fallback or
-cross-controller resume.
-
-The named recovery copy `.fireweed/bin/fireweed-a26f7b9` is available for
-explicit owner-directed recovery. The separately designated recovery executables
-`.fireweed/bin/fireweed-pre-ck-handoff` and `.fireweed/bin/fireweed-bootstrap`
-remain reserved for explicit owner direction.
-
-The owner requested removal of the five older pin copies: `9a206c5`, `ccd3d6b`,
-`12c571c`, `1936346` and `99a1d6d`.
-
-The owner authorized pruning superseded drill attachments. Current module reports,
-useful reviews, validation outcomes and cleanup receipts remain in the checkout;
-full historical evidence is recoverable through the
-[drill retention index](../../.fireweed/drills/README.md). That retention-only
-sequence performed no drill, correction, controller update or ref pruning;
-the later pin update is recorded above.
-
-The owner-authorized controller-pin attachment cleanup is complete. The compact
-[handoff receipt](../../.fireweed/drills/controller-pin-a26f7b9.md), current pin
-metadata and recovery executable remain. Expanded attachments are recoverable
-through Git history; actual drill reports and proof refs are preserved. No
-controller change or drill was performed during this retention-only cleanup.
+Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
