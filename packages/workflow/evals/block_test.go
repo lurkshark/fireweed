@@ -63,7 +63,7 @@ func assertBlockDocumentOnlyAddsReason(t *testing.T, approved, blocked, reason s
 	}
 }
 
-func assertBlockReleased(t *testing.T, root string, r workflow.BlockResult, reason string) {
+func assertBlockReleased(t *testing.T, root string, r workflow.BlockResult, reason, wantStatus string) {
 	t.Helper()
 	if r.State.Phase == "" || r.State.ClaimOID != "" || r.State.Head != head(t, root) || r.State.PhaseBase != head(t, root) {
 		t.Errorf("returned blocked state = %#v", r.State)
@@ -77,8 +77,8 @@ func assertBlockReleased(t *testing.T, root string, r workflow.BlockResult, reas
 	if _, err := workflow.Current(root, "manual"); err == nil {
 		t.Error("Current still found a held claim")
 	}
-	if got := git(t, root, "status", "--porcelain", "-uall"); got != "" {
-		t.Errorf("checkout is not clean: %s", got)
+	if got := git(t, root, "--no-optional-locks", "status", "--porcelain", "-uall"); got != wantStatus {
+		t.Errorf("blocked checkout status = %q, want %q", got, wantStatus)
 	}
 	if index, tree := git(t, root, "write-tree"), git(t, root, "rev-parse", "HEAD^{tree}"); index != tree {
 		t.Errorf("index tree %s differs from blocked HEAD tree %s", index, tree)
@@ -86,7 +86,16 @@ func assertBlockReleased(t *testing.T, root string, r workflow.BlockResult, reas
 }
 
 func Test_FLOW_063_FLOW_064_FLOW_065_FLOW_066_FLOW_067_BlockSavesHeldEvalsWorkAndCommitsOnlyState(t *testing.T) {
+	t.Run("ignored", func(t *testing.T) { testBlockSavesHeldEvalsWork(t, true) })
+	t.Run("unignored", func(t *testing.T) { testBlockSavesHeldEvalsWork(t, false) })
+}
+
+func testBlockSavesHeldEvalsWork(t *testing.T, ignored bool) {
+	t.Helper()
 	root := blockFixture(t, "", "", "### new:extra\nExtra MUST be checked.\n", "", "")
+	if !ignored {
+		exposeRunArtifacts(t, root)
+	}
 	write(t, root, "packages/alpha/evals/current_test.go", "original eval\n")
 	write(t, root, "packages/alpha/evals/retired_test.go", "retired eval\n")
 	commit(t, root, "fixture eval files")
@@ -109,7 +118,17 @@ func Test_FLOW_063_FLOW_064_FLOW_065_FLOW_066_FLOW_067_BlockSavesHeldEvalsWorkAn
 	write(t, root, "packages/alpha/evals/staged_test.go", "staged new eval\n")
 	git(t, root, "add", "packages/alpha/evals/staged_test.go")
 	write(t, root, "packages/alpha/evals/untracked_test.go", "untracked eval\n")
-	if got := git(t, root, "status", "--porcelain", "-uall"); !strings.Contains(got, "M  packages/alpha/evals/current_test.go") || !strings.Contains(got, " D packages/alpha/evals/retired_test.go") || !strings.Contains(got, "A  packages/alpha/evals/staged_test.go") || !strings.Contains(got, "?? packages/alpha/evals/untracked_test.go") {
+	runLog := ".fireweed/runs/" + started.Run + "/evals/worker.log"
+	const logContent = "first attempt\n\nfailed verification\n"
+	write(t, root, runLog, logContent)
+	wantStatus := ""
+	if !ignored {
+		wantStatus = "?? " + runLog
+	}
+	if got := git(t, root, "--no-optional-locks", "status", "--porcelain", "-uall", "--", runLog); got != wantStatus {
+		t.Fatalf("run log fixture status = %q, want %q", got, wantStatus)
+	}
+	if got := git(t, root, "--no-optional-locks", "status", "--porcelain", "-uall"); !strings.Contains(got, "M  packages/alpha/evals/current_test.go") || !strings.Contains(got, " D packages/alpha/evals/retired_test.go") || !strings.Contains(got, "A  packages/alpha/evals/staged_test.go") || !strings.Contains(got, "?? packages/alpha/evals/untracked_test.go") {
 		t.Fatalf("fixture lacks staged, deleted or untracked work: %s", got)
 	}
 	if got := git(t, root, "show", ":packages/alpha/evals/current_test.go"); got != "staged modified eval" {
@@ -145,6 +164,14 @@ func Test_FLOW_063_FLOW_064_FLOW_065_FLOW_066_FLOW_067_BlockSavesHeldEvalsWorkAn
 	if got := git(t, root, "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"); got != "changes/0001-manual.md" {
 		t.Errorf("block commit contains step work: %s", got)
 	}
+	for _, revision := range []string{r.AttemptRef, "HEAD"} {
+		if got := git(t, root, "ls-tree", "-r", "--name-only", revision, "--", ".fireweed/runs"); got != "" {
+			t.Errorf("%s contains run artifacts: %s", revision, got)
+		}
+	}
+	if log, err := os.ReadFile(filepath.Join(root, runLog)); err != nil || string(log) != logContent {
+		t.Errorf("run log after Block = %q, %v; want original contents %q", log, err, logContent)
+	}
 	blocked := readFile(t, root, "changes/0001-manual.md")
 	if !strings.Contains(blocked, "### ALP-003") || !strings.Contains(blocked, started.Run) || !strings.Contains(blocked, "phase: evals") || !strings.Contains(blocked, "blocked: "+reason) || !strings.Contains(blocked, "Users need a revised alpha value.") {
 		t.Errorf("block commit lost assigned/author state: %s", blocked)
@@ -161,7 +188,7 @@ func Test_FLOW_063_FLOW_064_FLOW_065_FLOW_066_FLOW_067_BlockSavesHeldEvalsWorkAn
 			t.Errorf("step file %s remains after block: %v", path, err)
 		}
 	}
-	assertBlockReleased(t, root, r, reason)
+	assertBlockReleased(t, root, r, reason, wantStatus)
 }
 
 func Test_FLOW_066_BlockImplPreservesCommittedEvalsAndAudit(t *testing.T) {
@@ -203,7 +230,7 @@ func Test_FLOW_066_BlockImplPreservesCommittedEvalsAndAudit(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(root, "packages/alpha/internal/attempt.go")); !os.IsNotExist(err) {
 		t.Errorf("impl work remains: %v", err)
 	}
-	assertBlockReleased(t, root, r, "implementation attempts exhausted")
+	assertBlockReleased(t, root, r, "implementation attempts exhausted", "")
 }
 
 func Test_FLOW_063_BlockRejectsForeignClaimApprovedEditsAndChangedHead(t *testing.T) {

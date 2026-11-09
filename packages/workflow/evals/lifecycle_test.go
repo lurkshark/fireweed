@@ -1,6 +1,7 @@
 package evals_test
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
@@ -42,9 +43,11 @@ func git(t *testing.T, root string, args ...string) string {
 	cmd := exec.Command("git", args...)
 	cmd.Dir = root
 	cmd.Env = append(os.Environ(), "GIT_CONFIG_NOSYSTEM=1", "GIT_AUTHOR_NAME=Fixture", "GIT_AUTHOR_EMAIL=fixture@example.invalid", "GIT_COMMITTER_NAME=Fixture", "GIT_COMMITTER_EMAIL=fixture@example.invalid")
-	out, err := cmd.CombinedOutput()
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+	out, err := cmd.Output()
 	if err != nil {
-		t.Fatalf("git %v: %v: %s", args, err, out)
+		t.Fatalf("git %v: %v: %s", args, err, stderr.String())
 	}
 	return strings.TrimSpace(string(out))
 }
@@ -121,6 +124,13 @@ if [ -f .fireweed/boundary-fail ] && [ -f packages/alpha/internal/ready ]; then 
 		}
 	}
 	return root
+}
+
+func exposeRunArtifacts(t *testing.T, root string) {
+	t.Helper()
+	git(t, root, "config", "core.excludesFile", os.DevNull)
+	git(t, root, "rm", "--", ".gitignore")
+	commit(t, root, "fixture without a run artifact ignore rule")
 }
 
 func start(t *testing.T, root string) workflow.State {
@@ -848,25 +858,55 @@ func toAudit(t *testing.T, root string) workflow.State {
 	return r.State
 }
 
-func Test_FLOW_032_FLOW_033_FLOW_046_EvalsDoneUsesDefaultAuditOrDisabledImpl(t *testing.T) {
-	for _, disabled := range []bool{false, true} {
-		t.Run(fmt.Sprint(disabled), func(t *testing.T) {
-			config := ""
-			want := "audit"
-			if disabled {
-				config = "audit:\n  enabled: false\n"
-				want = "impl"
+func Test_FLOW_032_FLOW_033_FLOW_046_FLOW_135_EvalsDoneAdvancesAndKeepsRunArtifactsLocal(t *testing.T) {
+	for _, tc := range []struct {
+		name, config, next string
+		ignored            bool
+	}{
+		{"default audit/ignored", "", "audit", true},
+		{"default audit/unignored", "", "audit", false},
+		{"disabled audit/ignored", "audit:\n  enabled: false\n", "impl", true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := fixture(t, tc.config, "", "", "", "")
+			if !tc.ignored {
+				exposeRunArtifacts(t, root)
 			}
-			root := fixture(t, config, "", "", "", "")
-			start(t, root)
+			started := start(t, root)
+			staged := "packages/alpha/evals/staged_test.go"
+			unstaged := "packages/alpha/evals/unstaged_test.go"
+			write(t, root, staged, "staged eval\n")
+			git(t, root, "add", "--", staged)
+			write(t, root, unstaged, "unstaged eval\n")
 			before := head(t, root)
 			r, err := done(root)
-			if err != nil || r.State.Phase != want || head(t, root) == before || r.State.PhaseBase != head(t, root) {
-				t.Errorf("Done = %#v, %v; want %s with commit", r, err, want)
+			if err != nil {
+				t.Fatalf("Done with generated run artifacts: %v", err)
+			}
+			after := head(t, root)
+			if r.State.Phase != tc.next || after == before || r.State.PhaseBase != after {
+				t.Errorf("Done phase = %q and phase base = %s; want %s at new HEAD %s", r.State.Phase, r.State.PhaseBase, tc.next, after)
 			}
 			current, err := workflow.Current(root, "manual")
-			if err != nil || current.Phase != want || current.PhaseBase != head(t, root) {
+			if err != nil || current.Phase != tc.next || current.PhaseBase != after {
 				t.Errorf("phase base not advanced: %#v, %v", current, err)
+			}
+			for path, want := range map[string]string{staged: "staged eval", unstaged: "unstaged eval"} {
+				if got := git(t, root, "show", after+":"+path); got != want {
+					t.Errorf("phase commit contains %q at %s, want %q", got, path, want)
+				}
+			}
+			if got := git(t, root, "ls-tree", "-r", "--name-only", after, "--", ".fireweed/runs"); got != "" {
+				t.Errorf("phase commit contains run artifacts: %s", got)
+			}
+			report := filepath.Join(".fireweed", "runs", started.Run, "evals", "alpha.json")
+			retained := readRetainedReport(t, filepath.Join(root, report))
+			if !strings.Contains(retained.Stdout, "fixture-hook-output") || !reflect.DeepEqual(retained.Cases, r.Reports["alpha"].Cases) {
+				t.Errorf("retained report lost verification output or cases: %#v", retained)
+			}
+			untracked := git(t, root, "ls-files", "--others", "--exclude-standard", "--", report)
+			if tc.ignored && untracked != "" || !tc.ignored && untracked != filepath.ToSlash(report) {
+				t.Errorf("retained report's Git visibility = %q with ignored=%t", untracked, tc.ignored)
 			}
 		})
 	}
