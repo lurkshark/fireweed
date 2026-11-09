@@ -551,7 +551,11 @@ func dependents(s project.Snapshot, name, mode string) []string {
 	return out
 }
 func reportPath(s model.State, phase, name string) string {
-	return filepath.Join(s.Snapshot.Root, ".fireweed", "runs", s.Run, phase, name+".json")
+	dir := filepath.Join(s.Snapshot.Root, ".fireweed", "runs", s.Run, phase)
+	if strings.EqualFold(name, "costs") {
+		dir = filepath.Join(dir, "reports")
+	}
+	return filepath.Join(dir, name+".json")
 }
 func saveReport(s model.State, phase, name string, r checks.Report) {
 	b, _ := json.MarshalIndent(r, "", "  ")

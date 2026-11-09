@@ -180,7 +180,12 @@ It MUST preserve existing nonblank provenance lines unchanged and in order.
 It MAY normalize blank lines within the Provenance section.
 
 ### FLOW-052
-Successful Done MUST retain verification reports and process output under the run directory.
+Successful Done MUST retain verification reports and process output under
+`.fireweed/runs/<run>/`.
+Each evaluated module's report MUST be readable as a JSON `checks.Report`
+at `<phase>/<module>.json` within that run directory.
+For module names equal to `costs` without regard to case, the report MUST use
+`<phase>/reports/<module>.json` and coexist with the phase's `costs.json`.
 
 ### FLOW-053
 State MUST expose the held projected snapshot so composing commands use the approved graph during hooks.
