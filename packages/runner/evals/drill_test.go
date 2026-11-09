@@ -16,8 +16,8 @@ import (
 	"github.com/lurkshark/fireweed/packages/runner"
 )
 
-// All scripts and observations live outside the fixture repository. The worker
-// only sees the workspace supplied by Drill; the hook sees the full scratch tree.
+// Hooks are tracked in the fixture repository. The fake worker and its
+// observations live outside the fixture repository.
 type drillFixture struct{ root, observations, base string }
 
 func newDrillFixture(t *testing.T) drillFixture {
@@ -30,15 +30,18 @@ func newDrillFixture(t *testing.T) drillFixture {
 	if err != nil {
 		t.Fatal(err)
 	}
-	setup := filepath.Join(observations, "setup.sh")
 	agent := filepath.Join(observations, "agent.sh")
 	wrapper := filepath.Join(observations, "wrapper.sh")
-	eval := filepath.Join(observations, "eval.sh")
-	nextWrite(t, observations, "setup.sh", `#!/bin/sh
+	nextWrite(t, root, ".fireweed/setup.sh", `#!/bin/sh
+mkdir -p .fireweed/bin
+if [ -d .git ]; then
+  printf '%s\n%s\n' "$PWD" "$FIREWEED_BIN" > "$1/input.setup"
+  printf 'INPUT_SETUP' > .fireweed/bin/fireweed
+  exit 0
+fi
 printf '%s\n%s\n' "$PWD" "$FIREWEED_BIN" > "$1/setup"
 git symbolic-ref -q HEAD > "$1/setup.branch" || :
 git rev-parse HEAD > "$1/setup.head"
-mkdir -p .fireweed/bin
 printf 'SETUP_BINARY_SECRET' > .fireweed/bin/fireweed
 if [ -f "$1/setup-fail" ]; then echo SETUP_FAILURE >&2; exit 17; fi
 if [ -f "$1/cleanup-fail" ]; then chmod 0500 "$(dirname "$PWD")"; fi
@@ -58,11 +61,15 @@ printf '%s' "$PWD" > "$1/agent.cwd"
 printf '%s' "$FIREWEED_BIN" > "$1/agent.bin"
 printf '%s' "$2" > "$1/prompt-$count"
 if [ "$count" -eq 1 ]; then
-  find . -path './.git' -prune -o -type f -print | sort > "$1/input.files"
+  find . -path './.git' -prune -o ! -type d -print | sort > "$1/input.files"
   git for-each-ref --format='%(refname)' > "$1/input.refs"
   git rev-list --count HEAD > "$1/input.history"
   if git cat-file -e "$(cat "$1/base")^{commit}" 2>/dev/null; then echo present > "$1/input.base"; else echo absent > "$1/input.base"; fi
+  if [ -f "$1/saved-attempt" ]; then
+    if git cat-file -e "$(cat "$1/saved-attempt")^{commit}" 2>/dev/null; then echo present; else echo absent; fi > "$1/input.saved-attempt"
+  fi
   if [ -e .git/objects/info/alternates ]; then echo present > "$1/input.alternates"; else echo absent > "$1/input.alternates"; fi
+  if [ -f .fireweed/bin/fireweed ]; then cp .fireweed/bin/fireweed "$1/input.setup-output"; fi
 fi
 mode=success
 [ ! -f "$1/mode" ] || mode=$(cat "$1/mode")
@@ -77,15 +84,49 @@ case "$mode" in
   wrong|mixed_exhaust) printf 'wrong' > packages/alpha/internal/value.go;;
   *) printf 'new' > packages/alpha/internal/value.go;;
 esac
+stray=''
 case "$mode" in
   change_api) printf 'corrupted' > packages/alpha/api.go;;
   delete_eval) rm packages/alpha/evals/alpha_test.go;;
-  add_foreign) mkdir -p packages/core/internal; printf 'bad' > packages/core/internal/foreign.go;;
-  add_other) printf 'bad' > packages/alpha/extra.txt;;
+  add_foreign) stray=packages/core/internal/foreign.go;;
+  add_other) stray=packages/alpha/extra.txt;;
   change_preserved) printf 'bad' > packages/alpha/internal/retained.go;;
-  add_project_protected) printf 'bad' > packages/alpha/internal/project-new.txt;;
+  add_project_protected) stray=packages/alpha/internal/project-new.txt;;
   change_protected_dependency_interface) printf 'bad' > packages/core/api.go;;
+  change_setup|delete_setup)
+    [ "$(cat .fireweed/bin/fireweed)" = INPUT_SETUP ] || exit 12
+    if [ "$mode" = change_setup ]; then printf 'bad' > .fireweed/bin/fireweed; else rm .fireweed/bin/fireweed; fi;;
+  self_check)
+    # Read the advertised shell command from a fenced block, inline code, or a bare line.
+    command=$(awk '
+      /^[[:space:]]*\140\140\140/ {
+        fenced = !fenced
+        if (!fenced && block ~ /[.]fireweed\/eval[.]sh/) { print block; exit }
+        block = ""
+        next
+      }
+      fenced { block = block $0 "\n"; next }
+      /[.]fireweed\/eval[.]sh/ {
+        if (match($0, /\140[^\140]*[.]fireweed\/eval[.]sh[^\140]*\140/))
+          print substr($0, RSTART + 1, RLENGTH - 2)
+        else
+          print
+        exit
+      }
+    ' "$1/prompt-$count")
+    [ -n "$command" ] || { echo 'prompt omitted the local eval command' >&2; exit 12; }
+    printf 'wrong' > packages/alpha/internal/value.go
+    if output=$(sh -c "$command" 2>&1); then echo 'local eval passed the wrong candidate' >&2; exit 12; fi
+    case "$output" in
+      *'own verification failure'*) printf 'new' > packages/alpha/internal/value.go;;
+      *) printf '%s\n' "$output" >&2; exit 12;;
+    esac
+    sh -c "$command" || exit 12;;
 esac
+if [ -n "$stray" ]; then
+  mkdir -p "$(dirname "$stray")" && printf 'stray' > "$stray" || exit 12
+  printf '%s\n' "$stray" > "$1/worker.artifact"
+fi
 cat > DRILL_NOTES.md <<'NOTES'
 ## Contradicted Decisions
 - ALP-001: ordered preference may be contradicted.
@@ -96,24 +137,48 @@ cat > DRILL_NOTES.md <<'NOTES'
 NOTES
 printf 'worker observation'
 `)
-	nextWrite(t, observations, "eval.sh", `#!/bin/sh
-printf '%s\n' "$1" >> "$3/eval.order"
-printf '%s' "$PWD" > "$3/eval.cwd"
-if [ ! -f packages/core/internal/secret.txt ] || [ ! -f packages/aardvark/internal/secret.txt ] || [ ! -f packages/zeta/internal/secret.txt ]; then echo dependent internals missing >&2; exit 25; fi
+	nextWrite(t, root, ".fireweed/eval.sh", `#!/bin/sh
+report=$3
+observations=$4
+root=$(pwd -P)
+if [ "$(cd "$2" && pwd -P)" != "$root/packages/$1" ]; then echo invalid module directory >&2; exit 25; fi
+if [ ! -f go.mod ] || [ ! -f packages/core/internal/secret.txt ]; then echo build inputs missing >&2; exit 25; fi
+if [ -d .git ]; then
+  [ "$1" = alpha ] && [ "$(cat .fireweed/bin/fireweed)" = INPUT_SETUP ] || exit 25
+  case "$report" in ''|*'{report}'*) echo unexpanded local report path >&2; exit 25;; esac
+  mkdir -p "$(dirname "$report")" || exit 25
+  report_file="$(cd "$(dirname "$report")" && pwd -P)/$(basename "$report")"
+  case "$report_file" in
+    "$root/"*) ;;
+    *) echo local report outside input workspace >&2; exit 25;;
+  esac
+  printf '%s\n' "${report_file#"$root"/}" > "$observations/local-eval.report"
+  printf '%s\n' "$PWD" >> "$observations/local-eval.cwd"
+else
+  printf '%s\n' "$1" >> "$observations/eval.order"
+  printf '%s' "$PWD" > "$observations/eval.cwd"
+  if [ ! -f packages/aardvark/internal/secret.txt ] || [ ! -f packages/zeta/internal/secret.txt ]; then echo dependent internals missing >&2; exit 25; fi
+  for observation in "$observations/worker.artifact" "$observations/local-eval.report"; do
+    if [ -f "$observation" ] && [ -e "$(cat "$observation")" ]; then
+      echo "unexpected file in verifier: $(cat "$observation")" >&2
+      exit 25
+    fi
+  done
+fi
 case "$1" in alpha) id=ALP-001;; aardvark) id=AAR-001;; zeta) id=ZET-001;; *) exit 26;; esac
-if [ "$1" = alpha ] && [ -f "$3/omit-own-coverage" ]; then printf '<testsuite><testcase name="ALP-001_case"/></testsuite>' > "$2"; exit 0; fi
-if [ "$1" = aardvark ] && [ -f "$3/omit-dependent-coverage" ]; then printf '<testsuite><testcase name="AAR-001_case"/></testsuite>' > "$2"; exit 0; fi
+if [ "$1" = alpha ] && [ -f "$observations/omit-own-coverage" ]; then printf '<testsuite><testcase name="ALP-001_case"/></testsuite>' > "$report"; exit 0; fi
+if [ "$1" = aardvark ] && [ -f "$observations/omit-dependent-coverage" ]; then printf '<testsuite><testcase name="AAR-001_case"/></testsuite>' > "$report"; exit 0; fi
 fail=''
 if [ "$1" = alpha ] && [ "$(cat packages/alpha/internal/value.go 2>/dev/null)" != new ]; then fail='own verification failure'; fi
-if [ "$1" != alpha ] && [ -f "$3/fail-dependents" ]; then fail="dependent $1 failure"; fi
-if [ -z "$fail" ]; then printf '<testsuite><testcase name="%s_case" classname="fixture"/></testsuite>' "$id" > "$2"; exit 0; fi
-printf '<testsuite><testcase name="%s_case" classname="fixture"><failure message="%s"/></testcase></testsuite>' "$id" "$fail" > "$2"
+if [ "$1" != alpha ] && [ -f "$observations/fail-dependents" ]; then fail="dependent $1 failure"; fi
+if [ -z "$fail" ]; then printf '<testsuite><testcase name="%s_case" classname="fixture"/></testsuite>' "$id" > "$report"; exit $?; fi
+printf '<testsuite><testcase name="%s_case" classname="fixture"><failure message="%s"/></testcase></testsuite>' "$id" "$fail" > "$report" || exit 25
 printf '%s\n' "$fail" >&2
 exit 1
 `)
-	nextWrite(t, root, ".gitignore", ".fireweed/drills/\n.fireweed/runs/\n")
+	nextWrite(t, root, ".gitignore", ".fireweed/bin/\n.fireweed/drills/\n.fireweed/runs/\n")
 	nextWrite(t, root, "SYSTEM.md", "# Fixture guidance\nSYSTEM_RETAINED\n")
-	nextWrite(t, root, "AGENTS.md", "AGENT_INSTRUCTION_SECRET\n")
+	nextWrite(t, root, "AGENTS.md", "AGENT_INSTRUCTION_RETAINED\n")
 	nextWrite(t, root, "go.mod", "module example.invalid/drill-fixture\n\ngo 1.22\n")
 	nextWrite(t, root, "fireweed.yaml", fmt.Sprintf(`fireweed: ">=0.1, <0.2"
 version: 1
@@ -125,8 +190,8 @@ module_defaults:
   preserve: [internal/retained.go]
   disposable: [internal/**]
 hooks:
-  setup: [sh, %q, %q]
-  eval: [sh, %q, "{module}", "{report}", %q]
+  setup: [sh, .fireweed/setup.sh, %q]
+  eval: [sh, .fireweed/eval.sh, "{module}", "{module_dir}", "{report}", %q]
 agent:
   command: [bash, %q, %q, "{prompt}"]
   wrap: [bash, %q, %q]
@@ -137,7 +202,7 @@ limit_patterns: [RATE LIMIT]
 limit_wait: 2ms
 limit_budget: 4ms
 verify_dependents: false
-`, setup, observations, eval, observations, agent, observations, wrapper, observations))
+`, observations, observations, agent, observations, wrapper, observations))
 	for _, module := range []struct{ name, prefix, deps string }{
 		{"foundation", "FOU", "[]"}, {"core", "COR", "[foundation]"}, {"alpha", "ALP", "[core]"},
 		{"aardvark", "AAR", "[alpha]"}, {"zeta", "ZET", "[aardvark]"},
@@ -189,7 +254,7 @@ func drillObserved(t *testing.T, f drillFixture, path string) string {
 
 func drillNoSetupOrAgent(t *testing.T, f drillFixture) {
 	t.Helper()
-	for _, path := range []string{"setup", "count"} {
+	for _, path := range []string{"setup", "input.setup", "count"} {
 		if _, err := os.Stat(filepath.Join(f.observations, path)); !os.IsNotExist(err) {
 			t.Errorf("%s exists: %v", path, err)
 		}
@@ -198,7 +263,7 @@ func drillNoSetupOrAgent(t *testing.T, f drillFixture) {
 
 func drillCleaned(t *testing.T, f drillFixture) {
 	t.Helper()
-	for _, path := range []string{"setup", "agent.cwd"} {
+	for _, path := range []string{"setup", "input.setup", "agent.cwd"} {
 		b, err := os.ReadFile(filepath.Join(f.observations, path))
 		if os.IsNotExist(err) {
 			continue
@@ -277,36 +342,55 @@ func drillNoAgent(t *testing.T, f drillFixture) {
 	}
 }
 
-func Test_RUN_052_RUN_053_RUN_054_RestrictedInputsAndPrompt(t *testing.T) {
+func Test_RUN_052_RUN_053_RestrictedInputsAndIndependentGit(t *testing.T) {
 	f := newDrillFixture(t)
+	nextWrite(t, f.root, "changes/archive/prior.md", "prior change\n")
+	nextWrite(t, f.root, ".fireweed/drills/alpha.md", "prior drill report\n")
+	nextGit(t, f.root, "add", "-f", ".fireweed/drills/alpha.md")
+	nextCommit(t, f.root, "tracked changes and reports")
+	f.base = nextGit(t, f.root, "rev-parse", "HEAD")
+	nextWrite(t, f.observations, "base", f.base)
+	nextGit(t, f.root, "branch", "invoking-only")
+	attempt := nextGit(t, f.root, "commit-tree", "HEAD^{tree}", "-m", "saved attempt")
+	nextGit(t, f.root, "update-ref", "refs/fireweed/attempts/sentinel", attempt)
+	nextWrite(t, f.observations, "saved-attempt", attempt)
 	r, err := f.run(context.Background(), 0)
 	if err != nil || r.Result != "pass" {
 		t.Fatalf("drill = %#v, %v", r, err)
 	}
 	got := strings.Fields(drillObserved(t, f, "input.files"))
-	want := []string{"./SYSTEM.md", "./packages/alpha/SPEC.md", "./packages/alpha/api.go", "./packages/alpha/evals/alpha_test.go", "./packages/alpha/internal/retained.go", "./packages/alpha/other.txt", "./packages/core/api.go", "./packages/foundation/api.go"}
+	want := []string{
+		"./.gitignore", "./.fireweed/bin/fireweed", "./.fireweed/eval.sh", "./.fireweed/setup.sh",
+		"./AGENTS.md", "./SYSTEM.md", "./fireweed.yaml", "./go.mod",
+		"./packages/alpha/SPEC.md", "./packages/alpha/api.go", "./packages/alpha/evals/alpha_test.go",
+		"./packages/alpha/internal/retained.go", "./packages/alpha/other.txt",
+		"./packages/core/SPEC.md", "./packages/core/api.go", "./packages/core/evals/core_test.go", "./packages/core/internal/secret.txt",
+		"./packages/foundation/SPEC.md", "./packages/foundation/api.go", "./packages/foundation/evals/foundation_test.go", "./packages/foundation/internal/secret.txt",
+	}
 	sort.Strings(want)
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("reconstruction inputs = %q, want %q", got, want)
 	}
-	if strings.TrimSpace(drillObserved(t, f, "input.base")) != "absent" || strings.TrimSpace(drillObserved(t, f, "input.alternates")) != "absent" || strings.TrimSpace(drillObserved(t, f, "input.history")) != "1" || strings.Contains(drillObserved(t, f, "input.refs"), "fireweed/") {
-		t.Error("input Git contains source history, alternates or refs")
-	}
-	prompt := drillObserved(t, f, "prompt-1")
-	for _, want := range []string{"ALP-001", "Prefer ordered values", "packages/alpha/api.go", "packages/alpha/evals/alpha_test.go", "DRILL_NOTES.md", "Contradicted Decisions", "Gaps", "no spec", "module", "disposable"} {
-		if !strings.Contains(prompt, want) {
-			t.Errorf("prompt lacks %q", want)
+	for path, want := range map[string]string{
+		"input.base": "absent", "input.saved-attempt": "absent", "input.alternates": "absent", "input.history": "1",
+	} {
+		if got := strings.TrimSpace(drillObserved(t, f, path)); got != want {
+			t.Errorf("%s = %q, want %q", path, got, want)
 		}
 	}
-	for _, forbidden := range []string{f.root, strings.TrimSpace(drillObserved(t, f, "setup")), "OLD_IMPLEMENTATION_SECRET", "INTERNAL_SECRET_", "SETUP_BINARY_SECRET"} {
-		if forbidden != "" && strings.Contains(prompt, forbidden) {
-			t.Errorf("prompt exposes %q", forbidden)
-		}
+	if refs := drillObserved(t, f, "input.refs"); strings.Contains(refs, "invoking-only") || strings.Contains(refs, "fireweed/") {
+		t.Errorf("input Git contains invoking refs: %q", refs)
 	}
-	for _, term := range []string{"outside", "history", "binar", "dependent", "internal"} {
-		if !strings.Contains(strings.ToLower(prompt), term) {
-			t.Errorf("prompt does not prohibit external/old inputs or dependent internals: %q", term)
-		}
+	agentRoot := drillObserved(t, f, "agent.cwd")
+	scratchRoot := strings.SplitN(drillObserved(t, f, "setup"), "\n", 2)[0]
+	if agentRoot == f.root || agentRoot == scratchRoot {
+		t.Errorf("agent used %q instead of a separate workspace", agentRoot)
+	}
+	if got, readErr := os.ReadFile(filepath.Join(f.observations, "input.setup")); readErr != nil || string(got) != agentRoot+"\n/fixture/new-controller\n" {
+		t.Errorf("input setup = %q, %v, want setup in %s before the worker", got, readErr, agentRoot)
+	}
+	if got, readErr := os.ReadFile(filepath.Join(f.observations, "input.setup-output")); readErr != nil || string(got) != "INPUT_SETUP" {
+		t.Errorf("worker saw setup output %q, %v", got, readErr)
 	}
 	if got := nextGit(t, f.root, "show", r.Ref+":packages/alpha/internal/retained.go"); got != "RETAINED_OVERLAP" {
 		t.Errorf("preserve precedence lost: %q", got)
@@ -318,6 +402,34 @@ func Test_RUN_052_RUN_053_RUN_054_RestrictedInputsAndPrompt(t *testing.T) {
 		if got := nextGit(t, f.root, "show", r.Ref+":packages/"+module+"/internal/secret.txt"); got != "INTERNAL_SECRET_"+module {
 			t.Errorf("%s verifier internal changed: %q", module, got)
 		}
+	}
+	drillCleaned(t, f)
+}
+
+func Test_RUN_054_PromptLetsWorkerRunOwnEval(t *testing.T) {
+	f := newDrillFixture(t)
+	f.mode(t, "self_check")
+	r, err := f.run(context.Background(), 0)
+	prompt := drillObserved(t, f, "prompt-1")
+	for _, want := range []string{"ALP-001", "Prefer ordered values", "packages/alpha/api.go", "packages/alpha/evals/alpha_test.go", "DRILL_NOTES.md", "Contradicted Decisions", "Gaps", "no spec", "module", "disposable", "outside"} {
+		if !strings.Contains(prompt, want) {
+			t.Errorf("prompt lacks %q", want)
+		}
+	}
+	for _, forbidden := range []string{f.root, strings.SplitN(drillObserved(t, f, "setup"), "\n", 2)[0], "OLD_IMPLEMENTATION_SECRET"} {
+		if strings.Contains(prompt, forbidden) {
+			t.Errorf("prompt exposes %q", forbidden)
+		}
+	}
+	if err != nil || r.Result != "pass" || len(r.Steps) != 1 || r.Ref == "" {
+		t.Fatalf("drill with worker self-check: result=%q, steps=%#v, err=%v", r.Result, r.Steps, err)
+	}
+	inputRoot := drillObserved(t, f, "agent.cwd")
+	if got := strings.Split(strings.TrimSpace(drillObserved(t, f, "local-eval.cwd")), "\n"); !slices.Equal(got, []string{inputRoot, inputRoot}) {
+		t.Errorf("worker eval roots = %q, want two runs in %q", got, inputRoot)
+	}
+	if got := nextGit(t, f.root, "show", r.Ref+":packages/alpha/internal/value.go"); got != "new" {
+		t.Errorf("worker's self-checked rebuild = %q", got)
 	}
 	drillCleaned(t, f)
 }
@@ -362,17 +474,17 @@ fi
 	drillCleaned(t, f)
 }
 
-func Test_RUN_055_ProjectProtectedAdditionAndDependencyInterfaceEditAreRejected(t *testing.T) {
-	for _, mode := range []string{"add_project_protected", "change_protected_dependency_interface"} {
+func Test_RUN_055_ReconstructionRejectsModifiedOrDeletedInputs(t *testing.T) {
+	for _, mode := range []string{"change_api", "delete_eval", "change_preserved", "change_protected_dependency_interface", "change_setup", "delete_setup"} {
 		t.Run(mode, func(t *testing.T) {
 			f := drillProjectProtectedFixture(t)
 			f.mode(t, mode)
 			r, err := f.run(context.Background(), 0)
-			if err == nil || r.Result != "fail" || len(r.Steps) != 1 || r.Ref != "" {
+			if err == nil || r.Result != "fail" || len(r.Steps) != 1 || r.Steps[0].ExitCode != 0 || r.Ref != "" {
 				t.Errorf("unauthorized %s reconstruction = %#v, %v", mode, r, err)
 			}
-			if got := nextGit(t, f.root, "rev-parse", "HEAD"); got != f.base {
-				t.Errorf("invalid reconstruction moved invoking HEAD to %s", got)
+			if nextGit(t, f.root, "rev-parse", "HEAD") != f.base || nextGit(t, f.root, "--no-optional-locks", "status", "--porcelain", "-uall") != "" {
+				t.Error("invalid submission changed invoking checkout")
 			}
 			if refs := nextGit(t, f.root, "for-each-ref", "--format=%(refname)", "refs/fireweed/drills"); refs != "" {
 				t.Errorf("invalid reconstruction retained rebuilt ref: %q", refs)
@@ -385,20 +497,23 @@ func Test_RUN_055_ProjectProtectedAdditionAndDependencyInterfaceEditAreRejected(
 	}
 }
 
-func Test_RUN_055_ReconstructionSubmissionAllowsOnlyDisposableAndNotes(t *testing.T) {
-	for _, mode := range []string{"change_api", "delete_eval", "add_foreign", "add_other", "change_preserved"} {
+func Test_RUN_055_ReconstructionImportsOnlyTargetDisposableAdditions(t *testing.T) {
+	for _, mode := range []string{"add_foreign", "add_other", "add_project_protected"} {
 		t.Run(mode, func(t *testing.T) {
-			f := newDrillFixture(t)
+			f := drillProjectProtectedFixture(t)
 			f.mode(t, mode)
 			r, err := f.run(context.Background(), 0)
-			if err == nil || r.Result != "fail" || len(r.Steps) == 0 {
-				t.Errorf("invalid %s = %#v, %v", mode, r, err)
+			if err != nil || r.Result != "pass" || len(r.Steps) != 1 || r.Ref == "" {
+				t.Fatalf("drill with stray file: result=%q, err=%v", r.Result, err)
 			}
-			if nextGit(t, f.root, "rev-parse", "HEAD") != f.base || nextGit(t, f.root, "show", "HEAD:packages/alpha/internal/value.go") != "OLD_IMPLEMENTATION_SECRET" {
-				t.Error("invalid submission changed invoking implementation")
+			if got := nextGit(t, f.root, "diff", "--name-only", f.base, r.Ref); got != "packages/alpha/internal/secret.txt\npackages/alpha/internal/value.go" {
+				t.Errorf("rebuilt ref changed files outside the expected disposable paths: %q", got)
 			}
-			if nextGit(t, f.root, "for-each-ref", "--format=%(refname)", "refs/fireweed/drills") != "" {
-				t.Error("invalid submission retained a rebuilt ref")
+			if got := nextGit(t, f.root, "show", r.Ref+":packages/alpha/internal/value.go"); got != "new" {
+				t.Errorf("rebuilt ref lacks submitted code: %q", got)
+			}
+			if nextGit(t, f.root, "rev-parse", "HEAD") != f.base || nextGit(t, f.root, "--no-optional-locks", "status", "--porcelain", "-uall") != "" {
+				t.Error("accepted submission changed invoking checkout")
 			}
 			drillCleaned(t, f)
 		})
