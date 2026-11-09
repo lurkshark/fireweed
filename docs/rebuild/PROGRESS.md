@@ -9,6 +9,12 @@ app and runner, with no supervisor rejection or emergency escalation. The
 retain the ref, trace, verification and cleanup evidence. WF4, full completion
 and prior own-Verify timing exceptions remain open.
 
+The [failure investigation](../../.fireweed/drills/workflow-native-retry-20261108T233724/investigation.md)
+proposes explicit retained report discovery and X01 error detail. Report naming
+needs an owner decision on the `costs.json` collision. Abandon exposed a
+reconstruction compatibility defect on the verifier's Git. Review the
+proposed scope before authoring or preparing another drill.
+
 **Single invocation consumed. Stop with no active run, queue or shared claim.**
 The owned scratch trees are gone. The inspector metadata was aligned with the
 installed pin before the drill. The retained reconstruction is on its native
