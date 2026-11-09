@@ -19,8 +19,10 @@ func ReadAt(root, revision, path string) ([]byte, error) { return local.ReadAt(r
 func Commit(root, subject string, paths []string) (string, error) {
 	return local.Commit(root, subject, paths)
 }
-func WriteBlob(root string, data []byte) (string, error)       { return local.WriteBlob(root, data) }
-func ReadBlob(root, oid string) ([]byte, error)                { return local.ReadBlob(root, oid) }
-func Ref(root, name string) (string, bool, error)              { return local.Ref(root, name) }
-func CASRef(root, name, old, new string) error                 { return local.CASRef(root, name, old, new) }
+func WriteBlob(root string, data []byte) (string, error) { return local.WriteBlob(root, data) }
+func ReadBlob(root, oid string) ([]byte, error)          { return local.ReadBlob(root, oid) }
+func Ref(root, name string) (string, bool, error)        { return local.Ref(root, name) }
+func CASRef(root, name, old, new string) error           { return local.CASRef(root, name, old, new) }
+
+// Run launches request.Args as the complete argv without prepending git.
 func Run(ctx context.Context, request Request) (Result, error) { return local.Run(ctx, request) }

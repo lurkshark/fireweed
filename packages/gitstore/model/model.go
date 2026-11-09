@@ -16,6 +16,8 @@ type Change struct {
 }
 
 type Request struct {
+	// Args is the complete argv. Args[0] names the executable and is resolved
+	// through PATH when it contains no slash. Run never prepends git.
 	Args    []string
 	Dir     string
 	Env     map[string]string

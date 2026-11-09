@@ -320,6 +320,26 @@ func Test_GIT_004_GIT_008_GIT_009_GIT_010_BlobsAndRefCAS(t *testing.T) {
 	}
 }
 
+func Test_GIT_005_RunRequiresExecutableForGitSubcommand(t *testing.T) {
+	root := repo(t)
+	gitPath, err := exec.LookPath("git")
+	if err != nil {
+		t.Fatal(err)
+	}
+	bin := t.TempDir()
+	if err := os.Symlink(gitPath, filepath.Join(bin, "git")); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", bin)
+
+	result, err := gitstore.Run(context.Background(), gitstore.Request{
+		Args: []string{"ls-tree", "HEAD"}, Dir: root, Timeout: 3 * time.Second,
+	})
+	if err == nil {
+		t.Errorf("Run launched ls-tree without an executable on PATH: %#v", result)
+	}
+}
+
 func Test_GIT_005_RunCaptureExitTimeoutAndGroupCancel(t *testing.T) {
 	dir := t.TempDir()
 	var err error
