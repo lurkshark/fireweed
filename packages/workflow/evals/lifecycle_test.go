@@ -1519,8 +1519,8 @@ func Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses(t *testing.T) {
 		t.Fatalf("evals Done: %v", err)
 	}
 	write(t, boundaryRoot, "packages/alpha/internal/ready", "ready\n")
-	if _, err := verify(boundaryRoot, false); err == nil || !strings.HasPrefix(err.Error(), "X01:") || !strings.Contains(err.Error(), "forbidden dependency") {
-		t.Errorf("boundary cause = %v", err)
+	if _, err := verify(boundaryRoot, false); err == nil || !strings.HasPrefix(err.Error(), "X01:") || !strings.Contains(err.Error(), "alpha: forbidden dependency") {
+		t.Errorf("boundary cause = %v; want X01 with %q", err, "alpha: forbidden dependency")
 	}
 	boundaryHook := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
 	config, err := os.ReadFile(filepath.Join(boundaryHook, "fireweed.yaml"))
