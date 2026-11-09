@@ -14,18 +14,20 @@ audits with no findings and passing implementation verification:
 
 The queue is empty and both claims have been released.
 
+WF2 is complete. `go test ./...`, `go vet ./...` and `fireweed ci` passed
+on the controller source commit below. The first Go test run alongside CI
+failed a timed app eval, which passed on the standalone retry. CI ran with
+Doctor enabled in a temporary local clone over `65bf933..6cc2629`.
+
 ## Controller
 
-The installed `.fireweed/bin/fireweed` ran WF1.
+The installed `.fireweed/bin/fireweed` was rebuilt from clean main for WF2.
 
-Controller source: `65bf9339b3b7491675625f546a6055eab38b488f`
+Controller source: `6cc26290333cb47c1a314b16b8b50679afdd07f4`
 
-## Next steps
+## Next step
 
-1. Complete WF2. With no active run or claim, rebuild the controller from
-   clean main and record its source commit here. Verify that commit with
-   `go test ./...`, `go vet ./...` and `fireweed ci`.
-2. Run `fireweed drill workflow` once, commit the report and review its gaps
-   with the owner (ACCEPTANCE WF3–WF4).
+Run `fireweed drill workflow` once, commit the report and review its gaps
+with the owner (ACCEPTANCE WF3–WF4).
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
