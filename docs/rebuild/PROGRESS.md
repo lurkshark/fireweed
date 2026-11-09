@@ -7,8 +7,9 @@ Main was reset to `515516a` to drop the drill-specific changes 0192
 supervised drill harness. Change 0194 (keep run artifacts local) is a
 general fix, so its original queue, evals, audit and apply commits were
 replayed on top. The previous head, `f35fc0f`, is kept on the local branch
-`backup/pre-drill-simplify`. `origin/main` still points at `f35fc0f`, so
-publishing this history needs an owner-approved force push.
+`backup/pre-drill-simplify`. The rewritten main was force-pushed to origin
+on 2026-11-09. The bootstrap binary was later removed and
+`.fireweed/drills/` pruned to the per-module reports.
 
 The workflow drill was failing because the reconstruction worker could not
 compile or test its code, not because of spec gaps. The fix is to change
