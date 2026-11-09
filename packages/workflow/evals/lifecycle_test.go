@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -1133,6 +1134,19 @@ func Test_FLOW_003_FLOW_024_FLOW_048_FLOW_049_FailedDoneKeepsPhaseAndHead(t *tes
 	}
 }
 
+func readRetainedReport(t *testing.T, path string) checks.Report {
+	t.Helper()
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("read retained report after successful Done: %v", err)
+	}
+	var report checks.Report
+	if err := json.Unmarshal(data, &report); err != nil {
+		t.Fatalf("decode retained report %s: %v", path, err)
+	}
+	return report
+}
+
 func Test_FLOW_005_FLOW_051_FLOW_052_FLOW_053_ContextAndProvenanceAndRetainedReports(t *testing.T) {
 	provenanceLines := func(root, path string) []string {
 		body, ok := contracts.Section(readFile(t, root, path), "Provenance")
@@ -1218,6 +1232,7 @@ func Test_FLOW_005_FLOW_051_FLOW_052_FLOW_053_ContextAndProvenanceAndRetainedRep
 	if !ok || !strings.Contains(provenance, "evals") || !strings.Contains(provenance, "impl") || !strings.Contains(provenance, "manual") || !strings.Contains(provenance, "0.1.0") || !strings.Contains(provenance, "202") {
 		t.Errorf("provenance incomplete: %q", provenance)
 	}
+	runRoot := filepath.Join(root, ".fireweed", "runs", state.Run)
 	for _, phase := range []string{"evals", "impl"} {
 		line := ""
 		for _, candidate := range strings.Split(provenance, "\n") {
@@ -1248,7 +1263,15 @@ func Test_FLOW_005_FLOW_051_FLOW_052_FLOW_053_ContextAndProvenanceAndRetainedRep
 			result = implResult
 		}
 		total, passing, failing := 0, 0, 0
-		for _, report := range result.Reports {
+		for module, report := range result.Reports {
+			path := filepath.Join(runRoot, phase, module+".json")
+			retained := readRetainedReport(t, path)
+			if !reflect.DeepEqual(retained.Cases, report.Cases) {
+				t.Errorf("retained cases at %s = %#v, want %#v", path, retained.Cases, report.Cases)
+			}
+			if !strings.Contains(retained.Stdout, "fixture-hook-output") {
+				t.Errorf("retained report at %s lost fixture hook output: %q", path, retained.Stdout)
+			}
 			for _, c := range report.Cases {
 				total++
 				switch c.Result {
@@ -1262,22 +1285,14 @@ func Test_FLOW_005_FLOW_051_FLOW_052_FLOW_053_ContextAndProvenanceAndRetainedRep
 		if total == 0 || passing == 0 || !strings.Contains(line, fmt.Sprintf("tests=%d failing=%d passing=%d", total, failing, passing)) {
 			t.Errorf("%s provenance line has wrong result counts for reports %#v: %q", phase, result.Reports, line)
 		}
-	}
-	runRoot := filepath.Join(root, ".fireweed/runs", state.Run)
-	count := 0
-	retained := ""
-	_ = filepath.Walk(runRoot, func(path string, info os.FileInfo, err error) error {
-		if err == nil && info != nil && !info.IsDir() {
-			count++
-			b, readErr := os.ReadFile(path)
-			if readErr == nil {
-				retained += string(b)
-			}
+		wantResult := "fail"
+		if phase == "impl" {
+			wantResult = "pass"
 		}
-		return nil
-	})
-	if count == 0 || !strings.Contains(retained, "ALP-001") || !strings.Contains(retained, "fixture-hook-output") {
-		t.Errorf("reports/output missing under %s (%d files)", runRoot, count)
+		cases := result.Reports["alpha"].Cases
+		if len(cases) == 0 || !reflect.DeepEqual(cases[0].IDs, []string{"ALP-001"}) || cases[0].Result != wantResult {
+			t.Errorf("%s alpha report = %#v, want ALP-001 to %s", phase, cases, wantResult)
+		}
 	}
 	configured := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
 	configuredPrevious := seedProvenance(configured)
@@ -1292,6 +1307,58 @@ func Test_FLOW_005_FLOW_051_FLOW_052_FLOW_053_ContextAndProvenanceAndRetainedRep
 	change, err := os.ReadFile(filepath.Join(configured, "changes/0001-manual.md"))
 	if err != nil || !strings.Contains(string(change), "fixture-agent --model local") {
 		t.Errorf("configured agent omitted from provenance: %v", err)
+	}
+}
+
+func Test_FLOW_052_DoneRetainsCostModuleReportBesideCostSnapshot(t *testing.T) {
+	for _, module := range []string{"costs", "CoStS"} {
+		t.Run(module, func(t *testing.T) {
+			root := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
+			write(t, root, filepath.Join("packages", module, "SPEC.md"), fmt.Sprintf(`---
+name: %s
+id_prefix: CST
+depends_on: [alpha]
+hooks:
+  eval: [sh, .fireweed/cost-module.sh, "{report}"]
+---
+# Cost module
+
+## Specs
+
+### CST-001
+The cost module MUST follow alpha.
+`, module))
+			write(t, root, ".fireweed/cost-module.sh", `#!/bin/sh
+printf 'cost-module-hook-output\n'
+printf '<testsuite><testcase name="CST-001" time="0.5"/></testsuite>' > "$1"
+`)
+			commit(t, root, "add cost module fixture")
+			state := start(t, root)
+			if _, err := done(root); err != nil {
+				t.Fatalf("fixture evals Done: %v", err)
+			}
+			write(t, root, "packages/alpha/internal/ready", "ready\n")
+			result, err := done(root)
+			if err != nil || result.State.Phase != "applied" {
+				t.Fatalf("fixture impl Done = phase %q, error %v", result.State.Phase, err)
+			}
+			if _, ok := result.Reports[module]; !ok {
+				t.Fatalf("impl Done did not evaluate %q: %#v", module, result.Reports)
+			}
+			if snapshot, ok := costAt(t, root, state.Run, "impl"); ok {
+				cost, found := costFor(snapshot.Modules, module)
+				if snapshot.Run != state.Run || snapshot.Phase != "impl" || snapshot.RecordedAt.IsZero() ||
+					!reflect.DeepEqual(snapshot.Modules, result.Costs) || !found || cost.Seconds != 0.5 || cost.CasesPerSpec["CST-001"] != 1 {
+					t.Errorf("retained cost snapshot = %#v, want impl costs including %s with one CST-001 case at 0.5 seconds", snapshot, module)
+				}
+			}
+			path := filepath.Join(root, ".fireweed", "runs", state.Run, "impl", "reports", module+".json")
+			report := readRetainedReport(t, path)
+			if len(report.Cases) != 1 || !reflect.DeepEqual(report.Cases[0].IDs, []string{"CST-001"}) || report.Cases[0].Result != "pass" ||
+				!strings.Contains(report.Stdout, "cost-module-hook-output") {
+				t.Errorf("retained report at %s = %#v, want passing CST-001 and cost-module hook output", path, report)
+			}
+		})
 	}
 }
 
