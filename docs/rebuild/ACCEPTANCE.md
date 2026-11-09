@@ -76,7 +76,7 @@ drill <module>
 gc, migrate, agents-md --write
 ```
 
-## Planned milestone — Workflow drill (WF1–WF4)
+## Completed milestone — Workflow drill (WF1–WF4)
 
 The earlier workflow contract review and candidate validation are in git
 history (before `515516a`); their evidence stays valid where nothing it
@@ -99,6 +99,9 @@ covered has changed.
    a queued change, or record why it is not one. A failing drill closes WF4
    once its gaps are triaged; repeat the drill only after changes that
    address its gaps have been applied.
+
+WF1–WF4 are complete. The [workflow drill report](../../.fireweed/drills/workflow.md)
+passed, and [PROGRESS.md](PROGRESS.md) records the owner-approved gap dispositions.
 
 The requirement/command inventories and all full-completion gates remain.
 

@@ -12,7 +12,7 @@ audits with no findings and passing implementation verification:
   (`084fbd4`) gives the drill worker a buildable input workspace with
   dependency implementations and its own eval hook. All 485 cases passed.
 
-The queue is empty and both claims have been released.
+Fireweed released both claims after applying the changes.
 
 WF2 is complete. `go test ./...`, `go vet ./...` and `fireweed ci` passed
 on the controller source commit below. The first Go test run alongside CI
@@ -27,18 +27,16 @@ Decisions. Fireweed cleaned up the scratch worktree and retained reconstruction
 `38aa8fc` under `refs/fireweed/drills/workflow/20261109T224519.080152000`.
 The [native report](../../.fireweed/drills/workflow.md) is committed in `c62b5be`.
 
-WF4 awaits the owner's disposition of the three reported gaps:
+WF4 is complete. The owner reviewed the report and approved these dispositions:
 
-- **FLOW-110 / APP-126.** The CLI's P01 for an unavailable base is already
-  specified and covered by APP-126. The drill retry passed it. Close this
-  observation unless the owner wants the workflow API contract clarified.
-- **FLOW-052 / checks.** A successful boundary hook's raw output is absent
-  from the API result. A local public-API probe confirmed that the API returns
-  diagnostics only. Decide whether raw boundary output belongs in run reports.
-- **FLOW-027 / checks.** A required boundary hook that exits 3 and prints only
-  an unattributed error currently passes. A local public-API probe reproduced
-  the false pass and confirmed X01 still reports attributed violations. The
-  design requires the boundary hook to pass. This is a candidate checks change.
+- **FLOW-110 / APP-126.** Closed. APP-126 specifies P01 for an unavailable
+  base and its eval passed on the drill retry.
+- **FLOW-052 / checks.** Deferred raw boundary-hook output retention. The
+  current boundary API returns diagnostics only.
+- **FLOW-027 / checks.** Queued
+  [0197-boundary-hook-nonzero-exit](../../changes/0197-boundary-hook-nonzero-exit.md)
+  in `be8fa32` to reject a nonzero exit without a module-attributed violation.
+  `fireweed stamp` and `fireweed check` passed. The change is unclaimed.
 
 ## Controller
 
@@ -48,7 +46,7 @@ Controller source: `6cc26290333cb47c1a314b16b8b50679afdd07f4`
 
 ## Next step
 
-Review the three gap dispositions with the owner (ACCEPTANCE WF4). Queue
-agreed changes and record the disposition of the other observations.
+When selected for implementation, run `0197-boundary-hook-nonzero-exit`
+through the normal fail-first, separate audit and implementation lifecycle.
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
