@@ -84,20 +84,40 @@ The report lists no contradicted Decisions. The owner deferred all three gaps:
 - `CON-017` through `CON-019` specify codes and, for duplicates, a subject.
   The evals also pin error wording or prefixes.
 
+**Gitstore renewed, awaiting owner review.** The verified controller ran
+`fireweed drill gitstore` at `617e657`. All 930 cases passed on the configured
+retry, including 10 gitstore cases and 920 transitive dependent cases. The
+[native report](../../.fireweed/drills/gitstore.md) is committed in `0b34909`.
+Fireweed cleaned up both scratch locations and retained
+`3382ac87a0074d518a3baf3b3ae20c7c4ec16f2f` at
+`refs/fireweed/drills/gitstore/20261110T041541.100354000`. The proof changes
+only disposable gitstore paths. The report lists no contradicted Decisions.
+
+- `GIT-010`: A public API probe reproduced a bug in the current product.
+  `CASRef` with an empty expected value deleted an existing ref and returned
+  success. The reconstruction rejects the mismatch. The report separately
+  identifies unspecified symbolic-ref behavior.
+- `GIT-007`: Dependent evals required `:(literal)` paths from lifecycle
+  callers, which the current product accepts. The reconstruction added that
+  support on retry. The target spec leaves path spelling and index state
+  after a failed commit unspecified.
+- `GIT-001`, `GIT-003` and `GIT-005` leave unborn HEAD, precedence for
+  overlapping tracked edits, and environment inheritance and PATH lookup
+  implicit.
+
 **Reuse workflow.** The retained ref and commit `38aa8fc` match the committed
 passing report and change only workflow's disposable files. Since that report,
 `0197` changed the checks dependency. The retained workflow reconstruction
 passed the `FLOW-027` and `FLOW-062` evals and the app CI boundary-failure eval
 against the current candidate in a temporary clone.
 
-**Renew the four remaining missing proofs.** The prior passing reports are committed.
+**Renew the three remaining missing proofs.** The prior passing reports are committed.
 The following refs under `refs/fireweed/drills/<module>/` are absent from this
 checkout and GitHub origin advertises none. Their exact commits were unavailable
 across 119 local object stores, including the historical candidate directories.
 
 | Module | Ref suffix | Expected commit |
 | --- | --- | --- |
-| gitstore | `20261101T170411.628421000` | `3cdc945cea3923dd22877e56e9a570f7a3caf346` |
 | assets | `20261101T173119.320562000` | `53ed45d3ee36dcac05fc5b736fa461152dd011d4` |
 | project | `20261102T031647.104747000` | `481bc00c1da360d3e8bf76cd5ba04053d2dccaeb` |
 | checks | `20261107T002339.020159000` | `c0ca0397e3781410e795f27b52de2b2105350559` |
@@ -108,9 +128,9 @@ need first native reports and retained refs.
 
 ## Next step
 
-Run the owner-approved `gitstore` drill with the verified controller. Stop for
-review before `assets` in the [regeneration goal](GOAL.md).
-The remaining order is `gitstore`, `assets`, `project`, `checks`, `runner`,
-then `app`.
+Review the gitstore proof and gaps with the owner, including whether to fix
+the reproduced `GIT-010` bug before `assets`. Continue the
+[regeneration goal](GOAL.md) after owner instruction. The remaining drill
+order is `assets`, `project`, `checks`, `runner`, then `app`.
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
