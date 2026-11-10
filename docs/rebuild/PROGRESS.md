@@ -84,37 +84,33 @@ The report lists no contradicted Decisions. The owner deferred all three gaps:
 - `CON-017` through `CON-019` specify codes and, for duplicates, a subject.
   The evals also pin error wording or prefixes.
 
-**Gitstore report retained, proof renewal required.** The verified controller ran
-`fireweed drill gitstore` at `617e657`. All 930 cases passed on the configured
-retry, including 10 gitstore cases and 920 transitive dependent cases. The
-[native report](../../.fireweed/drills/gitstore.md) is committed in `0b34909`.
+**Gitstore proof renewed, awaiting owner review.** The verified controller
+ran `fireweed drill gitstore` at `c3863e5`. All 933 cases passed on the first
+attempt, including 13 gitstore cases and 920 transitive dependent cases. Both
+GIT-010 expected-absence forms passed. The
+[native report](../../.fireweed/drills/gitstore.md) is committed in `c687766`.
 Fireweed cleaned up both scratch locations and retained
-`3382ac87a0074d518a3baf3b3ae20c7c4ec16f2f` at
-`refs/fireweed/drills/gitstore/20261110T041541.100354000`. The proof changes
-only disposable gitstore paths. The report lists no contradicted Decisions.
+`d3230d81b89f327ec5a4dfabfcd6381951d7b235` at
+`refs/fireweed/drills/gitstore/20261110T060020.420365000`. The proof changes
+only disposable gitstore paths.
 
-- `GIT-010`: The owner approved fixing deletion on an expected-absence
-  mismatch. Fireweed applied and archived
-  [0198](../../changes/archive/0198-casref-empty-expected-delete.md) in `feabbc7`
-  and [0199](../../changes/archive/0199-casref-zero-expected-delete.md) in
-  `3fa1918`. Empty and explicit all-zero expectations now atomically check
-  absence and preserve existing refs on mismatch. Both changes had genuine
-  fail-first evidence and separate audits with no findings. The final full
-  implementation verification passed 933 cases. The report separately lists
-  unspecified symbolic-ref behavior for review.
-- `GIT-007`: Dependent evals required `:(literal)` paths from lifecycle
-  callers, which the current product accepts. The reconstruction added that
-  support on retry. The target spec leaves path spelling and index state
-  after a failed commit unspecified.
-- `GIT-001`, `GIT-003` and `GIT-005` leave unborn HEAD, precedence for
-  overlapping tracked edits, and environment inheritance and PATH lookup
-  implicit.
+The owner-approved GIT-010 changes
+[0198](../../changes/archive/0198-casref-empty-expected-delete.md) (`feabbc7`)
+and [0199](../../changes/archive/0199-casref-zero-expected-delete.md) (`3fa1918`)
+passed fail-first, separate audits, and full verification. The earlier report
+at `0b34909` and proof `3382ac8` remain in history and at the earlier drill ref.
+That reconstruction failed the explicit-zero eval added after its drill.
 
-An isolated check of the retained reconstruction `3382ac8` against the
-current gitstore evals failed the `GIT-010` explicit-zero case. The
-reconstruction rejects the all-zero expected value even when the ref is
-absent. The retained report and ref document the earlier result. A new
-gitstore drill is needed to prove the updated behavior.
+The renewed report lists no contradicted Decisions. Its remaining questions
+are for owner review:
+
+- `GIT-001` and `GIT-003` leave unborn HEAD and precedence for overlapping
+  tracked edits implicit.
+- `GIT-005` leaves environment inheritance and executable PATH lookup implicit.
+- `GIT-007` leaves literal path syntax and index state after a failed commit
+  implicit. Lifecycle callers use the `:(literal)` spelling.
+- `GIT-008` through `GIT-010` leave abbreviated blob IDs, ref naming, and
+  symbolic-ref lookup and mutation implicit.
 
 **Reuse workflow.** The retained ref and commit `38aa8fc` match the committed
 passing report and change only workflow's disposable files. Since that report,
@@ -139,9 +135,8 @@ need first native reports and retained refs.
 
 ## Next step
 
-Review the applied GIT-010 fixes and the gitstore proof renewal with the
-owner. After owner instruction, renew `gitstore` before `assets` in the
-[regeneration goal](GOAL.md). The remaining drill order is `gitstore`,
-`assets`, `project`, `checks`, `runner`, then `app`.
+Review the renewed gitstore proof and report gaps with the owner before
+starting `assets` in the [regeneration goal](GOAL.md). The remaining drill
+order is `assets`, `project`, `checks`, `runner`, then `app`.
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
