@@ -112,7 +112,7 @@ remaining gaps:
 - `GIT-008` through `GIT-010` leave abbreviated blob IDs, ref naming, and
   symbolic-ref lookup and mutation implicit.
 
-**Assets proof renewed, awaiting owner review.** The verified controller ran
+**Renewed assets proof accepted.** The verified controller ran
 `fireweed drill assets` at `34f9f54`. All 1,049 cases passed on the configured
 retry, including 125 assets cases and 924 transitive dependent cases. All four
 Doctor cases that failed in the earlier drill passed. The
@@ -135,7 +135,8 @@ passed fail-first, a separate audit with no findings, and 791 implementation
 cases. All four previously failing Doctor evals passed with the retained
 assets reconstruction `69b7d7c` and the current checks code in a temporary clone.
 
-The renewed report lists no contradicted Decisions. The retry restored the
+The owner accepted the proof and approved proceeding to project. The renewed
+report lists no contradicted Decisions. The retry restored the
 `# Write evals` heading expected by workflow and app, which the current product
 already supplies. The report identifies the heading as implicit in AST-002
 and the missing-ID handoff to Doctor as implicit in AST-058. The remaining
@@ -164,8 +165,8 @@ need first native reports and retained refs.
 
 ## Next step
 
-Review the renewed assets proof and report with the owner before starting
-`project` in the [regeneration goal](GOAL.md). The remaining drill order is
-`project`, `checks`, `runner`, then `app`.
+Run the owner-approved `project` drill with the verified controller. Stop
+for review before `checks` in the [regeneration goal](GOAL.md). The remaining
+drill order is `project`, `checks`, `runner`, then `app`.
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
