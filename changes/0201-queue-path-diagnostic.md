@@ -1,6 +1,7 @@
 ---
 already_satisfied:
     - PRJ-069
+blocked: audit verification attempts exhausted
 module: project
 phase: audit
 run: 20261110T161922-8520833f1e629a2ca962e094
