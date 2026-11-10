@@ -2,256 +2,114 @@
 
 ## Current state (2026-11-10)
 
-**Regeneration milestone complete.** All eight modules have passing native
-reports and retained reconstruction refs. The owner accepted the final app
-proof and deferred its four gaps.
+The regeneration milestone is complete. All eight modules have passing native
+drill reports, and the owner accepted each proof and deferred its remaining
+gaps. Earlier milestone narratives, failed proofs and recovery notes are in
+Git history before this revision.
 
-WF1 is complete. Fireweed applied and archived both changes after separate
-audits with no findings and passing implementation verification:
+Seven owner-drafted changes are queued (0202–0208). Nothing has started them,
+and no claim is active.
 
-- [0195-run-argv-contract](../../changes/archive/0195-run-argv-contract.md)
-  (`eb4a7f2`) documents `gitstore.Request.Args[0]` as the executable and
-  adds regression coverage. All 925 cases passed.
-- [0196-drill-self-checked-reconstruction](../../changes/archive/0196-drill-self-checked-reconstruction.md)
-  (`084fbd4`) gives the drill worker a buildable input workspace with
-  dependency implementations and its own eval hook. All 485 cases passed.
+## Controller
 
-Fireweed released both claims after applying the changes.
-
-WF2 is complete. `go test ./...`, `go vet ./...` and `fireweed ci` passed
-on the WF2 controller source commit `6cc2629`. The first Go test run alongside CI
-failed a timed app eval, which passed on the standalone retry. CI ran with
-Doctor enabled in a temporary local clone over `65bf933..6cc2629`.
-
-WF3 is complete. With owner approval, the recorded controller ran
-`fireweed drill workflow` once at `4754026` with the configured Codex worker.
-The drill passed after its configured retry. All 666 cases passed (181
-workflow, 323 app, 162 runner) and the worker reported no contradicted
-Decisions. Fireweed cleaned up the scratch worktree and retained reconstruction
-`38aa8fc` under `refs/fireweed/drills/workflow/20261109T224519.080152000`.
-The [native report](../../.fireweed/drills/workflow.md) is committed in `c62b5be`.
-
-WF4 is complete. The owner reviewed the report and approved these dispositions:
-
-- **FLOW-110 / APP-126.** Closed. APP-126 specifies P01 for an unavailable
-  base and its eval passed on the drill retry.
-- **FLOW-052 / checks.** Deferred raw boundary-hook output retention. The
-  current boundary API returns diagnostics only.
-- **FLOW-027 / checks.** Fireweed applied and archived
-  [0197-boundary-hook-nonzero-exit](../../changes/archive/0197-boundary-hook-nonzero-exit.md)
-  in `d45652a`. CHK-043 now rejects a nonzero exit without a module-attributed
-  violation. Both regressions failed first, the separate audit found no
-  gaps, and all 787 implementation cases passed. `fireweed check` and
-  `fireweed check-commits a0e25a2..d45652a` passed. The queue is empty and
-  Fireweed released the claim.
-
-The owner reaffirmed standing Codex authorization for the configured workers
-and restricted auditors on owner-approved changes and drills. Commit `a4e020a`
-records the scope, including reconstruction inputs, and destination in
-[SYSTEM.md](../../SYSTEM.md#agent-configuration).
-
-## Controller and candidate
-
-The installed `.fireweed/bin/fireweed` was rebuilt with `-trimpath` from clean
-main with an empty queue and no claims. Go build metadata confirms the
-revision and a clean source tree.
+`.fireweed/bin/fireweed` was built with `-trimpath` from clean main with an
+empty queue and no claims. Go build metadata confirms the revision and a clean
+tree.
 
 Controller source: `e1e1869131833778f1f8f1a23cf62b0d3b3869b3`
 
-With `GOCACHE=/tmp/fireweed-rebuild-cache`, the fresh macOS arm64 candidate
-clone passed the product build, `go test ./...`,
-`go test -race ./...`, `go vet ./...`, `fireweed check`, and standalone
-`fireweed doctor` including canaries, recovery and both agent probes.
+On a fresh macOS arm64 clone of that commit, with
+`GOCACHE=/tmp/fireweed-rebuild-cache`, the product build, `go test ./...`,
+`go test -race ./...`, `go vet ./...`, `fireweed check` and standalone
+`fireweed doctor` passed, including canaries, recovery and both agent probes.
 `fireweed check-commits` passed 1,304 commits over
 `be35552b706aa3000ff8f11306d129ff1d701b85..e1e1869131833778f1f8f1a23cf62b0d3b3869b3`.
-CI with Doctor enabled over the same range passed on the full retry. CI
-verified passing evals and coverage for app, assets, checks, contracts,
-gitstore, project, runner and workflow. The first CI run failed on the
-deadline-sensitive `Test_RUN_036_RUN_037_OneBudgetAcrossChangesRetainsApplied`
-eval, which passed in isolation before the full retry.
+`fireweed ci` with Doctor over the same range passed on a full retry; the first
+run failed the timing-sensitive
+`Test_RUN_036_RUN_037_OneBudgetAcrossChangesRetainsApplied`, which
+[0207](../../changes/0207-time-budget-eval-margin.md) addresses.
 
-## Drill proof inventory
+## Drill proofs
 
-**Contracts proof accepted.** The verified controller ran
-`fireweed drill contracts` at `e7f1554`. All 1,119 cases passed on the first
-attempt, including 64 contracts cases and 1,055 transitive dependent cases.
-The [native report](../../.fireweed/drills/contracts.md) is committed in
-`24f9d94`. Fireweed cleaned up both scratch locations and retained
-`30c7cdfd356d7068f841179c9c4a1fb1321be6c4` at
-`refs/fireweed/drills/contracts/20261110T034341.899515000`.
-The proof changes only disposable contracts paths.
+Each proof ran `fireweed drill <module>` with the recorded controller and the
+configured Codex worker, cleaned up both scratch locations, and changed only
+the module's disposable paths. No report lists a contradicted Decision.
 
-The report lists no contradicted Decisions. The owner deferred all three gaps:
+| Module | Drill base | Passed on | Cases (own + dependent) | Report commit | Retained ref under `refs/fireweed/drills/` |
+| --- | --- | --- | --- | --- | --- |
+| contracts | `e7f1554` | attempt 1 | 64 + 1,055 | `24f9d94` | `contracts/20261110T034341.899515000` (`30c7cdf`) |
+| gitstore | `c3863e5` | attempt 1 | 13 + 920 | `c687766` | `gitstore/20261110T060020.420365000` (`d3230d8`) |
+| assets | `34f9f54` | retry | 125 + 924 | `db34f44` | `assets/20261110T080441.699697000` (`fe1a898`) |
+| project | `73e269d` | retry | 134 + 791 | `acc1c26` | `project/20261110T164427.736325000` (`0b51fc1`) |
+| checks | `9e81519` | retry | 125 + 666 | `8369532` | `checks/20261110T174227.798503000` (`3f0279d`) |
+| workflow | `4754026` | retry | 181 + 485 | `c62b5be` | `workflow/20261109T224519.080152000` (`38aa8fc`) |
+| runner | `5b59f35` | retry | 162 + 323 | `9390435` | `runner/20261110T192409.383763000` (`521e048`) |
+| app | `2ab6c98` | attempt 1 | 323 + 0 | `dd7d94b` | `app/20261110T201533.930973000` (`b6ace52`) |
 
-- `CON-002` / `CON-009` leave fenced headings and level-one section boundaries
-  implicit. The reconstruction handles these differently from the current code.
-- `CON-008` leaves equality for YAML NaN and offset timestamp keys ambiguous.
-- `CON-017` through `CON-019` specify codes and, for duplicates, a subject.
-  The evals also pin error wording or prefixes.
+The workflow proof was reused after `0197` changed checks: its retained
+reconstruction passed the `FLOW-027`, `FLOW-062` and app CI boundary-failure
+evals against the later candidate in a temporary clone.
 
-**Renewed gitstore proof accepted.** The verified controller
-ran `fireweed drill gitstore` at `c3863e5`. All 933 cases passed on the first
-attempt, including 13 gitstore cases and 920 transitive dependent cases. Both
-GIT-010 expected-absence forms passed. The
-[native report](../../.fireweed/drills/gitstore.md) is committed in `c687766`.
-Fireweed cleaned up both scratch locations and retained
-`d3230d81b89f327ec5a4dfabfcd6381951d7b235` at
-`refs/fireweed/drills/gitstore/20261110T060020.420365000`. The proof changes
-only disposable gitstore paths.
+Drill refs are local and never pushed, so they exist only in the clone where
+the drills ran. Two earlier passing refs (project `20261102T031647.104747000`,
+checks `20261107T002339.020159000`) were lost this way; the renewed proofs
+above supersede them. Back up `refs/fireweed/drills/` if the retained
+reconstructions matter beyond the committed reports.
 
-The owner-approved GIT-010 changes
-[0198](../../changes/archive/0198-casref-empty-expected-delete.md) (`feabbc7`)
-and [0199](../../changes/archive/0199-casref-zero-expected-delete.md) (`3fa1918`)
-passed fail-first, separate audits, and full verification. The earlier report
-at `0b34909` and proof `3382ac8` remain in history and at the earlier drill ref.
-That reconstruction failed the explicit-zero eval added after its drill.
+**Retries used dependent feedback.** Every retry above received the
+dependents' failing eval output and changed code to match it, so those five
+passes show the spec plus dependents' evals were enough, not the spec alone.
+[DECISIONS D009](DECISIONS.md#d009--drill-retries-and-the-dependent-signal)
+records the clarification, and
+[0202](../../changes/0202-drill-independent-signal.md) changes the drill so
+that dependent failures are reported, not fed back.
 
-The renewed report lists no contradicted Decisions. The owner deferred its
-remaining gaps:
+## Deferred gaps
 
-- `GIT-001` and `GIT-003` leave unborn HEAD and precedence for overlapping
-  tracked edits implicit.
-- `GIT-005` leaves environment inheritance and executable PATH lookup implicit.
-- `GIT-007` leaves literal path syntax and index state after a failed commit
-  implicit. Lifecycle callers use the `:(literal)` spelling.
-- `GIT-008` through `GIT-010` leave abbreviated blob IDs, ref naming, and
-  symbolic-ref lookup and mutation implicit.
+The owner deferred these gaps. The queued change that addresses one is linked.
 
-**Renewed assets proof accepted.** The verified controller ran
-`fireweed drill assets` at `34f9f54`. All 1,049 cases passed on the configured
-retry, including 125 assets cases and 924 transitive dependent cases. All four
-Doctor cases that failed in the earlier drill passed. The
-[native report](../../.fireweed/drills/assets.md) is committed in `db34f44`.
-Fireweed cleaned up both scratch locations and retained
-`fe1a898a1944436fa7fc066c4cf3781f26ef43cb` at
-`refs/fireweed/drills/assets/20261110T080441.699697000`. Its changes are
-confined to disposable assets paths.
-
-The earlier failed report remains in `84f7138` and reconstruction `69b7d7c`
-remains at `refs/fireweed/drills/assets/20261110T063418.808553000`. It passed
-125 assets cases and failed four dependent Doctor cases on `TestMissingIDCanary`.
-The owner deferred its other gaps on baseline coverage, mixed Go package zones,
-expected-failure JUnit status, and static import resolution.
-
-Fireweed applied [0200](../../changes/archive/0200-doctor-go-missing-id-canary.md)
-in `f854288`. CHK-059 now matches the supplied Go test declaration and its
-subtests, including names without an underscore after `Test`. The change
-passed fail-first, a separate audit with no findings, and 791 implementation
-cases. All four previously failing Doctor evals passed with the retained
-assets reconstruction `69b7d7c` and the current checks code in a temporary clone.
-
-The owner accepted the proof and approved proceeding to project. The renewed
-report lists no contradicted Decisions. The retry restored the
-`# Write evals` heading expected by workflow and app, which the current product
-already supplies. The report identifies the heading as implicit in AST-002
-and the missing-ID handoff to Doctor as implicit in AST-058. The remaining
-observations revisit the deferred mixed-zone, JUnit and import-resolution gaps.
-
-**Renewed project proof accepted.** The verified controller ran
-`fireweed drill project` at `73e269d`. All 925 cases passed on the configured
-retry, including 134 project and 791 dependent cases. `PRJ-069` and the
-original `APP-116`/`APP-117` regression both passed. The
-[native report](../../.fireweed/drills/project.md) is committed in `acc1c26`.
-Fireweed cleaned up both scratch locations and retained
-`0b51fc13ad29206da8d3a5ca762b2a0b06688036` at
-`refs/fireweed/drills/project/20261110T164427.736325000`. Its changes are
-confined to disposable project paths.
-
-The earlier failed report remains in `dfbb207` and reconstruction `917fb02d`
-remains at `refs/fireweed/drills/project/20261110T144729.916008000`. That
-reconstruction passed 133 project and 790 dependent cases but returned C13
-instead of C03 in the app list eval for a regular-file `changes` path.
-
-Fireweed applied [0201](../../changes/archive/0201-queue-path-diagnostic.md)
-in `73e269d`. The owner-approved amendment in `fde499d` narrowed `PRJ-069` to
-the existing public behavior. `Queue` rejects the regular-file path and
-identifies `changes` in its error. `Check` emits a non-warning C03 diagnostic
-identifying `changes`. The amendment retained the same run and audit phase.
-The separate audit found no gaps and all 925 implementation cases passed.
-Fireweed released the claim. The earlier P09 audit submission remains at
-`refs/fireweed/attempts/queue-path-diagnostic/1` (`dc223bd`).
-
-The renewed report lists no contradicted Decisions. The first attempt passed
-all project cases and the retry addressed downstream diagnostic mismatches.
-The owner deferred all remaining gaps. They cover app diagnostic codes and
-wording, duplicate C08 diagnostics, partial projections, numbering past 9999,
-intermediate graph validation, stale-view and history behavior, and the
-design's warning for specs outside configured globs.
-
-**Renewed checks proof accepted.** The verified controller ran
-`fireweed drill checks` at `9e81519`. All 791 cases passed on the configured
-retry, including 125 checks and 666 dependent cases. All three CHK-043 cases
-and the app CI boundary-failure eval passed. The
-[native report](../../.fireweed/drills/checks.md) is committed in `8369532`.
-Fireweed cleaned up both scratch locations and retained
-`3f0279d42e2bcca4efd7641d6a3a5ebd8d40ace2` at
-`refs/fireweed/drills/checks/20261110T174227.798503000`. Its changes are
-confined to disposable checks paths.
-
-The retry fixed a JUnit parser ambiguity that dropped failure details from
-numbered test labels. The `RUN-044` Unicode excerpt eval passed after that
-correction. Two Doctor fixtures could not build the executable in the
-worker's reconstruction workspace because of a missing module checksum.
-Both fixtures passed in the controller's full scratch checkout.
-
-The report lists no contradicted Decisions. The owner deferred all remaining
-gaps. They cover ID matching for numbered testcase labels, shell quoting around
-hook placeholders, boundary rule attribution, canary identity, probe output
-ordering, and fixture availability in the reconstruction workspace.
-
-**Reuse workflow.** The retained ref and commit `38aa8fc` match the committed
-passing report and change only workflow's disposable files. Since that report,
-`0197` changed the checks dependency. The retained workflow reconstruction
-passed the `FLOW-027` and `FLOW-062` evals and the app CI boundary-failure eval
-against the current candidate in a temporary clone.
-
-**Runner proof accepted.** The verified controller ran
-`fireweed drill runner` at `5b59f35`. All 485 cases passed on the configured
-retry, including 162 runner and 323 app cases. The
-[native report](../../.fireweed/drills/runner.md) is committed in `9390435`.
-Fireweed cleaned up both scratch locations and retained
-`521e048e7c39879c2e6600ab1158171395847ff9` at
-`refs/fireweed/drills/runner/20261110T192409.383763000`. Its changes are
-confined to disposable runner paths.
-
-The first attempt passed all runner cases. Three app cases failed because
-the approval refusal did not use P01. The retry preserved the typed approval
-error, emitted P01, and passed `APP-075`, `APP-077`, and `APP-082`.
-
-The report lists no contradicted Decisions. The owner deferred all three
-gaps. They cover shell quoting for already-quoted placeholders
-(`RUN-003`), repeated verification on successful phases (`RUN-014`), and
-the P01 diagnostic for approval refusals (`RUN-041`).
-
-**App proof accepted.** The verified controller ran
-`fireweed drill app` at `2ab6c98`. All 323 app cases passed on the first
-attempt. The [native report](../../.fireweed/drills/app.md) is committed in
-`dd7d94b`. Fireweed cleaned up both scratch locations and retained
-`b6ace52d10b327893d9d6ec3137f6ce617f344bb` at
-`refs/fireweed/drills/app/20261110T201533.930973000`. Its changes are
-confined to disposable app paths.
-
-The report lists no contradicted Decisions. The owner deferred all four gaps.
-They cover approved snapshot access when the live queue cannot be parsed,
-recovery of private project diagnostic codes, Doctor probe names in JSON,
-and the grammar for module names and prefixes.
-
-**Two historical passing refs remain missing.** The prior passing reports
-remain in Git history.
-The following refs under `refs/fireweed/drills/<module>/` are absent from this
-checkout and GitHub origin advertises none. Their exact commits were unavailable
-across 119 local object stores, including the historical candidate directories.
-
-| Module | Ref suffix | Expected commit |
-| --- | --- | --- |
-| project | `20261102T031647.104747000` | `481bc00c1da360d3e8bf76cd5ba04053d2dccaeb` |
-| checks | `20261107T002339.020159000` | `c0ca0397e3781410e795f27b52de2b2105350559` |
-
-The renewed project and checks proofs supersede these historical reports.
+- **contracts:** fenced headings and level-one section boundaries (CON-002,
+  CON-009); YAML NaN and offset-timestamp key equality (CON-008); evals that
+  pin error wording beyond the specified codes (CON-017 to CON-019).
+- **gitstore:** unborn HEAD and overlapping tracked edits (GIT-001, GIT-003);
+  environment and PATH lookup (GIT-005); literal path syntax and index state
+  after a failed commit (GIT-007); abbreviated blob IDs, ref naming and
+  symbolic refs (GIT-008 to GIT-010).
+- **assets:** the `# Write evals` heading other modules' evals expect
+  (AST-002; [0206](../../changes/0206-context-playbook-eval.md),
+  [0208](../../changes/0208-static-cause-evals.md)); mixed-zone Go packages,
+  expected-failure JUnit status and static import resolution (AST-018,
+  AST-054, AST-056, AST-057).
+- **project:** C13 for duplicate slugs (PRJ-024;
+  [0203](../../changes/0203-duplicate-slug-code.md)); app evals that pin
+  project wording (PRJ-021, PRJ-031, PRJ-041, PRJ-044;
+  [0208](../../changes/0208-static-cause-evals.md)); C01 and U02 carried both
+  as metadata and as message prefixes (PRJ-004, PRJ-040, PRJ-056, PRJ-058,
+  PRJ-066); duplicate C08 diagnostics, partial projections, numbering past
+  9999, intermediate graph validation, stale-view history, and the design's
+  warning for specs outside configured globs.
+- **checks:** which testcase-name tokens count as IDs (CHK-028, CHK-080;
+  [0204](../../changes/0204-junit-label-tokens.md)); shell quoting around hook
+  placeholders (CHK-032); boundary rule attribution (CHK-057); canary
+  identity (CHK-059); probe output ordering (CHK-065); Doctor fixtures that
+  cannot build the root binary in the reconstruction workspace (CHK-061).
+- **workflow:** raw boundary-hook output retention (FLOW-052).
+- **runner:** P01 for approval refusals (RUN-041;
+  [0205](../../changes/0205-approval-refusal-code.md)); shell quoting for
+  already-quoted placeholders (RUN-003); repeated verification on successful
+  phases (RUN-014).
+- **app:** approved-snapshot access when the live queue cannot be parsed
+  (APP-004, APP-012); recovering private project codes by matching messages
+  (APP-037, APP-078, APP-085); Doctor probe names in JSON (APP-067); the
+  module name and prefix grammar (APP-103).
 
 ## Next step
 
-The [regeneration goal](GOAL.md) is closed. Await owner direction for further
-work under the remaining [full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required).
-
-Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
+1. Owner review of the queued changes. Merging them to main approves them.
+2. Run them in queue order with the recorded controller.
+3. After 0202 applies, rebuild the controller from clean main before any
+   further drill, so that drill uses the new feedback and report rules.
+   Record the new controller source here.
+4. Await owner direction on the remaining
+   [full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required).
+   Gate 2 requires the queue to be empty again.

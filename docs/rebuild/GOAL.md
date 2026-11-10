@@ -1,9 +1,14 @@
-# Regeneration milestone
+# Current milestone
 
-**Complete as of 2026-11-10.** All eight modules have passing native reports
-and retained reconstruction refs. The owner accepted the final `app` proof
-and deferred all four gaps. [PROGRESS.md](PROGRESS.md) records the evidence
-and dispositions.
+**Regeneration is complete as of 2026-11-10.** All eight modules have passing
+native reports, and the owner accepted each proof. [PROGRESS.md](PROGRESS.md)
+records the evidence and deferred gaps.
+
+**Next: queued changes 0202–0208.** They stop drill retries from seeing
+dependent eval output and shrink drill reports (0202), give three dependent
+expectations a home in the owning module's spec (0203–0205), and repair evals
+that pin other modules' wording or depend on timing (0206–0208). They run only
+after the owner merges them to main.
 
 For future rebuild work, read AGENTS.md, SYSTEM.md, PROGRESS.md and the
 applicable gates in [ACCEPTANCE.md](ACCEPTANCE.md#full-completion-gates-still-required).

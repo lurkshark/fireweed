@@ -76,57 +76,32 @@ drill <module>
 gc, migrate, agents-md --write
 ```
 
-## Completed milestone — Workflow drill (WF1–WF4)
-
-The earlier workflow contract review and candidate validation are in git
-history (before `515516a`); their evidence stays valid where nothing it
-covered has changed.
-
-1. **WF1 — Simplified drill.** Run the queued
-   [0195](../../changes/0195-run-argv-contract.md) and
-   [0196](../../changes/0196-drill-self-checked-reconstruction.md) through the
-   normal lifecycle. 0196 gives the reconstruction worker a buildable input
-   workspace and its own eval hook, without the old implementation, history
-   or dependents.
-2. **WF2 — Controller.** With no run or claim active, rebuild
-   `.fireweed/bin/fireweed` from clean main and record its commit in PROGRESS.
-   `go test ./...`, `go vet ./...` and `fireweed ci` pass on that commit.
-3. **WF3 — Workflow drill.** Run `fireweed drill workflow` once with the
-   configured worker. Don't add wrappers, supervisors or extra prompts.
-4. **WF4 — Report reviewed and gaps triaged.** Commit
-   `.fireweed/drills/workflow.md`. Review its own and dependent eval results,
-   contradicted Decisions and gaps with the owner. Turn each agreed gap into
-   a queued change, or record why it is not one. A failing drill closes WF4
-   once its gaps are triaged; repeat the drill only after changes that
-   address its gaps have been applied.
-
-WF1–WF4 are complete. The [workflow drill report](../../.fireweed/drills/workflow.md)
-passed, and [PROGRESS.md](PROGRESS.md) records the owner-approved gap dispositions.
-
-The requirement/command inventories and all full-completion gates remain.
-
 ## Completed milestones
 
-Checks contracts and proof (CK1–CK4) are complete. The reviewed
-[checks report](../../.fireweed/drills/checks.md) contains the contract review,
-candidate validation and passing independent proof. The original CK procedure
-is retained in commit `c34c3cb`.
+These are history, not a queue to execute again. Their procedures are in Git
+history; per-change evidence is in [archived changes](../../changes/archive/)
+and the native reports in `.fireweed/drills/`.
 
-Core cutover, drill support/contracts proof, foundation proofs, stale-change
-projection/project proof, and stabilization A → B → C1–C8 are complete. The
-completed stabilization procedure and former budget remain in git history;
-they are not a queue to execute again. Its additional recipes passed fresh-init
-doctor proofs, and its single real gitstore regenerate passed normal full
-verification. That change does not substitute for the remaining module drills.
-Per-change evidence remains in [archived changes](../../changes/archive/),
-including [recipes](../../changes/archive/0168-additional-language-recipes.md)
-and [gitstore regeneration](../../changes/archive/0169-real-gitstore-regeneration.md).
-Retain the native [contracts](../../.fireweed/drills/contracts.md),
-[gitstore](../../.fireweed/drills/gitstore.md),
-[assets](../../.fireweed/drills/assets.md) and
-[project](../../.fireweed/drills/project.md) reports and their required proof refs.
-Reuse valid evidence; repeat only when relevant changes or unresolved failures
-invalidate it and the selected scope authorizes repetition.
+- **Core cutover, foundation proofs and stabilization (A → B → C1–C8).** The
+  additional recipes passed fresh-init doctor proofs
+  ([0168](../../changes/archive/0168-additional-language-recipes.md)), and one
+  real gitstore regenerate passed full verification
+  ([0169](../../changes/archive/0169-real-gitstore-regeneration.md)).
+- **Checks contracts and proof (CK1–CK4).** The original procedure, contract
+  review and candidate validation are in commit `c34c3cb` and the checks
+  report history before `8369532`.
+- **Workflow drill (WF1–WF4).** The simplified drill input
+  ([0195](../../changes/archive/0195-run-argv-contract.md),
+  [0196](../../changes/archive/0196-drill-self-checked-reconstruction.md)) and
+  the first passing workflow proof.
+- **Regeneration (gate 6).** Passing native reports for all eight modules,
+  dependency-first, closed on 2026-11-10. [PROGRESS.md](PROGRESS.md) lists
+  each report, retained ref and deferred gap. Five of the eight passed only
+  on a retry that saw dependent eval output; see
+  [D009](DECISIONS.md#d009--drill-retries-and-the-dependent-signal).
+
+Reuse valid evidence. Repeat a drill only when a relevant change or an
+unresolved failure invalidates it and the owner approves the repeat.
 
 ## Full-completion gates (still required)
 
@@ -137,7 +112,7 @@ Use one design/inventory review, then check fixes against affected requirements.
 3. **Go:** with `GOCACHE=/tmp/fireweed-rebuild-cache`, a fresh checkout builds the new binary and passes `go test ./...`, `go test -race ./...`, `go vet ./...`. Permanent tests run with local fixtures/fake agents and without agent authentication. Cross-compilation is not platform runtime testing; report limits accurately.
 4. **Controller checks:** the recorded controller runs `check`, `doctor`, `check-commits <setup-sha>..HEAD`, and `ci <setup-sha>..HEAD` with doctor enabled. Use the explicit history baseline `be35552b706aa3000ff8f11306d129ff1d701b85`; retain the exact nonempty range and per-module coverage in committed evidence. Resolve errors. For warnings, make a scoped correction or record the reason/limitation; zero warnings is not a separate gate. An empty default range proves no history.
 5. **Product checks:** the product binary in fresh repositories performs init/doctor, author/stamp/check, documented base approval, start/failing-evals/audit/impl/done, coverage/history/PR/CI. Exercise fixes, eval_fix, maintenance, blocked recovery and regenerate. Normal unattended approval rejection is tested without --allow-unmerged.
-6. **Real regeneration:** successful controller-driven drills for every rebuilt disposable module, dependency-first. Real agents reconstruct in the input workspace the product's drill builds (RUN-053), without old implementation/history, saved attempts or old binaries. Own/transitive dependent evals pass without preserved-contract edits. Commit reviewed reports/retain refs and clean scratch worktrees. Repeat only drills invalidated by relevant changes or unresolved failures. Gaps require human agreement before authored fixes; agent suggestions alone authorize none. Missing real-agent access blocks this gate.
+6. **Real regeneration (met 2026-11-10; see Completed milestones):** successful controller-driven drills for every rebuilt disposable module, dependency-first. Real agents reconstruct in the input workspace the product's drill builds (RUN-053), without old implementation/history, saved attempts or old binaries. Own/transitive dependent evals pass without preserved-contract edits. Commit reviewed reports/retain refs and clean scratch worktrees. Repeat only drills invalidated by relevant changes or unresolved failures. Gaps require human agreement before authored fixes; agent suggestions alone authorize none. Missing real-agent access blocks this gate.
 7. **Self-hosting:** in an isolated clone/fixture, the product binary governs a small real spec change and a real drill, with checked fail-first/audit/impl commits, archive/provenance, CI and scratch cleanup. Keep the original repository governed by its recorded controller. The real-drill portion remains required for full completion, separately from the earlier core self-hosting proof.
 8. **Delivery:** README build/test/use instructions, locally validated distribution/installer checksum behavior, clean committed target tree, concise restartable handoff and independent product executable. Report exact checks/commits/reports and limitations. Push only on explicit owner instruction; do not publish or tag.
 

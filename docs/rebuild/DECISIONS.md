@@ -47,3 +47,15 @@ The regenerate lifecycle feature assigns P10 to the warning that its module
 lacks a passing drill dated after the latest applied implementation Provenance.
 This allocation grants no drill authorization; PROGRESS records current
 status and GOAL links the planned milestone.
+
+## D009 — Drill retries and the dependent signal
+
+The design's Retries rule (a retry adds the last verification output to the
+prompt) is written for lifecycle steps. Drill step 3 calls dependent evals the
+strongest signal that a module relies on behavior its spec never states.
+Feeding dependent failures into a drill retry turns that signal into an answer
+key, so drill retries carry only reconstruction and own-eval failures, and a
+drill whose own evals pass but whose dependents fail ends as a failing drill.
+[0202](../../changes/0202-drill-independent-signal.md) specifies this. Proofs
+recorded before 0202 that passed on a retry remain valid evidence of a
+rebuild, not of spec sufficiency alone.

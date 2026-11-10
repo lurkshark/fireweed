@@ -1,6 +1,6 @@
 # Fireweed
 
-Fireweed is a local, language-agnostic Go CLI for checked spec-driven development and regeneration. The unchanged fireweed-design-v1.md is product authority; docs/rebuild/GOAL.md is the restart prompt and ACCEPTANCE.md defines ordered milestones and gates, adding no product scope. Record relevant discrepancies briefly in docs/rebuild/DECISIONS.md; add evals only for uncovered design behavior.
+Fireweed is a local, language-agnostic Go CLI for checked spec-driven development and regeneration. The unchanged fireweed-design-v1.md is product authority; docs/rebuild/GOAL.md names the current milestone and ACCEPTANCE.md defines ordered milestones and gates, adding no product scope. Record relevant discrepancies briefly in docs/rebuild/DECISIONS.md; add evals only for uncovered design behavior.
 
 ## Modules
 
