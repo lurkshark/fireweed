@@ -1,7 +1,9 @@
 ---
 fixes:
-  - GIT-010
+    - GIT-010
 module: gitstore
+phase: audit
+run: 20261110T045913-75966edcce447fcbf1ecc222
 ---
 
 ## Motivation
@@ -35,3 +37,12 @@ matching deletion, and create/update mismatch behavior.
 
 Keep the absence comparison and delete atomic through Git. Limit runtime
 edits to gitstore. Leave the other drill findings for owner review.
+
+`Test_GIT_010_DeleteWithEmptyExpectedRef` failed on the evals base. The call
+returned success for an existing ref, and `Ref` reported that the ref was gone.
+The absent-ref no-op passed.
+
+The implementation can be changed in `packages/gitstore/internal/local/local.go`,
+which is writable during impl.
+## Provenance
+- evals 2026-11-10T05:00:54.992058Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=11 failing=1 passing=10
