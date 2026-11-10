@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -182,12 +183,39 @@ func Test_CHK_041_CHK_042_NormalNonzeroExitCanUseBaselineAndOptOut(t *testing.T)
 	if err := os.WriteFile(filepath.Join(snap.Root, ".fireweed", "boundaries-baseline"), []byte("alpha: known\n"), 0644); err != nil {
 		t.Fatal(err)
 	}
-	snap.Modules[0].Document.Frontmatter["boundaries_opt_out"] = "legacy"
-	snap.Config["hooks"] = map[string]any{"boundaries": boundaryScript(t, snap.Root, `printf 'alpha: known\nalpha: opted out\n'; exit 3`)}
+	snap.Modules = append(snap.Modules, project.Module{
+		Name: "beta", Dir: "packages/beta",
+		Document: contracts.Document{Frontmatter: map[string]any{"boundaries_opt_out": "legacy"}},
+	})
+	snap.Config["hooks"] = map[string]any{"boundaries": boundaryScript(t, snap.Root, `printf 'alpha: known\nbeta: opted out\n'; exit 3`)}
 	diags, err := checks.Boundaries(context.Background(), checks.BoundaryRequest{Snapshot: snap, Timeout: time.Second})
 	if boundaryHasError(diags, err) {
 		t.Errorf("normally exited hook with fully suppressed lines rejected: %#v, %v", diags, err)
 	}
+}
+
+func requireBoundaryExitFailure(t *testing.T, diags []project.Diagnostic, err error, status int) {
+	t.Helper()
+	requireBoundaryDiagnostic(t, diags, "X02", false, "")
+	exitStatus := regexp.MustCompile(fmt.Sprintf(`(?i)\b(?:exit(?:ed)?|status|code)\b[^0-9\n]*\b%d\b`, status))
+	if err == nil || !exitStatus.MatchString(err.Error()) || strings.HasPrefix(err.Error(), "X02:") {
+		t.Errorf("boundary hook error = %v; want exit status %d without X02 prefix", err, status)
+	}
+}
+
+func Test_CHK_043_RequiredGlobalHookRejectsUnattributedNonzeroExit(t *testing.T) {
+	snap := boundarySnapshot(t, nil)
+	snap.Config["hooks"] = map[string]any{"boundaries": boundaryScript(t, snap.Root, `printf 'startup error: missing tool\n' >&2; exit 3`)}
+	diags, err := checks.Boundaries(context.Background(), checks.BoundaryRequest{Snapshot: snap, Timeout: time.Second})
+	requireBoundaryExitFailure(t, diags, err, 3)
+}
+
+func Test_CHK_043_SilentNonzeroOverrideIsIndependentOfGlobalViolation(t *testing.T) {
+	snap := boundarySnapshot(t, `printf 'alpha: global violation\n'; exit 3`)
+	snap.Modules[0].Document.Frontmatter["hooks"] = map[string]any{"boundaries": boundaryScript(t, snap.Root, `exit 7`)}
+	diags, err := checks.Boundaries(context.Background(), checks.BoundaryRequest{Snapshot: snap, Timeout: time.Second})
+	requireBoundaryDiagnostic(t, diags, "X01", false, "alpha: global violation")
+	requireBoundaryExitFailure(t, diags, err, 7)
 }
 
 func Test_CHK_043_LaunchCancellationAndTimeoutStayErrors(t *testing.T) {

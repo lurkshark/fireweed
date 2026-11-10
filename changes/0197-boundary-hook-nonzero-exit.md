@@ -2,6 +2,8 @@
 bases:
     CHK-043: 82e0e810
 module: checks
+phase: audit
+run: 20261110T001313-e0ad9b8a10464ed606bb9d69
 ---
 
 ## Motivation
@@ -43,3 +45,13 @@ attributed violations and keep the existing pass when all attributed lines are
 suppressed. Preserve zero-exit handling, the existing error prefix convention,
 and the public API. Limit runtime edits to checks and leave raw boundary output
 retention outside this change.
+
+Fail-first on the evals base: the required global hook returned no diagnostic
+or error for exit 3. The silent module override's exit 7 was ignored beside a
+global X01 violation. The existing launch, cancellation and timeout eval
+passed, as did the nonzero hook with all attributed lines suppressed.
+
+The implementation can be changed in `packages/checks/internal/engine/boundaries.go`,
+which is writable during impl.
+## Provenance
+- evals 2026-11-10T00:26:44.876737Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=121 failing=2 passing=119
