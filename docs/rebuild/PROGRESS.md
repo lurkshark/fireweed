@@ -67,7 +67,7 @@ eval, which passed in isolation before the full retry.
 
 ## Drill proof inventory
 
-**Contracts renewed, awaiting owner review.** The verified controller ran
+**Contracts proof accepted.** The verified controller ran
 `fireweed drill contracts` at `e7f1554`. All 1,119 cases passed on the first
 attempt, including 64 contracts cases and 1,055 transitive dependent cases.
 The [native report](../../.fireweed/drills/contracts.md) is committed in
@@ -76,7 +76,7 @@ The [native report](../../.fireweed/drills/contracts.md) is committed in
 `refs/fireweed/drills/contracts/20261110T034341.899515000`.
 The proof changes only disposable contracts paths.
 
-The report lists no contradicted Decisions and three questions for review:
+The report lists no contradicted Decisions. The owner deferred all three gaps:
 
 - `CON-002` / `CON-009` leave fenced headings and level-one section boundaries
   implicit. The reconstruction handles these differently from the current code.
@@ -108,8 +108,8 @@ need first native reports and retained refs.
 
 ## Next step
 
-Review the contracts report and its three questions with the owner. Start
-`gitstore` after the owner's instruction to continue the [regeneration goal](GOAL.md).
+Run the owner-approved `gitstore` drill with the verified controller. Stop for
+review before `assets` in the [regeneration goal](GOAL.md).
 The remaining order is `gitstore`, `assets`, `project`, `checks`, `runner`,
 then `app`.
 
