@@ -201,6 +201,24 @@ passing report and change only workflow's disposable files. Since that report,
 passed the `FLOW-027` and `FLOW-062` evals and the app CI boundary-failure eval
 against the current candidate in a temporary clone.
 
+**Runner proof awaits owner review.** The verified controller ran
+`fireweed drill runner` at `5b59f35`. All 485 cases passed on the configured
+retry, including 162 runner and 323 app cases. The
+[native report](../../.fireweed/drills/runner.md) is committed in `9390435`.
+Fireweed cleaned up both scratch locations and retained
+`521e048e7c39879c2e6600ab1158171395847ff9` at
+`refs/fireweed/drills/runner/20261110T192409.383763000`. Its changes are
+confined to disposable runner paths.
+
+The first attempt passed all runner cases. Three app cases failed because
+the approval refusal did not use P01. The retry preserved the typed approval
+error, emitted P01, and passed `APP-075`, `APP-077`, and `APP-082`.
+
+The report lists no contradicted Decisions. Its three gaps await owner
+disposition. They cover shell quoting for already-quoted placeholders
+(`RUN-003`), repeated verification on successful phases (`RUN-014`), and
+the P01 diagnostic for approval refusals (`RUN-041`).
+
 **Two historical passing refs remain missing.** The prior passing reports
 remain in Git history.
 The following refs under `refs/fireweed/drills/<module>/` are absent from this
@@ -213,13 +231,12 @@ across 119 local object stores, including the historical candidate directories.
 | checks | `20261107T002339.020159000` | `c0ca0397e3781410e795f27b52de2b2105350559` |
 
 The renewed project and checks proofs supersede these historical reports.
-`runner` and `app` need first native reports and retained refs.
+`app` needs its first native report and retained ref.
 
 ## Next step
 
-Run the owner-approved `runner` drill with the verified controller, commit
-the native report, retain the proof ref, and stop for owner review before
-`app`. The remaining drill order is `runner`, then `app` in the
+Review the runner proof and its three gaps with the owner. Wait for the
+owner's instruction to start `app`, the remaining drill in the
 [regeneration goal](GOAL.md).
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
