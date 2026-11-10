@@ -2,6 +2,10 @@
 
 ## Current state (2026-11-10)
 
+**Regeneration milestone complete.** All eight modules have passing native
+reports and retained reconstruction refs. The owner accepted the final app
+proof and deferred its four gaps.
+
 WF1 is complete. Fireweed applied and archived both changes after separate
 audits with no findings and passing implementation verification:
 
@@ -219,7 +223,7 @@ gaps. They cover shell quoting for already-quoted placeholders
 (`RUN-003`), repeated verification on successful phases (`RUN-014`), and
 the P01 diagnostic for approval refusals (`RUN-041`).
 
-**App proof awaits owner review.** The verified controller ran
+**App proof accepted.** The verified controller ran
 `fireweed drill app` at `2ab6c98`. All 323 app cases passed on the first
 attempt. The [native report](../../.fireweed/drills/app.md) is committed in
 `dd7d94b`. Fireweed cleaned up both scratch locations and retained
@@ -227,10 +231,10 @@ attempt. The [native report](../../.fireweed/drills/app.md) is committed in
 `refs/fireweed/drills/app/20261110T201533.930973000`. Its changes are
 confined to disposable app paths.
 
-The report lists no contradicted Decisions. Its four gaps await owner
-disposition. They cover access to the approved snapshot when the live queue
-cannot be parsed, recovering private project diagnostic codes, naming Doctor
-probes in JSON, and the grammar for module names and prefixes.
+The report lists no contradicted Decisions. The owner deferred all four gaps.
+They cover approved snapshot access when the live queue cannot be parsed,
+recovery of private project diagnostic codes, Doctor probe names in JSON,
+and the grammar for module names and prefixes.
 
 **Two historical passing refs remain missing.** The prior passing reports
 remain in Git history.
@@ -244,11 +248,10 @@ across 119 local object stores, including the historical candidate directories.
 | checks | `20261107T002339.020159000` | `c0ca0397e3781410e795f27b52de2b2105350559` |
 
 The renewed project and checks proofs supersede these historical reports.
-All eight modules now have passing native reports and retained refs.
 
 ## Next step
 
-Review the app proof and its four gaps with the owner. The app drill was the
-last drill in the [regeneration goal](GOAL.md). Stop here for review.
+The [regeneration goal](GOAL.md) is closed. Await owner direction for further
+work under the remaining [full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required).
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
