@@ -112,13 +112,31 @@ remaining gaps:
 - `GIT-008` through `GIT-010` leave abbreviated blob IDs, ref naming, and
   symbolic-ref lookup and mutation implicit.
 
+**Assets drill failed, awaiting owner review.** The verified controller ran
+`fireweed drill assets` at `bf4d439`. After the configured retry, all 125
+assets cases passed and 4 of 920 dependent cases failed (three app, one
+checks). The [native report](../../.fireweed/drills/assets.md) is committed
+in `84f7138`. Fireweed cleaned up both scratch locations and retained the
+failed reconstruction `69b7d7c97048c51121a8f8e819203eebc9beed83` at
+`refs/fireweed/drills/assets/20261110T063418.808553000`. Its changes are
+confined to disposable assets paths.
+
+The retry restored baseline spec coverage. All four remaining failures came
+from Doctor's Go `missing_id` canary. Go ran `TestMissingIDCanary` and the
+eval checker returned C11 naming it. Doctor's source matcher recognizes
+`Test_` names and ID-shaped tokens, so it reported that it missed this
+canary. The report lists no contradicted Decisions. Its other gaps concern
+baseline coverage, mixed Go package zones, expected-failure JUnit status,
+and static import resolution.
+
 **Reuse workflow.** The retained ref and commit `38aa8fc` match the committed
 passing report and change only workflow's disposable files. Since that report,
 `0197` changed the checks dependency. The retained workflow reconstruction
 passed the `FLOW-027` and `FLOW-062` evals and the app CI boundary-failure eval
 against the current candidate in a temporary clone.
 
-**Renew the three remaining missing proofs.** The prior passing reports are committed.
+**Three historical passing refs remain missing.** The prior passing reports
+remain in Git history.
 The following refs under `refs/fireweed/drills/<module>/` are absent from this
 checkout and GitHub origin advertises none. Their exact commits were unavailable
 across 119 local object stores, including the historical candidate directories.
@@ -135,8 +153,9 @@ need first native reports and retained refs.
 
 ## Next step
 
-Run the owner-approved `assets` drill with the verified controller. Stop for
-review before `project` in the [regeneration goal](GOAL.md). The remaining
-drill order is `assets`, `project`, `checks`, `runner`, then `app`.
+Review the assets report and decide how to address Doctor's `missing_id`
+canary matching before repeating the drill. Project awaits owner review in
+the [regeneration goal](GOAL.md). The remaining drill order is `assets`,
+`project`, `checks`, `runner`, then `app`.
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
