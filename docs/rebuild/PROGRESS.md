@@ -201,7 +201,7 @@ passing report and change only workflow's disposable files. Since that report,
 passed the `FLOW-027` and `FLOW-062` evals and the app CI boundary-failure eval
 against the current candidate in a temporary clone.
 
-**Runner proof awaits owner review.** The verified controller ran
+**Runner proof accepted.** The verified controller ran
 `fireweed drill runner` at `5b59f35`. All 485 cases passed on the configured
 retry, including 162 runner and 323 app cases. The
 [native report](../../.fireweed/drills/runner.md) is committed in `9390435`.
@@ -214,8 +214,8 @@ The first attempt passed all runner cases. Three app cases failed because
 the approval refusal did not use P01. The retry preserved the typed approval
 error, emitted P01, and passed `APP-075`, `APP-077`, and `APP-082`.
 
-The report lists no contradicted Decisions. Its three gaps await owner
-disposition. They cover shell quoting for already-quoted placeholders
+The report lists no contradicted Decisions. The owner deferred all three
+gaps. They cover shell quoting for already-quoted placeholders
 (`RUN-003`), repeated verification on successful phases (`RUN-014`), and
 the P01 diagnostic for approval refusals (`RUN-041`).
 
@@ -235,8 +235,8 @@ The renewed project and checks proofs supersede these historical reports.
 
 ## Next step
 
-Review the runner proof and its three gaps with the owner. Wait for the
-owner's instruction to start `app`, the remaining drill in the
-[regeneration goal](GOAL.md).
+Run the owner-approved `app` drill with the verified controller, commit the
+native report, retain the proof ref, and stop for owner review. This is the
+remaining drill in the [regeneration goal](GOAL.md).
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
