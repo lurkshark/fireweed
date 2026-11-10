@@ -143,7 +143,7 @@ already supplies. The report identifies the heading as implicit in AST-002
 and the missing-ID handoff to Doctor as implicit in AST-058. The remaining
 observations revisit the deferred mixed-zone, JUnit and import-resolution gaps.
 
-**Renewed project proof awaits owner review.** The verified controller ran
+**Renewed project proof accepted.** The verified controller ran
 `fireweed drill project` at `73e269d`. All 925 cases passed on the configured
 retry, including 134 project and 791 dependent cases. `PRJ-069` and the
 original `APP-116`/`APP-117` regression both passed. The
@@ -169,7 +169,7 @@ Fireweed released the claim. The earlier P09 audit submission remains at
 
 The renewed report lists no contradicted Decisions. The first attempt passed
 all project cases and the retry addressed downstream diagnostic mismatches.
-The reported gaps await disposition. They cover app diagnostic codes and
+The owner deferred all remaining gaps. They cover app diagnostic codes and
 wording, duplicate C08 diagnostics, partial projections, numbering past 9999,
 intermediate graph validation, stale-view and history behavior, and the
 design's warning for specs outside configured globs.
@@ -197,8 +197,9 @@ need first native reports and retained refs.
 
 ## Next step
 
-Review the renewed project proof and its gaps with the owner. Wait for the
-owner's instruction to start `checks`. The remaining drill order is `checks`,
-`runner`, then `app` in the [regeneration goal](GOAL.md).
+Run the owner-approved `checks` drill with the verified controller, commit
+the native report, retain the proof ref, and stop for owner review before
+`runner`. The remaining drill order is `checks`, `runner`, then `app` in the
+[regeneration goal](GOAL.md).
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
