@@ -41,9 +41,10 @@ WF4 is complete. The owner reviewed the report and approved these dispositions:
   `fireweed check-commits a0e25a2..d45652a` passed. The queue is empty and
   Fireweed released the claim.
 
-The owner approved the `0197` worker and restricted audit contexts for OpenAI
-Codex and granted standing authorization for the configured change lifecycle.
-[SYSTEM.md](../../SYSTEM.md#agent-configuration) records the scope and destination.
+The owner reaffirmed standing Codex authorization for the configured workers
+and restricted auditors on owner-approved changes and drills. Commit `a4e020a`
+records the scope, including reconstruction inputs, and destination in
+[SYSTEM.md](../../SYSTEM.md#agent-configuration).
 
 ## Controller and candidate
 
@@ -142,50 +143,36 @@ already supplies. The report identifies the heading as implicit in AST-002
 and the missing-ID handoff to Doctor as implicit in AST-058. The remaining
 observations revisit the deferred mixed-zone, JUnit and import-resolution gaps.
 
-**Project proof renewal awaits the PRJ-069 audit.** The verified controller ran
-`fireweed drill project` at `d4e8d95`. All 133 project cases and 790 dependent
-cases passed after the configured retry. One app case failed. The
-[native report](../../.fireweed/drills/project.md) is committed in `dfbb207`.
-Fireweed cleaned up both scratch locations and retained the reconstruction
-`917fb02dba3b227f5c57ed422455e7e5881735c7` at
-`refs/fireweed/drills/project/20261110T144729.916008000`. Its changes are
+**Renewed project proof awaits owner review.** The verified controller ran
+`fireweed drill project` at `73e269d`. All 925 cases passed on the configured
+retry, including 134 project and 791 dependent cases. `PRJ-069` and the
+original `APP-116`/`APP-117` regression both passed. The
+[native report](../../.fireweed/drills/project.md) is committed in `acc1c26`.
+Fireweed cleaned up both scratch locations and retained
+`0b51fc13ad29206da8d3a5ca762b2a0b06688036` at
+`refs/fireweed/drills/project/20261110T164427.736325000`. Its changes are
 confined to disposable project paths.
 
-`Test_APP_116_APP_117_ListUsageConfigurationAndQueueErrors` requires a C03
-error from `project.Check` when `changes` is a regular file. The reconstruction
-classified the queue read failure as C13. The same focused app eval passed
-against the current product. The project queue and Check specs leave this
-diagnostic implicit.
+The earlier failed report remains in `dfbb207` and reconstruction `917fb02d`
+remains at `refs/fireweed/drills/project/20261110T144729.916008000`. That
+reconstruction passed 133 project and 790 dependent cases but returned C13
+instead of C03 in the app list eval for a regular-file `changes` path.
 
-The owner approved making C03 explicit. Fireweed started
-[0201-queue-path-diagnostic](../../changes/0201-queue-path-diagnostic.md)
-and assigned `PRJ-069`. The project eval passed with the other 133 cases.
-Audit found that the change also promises C03 on the public `Queue` error,
-whose classification is private today. The eval asserts the path on `Queue`
-and the C03 diagnostic on `Check`. App derives C03 from that diagnostic.
+Fireweed applied [0201](../../changes/archive/0201-queue-path-diagnostic.md)
+in `73e269d`. The owner-approved amendment in `fde499d` narrowed `PRJ-069` to
+the existing public behavior. `Queue` rejects the regular-file path and
+identifies `changes` in its error. `Check` emits a non-warning C03 diagnostic
+identifying `changes`. The amendment retained the same run and audit phase.
+The separate audit found no gaps and all 925 implementation cases passed.
+Fireweed released the claim. The earlier P09 audit submission remains at
+`refs/fireweed/attempts/queue-path-diagnostic/1` (`dc223bd`).
 
-Both auditor submissions omitted the required dash before the finding's
-explanation. The controller rejected them with P09 and blocked `0201` in
-`d5ea3be`. It saved the audit work at
-`refs/fireweed/attempts/queue-path-diagnostic/1` (`dc223bd`) and released the
-claim. Audit rounds remain at zero.
-
-The owner approved narrowing `PRJ-069` to the behavior the existing eval
-asserts. `Queue` rejects a regular-file `changes` path and identifies it in
-the error. `Check` reports a non-warning C03 diagnostic identifying the same
-path. Author commit `fde499d` made the revision and removed `blocked` using
-the documented resume procedure, preserving the assigned ID, run and audit
-phase. `fireweed check` and the focused `PRJ-069` and `APP-116`/`APP-117` evals
-passed. Automatic approval review rejected the lifecycle command before it
-ran because it required specific authorization to send repository context to
-OpenAI Codex. No claim is active. The saved attempt and failed drill ref remain
-available.
-
-The report lists no contradicted Decisions. Its other observations cover
-diagnostic codes and wording relied on by app, duplicate C08 messages,
-change numbering past 9999, intermediate graph validation, and stale-view
-and history behavior. It also identifies the design's warning for specs
-outside configured globs as an unassigned contract.
+The renewed report lists no contradicted Decisions. The first attempt passed
+all project cases and the retry addressed downstream diagnostic mismatches.
+The reported gaps await disposition. They cover app diagnostic codes and
+wording, duplicate C08 diagnostics, partial projections, numbering past 9999,
+intermediate graph validation, stale-view and history behavior, and the
+design's warning for specs outside configured globs.
 
 **Reuse workflow.** The retained ref and commit `38aa8fc` match the committed
 passing report and change only workflow's disposable files. Since that report,
@@ -210,11 +197,8 @@ need first native reports and retained refs.
 
 ## Next step
 
-Obtain explicit authorization for the configured Codex audit, implementation
-and project reconstruction contexts. Resume `0201` at audit with the verified
-controller, then renew `project` after Fireweed applies it. Commit the native
-report, retain the proof ref and stop for owner review before `checks`. The
-remaining drill order is `project`, `checks`, `runner`, then `app` in the
-[regeneration goal](GOAL.md).
+Review the renewed project proof and its gaps with the owner. Wait for the
+owner's instruction to start `checks`. The remaining drill order is `checks`,
+`runner`, then `app` in the [regeneration goal](GOAL.md).
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
