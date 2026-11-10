@@ -1,6 +1,6 @@
 # Rebuild progress
 
-## Current state (2026-11-09)
+## Current state (2026-11-10)
 
 WF1 is complete. Fireweed applied and archived both changes after separate
 audits with no findings and passing implementation verification:
@@ -112,7 +112,7 @@ remaining gaps:
 - `GIT-008` through `GIT-010` leave abbreviated blob IDs, ref naming, and
   symbolic-ref lookup and mutation implicit.
 
-**Assets drill failed, awaiting owner review.** The verified controller ran
+**Assets proof renewal approved.** The verified controller ran
 `fireweed drill assets` at `bf4d439`. After the configured retry, all 125
 assets cases passed and 4 of 920 dependent cases failed (three app, one
 checks). The [native report](../../.fireweed/drills/assets.md) is committed
@@ -125,9 +125,16 @@ The retry restored baseline spec coverage. All four remaining failures came
 from Doctor's Go `missing_id` canary. Go ran `TestMissingIDCanary` and the
 eval checker returned C11 naming it. Doctor's source matcher recognizes
 `Test_` names and ID-shaped tokens, so it reported that it missed this
-canary. The report lists no contradicted Decisions. Its other gaps concern
-baseline coverage, mixed Go package zones, expected-failure JUnit status,
-and static import resolution.
+canary. The report lists no contradicted Decisions. The owner deferred the
+other gaps on baseline coverage, mixed Go package zones, expected-failure
+JUnit status, and static import resolution.
+
+Fireweed applied [0200](../../changes/archive/0200-doctor-go-missing-id-canary.md)
+in `f854288`. CHK-059 now matches the supplied Go test declaration and its
+subtests, including names without an underscore after `Test`. The change
+passed fail-first, a separate audit with no findings, and 791 implementation
+cases. All four previously failing Doctor evals passed with the retained
+assets reconstruction `69b7d7c` and the current checks code in a temporary clone.
 
 **Reuse workflow.** The retained ref and commit `38aa8fc` match the committed
 passing report and change only workflow's disposable files. Since that report,
@@ -153,9 +160,8 @@ need first native reports and retained refs.
 
 ## Next step
 
-Review the assets report and decide how to address Doctor's `missing_id`
-canary matching before repeating the drill. Project awaits owner review in
-the [regeneration goal](GOAL.md). The remaining drill order is `assets`,
-`project`, `checks`, `runner`, then `app`.
+Renew the owner-approved `assets` drill with the verified controller. Stop
+for review before `project` in the [regeneration goal](GOAL.md). The remaining
+drill order is `assets`, `project`, `checks`, `runner`, then `app`.
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
