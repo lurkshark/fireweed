@@ -2,6 +2,7 @@ package engine
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -70,38 +71,46 @@ func Boundaries(ctx context.Context, request model.BoundaryRequest) ([]project.D
 			}{command: command, module: module})
 		}
 	}
+	var hookErrors []error
 	for _, hook := range commands {
 		values := map[string]string{"module": hook.module.Name, "module_dir": hook.module.Dir}
 		result, runErr := runHook(ctx, snapshot.Root, hook.command, values, request.Bin, request.Timeout)
 		if runErr != nil {
 			diagnostics = append(diagnostics, project.Diagnostic{Code: "X02", Message: "boundary hook: " + runErr.Error()})
-			return diagnostics, fmt.Errorf("boundary hook: %w", runErr)
+			hookErrors = append(hookErrors, fmt.Errorf("boundary hook: %w", runErr))
+			break
 		}
+		attributed := false
 		for _, output := range []string{result.Stdout, result.Stderr} {
 			for _, line := range strings.Split(output, "\n") {
 				line = strings.TrimSuffix(line, "\r")
-				if line == "" || baseline[line] {
-					continue
-				}
-				owner := ""
 				for _, module := range snapshot.Modules {
 					if strings.HasPrefix(line, module.Name+":") {
-						owner = module.Name
-						if boundaryReason(module) != "" {
-							owner = "suppressed"
+						attributed = true
+						if !baseline[line] && boundaryReason(module) == "" {
+							violations++
+							diagnostics = append(diagnostics, project.Diagnostic{Code: "X01", Message: line})
 						}
 						break
 					}
 				}
-				if owner == "suppressed" {
-					continue
-				}
-				if owner != "" {
-					violations++
-					diagnostics = append(diagnostics, project.Diagnostic{Code: "X01", Message: line})
-				}
 			}
 		}
+		if result.ExitCode != 0 && !attributed {
+			name := "global boundary hook"
+			if hook.module.Name != "" {
+				name = hook.module.Name + " boundary hook"
+			}
+			err := fmt.Errorf("%s: exit status %d without a module-attributed violation", name, result.ExitCode)
+			diagnostics = append(diagnostics, project.Diagnostic{Code: "X02", Message: err.Error()})
+			hookErrors = append(hookErrors, err)
+		}
+	}
+	if len(hookErrors) == 1 {
+		return diagnostics, hookErrors[0]
+	}
+	if len(hookErrors) > 1 {
+		return diagnostics, errors.Join(hookErrors...)
 	}
 	if violations > 0 {
 		return diagnostics, fmt.Errorf("%d boundary violation(s)", violations)
