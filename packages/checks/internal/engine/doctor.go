@@ -7,6 +7,9 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"go/ast"
+	"go/parser"
+	"go/token"
 	"io"
 	"io/fs"
 	"os"
@@ -15,6 +18,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/lurkshark/fireweed/packages/assets"
 	"github.com/lurkshark/fireweed/packages/checks/model"
@@ -680,11 +685,10 @@ func (d *doctorState) probeEval(s project.Snapshot, v doctorVariant, name string
 		code, _, coded := contracts.ErrorCode(e)
 		var unmapped unmappedCaseError
 		if coded && code == "C11" && errors.As(e, &unmapped) {
-			for _, body := range files {
-				for _, token := range canaryCaseToken.FindAllString(renderDoctorText(body, d.values(0)), -1) {
-					if strings.Contains(unmapped.name, token) {
-						detected = true
-					}
+			for path, body := range files {
+				if matchesMissingIDCanary(path, renderDoctorText(body, d.values(0)), unmapped.name) {
+					detected = true
+					break
 				}
 			}
 		}
@@ -701,6 +705,37 @@ func (d *doctorState) probeEval(s project.Snapshot, v doctorVariant, name string
 		d.check("recovery "+v.name, module, true, name+": eval and coverage pass")
 	}
 }
+
+func matchesMissingIDCanary(path, body, name string) bool {
+	path = strings.TrimSuffix(path, ".tmpl")
+	if !strings.HasSuffix(path, ".go") {
+		for _, match := range canaryCaseToken.FindAllString(body, -1) {
+			if strings.Contains(name, match) {
+				return true
+			}
+		}
+		return false
+	}
+
+	// Go reports subtests under the top-level test name, separated by a slash.
+	testName, _, _ := strings.Cut(name, "/")
+	suffix, isTest := strings.CutPrefix(testName, "Test")
+	first, _ := utf8.DecodeRuneInString(suffix)
+	if !isTest || unicode.IsLower(first) || !strings.HasSuffix(path, "_test.go") {
+		return false
+	}
+	file, err := parser.ParseFile(token.NewFileSet(), path, body, parser.SkipObjectResolution)
+	if err != nil {
+		return false
+	}
+	for _, decl := range file.Decls {
+		if fn, ok := decl.(*ast.FuncDecl); ok && fn.Recv == nil && fn.Name.Name == testName {
+			return true
+		}
+	}
+	return false
+}
+
 func (d *doctorState) probeBoundary(s project.Snapshot, v doctorVariant, name string, files map[string]string, i int) {
 	module := d.names[i]
 	paths, err := d.plant(name, i, files)
