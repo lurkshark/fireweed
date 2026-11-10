@@ -174,7 +174,7 @@ wording, duplicate C08 diagnostics, partial projections, numbering past 9999,
 intermediate graph validation, stale-view and history behavior, and the
 design's warning for specs outside configured globs.
 
-**Renewed checks proof awaits owner review.** The verified controller ran
+**Renewed checks proof accepted.** The verified controller ran
 `fireweed drill checks` at `9e81519`. All 791 cases passed on the configured
 retry, including 125 checks and 666 dependent cases. All three CHK-043 cases
 and the app CI boundary-failure eval passed. The
@@ -190,8 +190,8 @@ correction. Two Doctor fixtures could not build the executable in the
 worker's reconstruction workspace because of a missing module checksum.
 Both fixtures passed in the controller's full scratch checkout.
 
-The report lists no contradicted Decisions. Its gaps await owner disposition.
-They cover ID matching for numbered testcase labels, shell quoting around
+The report lists no contradicted Decisions. The owner deferred all remaining
+gaps. They cover ID matching for numbered testcase labels, shell quoting around
 hook placeholders, boundary rule attribution, canary identity, probe output
 ordering, and fixture availability in the reconstruction workspace.
 
@@ -217,8 +217,9 @@ The renewed project and checks proofs supersede these historical reports.
 
 ## Next step
 
-Review the renewed checks proof and its gaps with the owner. Wait for the
-owner's instruction to start `runner`. The remaining drill order is `runner`,
-then `app` in the [regeneration goal](GOAL.md).
+Run the owner-approved `runner` drill with the verified controller, commit
+the native report, retain the proof ref, and stop for owner review before
+`app`. The remaining drill order is `runner`, then `app` in the
+[regeneration goal](GOAL.md).
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
