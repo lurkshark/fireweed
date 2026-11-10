@@ -33,10 +33,13 @@ WF4 is complete. The owner reviewed the report and approved these dispositions:
   base and its eval passed on the drill retry.
 - **FLOW-052 / checks.** Deferred raw boundary-hook output retention. The
   current boundary API returns diagnostics only.
-- **FLOW-027 / checks.** Queued
-  [0197-boundary-hook-nonzero-exit](../../changes/0197-boundary-hook-nonzero-exit.md)
-  in `be8fa32` to reject a nonzero exit without a module-attributed violation.
-  `fireweed stamp` and `fireweed check` passed. The change is unclaimed.
+- **FLOW-027 / checks.** Fireweed applied and archived
+  [0197-boundary-hook-nonzero-exit](../../changes/archive/0197-boundary-hook-nonzero-exit.md)
+  in `d45652a`. CHK-043 now rejects a nonzero exit without a module-attributed
+  violation. Both regressions failed first, the separate audit found no
+  gaps, and all 787 implementation cases passed. `fireweed check` and
+  `fireweed check-commits a0e25a2..d45652a` passed. The queue is empty and
+  Fireweed released the claim.
 
 The owner approved the `0197` worker and restricted audit contexts for OpenAI
 Codex and granted standing authorization for the configured change lifecycle.
@@ -50,7 +53,6 @@ Controller source: `6cc26290333cb47c1a314b16b8b50679afdd07f4`
 
 ## Next step
 
-Run `0197` through the normal fail-first, separate audit and implementation
-lifecycle with the recorded controller.
+Select the next owner-authorized milestone from [ACCEPTANCE.md](ACCEPTANCE.md).
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
