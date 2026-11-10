@@ -176,6 +176,25 @@ func Test_PRJ_044_CheckQueueIdentityCause(t *testing.T) {
 	t.Errorf("Check did not report C13 for queue identity cause %q", cause)
 }
 
+func Test_PRJ_069_RegularFileAtChangesReportsQueueCause(t *testing.T) {
+	root := fixture(t)
+	put(t, root, "packages/alpha/SPEC.md", "---\nname: alpha\nid_prefix: ALP\ndepends_on: []\n---\n# Alpha\n\n## Specs\n\n### ALP-001\nAlpha MUST work.\n")
+	const queuePath = "changes"
+	put(t, root, queuePath, "not a directory")
+
+	_, cause := project.Queue(root)
+	if cause == nil || !strings.Contains(cause.Error(), queuePath) {
+		t.Fatalf("Queue error = %v; want an error identifying %q", cause, queuePath)
+	}
+	diagnostics := project.Check(root)
+	for _, diagnostic := range diagnostics {
+		if !diagnostic.Warning && diagnostic.Code == "C03" && diagnostic.Path == queuePath && strings.Contains(diagnostic.Message, cause.Error()) {
+			return
+		}
+	}
+	t.Errorf("Check diagnostics = %#v; want a C03 error at %q for Queue cause %q", diagnostics, queuePath, cause)
+}
+
 func Test_PRJ_045_CheckPendingModuleTargetCause(t *testing.T) {
 	root := fixture(t)
 	put(t, root, "changes/0001-bad.md", "---\nmodule: missing\n---\n## Motivation\nNeeded.\n")
