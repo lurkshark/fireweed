@@ -1,17 +1,25 @@
 ---
+bases:
+    FLOW-054: 7df3ffcd
+    FLOW-055: 487dfc2d
+    FLOW-056: 2afdfc82
+    FLOW-057: 09d6cb13
+    FLOW-058: 7360b3b6
+    FLOW-059: cf833220
+    FLOW-060: 25d56a42
 module: workflow
 ---
 
 ## Motivation
 
 The design promises a stable code for every problem and output that agents
-can read. Workflow requires its lifecycle codes only as message prefixes
-(FLOW-054 to FLOW-060, FLOW-125, FLOW-133 and others), and no workflow
-error carries a code that `contracts.ErrorCode` can read. The runner passes
-these errors on, and the app recovers the code from the text with a regular
-expression that takes the last code-shaped token, which can be a wrapped
-cause or a spec ID rather than the lifecycle code (APP-078, APP-085). Make
-the code part of the error.
+can read. Workflow requires its lifecycle codes only as message prefixes,
+and no workflow error carries a code that `contracts.ErrorCode` can read.
+The runner passes these errors on, and the app recovers the code from the
+text with a regular expression that takes the last code-shaped token, which
+can be a wrapped cause or a spec ID rather than the lifecycle code
+(APP-078, APP-085). State these codes through `contracts.ErrorCode`,
+following SYSTEM.md's diagnostic-code convention.
 
 ## Interface
 
@@ -20,10 +28,28 @@ No signature changes. Errors that carry a code become (or wrap)
 
 ## Added
 
-### new:coded-errors
-Every error a public workflow function returns for a failure this spec assigns a D006 code MUST carry that code so that contracts.ErrorCode reports it. An error that wraps another module's coded error, for a failure this spec assigns no code, MUST keep the wrapped code.
-
 ## Modified
+
+### FLOW-054
+Start MUST reject a dirty worktree or an ineligible queue with an error whose contracts ErrorCode is P01.
+
+### FLOW-055
+Verify and Done MUST reject an unsupported phase with an error whose contracts ErrorCode is P01.
+
+### FLOW-056
+Start and Current MUST report existing claim ownership or contention failures with an error whose contracts ErrorCode is P02.
+
+### FLOW-057
+Verify and Done MUST reject unapproved author, runtime or audit-state alterations with an error whose contracts ErrorCode is P03 before running hooks.
+
+### FLOW-058
+Start, Verify and Done MUST reject a stale base with an error whose contracts ErrorCode is P05, retaining the underlying cause in its chain.
+
+### FLOW-059
+During audit, Verify MUST apply Done's audit-submission checks. Verify and Done MUST reject malformed or incomplete submissions with an error whose contracts ErrorCode is P09.
+
+### FLOW-060
+Done MUST return its existing blocked-change error with contracts ErrorCode P06 while preserving the committed blocking state and claim release.
 
 ## Removed
 
@@ -31,19 +57,18 @@ Every error a public workflow function returns for a failure this spec assigns a
 
 ## Rejected alternatives
 
-Rewording each prefix item to the ErrorCode form: it would rewrite many
-items and their evals for no behavior beyond the added item. The prefix
-items stay true, and a later change can relax them once the app reads codes
-only through `contracts.ErrorCode`.
+A workflow spec item requiring every coded error to carry its code: the
+same rule applies to every module, and copying it into each spec is what
+C18 warns about. It is a SYSTEM.md convention instead.
 
 ## Notes
 
-Keep the existing message text, including FLOW-133's exact text. Where
-FLOW-058 and FLOW-062 classify a stale-base failure as P05 while retaining
-the underlying cause, P05 is the outer code and the cause stays in the
-chain.
+Only the way each code is stated changes; the conditions are the same.
+Apply the convention to workflow's other coded errors too (for example
+FLOW-011, FLOW-015, FLOW-061, FLOW-090 to FLOW-096, FLOW-125, FLOW-131).
+Keep the existing message text, including leading codes and FLOW-133's
+exact text, until 0222. For P05, P05 is the outer code and the stale-base
+cause stays in the chain.
 
-Evals: extend the existing tests for each coded error to assert
-`contracts.ErrorCode` alongside the prefix, including one P05 stale-base
-case whose cause has its own code. Do not build new fixtures where an
-existing test already reaches the failure.
+Evals: assert `contracts.ErrorCode` for each modified item, including one
+P05 case whose cause has its own code.
