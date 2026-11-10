@@ -142,7 +142,7 @@ already supplies. The report identifies the heading as implicit in AST-002
 and the missing-ID handoff to Doctor as implicit in AST-058. The remaining
 observations revisit the deferred mixed-zone, JUnit and import-resolution gaps.
 
-**Project drill failed, awaiting owner review.** The verified controller ran
+**Project proof renewal awaits the PRJ-069 audit.** The verified controller ran
 `fireweed drill project` at `d4e8d95`. All 133 project cases and 790 dependent
 cases passed after the configured retry. One app case failed. The
 [native report](../../.fireweed/drills/project.md) is committed in `dfbb207`.
@@ -168,7 +168,18 @@ Both auditor submissions omitted the required dash before the finding's
 explanation. The controller rejected them with P09 and blocked `0201` in
 `d5ea3be`. It saved the audit work at
 `refs/fireweed/attempts/queue-path-diagnostic/1` (`dc223bd`) and released the
-claim. Audit rounds remain at zero. The spec clarification awaits recovery.
+claim. Audit rounds remain at zero.
+
+The owner approved narrowing `PRJ-069` to the behavior the existing eval
+asserts. `Queue` rejects a regular-file `changes` path and identifies it in
+the error. `Check` reports a non-warning C03 diagnostic identifying the same
+path. Author commit `fde499d` made the revision and removed `blocked` using
+the documented resume procedure, preserving the assigned ID, run and audit
+phase. `fireweed check` and the focused `PRJ-069` and `APP-116`/`APP-117` evals
+passed. Automatic approval review rejected the lifecycle command before it
+ran because it required specific authorization to send repository context to
+OpenAI Codex. No claim is active. The saved attempt and failed drill ref remain
+available.
 
 The report lists no contradicted Decisions. Its other observations cover
 diagnostic codes and wording relied on by app, duplicate C08 messages,
@@ -199,10 +210,11 @@ need first native reports and retained refs.
 
 ## Next step
 
-Review recovery of blocked `0201` with the owner. The proposed scope is the
-existing public behavior: `Queue` rejects a regular-file `changes` path and
-identifies it, and `Check` reports C03. Recover the change through Fireweed's
-normal audit before renewing `project`. The remaining drill order is
-`project`, `checks`, `runner`, then `app` in the [regeneration goal](GOAL.md).
+Obtain explicit authorization for the configured Codex audit, implementation
+and project reconstruction contexts. Resume `0201` at audit with the verified
+controller, then renew `project` after Fireweed applies it. Commit the native
+report, retain the proof ref and stop for owner review before `checks`. The
+remaining drill order is `project`, `checks`, `runner`, then `app` in the
+[regeneration goal](GOAL.md).
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
