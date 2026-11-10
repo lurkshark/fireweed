@@ -84,7 +84,7 @@ The report lists no contradicted Decisions. The owner deferred all three gaps:
 - `CON-017` through `CON-019` specify codes and, for duplicates, a subject.
   The evals also pin error wording or prefixes.
 
-**Gitstore renewed, awaiting owner review.** The verified controller ran
+**Gitstore report retained, proof renewal required.** The verified controller ran
 `fireweed drill gitstore` at `617e657`. All 930 cases passed on the configured
 retry, including 10 gitstore cases and 920 transitive dependent cases. The
 [native report](../../.fireweed/drills/gitstore.md) is committed in `0b34909`.
@@ -93,10 +93,15 @@ Fireweed cleaned up both scratch locations and retained
 `refs/fireweed/drills/gitstore/20261110T041541.100354000`. The proof changes
 only disposable gitstore paths. The report lists no contradicted Decisions.
 
-- `GIT-010`: A public API probe reproduced a bug in the current product.
-  `CASRef` with an empty expected value deleted an existing ref and returned
-  success. The reconstruction rejects the mismatch. The report separately
-  identifies unspecified symbolic-ref behavior.
+- `GIT-010`: The owner approved fixing deletion on an expected-absence
+  mismatch. Fireweed applied and archived
+  [0198](../../changes/archive/0198-casref-empty-expected-delete.md) in `feabbc7`
+  and [0199](../../changes/archive/0199-casref-zero-expected-delete.md) in
+  `3fa1918`. Empty and explicit all-zero expectations now atomically check
+  absence and preserve existing refs on mismatch. Both changes had genuine
+  fail-first evidence and separate audits with no findings. The final full
+  implementation verification passed 933 cases. The report separately lists
+  unspecified symbolic-ref behavior for review.
 - `GIT-007`: Dependent evals required `:(literal)` paths from lifecycle
   callers, which the current product accepts. The reconstruction added that
   support on retry. The target spec leaves path spelling and index state
@@ -104,6 +109,12 @@ only disposable gitstore paths. The report lists no contradicted Decisions.
 - `GIT-001`, `GIT-003` and `GIT-005` leave unborn HEAD, precedence for
   overlapping tracked edits, and environment inheritance and PATH lookup
   implicit.
+
+An isolated check of the retained reconstruction `3382ac8` against the
+current gitstore evals failed the `GIT-010` explicit-zero case. The
+reconstruction rejects the all-zero expected value even when the ref is
+absent. The retained report and ref document the earlier result. A new
+gitstore drill is needed to prove the updated behavior.
 
 **Reuse workflow.** The retained ref and commit `38aa8fc` match the committed
 passing report and change only workflow's disposable files. Since that report,
@@ -128,9 +139,9 @@ need first native reports and retained refs.
 
 ## Next step
 
-Review the gitstore proof and gaps with the owner, including whether to fix
-the reproduced `GIT-010` bug before `assets`. Continue the
-[regeneration goal](GOAL.md) after owner instruction. The remaining drill
-order is `assets`, `project`, `checks`, `runner`, then `app`.
+Review the applied GIT-010 fixes and the gitstore proof renewal with the
+owner. After owner instruction, renew `gitstore` before `assets` in the
+[regeneration goal](GOAL.md). The remaining drill order is `gitstore`,
+`assets`, `project`, `checks`, `runner`, then `app`.
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
