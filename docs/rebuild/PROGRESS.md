@@ -7,7 +7,7 @@ drill reports, and the owner accepted each proof and deferred its remaining
 gaps. Earlier milestone narratives, failed proofs and recovery notes are in
 Git history before this revision.
 
-Thirteen owner-drafted changes are queued (0202–0214). Nothing has started them,
+Sixteen owner-drafted changes are queued (0202–0217). Nothing has started them,
 and no claim is active.
 
 ## Controller
@@ -93,7 +93,9 @@ The owner deferred these gaps. The queued change that addresses one is linked.
   placeholders (CHK-032); boundary rule attribution (CHK-057); canary
   identity (CHK-059); probe output ordering (CHK-065); Doctor fixtures that
   cannot build the root binary in the reconstruction workspace (CHK-061).
-- **workflow:** raw boundary-hook output retention (FLOW-052).
+- **workflow:** raw boundary-hook output retention (FLOW-052); P08 flags module runs rather than rework chains (FLOW-111;
+  [0217](../../changes/0217-rework-chain-warning.md), see
+  [D010](DECISIONS.md#d010--p08-warns-on-rework-chains)).
 - **runner:** P01 for approval refusals (RUN-041;
   [0205](../../changes/0205-approval-refusal-code.md)); shell quoting for
   already-quoted placeholders (RUN-003); repeated verification on successful

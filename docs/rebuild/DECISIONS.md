@@ -59,3 +59,15 @@ drill whose own evals pass but whose dependents fail ends as a failing drill.
 [0202](../../changes/0202-drill-independent-signal.md) specifies this. Proofs
 recorded before 0202 that passed on a retry remain valid evidence of a
 rebuild, not of spec sufficiency alone.
+
+## D010 — P08 warns on rework chains
+
+The design describes P08 as three or more consecutive applied changes on one
+module and gives its purpose as catching a regression chain, where each change
+fixes the edge case the last one exposed. The module run is only a proxy:
+replaying the archive, it mostly flagged planned bootstrap work and missed
+chains with an unrelated change between links. P08 instead warns when the
+latest applied change ends a chain of three changes that rework the same spec
+IDs within the last ten applied changes.
+[0217](../../changes/0217-rework-chain-warning.md) specifies this; the
+purpose is unchanged.
