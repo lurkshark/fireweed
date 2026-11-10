@@ -157,6 +157,19 @@ classified the queue read failure as C13. The same focused app eval passed
 against the current product. The project queue and Check specs leave this
 diagnostic implicit.
 
+The owner approved making C03 explicit. Fireweed started
+[0201-queue-path-diagnostic](../../changes/0201-queue-path-diagnostic.md)
+and assigned `PRJ-069`. The project eval passed with the other 133 cases.
+Audit found that the change also promises C03 on the public `Queue` error,
+whose classification is private today. The eval asserts the path on `Queue`
+and the C03 diagnostic on `Check`. App derives C03 from that diagnostic.
+
+Both auditor submissions omitted the required dash before the finding's
+explanation. The controller rejected them with P09 and blocked `0201` in
+`d5ea3be`. It saved the audit work at
+`refs/fireweed/attempts/queue-path-diagnostic/1` (`dc223bd`) and released the
+claim. Audit rounds remain at zero. The spec clarification awaits recovery.
+
 The report lists no contradicted Decisions. Its other observations cover
 diagnostic codes and wording relied on by app, duplicate C08 messages,
 change numbering past 9999, intermediate graph validation, and stale-view
@@ -186,9 +199,10 @@ need first native reports and retained refs.
 
 ## Next step
 
-Review the project report and the queue-read diagnostic mismatch with the
-owner before renewing project or starting `checks` in the
-[regeneration goal](GOAL.md). The remaining drill order is `project`,
-`checks`, `runner`, then `app`.
+Review recovery of blocked `0201` with the owner. The proposed scope is the
+existing public behavior: `Queue` rejects a regular-file `changes` path and
+identifies it, and `Check` reports C03. Recover the change through Fireweed's
+normal audit before renewing `project`. The remaining drill order is
+`project`, `checks`, `runner`, then `app` in the [regeneration goal](GOAL.md).
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
