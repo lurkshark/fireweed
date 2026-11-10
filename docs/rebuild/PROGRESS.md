@@ -142,6 +142,27 @@ already supplies. The report identifies the heading as implicit in AST-002
 and the missing-ID handoff to Doctor as implicit in AST-058. The remaining
 observations revisit the deferred mixed-zone, JUnit and import-resolution gaps.
 
+**Project drill failed, awaiting owner review.** The verified controller ran
+`fireweed drill project` at `d4e8d95`. All 133 project cases and 790 dependent
+cases passed after the configured retry. One app case failed. The
+[native report](../../.fireweed/drills/project.md) is committed in `dfbb207`.
+Fireweed cleaned up both scratch locations and retained the reconstruction
+`917fb02dba3b227f5c57ed422455e7e5881735c7` at
+`refs/fireweed/drills/project/20261110T144729.916008000`. Its changes are
+confined to disposable project paths.
+
+`Test_APP_116_APP_117_ListUsageConfigurationAndQueueErrors` requires a C03
+error from `project.Check` when `changes` is a regular file. The reconstruction
+classified the queue read failure as C13. The same focused app eval passed
+against the current product. The project queue and Check specs leave this
+diagnostic implicit.
+
+The report lists no contradicted Decisions. Its other observations cover
+diagnostic codes and wording relied on by app, duplicate C08 messages,
+change numbering past 9999, intermediate graph validation, and stale-view
+and history behavior. It also identifies the design's warning for specs
+outside configured globs as an unassigned contract.
+
 **Reuse workflow.** The retained ref and commit `38aa8fc` match the committed
 passing report and change only workflow's disposable files. Since that report,
 `0197` changed the checks dependency. The retained workflow reconstruction
@@ -165,8 +186,9 @@ need first native reports and retained refs.
 
 ## Next step
 
-Run the owner-approved `project` drill with the verified controller. Stop
-for review before `checks` in the [regeneration goal](GOAL.md). The remaining
-drill order is `project`, `checks`, `runner`, then `app`.
+Review the project report and the queue-read diagnostic mismatch with the
+owner before renewing project or starting `checks` in the
+[regeneration goal](GOAL.md). The remaining drill order is `project`,
+`checks`, `runner`, then `app`.
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
