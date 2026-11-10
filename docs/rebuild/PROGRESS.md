@@ -38,10 +38,9 @@ WF4 is complete. The owner reviewed the report and approved these dispositions:
   in `be8fa32` to reject a nonzero exit without a module-attributed violation.
   `fireweed stamp` and `fireweed check` passed. The change is unclaimed.
 
-Implementation of `0197` awaits approval. Automatic approval review rejected
-`fireweed next` before launch because this lifecycle sends checks source,
-specs, interfaces, evals and change context to the OpenAI Codex service.
-The controller queue contains only `0197` and no claim was created.
+The owner approved the `0197` worker and restricted audit contexts for OpenAI
+Codex and granted standing authorization for the configured change lifecycle.
+[SYSTEM.md](../../SYSTEM.md#agent-configuration) records the scope and destination.
 
 ## Controller
 
@@ -51,9 +50,7 @@ Controller source: `6cc26290333cb47c1a314b16b8b50679afdd07f4`
 
 ## Next step
 
-Obtain explicit owner approval to send the `0197` worker and restricted audit
-contexts to OpenAI Codex at `chatgpt.com/backend-api/codex`. Then run the
-change through the normal fail-first, separate audit and implementation
+Run `0197` through the normal fail-first, separate audit and implementation
 lifecycle with the recorded controller.
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.

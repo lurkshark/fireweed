@@ -20,6 +20,8 @@ The controller is `.fireweed/bin/fireweed`, a separate build of this repository,
 
 Workers and regeneration use exactly `codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c 'model_reasoning_effort="high"' -s workspace-write {prompt}`. Separate restricted auditors use exactly `codex exec --ephemeral --ignore-user-config -m gpt-6-astra -c 'model_reasoning_effort="medium"' -s workspace-write {prompt}`. Do not silently change the model or effort or retry indefinitely after an access failure.
 
+The repository owner grants standing authorization for the configured workers and separate auditors to send the context needed for owner-approved Fireweed changes to OpenAI Codex at `https://chatgpt.com/backend-api/codex`. Worker context may include relevant tracked source, interfaces, Specs, evals, change files, operational instructions, playbooks and verification feedback. Auditor context stays restricted to the change, projected spec, target evals and audit playbook. Keep credentials and unrelated local data out of the submitted context.
+
 ## Author and worker policy
 
 Authors may commit change files and protected setup or docs on main, between active changes and in separate commits. Only fireweed applies Specs and Decisions, makes phase commits and archives. Workers follow context and zones, never commit, never weaken enforcement, never invoke lifecycle mutators (start, done, release, next, run, abandon) and never edit run, phase or Provenance. Audit stays enabled with separate restricted context. No push, publication or release tags without explicit owner instruction.
