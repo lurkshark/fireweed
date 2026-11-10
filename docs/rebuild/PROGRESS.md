@@ -219,6 +219,19 @@ gaps. They cover shell quoting for already-quoted placeholders
 (`RUN-003`), repeated verification on successful phases (`RUN-014`), and
 the P01 diagnostic for approval refusals (`RUN-041`).
 
+**App proof awaits owner review.** The verified controller ran
+`fireweed drill app` at `2ab6c98`. All 323 app cases passed on the first
+attempt. The [native report](../../.fireweed/drills/app.md) is committed in
+`dd7d94b`. Fireweed cleaned up both scratch locations and retained
+`b6ace52d10b327893d9d6ec3137f6ce617f344bb` at
+`refs/fireweed/drills/app/20261110T201533.930973000`. Its changes are
+confined to disposable app paths.
+
+The report lists no contradicted Decisions. Its four gaps await owner
+disposition. They cover access to the approved snapshot when the live queue
+cannot be parsed, recovering private project diagnostic codes, naming Doctor
+probes in JSON, and the grammar for module names and prefixes.
+
 **Two historical passing refs remain missing.** The prior passing reports
 remain in Git history.
 The following refs under `refs/fireweed/drills/<module>/` are absent from this
@@ -231,12 +244,11 @@ across 119 local object stores, including the historical candidate directories.
 | checks | `20261107T002339.020159000` | `c0ca0397e3781410e795f27b52de2b2105350559` |
 
 The renewed project and checks proofs supersede these historical reports.
-`app` needs its first native report and retained ref.
+All eight modules now have passing native reports and retained refs.
 
 ## Next step
 
-Run the owner-approved `app` drill with the verified controller, commit the
-native report, retain the proof ref, and stop for owner review. This is the
-remaining drill in the [regeneration goal](GOAL.md).
+Review the app proof and its four gaps with the owner. The app drill was the
+last drill in the [regeneration goal](GOAL.md). Stop here for review.
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
