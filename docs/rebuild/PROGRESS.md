@@ -67,20 +67,36 @@ eval, which passed in isolation before the full retry.
 
 ## Drill proof inventory
 
+**Contracts renewed, awaiting owner review.** The verified controller ran
+`fireweed drill contracts` at `e7f1554`. All 1,119 cases passed on the first
+attempt, including 64 contracts cases and 1,055 transitive dependent cases.
+The [native report](../../.fireweed/drills/contracts.md) is committed in
+`24f9d94`. Fireweed cleaned up both scratch locations and retained
+`30c7cdfd356d7068f841179c9c4a1fb1321be6c4` at
+`refs/fireweed/drills/contracts/20261110T034341.899515000`.
+The proof changes only disposable contracts paths.
+
+The report lists no contradicted Decisions and three questions for review:
+
+- `CON-002` / `CON-009` leave fenced headings and level-one section boundaries
+  implicit. The reconstruction handles these differently from the current code.
+- `CON-008` leaves equality for YAML NaN and offset timestamp keys ambiguous.
+- `CON-017` through `CON-019` specify codes and, for duplicates, a subject.
+  The evals also pin error wording or prefixes.
+
 **Reuse workflow.** The retained ref and commit `38aa8fc` match the committed
 passing report and change only workflow's disposable files. Since that report,
 `0197` changed the checks dependency. The retained workflow reconstruction
 passed the `FLOW-027` and `FLOW-062` evals and the app CI boundary-failure eval
 against the current candidate in a temporary clone.
 
-**Renew the five missing proofs.** The prior passing reports are committed.
+**Renew the four remaining missing proofs.** The prior passing reports are committed.
 The following refs under `refs/fireweed/drills/<module>/` are absent from this
 checkout and GitHub origin advertises none. Their exact commits were unavailable
 across 119 local object stores, including the historical candidate directories.
 
 | Module | Ref suffix | Expected commit |
 | --- | --- | --- |
-| contracts | `20261101T041658.861289000` | `518caf16bb6f21d86b3986bb1ef52899abad5376` |
 | gitstore | `20261101T170411.628421000` | `3cdc945cea3923dd22877e56e9a570f7a3caf346` |
 | assets | `20261101T173119.320562000` | `53ed45d3ee36dcac05fc5b736fa461152dd011d4` |
 | project | `20261102T031647.104747000` | `481bc00c1da360d3e8bf76cd5ba04053d2dccaeb` |
@@ -92,10 +108,9 @@ need first native reports and retained refs.
 
 ## Next step
 
-Await the owner's instruction to start the [regeneration goal](GOAL.md).
-The planned order is `contracts`, `gitstore`,
-`assets`, `project`, `checks`, `runner`, then `app`. For each module, commit
-the native report, retain the proof ref, and review its result and gaps before
-advancing. The workflow proof is already retained.
+Review the contracts report and its three questions with the owner. Start
+`gitstore` after the owner's instruction to continue the [regeneration goal](GOAL.md).
+The remaining order is `gitstore`, `assets`, `project`, `checks`, `runner`,
+then `app`.
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
