@@ -7,7 +7,7 @@ drill reports, and the owner accepted each proof and deferred its remaining
 gaps. Earlier milestone narratives, failed proofs and recovery notes are in
 Git history before this revision.
 
-Seven owner-drafted changes are queued (0202–0208). Nothing has started them,
+Thirteen owner-drafted changes are queued (0202–0214). Nothing has started them,
 and no claim is active.
 
 ## Controller
@@ -85,7 +85,7 @@ The owner deferred these gaps. The queued change that addresses one is linked.
   project wording (PRJ-021, PRJ-031, PRJ-041, PRJ-044;
   [0208](../../changes/0208-static-cause-evals.md)); C01 and U02 carried both
   as metadata and as message prefixes (PRJ-004, PRJ-040, PRJ-056, PRJ-058,
-  PRJ-066); duplicate C08 diagnostics, partial projections, numbering past
+  PRJ-066; [0209](../../changes/0209-project-coded-errors.md)); duplicate C08 diagnostics, partial projections, numbering past
   9999, intermediate graph validation, stale-view history, and the design's
   warning for specs outside configured globs.
 - **checks:** which testcase-name tokens count as IDs (CHK-028, CHK-080;
@@ -99,8 +99,9 @@ The owner deferred these gaps. The queued change that addresses one is linked.
   already-quoted placeholders (RUN-003); repeated verification on successful
   phases (RUN-014).
 - **app:** approved-snapshot access when the live queue cannot be parsed
-  (APP-004, APP-012); recovering private project codes by matching messages
-  (APP-037, APP-078, APP-085); Doctor probe names in JSON (APP-067); the
+  (APP-004, APP-012); recovering lower-module codes by matching messages
+  (APP-037, APP-078, APP-085; 0209–0212 give lower-module errors their
+  codes and [0214](../../changes/0214-app-reads-error-codes.md) reads them); Doctor probe names in JSON (APP-067); the
   module name and prefix grammar (APP-103).
 
 ## Next step
