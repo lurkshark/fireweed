@@ -174,6 +174,27 @@ wording, duplicate C08 diagnostics, partial projections, numbering past 9999,
 intermediate graph validation, stale-view and history behavior, and the
 design's warning for specs outside configured globs.
 
+**Renewed checks proof awaits owner review.** The verified controller ran
+`fireweed drill checks` at `9e81519`. All 791 cases passed on the configured
+retry, including 125 checks and 666 dependent cases. All three CHK-043 cases
+and the app CI boundary-failure eval passed. The
+[native report](../../.fireweed/drills/checks.md) is committed in `8369532`.
+Fireweed cleaned up both scratch locations and retained
+`3f0279d42e2bcca4efd7641d6a3a5ebd8d40ace2` at
+`refs/fireweed/drills/checks/20261110T174227.798503000`. Its changes are
+confined to disposable checks paths.
+
+The retry fixed a JUnit parser ambiguity that dropped failure details from
+numbered test labels. The `RUN-044` Unicode excerpt eval passed after that
+correction. Two Doctor fixtures could not build the executable in the
+worker's reconstruction workspace because of a missing module checksum.
+Both fixtures passed in the controller's full scratch checkout.
+
+The report lists no contradicted Decisions. Its gaps await owner disposition.
+They cover ID matching for numbered testcase labels, shell quoting around
+hook placeholders, boundary rule attribution, canary identity, probe output
+ordering, and fixture availability in the reconstruction workspace.
+
 **Reuse workflow.** The retained ref and commit `38aa8fc` match the committed
 passing report and change only workflow's disposable files. Since that report,
 `0197` changed the checks dependency. The retained workflow reconstruction
@@ -191,15 +212,13 @@ across 119 local object stores, including the historical candidate directories.
 | project | `20261102T031647.104747000` | `481bc00c1da360d3e8bf76cd5ba04053d2dccaeb` |
 | checks | `20261107T002339.020159000` | `c0ca0397e3781410e795f27b52de2b2105350559` |
 
-Reassess reuse if an exact historical proof is recovered from a backup.
-Checks needs current proof of the `0197` CHK-043 change. `runner` and `app`
-need first native reports and retained refs.
+The renewed project and checks proofs supersede these historical reports.
+`runner` and `app` need first native reports and retained refs.
 
 ## Next step
 
-Run the owner-approved `checks` drill with the verified controller, commit
-the native report, retain the proof ref, and stop for owner review before
-`runner`. The remaining drill order is `checks`, `runner`, then `app` in the
-[regeneration goal](GOAL.md).
+Review the renewed checks proof and its gaps with the owner. Wait for the
+owner's instruction to start `runner`. The remaining drill order is `runner`,
+then `app` in the [regeneration goal](GOAL.md).
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
