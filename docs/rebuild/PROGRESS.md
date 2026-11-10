@@ -38,6 +38,11 @@ WF4 is complete. The owner reviewed the report and approved these dispositions:
   in `be8fa32` to reject a nonzero exit without a module-attributed violation.
   `fireweed stamp` and `fireweed check` passed. The change is unclaimed.
 
+Implementation of `0197` awaits approval. Automatic approval review rejected
+`fireweed next` before launch because this lifecycle sends checks source,
+specs, interfaces, evals and change context to the OpenAI Codex service.
+The controller queue contains only `0197` and no claim was created.
+
 ## Controller
 
 The installed `.fireweed/bin/fireweed` was rebuilt from clean main for WF2.
@@ -46,7 +51,9 @@ Controller source: `6cc26290333cb47c1a314b16b8b50679afdd07f4`
 
 ## Next step
 
-When selected for implementation, run `0197-boundary-hook-nonzero-exit`
-through the normal fail-first, separate audit and implementation lifecycle.
+Obtain explicit owner approval to send the `0197` worker and restricted audit
+contexts to OpenAI Codex at `chatgpt.com/backend-api/codex`. Then run the
+change through the normal fail-first, separate audit and implementation
+lifecycle with the recorded controller.
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
