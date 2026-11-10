@@ -320,24 +320,34 @@ func Test_GIT_004_GIT_008_GIT_009_GIT_010_BlobsAndRefCAS(t *testing.T) {
 	}
 }
 
-func Test_GIT_010_DeleteWithEmptyExpectedRef(t *testing.T) {
-	root := repo(t)
-	name := "refs/fireweed/eval-claim"
+func Test_GIT_010_DeleteWithAbsentExpectedRef(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		old  string
+	}{
+		{name: "Empty", old: ""},
+		{name: "ZeroSHA1", old: strings.Repeat("0", 40)},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := repo(t)
+			name := "refs/fireweed/eval-claim"
 
-	if err := gitstore.CASRef(root, name, "", ""); err != nil {
-		t.Errorf("delete of absent ref with empty expected value: %v", err)
-	}
-	if got, exists, err := gitstore.Ref(root, name); err != nil || exists || got != "" {
-		t.Errorf("Ref after absent delete = %q, %v, %v, want absent", got, exists, err)
-	}
+			if err := gitstore.CASRef(root, name, tc.old, ""); err != nil {
+				t.Errorf("delete of absent ref: %v", err)
+			}
+			if got, exists, err := gitstore.Ref(root, name); err != nil || exists || got != "" {
+				t.Errorf("Ref after absent delete = %q, %v, %v, want absent", got, exists, err)
+			}
 
-	oid := head(t, root)
-	git(t, root, "update-ref", name, oid)
-	if err := gitstore.CASRef(root, name, "", ""); err == nil {
-		t.Error("delete of existing ref with empty expected value succeeded")
-	}
-	if got, exists, err := gitstore.Ref(root, name); err != nil || !exists || got != oid {
-		t.Errorf("Ref after mismatched delete = %q, %v, %v, want %q, true, nil", got, exists, err, oid)
+			oid := head(t, root)
+			git(t, root, "update-ref", name, oid)
+			if err := gitstore.CASRef(root, name, tc.old, ""); err == nil {
+				t.Error("delete of existing ref succeeded despite expected absence")
+			}
+			if got, exists, err := gitstore.Ref(root, name); err != nil || !exists || got != oid {
+				t.Errorf("Ref after mismatched delete = %q, %v, %v, want %q, true, nil", got, exists, err, oid)
+			}
+		})
 	}
 }
 
