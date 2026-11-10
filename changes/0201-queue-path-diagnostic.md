@@ -1,7 +1,6 @@
 ---
 already_satisfied:
     - PRJ-069
-blocked: audit verification attempts exhausted
 module: project
 phase: audit
 run: 20261110T161922-8520833f1e629a2ca962e094
@@ -23,7 +22,7 @@ The current implementation already satisfies the requirement.
 ## Added
 
 ### PRJ-069
-When `changes` is a regular file, Queue MUST return an error with code C03 and Check MUST return a non-warning diagnostic with code C03. Both MUST identify `changes`.
+When `changes` is a regular file, Queue MUST return an error identifying `changes`. Check MUST report a non-warning C03 diagnostic identifying `changes`.
 
 ## Modified
 
@@ -34,8 +33,9 @@ When `changes` is a regular file, Queue MUST return an error with code C03 and C
 ## Notes
 
 Add one project-level public eval using the assigned ID and a valid fixture
-with a regular file at `changes`. Assert the C03 cause from `Queue` and a
-non-warning C03 diagnostic from `Check`, both identifying the queue path.
+with a regular file at `changes`. Assert that `Queue` rejects the path with
+an error identifying `changes` and `Check` reports a non-warning C03
+diagnostic identifying the same path.
 Preserve the existing app eval and the C13 behavior for ambiguous slugs.
 The new case must pass against the existing implementation. Keep product
 code, interfaces, and other project contracts unchanged.
