@@ -275,17 +275,18 @@ func Ref(root, name string) (string, bool, error) {
 }
 
 func CASRef(root, name, old, new string) error {
+	const zeroSHA1 = "0000000000000000000000000000000000000000"
 	if old == "" {
-		old = strings.Repeat("0", 40)
-		if new == "" {
-			// Git's delete mode treats an all-zero old ID as unconditional.
-			if strings.ContainsRune(name, '\x00') {
-				return errors.New("ref name contains NUL")
-			}
-			input := []byte("verify " + name + "\x00" + old + "\x00")
-			_, err := git(root, input, nil, "update-ref", "--stdin", "-z")
-			return err
+		old = zeroSHA1
+	}
+	if new == "" && old == zeroSHA1 {
+		// Git's delete mode treats an all-zero old ID as unconditional.
+		if strings.ContainsRune(name, '\x00') {
+			return errors.New("ref name contains NUL")
 		}
+		input := []byte("verify " + name + "\x00" + old + "\x00")
+		_, err := git(root, input, nil, "update-ref", "--stdin", "-z")
+		return err
 	}
 	var args []string
 	if new == "" {
