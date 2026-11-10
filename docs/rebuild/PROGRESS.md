@@ -84,7 +84,7 @@ The report lists no contradicted Decisions. The owner deferred all three gaps:
 - `CON-017` through `CON-019` specify codes and, for duplicates, a subject.
   The evals also pin error wording or prefixes.
 
-**Gitstore proof renewed, awaiting owner review.** The verified controller
+**Renewed gitstore proof accepted.** The verified controller
 ran `fireweed drill gitstore` at `c3863e5`. All 933 cases passed on the first
 attempt, including 13 gitstore cases and 920 transitive dependent cases. Both
 GIT-010 expected-absence forms passed. The
@@ -101,8 +101,8 @@ passed fail-first, separate audits, and full verification. The earlier report
 at `0b34909` and proof `3382ac8` remain in history and at the earlier drill ref.
 That reconstruction failed the explicit-zero eval added after its drill.
 
-The renewed report lists no contradicted Decisions. Its remaining questions
-are for owner review:
+The renewed report lists no contradicted Decisions. The owner deferred its
+remaining gaps:
 
 - `GIT-001` and `GIT-003` leave unborn HEAD and precedence for overlapping
   tracked edits implicit.
@@ -135,8 +135,8 @@ need first native reports and retained refs.
 
 ## Next step
 
-Review the renewed gitstore proof and report gaps with the owner before
-starting `assets` in the [regeneration goal](GOAL.md). The remaining drill
-order is `assets`, `project`, `checks`, `runner`, then `app`.
+Run the owner-approved `assets` drill with the verified controller. Stop for
+review before `project` in the [regeneration goal](GOAL.md). The remaining
+drill order is `assets`, `project`, `checks`, `runner`, then `app`.
 
 Deadline set by the owner: **2026-11-10 22:51:05 UTC**.
