@@ -242,6 +242,9 @@ When Check rejects syntax or duplicate identities in a module SPEC.md, the
 failure diagnostic MUST identify that document's repository-relative path in
 Diagnostic.Path.
 
+### PRJ-069
+When `changes` is a regular file, Queue MUST return an error identifying `changes`. Check MUST report a non-warning C03 diagnostic identifying `changes`.
+
 ## Decisions
 
 [0126-spec-history-query] History reads the project's current archive files, as the archive-backed show
