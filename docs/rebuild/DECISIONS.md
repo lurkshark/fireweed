@@ -18,7 +18,7 @@ product. This allocation did not itself change the controller pin.
 
 | Range | Area and fixed assignments |
 | --- | --- |
-| C01–C99 | Deterministic configuration and static checks. C01 configuration discovery/decoding; C02 module graph; C03 document/item syntax; C04 normative text; C05 ID ownership/uniqueness; C06 spec tags; C07 change structure/Motivation; C08 bases; C09 handles; C10 coverage; C11 eval-hook/JUnit contract; C12 metadata/zone declarations; C13 queue identity. C14–C16 doctor diagnostics are allocated in D007. C17 spec shape, C18 copied conventions, C19 Decision length retain design meanings. |
+| C01–C99 | Deterministic configuration and static checks. C01 configuration discovery/decoding; C02 module graph; C03 document/item syntax; C04 normative text; C05 ID ownership/uniqueness; C06 spec tags; C07 change structure/Motivation; C08 bases; C09 handles; C10 coverage; C11 eval-hook/JUnit contract; C12 metadata/zone declarations; C13 queue identity. C14–C16 doctor diagnostics are allocated in D007. C17 spec shape, C18 copied conventions, C19 Decision length retain design meanings. C20 is a SPEC.md outside the module globs (0225). |
 | P01–P99, P2-01 | Lifecycle and approval. P01 preconditions; P02 claims; P03 approved state; P04 approval warning; P05 stale base; P06 blocked/Questions; P07 unapproved-work limit; P08 repeated-module warning; P09 audit submission. Existing P2-01 remains missing genuine fail-first evidence. |
 | Z01–Z99 | Phase-zone permissions. Existing Z01 remains a forbidden path edit. |
 | X01–X99 | Boundaries. X01 unsuppressed violation; X02 required hook missing or unable to complete; X03 reasoned opt-out; X04 boundary enforcement unnecessary. B05 is retired. |
@@ -56,7 +56,7 @@ strongest signal that a module relies on behavior its spec never states.
 Feeding dependent failures into a drill retry turns that signal into an answer
 key, so drill retries carry only reconstruction and own-eval failures, and a
 drill whose own evals pass but whose dependents fail ends as a failing drill.
-[0202](../../changes/0202-drill-independent-signal.md) specifies this. Proofs
+[0202](../../changes/archive/0202-drill-independent-signal.md) specifies this. Proofs
 recorded before 0202 that passed on a retry remain valid evidence of a
 rebuild, not of spec sufficiency alone.
 
@@ -69,5 +69,5 @@ replaying the archive, it mostly flagged planned bootstrap work and missed
 chains with an unrelated change between links. P08 instead warns when the
 latest applied change ends a chain of three changes that rework the same spec
 IDs within the last ten applied changes.
-[0217](../../changes/0217-rework-chain-warning.md) specifies this; the
+[0217](../../changes/archive/0217-rework-chain-warning.md) specifies this; the
 purpose is unchanged.

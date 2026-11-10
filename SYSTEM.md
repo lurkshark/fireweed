@@ -10,6 +10,8 @@ contracts owns public data, Markdown grammar, IDs, hashes and zones. gitstore ow
 
 Module path: github.com/lurkshark/fireweed. Thin api.go facades and public contracts are retained interfaces; all behavior belongs under internal/. Evals import public packages only and use temporary repositories, explicit fixture Git identities, deterministic local hooks and bounded fake agents. No runtime network calls or private implementation tests. Keep dependencies minimal (YAML parser only initially). Never import a public parent from its own internal implementation; shared data belongs in contracts.
 
+Diagnostic codes: an error for a failure that a spec assigns a D006 code carries that code as a `contracts.CodedError`, and wrapping uses `%w` so `contracts.ErrorCode` still reports it. A module that assigns its own code to a wrapped failure supplies the outer code. Once the app reads codes only through `contracts.ErrorCode` (change app-reads-error-codes), error text does not repeat its own code label; the CLI prints the code once.
+
 Fixture notes: canonicalize macOS temporary paths before comparing symlinked locations; parse Git stdout separately from stderr and use `git --no-optional-locks status` for read-only status. Avoid case-only ref names on case-insensitive filesystems. Keep shared facade types in retained model packages to avoid import cycles. Accept the supplied macOS sh diagnosis: fixtures receiving long prompt arguments use Bash or stdin; do not reinterpret it as a timeout or investigate it again.
 
 ## Controller and product
