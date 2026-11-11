@@ -7,7 +7,7 @@ drill reports, and the owner accepted each proof and deferred its remaining
 gaps. Earlier milestone narratives, failed proofs and recovery notes are in
 Git history before this revision.
 
-The owner approved changes 0202–0233. Changes 0202–0221 have applied. In 0210,
+The owner approved changes 0202–0233. Changes 0202–0222 have applied. In 0210,
 Fireweed resumed the saved attempt with both CHK-048 assertions intact after
 the owner approved marking that ID `already_satisfied`.
 
@@ -22,13 +22,11 @@ after the first 0221 run exposed remaining text classifiers. Fireweed applied
 it, restored 0221's saved implementation, and verified all 323 app cases
 against the unlabeled checks errors.
 
-Fireweed blocked 0222 after two implementation attempts. All 188 workflow
-cases passed. Dependent evals still assert workflow code labels in app
-(APP-091–APP-093 and APP-130–APP-131) and runner (RUN-011–RUN-012). Fireweed
-saved `refs/fireweed/attempts/workflow-unlabeled-errors/1` and released the
-claim. Changes 0223–0233 remain queued. The owner also requested queuing
-0234-worker-declared-block after 0222 released its claim. Links use archive
-paths, which resolve once each change applies.
+0222 exposed dependent evals that asserted workflow code labels. The owner
+approved separate app and runner eval fixes. Both passed audit and applied.
+Fireweed restored 0222's saved implementation and verified 188 workflow, 167
+runner and 323 app cases. Changes 0223–0234 remain queued, including the
+separately requested worker-declared blocking change.
 
 ## Controller
 
@@ -135,15 +133,11 @@ The owner deferred these gaps. The queued change that addresses one is linked.
 
 ## Next step
 
-1. Review app and runner `eval_fix` prerequisites for 0222. Assert the existing
-   diagnostic codes through `contracts.ErrorCode` and retain the CLI and
-   lifecycle assertions.
-2. Resume 0222 from the saved attempt and run the remaining changes in queue
-   order with the recorded controller.
-3. After 0230 applies, rebuild the controller from clean main with no run or
+1. Run the remaining changes in queue order with the recorded controller.
+2. After 0230 applies, rebuild the controller from clean main with no run or
    claim active and record the new source here. This lets each successful
    phase run full verification once.
-4. Await owner direction on the remaining
+3. Await owner direction on the remaining
    [full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required).
    Gate 2 requires the queue to be empty again.
 
