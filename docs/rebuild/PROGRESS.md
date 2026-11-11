@@ -7,9 +7,13 @@ drill reports, and the owner accepted each proof and deferred its remaining
 gaps. Earlier milestone narratives, failed proofs and recovery notes are in
 Git history before this revision.
 
-The owner approved changes 0202–0233. Changes 0202–0207 have applied and 0208–0233
-remain queued. Links to queued changes in these docs use their archive paths,
-which resolve once each change applies.
+The owner approved changes 0202–0233. Changes 0202–0209 have applied. Fireweed
+blocked 0210 after two eval attempts with P2-01 for CHK-048. Both CHK-048 cases
+already return the required structured codes because Evaluate wraps the parser
+error with `%w`. Fireweed retained the eval edits at
+`refs/fireweed/attempts/checks-coded-errors/1` and released the claim. Changes
+0211–0233 remain queued. Links to queued changes in these docs use their archive
+paths, which resolve once each change applies.
 
 ## Controller
 
@@ -116,11 +120,13 @@ The owner deferred these gaps. The queued change that addresses one is linked.
 
 ## Next step
 
-1. Run the remaining changes in queue order with the recorded controller.
-2. After 0230 applies, rebuild the controller from clean main with no run or
+1. Review marking CHK-048 `already_satisfied` in 0210 and resuming the saved
+   eval attempt with its structured-code assertions intact.
+2. Run the remaining changes in queue order with the recorded controller.
+3. After 0230 applies, rebuild the controller from clean main with no run or
    claim active and record the new source here. This lets each successful
    phase run full verification once.
-3. Await owner direction on the remaining
+4. Await owner direction on the remaining
    [full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required).
    Gate 2 requires the queue to be empty again.
 
