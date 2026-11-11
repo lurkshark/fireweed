@@ -7,11 +7,17 @@ drill reports, and the owner accepted each proof and deferred its remaining
 gaps. Earlier milestone narratives, failed proofs and recovery notes are in
 Git history before this revision.
 
-The owner approved changes 0202–0233. Changes 0202–0210 have applied. The
-owner approved marking CHK-048 `already_satisfied` in 0210 because Evaluate
-already preserves both parser error codes. Fireweed resumed the saved attempt
-with both assertions intact. Changes 0211–0233 remain queued. Links to queued
-changes in these docs use their archive paths, which resolve once each applies.
+The owner approved changes 0202–0233. Changes 0202–0219 have applied. In 0210,
+Fireweed resumed the saved attempt with both CHK-048 assertions intact after
+the owner approved marking that ID `already_satisfied`.
+
+Fireweed blocked 0220 after two implementation attempts with E01 for APP-135.
+`show --history` still extracts diagnostic codes from error text through
+`lifecycleError`. With the project prefixes removed, unknown module and ID,
+malformed configuration, and malformed archive cases all report P01. The saved
+attempt is `refs/fireweed/attempts/project-unlabeled-errors/1`. Fireweed released
+the claim. Changes 0221–0233 remain queued. Links use their archive paths, which
+resolve once each applies.
 
 ## Controller
 
@@ -118,11 +124,14 @@ The owner deferred these gaps. The queued change that addresses one is linked.
 
 ## Next step
 
-1. Run the remaining changes in queue order with the recorded controller.
-2. After 0230 applies, rebuild the controller from clean main with no run or
+1. Review a prerequisite app change to read structured error codes in
+   `show --history` while preserving APP-135 exit codes and diagnostics.
+2. Resume 0220 from its saved attempt and run the remaining changes in queue
+   order with the recorded controller.
+3. After 0230 applies, rebuild the controller from clean main with no run or
    claim active and record the new source here. This lets each successful
    phase run full verification once.
-3. Await owner direction on the remaining
+4. Await owner direction on the remaining
    [full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required).
    Gate 2 requires the queue to be empty again.
 
