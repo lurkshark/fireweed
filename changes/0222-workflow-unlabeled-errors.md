@@ -1,6 +1,7 @@
 ---
 bases:
     FLOW-133: 7de84872
+blocked: impl verification attempts exhausted
 module: workflow
 phase: impl
 run: 20261111T171536-ca2a2d5d9f81416ba56ea512
