@@ -47,12 +47,11 @@ func write(root, path string, data []byte) error {
 	return os.WriteFile(p, data, 0644)
 }
 
-// Keep the existing code prefix until callers render the structured code.
 func codedErrorf(code, subject, format string, args ...any) error {
 	return contracts.CodedError{
 		Code:    code,
 		Subject: subject,
-		Cause:   fmt.Errorf(code+": "+format, args...),
+		Cause:   fmt.Errorf(format, args...),
 	}
 }
 
@@ -61,11 +60,7 @@ func hard(ds []project.Diagnostic) error {
 		if d.Warning {
 			continue
 		}
-		message := d.Message
-		if !strings.HasPrefix(message, d.Code+": ") {
-			message = d.Code + ": " + message
-		}
-		cause := contracts.CodedError{Code: d.Code, Subject: d.Path, Cause: errors.New(message)}
+		cause := contracts.CodedError{Code: d.Code, Subject: d.Path, Cause: errors.New(d.Message)}
 		if d.Code == "C08" && strings.HasPrefix(d.Message, "stale base for ") {
 			return codedErrorf("P05", d.Path, "%w", cause)
 		}
@@ -717,9 +712,7 @@ func Verify(ctx context.Context, req model.Request) (model.Result, error) {
 				if d.Warning || d.Code == "" {
 					continue
 				}
-				if d.Code == "X02" && strings.HasPrefix(err.Error(), d.Code+": ") {
-					first = contracts.CodedError{Code: d.Code, Subject: d.Path, Cause: err}
-				} else if d.Code == "X02" || strings.Contains(err.Error(), d.Message) {
+				if d.Code == "X02" || strings.Contains(err.Error(), d.Message) {
 					first = codedErrorf(d.Code, d.Path, "%w", err)
 				} else {
 					first = codedErrorf(d.Code, d.Path, "%s: %w", d.Message, err)
@@ -727,11 +720,7 @@ func Verify(ctx context.Context, req model.Request) (model.Result, error) {
 				break
 			}
 			if first == nil {
-				if strings.HasPrefix(err.Error(), "X02: ") {
-					first = contracts.CodedError{Code: "X02", Cause: err}
-				} else {
-					first = codedErrorf("X02", "", "%w", err)
-				}
+				first = codedErrorf("X02", "", "%w", err)
 			}
 		}
 		if err = hard(ds); err != nil && first == nil {

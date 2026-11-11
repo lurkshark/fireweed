@@ -502,7 +502,7 @@ GC MUST read gc.drill_max_age as a positive Go duration, defaulting to 720h (30 
 GC MUST return the sorted full names of only its successfully deleted refs. It MUST leave all other refs, HEAD, index and working files unchanged.
 
 ### FLOW-133
-For a valid queue, Current(root, "") MUST return an error whose text is `P02: worktree holds no change` when the calling worktree owns none of its change claims.
+For a valid queue, Current(root, "") MUST return an error whose contracts ErrorCode is P02 and whose text is `worktree holds no change` when the calling worktree owns none of its change claims.
 
 ### FLOW-134
 During full impl Verify, mapped testcase failures in valid reports MUST NOT

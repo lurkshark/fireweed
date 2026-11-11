@@ -2,7 +2,7 @@
 bases:
     FLOW-133: 7de84872
 module: workflow
-phase: impl
+phase: applied
 run: 20261111T171536-ca2a2d5d9f81416ba56ea512
 ---
 
@@ -49,9 +49,17 @@ coded-error helper, diagnostic conversion and boundary wrapping. CHK-025
 still requires the checks cause to start with `P2-01:`, and runner evals
 expect that cause text. The workflow eval checks its structured P2-01
 and the fail-first message.
+
+Quick impl verification passed all 188 workflow cases. Focused reruns of the
+dependent failures reproduced the legacy text assertions in app for PRBody
+(P01) and Current after Release (P02), and in runner for Next on a dirty
+worktree (P01) or at the unapproved archive limit (P07). Full verification
+requires audited eval_fix changes in app and runner to read these codes through
+`contracts.ErrorCode`.
 ## Provenance
 - evals 2026-11-11T17:27:45.768577Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=188 failing=18 passing=170
 - audit 2026-11-11T17:28:02.38974Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-astra -c model_reasoning_effort="medium" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-11T19:17:45.63746Z agent=manual fireweed=0.1.0 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=678 failing=0 passing=678
 ## Audit
 
 No findings; checked FLOW-133
