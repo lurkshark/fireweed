@@ -205,6 +205,9 @@ The additional boundaries hooks MUST report module-prefixed violations for impor
 ### AST-058
 Each supplied additional-recipe canary MUST expose its named violation through the corresponding hook. The hooks MUST pass cleanly again after the canary is removed.
 
+### AST-059
+Explain MUST describe C20 as a warning for a SPEC.md file outside the configured modules globs and advise adding a matching glob or moving or renaming the file.
+
 ## Decisions
 
 [0014-go-setup-bundle] Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,
