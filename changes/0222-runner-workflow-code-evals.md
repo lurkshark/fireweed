@@ -3,6 +3,8 @@ eval_fix:
     - RUN-011
     - RUN-012
 module: runner
+phase: audit
+run: 20261111T183620-87ba2d6c8314ee9d90ae4223
 ---
 
 ## Motivation
@@ -30,3 +32,5 @@ In `Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents`, assert P01 through
 `contracts.ErrorCode` for dirty start and P07 for the unapproved archive
 limit. Preserve the failure conditions, no-agent checks, claim and approval
 checks, and all other subtests. This change precedes 0222-workflow-unlabeled-errors.
+## Provenance
+- evals 2026-11-11T18:48:34.842995Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=167 failing=0 passing=167

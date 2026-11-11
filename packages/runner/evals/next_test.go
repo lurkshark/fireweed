@@ -353,8 +353,8 @@ func Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents(t *testing.T) {
 		f := newNextFixture(t, true, true, "normal")
 		nextWrite(t, f.root, "stray.txt", "dirty\n")
 		_, err := f.run(false)
-		if err == nil || !strings.Contains(err.Error(), "P01") {
-			t.Errorf("dirty start error = %v", err)
+		if code, _, ok := contracts.ErrorCode(err); !ok || code != "P01" {
+			t.Errorf("dirty start error code = %q (present: %t), want P01 (error: %v)", code, ok, err)
 		}
 		f.noAgent(t)
 	})
@@ -384,8 +384,8 @@ func Test_RUN_011_RUN_012_StartAndApprovalPrecedeAgents(t *testing.T) {
 			}
 		}
 		_, err := f.run(false)
-		if err == nil || !strings.Contains(err.Error(), "P07") {
-			t.Errorf("unapproved archive bound error = %v", err)
+		if code, _, ok := contracts.ErrorCode(err); !ok || code != "P07" {
+			t.Errorf("unapproved archive bound error code = %q (present: %t), want P07 (error: %v)", code, ok, err)
 		}
 		if refs := nextGit(t, f.root, "for-each-ref", "refs/fireweed/claims"); refs != "" {
 			t.Errorf("P07 claimed change: %s", refs)
