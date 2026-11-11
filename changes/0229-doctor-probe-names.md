@@ -1,5 +1,7 @@
 ---
 module: checks
+phase: audit
+run: 20261111T222805-e028ae6f99a11bae90055070
 ---
 
 ## Motivation
@@ -17,7 +19,7 @@ None. DoctorCheck.Name's format is specified.
 
 ## Added
 
-### new:probe-names
+### CHK-084
 Each canary DoctorCheck Name MUST begin with its probe name (baseline, undeclared, internal_eval, failing_eval, missing_id or recovery), followed by a space and the hook scope when one applies.
 
 ## Modified
@@ -32,3 +34,11 @@ The current names already have this shape for the canary probes, so this
 probably passes first; if it does not, the evals step reports the
 mismatch. Other DoctorChecks, such as agent probes, are not affected.
 Run before 0231.
+
+The CHK-084 eval passes for successful canary checks across global hooks and
+module overrides. It fails for an eval override's failed recovery, which emits
+`recovery failing_eval alpha eval override` with the canary name before the
+hook scope. The name is produced in
+`packages/checks/internal/engine/doctor.go`, which is writable during impl.
+## Provenance
+- evals 2026-11-11T22:43:34.498859Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=130 failing=1 passing=129
