@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
@@ -143,7 +144,7 @@ func Test_FLOW_106_FLOW_107_FLOW_108_StatusModuleMetadata(t *testing.T) {
 	}
 }
 
-func Test_FLOW_109_FLOW_111_StatusProvenanceDriftAndRecentModuleWarning(t *testing.T) {
+func Test_FLOW_109_StatusProvenanceDrift(t *testing.T) {
 	root := fixture(t, "", "", "", "", "")
 	write(t, root, "packages/delta/SPEC.md", "---\nname: delta\nid_prefix: DEL\ndepends_on: []\n---\n# Delta\n\n## Specs\n")
 	archivedImpl(t, root, "0002-alpha-old", "alpha", "2026-06-01T12:00:00Z")
@@ -161,10 +162,93 @@ func Test_FLOW_109_FLOW_111_StatusProvenanceDriftAndRecentModuleWarning(t *testi
 			t.Errorf("drift %s = %d, present %t; want %d", name, got, ok, want)
 		}
 	}
-	d, ok := warningFor(r.Diagnostics, "P08")
-	if !ok || !d.Warning || !strings.Contains(d.Message, "alpha") || !strings.Contains(d.Message, "3") {
-		t.Errorf("P08 warning = %#v", r.Diagnostics)
+}
+
+func Test_FLOW_111_StatusReworkChainWarning(t *testing.T) {
+	const oldest = "0010-original"
+	const first = "0009-add"
+	const middle = "0008-modify"
+	const last = "0002-rework"
+	type edit struct{ section, body string }
+	archive := func(t *testing.T, root, name string, day int, front string, edits ...edit) {
+		t.Helper()
+		archivedImpl(t, root, name, "alpha", fmt.Sprintf("2026-06-%02dT12:00:00Z", day))
+		path := "changes/archive/" + name + ".md"
+		doc := strings.Replace(readFile(t, root, path), "phase: applied\n", "phase: applied\n"+front, 1)
+		for _, edit := range edits {
+			doc = contracts.ReplaceSection(doc, edit.section, "\n"+edit.body+"\n")
+		}
+		write(t, root, path, doc)
 	}
+	for _, tc := range []struct {
+		name        string
+		gap         int
+		front       string
+		lastEdits   []edit
+		latestMatch bool
+		wantIDs     []string
+	}{
+		{name: "three linked changes", front: "fixes: [ALP-001]\n", lastEdits: []edit{{"Removed", "### ALP-002"}}, wantIDs: []string{"ALP-001", "ALP-002", "ALP-003"}},
+		{name: "unrelated changes before tenth predecessor", gap: 9, front: "eval_fix: [ALP-001]\n", wantIDs: []string{"ALP-001", "ALP-003", "ALP-005"}},
+		{name: "predecessor more than ten applied changes back", gap: 10, front: "eval_fix: [ALP-001]\n"},
+		{name: "latest matching predecessor wins", front: "eval_fix: [ALP-001, ALP-004]\n", latestMatch: true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := fixture(t, "", "", "", "", "")
+			wantFiles := []string{first + ".md", middle + ".md", last + ".md"}
+			firstEdits := []edit{{"Added", "### ALP-003\nAlpha MUST expose a third value."}}
+			if tc.gap > 0 {
+				archive(t, root, oldest, 1, "", edit{"Added", "### ALP-005\nAlpha MUST expose a fifth value."})
+				firstEdits = append(firstEdits, edit{"Modified", "### ALP-005\nAlpha MUST expose a nonempty fifth value."})
+				wantFiles = append(wantFiles, oldest+".md")
+			}
+			archive(t, root, first, 2, "", firstEdits...)
+			archive(t, root, middle, 3, "", edit{"Modified", "### ALP-003\nAlpha MUST expose a nonempty third value.\n\n" +
+				"### ALP-001\n" + newClause + "\n\n### ALP-002\nAlpha MUST keep the second value stable."})
+			for i := 0; i < tc.gap; i++ {
+				archivedImpl(t, root, fmt.Sprintf("%04d-unrelated", 11+i), "beta", fmt.Sprintf("2026-06-%02dT12:00:00Z", 4+i))
+			}
+			if tc.latestMatch {
+				archive(t, root, "0007-newer-match", 4, "", edit{"Added", "### ALP-004\nAlpha MUST expose a fourth value."})
+			}
+			archive(t, root, last, 5+tc.gap, tc.front, tc.lastEdits...)
+			commit(t, root, "applied rework fixture")
+			diagnostics := status(t, root).Diagnostics
+			if len(tc.wantIDs) == 0 {
+				if containsCode(diagnostics, "P08") {
+					t.Errorf("unexpected P08: %#v", diagnostics)
+				}
+				return
+			}
+			d, ok := warningFor(diagnostics, "P08")
+			if !ok || !d.Warning {
+				t.Fatalf("expected a P08 warning: %#v", diagnostics)
+			}
+			for _, term := range append(wantFiles, tc.wantIDs...) {
+				if !strings.Contains(d.Message, term) {
+					t.Errorf("P08 message %q omits %q", d.Message, term)
+				}
+			}
+			if strings.Contains(d.Message, "-unrelated.md") {
+				t.Errorf("P08 message %q includes a change outside the chain", d.Message)
+			}
+			archivedImpl(t, root, "0020-unrelated-latest", "beta", "2026-06-20T12:00:00Z")
+			commit(t, root, "apply unrelated change after the chain")
+			if diagnostics := status(t, root).Diagnostics; containsCode(diagnostics, "P08") {
+				t.Errorf("P08 warned for an older chain: %#v", diagnostics)
+			}
+		})
+	}
+	t.Run("same module without shared IDs", func(t *testing.T) {
+		root := fixture(t, "", "", "", "", "")
+		for i := 1; i <= 3; i++ {
+			archive(t, root, fmt.Sprintf("%04d-independent", i+1), i, "", edit{"Added", fmt.Sprintf("### ALP-%03d\nAlpha MUST expose fixture value %d.", i+2, i)})
+		}
+		commit(t, root, "three independent alpha changes")
+		if diagnostics := status(t, root).Diagnostics; containsCode(diagnostics, "P08") {
+			t.Errorf("unexpected P08 for independent alpha changes: %#v", diagnostics)
+		}
+	})
 }
 
 func Test_FLOW_110_StatusSharedBaseUsesSameArchivedDocumentIdentity(t *testing.T) {

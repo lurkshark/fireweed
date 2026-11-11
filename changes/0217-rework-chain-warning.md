@@ -2,6 +2,8 @@
 bases:
     FLOW-111: 1547e4e6
 module: workflow
+phase: audit
+run: 20261111T094613-0a1a131293b1167588705e94
 ---
 
 ## Motivation
@@ -57,3 +59,15 @@ changes on one module with no shared IDs (no warning), a chain with an
 unrelated change between links (warns), and a link to a change more than
 ten applied changes back (no warning). Run after 0215 and 0216, so app's
 status eval already triggers P08 under this rule.
+
+`go test ./packages/workflow/evals -run '^Test_FLOW_(109_StatusProvenanceDrift|111_StatusReworkChainWarning)$' -count=1 -v`
+confirmed that FLOW-109 still passes. The current P08 message omits the chain
+files and IDs, misses the chain across unrelated changes, and warns for both
+independent same-module changes and a chain broken by a newer predecessor.
+`fireweed verify rework-chain-warning` accepted the FLOW-111 fail-first
+evidence. The report recorded 183 passing cases and five expected failures.
+
+The P08 trigger lives in the implementation-writable file
+`packages/workflow/internal/lifecycle/status.go`.
+## Provenance
+- evals 2026-11-11T09:56:48.253732Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=188 failing=5 passing=183
