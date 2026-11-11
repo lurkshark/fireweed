@@ -271,6 +271,9 @@ Doctor MUST expand {prompt}, {prompt_file} and {git_common_dir} once in selected
 ### CHK-083
 Doctor MUST create one temporary file containing the exact probe prompt only when a selected command or wrapper template uses {prompt_file}, and expand that placeholder to its absolute path. The file MUST remain available through execution and be removed afterward, including after launch failure, nonzero exit, timeout or cancellation.
 
+### CHK-084
+Each canary DoctorCheck Name MUST begin with its probe name (baseline, undeclared, internal_eval, failing_eval, missing_id or recovery), followed by a space and the hook scope when one applies.
+
 ## Decisions
 
 [0071-doctor-probes] Doctor requests the literal reply FIREWEED_DOCTOR_OK; limit_patterns match

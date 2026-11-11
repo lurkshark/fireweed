@@ -547,16 +547,18 @@ func (d *doctorState) boundaryClean(s project.Snapshot) error {
 }
 func (d *doctorState) crossClean(canary string, evals, bounds []doctorVariant) error {
 	if len(evals) > 0 {
-		s := d.variantSnapshot(evals[0])
+		v := evals[0]
+		s := d.variantSnapshot(v)
 		for _, module := range d.names {
 			if err := d.evalClean(s, module); err != nil {
-				return fmt.Errorf("%s eval: %w", canary, err)
+				return fmt.Errorf("%s (%s): %w", canary, v.name, err)
 			}
 		}
 	}
 	if len(bounds) > 0 {
-		if err := d.boundaryClean(d.variantSnapshot(bounds[0])); err != nil {
-			return fmt.Errorf("%s boundaries: %w", canary, err)
+		v := bounds[0]
+		if err := d.boundaryClean(d.variantSnapshot(v)); err != nil {
+			return fmt.Errorf("%s (%s): %w", canary, v.name, err)
 		}
 	}
 	return nil
@@ -607,13 +609,13 @@ func (d *doctorState) probeHooks() {
 			name  string
 			files map[string]string
 		}{{"failing_eval", d.canaries.FailingEval}, {"missing_id", d.canaries.MissingID}} {
-			if err := d.crossClean("baseline "+c.name, evals, bounds); err != nil {
-				d.fail("baseline "+c.name, d.names[0], "eval", err.Error())
+			if err := d.crossClean(c.name, evals, bounds); err != nil {
+				d.fail(label, d.names[0], "eval", err.Error())
 				continue
 			}
 			d.probeEval(s, v, c.name, c.files)
-			if err := d.crossClean("recovery "+c.name, evals, bounds); err != nil {
-				d.fail("recovery "+c.name, d.names[0], "eval", err.Error())
+			if err := d.crossClean(c.name, evals, bounds); err != nil {
+				d.fail("recovery "+v.name, d.names[0], "eval", err.Error())
 			}
 		}
 	}
@@ -633,13 +635,13 @@ func (d *doctorState) probeHooks() {
 			files  map[string]string
 			module int
 		}{{"undeclared", d.canaries.Undeclared, 0}, {"internal_eval", d.canaries.InternalEval, 1}} {
-			if err := d.crossClean("baseline "+c.name, evals, bounds); err != nil {
-				d.fail("baseline "+c.name, d.names[c.module], "boundary hook", err.Error())
+			if err := d.crossClean(c.name, evals, bounds); err != nil {
+				d.fail(label, d.names[c.module], "boundary hook", err.Error())
 				continue
 			}
 			d.probeBoundary(s, v, c.name, c.files, c.module)
-			if err := d.crossClean("recovery "+c.name, evals, bounds); err != nil {
-				d.fail("recovery "+c.name, d.names[c.module], "boundary hook", err.Error())
+			if err := d.crossClean(c.name, evals, bounds); err != nil {
+				d.fail("recovery "+v.name, d.names[c.module], "boundary hook", err.Error())
 			}
 		}
 	}
@@ -661,9 +663,10 @@ func removeCanary(paths []string) {
 }
 func (d *doctorState) probeEval(s project.Snapshot, v doctorVariant, name string, files map[string]string) {
 	module := d.names[0]
+	label := name + " " + v.name
 	paths, err := d.plant(name, 0, files)
 	if err != nil {
-		d.fail(name, module, "eval", err.Error())
+		d.fail(label, module, "eval", err.Error())
 		return
 	}
 	report, e := Evaluate(d.ctx, model.HookRequest{Snapshot: s, Module: module, Bin: d.req.Bin, Timeout: d.req.Timeout})
@@ -694,15 +697,16 @@ func (d *doctorState) probeEval(s project.Snapshot, v doctorVariant, name string
 		}
 	}
 	if !detected {
-		d.fail(name+" "+v.name, module, "eval", fmt.Sprintf("missed %s canary: report=%+v error=%v", name, report, e))
+		d.fail(label, module, "eval", fmt.Sprintf("missed %s canary: report=%+v error=%v", name, report, e))
 	} else {
-		d.check(name+" "+v.name, module, true, "eval detected "+name)
+		d.check(label, module, true, "eval detected "+name)
 	}
 	removeCanary(paths)
+	recovery := "recovery " + v.name
 	if err := d.evalClean(s, module); err != nil {
-		d.fail("recovery "+name+" "+v.name, module, "eval", err.Error())
+		d.fail(recovery, module, "eval", name+": "+err.Error())
 	} else {
-		d.check("recovery "+v.name, module, true, name+": eval and coverage pass")
+		d.check(recovery, module, true, name+": eval and coverage pass")
 	}
 }
 
@@ -738,9 +742,10 @@ func matchesMissingIDCanary(path, body, name string) bool {
 
 func (d *doctorState) probeBoundary(s project.Snapshot, v doctorVariant, name string, files map[string]string, i int) {
 	module := d.names[i]
+	label := name + " " + v.name
 	paths, err := d.plant(name, i, files)
 	if err != nil {
-		d.fail(name, module, "boundaries", err.Error())
+		d.fail(label, module, "boundaries", err.Error())
 		return
 	}
 	ds, e := Boundaries(d.ctx, model.BoundaryRequest{Snapshot: s, Bin: d.req.Bin, Timeout: d.req.Timeout})
@@ -755,15 +760,16 @@ func (d *doctorState) probeBoundary(s project.Snapshot, v doctorVariant, name st
 		}
 	}
 	if !detected {
-		d.fail(name+" "+v.name, module, "boundaries", fmt.Sprintf("missed %s canary: diagnostics=%v error=%v", name, ds, e))
+		d.fail(label, module, "boundaries", fmt.Sprintf("missed %s canary: diagnostics=%v error=%v", name, ds, e))
 	} else {
-		d.check(name+" "+v.name, module, true, "boundaries detected "+name)
+		d.check(label, module, true, "boundaries detected "+name)
 	}
 	removeCanary(paths)
+	recovery := "recovery " + v.name
 	if err := d.boundaryClean(s); err != nil {
-		d.fail("recovery "+name+" "+v.name, module, "boundaries", err.Error())
+		d.fail(recovery, module, "boundaries", name+": "+err.Error())
 	} else {
-		d.check("recovery "+v.name, module, true, name+": boundaries pass")
+		d.check(recovery, module, true, name+": boundaries pass")
 	}
 }
 func agentArgs(command any, values map[string]string) ([]string, error) {
