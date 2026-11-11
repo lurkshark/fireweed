@@ -148,8 +148,8 @@ Explain MUST describe B03 as a budget warning when eval lines divided by disposa
 It MUST advise simplifying redundant eval or fixture code while preserving required assertions.
 
 ### AST-041
-Explain MUST describe P08 as a warning when at least three consecutive applied changes target the same module.
-It MUST advise reviewing that sequence's scope with the project owner before continuing.
+Explain MUST describe P08 as a warning that recently applied changes form a chain in which each one reworks spec IDs the previous one added or modified.
+It MUST advise reviewing that chain with the project owner before continuing.
 
 ### AST-042
 Explain MUST describe B04 as a warning for binary files or files larger than 256 KB newly added to a disposable zone, reported by pr-body.
