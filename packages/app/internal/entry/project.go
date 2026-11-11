@@ -5,7 +5,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project"
@@ -41,50 +40,6 @@ func loadValidatedProject() (project.Snapshot, error) {
 		return project.Snapshot{}, contracts.CodedError{Code: "C02", Cause: err}
 	}
 	return snapshot, nil
-}
-
-func projectFailureCode(err error, fallback string) string {
-	if code, _, ok := contracts.ErrorCode(err); ok {
-		return code
-	}
-	if err == nil {
-		return fallback
-	}
-	root, rootErr := findProjectRoot()
-	if rootErr == nil {
-		code := ""
-		for _, diagnostic := range project.Check(root) {
-			if diagnostic.Warning {
-				continue
-			}
-			if code != "" && code != diagnostic.Code {
-				return fallback
-			}
-			code = diagnostic.Code
-		}
-		if code != "" {
-			return code
-		}
-	}
-	return fallback
-}
-
-func newChangeFailureCode(err error) string {
-	message := err.Error()
-	switch {
-	case strings.HasPrefix(message, "invalid change slug "):
-		return "U01"
-	case strings.HasPrefix(message, "unknown module "):
-		return "U02"
-	case strings.HasPrefix(message, "change slug ") && strings.Contains(message, " already exists in "),
-		strings.HasPrefix(message, "invalid change number in "):
-		return "C13"
-	default:
-		if code, _, ok := contracts.ErrorCode(err); ok {
-			return code
-		}
-		return "P01"
-	}
 }
 
 func findProjectRoot() (string, error) {

@@ -25,7 +25,7 @@ func runCheckCommits(args []string, jsonMode bool, out, errOut io.Writer) int {
 	}
 	snapshot, err := loadValidatedProject()
 	if err != nil {
-		return cliFailure(2, jsonMode, out, errOut, projectFailureCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry check-commits.", err))
+		return cliFailure(2, jsonMode, out, errOut, errorCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry check-commits.", err))
 	}
 	revisionRange := ""
 	if len(args) == 1 {
@@ -33,7 +33,7 @@ func runCheckCommits(args []string, jsonMode bool, out, errOut io.Writer) int {
 	}
 	report, err := checks.History(snapshot.Root, revisionRange)
 	if err != nil {
-		code := projectFailureCode(err, "P01")
+		code := errorCode(err, "P01")
 		return cliFailure(1, jsonMode, out, errOut, code, fmt.Sprintf("%v. Use a valid Git revision range and repair the recorded project documents, then retry check-commits.", err))
 	}
 	if len(report.Diagnostics) != 0 {

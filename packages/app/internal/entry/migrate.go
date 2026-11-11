@@ -19,7 +19,7 @@ func runMigrate(args []string, jsonMode bool, out, errOut io.Writer) int {
 	}
 	snapshot, err := project.Load(root)
 	if err != nil {
-		return cliFailure(2, jsonMode, out, errOut, projectFailureCode(err, "C01"), fmt.Sprintf("%v. Correct fireweed.yaml and module declarations, then retry migrate.", err))
+		return cliFailure(2, jsonMode, out, errOut, errorCode(err, "C01"), fmt.Sprintf("%v. Correct fireweed.yaml and module declarations, then retry migrate.", err))
 	}
 	if version, ok := snapshot.Config["version"].(int); !ok || version != 1 {
 		return cliFailure(2, jsonMode, out, errOut, "C01", fmt.Sprintf("Unsupported project format version %v in fireweed.yaml. Use a project with explicit version: 1, then retry migrate.", snapshot.Config["version"]))

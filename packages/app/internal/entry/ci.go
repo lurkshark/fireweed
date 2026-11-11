@@ -17,7 +17,7 @@ func runCI(args []string, noDoctor, jsonMode bool, out, errOut io.Writer) int {
 	}
 	snapshot, err := loadValidatedProject()
 	if err != nil {
-		code := projectFailureCode(err, "C01")
+		code := errorCode(err, "C01")
 		status := 1
 		if code == "C01" || code == "C02" || code == "C12" {
 			status = 2
@@ -38,8 +38,8 @@ func runCI(args []string, noDoctor, jsonMode bool, out, errOut io.Writer) int {
 			diagnostics = append(diagnostics, item)
 		}
 	}
-	addError := func(err error, action string) {
-		diagnostics = lifecycleError(err, diagnostics, action)
+	addError := func(err error, fallback, action string) {
+		diagnostics = appendErrorDiagnostic(diagnostics, err, fallback, action)
 	}
 	add(project.Check(snapshot.Root))
 
@@ -49,8 +49,7 @@ func runCI(args []string, noDoctor, jsonMode bool, out, errOut io.Writer) int {
 	}
 	history, err := checks.History(snapshot.Root, revisionRange)
 	if err != nil {
-		code := projectFailureCode(err, "P01")
-		addError(fmt.Errorf("%s: %w", code, err), "Use a valid Git revision range and repair recorded documents, then retry ci.")
+		addError(err, "P01", "Use a valid Git revision range and repair recorded documents, then retry ci.")
 	} else {
 		add(history.Diagnostics)
 	}
@@ -60,24 +59,20 @@ func runCI(args []string, noDoctor, jsonMode bool, out, errOut io.Writer) int {
 			Snapshot: snapshot, Module: module.Name, Bin: bin, Timeout: hookTimeout(snapshot),
 		})
 		if evalErr != nil {
-			addError(evalErr, "Use valid Specs and an eval hook for "+module.Name+", then retry ci.")
+			addError(evalErr, "P01", "Use valid Specs and an eval hook for "+module.Name+", then retry ci.")
 			continue
 		}
 		section, _ := contracts.Section(module.Document.Body, "Specs")
 		specs, parseErr := contracts.ParseItems(section)
 		if parseErr != nil {
-			code := "C03"
-			if assigned, _, ok := contracts.ErrorCode(parseErr); ok {
-				code = assigned
-			}
-			addError(fmt.Errorf("%s: %w", code, parseErr), "Use valid "+module.Name+" Specs, then retry ci.")
+			addError(parseErr, "C03", "Use valid "+module.Name+" Specs, then retry ci.")
 			continue
 		}
 		if coverageErr := checks.RequireCoverage(report, specs); coverageErr != nil {
-			addError(coverageErr, "Use a passing case for each current "+module.Name+" spec, then retry ci.")
+			addError(coverageErr, "P01", "Use a passing case for each current "+module.Name+" spec, then retry ci.")
 		}
 		if passErr := checks.RequirePass(report, specs); passErr != nil {
-			addError(passErr, "Use corrected "+module.Name+" cases, then retry ci.")
+			addError(passErr, "P01", "Use corrected "+module.Name+" cases, then retry ci.")
 		}
 	}
 	boundaryDiagnostics, boundaryErr := checks.Boundaries(ctx, checks.BoundaryRequest{
@@ -85,7 +80,7 @@ func runCI(args []string, noDoctor, jsonMode bool, out, errOut io.Writer) int {
 	})
 	add(boundaryDiagnostics)
 	if boundaryErr != nil && !hasError(reported(boundaryDiagnostics)) {
-		addError(boundaryErr, "Use a valid boundaries hook, then retry ci.")
+		addError(boundaryErr, "P01", "Use a valid boundaries hook, then retry ci.")
 	}
 	if !noDoctor {
 		doctor := checks.Doctor(ctx, checks.DoctorRequest{

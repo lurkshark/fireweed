@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"regexp"
 
 	"github.com/lurkshark/fireweed/packages/runner"
 )
@@ -18,12 +17,10 @@ type nextData struct {
 	Reason string `json:"reason,omitempty"`
 }
 
-var wrappedCause = regexp.MustCompile(`(?:^|: )([A-Z][A-Z0-9-]+):\s*`)
-
 func runNext(allowUnmerged, jsonMode bool, out, errOut io.Writer) int {
 	snapshot, err := loadValidatedProject()
 	if err != nil {
-		return cliFailure(2, jsonMode, out, errOut, projectFailureCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry next.", err))
+		return cliFailure(2, jsonMode, out, errOut, errorCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry next.", err))
 	}
 	bin, err := os.Executable()
 	if err != nil {
@@ -38,10 +35,7 @@ func runNext(allowUnmerged, jsonMode bool, out, errOut io.Writer) int {
 		return cliResponse(3, jsonMode, out, errOut, data, plain, reported(result.State.Diagnostics))
 	}
 	if err != nil {
-		code := "P01"
-		for _, match := range wrappedCause.FindAllStringSubmatch(err.Error(), -1) {
-			code = match[1]
-		}
+		code := errorCode(err, "P01")
 		action := "Use the reported cause to correct the change or project checks, then retry next."
 		if runner.IsApprovalRequired(err) {
 			action = "Approve the change on the configured base or use --allow-unmerged for authorized local work, then retry next."
@@ -51,7 +45,7 @@ func runNext(allowUnmerged, jsonMode bool, out, errOut io.Writer) int {
 			status = 2
 			action = "Use a valid usage policy in fireweed.yaml, then retry next."
 		}
-		message := fmt.Sprintf("%v. %s", err, action)
+		message := trimDiagnosticLabel(code, err.Error()) + ". " + action
 		diagnostics := append([]diagnostic{{Code: code, Message: message}}, reported(result.State.Diagnostics)...)
 		return cliResponse(status, jsonMode, out, errOut, nil, "", diagnostics)
 	}

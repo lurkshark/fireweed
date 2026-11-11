@@ -158,12 +158,7 @@ func Run(args []string, out, errOut io.Writer) int {
 		}
 	}
 	failStatus := func(status int, code, message string) int {
-		if jsonMode {
-			_ = json.NewEncoder(out).Encode(envelope{Schema: 1, Diagnostics: []diagnostic{{Code: code, Message: message}}})
-		} else {
-			fmt.Fprintf(errOut, "%s: %s\n", code, message)
-		}
-		return status
+		return cliFailure(status, jsonMode, out, errOut, code, message)
 	}
 	fail := func(code, message string) int {
 		return failStatus(2, code, message)
@@ -240,7 +235,7 @@ func Run(args []string, out, errOut io.Writer) int {
 			body, err = assets.Playbook(positional[1])
 		}
 		if err != nil {
-			return fail("U02", fmt.Sprintf("%v. Use a valid %s name.", err, lookupKind(command)))
+			return fail(errorCode(err, "U02"), fmt.Sprintf("%v. Use a valid %s name.", err, lookupKind(command)))
 		}
 	case "modules":
 		if count != 0 {
@@ -248,7 +243,7 @@ func Run(args []string, out, errOut io.Writer) int {
 		}
 		snapshot, err := loadModuleProject()
 		if err != nil {
-			return fail(projectFailureCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and correct module declarations in SPEC.md, then run modules again.", err))
+			return fail(errorCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and correct module declarations in SPEC.md, then run modules again.", err))
 		}
 		modules := moduleResults(snapshot.Modules)
 		if jsonMode {
@@ -307,11 +302,11 @@ func Run(args []string, out, errOut io.Writer) int {
 		}
 		snapshot, err := loadValidatedProject()
 		if err != nil {
-			return fail(projectFailureCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and correct module declarations in SPEC.md, then retry.", err))
+			return fail(errorCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and correct module declarations in SPEC.md, then retry.", err))
 		}
 		path, err := project.NewChange(snapshot.Root, positional[1], positional[2])
 		if err != nil {
-			return fail(newChangeFailureCode(err), fmt.Sprintf("%v. Use a valid module and an unused lowercase slug.", err))
+			return fail(errorCode(err, "P01"), fmt.Sprintf("%v. Use a valid module and an unused lowercase slug.", err))
 		}
 		if jsonMode {
 			_ = json.NewEncoder(out).Encode(envelope{Schema: 1, Data: path, Diagnostics: []diagnostic{}})
@@ -325,10 +320,10 @@ func Run(args []string, out, errOut io.Writer) int {
 		}
 		snapshot, err := loadValidatedProject()
 		if err != nil {
-			return fail(projectFailureCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
+			return fail(errorCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
 		}
 		if err := project.Stamp(snapshot.Root, positional[1]); err != nil {
-			code := projectFailureCode(err, "P01")
+			code := errorCode(err, "P01")
 			return failStatus(1, code, err.Error())
 		}
 		body = fmt.Sprintf("Stamped %s\n", positional[1])
@@ -341,16 +336,16 @@ func Run(args []string, out, errOut io.Writer) int {
 		}
 		snapshot, err := loadValidatedProject()
 		if err != nil {
-			return fail(projectFailureCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
+			return fail(errorCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
 		}
 		if fix {
 			changes, err := project.Queue(snapshot.Root)
 			if err != nil {
-				return failStatus(1, projectFailureCode(err, "P01"), fmt.Sprintf("%v. Use corrected queued changes, then retry check --fix.", err))
+				return failStatus(1, errorCode(err, "P01"), fmt.Sprintf("%v. Use corrected queued changes, then retry check --fix.", err))
 			}
 			for _, change := range changes {
 				if err := project.StampMissing(snapshot.Root, change.Path); err != nil {
-					return failStatus(1, projectFailureCode(err, "P01"), fmt.Sprintf("%v. Use a valid base and change, then retry check --fix.", err))
+					return failStatus(1, errorCode(err, "P01"), fmt.Sprintf("%v. Use a valid base and change, then retry check --fix.", err))
 				}
 			}
 		}
@@ -400,13 +395,13 @@ func Run(args []string, out, errOut io.Writer) int {
 		}
 		snapshot, err := loadValidatedProject()
 		if err != nil {
-			code := projectFailureCode(err, "C01")
+			code := errorCode(err, "C01")
 			return fail(code, fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
 		}
 		if projected {
 			snapshot, err = project.Project(snapshot.Root, "")
 			if err != nil {
-				return fail(projectFailureCode(err, "P01"), err.Error())
+				return fail(errorCode(err, "P01"), err.Error())
 			}
 		}
 		var found *project.Module
@@ -424,7 +419,7 @@ func Run(args []string, out, errOut io.Writer) int {
 		if count == 1 {
 			body, err = contracts.RenderDocument(found.Document)
 			if err != nil {
-				return fail("C03", err.Error())
+				return fail(errorCode(err, "C03"), err.Error())
 			}
 		} else {
 			section, _ := contracts.Section(found.Document.Body, "Specs")

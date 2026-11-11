@@ -20,11 +20,11 @@ func runGC(args []string, jsonMode bool, out, errOut io.Writer) int {
 	}
 	snapshot, err := loadValidatedProject()
 	if err != nil {
-		return cliFailure(2, jsonMode, out, errOut, projectFailureCode(err, "C01"), fmt.Sprintf("%v. Correct fireweed.yaml and module declarations, then retry gc.", err))
+		return cliFailure(2, jsonMode, out, errOut, errorCode(err, "C01"), fmt.Sprintf("%v. Correct fireweed.yaml and module declarations, then retry gc.", err))
 	}
 	result, err := workflow.GC(context.Background(), workflow.GCRequest{Root: snapshot.Root})
 	if err != nil {
-		diagnostics := lifecycleError(err, nil, "Correct the reported project configuration or Git state, then retry gc.")
+		diagnostics := appendErrorDiagnostic(nil, err, "P01", "Correct the reported project configuration or Git state, then retry gc.")
 		status := 1
 		if diagnostics[0].Code == "C01" {
 			status = 2

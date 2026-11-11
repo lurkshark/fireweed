@@ -7,9 +7,9 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/lurkshark/fireweed/packages/checks"
 	"github.com/lurkshark/fireweed/packages/contracts"
@@ -27,7 +27,7 @@ func contains(values []string, value string) bool {
 }
 
 func cliFailure(status int, jsonMode bool, out, errOut io.Writer, code, message string) int {
-	return cliResponse(status, jsonMode, out, errOut, nil, "", []diagnostic{{Code: code, Message: message}})
+	return cliResponse(status, jsonMode, out, errOut, nil, "", []diagnostic{{Code: code, Message: trimDiagnosticLabel(code, message)}})
 }
 
 func cliResponse(status int, jsonMode bool, out, errOut io.Writer, data any, plain string, diagnostics []diagnostic) int {
@@ -55,17 +55,23 @@ func reported(ds []project.Diagnostic) []diagnostic {
 	return result
 }
 
-var diagnosticPrefix = regexp.MustCompile(`^([A-Z][A-Z0-9-]+):\s*`)
-
-func lifecycleError(err error, ds []diagnostic, action string) []diagnostic {
-	message := err.Error()
-	code := "P01"
-	if parts := diagnosticPrefix.FindStringSubmatch(message); parts != nil {
-		code = parts[1]
-		message = strings.TrimPrefix(message, parts[0])
+func errorCode(err error, fallback string) string {
+	if code, _, ok := contracts.ErrorCode(err); ok {
+		return code
 	}
-	// Keep the source diagnostics, including warnings, and add an actionable error.
-	return append(ds, diagnostic{Code: code, Message: message + ". " + action})
+	return fallback
+}
+
+func trimDiagnosticLabel(code, message string) string {
+	if rest, ok := strings.CutPrefix(message, code+":"); ok {
+		return strings.TrimLeftFunc(rest, unicode.IsSpace)
+	}
+	return message
+}
+
+func appendErrorDiagnostic(ds []diagnostic, err error, fallback, action string) []diagnostic {
+	code := errorCode(err, fallback)
+	return append(ds, diagnostic{Code: code, Message: trimDiagnosticLabel(code, err.Error()) + ". " + action})
 }
 
 func loadModuleProject() (project.Snapshot, error) {
@@ -109,7 +115,7 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 	}
 	snapshot, err := loadValidatedProject()
 	if err != nil {
-		return fail(2, projectFailureCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
+		return fail(2, errorCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
 	}
 	root := snapshot.Root
 	if command == "start" {
@@ -121,24 +127,24 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 		}
 		ds := reported(state.Diagnostics)
 		if err != nil {
-			return cliResponse(1, jsonMode, out, errOut, nil, "", lifecycleError(err, ds, "Use an eligible queued change and clear conflicting claims, then retry start."))
+			return cliResponse(1, jsonMode, out, errOut, nil, "", appendErrorDiagnostic(ds, err, "P01", "Use an eligible queued change and clear conflicting claims, then retry start."))
 		}
 		body, err := workflow.Context(root, args[0], false)
 		if err != nil {
-			return cliResponse(1, jsonMode, out, errOut, nil, "", lifecycleError(err, ds, "Use context <change> after checking the held claim."))
+			return cliResponse(1, jsonMode, out, errOut, nil, "", appendErrorDiagnostic(ds, err, "P01", "Use context <change> after checking the held claim."))
 		}
 		return cliResponse(0, jsonMode, out, errOut, body, body, ds)
 	}
 	if command == "context" {
 		body, err := workflow.Context(root, args[0], full)
 		if err != nil {
-			return cliResponse(1, jsonMode, out, errOut, nil, "", lifecycleError(err, nil, "Use a change held by this worktree and retry context."))
+			return cliResponse(1, jsonMode, out, errOut, nil, "", appendErrorDiagnostic(nil, err, "P01", "Use a change held by this worktree and retry context."))
 		}
 		return cliResponse(0, jsonMode, out, errOut, body, body, nil)
 	}
 	if command == "release" {
 		if err := workflow.Release(root, args[0]); err != nil {
-			return cliResponse(1, jsonMode, out, errOut, nil, "", lifecycleError(err, nil, "Use a change claimed by this worktree and retry release."))
+			return cliResponse(1, jsonMode, out, errOut, nil, "", appendErrorDiagnostic(nil, err, "P01", "Use a change claimed by this worktree and retry release."))
 		}
 		body := fmt.Sprintf("Released %s\n", args[0])
 		return cliResponse(0, jsonMode, out, errOut, body, body, nil)
@@ -146,7 +152,7 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 	if command == "commits" {
 		ids, err := workflow.Commits(root, args[0])
 		if err != nil {
-			ds := lifecycleError(err, nil, "Use a valid pending or archived change selector in a Git project, then retry commits.")
+			ds := appendErrorDiagnostic(nil, err, "P01", "Use a valid pending or archived change selector in a Git project, then retry commits.")
 			status := 1
 			if ds[0].Code == "U02" {
 				status = 2
@@ -165,7 +171,7 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 	if command == "abandon" {
 		oid, err := workflow.Abandon(root, args[0])
 		if err != nil {
-			ds := lifecycleError(err, nil, "Use an eligible pending change in a clean Git project, resolve any conflicting claim, then retry abandon.")
+			ds := appendErrorDiagnostic(nil, err, "P01", "Use an eligible pending change in a clean Git project, resolve any conflicting claim, then retry abandon.")
 			status := 1
 			if ds[0].Code == "U02" {
 				status = 2
@@ -191,7 +197,7 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 				snapshot, err = project.Project(root, withChange)
 			}
 			if err != nil {
-				return fail(2, projectFailureCode(err, "P01"), fmt.Sprintf("%v. Use a valid queued change alias.", err))
+				return fail(2, errorCode(err, "P01"), fmt.Sprintf("%v. Use a valid queued change alias.", err))
 			}
 		}
 		var module *project.Module
@@ -222,11 +228,7 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 		section, _ := contracts.Section(module.Document.Body, "Specs")
 		specs, err := contracts.ParseItems(section)
 		if err != nil {
-			code := "C03"
-			if assigned, _, ok := contracts.ErrorCode(err); ok {
-				code = assigned
-			}
-			return fail(2, code, fmt.Sprintf("%v. Correct the module Specs and retry coverage.", err))
+			return fail(2, errorCode(err, "C03"), fmt.Sprintf("%v. Correct the module Specs and retry coverage.", err))
 		}
 		report, err := checks.Evaluate(context.Background(), checks.HookRequest{Snapshot: snapshot, Module: module.Name, Bin: bin, Timeout: hookTimeout(snapshot)})
 		if err == nil {
@@ -236,7 +238,7 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 			err = checks.RequirePass(report, specs)
 		}
 		if err != nil {
-			return cliResponse(1, jsonMode, out, errOut, nil, "", lifecycleError(err, nil, "Use a valid eval hook with covered, passing spec cases, then retry coverage."))
+			return cliResponse(1, jsonMode, out, errOut, nil, "", appendErrorDiagnostic(nil, err, "P01", "Use a valid eval hook with covered, passing spec cases, then retry coverage."))
 		}
 		var plain strings.Builder
 		for _, c := range report.Cases {
@@ -257,7 +259,7 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 	}
 	ds := reported(result.Diagnostics)
 	if err != nil {
-		return cliResponse(1, jsonMode, out, errOut, nil, "", lifecycleError(err, ds, "Use the held change and correct its checks, then retry "+command+"."))
+		return cliResponse(1, jsonMode, out, errOut, nil, "", appendErrorDiagnostic(ds, err, "P01", "Use the held change and correct its checks, then retry "+command+"."))
 	}
 	return cliResponse(0, jsonMode, out, errOut, result, fmt.Sprintf("%s: %s\n", command, result.State.Phase), ds)
 }

@@ -67,7 +67,7 @@ func runNewModule(args []string, out, errOut io.Writer) int {
 
 	snapshot, err := loadValidatedProject()
 	if err != nil {
-		return fail(projectFailureCode(err, "C01"), fmt.Sprintf("%v. Use a valid project configuration and module declarations, then retry.", err))
+		return fail(errorCode(err, "C01"), fmt.Sprintf("%v. Use a valid project configuration and module declarations, then retry.", err))
 	}
 	for _, module := range snapshot.Modules {
 		if module.Name == name || module.IDPrefix == prefix {

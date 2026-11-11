@@ -26,7 +26,7 @@ func runDrill(args []string, jsonMode bool, out, errOut io.Writer) int {
 	}
 	snapshot, err := loadValidatedProject()
 	if err != nil {
-		return cliFailure(2, jsonMode, out, errOut, projectFailureCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry drill.", err))
+		return cliFailure(2, jsonMode, out, errOut, errorCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry drill.", err))
 	}
 	found := false
 	for _, module := range snapshot.Modules {
@@ -58,10 +58,7 @@ func runDrill(args []string, jsonMode bool, out, errOut io.Writer) int {
 		return cliResponse(3, jsonMode, out, errOut, data, plain+"\n", nil)
 	}
 	if err != nil {
-		code := "P01"
-		for _, match := range wrappedCause.FindAllStringSubmatch(err.Error(), -1) {
-			code = match[1]
-		}
+		code := errorCode(err, "P01")
 		var artifacts []string
 		if data.Report != "" {
 			if _, statErr := os.Stat(filepath.Join(snapshot.Root, filepath.FromSlash(data.Report))); statErr == nil {

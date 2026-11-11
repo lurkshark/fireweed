@@ -20,11 +20,11 @@ type listEntry struct {
 func runList(jsonMode bool, out, errOut io.Writer) int {
 	snapshot, err := loadValidatedProject()
 	if err != nil {
-		return cliFailure(2, jsonMode, out, errOut, projectFailureCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry list.", err))
+		return cliFailure(2, jsonMode, out, errOut, errorCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry list.", err))
 	}
 	changes, err := project.Queue(snapshot.Root)
 	if err != nil {
-		return cliFailure(1, jsonMode, out, errOut, projectFailureCode(err, "P01"), fmt.Sprintf("%v. Use corrected queued changes, then retry list.", err))
+		return cliFailure(1, jsonMode, out, errOut, errorCode(err, "P01"), fmt.Sprintf("%v. Use corrected queued changes, then retry list.", err))
 	}
 	entries := make([]listEntry, 0, len(changes))
 	var plain strings.Builder

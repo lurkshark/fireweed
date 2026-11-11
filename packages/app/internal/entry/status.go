@@ -60,16 +60,12 @@ func statusCounts(counts map[string]int) map[string]int {
 func runStatus(jsonMode bool, out, errOut io.Writer) int {
 	snapshot, err := loadValidatedProject()
 	if err != nil {
-		return cliFailure(2, jsonMode, out, errOut, projectFailureCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry status.", err))
+		return cliFailure(2, jsonMode, out, errOut, errorCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry status.", err))
 	}
 	report, err := workflow.Status(snapshot.Root)
 	diagnostics := reported(report.Diagnostics)
 	if err != nil {
-		diagnostics = lifecycleError(err, diagnostics, "Use the reported cause to correct the project or Git state, then retry status.")
-		last := len(diagnostics) - 1
-		if diagnostics[last].Code == "P01" {
-			diagnostics[last].Code = projectFailureCode(err, "P01")
-		}
+		diagnostics = appendErrorDiagnostic(diagnostics, err, "P01", "Use the reported cause to correct the project or Git state, then retry status.")
 		return cliResponse(1, jsonMode, out, errOut, nil, "", diagnostics)
 	}
 

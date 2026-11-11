@@ -27,7 +27,7 @@ func runDoctor(noAgent, jsonMode bool, out, errOut io.Writer) int {
 	}
 	// Configuration loading is a usage failure. Other static failures belong to
 	// Doctor's diagnostic report and retain their assigned causes.
-	if _, err := project.Load(root); err != nil && projectFailureCode(err, "C01") == "C01" {
+	if _, err := project.Load(root); err != nil && errorCode(err, "C01") == "C01" {
 		return cliFailure(2, jsonMode, out, errOut, "C01", fmt.Sprintf("%v. Correct fireweed.yaml and retry doctor.", err))
 	}
 	bin, err := os.Executable()
@@ -95,7 +95,7 @@ func runAgentsMD(jsonMode bool, out, errOut io.Writer) int {
 		return cliFailure(2, jsonMode, out, errOut, "C01", fmt.Sprintf("%v. Provide a valid fireweed.yaml and retry agents-md --write.", err))
 	}
 	if _, err := project.Load(root); err != nil {
-		code := projectFailureCode(err, "C01")
+		code := errorCode(err, "C01")
 		return cliFailure(2, jsonMode, out, errOut, code, fmt.Sprintf("%v. Correct the project configuration and retry agents-md --write.", err))
 	}
 	data, err := updateManagedFile(root)

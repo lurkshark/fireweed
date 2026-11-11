@@ -5,21 +5,17 @@ import (
 	"io"
 	"strings"
 
-	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project"
 )
 
 func runShowStale(selector string, jsonMode bool, out, errOut io.Writer) int {
 	snapshot, err := loadValidatedProject()
 	if err != nil {
-		return cliFailure(2, jsonMode, out, errOut, projectFailureCode(err, "C01"), fmt.Sprintf("%v. Use a valid fireweed.yaml and module declarations, then retry show --stale <change>.", err))
+		return cliFailure(2, jsonMode, out, errOut, errorCode(err, "C01"), fmt.Sprintf("%v. Use a valid fireweed.yaml and module declarations, then retry show --stale <change>.", err))
 	}
 	entries, err := project.StaleSpecs(snapshot.Root, selector)
 	if err != nil {
-		code := "P01"
-		if assigned, _, ok := contracts.ErrorCode(err); ok {
-			code = assigned
-		}
+		code := errorCode(err, "P01")
 		status := 1
 		if code == "U02" || code == "C13" || code == "C01" || code == "C02" || code == "C12" {
 			status = 2

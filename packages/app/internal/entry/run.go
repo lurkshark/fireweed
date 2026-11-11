@@ -27,7 +27,7 @@ type runData struct {
 func runQueue(max int, forDuration time.Duration, allowUnmerged, jsonMode bool, out, errOut io.Writer) int {
 	snapshot, err := loadValidatedProject()
 	if err != nil {
-		return cliFailure(2, jsonMode, out, errOut, projectFailureCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry run.", err))
+		return cliFailure(2, jsonMode, out, errOut, errorCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry run.", err))
 	}
 	bin, err := os.Executable()
 	if err != nil {
@@ -54,10 +54,7 @@ func runQueue(max int, forDuration time.Duration, allowUnmerged, jsonMode bool, 
 		return cliResponse(3, jsonMode, out, errOut, data, plain.String(), diagnostics)
 	}
 	if err != nil {
-		code := "P01"
-		for _, match := range wrappedCause.FindAllStringSubmatch(err.Error(), -1) {
-			code = match[1]
-		}
+		code := errorCode(err, "P01")
 		action := "Use the reported cause to correct the change or project checks, then retry run."
 		if runner.IsApprovalRequired(err) {
 			action = "Approve the change on the configured base or use --allow-unmerged for authorized local work, then retry run."
@@ -67,7 +64,7 @@ func runQueue(max int, forDuration time.Duration, allowUnmerged, jsonMode bool, 
 			status = 2
 			action = "Use a valid usage policy in fireweed.yaml, then retry run."
 		}
-		message := fmt.Sprintf("%v. %s", err, action)
+		message := trimDiagnosticLabel(code, err.Error()) + ". " + action
 		diagnostics = append([]diagnostic{{Code: code, Message: message}}, diagnostics...)
 		return cliResponse(status, jsonMode, out, errOut, nil, "", diagnostics)
 	}
