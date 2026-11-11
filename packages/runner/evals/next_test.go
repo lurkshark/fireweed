@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/lurkshark/fireweed/packages/assets"
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/runner"
 	"github.com/lurkshark/fireweed/packages/workflow"
@@ -644,6 +645,9 @@ func Test_RUN_023_RUN_024_DefaultEvalsExhaustionBlocks(t *testing.T) {
 	f := newNextFixture(t, true, true, "noedit")
 	before := nextGit(t, f.root, "rev-parse", "HEAD")
 	r, err := f.run(false)
+	if code, _, ok := contracts.ErrorCode(err); !ok || code != "P2-01" {
+		t.Errorf("Next error code = %q (present: %t), want P2-01 (error: %v)", code, ok, err)
+	}
 	if err == nil || !strings.Contains(err.Error(), "P2-01: no fail-first case for ALP-002") {
 		t.Errorf("evals exhaustion cause = %v", err)
 	}

@@ -11,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/runner"
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
@@ -122,6 +123,7 @@ func Test_RUN_029_InvalidUsagePolicyPrecedesFreshStart(t *testing.T) {
 		{"bad wait", "limit_wait: nonsense\n"},
 		{"bad budget", "limit_budget: nonsense\n"},
 		{"zero wait", "limit_wait: 0s\n"},
+		{"negative wait", "limit_wait: -1s\n"},
 		{"negative budget", "limit_budget: -1s\n"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -130,8 +132,8 @@ func Test_RUN_029_InvalidUsagePolicyPrecedesFreshStart(t *testing.T) {
 			head := nextGit(t, f.root, "rev-parse", "HEAD")
 			change := nextRead(t, f.root, nextChange)
 			_, err := f.run(false)
-			if err == nil || !strings.Contains(err.Error(), "C01") {
-				t.Errorf("invalid policy error = %v, want C01", err)
+			if code, _, ok := contracts.ErrorCode(err); !ok || code != "C01" {
+				t.Errorf("Next error code = %q (present: %t), want C01 (error: %v)", code, ok, err)
 			}
 			if got, readErr := os.ReadFile(filepath.Join(f.root, nextChange)); readErr != nil || string(got) != change {
 				t.Errorf("invalid policy changed queued document: %v", readErr)
