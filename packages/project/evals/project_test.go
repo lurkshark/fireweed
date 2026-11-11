@@ -201,8 +201,9 @@ func Test_PRJ_024_NewChangeRejectsDuplicatesWithoutOverwrite(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			root := fixture(t)
 			put(t, root, path, "original marker")
-			if _, err := project.NewChange(root, "alpha", "repeat"); err == nil {
-				t.Error("duplicate slug accepted")
+			_, err := project.NewChange(root, "alpha", "repeat")
+			if code, _, ok := contracts.ErrorCode(err); !ok || code != "C13" {
+				t.Errorf("NewChange error code = (%q, %v); want (C13, true): %v", code, ok, err)
 			}
 			data, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(path)))
 			if err != nil || string(data) != "original marker" {

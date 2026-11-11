@@ -4,6 +4,8 @@ already_satisfied:
 bases:
     PRJ-024: 09d40177
 module: project
+phase: audit
+run: 20261111T010825-6111527bc1bb48b7afeeb3ad
 ---
 
 ## Motivation
@@ -34,3 +36,12 @@ NewChange MUST reject a slug already present in the pending queue or archive wit
 The existing PRJ-024 evals should also check the C13 code through
 `contracts.ErrorCode` for both the pending and the archived duplicate.
 Do not assert the error's wording.
+
+Fail-first: both PRJ-024 duplicate cases reject the slug and preserve the
+existing file, but `contracts.ErrorCode` reports no code. The CLI supplies
+C13 from the error text. The author should remove PRJ-024 from
+`already_satisfied` so the controller requires this fail-first evidence.
+The implementation can supply the code in
+`packages/project/internal/fixture/fixture.go`.
+## Provenance
+- evals 2026-11-11T01:10:13.251641Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=134 failing=3 passing=131
