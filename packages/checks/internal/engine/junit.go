@@ -50,10 +50,10 @@ func (e unmappedCaseError) Error() string {
 func ParseJUnit(data []byte, specs []contracts.Item) (model.Report, error) {
 	var root junitSuite
 	if err := xml.Unmarshal(data, &root); err != nil {
-		return model.Report{}, fmt.Errorf("C11: parse JUnit: %w", err)
+		return model.Report{}, contracts.CodedError{Code: "C11", Cause: fmt.Errorf("C11: parse JUnit: %w", err)}
 	}
 	if root.XMLName.Local != "testsuite" && root.XMLName.Local != "testsuites" {
-		return model.Report{}, fmt.Errorf("C11: invalid JUnit root %q", root.XMLName.Local)
+		return model.Report{}, contracts.CodedError{Code: "C11", Cause: fmt.Errorf("C11: invalid JUnit root %q", root.XMLName.Local)}
 	}
 	var report model.Report
 	idShape := regexp.MustCompile(`^([A-Za-z][A-Za-z0-9]*?)[-_]?[0-9]+$`)
@@ -105,7 +105,11 @@ func ParseJUnit(data []byte, specs []contracts.Item) (model.Report, error) {
 							}
 						}
 						if !known {
-							return fmt.Errorf("C11: testcase %q references unknown spec ID %q", c.Name, candidate)
+							return contracts.CodedError{
+								Code:    "C11",
+								Subject: c.Name,
+								Cause:   fmt.Errorf("C11: testcase %q references unknown spec ID %q", c.Name, candidate),
+							}
 						}
 					}
 				}
@@ -159,7 +163,7 @@ func RequireCoverage(report model.Report, specs []contracts.Item) error {
 			}
 		}
 		if !covered {
-			return fmt.Errorf("C10: no coverage for %s", spec.ID)
+			return contracts.CodedError{Code: "C10", Subject: spec.ID, Cause: fmt.Errorf("C10: no coverage for %s", spec.ID)}
 		}
 	}
 	return nil
@@ -197,7 +201,7 @@ func RequirePass(report model.Report, specs []contracts.Item) error {
 		}
 		for _, c := range report.Cases {
 			if c.Result == "fail" && references(c, spec.ID) {
-				return fmt.Errorf("E01: failed case %q for %s", c.Name, spec.ID)
+				return contracts.CodedError{Code: "E01", Subject: spec.ID, Cause: fmt.Errorf("E01: failed case %q for %s", c.Name, spec.ID)}
 			}
 		}
 	}

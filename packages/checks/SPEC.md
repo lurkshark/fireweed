@@ -19,7 +19,7 @@ name: checks
 ParseJUnit MUST accept testsuite or testsuites documents, including nested suites, returning testcase name, classname and time.
 
 ### CHK-002
-RequireCoverage MUST cover each current spec except review or quarantine with a non-skipped referencing case. Missing coverage MUST return a C10-prefixed error.
+RequireCoverage MUST cover each current spec except review or quarantine with a non-skipped referencing case. Missing coverage MUST return an error whose contracts ErrorCode is C10.
 
 ### CHK-003
 Evaluate MUST run the configured eval hook, accepting shell strings or argv.
@@ -91,13 +91,13 @@ Zones MUST check both the source and destination of a rename against phase permi
 RequireFailFirst MUST find a failed or errored referencing case for every requested enforced ID except already_satisfied; passing, skipped, empty or unrelated failures do not qualify. Missing genuine fail-first evidence MUST return a P2-01-prefixed error.
 
 ### CHK-026
-RequirePass MUST reject failed or errored cases referencing any non-quarantined spec with an E01-prefixed error.
+RequirePass MUST reject failed or errored cases referencing any non-quarantined spec with an error whose contracts ErrorCode is E01.
 
 ### CHK-027
-ParseJUnit MUST reject malformed XML with a C11-prefixed error.
+ParseJUnit MUST reject malformed XML with an error whose contracts ErrorCode is C11.
 
 ### CHK-028
-ParseJUnit MUST reject, with a C11-prefixed error, a testcase that references no supplied spec ID or that contains a token with a supplied spec's prefix, matched under the ID rules, naming no supplied spec. Text without such a prefix, including numbered labels, MUST NOT count as an ID reference.
+ParseJUnit MUST reject, with an error whose contracts ErrorCode is C11, a testcase that references no supplied spec ID or that contains a token with a supplied spec's prefix, matched under the ID rules, naming no supplied spec. Text without such a prefix, including numbered labels, MUST NOT count as an ID reference.
 
 ### CHK-029
 ParseJUnit MUST map testcase name and classname to current spec IDs using contracts.MatchesID.
@@ -121,13 +121,13 @@ Evaluate MUST retain the hook process's stdout, stderr and exit code in its retu
 Evaluate MUST parse the hook's written JUnit report into the returned report's cases.
 
 ### CHK-036
-Evaluate MUST fail with a C11-prefixed error when the eval hook cannot launch or exceeds its timeout.
+Evaluate MUST fail with an error whose contracts ErrorCode is C11 when the eval hook cannot launch or exceeds its timeout.
 
 ### CHK-037
-Evaluate MUST fail with a C11-prefixed error when the eval hook does not write its JUnit report.
+Evaluate MUST fail with an error whose contracts ErrorCode is C11 when the eval hook does not write its JUnit report.
 
 ### CHK-038
-Evaluate MUST reject a zero exit with mapped failures or a nonzero exit without mapped failures with a C11-prefixed error, while accepting a nonzero exit with mapped failures as valid report evidence.
+Evaluate MUST reject a zero exit with mapped failures or a nonzero exit without mapped failures with an error whose contracts ErrorCode is C11, while accepting a nonzero exit with mapped failures as valid report evidence.
 
 ### CHK-039
 Boundaries MUST return errors with diagnostic X01 for unsuppressed module-attributed violations.
@@ -152,13 +152,13 @@ Boundaries MUST fail with diagnostic X02 for a missing hook required by a module
 Boundaries MUST warn with diagnostic X04 without an error for a missing hook when no boundary enforcement is required.
 
 ### CHK-046
-Evaluate MUST return C11-prefixed errors for existing eval-hook setup failures, including missing or invalid hook commands.
+Evaluate MUST return errors whose contracts ErrorCode is C11 for existing eval-hook setup failures, including missing or invalid hook commands.
 
 ### CHK-047
-Evaluate MUST return a U02-prefixed error for an unknown requested module.
+Evaluate MUST return an error whose contracts ErrorCode is U02 for an unknown requested module.
 
 ### CHK-048
-Evaluate MUST return C03-prefixed errors for malformed module item syntax and C05-prefixed errors for duplicate module item identities.
+Evaluate MUST return errors whose contracts ErrorCode is C03 for malformed module item syntax and C05 for duplicate module item identities.
 
 ### CHK-049
 Doctor MUST retain project.Check diagnostics and prevent hook or agent probes when the current project has a static error.

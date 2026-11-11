@@ -13,7 +13,7 @@ bases:
     CHK-047: 501d63ae
     CHK-048: 3b0dee08
 module: checks
-phase: impl
+phase: applied
 run: 20261111T051736-9640fdfd1590a860b50eb3a9
 ---
 
@@ -103,6 +103,7 @@ be implemented in `packages/checks/internal/engine/hooks.go`.
 ## Provenance
 - evals 2026-11-11T05:55:57.461239Z agent=manual fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=128 failing=19 passing=109
 - audit 2026-11-11T05:56:20.925122Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-astra -c model_reasoning_effort="medium" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-11T06:32:46.315707Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=798 failing=0 passing=798
 ## Audit
 
 No findings; checked CHK-002, CHK-026, CHK-027, CHK-028, CHK-036, CHK-037, CHK-038, CHK-046, CHK-047, CHK-048
