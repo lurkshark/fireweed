@@ -7,19 +7,20 @@ drill reports, and the owner accepted each proof and deferred its remaining
 gaps. Earlier milestone narratives, failed proofs and recovery notes are in
 Git history before this revision.
 
-Thirty-two owner-drafted changes are queued (0202–0233). Nothing has started them,
-and no claim is active. Links to queued changes in these docs use their archive
-paths, which resolve once each change applies.
+The owner approved changes 0202–0233. Change 0202 has applied and 0203–0233
+remain queued. Links to queued changes in these docs use their archive paths,
+which resolve once each change applies.
 
 ## Controller
 
-`.fireweed/bin/fireweed` was built with `-trimpath` from clean main with an
-empty queue and no claims. Go build metadata confirms the revision and a clean
-tree.
+`.fireweed/bin/fireweed` was rebuilt with `-trimpath` from clean main after
+0202 applied and its claim was released. Go build metadata confirms the
+revision and a clean tree.
 
-Controller source: `e1e1869131833778f1f8f1a23cf62b0d3b3869b3`
+Controller source: `71f6a63e2ddc13a6d64a5048ebf91cc89b7fa5c1`
 
-On a fresh macOS arm64 clone of that commit, with
+On a fresh macOS arm64 clone of the previous controller source
+(`e1e1869131833778f1f8f1a23cf62b0d3b3869b3`), with
 `GOCACHE=/tmp/fireweed-rebuild-cache`, the product build, `go test ./...`,
 `go test -race ./...`, `go vet ./...`, `fireweed check` and standalone
 `fireweed doctor` passed, including canaries, recovery and both agent probes.
@@ -115,15 +116,12 @@ The owner deferred these gaps. The queued change that addresses one is linked.
 
 ## Next step
 
-1. Owner review of the queued changes. Merging them to main approves them.
-2. Run them in queue order with the recorded controller.
-3. Rebuild the controller from clean main, with no run or claim active, after
+1. Run the remaining changes in queue order with the recorded controller.
+2. Rebuild the controller from clean main, with no run or claim active, after
    each of these applies, and record the new source here:
-   - 0202, before any further drill, so drills use the new feedback and
-     report rules;
    - 0207, so queue runs stop failing on the flaky time-budget eval;
    - 0230, so each successful phase runs full verification once.
-4. Await owner direction on the remaining
+3. Await owner direction on the remaining
    [full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required).
    Gate 2 requires the queue to be empty again.
 
