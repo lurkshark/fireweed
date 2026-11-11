@@ -8,6 +8,8 @@ bases:
     APP-078: 094fe1fd
     APP-085: bf182e31
 module: app
+phase: audit
+run: 20261111T083505-a3181a5d03759644a55b7091
 ---
 
 ## Motivation
@@ -67,3 +69,5 @@ today; it must no longer choose the code.
 Run this only after 0209 to 0212 apply. If a lower-module path still
 returns a coded failure without `contracts.CodedError`, block the change
 and name the path rather than keeping a text fallback.
+## Provenance
+- evals 2026-11-11T08:48:01.006913Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=323 failing=0 passing=323
