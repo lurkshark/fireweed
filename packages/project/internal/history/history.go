@@ -16,8 +16,7 @@ import (
 func SpecHistory(root, module, id string) ([]model.SpecHistoryEntry, error) {
 	snapshot, err := fixture.Load(root)
 	if err != nil {
-		code, _, _ := contracts.ErrorCode(err)
-		return nil, fmt.Errorf("%s: %w", code, err)
+		return nil, err
 	}
 
 	var target *model.Module
@@ -28,7 +27,7 @@ func SpecHistory(root, module, id string) ([]model.SpecHistoryEntry, error) {
 		}
 	}
 	if target == nil {
-		return nil, contracts.CodedError{Code: "U02", Subject: module, Cause: fmt.Errorf("U02: unknown module %q", module)}
+		return nil, contracts.CodedError{Code: "U02", Subject: module, Cause: fmt.Errorf("unknown module %q", module)}
 	}
 
 	result := make([]model.SpecHistoryEntry, 0)
@@ -75,7 +74,7 @@ func SpecHistory(root, module, id string) ([]model.SpecHistoryEntry, error) {
 			}
 		}
 		if !found {
-			return nil, contracts.CodedError{Code: "U02", Subject: id, Cause: fmt.Errorf("U02: unknown spec ID %q", id)}
+			return nil, contracts.CodedError{Code: "U02", Subject: id, Cause: fmt.Errorf("unknown spec ID %q", id)}
 		}
 	}
 
@@ -93,7 +92,7 @@ func SpecHistory(root, module, id string) ([]model.SpecHistoryEntry, error) {
 }
 
 func historyDocumentError(path string, err error) error {
-	return contracts.CodedError{Code: "C03", Subject: path, Cause: fmt.Errorf("C03: %w", err)}
+	return contracts.CodedError{Code: "C03", Subject: path, Cause: err}
 }
 
 func readArchive(root, path string) (model.SpecHistoryEntry, error) {
