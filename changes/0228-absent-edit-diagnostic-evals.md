@@ -2,7 +2,7 @@
 eval_fix:
     - PRJ-016
 module: project
-phase: audit
+phase: impl
 run: 20261111T220010-7d6302a96fd7261e281b415c
 ---
 
@@ -35,3 +35,7 @@ names ALP-999. Leave the PRJ-014 and PRJ-015 cases as they are.
 The project evals passed with `fireweed verify absent-edit-diagnostic-evals`.
 ## Provenance
 - evals 2026-11-11T22:01:21.740696Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=135 failing=0 passing=135
+- audit 2026-11-11T22:01:46.781763Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-astra -c model_reasoning_effort="medium" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+## Audit
+
+No findings; checked PRJ-016
