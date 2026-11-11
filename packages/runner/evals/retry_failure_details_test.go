@@ -70,7 +70,7 @@ func retryDetailSection(t *testing.T, f nextFixture) (string, string) {
 	if i < len(first) {
 		t.Fatalf("retry prompt lost dependent hook stderr marker: %q", retry[len(first):])
 	}
-	return retry[len(first):], retry[i+len(marker):]
+	return retry[len(first) : i+len(marker)], retry[i+len(marker):]
 }
 
 func Test_RUN_043_RetryIncludesJUnitOnlyCasesFromOwnAndDependentModules(t *testing.T) {
@@ -90,7 +90,7 @@ func Test_RUN_043_RetryIncludesJUnitOnlyCasesFromOwnAndDependentModules(t *testi
 		t.Fatalf("Next with JUnit-only dependent failure = %#v, %v", r, err)
 	}
 	feedback, section := retryDetailSection(t, f)
-	if !strings.Contains(feedback, "E01: failed case") || !strings.Contains(feedback, retryDetailHookMarker) {
+	if !strings.Contains(feedback, "ALP-002_first") || !strings.Contains(feedback, retryDetailHookMarker) {
 		t.Error("retry lost existing verification feedback or hook stderr")
 	}
 	for _, want := range []string{

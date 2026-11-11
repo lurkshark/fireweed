@@ -17,7 +17,10 @@ import (
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
 
-const nextChange = "changes/0001-next.md"
+const (
+	nextChange    = "changes/0001-next.md"
+	nextValueCase = "ALP-002_fixture_value"
+)
 
 func nextWrite(t *testing.T, root, name, body string) {
 	t.Helper()
@@ -242,8 +245,15 @@ if [ -f packages/alpha/evals/staged_test.go ] && [ ! -f "$3/evals-observed" ]; t
 fi
 go test ./packages/alpha/evals > .fireweed/go-test.log 2>&1
 code=$?
-if [ "$code" -eq 0 ]; then result=''; else result='<failure message="Go eval failed"/>'; cat .fireweed/go-test.log; fi
-printf '<testsuite><testcase name="ALP-001" classname="fixture"/><testcase name="ALP-002" classname="fixture">%s</testcase></testsuite>' "$result" > "$2"
+case_name='`+nextValueCase+`'
+if [ "$code" -eq 0 ]; then
+  result=''
+  printf 'fixture testcase %s passed\n' "$case_name"
+else
+  result='<failure message="Go eval failed"/>'
+  cat .fireweed/go-test.log
+fi
+printf '<testsuite><testcase name="ALP-001" classname="fixture"/><testcase name="%s" classname="fixture">%s</testcase></testsuite>' "$case_name" "$result" > "$2"
 exit "$code"
 `)
 	nextWrite(t, root, ".fireweed/boundaries.sh", "#!/bin/sh\nexit 0\n")
@@ -708,13 +718,10 @@ func Test_RUN_021_RUN_022_DefaultRetriesRetainWorkAndFeedbackPerPhase(t *testing
 			t.Errorf("retained work missing from %s", path)
 		}
 	}
-	for _, phase := range []struct{ name, feedback string }{
-		{"evals", "P2-01: no fail-first case for ALP-002"},
-		{"impl", "E01: failed case"},
-	} {
-		prompt := nextRead(t, f.logDir, "worker-"+phase.name+"-2.prompt")
-		if !strings.Contains(prompt, phase.feedback) {
-			t.Errorf("%s retry prompt lacks real verification feedback %q", phase.name, phase.feedback)
+	for _, phase := range []string{"evals", "impl"} {
+		prompt := nextRead(t, f.logDir, "worker-"+phase+"-2.prompt")
+		if !strings.Contains(prompt, nextValueCase) {
+			t.Errorf("%s retry prompt lacks verification feedback naming testcase %q", phase, nextValueCase)
 		}
 	}
 	if prompt := nextRead(t, f.logDir, "worker-impl-2.prompt"); !strings.Contains(prompt, "--- FAIL: Test_ALP_002_NewValue") {
@@ -752,8 +759,11 @@ func Test_RUN_023_RUN_024_ImplExhaustionSavesWorkAndBlocks(t *testing.T) {
 	f := newNextFixture(t, true, true, "exhaust-impl")
 	before := nextGit(t, f.root, "rev-parse", "HEAD")
 	r, err := f.run(false)
-	if err == nil || !strings.Contains(err.Error(), "E01: failed case") {
-		t.Errorf("exhaustion cause = %v", err)
+	if code, _, ok := contracts.ErrorCode(err); !ok || code != "E01" {
+		t.Errorf("Next error code = %q (present: %t), want E01 (error: %v)", code, ok, err)
+	}
+	if err == nil || !strings.Contains(err.Error(), nextValueCase) {
+		t.Errorf("exhaustion cause = %v, want testcase %q", err, nextValueCase)
 	}
 	if len(r.Steps) != 4 {
 		t.Fatalf("exhaustion steps = %d, want 4", len(r.Steps))

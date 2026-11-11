@@ -4,6 +4,8 @@ eval_fix:
     - RUN-024
     - RUN-043
 module: runner
+phase: audit
+run: 20261111T105608-3583ab308996d9fbe7ac9b35
 ---
 
 ## Motivation
@@ -40,3 +42,5 @@ Audited eval_fix only. Edit only the runner evals zone and this change.
   `E01: failed case` with the failing testcase's name.
 
 Run after 0212 and before 0221.
+## Provenance
+- evals 2026-11-11T11:09:17.124057Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=167 failing=0 passing=167
