@@ -1,5 +1,7 @@
 ---
 module: workflow
+phase: applied
+run: 20261111T080643-a3e51a12ee3e891cbddc2b19
 ---
 
 ## Motivation
@@ -36,3 +38,5 @@ files.
 
 No spec, eval or other module refers to these file names, so all evals
 must pass unchanged and the workflow drill proof stays valid.
+## Provenance
+- impl 2026-11-11T08:35:02.069937Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=672 failing=0 passing=672
