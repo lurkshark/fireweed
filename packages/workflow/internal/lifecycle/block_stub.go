@@ -110,7 +110,7 @@ func Block(request model.BlockRequest) (model.BlockResult, error) {
 		return result, err
 	}
 	if s.Head != c.PhaseBase {
-		return result, errors.New("P05: HEAD differs from the held phase base")
+		return result, codedErrorf("P05", c.Change, "HEAD differs from the held phase base")
 	}
 	if strings.TrimSpace(request.Reason) == "" {
 		return result, errors.New("blocked reason is empty")
@@ -118,7 +118,7 @@ func Block(request model.BlockRequest) (model.BlockResult, error) {
 	switch c.Phase {
 	case "evals", "audit", "impl":
 	default:
-		return result, fmt.Errorf("P01: unsupported phase %s", c.Phase)
+		return result, codedErrorf("P01", c.Change, "unsupported phase %s", c.Phase)
 	}
 	root := s.Snapshot.Root
 	doc, err := blockDocument(root, s, c)

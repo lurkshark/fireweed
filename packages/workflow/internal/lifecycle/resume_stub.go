@@ -72,7 +72,7 @@ func restoredChange(current, saved contracts.Document, phase string) (string, er
 
 func StartFromAttempt(root, change string, attempt int) (model.State, error) {
 	if attempt <= 0 {
-		return model.State{}, errors.New("P01: attempt number must be positive")
+		return model.State{}, codedErrorf("P01", change, "attempt number must be positive")
 	}
 	repo, err := gitstore.Inspect(root)
 	if err != nil {
@@ -84,7 +84,7 @@ func StartFromAttempt(root, change string, attempt int) (model.State, error) {
 		return model.State{}, err
 	}
 	if str(ch.Document.Frontmatter["run"]) == "" || str(ch.Document.Frontmatter["phase"]) == "" {
-		return model.State{}, errors.New("P01: saved attempt requires a committed phase")
+		return model.State{}, codedErrorf("P01", ch.Slug, "saved attempt requires a committed phase")
 	}
 	name := fmt.Sprintf("refs/fireweed/attempts/%s/%d", ch.Slug, attempt)
 	oid, ok, err := gitstore.Ref(root, name)
@@ -92,7 +92,7 @@ func StartFromAttempt(root, change string, attempt int) (model.State, error) {
 		return model.State{}, fmt.Errorf("read saved attempt %s: %w", name, err)
 	}
 	if !ok {
-		return model.State{}, fmt.Errorf("P01: saved attempt %s does not exist", name)
+		return model.State{}, codedErrorf("P01", name, "saved attempt %s does not exist", name)
 	}
 	files, err := savedStep(root, oid)
 	if err != nil {

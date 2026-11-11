@@ -46,17 +46,30 @@ func write(root, path string, data []byte) error {
 	}
 	return os.WriteFile(p, data, 0644)
 }
+
+// Keep the existing code prefix until callers render the structured code.
+func codedErrorf(code, subject, format string, args ...any) error {
+	return contracts.CodedError{
+		Code:    code,
+		Subject: subject,
+		Cause:   fmt.Errorf(code+": "+format, args...),
+	}
+}
+
 func hard(ds []project.Diagnostic) error {
 	for _, d := range ds {
-		if !d.Warning {
-			if d.Code == "C08" && strings.HasPrefix(d.Message, "stale base for ") {
-				return fmt.Errorf("P05: C08: %s", d.Message)
-			}
-			if strings.HasPrefix(d.Message, d.Code+": ") {
-				return errors.New(d.Message)
-			}
-			return fmt.Errorf("%s: %s", d.Code, d.Message)
+		if d.Warning {
+			continue
 		}
+		message := d.Message
+		if !strings.HasPrefix(message, d.Code+": ") {
+			message = d.Code + ": " + message
+		}
+		cause := contracts.CodedError{Code: d.Code, Subject: d.Path, Cause: errors.New(message)}
+		if d.Code == "C08" && strings.HasPrefix(d.Message, "stale base for ") {
+			return codedErrorf("P05", d.Path, "%w", cause)
+		}
+		return cause
 	}
 	return nil
 }
@@ -155,26 +168,26 @@ func changeBy(root, target string) (project.Change, error) {
 
 func unknownChange(target string, slugs []string) error {
 	if len(slugs) == 0 {
-		return fmt.Errorf("U02: change %q not found; no valid change slugs", target)
+		return codedErrorf("U02", target, "change %q not found; no valid change slugs", target)
 	}
 	sort.Strings(slugs)
-	return fmt.Errorf("U02: change %q not found; valid change slugs: %s", target, strings.Join(slugs, ", "))
+	return codedErrorf("U02", target, "change %q not found; valid change slugs: %s", target, strings.Join(slugs, ", "))
 }
 func existing(root, slug string) (claim, string, error) {
 	oid, ok, e := gitstore.Ref(root, ref(slug))
 	if e != nil {
-		return claim{}, "", fmt.Errorf("P02: read claim: %w", e)
+		return claim{}, "", codedErrorf("P02", slug, "read claim: %w", e)
 	}
 	if !ok {
-		return claim{}, "", errors.New("P02: change has no claim")
+		return claim{}, "", codedErrorf("P02", slug, "change has no claim")
 	}
 	b, e := gitstore.ReadBlob(root, oid)
 	if e != nil {
-		return claim{}, "", fmt.Errorf("P02: read claim: %w", e)
+		return claim{}, "", codedErrorf("P02", slug, "read claim: %w", e)
 	}
 	var c claim
 	if e = json.Unmarshal(b, &c); e != nil {
-		return claim{}, "", fmt.Errorf("P02: decode claim: %w", e)
+		return claim{}, "", codedErrorf("P02", slug, "decode claim: %w", e)
 	}
 	return c, oid, nil
 }
@@ -303,7 +316,7 @@ func Start(root, target string) (model.State, error) {
 		return model.State{}, e
 	}
 	if len(changes) > 0 {
-		return model.State{}, errors.New("P01: start requires clean worktree")
+		return model.State{}, codedErrorf("P01", target, "start requires clean worktree")
 	}
 	if e = hard(project.Check(root)); e != nil {
 		return model.State{}, e
@@ -318,11 +331,11 @@ func Start(root, target string) (model.State, error) {
 		return model.State{}, e
 	}
 	if len(q) == 0 {
-		return model.State{}, errors.New("P01: no eligible change")
+		return model.State{}, codedErrorf("P01", target, "no eligible change")
 	}
 	ch := q[0]
 	if target != "" && target != ch.Slug && target != ch.Path && target != filepath.Base(ch.Path) {
-		return model.State{}, errors.New("P01: change is not eligible queue head")
+		return model.State{}, codedErrorf("P01", target, "change is not eligible queue head")
 	}
 	local, shared := baseRefs(root, mustLoad(root).Config)
 	ds := []project.Diagnostic{}
@@ -344,7 +357,7 @@ func Start(root, target string) (model.State, error) {
 		}
 		if count >= limit {
 			ds = append(ds, diag("P07", "shared-base unapproved archive limit reached", false))
-			return model.State{Diagnostics: ds}, errors.New("P07: unapproved archive limit")
+			return model.State{Diagnostics: ds}, codedErrorf("P07", ch.Slug, "unapproved archive limit")
 		}
 	}
 	snap, e := project.Project(root, ch.Slug)
@@ -377,7 +390,7 @@ func Start(root, target string) (model.State, error) {
 	c.Audit = auditState(ch.Document)
 	oid, e := storeClaim(root, c, "")
 	if e != nil {
-		return model.State{Diagnostics: ds}, fmt.Errorf("P02: claim already held: %w", e)
+		return model.State{Diagnostics: ds}, codedErrorf("P02", ch.Slug, "claim already held: %w", e)
 	}
 	rollback := func(err error) (model.State, error) {
 		_ = gitstore.CASRef(root, ref(ch.Slug), oid, "")
@@ -410,7 +423,7 @@ func Start(root, target string) (model.State, error) {
 	c.Audit = auditState(ch.Document)
 	oid, e = storeClaim(root, c, oid)
 	if e != nil {
-		return model.State{}, fmt.Errorf("P02: update claim: %w", e)
+		return model.State{}, codedErrorf("P02", ch.Slug, "update claim: %w", e)
 	}
 	s := state(root, ch, c, oid, repo.Head)
 	s.Diagnostics = ds
@@ -434,7 +447,7 @@ func Current(root, target string) (model.State, error) {
 				return state(root, ch, c, oid, repo.Head), nil
 			}
 		}
-		return model.State{}, errors.New("P02: worktree holds no change")
+		return model.State{}, codedErrorf("P02", "", "worktree holds no change")
 	}
 	ch, e := changeBy(root, target)
 	if e != nil {
@@ -445,20 +458,20 @@ func Current(root, target string) (model.State, error) {
 		return model.State{}, e
 	}
 	if c.Worktree != root || c.Change != ch.Slug {
-		return model.State{}, errors.New("P02: claim belongs to another worktree")
+		return model.State{}, codedErrorf("P02", ch.Slug, "claim belongs to another worktree")
 	}
 	return state(root, ch, c, oid, repo.Head), nil
 }
 func validate(s model.State, c claim) error {
 	if s.Change.Slug != c.Change || str(s.Change.Document.Frontmatter["run"]) != c.Run || str(s.Change.Document.Frontmatter["phase"]) != c.Phase {
-		return errors.New("P03: approved run or phase changed")
+		return codedErrorf("P03", c.Change, "approved run or phase changed")
 	}
 	a, sections := author(s.Change.Document)
 	if !equal(a, c.Author) || !equal(sections, c.Sections) {
-		return errors.New("P03: approved author metadata changed")
+		return codedErrorf("P03", c.Change, "approved author metadata changed")
 	}
 	if !equal(auditState(s.Change.Document), c.Audit) {
-		return errors.New("P03: approved audit state changed")
+		return codedErrorf("P03", c.Change, "approved audit state changed")
 	}
 	return nil
 }
@@ -624,7 +637,7 @@ func Verify(ctx context.Context, req model.Request) (model.Result, error) {
 		return r, e
 	}
 	if c.Phase != "evals" && c.Phase != "audit" && c.Phase != "impl" {
-		return r, fmt.Errorf("P01: unsupported phase %s", c.Phase)
+		return r, codedErrorf("P01", c.Change, "unsupported phase %s", c.Phase)
 	}
 	diff, e := stepChanges(s.Snapshot.Root, c.PhaseBase)
 	if e != nil {
@@ -677,14 +690,14 @@ func Verify(ctx context.Context, req model.Request) (model.Result, error) {
 					}
 					for _, testcase := range rep.Cases {
 						if testcase.Result != "pass" && first == nil {
-							first = fmt.Errorf("E01: eval_fix testcase %q did not pass", testcase.Name)
+							first = codedErrorf("E01", testcase.Name, "eval_fix testcase %q did not pass", testcase.Name)
 						}
 					}
 				} else {
 					if err = checks.RequireFailFirst(rep, selectedIDs(s.Change, items), list(s.Change.Document.Frontmatter["already_satisfied"])); err != nil {
 						r.Diagnostics = append(r.Diagnostics, diag("P2-01", err.Error(), false))
 						if first == nil {
-							first = err
+							first = contracts.CodedError{Code: "P2-01", Subject: name, Cause: err}
 						}
 					}
 				}
@@ -705,19 +718,19 @@ func Verify(ctx context.Context, req model.Request) (model.Result, error) {
 					continue
 				}
 				if d.Code == "X02" && strings.HasPrefix(err.Error(), d.Code+": ") {
-					first = err
+					first = contracts.CodedError{Code: d.Code, Subject: d.Path, Cause: err}
 				} else if d.Code == "X02" || strings.Contains(err.Error(), d.Message) {
-					first = fmt.Errorf("%s: %w", d.Code, err)
+					first = codedErrorf(d.Code, d.Path, "%w", err)
 				} else {
-					first = fmt.Errorf("%s: %s: %w", d.Code, d.Message, err)
+					first = codedErrorf(d.Code, d.Path, "%s: %w", d.Message, err)
 				}
 				break
 			}
 			if first == nil {
 				if strings.HasPrefix(err.Error(), "X02: ") {
-					first = err
+					first = contracts.CodedError{Code: "X02", Cause: err}
 				} else {
-					first = fmt.Errorf("X02: %w", err)
+					first = codedErrorf("X02", "", "%w", err)
 				}
 			}
 		}
@@ -848,7 +861,7 @@ func auditProcess(s model.State, c claim) (project.Change, string, bool, error) 
 	}
 	checked := regexp.MustCompile(`(?m)^Checked IDs:\s*(.+)$`).FindStringSubmatch(body)
 	if checked == nil || !strings.Contains(body, "No findings") {
-		return ch, "", false, errors.New("P09: audit requires Checked IDs and No findings")
+		return ch, "", false, codedErrorf("P09", ch.Slug, "audit requires Checked IDs and No findings")
 	}
 	found := map[string]bool{}
 	for _, id := range regexp.MustCompile(`[A-Za-z][A-Za-z0-9-]*-\d+`).FindAllString(checked[1], -1) {
@@ -856,7 +869,7 @@ func auditProcess(s model.State, c claim) (project.Change, string, bool, error) 
 	}
 	for _, id := range append(selectedIDs(ch, specs(module(c.Snapshot, ch.Module))), evalFixIDs(ch)...) {
 		if !found[id] {
-			return ch, "", false, fmt.Errorf("P09: audit did not check %s", id)
+			return ch, "", false, codedErrorf("P09", id, "audit did not check %s", id)
 		}
 	}
 	ch.Document.Body = contracts.ReplaceSection(ch.Document.Body, "Audit", "\nNo findings; checked "+strings.Join(sortedKeys(found), ", ")+"\n")
@@ -1027,7 +1040,7 @@ func Done(ctx context.Context, req model.Request) (model.Result, error) {
 	case "impl":
 		next = "applied"
 	default:
-		return result, fmt.Errorf("P01: unsupported phase %s", c.Phase)
+		return result, codedErrorf("P01", c.Change, "unsupported phase %s", c.Phase)
 	}
 	ch, e = provenance(ch, c.Phase, req.Agent, result.Reports)
 	if e != nil {
@@ -1070,7 +1083,7 @@ func Done(ctx context.Context, req model.Request) (model.Result, error) {
 		result.State.Head = head
 		result.State.PhaseBase = head
 		result.State.Change = ch
-		return result, errors.New("P06: change blocked")
+		return result, codedErrorf("P06", ch.Slug, "change blocked")
 	}
 	result.State, e = commitPhase(s, c, oid, ch, paths, subject, next)
 	return result, e

@@ -28,13 +28,13 @@ type prChange struct {
 func PRBody(root, revisionRange string) (model.PRBodyReport, error) {
 	parts := strings.Split(revisionRange, "..")
 	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
-		return model.PRBodyReport{}, fmt.Errorf("P01: invalid range %q", revisionRange)
+		return model.PRBodyReport{}, codedErrorf("P01", revisionRange, "invalid range %q", revisionRange)
 	}
 	var resolved [2]string
 	for i, part := range parts {
 		out, err := commitsGit(root, "rev-parse", "--verify", "--end-of-options", part+"^{commit}")
 		if err != nil {
-			return model.PRBodyReport{}, fmt.Errorf("P01: resolve range %q: %w", revisionRange, err)
+			return model.PRBodyReport{}, codedErrorf("P01", revisionRange, "resolve range %q: %w", revisionRange, err)
 		}
 		resolved[i] = strings.TrimSpace(out)
 	}

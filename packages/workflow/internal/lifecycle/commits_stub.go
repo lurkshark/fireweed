@@ -66,7 +66,7 @@ func selectCommitChange(paths []string, selector string) (string, error) {
 	if len(matches) == 0 {
 		return "", unknownChange(selector, slugs)
 	}
-	return "", fmt.Errorf("U02: change %q is ambiguous", selector)
+	return "", codedErrorf("U02", selector, "change %q is ambiguous", selector)
 }
 
 func commitPhaseAt(root, revision, basename string) (string, error) {

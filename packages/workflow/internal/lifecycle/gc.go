@@ -39,7 +39,7 @@ func gcMaxAge(config map[string]any) (time.Duration, error) {
 	}
 	settings, ok := raw.(map[string]any)
 	if !ok {
-		return 0, fmt.Errorf("C01: gc must be a mapping")
+		return 0, codedErrorf("C01", "gc", "gc must be a mapping")
 	}
 	raw, exists = settings["drill_max_age"]
 	if !exists {
@@ -47,11 +47,11 @@ func gcMaxAge(config map[string]any) (time.Duration, error) {
 	}
 	value, ok := raw.(string)
 	if !ok {
-		return 0, fmt.Errorf("C01: gc.drill_max_age must be a positive Go duration")
+		return 0, codedErrorf("C01", "gc.drill_max_age", "gc.drill_max_age must be a positive Go duration")
 	}
 	age, err := time.ParseDuration(value)
 	if err != nil || age <= 0 {
-		return 0, fmt.Errorf("C01: gc.drill_max_age must be a positive Go duration: %q", value)
+		return 0, codedErrorf("C01", "gc.drill_max_age", "gc.drill_max_age must be a positive Go duration: %q", value)
 	}
 	return age, nil
 }

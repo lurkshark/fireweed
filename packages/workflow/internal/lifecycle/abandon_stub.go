@@ -1,8 +1,6 @@
 package lifecycle
 
 import (
-	"errors"
-	"fmt"
 	"os"
 	"path"
 	"strings"
@@ -22,7 +20,7 @@ func Abandon(root, change string) (string, error) {
 		return "", err
 	}
 	if len(dirty) != 0 {
-		return "", errors.New("P01: abandon requires clean worktree")
+		return "", codedErrorf("P01", change, "abandon requires clean worktree")
 	}
 	paths, err := commitChangePaths(root, repo.Head)
 	if err != nil {
@@ -40,16 +38,16 @@ func Abandon(root, change string) (string, error) {
 			foundPending = true
 		}
 		if candidate == archived {
-			return "", errors.New("P01: applied archived change cannot be abandoned")
+			return "", codedErrorf("P01", archived, "applied archived change cannot be abandoned")
 		}
 	}
 	if !foundPending {
-		return "", fmt.Errorf("U02: change %q not found", change)
+		return "", codedErrorf("U02", change, "change %q not found", change)
 	}
 	slug := strings.TrimSuffix(basename[strings.IndexByte(basename, '-')+1:], ".md")
 	claimOID, claimed, err := gitstore.Ref(root, ref(slug))
 	if err != nil {
-		return "", fmt.Errorf("P02: read claim: %w", err)
+		return "", codedErrorf("P02", slug, "read claim: %w", err)
 	}
 	if claimed {
 		owner, _, err := existing(root, slug)
@@ -57,7 +55,7 @@ func Abandon(root, change string) (string, error) {
 			return "", err
 		}
 		if owner.Worktree != root || owner.Change != slug {
-			return "", errors.New("P02: claim belongs to another worktree")
+			return "", codedErrorf("P02", slug, "claim belongs to another worktree")
 		}
 	}
 	commits, err := Commits(root, pending)
@@ -72,7 +70,7 @@ func Abandon(root, change string) (string, error) {
 		}
 		fields := strings.Fields(line)
 		if len(fields) < 2 {
-			return "", fmt.Errorf("P01: phase commit %s has no parent", oid)
+			return "", codedErrorf("P01", oid, "phase commit %s has no parent", oid)
 		}
 		parent := fields[1]
 		phase, err := commitPhaseAt(root, oid, basename)
@@ -125,7 +123,7 @@ func Abandon(root, change string) (string, error) {
 	}
 	if claimed {
 		if err := gitstore.CASRef(root, ref(slug), claimOID, ""); err != nil {
-			return "", fmt.Errorf("P02: release claim: %w", err)
+			return "", codedErrorf("P02", slug, "release claim: %w", err)
 		}
 	}
 	return oid, nil

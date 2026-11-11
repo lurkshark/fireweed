@@ -191,25 +191,25 @@ For module names equal to `costs` without regard to case, the report MUST use
 State MUST expose the held projected snapshot so composing commands use the approved graph during hooks.
 
 ### FLOW-054
-Start MUST prefix dirty-worktree and queue-eligibility rejections with P01.
+Start MUST reject a dirty worktree or an ineligible queue with an error whose contracts ErrorCode is P01.
 
 ### FLOW-055
-Verify and Done MUST prefix unsupported-phase rejections with P01.
+Verify and Done MUST reject an unsupported phase with an error whose contracts ErrorCode is P01.
 
 ### FLOW-056
-Start and Current MUST prefix existing claim ownership or contention failures with P02.
+Start and Current MUST report existing claim ownership or contention failures with an error whose contracts ErrorCode is P02.
 
 ### FLOW-057
-Verify and Done MUST prefix unapproved author, runtime or audit-state alteration errors with P03 before running hooks.
+Verify and Done MUST reject unapproved author, runtime or audit-state alterations with an error whose contracts ErrorCode is P03 before running hooks.
 
 ### FLOW-058
-Start, Verify and Done MUST prefix stale-base rejections with P05, retaining the underlying cause.
+Start, Verify and Done MUST reject a stale base with an error whose contracts ErrorCode is P05, retaining the underlying cause in its chain.
 
 ### FLOW-059
-During audit, Verify MUST apply Done's audit-submission checks. Verify and Done MUST prefix malformed or incomplete submission rejections with P09.
+During audit, Verify MUST apply Done's audit-submission checks. Verify and Done MUST reject malformed or incomplete submissions with an error whose contracts ErrorCode is P09.
 
 ### FLOW-060
-Done MUST prefix its existing blocked-change error with P06 while preserving the committed blocking state and claim release.
+Done MUST return its existing blocked-change error with contracts ErrorCode P06 while preserving the committed blocking state and claim release.
 
 ### FLOW-061
 Start MUST distinguish an explicit unknown change selector from queue eligibility. Lifecycle operations MUST return U02 for unknown explicit change selectors, naming the rejected value and listing valid slugs for the operation.
