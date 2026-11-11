@@ -35,7 +35,7 @@ func prBodyAppFixture(t *testing.T) (root, nested, revisionRange, endpoint strin
 	cliGit(t, root, "init", "-q", "-b", "main")
 	cliCommit(t, root, "PR body base")
 	base := cliGit(t, root, "rev-parse", "HEAD")
-	statusArchive(t, root, "0001-review", "alpha", "2026-10-30T12:00:00Z")
+	statusArchive(t, root, "0001-review", "alpha", "2026-10-30T12:00:00Z", "", "")
 	appPut(t, root, "packages/alpha/internal/opaque.dat", "\x00\x01\x02\x03")
 	appPut(t, root, "packages/alpha/internal/ordinary.txt", "ordinary addition\n")
 	snapshot := workflow.CostSnapshot{

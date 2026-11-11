@@ -17,7 +17,7 @@ import (
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
 
-func statusArchive(t *testing.T, root, name, module, date string) {
+func statusArchive(t *testing.T, root, name, module, date, added, modified string) {
 	t.Helper()
 	playbook, err := assets.Playbook("impl")
 	if err != nil {
@@ -36,16 +36,16 @@ Earlier implementation change.
 ## Interface
 
 ## Added
-
+%s
 ## Modified
-
+%s
 ## Removed
 
 ## Decisions
 
 ## Provenance
 - impl %s agent=manual fireweed=%s playbook=%x tests=1 failing=0 passing=1
-`, module, name, date, assets.Version(), sha256.Sum256([]byte(playbook))))
+`, module, name, added, modified, date, assets.Version(), sha256.Sum256([]byte(playbook))))
 }
 
 func statusRichFixture(t *testing.T) (string, workflow.StatusReport) {
@@ -99,13 +99,13 @@ Gamma MUST work.
 	listChange(t, root, "0001-blocked.md", "alpha", "phase: impl\nblocked: fixture review required\naudit_rounds: 2\n")
 	listChange(t, root, "0002-dependent.md", "beta", "")
 	listChange(t, root, "0003-independent.md", "gamma", "phase: audit\naudit_rounds: 1\n")
-	for _, a := range []struct{ name, module, date string }{
-		{"0004-beta-old", "beta", "2026-06-11T12:00:00Z"},
-		{"0005-alpha-old", "alpha", "2026-06-12T12:00:00Z"},
-		{"0006-alpha-new", "alpha", "2026-06-13T12:00:00Z"},
-		{"0007-alpha-newest", "alpha", "2026-06-14T12:00:00Z"},
+	for _, a := range []struct{ name, module, date, added, modified string }{
+		{"0004-beta-old", "beta", "2026-06-11T12:00:00Z", "", ""},
+		{"0005-alpha-old", "alpha", "2026-06-12T12:00:00Z", "### ALP-001\nAlpha MUST return a value.\n", ""},
+		{"0006-alpha-new", "alpha", "2026-06-13T12:00:00Z", "", "### ALP-001\nAlpha MUST return a nonempty value.\n"},
+		{"0007-alpha-newest", "alpha", "2026-06-14T12:00:00Z", "", "### ALP-001 [quarantine: intermittent fixture]\nAlpha MUST work.\n"},
 	} {
-		statusArchive(t, root, a.name, a.module, a.date)
+		statusArchive(t, root, a.name, a.module, a.date, a.added, a.modified)
 	}
 	appPut(t, root, ".fireweed/drills/alpha.md", fmt.Sprintf("---\ndate: 2026-06-10T12:00:00Z\nbase_commit: %s\nagent: fixture\nmodel: fixture\nresult: fail\n---\n", base))
 	snapshot := workflow.CostSnapshot{

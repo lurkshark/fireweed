@@ -2,6 +2,8 @@
 eval_fix:
     - APP-125
 module: app
+phase: audit
+run: 20261111T085036-8f8b2d34889504e308688563
 ---
 
 ## Motivation
@@ -37,3 +39,8 @@ warns. Extend `statusArchive` with optional Added and Modified items rather
 than writing archives by hand. Keep every other assertion.
 
 Run this before 0217.
+
+`fireweed verify status-rework-fixture` passed in the evals phase with B02
+case-count warnings for APP-103 and APP-104.
+## Provenance
+- evals 2026-11-11T09:01:56.717823Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=323 failing=0 passing=323
