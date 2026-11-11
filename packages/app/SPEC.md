@@ -131,7 +131,7 @@ coverage MUST return exit 2 with corrective diagnostics for usage, configuration
 coverage --json MUST return schema 1 with report data on success, null on failure and code/message diagnostics.
 
 ### APP-037
-Existing static failures exposed by the CLI MUST retain their D006 cause: C01 configuration, C02 graph, C03 syntax, C04 normative text, C05 identities, C06 tags, C07 change structure, C08 bases, C09 handles, C12 metadata or C13 queue identity.
+Existing static failures exposed by the CLI MUST report the D006 code that the failing Diagnostic carries or that contracts.ErrorCode returns for the failing error: C01 configuration, C02 graph, C03 syntax, C04 normative text, C05 identities, C06 tags, C07 change structure, C08 bases, C09 handles, C12 metadata or C13 queue identity.
 
 ### APP-038
 CLI lookup rejections for unknown names or ambiguous projected change-local handles MUST use U02. Invalid graphs, module spec identities and other static validation failures MUST retain their D006 static codes.
@@ -261,8 +261,9 @@ runner execution or lifecycle failure, exit2 for usage or configuration errors,
 and exit3 for a clean usage stop.
 
 ### APP-078
-next failure diagnostics MUST retain existing cause codes from wrapped
-dependency errors and include a corrective action.
+next failure diagnostics MUST report the code that contracts.ErrorCode
+returns for the returned error, or P01 when it returns none, and include a
+corrective action.
 
 ### APP-079
 next --json MUST emit schema1 and leave stderr empty. It MUST use object data
@@ -297,8 +298,9 @@ blocked change, exit2 for usage or configuration errors, and exit3 for a clean
 time or usage stop.
 
 ### APP-085
-run failure diagnostics MUST retain existing cause codes from wrapped
-dependency errors and include a corrective action.
+run failure diagnostics MUST report the code that contracts.ErrorCode
+returns for the returned error, or P01 when it returns none, and include a
+corrective action.
 
 ### APP-086
 run --json MUST emit schema1 and leave stderr empty. It MUST use object data
