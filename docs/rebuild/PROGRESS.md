@@ -20,8 +20,15 @@ errors.
 The owner approved [the CLI migration prerequisite](../../changes/archive/0221-app-structured-diagnostics.md)
 after the first 0221 run exposed remaining text classifiers. Fireweed applied
 it, restored 0221's saved implementation, and verified all 323 app cases
-against the unlabeled checks errors. Changes 0222–0233 remain queued. Links use
-their archive paths, which resolve once each applies.
+against the unlabeled checks errors.
+
+Fireweed blocked 0222 after two implementation attempts. All 188 workflow
+cases passed. Dependent evals still assert workflow code labels in app
+(APP-091–APP-093 and APP-130–APP-131) and runner (RUN-011–RUN-012). Fireweed
+saved `refs/fireweed/attempts/workflow-unlabeled-errors/1` and released the
+claim. Changes 0223–0233 remain queued. The owner also requested queuing
+0234-worker-declared-block after 0222 released its claim. Links use archive
+paths, which resolve once each change applies.
 
 ## Controller
 
@@ -128,11 +135,15 @@ The owner deferred these gaps. The queued change that addresses one is linked.
 
 ## Next step
 
-1. Run the remaining changes in queue order with the recorded controller.
-2. After 0230 applies, rebuild the controller from clean main with no run or
+1. Review app and runner `eval_fix` prerequisites for 0222. Assert the existing
+   diagnostic codes through `contracts.ErrorCode` and retain the CLI and
+   lifecycle assertions.
+2. Resume 0222 from the saved attempt and run the remaining changes in queue
+   order with the recorded controller.
+3. After 0230 applies, rebuild the controller from clean main with no run or
    claim active and record the new source here. This lets each successful
    phase run full verification once.
-3. Await owner direction on the remaining
+4. Await owner direction on the remaining
    [full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required).
    Gate 2 requires the queue to be empty again.
 
