@@ -91,15 +91,7 @@ func moduleSpecs(module project.Module) ([]contracts.Item, error) {
 	if !ok {
 		return nil, nil
 	}
-	items, err := contracts.ParseItems(section)
-	if err != nil {
-		code, _, ok := contracts.ErrorCode(err)
-		if !ok {
-			return nil, fmt.Errorf("parse module specs: %w", err)
-		}
-		return nil, fmt.Errorf("%s: %w", code, err)
-	}
-	return items, nil
+	return contracts.ParseItems(section)
 }
 
 func Evaluate(ctx context.Context, request model.HookRequest) (model.Report, error) {
@@ -111,14 +103,14 @@ func Evaluate(ctx context.Context, request model.HookRequest) (model.Report, err
 		}
 	}
 	if module == nil {
-		return model.Report{}, contracts.CodedError{Code: "U02", Subject: request.Module, Cause: fmt.Errorf("U02: unknown module %q", request.Module)}
+		return model.Report{}, contracts.CodedError{Code: "U02", Subject: request.Module, Cause: fmt.Errorf("unknown module %q", request.Module)}
 	}
 	command := mapValue(request.Snapshot.Config, "hooks")["eval"]
 	if override, ok := mapValue(module.Document.Frontmatter, "hooks")["eval"]; ok {
 		command = override
 	}
 	if command == nil {
-		return model.Report{}, contracts.CodedError{Code: "C11", Subject: module.Name, Cause: fmt.Errorf("C11: missing eval hook for %s", module.Name)}
+		return model.Report{}, contracts.CodedError{Code: "C11", Subject: module.Name, Cause: fmt.Errorf("missing eval hook for %s", module.Name)}
 	}
 	specs, err := moduleSpecs(*module)
 	if err != nil {
@@ -126,7 +118,7 @@ func Evaluate(ctx context.Context, request model.HookRequest) (model.Report, err
 	}
 	temp, err := os.MkdirTemp("", "fireweed-junit-")
 	if err != nil {
-		return model.Report{}, contracts.CodedError{Code: "C11", Subject: module.Name, Cause: fmt.Errorf("C11: %w", err)}
+		return model.Report{}, contracts.CodedError{Code: "C11", Subject: module.Name, Cause: err}
 	}
 	defer os.RemoveAll(temp)
 	reportPath := filepath.Join(temp, "report.xml")
@@ -134,11 +126,11 @@ func Evaluate(ctx context.Context, request model.HookRequest) (model.Report, err
 	process, err := runHook(ctx, request.Snapshot.Root, command, values, request.Bin, request.Timeout)
 	report := model.Report{HookExit: process.ExitCode, Stdout: process.Stdout, Stderr: process.Stderr}
 	if err != nil {
-		return report, contracts.CodedError{Code: "C11", Subject: module.Name, Cause: fmt.Errorf("C11: %w", err)}
+		return report, contracts.CodedError{Code: "C11", Subject: module.Name, Cause: err}
 	}
 	data, err := os.ReadFile(reportPath)
 	if err != nil {
-		return report, contracts.CodedError{Code: "C11", Subject: module.Name, Cause: fmt.Errorf("C11: read JUnit report: %w", err)}
+		return report, contracts.CodedError{Code: "C11", Subject: module.Name, Cause: fmt.Errorf("read JUnit report: %w", err)}
 	}
 	parsed, err := ParseJUnit(data, specs)
 	if err != nil {
@@ -156,7 +148,7 @@ func Evaluate(ctx context.Context, request model.HookRequest) (model.Report, err
 		return report, contracts.CodedError{
 			Code:    "C11",
 			Subject: module.Name,
-			Cause:   fmt.Errorf("C11: eval hook exit %d disagrees with JUnit failures", process.ExitCode),
+			Cause:   fmt.Errorf("eval hook exit %d disagrees with JUnit failures", process.ExitCode),
 		}
 	}
 	return report, nil
