@@ -7,7 +7,7 @@ drill reports, and the owner accepted each proof and deferred its remaining
 gaps. Earlier milestone narratives, failed proofs and recovery notes are in
 Git history before this revision.
 
-The owner approved changes 0202–0233. Changes 0202–0220 have applied. In 0210,
+The owner approved changes 0202–0233. Changes 0202–0221 have applied. In 0210,
 Fireweed resumed the saved attempt with both CHK-048 assertions intact after
 the owner approved marking that ID `already_satisfied`.
 
@@ -17,14 +17,11 @@ after the first 0220 run exposed the remaining text-based diagnostic lookup in
 implementation, and verified all APP-135 cases against the unlabeled project
 errors.
 
-Fireweed blocked 0221 after two implementation attempts with E01 for APP-040.
-The app still classifies errors from message text in coverage, CI, drill, next
-and run. Removing checks' prefixes makes those commands report P01 in place of
-the structured C10, C11 and E01 codes. The 0214 implementation commit applied
-the spec edits and left the remaining text classifiers in place. Fireweed
-saved `refs/fireweed/attempts/checks-unlabeled-errors/1` and released the claim.
-Changes 0222–0233 remain queued. Links use their archive paths, which resolve
-once each applies.
+The owner approved [the CLI migration prerequisite](../../changes/archive/0221-app-structured-diagnostics.md)
+after the first 0221 run exposed remaining text classifiers. Fireweed applied
+it, restored 0221's saved implementation, and verified all 323 app cases
+against the unlabeled checks errors. Changes 0222–0233 remain queued. Links use
+their archive paths, which resolve once each applies.
 
 ## Controller
 
@@ -131,14 +128,11 @@ The owner deferred these gaps. The queued change that addresses one is linked.
 
 ## Next step
 
-1. Review a prerequisite app change to complete the structured-code migration
-   and preserve the existing CLI exit statuses and diagnostics.
-2. Resume 0221 from its saved attempt and run the remaining changes in queue
-   order with the recorded controller.
-3. After 0230 applies, rebuild the controller from clean main with no run or
+1. Run the remaining changes in queue order with the recorded controller.
+2. After 0230 applies, rebuild the controller from clean main with no run or
    claim active and record the new source here. This lets each successful
    phase run full verification once.
-4. Await owner direction on the remaining
+3. Await owner direction on the remaining
    [full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required).
    Gate 2 requires the queue to be empty again.
 
