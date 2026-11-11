@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
@@ -157,9 +158,11 @@ func Test_APP_130_APP_131_PRBodyFailures(t *testing.T) {
 	if _, err := workflow.PRBody(badConfig, badRange); err == nil || !strings.Contains(err.Error(), "fireweed.yaml") {
 		t.Fatalf("public PRBody bad endpoint configuration error=%v; want configuration cause", err)
 	}
-	unavailableRange := strings.SplitN(revisionRange, "..", 2)[0] + "..not-a-commit"
-	if _, err := workflow.PRBody(root, unavailableRange); err == nil || !strings.Contains(err.Error(), "P01") {
-		t.Fatalf("public PRBody unavailable endpoint error=%v; want P01", err)
+	const unavailableRevision = "not-a-commit"
+	unavailableRange := strings.SplitN(revisionRange, "..", 2)[0] + ".." + unavailableRevision
+	_, err := workflow.PRBody(root, unavailableRange)
+	if code, _, ok := contracts.ErrorCode(err); !ok || code != "P01" || !strings.Contains(err.Error(), unavailableRevision) {
+		t.Fatalf("public PRBody unavailable endpoint: code=%q err=%v; want P01 naming %q", code, err, unavailableRevision)
 	}
 	for _, tc := range []struct {
 		name, dir, code, cause string
@@ -171,7 +174,7 @@ func Test_APP_130_APP_131_PRBodyFailures(t *testing.T) {
 		{"invalid-option", nested, "U01", "--bogus", []string{"pr-body", revisionRange, "--bogus"}, 2},
 		{"absent-project", invalidRoot, "C01", "", []string{"pr-body", revisionRange}, 2},
 		{"bad-endpoint-config", badConfig, "C01", "", []string{"pr-body", badRange}, 2},
-		{"unavailable-range", nested, "P01", "not-a-commit", []string{"pr-body", unavailableRange}, 1},
+		{"unavailable-range", nested, "P01", unavailableRevision, []string{"pr-body", unavailableRange}, 1},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			for _, jsonMode := range []bool{false, true} {

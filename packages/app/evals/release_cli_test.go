@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
 
@@ -96,8 +97,9 @@ func Test_APP_091_APP_092_APP_093_ReleaseOwnedClaimRetainsDirtyWork(t *testing.T
 			if got := releaseAppRefs(t, root); got != wantRefs {
 				t.Errorf("release changed refs beyond owned claim: got %q, want %q", got, wantRefs)
 			}
-			if _, err := workflow.Current(root, "manual"); err == nil || !strings.HasPrefix(err.Error(), "P02:") {
-				t.Errorf("released claim remains current: %v", err)
+			_, err = workflow.Current(root, "manual")
+			if code, _, ok := contracts.ErrorCode(err); !ok || code != "P02" {
+				t.Errorf("workflow.Current after release: code=%q err=%v; want P02", code, err)
 			}
 			status, out, errOut = runSavedAttemptApp(t, root, args...)
 			releaseAppFailure(t, status, 1, out, errOut, tc.json, "P02")
