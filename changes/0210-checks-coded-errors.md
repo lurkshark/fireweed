@@ -12,7 +12,6 @@ bases:
     CHK-046: 6b701504
     CHK-047: 501d63ae
     CHK-048: 3b0dee08
-blocked: evals verification attempts exhausted
 module: checks
 phase: evals
 run: 20261111T051736-9640fdfd1590a860b50eb3a9
