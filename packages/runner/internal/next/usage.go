@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"time"
+
+	"github.com/lurkshark/fireweed/packages/runner/internal/diagnostic"
 )
 
 type usagePolicy struct {
@@ -22,10 +24,10 @@ func readUsagePolicy(config map[string]any) (usagePolicy, error) {
 		return usagePolicy{}, err
 	}
 	if wait <= 0 {
-		return usagePolicy{}, fmt.Errorf("C01: limit_wait must be positive")
+		return usagePolicy{}, diagnostic.Errorf("C01", "limit_wait", "limit_wait must be positive")
 	}
 	if budget < 0 {
-		return usagePolicy{}, fmt.Errorf("C01: limit_budget must not be negative")
+		return usagePolicy{}, diagnostic.Errorf("C01", "limit_budget", "limit_budget must not be negative")
 	}
 	return usagePolicy{wait: wait, budget: budget}, nil
 }
@@ -36,14 +38,14 @@ func usageDuration(value any, name string, fallback time.Duration) (time.Duratio
 	}
 	text, ok := value.(string)
 	if !ok {
-		return 0, fmt.Errorf("C01: %s must be a duration string, got %T", name, value)
+		return 0, diagnostic.Errorf("C01", name, "%s must be a duration string, got %T", name, value)
 	}
 	if text == "" {
 		return fallback, nil
 	}
 	duration, err := time.ParseDuration(text)
 	if err != nil {
-		return 0, fmt.Errorf("C01: invalid %s %q: %w", name, text, err)
+		return 0, diagnostic.Errorf("C01", name, "invalid %s %q: %w", name, text, err)
 	}
 	return duration, nil
 }

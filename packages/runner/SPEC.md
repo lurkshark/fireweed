@@ -137,7 +137,8 @@ across phase advancement and on an invocation-failure return.
 ### RUN-029
 Next MUST read limit_wait and limit_budget as durations, defaulting to 30m and
 4h when unset. It MUST reject malformed durations, a nonpositive wait or negative
-budget with C01 before claiming a fresh change or invoking an agent.
+budget with an error whose contracts ErrorCode is C01 before claiming a fresh
+change or invoking an agent.
 
 ### RUN-030
 Subject to the usage budget and Run's For bound, an AgentResult with UsageLimit

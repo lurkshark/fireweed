@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/lurkshark/fireweed/packages/project"
+	"github.com/lurkshark/fireweed/packages/runner/internal/diagnostic"
 	"github.com/lurkshark/fireweed/packages/runner/internal/next"
 	"github.com/lurkshark/fireweed/packages/runner/model"
 )
@@ -34,24 +35,24 @@ func Execute(ctx context.Context, request model.RunRequest) (model.RunResult, er
 		if err != nil {
 			var blocked *next.BlockedError
 			if errors.As(err, &blocked) {
-				blockedErr = errors.Join(blockedErr, err)
+				blockedErr = diagnostic.Join(blockedErr, err)
 				continue
 			}
 			if blockedErr == nil {
 				return result, err
 			}
 			if next.IsUsageStop(err) {
-				return result, &next.CombinedUsageFailure{Blocked: blockedErr, Stop: err}
+				return result, diagnostic.PreserveCode(&next.CombinedUsageFailure{Blocked: blockedErr, Stop: err}, blockedErr)
 			}
 			if IsTimeStop(err) {
-				return result, &combinedTimeFailure{blocked: blockedErr, stop: err}
+				return result, diagnostic.PreserveCode(&combinedTimeFailure{blocked: blockedErr, stop: err}, blockedErr)
 			}
-			return result, errors.Join(blockedErr, err)
+			return result, diagnostic.Join(blockedErr, err)
 		}
 		if change.Empty {
 			queue, err := project.Queue(request.Root)
 			if err != nil {
-				return result, errors.Join(blockedErr, fmt.Errorf("read change queue: %w", err))
+				return result, diagnostic.Join(blockedErr, fmt.Errorf("read change queue: %w", err))
 			}
 			result.Empty = len(queue) == 0
 			return result, blockedErr
@@ -60,7 +61,7 @@ func Execute(ctx context.Context, request model.RunRequest) (model.RunResult, er
 		if request.Max > 0 && len(result.Applied) == request.Max {
 			queue, err := project.Queue(request.Root)
 			if err != nil {
-				return result, errors.Join(blockedErr, fmt.Errorf("read change queue: %w", err))
+				return result, diagnostic.Join(blockedErr, fmt.Errorf("read change queue: %w", err))
 			}
 			result.Empty = len(queue) == 0
 			result.Limited = !result.Empty

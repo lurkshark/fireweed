@@ -16,6 +16,7 @@ import (
 	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/gitstore"
 	"github.com/lurkshark/fireweed/packages/project"
+	"github.com/lurkshark/fireweed/packages/runner/internal/diagnostic"
 	"github.com/lurkshark/fireweed/packages/runner/internal/invoke"
 	"github.com/lurkshark/fireweed/packages/runner/internal/next"
 	"github.com/lurkshark/fireweed/packages/runner/model"
@@ -32,7 +33,7 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 	}
 	target := findModule(snapshot, request.Module)
 	if target == nil {
-		return result, fmt.Errorf("U02: unknown module %q", request.Module)
+		return result, diagnostic.Errorf("U02", request.Module, "unknown module %q", request.Module)
 	}
 	repo, err := gitstore.Inspect(request.Root)
 	if err != nil {
@@ -91,10 +92,10 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 			cleanup = errors.Join(cleanup, os.RemoveAll(scratch))
 		}
 		if cleanup != nil {
-			err = errors.Join(err, fmt.Errorf("drill cleanup: %w", cleanup))
+			err = diagnostic.Join(err, fmt.Errorf("drill cleanup: %w", cleanup))
 			result.Result = "fail"
 			if len(result.Steps) > 0 {
-				err = errors.Join(err, markReportFailure(repo.Root, result.ReportPath, cleanup))
+				err = diagnostic.Join(err, markReportFailure(repo.Root, result.ReportPath, cleanup))
 			}
 		}
 	}()
@@ -203,7 +204,7 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 		}
 		accepted = true
 		ownFailure, dependentFailure := verifyAll(ctx, snapshot, scratch, *target, request, &result)
-		failure = errors.Join(ownFailure, dependentFailure)
+		failure = diagnostic.Join(ownFailure, dependentFailure)
 		if ctx.Err() != nil {
 			failure = ctx.Err()
 			break
@@ -219,7 +220,7 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 	if accepted {
 		result.Ref = "refs/fireweed/drills/" + request.Module + "/" + result.Date
 		if retainErr := retain(scratch, repo.Root, result.Ref, *target); retainErr != nil {
-			failure = errors.Join(failure, retainErr)
+			failure = diagnostic.Join(failure, retainErr)
 			result.Ref = ""
 		}
 	}
@@ -228,7 +229,7 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 	}
 	if len(result.Steps) > 0 {
 		if reportErr := writeReport(repo.Root, input, result, failure); reportErr != nil {
-			failure = errors.Join(failure, reportErr)
+			failure = diagnostic.Join(failure, reportErr)
 			result.Result = "fail"
 		}
 	}
@@ -321,17 +322,17 @@ func setup(ctx context.Context, root string, config map[string]any, request mode
 		for _, part := range v {
 			s, ok := part.(string)
 			if !ok {
-				return fmt.Errorf("invalid setup argv")
+				return contracts.CodedError{Code: "C01", Subject: "hooks.setup", Cause: errors.New("invalid setup argv")}
 			}
 			args = append(args, s)
 		}
 	case []string:
 		args = v
 	default:
-		return fmt.Errorf("invalid setup hook")
+		return contracts.CodedError{Code: "C01", Subject: "hooks.setup", Cause: errors.New("invalid setup hook")}
 	}
 	if len(args) == 0 {
-		return fmt.Errorf("empty setup hook")
+		return contracts.CodedError{Code: "C01", Subject: "hooks.setup", Cause: errors.New("empty setup hook")}
 	}
 	timeout := request.Timeout
 	if timeout <= 0 {
@@ -575,13 +576,13 @@ func evalCommand(root string, config map[string]any, target project.Module) (str
 		for _, arg := range command {
 			value, ok := arg.(string)
 			if !ok {
-				return "", fmt.Errorf("C11: eval hook argv for %s contains non-string", target.Name)
+				return "", diagnostic.Errorf("C11", target.Name, "eval hook argv for %s contains non-string", target.Name)
 			}
 			args = append(args, value)
 		}
 	}
 	if len(args) == 0 || args[0] == "" {
-		return "", fmt.Errorf("C11: missing or invalid eval hook for %s", target.Name)
+		return "", diagnostic.Errorf("C11", target.Name, "missing or invalid eval hook for %s", target.Name)
 	}
 	expand := expansion(func(value string) string { return value })
 	words := make([]string, len(args))
@@ -705,9 +706,10 @@ func verifyAll(ctx context.Context, snapshot project.Snapshot, scratch string, t
 		report, err := checks.Evaluate(ctx, checks.HookRequest{Snapshot: snapshot, Module: name, Bin: request.Bin, Timeout: request.Timeout})
 		module := findModule(snapshot, name)
 		items, specErr := specs(*module)
-		err = errors.Join(err, specErr)
 		if specErr == nil {
-			err = errors.Join(err, checks.RequirePass(report, items), checks.RequireCoverage(report, items))
+			err = diagnostic.Join(err, checks.RequirePass(report, items), checks.RequireCoverage(report, items))
+		} else {
+			err = diagnostic.Join(err, specErr)
 		}
 		if err != nil {
 			err = fmt.Errorf("%s eval: %w", name, err)
@@ -722,7 +724,7 @@ func verifyAll(ctx context.Context, snapshot project.Snapshot, scratch string, t
 			}
 		}
 	}
-	return ownFailure, errors.Join(dependentFailures...)
+	return ownFailure, diagnostic.Join(dependentFailures...)
 }
 func failureDetails(name string, report checks.Report) string {
 	var b strings.Builder
@@ -849,11 +851,11 @@ func usagePolicy(config map[string]any) (time.Duration, time.Duration, error) {
 		}
 		s, ok := value.(string)
 		if !ok {
-			return 0, fmt.Errorf("C01: %s must be a duration", key)
+			return 0, diagnostic.Errorf("C01", key, "%s must be a duration", key)
 		}
 		d, err := time.ParseDuration(s)
 		if err != nil {
-			return 0, fmt.Errorf("C01: invalid %s: %w", key, err)
+			return 0, diagnostic.Errorf("C01", key, "invalid %s: %w", key, err)
 		}
 		return d, nil
 	}
@@ -866,7 +868,7 @@ func usagePolicy(config map[string]any) (time.Duration, time.Duration, error) {
 		return 0, 0, err
 	}
 	if w <= 0 || b < 0 {
-		return 0, 0, fmt.Errorf("C01: invalid usage wait or budget")
+		return 0, 0, diagnostic.Errorf("C01", "fireweed.yaml", "invalid usage wait or budget")
 	}
 	return w, b, nil
 }

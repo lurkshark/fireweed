@@ -16,6 +16,7 @@ import (
 	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/gitstore"
 	"github.com/lurkshark/fireweed/packages/project"
+	"github.com/lurkshark/fireweed/packages/runner/internal/diagnostic"
 	"github.com/lurkshark/fireweed/packages/runner/internal/invoke"
 	"github.com/lurkshark/fireweed/packages/runner/model"
 	"github.com/lurkshark/fireweed/packages/workflow"
@@ -32,7 +33,7 @@ func RunWithBudget(ctx context.Context, request model.NextRequest, budget *Usage
 		return result, stop
 	}
 	state, currentErr := workflow.Current(request.Root, "")
-	if currentErr != nil && !strings.Contains(currentErr.Error(), "P02: worktree holds no change") {
+	if code, _, _ := contracts.ErrorCode(currentErr); currentErr != nil && code != "P02" {
 		return result, fmt.Errorf("read held change: %w", currentErr)
 	}
 	if currentErr != nil {
@@ -106,7 +107,7 @@ func RunWithBudget(ctx context.Context, request model.NextRequest, budget *Usage
 				return result, fmt.Errorf("inspect held phase HEAD: %w", inspectErr)
 			}
 			if preInvoke.Head != state.PhaseBase {
-				return result, fmt.Errorf("P05: held %s phase HEAD moved from %s to %s before agent invocation", phase, state.PhaseBase, preInvoke.Head)
+				return result, diagnostic.Errorf("P05", state.Change.Path, "held %s phase HEAD moved from %s to %s before agent invocation", phase, state.PhaseBase, preInvoke.Head)
 			}
 			invokeSnapshot := state.Snapshot
 			var audit *auditWorkspace
@@ -130,7 +131,7 @@ func RunWithBudget(ctx context.Context, request model.NextRequest, budget *Usage
 					if auditErr != nil {
 						auditErr = fmt.Errorf("validate audit submission: %w", auditErr)
 					}
-					return result, errors.Join(auditErr, cleanupErr, invokeErr)
+					return result, diagnostic.Join(auditErr, cleanupErr, invokeErr)
 				}
 			}
 			var recovered bool
@@ -139,7 +140,7 @@ func RunWithBudget(ctx context.Context, request model.NextRequest, budget *Usage
 				recovered, recoveryErr = recoverAgentCommits(state.Snapshot.Root, state.PhaseBase)
 			}
 			if recoveryErr != nil {
-				return result, errors.Join(fmt.Errorf("recover %s agent commits: %w", phase, recoveryErr), invokeErr)
+				return result, diagnostic.Join(fmt.Errorf("recover %s agent commits: %w", phase, recoveryErr), invokeErr)
 			}
 			if recovered {
 				recoveryWarnings = append(recoveryWarnings, project.Diagnostic{
@@ -180,7 +181,8 @@ func RunWithBudget(ctx context.Context, request model.NextRequest, budget *Usage
 					Reason: phase + " verification attempts exhausted",
 				})
 				if blockErr != nil {
-					return result, fmt.Errorf("verify %s: %w; block exhausted step: %w", phase, verifyErr, blockErr)
+					err := fmt.Errorf("verify %s: %w; block exhausted step: %w", phase, verifyErr, blockErr)
+					return result, diagnostic.PreserveCode(err, verifyErr, blockErr)
 				}
 				result.State = withRecoveryWarnings(blocked.State, recoveryWarnings)
 				return result, &BlockedError{Phase: phase, AttemptRef: blocked.AttemptRef, Cause: verifyErr}
