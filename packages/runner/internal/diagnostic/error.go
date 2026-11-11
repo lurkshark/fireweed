@@ -7,12 +7,12 @@ import (
 	"github.com/lurkshark/fireweed/packages/contracts"
 )
 
-// Errorf keeps the existing code prefix until callers render the structured code.
+// Errorf keeps the diagnostic code in structured metadata.
 func Errorf(code, subject, format string, args ...any) error {
 	return contracts.CodedError{
 		Code:    code,
 		Subject: subject,
-		Cause:   fmt.Errorf(code+": "+format, args...),
+		Cause:   fmt.Errorf(format, args...),
 	}
 }
 
