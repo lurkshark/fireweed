@@ -46,8 +46,10 @@ func assertAbandonRefusal(t *testing.T, root, selector, code string) {
 	beforeTree := git(t, root, "rev-parse", "HEAD^{tree}")
 	beforeStatus := git(t, root, "status", "--porcelain=v1", "--untracked-files=all")
 	beforeRefs := releaseRefs(t, root)
-	if oid, err := workflow.Abandon(root, selector); err == nil || !strings.HasPrefix(err.Error(), code+":") || oid != "" {
-		t.Errorf("Abandon(%q) = %q, %v; want %s refusal without OID", selector, oid, err, code)
+	oid, err := workflow.Abandon(root, selector)
+	assertErrorCode(t, "Abandon("+selector+")", err, code)
+	if oid != "" {
+		t.Errorf("Abandon(%q) = %q, %v; want refusal without OID", selector, oid, err)
 	}
 	if got := head(t, root); got != beforeHead {
 		t.Errorf("rejected Abandon moved HEAD: %s -> %s", beforeHead, got)
@@ -125,9 +127,8 @@ func Test_FLOW_089_FLOW_091_FLOW_094_AbandonCleanOwnedSteppedChange(t *testing.T
 	if claim := git(t, root, "for-each-ref", "--format=%(objectname)", "refs/fireweed/claims/manual"); claim != "" {
 		t.Errorf("owned claim remains: %s", claim)
 	}
-	if _, err := workflow.Current(root, "manual"); err == nil || !strings.HasPrefix(err.Error(), "U02:") {
-		t.Errorf("released claim is still current: %v", err)
-	}
+	_, err = workflow.Current(root, "manual")
+	assertErrorCode(t, "Current after Abandon", err, "U02")
 }
 
 func Test_FLOW_090_AbandonRejectsDirtyWorkingTree(t *testing.T) {
@@ -286,8 +287,7 @@ func Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal(t *testing.T) {
 	}
 	write(t, root, "changes/0002-manual.md", readFile(t, root, pendingCommitChange))
 	commit(t, root, "queue second manual change")
-	if _, err := workflow.Commits(root, "manual"); err == nil || !strings.HasPrefix(err.Error(), "U02:") {
-		t.Fatalf("fixture slug is not ambiguous to Commits: %v", err)
-	}
+	_, err := workflow.Commits(root, "manual")
+	assertErrorCode(t, "Commits with ambiguous slug", err, "U02")
 	assertAbandonRefusal(t, root, "manual", "U02")
 }

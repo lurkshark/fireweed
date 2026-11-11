@@ -336,8 +336,9 @@ func Test_FLOW_115_FLOW_124_FLOW_125_PRBodyDisposableArtifactBoundaryAndRanges(t
 		}
 		for _, invalid := range []string{"", "not-a-commit.." + endpoint, base + "..not-a-commit", "not-a-range"} {
 			_, err := workflow.PRBody(root, invalid)
-			if err == nil || !strings.Contains(err.Error(), "P01") || (invalid != "" && !strings.Contains(err.Error(), "not-a-commit") && !strings.Contains(err.Error(), "not-a-range") && !strings.Contains(err.Error(), "resolve")) {
-				t.Errorf("PRBody(%q) error = %v, want P01 with rejected range or cause", invalid, err)
+			assertErrorCode(t, "PRBody("+invalid+")", err, "P01")
+			if err == nil || (invalid != "" && !strings.Contains(err.Error(), "not-a-commit") && !strings.Contains(err.Error(), "not-a-range") && !strings.Contains(err.Error(), "resolve")) {
+				t.Errorf("PRBody(%q) error = %v, want rejected range or cause", invalid, err)
 			}
 		}
 	})

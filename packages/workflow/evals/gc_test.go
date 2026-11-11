@@ -170,10 +170,8 @@ func Test_FLOW_131_GCInvalidDurationFailsBeforeAnyPruning(t *testing.T) {
 			gcClaim(t, root, "stale", filepath.Join(t.TempDir(), "gone"))
 			gcRef(t, root, old, head(t, root))
 			before := gcNames(t, root)
-			r, err := workflow.GC(context.Background(), workflow.GCRequest{Root: root, Now: gcNow})
-			if err == nil || !strings.HasPrefix(err.Error(), "C01:") {
-				t.Errorf("invalid drill_max_age %q: result=%#v error=%v; want C01", value, r, err)
-			}
+			_, err := workflow.GC(context.Background(), workflow.GCRequest{Root: root, Now: gcNow})
+			assertErrorCode(t, "GC with invalid drill_max_age", err, "C01")
 			if got := gcNames(t, root); !reflect.DeepEqual(got, before) {
 				t.Errorf("invalid setting pruned refs: before=%v after=%v", before, got)
 			}

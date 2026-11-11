@@ -126,14 +126,12 @@ func Test_FLOW_087_CommitsUseFirstParentOfMerge(t *testing.T) {
 func Test_FLOW_088_CommitsRejectMissingAndAmbiguousSelectors(t *testing.T) {
 	root := fixture(t, "", "", "", "", "")
 	for _, selector := range []string{"absent", "changes/absent.md"} {
-		if _, err := workflow.Commits(root, selector); err == nil || !strings.HasPrefix(err.Error(), "U02:") {
-			t.Errorf("Commits(%q) error = %v, want U02", selector, err)
-		}
+		_, err := workflow.Commits(root, selector)
+		assertErrorCode(t, "Commits("+selector+")", err, "U02")
 	}
 	write(t, root, "changes/0002-manual.md", readFile(t, root, pendingCommitChange))
 	commit(t, root, "same message")
-	if _, err := workflow.Commits(root, "manual"); err == nil || !strings.HasPrefix(err.Error(), "U02:") {
-		t.Errorf("ambiguous slug error = %v, want U02", err)
-	}
+	_, err := workflow.Commits(root, "manual")
+	assertErrorCode(t, "Commits with ambiguous slug", err, "U02")
 	assertCommits(t, root, pendingCommitChange, []string{})
 }

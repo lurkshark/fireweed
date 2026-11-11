@@ -52,9 +52,8 @@ func Test_FLOW_084_ReleaseOwnedClaimPreservesDirtyWorkAndRecordedState(t *testin
 			t.Errorf("%s changed: %q -> %q", path, want, got)
 		}
 	}
-	if _, err := workflow.Current(root, "manual"); err == nil || !strings.HasPrefix(err.Error(), "P02:") {
-		t.Errorf("released claim remains current: %v", err)
-	}
+	_, err := workflow.Current(root, "manual")
+	assertErrorCode(t, "Current after Release", err, "P02")
 	wantRefs := strings.Replace(beforeRefs, "refs/fireweed/claims/manual "+started.ClaimOID+"\n", "", 1)
 	if wantRefs == beforeRefs {
 		t.Fatalf("Start claim absent from refs: %q", beforeRefs)
@@ -67,9 +66,7 @@ func Test_FLOW_084_ReleaseOwnedClaimPreservesDirtyWorkAndRecordedState(t *testin
 func Test_FLOW_085_ReleaseMissingAndForeignClaimsPreserveRefs(t *testing.T) {
 	root := fixture(t, "", "", "", "", "")
 	before := releaseRefs(t, root)
-	if err := workflow.Release(root, "manual"); err == nil || !strings.HasPrefix(err.Error(), "P02:") {
-		t.Errorf("missing claim Release = %v, want P02", err)
-	}
+	assertErrorCode(t, "Release with missing claim", workflow.Release(root, "manual"), "P02")
 	if got := releaseRefs(t, root); got != before {
 		t.Errorf("missing claim changed refs: %q -> %q", before, got)
 	}
@@ -85,9 +82,7 @@ func Test_FLOW_085_ReleaseMissingAndForeignClaimsPreserveRefs(t *testing.T) {
 	ownerChange := readFile(t, root, "changes/0001-manual.md")
 	foreignChange := readFile(t, other, "changes/0001-manual.md")
 	before = releaseRefs(t, root)
-	if err := workflow.Release(other, "manual"); err == nil || !strings.HasPrefix(err.Error(), "P02:") {
-		t.Errorf("foreign claim Release = %v, want P02", err)
-	}
+	assertErrorCode(t, "Release with foreign claim", workflow.Release(other, "manual"), "P02")
 	if got := releaseRefs(t, root); got != before {
 		t.Errorf("foreign claim changed refs: %q -> %q", before, got)
 	}
@@ -125,9 +120,8 @@ func Test_FLOW_086_ReleaseAcceptsCurrentChangeSelectors(t *testing.T) {
 			if err := workflow.Release(root, selected); err != nil {
 				t.Fatalf("Release selector %q: %v", selected, err)
 			}
-			if _, err := workflow.Current(root, "manual"); err == nil || !strings.HasPrefix(err.Error(), "P02:") {
-				t.Errorf("selector %q left claim current: %v", selected, err)
-			}
+			_, err = workflow.Current(root, "manual")
+			assertErrorCode(t, "Current after Release("+selected+")", err, "P02")
 		})
 	}
 }

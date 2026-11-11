@@ -19,8 +19,8 @@ func Test_FLOW_059_AuditVerifyChecksSubmissionWithoutAdvancing(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, tc := range []struct{ body, want string }{
-		{"No findings\n", "P09: audit requires Checked IDs and No findings"},
-		{"Checked IDs: ALP-002\nNo findings\n", "P09: audit did not check ALP-001"},
+		{"No findings\n", "audit requires Checked IDs and No findings"},
+		{"Checked IDs: ALP-002\nNo findings\n", "audit did not check ALP-001"},
 	} {
 		audit(t, root, tc.body)
 		before := readFile(t, root, pendingCommitChange)
@@ -94,7 +94,8 @@ func Test_FLOW_002_AuditRejectsForbiddenEditBeforeHooks(t *testing.T) {
 		{"Done", func() (workflow.Result, error) { return done(root) }},
 	} {
 		result, err := operation.call()
-		if err == nil || !strings.HasPrefix(err.Error(), "Z01:") || !strings.Contains(err.Error(), forbidden) {
+		assertErrorCode(t, operation.name, err, "Z01")
+		if err == nil || !strings.Contains(err.Error(), forbidden) {
 			t.Errorf("%s = phase %q, error %v; want Z01 naming %s", operation.name, result.State.Phase, err, forbidden)
 		}
 		if got := head(t, root); got != base {
@@ -142,7 +143,8 @@ func Test_FLOW_061_UnknownLifecycleSelectorsNameValidSlugs(t *testing.T) {
 	for _, selector := range []string{"ghost", "0009-ghost.md"} {
 		for _, op := range operations {
 			err := op.call(selector)
-			if err == nil || !strings.HasPrefix(err.Error(), "U02:") || !strings.Contains(err.Error(), selector) || !strings.Contains(err.Error(), "manual") {
+			assertErrorCode(t, op.name+"("+selector+")", err, "U02")
+			if err == nil || !strings.Contains(err.Error(), selector) || !strings.Contains(err.Error(), "manual") {
 				t.Errorf("%s(%q) = %v; want U02 with rejected selector and valid slug manual", op.name, selector, err)
 			}
 		}
@@ -160,7 +162,8 @@ func Test_FLOW_061_UnknownLifecycleSelectorsNameValidSlugs(t *testing.T) {
 	commit(t, root, "archive fixture change")
 	for _, op := range operations[len(operations)-2:] {
 		err := op.call("ghost")
-		if err == nil || !strings.HasPrefix(err.Error(), "U02:") || !strings.Contains(err.Error(), "ghost") || !strings.Contains(err.Error(), "manual") {
+		assertErrorCode(t, "archived "+op.name, err, "U02")
+		if err == nil || !strings.Contains(err.Error(), "ghost") || !strings.Contains(err.Error(), "manual") {
 			t.Errorf("archived %s(ghost) = %v; want U02 with archive slug manual", op.name, err)
 		}
 	}

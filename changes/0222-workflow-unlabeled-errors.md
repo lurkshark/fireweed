@@ -2,6 +2,8 @@
 bases:
     FLOW-133: 7de84872
 module: workflow
+phase: audit
+run: 20261111T171536-ca2a2d5d9f81416ba56ea512
 ---
 
 ## Motivation
@@ -34,3 +36,18 @@ Remove each leading `<code>: ` from workflow error text and keep the code in
 leading P code (0211 moved the modified items' evals to
 `contracts.ErrorCode`). Run after 0220 and 0221, so that wrapped project and
 checks causes are already unlabeled.
+
+`fireweed verify workflow-unlabeled-errors` accepted fail-first evidence.
+All three FLOW-133 scenarios returned structured P02 and failed on the
+leading label in the message. The workflow report recorded 170 passing
+and 18 failing cases, including parent cases, with failures on the old
+message labels.
+
+The implementation-writable code is in
+`packages/workflow/internal/lifecycle/lifecycle.go`, including the
+coded-error helper, diagnostic conversion and boundary wrapping. CHK-025
+still requires the checks cause to start with `P2-01:`, and runner evals
+expect that cause text. The workflow eval checks its structured P2-01
+and the fail-first message.
+## Provenance
+- evals 2026-11-11T17:27:45.768577Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=188 failing=18 passing=170

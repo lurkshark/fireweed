@@ -12,8 +12,9 @@ func Test_FLOW_133_CurrentEmptySelectorWithoutOwnedClaim(t *testing.T) {
 	assertAbsent := func(t *testing.T, root string) {
 		t.Helper()
 		_, err := workflow.Current(root, "")
-		if err == nil || err.Error() != "P02: worktree holds no change" {
-			t.Errorf("Current(root, empty) error = %v; want exact P02 absence signal", err)
+		assertErrorCode(t, "Current(root, empty)", err, "P02")
+		if err == nil || err.Error() != "worktree holds no change" {
+			t.Errorf("Current(root, empty) error = %v; want %q", err, "worktree holds no change")
 		}
 	}
 

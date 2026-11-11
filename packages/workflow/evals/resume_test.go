@@ -1,6 +1,7 @@
 package evals_test
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -309,9 +310,8 @@ func Test_FLOW_073_StartFromAttemptRequiresCleanEligibleUnblockedAndUnclaimedCha
 		root, _, _ := savedEvalsAttempt(t)
 		unblockAttempt(t, root)
 		write(t, root, "uncommitted.txt", "dirty\n")
-		if _, err := workflow.StartFromAttempt(root, "manual", 1); err == nil || !strings.HasPrefix(err.Error(), "P01") {
-			t.Errorf("dirty resume = %v, want P01", err)
-		}
+		_, err := workflow.StartFromAttempt(root, "manual", 1)
+		assertErrorCode(t, "dirty resume", err, "P01")
 		if got := git(t, root, "for-each-ref", "--format=%(objectname)", "refs/fireweed/claims/manual"); got != "" {
 			t.Errorf("dirty resume created claim: %s", got)
 		}
@@ -319,9 +319,8 @@ func Test_FLOW_073_StartFromAttemptRequiresCleanEligibleUnblockedAndUnclaimedCha
 	t.Run("still blocked", func(t *testing.T) {
 		root, _, _ := savedEvalsAttempt(t)
 		beforeHead, before := head(t, root), readFile(t, root, "changes/0001-manual.md")
-		if _, err := workflow.StartFromAttempt(root, "manual", 1); err == nil || !strings.HasPrefix(err.Error(), "P01") {
-			t.Errorf("blocked resume = %v, want P01", err)
-		}
+		_, err := workflow.StartFromAttempt(root, "manual", 1)
+		assertErrorCode(t, "blocked resume", err, "P01")
 		assertNoResumeMutation(t, root, beforeHead, before)
 	})
 	t.Run("not first eligible", func(t *testing.T) {
@@ -330,9 +329,8 @@ func Test_FLOW_073_StartFromAttemptRequiresCleanEligibleUnblockedAndUnclaimedCha
 		write(t, root, "changes/0000-first.md", "---\nmodule: alpha\n---\n## Motivation\nEarlier approved work.\n\n## Interface\n\n## Added\n\n## Modified\n\n## Removed\n\n## Decisions\n")
 		commit(t, root, "earlier eligible change")
 		beforeHead, before := head(t, root), readFile(t, root, "changes/0001-manual.md")
-		if _, err := workflow.StartFromAttempt(root, "manual", 1); err == nil || !strings.HasPrefix(err.Error(), "P01") {
-			t.Errorf("waiting resume = %v, want P01", err)
-		}
+		_, err := workflow.StartFromAttempt(root, "manual", 1)
+		assertErrorCode(t, "waiting resume", err, "P01")
 		assertNoResumeMutation(t, root, beforeHead, before)
 	})
 	t.Run("foreign claim", func(t *testing.T) {
@@ -342,9 +340,8 @@ func Test_FLOW_073_StartFromAttemptRequiresCleanEligibleUnblockedAndUnclaimedCha
 		git(t, root, "worktree", "add", "-b", "linked", other, "HEAD")
 		owner := start(t, root)
 		beforeHead, before := head(t, other), readFile(t, other, "changes/0001-manual.md")
-		if _, err := workflow.StartFromAttempt(other, "manual", 1); err == nil || !strings.HasPrefix(err.Error(), "P02") {
-			t.Errorf("foreign claim resume = %v, want P02", err)
-		}
+		_, err := workflow.StartFromAttempt(other, "manual", 1)
+		assertErrorCode(t, "foreign claim resume", err, "P02")
 		if head(t, other) != beforeHead || readFile(t, other, "changes/0001-manual.md") != before {
 			t.Error("foreign resume changed other worktree")
 		}
@@ -359,9 +356,8 @@ func Test_FLOW_076_StartFromAttemptRejectsInvalidOrMissingAttemptBeforeMutation(
 	unblockAttempt(t, root)
 	beforeHead, before := head(t, root), readFile(t, root, "changes/0001-manual.md")
 	for _, attempt := range []int{0, -1, 2} {
-		if _, err := workflow.StartFromAttempt(root, "manual", attempt); err == nil || !strings.HasPrefix(err.Error(), "P01") {
-			t.Errorf("attempt %d = %v, want P01", attempt, err)
-		}
+		_, err := workflow.StartFromAttempt(root, "manual", attempt)
+		assertErrorCode(t, fmt.Sprintf("resume attempt %d", attempt), err, "P01")
 		assertNoResumeMutation(t, root, beforeHead, before)
 	}
 }

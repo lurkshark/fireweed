@@ -401,12 +401,12 @@ func Test_FLOW_055_VerifyAndDoneRejectUnsupportedHeldPhase(t *testing.T) {
 	before := head(t, root)
 	_, err := verify(root, true)
 	assertErrorCode(t, "Verify", err, "P01")
-	if err == nil || !strings.HasPrefix(err.Error(), "P01: unsupported phase review") {
+	if err == nil || !strings.HasPrefix(err.Error(), "unsupported phase review") {
 		t.Errorf("unsupported Verify phase = %v", err)
 	}
 	_, err = done(root)
 	assertErrorCode(t, "Done", err, "P01")
-	if err == nil || !strings.HasPrefix(err.Error(), "P01: unsupported phase review") || head(t, root) != before {
+	if err == nil || !strings.HasPrefix(err.Error(), "unsupported phase review") || head(t, root) != before {
 		t.Errorf("unsupported Done phase = %v", err)
 	}
 }
@@ -426,7 +426,9 @@ func Test_FLOW_055_UnsupportedPhasePrecedesProtectedEdit(t *testing.T) {
 		{"Verify", func() (workflow.Result, error) { return verify(root, true) }},
 		{"Done", func() (workflow.Result, error) { return done(root) }},
 	} {
-		if _, err := operation.call(); err == nil || !strings.HasPrefix(err.Error(), "P01: unsupported phase review") {
+		_, err := operation.call()
+		assertErrorCode(t, operation.name, err, "P01")
+		if err == nil || !strings.HasPrefix(err.Error(), "unsupported phase review") {
 			t.Errorf("%s with protected edit = %v, want P01 unsupported phase", operation.name, err)
 		}
 		if got := head(t, root); got != before {
@@ -441,13 +443,19 @@ func Test_FLOW_055_UnsupportedPhasePrecedesProtectedEdit(t *testing.T) {
 
 func Test_FLOW_056_FLOW_061_CurrentAndContextIdentifyMissingClaimsAndChanges(t *testing.T) {
 	root := fixture(t, "", "", "", "", "")
-	if _, err := workflow.Current(root, "manual"); err == nil || !strings.HasPrefix(err.Error(), "P02: change has no claim") {
+	_, err := workflow.Current(root, "manual")
+	assertErrorCode(t, "unclaimed Current", err, "P02")
+	if err == nil || !strings.HasPrefix(err.Error(), "change has no claim") {
 		t.Errorf("unclaimed Current = %v", err)
 	}
-	if _, err := workflow.Current(root, "absent"); err == nil || !strings.HasPrefix(err.Error(), `U02: change "absent" not found`) {
+	_, err = workflow.Current(root, "absent")
+	assertErrorCode(t, "unknown Current change", err, "U02")
+	if err == nil || !strings.HasPrefix(err.Error(), `change "absent" not found`) {
 		t.Errorf("unknown Current change = %v", err)
 	}
-	if _, err := workflow.Context(root, "absent", false); err == nil || !strings.HasPrefix(err.Error(), `U02: change "absent" not found`) {
+	_, err = workflow.Context(root, "absent", false)
+	assertErrorCode(t, "unknown Context change", err, "U02")
+	if err == nil || !strings.HasPrefix(err.Error(), `change "absent" not found`) {
 		t.Errorf("unknown Context change = %v", err)
 	}
 }
@@ -456,7 +464,7 @@ func Test_FLOW_058_StaleLifecycleBaseKeepsCodedCause(t *testing.T) {
 	assertStaleBase := func(operation string, err error) {
 		t.Helper()
 		assertErrorCode(t, operation, err, "P05")
-		if err == nil || !strings.HasPrefix(err.Error(), "P05:") || !strings.Contains(err.Error(), "ALP-001") {
+		if err == nil || !strings.Contains(err.Error(), "ALP-001") {
 			t.Errorf("stale %s = %v", operation, err)
 		}
 		for cause := errors.Unwrap(err); cause != nil; cause = errors.Unwrap(cause) {
@@ -1435,7 +1443,7 @@ func Test_FLOW_054_StartOperationalPreconditionsHaveP01(t *testing.T) {
 	write(t, dirty, "stray.txt", "untracked\n")
 	_, err := workflow.Start(dirty, "manual")
 	assertErrorCode(t, "dirty Start", err, "P01")
-	if err == nil || !strings.HasPrefix(err.Error(), "P01: start requires clean worktree") {
+	if err == nil || !strings.HasPrefix(err.Error(), "start requires clean worktree") {
 		t.Errorf("dirty Start = %v", err)
 	}
 	queued := fixture(t, "", "", "", "", "")
@@ -1443,7 +1451,7 @@ func Test_FLOW_054_StartOperationalPreconditionsHaveP01(t *testing.T) {
 	commit(t, queued, "earlier queued change")
 	_, err = workflow.Start(queued, "manual")
 	assertErrorCode(t, "ineligible Start", err, "P01")
-	if err == nil || !strings.HasPrefix(err.Error(), "P01: change is not eligible queue head") {
+	if err == nil || !strings.HasPrefix(err.Error(), "change is not eligible queue head") {
 		t.Errorf("ineligible Start = %v", err)
 	}
 	git(t, queued, "rm", "--", "changes/0000-first.md", pendingCommitChange)
@@ -1461,12 +1469,12 @@ func Test_FLOW_056_StartContentionAndCurrentForeignClaimHaveP02(t *testing.T) {
 	start(t, root)
 	_, err = workflow.Start(other, "manual")
 	assertErrorCode(t, "contended Start", err, "P02")
-	if err == nil || !strings.HasPrefix(err.Error(), "P02: claim already held:") || !strings.Contains(err.Error(), "update-ref") {
+	if err == nil || !strings.HasPrefix(err.Error(), "claim already held:") || !strings.Contains(err.Error(), "update-ref") {
 		t.Errorf("contended Start = %v", err)
 	}
 	_, err = workflow.Current(other, "manual")
 	assertErrorCode(t, "foreign Current", err, "P02")
-	if err == nil || !strings.HasPrefix(err.Error(), "P02: claim belongs to another worktree") {
+	if err == nil || !strings.HasPrefix(err.Error(), "claim belongs to another worktree") {
 		t.Errorf("foreign Current = %v", err)
 	}
 }
@@ -1486,13 +1494,13 @@ func Test_FLOW_057_VerifyAndDoneRejectApprovedStateEditsBeforeHooks(t *testing.T
 			switch edit {
 			case "author":
 				write(t, root, "changes/0001-manual.md", strings.Replace(string(b), "Users need a revised alpha value.", "Unapproved changed purpose.", 1))
-				want = "P03: approved author metadata changed"
+				want = "approved author metadata changed"
 			case "runtime":
 				write(t, root, "changes/0001-manual.md", strings.Replace(string(b), "phase: evals", "phase: impl", 1))
-				want = "P03: approved run or phase changed"
+				want = "approved run or phase changed"
 			case "audit":
 				write(t, root, "changes/0001-manual.md", strings.Replace(string(b), "phase: evals", "audit_rounds: 1\nphase: evals", 1))
-				want = "P03: approved audit state changed"
+				want = "approved audit state changed"
 			}
 			before := head(t, root)
 			_, err = verify(root, true)
@@ -1519,13 +1527,13 @@ func Test_FLOW_059_AuditNoFindingsErrorsHaveP09(t *testing.T) {
 	audit(t, root, "No findings\n")
 	_, err := done(root)
 	assertErrorCode(t, "Done with malformed submission", err, "P09")
-	if err == nil || !strings.HasPrefix(err.Error(), "P09: audit requires Checked IDs and No findings") || head(t, root) != before {
+	if err == nil || !strings.HasPrefix(err.Error(), "audit requires Checked IDs and No findings") || head(t, root) != before {
 		t.Errorf("malformed No findings = %v", err)
 	}
 	audit(t, root, "Checked IDs: ALP-002\nNo findings\n")
 	_, err = done(root)
 	assertErrorCode(t, "Done with incomplete submission", err, "P09")
-	if err == nil || !strings.HasPrefix(err.Error(), "P09: audit did not check ALP-001") || head(t, root) != before {
+	if err == nil || !strings.HasPrefix(err.Error(), "audit did not check ALP-001") || head(t, root) != before {
 		t.Errorf("incomplete No findings = %v", err)
 	}
 }
@@ -1537,7 +1545,7 @@ func Test_FLOW_060_BlockedDoneKeepsCommitQuestionsAndReleasesClaim(t *testing.T)
 	before := head(t, root)
 	_, err := done(root)
 	assertErrorCode(t, "blocked Done", err, "P06")
-	if err == nil || !strings.HasPrefix(err.Error(), "P06: change blocked") {
+	if err == nil || !strings.HasPrefix(err.Error(), "change blocked") {
 		t.Errorf("blocked Done = %v", err)
 	}
 	committed := git(t, root, "show", "HEAD:"+pendingCommitChange)
@@ -1590,7 +1598,9 @@ func Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses(t *testing.T) {
 	commit(t, failFirst, "unrelated failing case")
 	start(t, failFirst)
 	write(t, failFirst, "packages/alpha/internal/ready", "ready\n")
-	if _, err := verify(failFirst, true); err == nil || !strings.HasPrefix(err.Error(), "P2-01: no fail-first case for ALP-001") {
+	_, err = verify(failFirst, true)
+	assertErrorCode(t, "Verify without fail-first evidence", err, "P2-01")
+	if err == nil || !strings.Contains(err.Error(), "no fail-first case for ALP-001") {
 		t.Errorf("fail-first cause = %v", err)
 	}
 	implFailure := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
@@ -1650,14 +1660,9 @@ func Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses(t *testing.T) {
 		!strings.Contains(boundaryDiagnostics[0].Message, "/missing/fireweed-boundary-hook") {
 		t.Fatalf("unlaunchable boundary fixture = diagnostics %#v, error %v; want X02 naming missing executable", boundaryDiagnostics, boundaryErr)
 	}
-	want := boundaryErr.Error()
-	if !strings.HasPrefix(want, "X02: ") {
-		want = "X02: " + want
-	}
-	if strings.Count(want, "X02:") != 1 {
-		t.Fatalf("boundary cause has repeated X02: %q", want)
-	}
-	if _, err := verify(boundaryHook, false); err == nil || err.Error() != want {
+	_, err = verify(boundaryHook, false)
+	assertErrorCode(t, "Verify with unlaunchable boundary hook", err, "X02")
+	if want := boundaryErr.Error(); err == nil || err.Error() != want {
 		t.Errorf("boundary hook cause = %v, want exactly %q", err, want)
 	}
 }
@@ -1713,14 +1718,8 @@ func Test_FLOW_062_MissingRequiredBoundaryHookKeepsCauseAndAllDiagnostics(t *tes
 		t.Fatalf("boundary diagnostics omitted modules: %v", wantModules)
 	}
 	result, err := verify(root, false)
-	want := boundaryErr.Error()
-	if !strings.HasPrefix(want, "X02: ") {
-		want = "X02: " + want
-	}
-	if strings.Count(want, "X02:") != 1 {
-		t.Fatalf("checks boundary cause has repeated X02: %q", want)
-	}
-	if err == nil || err.Error() != want || strings.Count(err.Error(), "X02:") != 1 {
+	assertErrorCode(t, "Verify with missing boundary hook", err, "X02")
+	if want := boundaryErr.Error(); err == nil || err.Error() != want {
 		t.Errorf("full Verify cause = %v; want exactly %q", err, want)
 	}
 	if !reflect.DeepEqual(result.Diagnostics, boundaryDiagnostics) {

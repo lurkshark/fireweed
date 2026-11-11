@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"strings"
 	"testing"
 
 	"github.com/lurkshark/fireweed/packages/project"
@@ -176,17 +175,15 @@ func Test_FLOW_011_StartSelectsFirstEligiblePastWaitingHead(t *testing.T) {
 	for _, target := range []string{"waiting", "later-eligible"} {
 		t.Run("reject "+target, func(t *testing.T) {
 			root := makeQueue(t)
-			if _, err := workflow.Start(root, target); err == nil || !strings.HasPrefix(err.Error(), "P01") {
-				t.Errorf("Start(%s) = %v, want P01 rejection", target, err)
-			}
+			_, err := workflow.Start(root, target)
+			assertErrorCode(t, "Start("+target+")", err, "P01")
 		})
 	}
 	t.Run("no eligible change", func(t *testing.T) {
 		root := eligibilityBase(t, "alpha")
 		eligibilityChange(t, root, 2, "waiting", "beta", "", "")
 		readyEligibilityFixture(t, root)
-		if _, err := workflow.Start(root, ""); err == nil || !strings.HasPrefix(err.Error(), "P01") {
-			t.Errorf("Start(empty) = %v, want P01 rejection", err)
-		}
+		_, err := workflow.Start(root, "")
+		assertErrorCode(t, "Start with no eligible change", err, "P01")
 	})
 }
