@@ -3,6 +3,8 @@ bases:
     CON-002: 076c0dda
     CON-009: fc9dc150
 module: contracts
+phase: audit
+run: 20261111T205154-aaf9d41cecb5c49e9ec4aae9
 ---
 
 ## Motivation
@@ -43,3 +45,17 @@ code, so existing projections and bases are unchanged.
 Evals: a Notes section containing a fenced block with a `## ` line must be
 returned whole by Section and replaced whole by ReplaceSection, and a
 level-one heading must end the preceding section.
+
+Fail-first evidence from `go test -count=1 ./packages/contracts/evals`:
+`Test_CON_002_CON_009_FencedSectionHeadings` failed for both backticks and
+tildes. Section truncated Notes and reported the fenced Example heading as
+present. ReplaceSection left part of the fence when replacing Notes and
+edited the fenced Example instead of appending a section.
+`Test_CON_002_CON_009_LevelOneSectionBoundary` also failed. Section included
+the next level-one heading and its introduction, and ReplaceSection removed
+them.
+
+Both APIs share `sectionBounds` in the implementation-writable
+`packages/contracts/internal/primitives/primitives.go`.
+## Provenance
+- evals 2026-11-11T20:53:41.439571Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=68 failing=4 passing=64
