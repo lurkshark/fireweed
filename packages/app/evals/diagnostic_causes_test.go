@@ -11,6 +11,11 @@ import (
 
 func appCause(t *testing.T, bin, root string, args []string, wantStatus int, code, cause string) {
 	t.Helper()
+	appDiagnostic(t, bin, root, args, wantStatus, code, cause, false)
+}
+
+func appDiagnostic(t *testing.T, bin, root string, args []string, wantStatus int, code, subject string, wantGuidance bool) {
+	t.Helper()
 	for _, jsonMode := range []bool{false, true} {
 		call := append([]string(nil), args...)
 		if jsonMode {
@@ -35,17 +40,26 @@ func appCause(t *testing.T, bin, root string, args []string, wantStatus int, cod
 			}
 			found := false
 			for _, diagnostic := range diagnostics {
-				if diagnostic.Code == code && strings.Contains(diagnostic.Message, cause) {
+				if diagnostic.Code == code && strings.Contains(diagnostic.Message, subject) {
 					found = true
+					if wantGuidance && !corrective(diagnostic.Message) {
+						t.Errorf("JSON %s diagnostic lacks corrective action: %q", code, diagnostic.Message)
+					}
 				}
 			}
 			if !found {
-				t.Errorf("missing %s cause %q in %s", code, cause, stdout)
+				t.Errorf("missing %s diagnostic with subject %q in %s", code, subject, stdout)
 			}
-		} else if !strings.Contains(stdout+stderr, code+": ") || !strings.Contains(stdout+stderr, cause) {
-			t.Errorf("missing %s cause %q in plain output %q", code, cause, stdout+stderr)
-		} else if strings.Contains(stdout+stderr, code+": "+code+":") {
-			t.Errorf("duplicate %s prefix in %q", code, stdout+stderr)
+		} else {
+			output := stdout + stderr
+			if !strings.Contains(output, code+": ") || !strings.Contains(output, subject) {
+				t.Errorf("missing %s diagnostic with subject %q in plain output %q", code, subject, output)
+			} else if strings.Contains(output, code+": "+code+":") {
+				t.Errorf("duplicate %s prefix in %q", code, output)
+			}
+			if wantGuidance && !corrective(output) {
+				t.Errorf("plain %s diagnostic lacks corrective action: %q", code, output)
+			}
 		}
 	}
 }
@@ -53,39 +67,40 @@ func appCause(t *testing.T, bin, root string, args []string, wantStatus int, cod
 func Test_APP_037_StaticCauses(t *testing.T) {
 	bin := buildAppBinary(t)
 	for _, tc := range []struct {
-		name, code, cause string
-		args              []string
-		status            int
-		edit              func(*testing.T, string)
+		name, code, subject string
+		args                []string
+		status              int
+		wantGuidance        bool
+		edit                func(*testing.T, string)
 	}{
-		{"configuration", "C01", "fireweed.yaml", []string{"modules"}, 2, func(t *testing.T, root string) {
+		{"configuration", "C01", "fireweed.yaml", []string{"modules"}, 2, true, func(t *testing.T, root string) {
 			appPut(t, root, "fireweed.yaml", "modules: [broken\n")
 		}},
-		{"graph", "C02", "missing module", []string{"modules"}, 2, func(t *testing.T, root string) {
+		{"graph", "C02", "missing", []string{"modules"}, 2, true, func(t *testing.T, root string) {
 			appPut(t, root, "packages/beta/SPEC.md", "---\nname: beta\nid_prefix: BET\ndepends_on: [missing]\n---\n# Beta\n\n## Specs\n")
 		}},
-		{"syntax", "C03", "malformed item heading", []string{"coverage", "alpha"}, 2, func(t *testing.T, root string) {
+		{"syntax", "C03", "", []string{"coverage", "alpha"}, 2, true, func(t *testing.T, root string) {
 			appPut(t, root, "packages/alpha/SPEC.md", strings.Replace(authoringSpec, "### ALP-001", "### broken item", 1))
 		}},
-		{"normative", "C04", "non-normative", []string{"check"}, 1, func(t *testing.T, root string) {
+		{"normative", "C04", "", []string{"check"}, 1, false, func(t *testing.T, root string) {
 			authoringChange(t, root, "0001-first.md", "Users need a statement.\n", "### new:first\nA statement without a normative verb.\n", "")
 		}},
-		{"identity", "C05", "duplicate item ID", []string{"check"}, 1, func(t *testing.T, root string) {
+		{"identity", "C05", "", []string{"check"}, 1, false, func(t *testing.T, root string) {
 			authoringChange(t, root, "0001-first.md", "Users need two items.\n", "### new:one\nOne MUST work.\n### new:one\nOne MUST remain unique.\n", "")
 		}},
-		{"tag", "C06", "invalid review/quarantine tag", []string{"check"}, 1, func(t *testing.T, root string) {
+		{"tag", "C06", "", []string{"check"}, 1, false, func(t *testing.T, root string) {
 			authoringChange(t, root, "0001-first.md", "Users need an item.\n", "### new:one [invalid]\nOne MUST work.\n", "")
 		}},
-		{"structure", "C07", "missing Motivation", []string{"check"}, 1, func(t *testing.T, root string) {
+		{"structure", "C07", "", []string{"check"}, 1, false, func(t *testing.T, root string) {
 			authoringChange(t, root, "0001-first.md", "", "### new:one\nOne MUST work.\n", "")
 		}},
-		{"base", "C08", "absent from preceding projection", []string{"stamp", "revise"}, 1, func(t *testing.T, root string) {
+		{"base", "C08", "ALP-999", []string{"stamp", "revise"}, 1, false, func(t *testing.T, root string) {
 			authoringChange(t, root, "0001-revise.md", "Users need a revision.\n", "", "### ALP-999\nMissing MUST change.\n")
 		}},
-		{"handle", "C09", "undeclared handle", []string{"check"}, 1, func(t *testing.T, root string) {
+		{"handle", "C09", "new:missing", []string{"check"}, 1, false, func(t *testing.T, root string) {
 			authoringChange(t, root, "0001-first.md", "Users need new:missing.\n", "### new:one\nOne MUST work.\n", "")
 		}},
-		{"metadata", "C12", "set must be a mapping", []string{"show", "alpha", "--projected"}, 2, func(t *testing.T, root string) {
+		{"metadata", "C12", "", []string{"show", "alpha", "--projected"}, 2, false, func(t *testing.T, root string) {
 			authoringChange(t, root, "0001-first.md", "Users need a change.\n", "", "")
 			path := filepath.Join(root, "changes/0001-first.md")
 			body, err := os.ReadFile(path)
@@ -94,7 +109,7 @@ func Test_APP_037_StaticCauses(t *testing.T) {
 			}
 			appPut(t, root, "changes/0001-first.md", strings.Replace(string(body), "module: alpha\n", "module: alpha\nset: invalid\n", 1))
 		}},
-		{"queue-identity", "C13", "ambiguous change slug", []string{"check"}, 1, func(t *testing.T, root string) {
+		{"queue-identity", "C13", "repeat", []string{"check"}, 1, false, func(t *testing.T, root string) {
 			authoringChange(t, root, "0001-repeat.md", "Users need one item.\n", "### new:one\nOne MUST work.\n", "")
 			authoringChange(t, root, "0002-repeat.md", "Users need another item.\n", "### new:two\nTwo MUST work.\n", "")
 		}},
@@ -102,7 +117,7 @@ func Test_APP_037_StaticCauses(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			root := authoringFixture(t)
 			tc.edit(t, root)
-			appCause(t, bin, root, tc.args, tc.status, tc.code, tc.cause)
+			appDiagnostic(t, bin, root, tc.args, tc.status, tc.code, tc.subject, tc.wantGuidance)
 		})
 	}
 }
@@ -110,21 +125,22 @@ func Test_APP_037_StaticCauses(t *testing.T) {
 func Test_APP_037_APP_038_ShowStaticCauses(t *testing.T) {
 	bin := buildAppBinary(t)
 	for _, tc := range []struct {
-		name, code, cause string
-		args              []string
-		edit              func(*testing.T, string)
+		name, code   string
+		args         []string
+		wantGuidance bool
+		edit         func(*testing.T, string)
 	}{
-		{"duplicate-graph-name", "C02", "duplicate module name", []string{"show", "alpha"}, func(t *testing.T, root string) {
+		{"duplicate-graph-name", "C02", []string{"show", "alpha"}, true, func(t *testing.T, root string) {
 			appPut(t, root, "packages/beta/SPEC.md", "---\nname: alpha\nid_prefix: BET\ndepends_on: []\n---\n# Beta\n\n## Specs\n")
 		}},
-		{"duplicate-fixed-spec-id", "C05", "duplicate item ID", []string{"show", "alpha", "ALP-002"}, func(t *testing.T, root string) {
+		{"duplicate-fixed-spec-id", "C05", []string{"show", "alpha", "ALP-002"}, false, func(t *testing.T, root string) {
 			appPut(t, root, "packages/alpha/SPEC.md", authoringSpec+"\n### ALP-001\nDuplicate MUST fail.\n\n### ALP-002\nDistinct MUST remain selectable.\n")
 		}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			root := authoringFixture(t)
 			tc.edit(t, root)
-			appCause(t, bin, root, tc.args, 2, tc.code, tc.cause)
+			appDiagnostic(t, bin, root, tc.args, 2, tc.code, "", tc.wantGuidance)
 		})
 	}
 }

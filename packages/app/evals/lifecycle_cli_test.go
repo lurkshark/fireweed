@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/lurkshark/fireweed/packages/assets"
 	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
@@ -179,11 +180,15 @@ func lifecycleCommandFailure(t *testing.T, status, want int, stdout, stderr stri
 }
 
 func Test_APP_009_APP_027_APP_028_StartContextAssignmentAndRejection(t *testing.T) {
+	playbook, err := assets.Playbook("evals")
+	if err != nil {
+		t.Fatal(err)
+	}
 	bin := buildAppBinary(t)
 	root := lifecycleCLIProject(t, bin, true)
 	before := cliGit(t, root, "rev-parse", "HEAD")
 	status, plain, stderr := runLifecycleBinary(t, bin, appNestedDir(t, root), "start", "manual")
-	if status != 0 || stderr != "" || !strings.Contains(plain, "# Write evals") || !strings.Contains(plain, "ALP-002") {
+	if status != 0 || stderr != "" || !strings.Contains(plain, playbook) || !strings.Contains(plain, "ALP-002") {
 		t.Fatalf("start: exit=%d stdout=%q stderr=%q", status, plain, stderr)
 	}
 	if after := cliGit(t, root, "rev-parse", "HEAD"); after != before {
@@ -221,6 +226,10 @@ func Test_APP_009_APP_027_APP_028_StartContextAssignmentAndRejection(t *testing.
 }
 
 func Test_APP_009_APP_027_APP_028_APP_040_StartPreservesApprovalWarning(t *testing.T) {
+	playbook, err := assets.Playbook("evals")
+	if err != nil {
+		t.Fatal(err)
+	}
 	bin := buildAppBinary(t)
 	for _, jsonMode := range []bool{false, true} {
 		root := lifecycleCLIProject(t, bin, false)
@@ -239,7 +248,7 @@ func Test_APP_009_APP_027_APP_028_APP_040_StartPreservesApprovalWarning(t *testi
 			t.Fatalf("start with approval warning (JSON=%v): %d %q %q", jsonMode, status, output, stderr)
 		}
 		if jsonMode {
-			if stderr != "" || !strings.Contains(cliString(t, output), "# Write evals") {
+			if stderr != "" || !strings.Contains(cliString(t, output), playbook) {
 				t.Errorf("JSON start omitted context or wrote stderr: %q %q", output, stderr)
 			}
 			var diagnostics []struct {
@@ -250,7 +259,7 @@ func Test_APP_009_APP_027_APP_028_APP_040_StartPreservesApprovalWarning(t *testi
 			if err := json.Unmarshal(decodeEnvelope(t, output)["diagnostics"], &diagnostics); err != nil || len(diagnostics) == 0 || diagnostics[0].Code != "P04" || diagnostics[0].Message == "" || !diagnostics[0].Warning {
 				t.Errorf("approval warning missing: %s, %v", output, err)
 			}
-		} else if !strings.Contains(output, "# Write evals") || !strings.Contains(output+stderr, "P04") {
+		} else if !strings.Contains(output, playbook) || !strings.Contains(output+stderr, "P04") {
 			t.Errorf("plain start omitted context or P04 warning: %q %q", output, stderr)
 		}
 	}
