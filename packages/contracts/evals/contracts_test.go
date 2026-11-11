@@ -362,8 +362,8 @@ func Test_CON_017_ParseItemsDuplicateCode(t *testing.T) {
 			if code, subject, ok := contracts.ErrorCode(err); !ok || code != "C05" || subject != id {
 				t.Errorf("ErrorCode = (%q, %q, %v); want (C05, %q, true)", code, subject, ok, id)
 			}
-			if want := "duplicate item ID: " + id; err.Error() != want {
-				t.Errorf("duplicate message = %q; want %q", err, want)
+			if !strings.Contains(err.Error(), id) {
+				t.Errorf("duplicate message %q does not name ID %q", err, id)
 			}
 		})
 	}
@@ -386,21 +386,19 @@ func Test_CON_018_ParseItemsMalformedCode(t *testing.T) {
 			if code, _, ok := contracts.ErrorCode(err); !ok || code != "C03" {
 				t.Errorf("ErrorCode = (%q, _, %v); want (C03, _, true)", code, ok)
 			}
-			if want := fmt.Sprintf("malformed item heading: %q", heading); err.Error() != want {
-				t.Errorf("malformed heading message = %q; want %q", err, want)
+			if !strings.Contains(err.Error(), heading) {
+				t.Errorf("malformed heading message %q does not name heading %q", err, heading)
 			}
 		})
 	}
 }
 
 func Test_CON_019_ParseDocumentFrontmatterCode(t *testing.T) {
-	for _, tc := range []struct {
-		name, source, message string
-	}{
-		{"missing", "# Body\n", "missing YAML frontmatter"},
-		{"unterminated", "---\nname: contracts\nbody\n", "unterminated YAML frontmatter"},
-		{"invalid_yaml", "---\nname: [broken\n---\nbody\n", "invalid YAML frontmatter:"},
-		{"non_mapping", "---\n- first\n---\nbody\n", "invalid YAML frontmatter:"},
+	for _, tc := range []struct{ name, source string }{
+		{"missing", "# Body\n"},
+		{"unterminated", "---\nname: contracts\nbody\n"},
+		{"invalid_yaml", "---\nname: [broken\n---\nbody\n"},
+		{"non_mapping", "---\n- first\n---\nbody\n"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			_, err := contracts.ParseDocument(tc.source)
@@ -412,9 +410,6 @@ func Test_CON_019_ParseDocumentFrontmatterCode(t *testing.T) {
 			}
 			if code, _, ok := contracts.ErrorCode(err); !ok || code != "C03" {
 				t.Errorf("ErrorCode = (%q, _, %v); want (C03, _, true)", code, ok)
-			}
-			if !strings.HasPrefix(err.Error(), tc.message) {
-				t.Errorf("frontmatter message = %q; want prefix %q", err, tc.message)
 			}
 		})
 	}

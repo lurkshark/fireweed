@@ -4,6 +4,8 @@ eval_fix:
     - CON-018
     - CON-019
 module: contracts
+phase: audit
+run: 20261111T213207-39b0efee633a4ff9b1ad4295
 ---
 
 ## Motivation
@@ -34,3 +36,7 @@ and `Test_CON_019_ParseDocumentFrontmatterCode`, keep the `contracts.ErrorCode`
 code and subject checks. Replace each exact message or prefix check with a
 check that the text names the duplicated ID or the malformed heading where
 the fixture has one; otherwise drop it.
+
+The contracts evals passed `fireweed verify item-error-wording-evals`.
+## Provenance
+- evals 2026-11-11T21:33:13.792968Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=68 failing=0 passing=68
