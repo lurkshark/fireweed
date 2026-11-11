@@ -396,6 +396,19 @@ func Test_AST_027_DoctorExplanations(t *testing.T) {
 	}
 }
 
+func Test_AST_059_SpecOutsideModuleGlobsExplanation(t *testing.T) {
+	explanation, err := assets.Explain("C20")
+	if err != nil {
+		t.Fatalf("Explain(C20): %v", err)
+	}
+
+	requirePattern(t, explanation, `(?i)\bwarning\b`, "warning severity")
+	requirePattern(t, explanation, `(?i)\bSPEC\.md\b[^.\n]*\b(?:outside|does not match|doesn't match|not covered by|unmatched by)\b[^.\n]*\bmodules?\b[^.\n]*\bglobs?\b|\bmodules?\b[^.\n]*\bglobs?\b[^.\n]*\b(?:do not match|don't match|exclude|do not cover|don't cover)\b[^.\n]*\bSPEC\.md\b`, "a SPEC.md file outside the configured module globs")
+	requirePattern(t, explanation, `(?i)\badd\b[^.\n]*(?:\b(?:matching|covering)\b[^.\n]*\bglob\b|\bglob\b[^.\n]*\b(?:match\w*|cover\w*|includ\w*)\b)`, "advice to add a matching glob")
+	requirePattern(t, explanation, `(?i)\bmove\b[^.\n]*(?:\bfile\b|\bit\b|\bSPEC\.md\b)`, "advice to move the file")
+	requirePattern(t, explanation, `(?i)\brename\b[^.\n]*(?:\bfile\b|\bit\b|\bSPEC\.md\b)`, "advice to rename the file")
+}
+
 func requirePattern(t *testing.T, text, pattern, description string) {
 	t.Helper()
 	if !regexp.MustCompile(pattern).MatchString(text) {

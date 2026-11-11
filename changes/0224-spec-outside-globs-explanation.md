@@ -1,5 +1,7 @@
 ---
 module: assets
+phase: audit
+run: 20261111T193939-f48e0648f90b9af622e22113
 ---
 
 ## Motivation
@@ -14,7 +16,7 @@ None. Explain gains the C20 entry.
 
 ## Added
 
-### new:c20-explanation
+### AST-059
 Explain MUST describe C20 as a warning for a SPEC.md file outside the configured modules globs and advise adding a matching glob or moving or renaming the file.
 
 ## Modified
@@ -26,3 +28,10 @@ Explain MUST describe C20 as a warning for a SPEC.md file outside the configured
 ## Notes
 
 Run before 0225.
+
+Fail-first verification passed for the evals phase. The AST-059 eval failed
+because `assets.Explain("C20")` returned `unknown diagnostic code "C20"`.
+Add the C20 explanation in `packages/assets/internal/content/content.go` during
+implementation.
+## Provenance
+- evals 2026-11-11T19:42:49.780695Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=126 failing=1 passing=125
