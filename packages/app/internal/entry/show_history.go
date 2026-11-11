@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project"
 )
 
@@ -31,18 +32,25 @@ func runShowHistory(args []string, jsonMode bool, out, errOut io.Writer) int {
 	}
 	entries, err := project.SpecHistory(root, args[0], id)
 	if err != nil {
+		code, _, coded := contracts.ErrorCode(err)
+		message := err.Error()
+		if !coded {
+			code = "P01"
+		} else if rest, found := strings.CutPrefix(message, code+":"); found {
+			message = strings.TrimLeft(rest, " \t\n\f\r")
+		}
+
 		action := "Use a valid archive and correct the reported cause, then retry show --history."
-		diagnostics := lifecycleError(err, nil, action)
 		status := 1
-		if diagnostics[0].Code == "U02" {
+		switch code {
+		case "U02":
 			status = 2
 			action = "Use a module or ID listed in the project, then retry show --history."
-		} else if diagnostics[0].Code == "C01" {
+		case "C01":
 			status = 2
 			action = "Use a valid fireweed.yaml, then retry show --history."
 		}
-		diagnostics = lifecycleError(err, nil, action)
-		return cliResponse(status, jsonMode, out, errOut, nil, "", diagnostics)
+		return cliFailure(status, jsonMode, out, errOut, code, message+". "+action)
 	}
 
 	rows := make([]specHistoryRow, 0, len(entries))
