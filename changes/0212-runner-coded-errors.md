@@ -2,7 +2,7 @@
 bases:
     RUN-029: 5b18306a
 module: runner
-phase: audit
+phase: impl
 run: 20261111T072134-1273816dd7ab08e452ef8599
 ---
 
@@ -50,3 +50,7 @@ The usage-policy errors are in `packages/runner/internal/next/usage.go`
 and the drill configuration errors are in `packages/runner/internal/drill/drill.go`.
 ## Provenance
 - evals 2026-11-11T07:41:11.512385Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=167 failing=8 passing=159
+- audit 2026-11-11T07:41:31.146594Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-astra -c model_reasoning_effort="medium" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+## Audit
+
+No findings; checked RUN-029
