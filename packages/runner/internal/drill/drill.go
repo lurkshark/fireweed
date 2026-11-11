@@ -202,17 +202,16 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 			break
 		}
 		accepted = true
-		verification := verifyAll(ctx, snapshot, scratch, *target, request, &result)
-		if verification == nil {
-			failure = nil
-			break
-		}
-		failure = verification
-		feedback = "\n\n# Previous verification failed\n" + verification.Error() + failureDetails(result)
+		ownFailure, dependentFailure := verifyAll(ctx, snapshot, scratch, *target, request, &result)
+		failure = errors.Join(ownFailure, dependentFailure)
 		if ctx.Err() != nil {
 			failure = ctx.Err()
 			break
 		}
+		if ownFailure == nil {
+			break
+		}
+		feedback = "\n\n# Previous verification failed\n" + ownFailure.Error() + failureDetails(result.Module, result.Own)
 	}
 	if failure == nil && !accepted {
 		failure = fmt.Errorf("reconstruction attempts exhausted")
@@ -695,20 +694,15 @@ func specs(module project.Module) ([]contracts.Item, error) {
 	section, _ := contracts.Section(module.Document.Body, "Specs")
 	return contracts.ParseItems(section)
 }
-func verifyAll(ctx context.Context, snapshot project.Snapshot, scratch string, target project.Module, request model.DrillRequest, result *model.DrillResult) error {
+func verifyAll(ctx context.Context, snapshot project.Snapshot, scratch string, target project.Module, request model.DrillRequest, result *model.DrillResult) (ownFailure, dependentFailure error) {
 	snapshot.Root = scratch
-	var failures []error
+	var dependentFailures []error
 	names := append([]string{target.Name}, dependents(snapshot, target)...)
 	for _, name := range names {
-		if err := ctx.Err(); err != nil {
-			return err
+		if ctx.Err() != nil {
+			break
 		}
 		report, err := checks.Evaluate(ctx, checks.HookRequest{Snapshot: snapshot, Module: name, Bin: request.Bin, Timeout: request.Timeout})
-		if name == target.Name {
-			result.Own = report
-		} else {
-			result.Dependents[name] = report
-		}
 		module := findModule(snapshot, name)
 		items, specErr := specs(*module)
 		err = errors.Join(err, specErr)
@@ -716,29 +710,27 @@ func verifyAll(ctx context.Context, snapshot project.Snapshot, scratch string, t
 			err = errors.Join(err, checks.RequirePass(report, items), checks.RequireCoverage(report, items))
 		}
 		if err != nil {
-			failures = append(failures, fmt.Errorf("%s eval: %w", name, err))
+			err = fmt.Errorf("%s eval: %w", name, err)
 		}
-	}
-	return errors.Join(failures...)
-}
-func failureDetails(result model.DrillResult) string {
-	var b strings.Builder
-	write := func(name string, report checks.Report) {
-		fmt.Fprintf(&b, "\n%s stdout: %s\n%s stderr: %s\n", name, report.Stdout, name, report.Stderr)
-		for _, c := range report.Cases {
-			if c.Result == "fail" {
-				fmt.Fprintf(&b, "%s %s %s: %s\n", name, c.Classname, c.Name, c.Failure)
+		if name == target.Name {
+			result.Own = report
+			ownFailure = err
+		} else {
+			result.Dependents[name] = report
+			if err != nil {
+				dependentFailures = append(dependentFailures, err)
 			}
 		}
 	}
-	write(result.Module, result.Own)
-	names := make([]string, 0, len(result.Dependents))
-	for name := range result.Dependents {
-		names = append(names, name)
-	}
-	sort.Strings(names)
-	for _, name := range names {
-		write(name, result.Dependents[name])
+	return ownFailure, errors.Join(dependentFailures...)
+}
+func failureDetails(name string, report checks.Report) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "\n%s stdout: %s\n%s stderr: %s\n", name, report.Stdout, name, report.Stderr)
+	for _, c := range report.Cases {
+		if c.Result == "fail" {
+			fmt.Fprintf(&b, "%s %s %s: %s\n", name, c.Classname, c.Name, c.Failure)
+		}
 	}
 	return b.String()
 }
@@ -805,7 +797,15 @@ func writeReport(root, input string, result model.DrillResult, failure error) er
 	}
 	fmt.Fprintf(&b, "\n## Contradicted Decisions\n%s\n## Gaps\n%s\n## Agent observations\n", strings.TrimSpace(contradicted), strings.TrimSpace(gaps))
 	for i, step := range result.Steps {
-		fmt.Fprintf(&b, "\n### Attempt %d (exit %d)\n%s\n%s\n", i+1, step.ExitCode, step.Stdout, step.Stderr)
+		fmt.Fprintf(&b, "\n### Attempt %d (exit %d)\n", i+1, step.ExitCode)
+		if step.LogPath != "" {
+			rel, err := filepath.Rel(root, step.LogPath)
+			if err != nil {
+				return fmt.Errorf("resolve relative agent log path: %w", err)
+			}
+			fmt.Fprintf(&b, "Invocation log: `%s`\n\n", filepath.ToSlash(rel))
+		}
+		fmt.Fprintf(&b, "%s\n", step.Stdout)
 	}
 	if failure != nil {
 		fmt.Fprintf(&b, "\n## Verification failures\n%s\n", failure)

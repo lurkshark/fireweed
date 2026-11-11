@@ -250,7 +250,7 @@ The reconstruction prompt MUST include the target spec and Decisions, identify i
 Drill MUST reject an attempt that modified or deleted any input file present after setup, before importing code. It MUST import only the target's rebuilt disposable files into the verification worktree, ignoring other files the worker or its eval runs created, without changing retained files or the invoking implementation.
 
 ### RUN-056
-Drill MUST use the configured worker command, wrapper and timeout through InvokeAgent, retaining ordered AgentResults in Steps. Non-usage failures and verification retries MUST share the configured attempts bound, retain rebuilt work and include the preceding failure in retry prompts.
+Drill MUST use the configured worker command, wrapper and timeout through InvokeAgent, retaining ordered AgentResults in Steps. Non-usage failures and verification retries MUST share the configured attempts bound, retain rebuilt work and include the preceding reconstruction or own-eval failure in retry prompts.
 
 ### RUN-057
 Drill MUST treat usage-limit responses as the same attempt, applying configured limit_wait and limit_budget without spending a failed attempt. An exhausted usage budget MUST return an IsUsageStop error with Result stopped; cancellation or timeout MUST return an error and stop reconstruction.
@@ -285,6 +285,12 @@ InvokeAgent MUST accept a log project root, run, phase and positive one-based at
 
 ### RUN-067
 InvokeAgent MUST create one temporary file containing the exact request Prompt only when {prompt_file} occurs in the selected command or wrapper templates, and expand that placeholder to its absolute path. The file MUST remain available through command execution and be removed afterward, including after launch failure, nonzero exit, timeout or cancellation.
+
+### RUN-068
+Drill retry prompts MUST NOT include dependent modules' eval output. When the target's own evals pass and only dependent evals fail, Drill MUST NOT retry reconstruction and MUST return Result fail with those dependent failures in the report.
+
+### RUN-069
+Each attempt's Agent observations entry MUST contain that attempt's agent stdout and the repository-relative path of its invocation log, and MUST NOT contain the attempt's stderr.
 
 ## Decisions
 
