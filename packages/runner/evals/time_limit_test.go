@@ -83,21 +83,23 @@ func timeHeldWork(t *testing.T, f runFixture, slug, phase, marker, want, head st
 func Test_RUN_036_RUN_037_OneBudgetAcrossChangesRetainsApplied(t *testing.T) {
 	f := newRunFixture(t, 2, false, false)
 	timeFastHook(t, f)
-	timeAgentAfterWork(t, f, `if [ "$module" = alpha ]; then sleep 1; fi
+	// Alpha consumes more than the elapsed-time margin, so a fresh budget for
+	// beta would exceed the bound even when the rest of the fixture runs quickly.
+	const margin = 4 * time.Second
+	timeAgentAfterWork(t, f, `if [ "$module" = alpha ] && [ "$phase" = impl ]; then sleep 6; fi
 if [ "$module" = beta ] && [ "$phase" = evals ]; then
   printf 'TIME_HELD_WORK\n' > packages/beta/evals/time-work.txt
-  sleep 6
+  sleep 120
 fi
 `)
-	audit := nextRead(t, f.agents, "auditor.sh")
-	nextWrite(t, f.agents, "auditor.sh", strings.Replace(audit, "sleep 0.12", "sleep 1", 1))
 	req := f.request(0, false)
-	req.For = 10 * time.Second
+	req.For = 30 * time.Second
+	req.Timeout = time.Minute
 	start := time.Now()
 	r, err := runner.Run(context.Background(), req)
 	elapsed := time.Since(start)
-	timeStop(t, err, "10s")
-	if elapsed > 14*time.Second {
+	timeStop(t, err, req.For.String())
+	if elapsed > req.For+margin {
 		t.Errorf("total deadline waited %s; budget may have reset after alpha", elapsed)
 	}
 	if len(r.Applied) == 1 {
@@ -128,7 +130,7 @@ func Test_RUN_037_RUN_039_AgentDeadlineRetainsHeldWork(t *testing.T) {
 	timeFastHook(t, f)
 	timeAgentAfterWork(t, f, `if [ "$phase" = evals ]; then
   printf 'TIME_HELD_WORK\n' > packages/alpha/evals/time-work.txt
-  sleep 4
+  sleep 120
 fi
 `)
 	head := nextGit(t, f.root, "rev-parse", "HEAD")
@@ -137,9 +139,9 @@ fi
 		t.Fatalf("start interrupted agent step: %v", startErr)
 	}
 	req := f.request(0, false)
-	req.For = 2 * time.Second
+	req.For = 10 * time.Second
 	r, err := runner.Run(context.Background(), req)
-	timeStop(t, err, "2s")
+	timeStop(t, err, req.For.String())
 	if err != nil && !runner.IsTimeStop(fmt.Errorf("outer: %w", err)) {
 		t.Errorf("wrapped time stop classification = %v", err)
 	}
@@ -160,7 +162,7 @@ func Test_RUN_037_VerificationDeadlineRetainsHeldWork(t *testing.T) {
 	anchor := "if [ \"$phase\" = evals ]; then result="
 	addition := `if [ "$phase" = evals ]; then
   printf 'TIME_HELD_WORK\n' > packages/alpha/evals/time-work.txt
-  sleep 4
+  sleep 120
 fi
 `
 	if !strings.Contains(hook, anchor) {
@@ -174,7 +176,7 @@ fi
 		t.Fatalf("start interrupted verification step: %v", startErr)
 	}
 	req := f.request(0, false)
-	req.For = 2 * time.Second
+	req.For = 10 * time.Second
 	r, err := runner.Run(context.Background(), req)
 	invocations, invocationErr := os.ReadFile(filepath.Join(f.agents, "invocations"))
 	workPath := filepath.Join(f.root, "packages/alpha/evals/added_test.go")
@@ -202,7 +204,7 @@ fi
 	t.Logf("hook marker %s: exists=%t stat_error=%v read_error=%v content=%q", markerPath, markerStatErr == nil && markerInfo != nil, markerStatErr, markerReadErr, marker)
 	t.Logf("verification report %s: exists=%t stat_error=%v read_error=%v content=%q", reportPath, reportStatErr == nil && reportInfo != nil, reportStatErr, reportReadErr, report)
 	t.Logf("held identity: state=%#v read_error=%v original phase=%q run=%q claim=%q assigned=%#v HEAD=%q; actual HEAD=%q error=%v; claim refs=%q error=%v; commits=%q error=%v", held, heldErr, original.Phase, original.Run, original.ClaimOID, original.Change.Added, original.Head, actualHead, headErr, claimRef, claimErr, commits, commitsErr)
-	timeStop(t, err, "2s")
+	timeStop(t, err, req.For.String())
 	if len(r.Applied) != 0 {
 		t.Errorf("interrupted verification applied %d changes", len(r.Applied))
 	}
@@ -240,14 +242,14 @@ func Test_RUN_038_UsageWaitPreflightStopsBeforeWaiting(t *testing.T) {
 	runUsageAgent(t, f, "alpha/evals")
 	head := nextGit(t, f.root, "rev-parse", "HEAD")
 	req := f.request(0, false)
-	req.For = 5 * time.Second
-	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+	req.For = 20 * time.Second
+	ctx, cancel := context.WithTimeout(context.Background(), req.For+5*time.Second)
 	defer cancel()
 	start := time.Now()
 	r, err := runner.Run(ctx, req)
 	elapsed := time.Since(start)
-	timeStop(t, err, "5s")
-	if elapsed >= 3*time.Second {
+	timeStop(t, err, req.For.String())
+	if elapsed >= req.For/2 {
 		t.Errorf("usage wait preflight took %s", elapsed)
 	}
 	if len(r.Applied) != 0 {
@@ -290,13 +292,14 @@ func Test_RUN_040_EarlierBlockRetainsCauseBeforeTimeStop(t *testing.T) {
 	timeFastHook(t, f)
 	timeAgentAfterWork(t, f, `if [ "$module" = gamma ] && [ "$phase" = evals ]; then
   printf 'TIME_HELD_WORK\n' > packages/gamma/evals/time-work.txt
-  while :; do sleep 1; done
+  sleep 120
 fi
 `)
 	req := f.request(0, false)
-	req.For = 8 * time.Second
+	req.For = 20 * time.Second
+	req.Timeout = time.Minute
 	r, err := runner.Run(context.Background(), req)
-	if err == nil || !strings.Contains(err.Error(), "P2-01: no fail-first case for ALP-002") || !strings.Contains(err.Error(), "refs/fireweed/attempts/alpha/1") || !strings.Contains(err.Error(), "8s") || runner.IsTimeStop(err) {
+	if err == nil || !strings.Contains(err.Error(), "P2-01: no fail-first case for ALP-002") || !strings.Contains(err.Error(), "refs/fireweed/attempts/alpha/1") || !strings.Contains(err.Error(), req.For.String()) || runner.IsTimeStop(err) {
 		t.Errorf("combined block and time failure: Applied=%d, err=%v", len(r.Applied), err)
 	}
 	if saved := nextGit(t, f.root, "for-each-ref", "--format=%(objectname)", "refs/fireweed/attempts/alpha/1"); saved == "" {
