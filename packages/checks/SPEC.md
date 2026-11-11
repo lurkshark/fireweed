@@ -97,7 +97,7 @@ RequirePass MUST reject failed or errored cases referencing any non-quarantined 
 ParseJUnit MUST reject malformed XML with a C11-prefixed error.
 
 ### CHK-028
-ParseJUnit MUST reject testcases with missing or unknown spec IDs with a C11-prefixed error.
+ParseJUnit MUST reject, with a C11-prefixed error, a testcase that references no supplied spec ID or that contains a token with a supplied spec's prefix, matched under the ID rules, naming no supplied spec. Text without such a prefix, including numbered labels, MUST NOT count as an ID reference.
 
 ### CHK-029
 ParseJUnit MUST map testcase name and classname to current spec IDs using contracts.MatchesID.
