@@ -2,6 +2,7 @@ package queue
 
 import (
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/lurkshark/fireweed/packages/contracts"
@@ -25,6 +26,7 @@ func Check(root string) []model.Diagnostic {
 	if err := fixture.ValidateGraph(snapshot.Modules); err != nil {
 		addCode("C02", "fireweed.yaml", err.Error())
 	}
+	diagnostics = append(diagnostics, specsOutsideModules(snapshot)...)
 	p, err := newProjection(snapshot)
 	if err != nil {
 		addCode(errorCode(err, "C03"), "SPEC.md", err.Error())
@@ -107,6 +109,34 @@ func Check(root string) []model.Diagnostic {
 		}
 	}
 	return diagnostics
+}
+
+func specsOutsideModules(snapshot model.Snapshot) []model.Diagnostic {
+	tracked, err := readGit(snapshot.Root, "ls-files", "--cached", "-z", "--", ":(glob)**/SPEC.md")
+	if err != nil {
+		// Check also validates project documents outside a Git repository.
+		return nil
+	}
+	var warnings []model.Diagnostic
+	seen := make(map[string]bool)
+	for _, path := range strings.Split(string(tracked), "\x00") {
+		if path == "" || strings.HasPrefix(path, ".fireweed/") || seen[path] {
+			continue
+		}
+		if slices.ContainsFunc(snapshot.Modules, func(module model.Module) bool {
+			return strings.HasPrefix(path, module.Dir+"/")
+		}) {
+			continue
+		}
+		seen[path] = true
+		warnings = append(warnings, model.Diagnostic{
+			Code:    "C20",
+			Path:    path,
+			Message: path + " is outside the configured module globs",
+			Warning: true,
+		})
+	}
+	return warnings
 }
 
 func modulePrefix(snapshot model.Snapshot, name string) string {

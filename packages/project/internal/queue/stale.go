@@ -2,7 +2,6 @@ package queue
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -10,7 +9,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/gitstore"
@@ -146,7 +144,7 @@ func StampMissing(root, target string) error {
 
 // stampedProjection uses the commit that introduced the current bases mapping.
 func stampedProjection(root string, change model.Change, bases map[string]any) (*projection, bool) {
-	out, err := staleGit(root, "log", "--format=%H", "HEAD", "--", change.Path)
+	out, err := readGit(root, "log", "--format=%H", "HEAD", "--", change.Path)
 	if err != nil {
 		return nil, false
 	}
@@ -203,7 +201,7 @@ func stampedProjection(root string, change model.Change, bases map[string]any) (
 }
 
 func queueAt(root, commit string) ([]model.Change, error) {
-	out, err := staleGit(root, "ls-tree", "-r", "--name-only", "-z", commit, "--", "changes")
+	out, err := readGit(root, "ls-tree", "-r", "--name-only", "-z", commit, "--", "changes")
 	if err != nil {
 		return nil, err
 	}
@@ -256,16 +254,4 @@ func queueAt(root, commit string) ([]model.Change, error) {
 		return changes[i].Slug < changes[j].Slug
 	})
 	return changes, nil
-}
-
-func staleGit(root string, args ...string) ([]byte, error) {
-	argv := append([]string{"git", "-C", root, "-c", "core.hooksPath=/dev/null", "-c", "core.fsmonitor=false"}, args...)
-	result, err := gitstore.Run(context.Background(), gitstore.Request{
-		Args: argv, Timeout: 30 * time.Second,
-		Env: map[string]string{"GIT_NO_LAZY_FETCH": "1", "GIT_TERMINAL_PROMPT": "0"},
-	})
-	if err != nil {
-		return nil, fmt.Errorf("git %s: %w: %s", strings.Join(args, " "), err, result.Stderr)
-	}
-	return []byte(result.Stdout), nil
 }

@@ -248,6 +248,9 @@ Diagnostic.Path.
 ### PRJ-069
 When `changes` is a regular file, Queue MUST return an error identifying `changes`. Check MUST report a non-warning C03 diagnostic identifying `changes`.
 
+### PRJ-070
+Check MUST return a C20 warning naming each tracked file named SPEC.md that is neither a configured module's SPEC.md nor inside a configured module directory or `.fireweed/`.
+
 ## Decisions
 
 [0126-spec-history-query] History reads the project's current archive files, as the archive-backed show
