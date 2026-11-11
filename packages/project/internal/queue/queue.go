@@ -34,7 +34,7 @@ func readQueue(root string, snapshot model.Snapshot) ([]model.Change, error) {
 		return nil, nil
 	}
 	if err != nil {
-		return nil, withCause("C03", fmt.Errorf("read changes: %w", err))
+		return nil, contracts.CodedError{Code: "C03", Subject: "changes", Cause: fmt.Errorf("read changes: %w", err)}
 	}
 	var changes []model.Change
 	slugs := map[string]bool{}
@@ -48,24 +48,24 @@ func readQueue(root string, snapshot model.Snapshot) ([]model.Change, error) {
 		}
 		number, err := strconv.Atoi(parts[1])
 		if err != nil {
-			return nil, withCause("C13", fmt.Errorf("invalid change number %s: %w", entry.Name(), err))
+			return nil, contracts.CodedError{Code: "C13", Subject: entry.Name(), Cause: fmt.Errorf("invalid change number %s: %w", entry.Name(), err)}
 		}
 		if slugs[parts[2]] {
-			return nil, withCause("C13", fmt.Errorf("ambiguous change slug %q", parts[2]))
+			return nil, contracts.CodedError{Code: "C13", Subject: parts[2], Cause: fmt.Errorf("ambiguous change slug %q", parts[2])}
 		}
 		slugs[parts[2]] = true
 		path := "changes/" + entry.Name()
 		data, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(path)))
 		if err != nil {
-			return nil, withCause("C03", fmt.Errorf("read %s: %w", path, err))
+			return nil, contracts.CodedError{Code: "C03", Subject: path, Cause: fmt.Errorf("read %s: %w", path, err)}
 		}
 		doc, err := contracts.ParseDocument(string(data))
 		if err != nil {
-			return nil, withCause("C03", fmt.Errorf("parse %s: %w", path, err))
+			return nil, fmt.Errorf("parse %s: %w", path, err)
 		}
 		module, ok := doc.Frontmatter["module"].(string)
 		if !ok || !known[module] {
-			return nil, withCause("C07", fmt.Errorf("%s names unknown module %q", path, module))
+			return nil, contracts.CodedError{Code: "C07", Subject: path, Cause: fmt.Errorf("%s names unknown module %q", path, module)}
 		}
 		change := model.Change{Number: number, Slug: parts[2], Path: path, Module: module, Document: doc}
 		for _, section := range []struct {
@@ -77,7 +77,7 @@ func readQueue(root string, snapshot model.Snapshot) ([]model.Change, error) {
 			body, _ := contracts.Section(doc.Body, section.name)
 			items, err := contracts.ParseItems(body)
 			if err != nil {
-				return nil, withCause(itemErrorCode(err), fmt.Errorf("%s %s: %w", path, section.name, err))
+				return nil, fmt.Errorf("%s %s: %w", path, section.name, err)
 			}
 			*section.into = items
 		}

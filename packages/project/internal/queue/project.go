@@ -28,7 +28,7 @@ func newProjection(snapshot model.Snapshot) (*projection, error) {
 		section, _ := contracts.Section(module.Document.Body, "Specs")
 		items, err := contracts.ParseItems(section)
 		if err != nil {
-			return nil, withCause(itemErrorCode(err), fmt.Errorf("%s/SPEC.md: %w", module.Dir, err))
+			return nil, fmt.Errorf("%s/SPEC.md: %w", module.Dir, err)
 		}
 		for _, item := range items {
 			p.items[module.Name] = append(p.items[module.Name], ownedItem{item: item})
@@ -55,10 +55,10 @@ func (p *projection) apply(change model.Change) error {
 		}
 	}
 	if index < 0 {
-		return withCause("C07", fmt.Errorf("unknown module %q", change.Module))
+		return contracts.CodedError{Code: "C07", Subject: change.Path, Cause: fmt.Errorf("unknown module %q", change.Module)}
 	}
 	if err := applySet(&p.snapshot.Modules[index], change.Document.Frontmatter["set"]); err != nil {
-		return withCause("C12", fmt.Errorf("%s: %w", change.Path, err))
+		return contracts.CodedError{Code: "C12", Subject: change.Path, Cause: fmt.Errorf("%s: %w", change.Path, err)}
 	}
 	items := p.items[change.Module]
 	for _, edit := range change.Modified {
@@ -71,7 +71,7 @@ func (p *projection) apply(change model.Change) error {
 			}
 		}
 		if !found {
-			return withCause("C08", fmt.Errorf("%s: Modified ID %s absent from preceding projection", change.Path, edit.ID))
+			return contracts.CodedError{Code: "C08", Subject: change.Path, Cause: fmt.Errorf("%s: Modified ID %s absent from preceding projection", change.Path, edit.ID)}
 		}
 	}
 	for _, edit := range change.Removed {
@@ -84,7 +84,7 @@ func (p *projection) apply(change model.Change) error {
 			}
 		}
 		if !found {
-			return withCause("C08", fmt.Errorf("%s: Removed ID %s absent from preceding projection", change.Path, edit.ID))
+			return contracts.CodedError{Code: "C08", Subject: change.Path, Cause: fmt.Errorf("%s: Removed ID %s absent from preceding projection", change.Path, edit.ID)}
 		}
 	}
 	for _, edit := range change.Added {
@@ -95,10 +95,7 @@ func (p *projection) apply(change model.Change) error {
 		items = append(items, ownedItem{item: edit, owner: owner})
 	}
 	p.items[change.Module] = items
-	if err := fixture.ValidateGraph(p.snapshot.Modules); err != nil {
-		return withCause("C02", err)
-	}
-	return nil
+	return fixture.ValidateGraph(p.snapshot.Modules)
 }
 
 func applySet(module *model.Module, raw any) error {
@@ -234,20 +231,18 @@ func Stamp(root, target string) error {
 		}
 	}
 	change := changes[index]
-	bases := map[string]any{}
-	if raw, exists := change.Document.Frontmatter["bases"]; exists {
-		current, ok := raw.(map[string]any)
-		if !ok {
-			return contracts.CodedError{Code: "C08", Subject: change.Path, Cause: fmt.Errorf("%s bases must be a mapping", change.Path)}
-		}
-		for key, value := range current {
-			bases[key] = value
-		}
+	current, err := changeBases(change)
+	if err != nil {
+		return err
 	}
-	for _, edit := range append(append([]contracts.Item{}, change.Modified...), change.Removed...) {
+	bases := make(map[string]any, len(current))
+	for key, value := range current {
+		bases[key] = value
+	}
+	for _, edit := range edited(change) {
 		base, ok := p.find(change.Module, edit.ID)
 		if !ok {
-			return fmt.Errorf("%s: ID %s absent from preceding projection", change.Path, edit.ID)
+			return absentEditError(change.Path, edit.ID)
 		}
 		bases[edit.ID] = contracts.SpecHash(base)
 	}

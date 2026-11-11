@@ -14,43 +14,29 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type loadFailure struct {
-	code string
+type moduleDocumentError struct {
 	path string
 	err  error
 }
 
-func (e *loadFailure) Error() string { return e.err.Error() }
-func (e *loadFailure) Unwrap() error { return e.err }
+func (e *moduleDocumentError) Error() string { return e.err.Error() }
+func (e *moduleDocumentError) Unwrap() error { return e.err }
 
-// LoadCode identifies the diagnostic cause retained by a Load error.
-func LoadCode(err error) string {
-	var failure *loadFailure
-	if errors.As(err, &failure) {
-		return failure.code
-	}
-	return "C01"
+func configError(err error) error {
+	return contracts.CodedError{Code: "C01", Subject: "fireweed.yaml", Cause: err}
 }
-
-func loadCause(code string, err error) error { return &loadFailure{code: code, err: err} }
 
 // LoadPath identifies the document responsible for a Load failure.
 func LoadPath(err error) string {
-	var failure *loadFailure
-	if errors.As(err, &failure) && failure.path != "" {
+	var failure *moduleDocumentError
+	if errors.As(err, &failure) {
 		return failure.path
 	}
 	return "fireweed.yaml"
 }
 
-func moduleCause(rel string, err error) error {
-	code, _, ok := contracts.ErrorCode(err)
-	if !ok {
-		code = "C03"
-	}
-	path := rel + "/SPEC.md"
-	return &loadFailure{
-		code: code,
+func moduleParseError(path string, err error) error {
+	return &moduleDocumentError{
 		path: path,
 		err:  fmt.Errorf("parse %s: %w. Use valid frontmatter and unique spec item headings, then retry", path, err),
 	}
@@ -59,7 +45,7 @@ func moduleCause(rel string, err error) error {
 func Load(root string) (model.Snapshot, error) {
 	data, err := os.ReadFile(filepath.Join(root, "fireweed.yaml"))
 	if err != nil {
-		return model.Snapshot{}, fmt.Errorf("read fireweed.yaml: %w", err)
+		return model.Snapshot{}, configError(fmt.Errorf("read fireweed.yaml: %w", err))
 	}
 	config, patterns, defaults, err := parseConfig(data)
 	if err != nil {
@@ -69,7 +55,7 @@ func Load(root string) (model.Snapshot, error) {
 	snapshot := model.Snapshot{Root: root, Config: config}
 	err = filepath.WalkDir(root, func(path string, entry fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
-			return walkErr
+			return configError(walkErr)
 		}
 		if !entry.IsDir() {
 			return nil
@@ -79,7 +65,7 @@ func Load(root string) (model.Snapshot, error) {
 		}
 		rel, err := filepath.Rel(root, path)
 		if err != nil {
-			return err
+			return configError(err)
 		}
 		rel = filepath.ToSlash(rel)
 		if rel == "." || !matchesModule(patterns, rel) {
@@ -87,7 +73,9 @@ func Load(root string) (model.Snapshot, error) {
 		}
 		data, err := os.ReadFile(filepath.Join(path, "SPEC.md"))
 		if err != nil {
-			return &loadFailure{code: "C03", path: rel + "/SPEC.md", err: fmt.Errorf("read %s/SPEC.md: %w", rel, err)}
+			specPath := rel + "/SPEC.md"
+			cause := fmt.Errorf("read %s: %w", specPath, err)
+			return &moduleDocumentError{path: specPath, err: contracts.CodedError{Code: "C03", Subject: specPath, Cause: cause}}
 		}
 		module, err := parseModule(data, defaults, rel)
 		if err != nil {
@@ -105,52 +93,53 @@ func Load(root string) (model.Snapshot, error) {
 func parseConfig(data []byte) (map[string]any, []string, map[string]any, error) {
 	var config map[string]any
 	if err := yaml.Unmarshal(data, &config); err != nil {
-		return nil, nil, nil, fmt.Errorf("parse fireweed.yaml: %w", err)
+		return nil, nil, nil, configError(fmt.Errorf("parse fireweed.yaml: %w", err))
 	}
 	if config == nil {
-		return nil, nil, nil, fmt.Errorf("fireweed.yaml must be a mapping")
+		return nil, nil, nil, configError(fmt.Errorf("fireweed.yaml must be a mapping"))
 	}
 	patterns, err := stringList(config["modules"], "fireweed.yaml modules")
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, nil, configError(err)
 	}
 	defaults := map[string]any{}
 	if value, ok := config["module_defaults"]; ok {
 		defaults, ok = value.(map[string]any)
 		if !ok {
-			return nil, nil, nil, fmt.Errorf("fireweed.yaml module_defaults must be a mapping")
+			return nil, nil, nil, configError(fmt.Errorf("fireweed.yaml module_defaults must be a mapping"))
 		}
 	}
 	return config, patterns, defaults, nil
 }
 
 func parseModule(data []byte, defaults map[string]any, rel string) (model.Module, error) {
+	path := rel + "/SPEC.md"
 	doc, err := contracts.ParseDocument(string(data))
 	if err != nil {
-		return model.Module{}, moduleCause(rel, err)
+		return model.Module{}, moduleParseError(path, err)
 	}
 	section, _ := contracts.Section(doc.Body, "Specs")
 	if _, err := contracts.ParseItems(section); err != nil {
-		return model.Module{}, moduleCause(rel, err)
+		return model.Module{}, moduleParseError(path, err)
 	}
 	name, ok := doc.Frontmatter["name"].(string)
 	if !ok {
-		return model.Module{}, loadCause("C12", fmt.Errorf("%s/SPEC.md name must be a string", rel))
+		return model.Module{}, contracts.CodedError{Code: "C12", Subject: path, Cause: fmt.Errorf("%s name must be a string", path)}
 	}
 	prefix, ok := doc.Frontmatter["id_prefix"].(string)
 	if !ok {
-		return model.Module{}, loadCause("C12", fmt.Errorf("%s/SPEC.md id_prefix must be a string", rel))
+		return model.Module{}, contracts.CodedError{Code: "C12", Subject: path, Cause: fmt.Errorf("%s id_prefix must be a string", path)}
 	}
 	var dependencies []string
 	if value, ok := doc.Frontmatter["depends_on"]; ok {
-		dependencies, err = stringList(value, rel+"/SPEC.md depends_on")
+		dependencies, err = stringList(value, path+" depends_on")
 		if err != nil {
-			return model.Module{}, loadCause("C12", err)
+			return model.Module{}, contracts.CodedError{Code: "C12", Subject: path, Cause: err}
 		}
 	}
 	zones, err := moduleZones(doc.Frontmatter, defaults, rel)
 	if err != nil {
-		return model.Module{}, loadCause("C12", err)
+		return model.Module{}, contracts.CodedError{Code: "C12", Cause: err}
 	}
 	return model.Module{
 		Name: name, IDPrefix: prefix, Dir: rel, DependsOn: dependencies,
@@ -219,16 +208,16 @@ func ValidateGraph(modules []model.Module) error {
 	prefixes := make(map[string]string, len(modules))
 	for _, module := range modules {
 		if module.Name == "" {
-			return fmt.Errorf("empty module name")
+			return contracts.CodedError{Code: "C02", Cause: fmt.Errorf("empty module name")}
 		}
 		if module.IDPrefix == "" {
-			return fmt.Errorf("empty ID prefix for module %s", module.Name)
+			return contracts.CodedError{Code: "C02", Subject: module.Name, Cause: fmt.Errorf("empty ID prefix for module %s", module.Name)}
 		}
 		if _, exists := byName[module.Name]; exists {
-			return fmt.Errorf("duplicate module name %q", module.Name)
+			return contracts.CodedError{Code: "C02", Subject: module.Name, Cause: fmt.Errorf("duplicate module name %q", module.Name)}
 		}
 		if other, exists := prefixes[module.IDPrefix]; exists {
-			return fmt.Errorf("duplicate ID prefix %q for %s and %s", module.IDPrefix, other, module.Name)
+			return contracts.CodedError{Code: "C02", Subject: module.Name, Cause: fmt.Errorf("duplicate ID prefix %q for %s and %s", module.IDPrefix, other, module.Name)}
 		}
 		byName[module.Name] = module
 		prefixes[module.IDPrefix] = module.Name
@@ -239,13 +228,13 @@ func ValidateGraph(modules []model.Module) error {
 		state[name] = 1
 		for _, dependency := range byName[name].DependsOn {
 			if dependency == name {
-				return fmt.Errorf("module %s has a self-dependency", name)
+				return contracts.CodedError{Code: "C02", Subject: name, Cause: fmt.Errorf("module %s has a self-dependency", name)}
 			}
 			if _, exists := byName[dependency]; !exists {
-				return fmt.Errorf("module %s depends on missing module %s", name, dependency)
+				return contracts.CodedError{Code: "C02", Subject: name, Cause: fmt.Errorf("module %s depends on missing module %s", name, dependency)}
 			}
 			if state[dependency] == 1 {
-				return fmt.Errorf("dependency cycle between %s and %s", name, dependency)
+				return contracts.CodedError{Code: "C02", Subject: name, Cause: fmt.Errorf("dependency cycle between %s and %s", name, dependency)}
 			}
 			if state[dependency] == 0 {
 				if err := visit(dependency); err != nil {
@@ -271,7 +260,7 @@ var changeNamePattern = regexp.MustCompile(`^([0-9]+)-(.+)\.md$`)
 
 func NewChange(root, module, slug string) (string, error) {
 	if !slugPattern.MatchString(slug) {
-		return "", fmt.Errorf("invalid change slug %q", slug)
+		return "", contracts.CodedError{Code: "U01", Subject: slug, Cause: fmt.Errorf("invalid change slug %q", slug)}
 	}
 	snapshot, err := Load(root)
 	if err != nil {
@@ -285,7 +274,7 @@ func NewChange(root, module, slug string) (string, error) {
 		}
 	}
 	if !found {
-		return "", fmt.Errorf("unknown module %q", module)
+		return "", contracts.CodedError{Code: "U02", Subject: module, Cause: fmt.Errorf("unknown module %q", module)}
 	}
 	maxNumber := 0
 	for _, directory := range []string{"changes", "changes/archive"} {
@@ -313,7 +302,8 @@ func NewChange(root, module, slug string) (string, error) {
 			}
 			number, err := strconv.Atoi(parts[1])
 			if err != nil {
-				return "", fmt.Errorf("invalid change number in %s/%s: %w", directory, entry.Name(), err)
+				path := directory + "/" + entry.Name()
+				return "", contracts.CodedError{Code: "C13", Subject: path, Cause: fmt.Errorf("invalid change number in %s: %w", path, err)}
 			}
 			if number > maxNumber {
 				maxNumber = number

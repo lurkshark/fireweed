@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/gitstore"
 	"github.com/lurkshark/fireweed/packages/project/model"
 )
@@ -31,7 +32,7 @@ func LoadAt(root, revision string) (model.Snapshot, error) {
 
 	data, err := gitstore.ReadAt(canonical, commit, "fireweed.yaml")
 	if err != nil {
-		return model.Snapshot{}, fmt.Errorf("read fireweed.yaml at %s: %w", commit, err)
+		return model.Snapshot{}, configError(fmt.Errorf("read fireweed.yaml at %s: %w", commit, err))
 	}
 	config, patterns, defaults, err := parseConfig(data)
 	if err != nil {
@@ -40,7 +41,7 @@ func LoadAt(root, revision string) (model.Snapshot, error) {
 
 	trees, err := readGit(canonical, "ls-tree", "-r", "-d", "--name-only", "-z", commit)
 	if err != nil {
-		return model.Snapshot{}, fmt.Errorf("list module directories at %s: %w", commit, err)
+		return model.Snapshot{}, configError(fmt.Errorf("list module directories at %s: %w", commit, err))
 	}
 	snapshot := model.Snapshot{Root: canonical, Config: config}
 	var dirs []string
@@ -61,7 +62,7 @@ func LoadAt(root, revision string) (model.Snapshot, error) {
 		path := dir + "/SPEC.md"
 		data, err := gitstore.ReadAt(canonical, commit, path)
 		if err != nil {
-			return model.Snapshot{}, fmt.Errorf("read %s at %s: %w", path, commit, err)
+			return model.Snapshot{}, contracts.CodedError{Code: "C03", Subject: path, Cause: fmt.Errorf("read %s at %s: %w", path, commit, err)}
 		}
 		module, err := parseModule(data, defaults, dir)
 		if err != nil {

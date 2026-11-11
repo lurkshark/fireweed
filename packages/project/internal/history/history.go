@@ -16,7 +16,8 @@ import (
 func SpecHistory(root, module, id string) ([]model.SpecHistoryEntry, error) {
 	snapshot, err := fixture.Load(root)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w", fixture.LoadCode(err), err)
+		code, _, _ := contracts.ErrorCode(err)
+		return nil, fmt.Errorf("%s: %w", code, err)
 	}
 
 	var target *model.Module
@@ -27,20 +28,20 @@ func SpecHistory(root, module, id string) ([]model.SpecHistoryEntry, error) {
 		}
 	}
 	if target == nil {
-		return nil, fmt.Errorf("U02: unknown module %q", module)
+		return nil, contracts.CodedError{Code: "U02", Subject: module, Cause: fmt.Errorf("U02: unknown module %q", module)}
 	}
 
 	result := make([]model.SpecHistoryEntry, 0)
-	archiveDir := filepath.Join(root, "changes", "archive")
-	files, err := os.ReadDir(archiveDir)
+	const archiveDir = "changes/archive"
+	files, err := os.ReadDir(filepath.Join(root, filepath.FromSlash(archiveDir)))
 	if err != nil && !os.IsNotExist(err) {
-		return nil, fmt.Errorf("C03: read changes/archive: %w", err)
+		return nil, historyDocumentError(archiveDir, fmt.Errorf("read %s: %w", archiveDir, err))
 	}
 	for _, file := range files {
 		if file.IsDir() || filepath.Ext(file.Name()) != ".md" {
 			continue
 		}
-		path := "changes/archive/" + file.Name()
+		path := archiveDir + "/" + file.Name()
 		entry, err := readArchive(root, path)
 		if err != nil {
 			return nil, err
@@ -63,7 +64,8 @@ func SpecHistory(root, module, id string) ([]model.SpecHistoryEntry, error) {
 		body, _ := contracts.Section(target.Document.Body, "Specs")
 		items, err := contracts.ParseItems(body)
 		if err != nil {
-			return nil, fmt.Errorf("C03: %s/SPEC.md Specs: %w", target.Dir, err)
+			path := target.Dir + "/SPEC.md"
+			return nil, historyDocumentError(path, fmt.Errorf("%s Specs: %w", path, err))
 		}
 		found := false
 		for _, item := range items {
@@ -73,7 +75,7 @@ func SpecHistory(root, module, id string) ([]model.SpecHistoryEntry, error) {
 			}
 		}
 		if !found {
-			return nil, fmt.Errorf("U02: unknown spec ID %q", id)
+			return nil, contracts.CodedError{Code: "U02", Subject: id, Cause: fmt.Errorf("U02: unknown spec ID %q", id)}
 		}
 	}
 
@@ -90,25 +92,29 @@ func SpecHistory(root, module, id string) ([]model.SpecHistoryEntry, error) {
 	return result, nil
 }
 
+func historyDocumentError(path string, err error) error {
+	return contracts.CodedError{Code: "C03", Subject: path, Cause: fmt.Errorf("C03: %w", err)}
+}
+
 func readArchive(root, path string) (model.SpecHistoryEntry, error) {
 	data, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(path)))
 	if err != nil {
-		return model.SpecHistoryEntry{}, fmt.Errorf("C03: read %s: %w", path, err)
+		return model.SpecHistoryEntry{}, historyDocumentError(path, fmt.Errorf("read %s: %w", path, err))
 	}
 	doc, err := contracts.ParseDocument(string(data))
 	if err != nil {
-		return model.SpecHistoryEntry{}, fmt.Errorf("C03: parse %s: %w", path, err)
+		return model.SpecHistoryEntry{}, historyDocumentError(path, fmt.Errorf("parse %s: %w", path, err))
 	}
 	module, ok := doc.Frontmatter["module"].(string)
 	if !ok || module == "" {
-		return model.SpecHistoryEntry{}, fmt.Errorf("C03: %s has no module", path)
+		return model.SpecHistoryEntry{}, historyDocumentError(path, fmt.Errorf("%s has no module", path))
 	}
 	ids := make(map[string]bool)
 	for _, name := range []string{"Added", "Modified"} {
 		body, _ := contracts.Section(doc.Body, name)
 		items, err := contracts.ParseItems(body)
 		if err != nil {
-			return model.SpecHistoryEntry{}, fmt.Errorf("C03: %s %s: %w", path, name, err)
+			return model.SpecHistoryEntry{}, historyDocumentError(path, fmt.Errorf("%s %s: %w", path, name, err))
 		}
 		for _, item := range items {
 			ids[item.ID] = true

@@ -64,6 +64,10 @@ func edited(change model.Change) []contracts.Item {
 	return append(items, change.Removed...)
 }
 
+func absentEditError(path, id string) error {
+	return contracts.CodedError{Code: "C08", Subject: path, Cause: fmt.Errorf("%s: ID %s absent from preceding projection", path, id)}
+}
+
 // StaleSpecs reports recorded bases that differ from the preceding projection.
 func StaleSpecs(root, target string) ([]model.StaleSpec, error) {
 	change, p, err := preceding(root, target)
@@ -83,7 +87,7 @@ func StaleSpecs(root, target string) ([]model.StaleSpec, error) {
 		recorded := fmt.Sprint(raw)
 		current, ok := p.find(change.Module, edit.ID)
 		if !ok {
-			return nil, contracts.CodedError{Code: "C08", Subject: change.Path, Cause: fmt.Errorf("%s: ID %s absent from preceding projection", change.Path, edit.ID)}
+			return nil, absentEditError(change.Path, edit.ID)
 		}
 		if recorded != contracts.SpecHash(current) {
 			stale = append(stale, model.StaleSpec{ID: edit.ID, RecordedHash: recorded, Current: contracts.RenderItem(current)})
@@ -122,7 +126,7 @@ func StampMissing(root, target string) error {
 	for _, edit := range edited(change) {
 		base, ok := p.find(change.Module, edit.ID)
 		if !ok {
-			return contracts.CodedError{Code: "C08", Subject: change.Path, Cause: fmt.Errorf("%s: ID %s absent from preceding projection", change.Path, edit.ID)}
+			return absentEditError(change.Path, edit.ID)
 		}
 		if _, exists := bases[edit.ID]; !exists {
 			bases[edit.ID] = contracts.SpecHash(base)

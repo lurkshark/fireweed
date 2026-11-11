@@ -186,15 +186,18 @@ A module with no matching archives MUST return an empty slice.
 
 ### PRJ-055
 An unknown module or an ID absent from both current module Specs and matching
-archive edits MUST return an error beginning `U02: ` and naming the rejected name.
+archive edits MUST return an error whose contracts ErrorCode is U02 and whose
+text names the rejected name.
 A current ID with no matching archive edits MUST return an empty slice.
 An ID in matching archive edits MUST remain queryable when it no longer exists
 in current Specs.
 
 ### PRJ-056
-Missing or malformed fireweed.yaml MUST produce an error beginning `C01: `.
+Missing or malformed fireweed.yaml MUST produce an error whose contracts
+ErrorCode is C01.
 Malformed archived change documents or malformed Added/Modified item syntax
-MUST produce an error beginning `C03: ` and identifying the archive path.
+MUST produce an error whose contracts ErrorCode is C03 and whose text
+identifies the archive path.
 
 ### PRJ-057
 Stamp MUST return an error whose contracts ErrorCode is C08 when the change's bases frontmatter is not a mapping.
