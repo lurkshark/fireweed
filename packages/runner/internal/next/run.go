@@ -361,7 +361,11 @@ func requireApproval(root, path string) error {
 			return nil
 		}
 	}
-	return &approvalRequiredError{path: path}
+	return contracts.CodedError{
+		Code:    "P01",
+		Subject: path,
+		Cause:   &approvalRequiredError{path: path},
+	}
 }
 
 func configuredCommand(config map[string]any, role string) string {

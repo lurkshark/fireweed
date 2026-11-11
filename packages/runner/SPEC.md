@@ -198,7 +198,7 @@ retaining the blocking cause/ref and time-stop reason. IsTimeStop MUST return
 false for that combined failure.
 
 ### RUN-041
-Next MUST return an error for which IsApprovalRequired reports true when the selected change file is on neither the local nor the shared base and AllowUnmerged is false.
+Next MUST return an error for which IsApprovalRequired reports true and contracts.ErrorCode returns P01 when the selected change file is on neither the local nor the shared base and AllowUnmerged is false.
 
 ### RUN-042
 IsApprovalRequired MUST report false for Next errors caused by anything other than a missing approval.

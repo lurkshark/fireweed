@@ -37,10 +37,13 @@ func Execute(ctx context.Context, request model.RunRequest) (model.RunResult, er
 				blockedErr = errors.Join(blockedErr, err)
 				continue
 			}
-			if blockedErr != nil && next.IsUsageStop(err) {
+			if blockedErr == nil {
+				return result, err
+			}
+			if next.IsUsageStop(err) {
 				return result, &next.CombinedUsageFailure{Blocked: blockedErr, Stop: err}
 			}
-			if blockedErr != nil && IsTimeStop(err) {
+			if IsTimeStop(err) {
 				return result, &combinedTimeFailure{blocked: blockedErr, stop: err}
 			}
 			return result, errors.Join(blockedErr, err)
