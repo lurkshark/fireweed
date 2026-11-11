@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project"
 )
 
@@ -186,8 +187,11 @@ func Test_PRJ_055_SpecHistoryLookupNamesAndRemovedCurrentSpec(t *testing.T) {
 		{"alpha", "BET-001", "BET-001"},
 	} {
 		_, err := project.SpecHistory(root, tc.module, tc.id)
-		if err == nil || !strings.HasPrefix(err.Error(), "U02: ") || !strings.Contains(err.Error(), tc.rejected) {
-			t.Errorf("lookup module %q ID %q = %v; want U02: naming %q", tc.module, tc.id, err, tc.rejected)
+		if code, _, ok := contracts.ErrorCode(err); !ok || code != "U02" {
+			t.Errorf("lookup module %q ID %q error code = (%q, %v), want (U02, true); error: %v", tc.module, tc.id, code, ok, err)
+		}
+		if err == nil || !strings.Contains(err.Error(), tc.rejected) {
+			t.Errorf("lookup module %q ID %q error = %v, want error naming %q", tc.module, tc.id, err, tc.rejected)
 		}
 	}
 }
@@ -207,8 +211,8 @@ func Test_PRJ_056_SpecHistoryConfigurationAndArchiveSyntaxErrors(t *testing.T) {
 				put(t, root, "fireweed.yaml", tc.config)
 			}
 			_, err := project.SpecHistory(root, "alpha", "")
-			if err == nil || !strings.HasPrefix(err.Error(), "C01: ") {
-				t.Errorf("invalid config = %v; want C01: prefix", err)
+			if code, _, ok := contracts.ErrorCode(err); !ok || code != "C01" {
+				t.Errorf("invalid config error code = (%q, %v), want (C01, true); error: %v", code, ok, err)
 			}
 		})
 	}
@@ -222,8 +226,11 @@ func Test_PRJ_056_SpecHistoryConfigurationAndArchiveSyntaxErrors(t *testing.T) {
 			path := "changes/archive/0001-invalid.md"
 			put(t, root, path, tc.document)
 			_, err := project.SpecHistory(root, "alpha", "ALP-002")
-			if err == nil || !strings.HasPrefix(err.Error(), "C03: ") || !strings.Contains(err.Error(), path) {
-				t.Errorf("malformed archive = %v; want C03: naming %s", err, path)
+			if code, _, ok := contracts.ErrorCode(err); !ok || code != "C03" {
+				t.Errorf("malformed archive error code = (%q, %v), want (C03, true); error: %v", code, ok, err)
+			}
+			if err == nil || !strings.Contains(err.Error(), path) {
+				t.Errorf("malformed archive error = %v, want error naming %s", err, path)
 			}
 		})
 	}

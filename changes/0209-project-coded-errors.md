@@ -3,6 +3,8 @@ bases:
     PRJ-055: c323db61
     PRJ-056: 1f45a62f
 module: project
+phase: audit
+run: 20261111T043001-941b76c82838a5e34dac4138
 ---
 
 ## Motivation
@@ -61,3 +63,5 @@ text, including the leading code, until 0220.
 Evals: in spec_history_test.go, replace the PRJ-055 and PRJ-056 prefix
 checks (`U02: `, `C01: `, `C03: `) with `contracts.ErrorCode` checks, keeping
 the checks for the rejected name and archive path.
+## Provenance
+- evals 2026-11-11T04:31:13.434594Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=134 failing=4 passing=130
