@@ -3,6 +3,8 @@ eval_fix:
     - FLOW-058
     - FLOW-062
 module: workflow
+phase: audit
+run: 20261111T102413-41ea5d5a3600f8d6cc1bf0f1
 ---
 
 ## Motivation
@@ -42,3 +44,5 @@ an error with or without the label, and leave assertions on workflow's own
 P codes, which 0222 changes.
 
 Run after 0211 and before 0220.
+## Provenance
+- evals 2026-11-11T10:33:25.306337Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=188 failing=0 passing=188

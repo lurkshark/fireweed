@@ -456,12 +456,11 @@ func Test_FLOW_058_StaleLifecycleBaseKeepsCodedCause(t *testing.T) {
 	assertStaleBase := func(operation string, err error) {
 		t.Helper()
 		assertErrorCode(t, operation, err, "P05")
-		const message = "stale base for ALP-001"
-		if err == nil || !strings.HasPrefix(err.Error(), "P05:") || !strings.Contains(err.Error(), message) {
+		if err == nil || !strings.HasPrefix(err.Error(), "P05:") || !strings.Contains(err.Error(), "ALP-001") {
 			t.Errorf("stale %s = %v", operation, err)
 		}
 		for cause := errors.Unwrap(err); cause != nil; cause = errors.Unwrap(cause) {
-			if code, _, ok := contracts.ErrorCode(cause); ok && code == "C08" && strings.Contains(cause.Error(), message) {
+			if code, _, ok := contracts.ErrorCode(cause); ok && code == "C08" && strings.Contains(cause.Error(), "ALP-001") {
 				return
 			}
 		}
@@ -500,8 +499,10 @@ func Test_FLOW_062_MissingLifecycleBaseKeepsC08(t *testing.T) {
 	change := readFile(t, root, pendingCommitChange)
 	write(t, root, pendingCommitChange, regexp.MustCompile(`(?m)^  ALP-001: [0-9a-f]+$`).ReplaceAllString(change, "  ALP-001: "))
 	commit(t, root, "missing approved base")
-	if _, err := workflow.Start(root, "manual"); err == nil || !strings.HasPrefix(err.Error(), "C08: missing base for ALP-001") {
-		t.Errorf("missing-base static cause = %v", err)
+	_, err := workflow.Start(root, "manual")
+	assertErrorCode(t, "Start with missing base", err, "C08")
+	if err == nil || !strings.Contains(err.Error(), "ALP-001") {
+		t.Errorf("missing-base static cause = %v, want ALP-001", err)
 	}
 }
 
@@ -1559,19 +1560,30 @@ func Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses(t *testing.T) {
 	write(t, evalRoot, ".fireweed/eval.sh", strings.ReplaceAll(string(b), `name="ALP-001"`, `name="ALP-002"`))
 	commit(t, evalRoot, "hook omits target")
 	start(t, evalRoot)
-	if _, err := verify(evalRoot, true); err == nil || !strings.HasPrefix(err.Error(), "C10: no coverage for ALP-001") {
-		t.Errorf("coverage cause = %v", err)
+	_, err = verify(evalRoot, true)
+	assertErrorCode(t, "Verify with missing coverage", err, "C10")
+	if err == nil || !strings.Contains(err.Error(), "ALP-001") {
+		t.Errorf("Verify coverage cause = %v, want ALP-001", err)
 	}
 	before := head(t, evalRoot)
-	if _, err := done(evalRoot); err == nil || !strings.HasPrefix(err.Error(), "C10: no coverage for ALP-001") || head(t, evalRoot) != before {
-		t.Errorf("Done coverage cause = %v", err)
+	_, err = done(evalRoot)
+	assertErrorCode(t, "Done with missing coverage", err, "C10")
+	if err == nil || !strings.Contains(err.Error(), "ALP-001") {
+		t.Errorf("Done coverage cause = %v, want ALP-001", err)
+	}
+	if head(t, evalRoot) != before {
+		t.Error("Done with missing coverage moved HEAD")
 	}
 	missingReport := fixture(t, "", "", "", "", "")
-	write(t, missingReport, ".fireweed/eval.sh", "#!/bin/sh\nexit 0\n")
+	reportPathFile := filepath.Join(t.TempDir(), "report-path")
+	write(t, missingReport, ".fireweed/eval.sh", fmt.Sprintf("#!/bin/sh\nprintf '%%s\\n' \"$2\" > %q\n", reportPathFile))
 	commit(t, missingReport, "hook omits JUnit report")
 	start(t, missingReport)
-	if _, err := verify(missingReport, true); err == nil || !strings.HasPrefix(err.Error(), "C11: read JUnit report:") {
-		t.Errorf("missing JUnit cause = %v", err)
+	_, err = verify(missingReport, true)
+	assertErrorCode(t, "Verify with missing JUnit report", err, "C11")
+	reportPath := strings.TrimSpace(readFile(t, "", reportPathFile))
+	if reportPath == "" || err == nil || !strings.Contains(err.Error(), reportPath) {
+		t.Errorf("missing JUnit cause = %v, want the hook's report path %q", err, reportPath)
 	}
 	failFirst := fixture(t, "", "", "", "", "")
 	write(t, failFirst, ".fireweed/unrelated", "yes\n")
@@ -1586,8 +1598,10 @@ func Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses(t *testing.T) {
 	if _, err := done(implFailure); err != nil {
 		t.Fatalf("evals Done: %v", err)
 	}
-	if _, err := verify(implFailure, true); err == nil || !strings.HasPrefix(err.Error(), "E01: failed case") || !strings.Contains(err.Error(), "ALP-001") {
-		t.Errorf("impl testcase cause = %v", err)
+	_, err = verify(implFailure, true)
+	assertErrorCode(t, "Verify with failing impl testcase", err, "E01")
+	if err == nil || !strings.Contains(err.Error(), "ALP-001") {
+		t.Errorf("impl testcase cause = %v, want ALP-001", err)
 	}
 
 	zoneRoot := fixture(t, "", "", "", "", "")
@@ -1595,9 +1609,8 @@ func Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses(t *testing.T) {
 	commit(t, zoneRoot, "existing implementation")
 	start(t, zoneRoot)
 	write(t, zoneRoot, "packages/alpha/internal/existing.go", "package internal // changed in evals\n")
-	if _, err := verify(zoneRoot, true); err == nil || !strings.HasPrefix(err.Error(), "Z01:") {
-		t.Errorf("zone cause = %v", err)
-	}
+	_, err = verify(zoneRoot, true)
+	assertErrorCode(t, "Verify with forbidden zone edit", err, "Z01")
 
 	boundaryRoot := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
 	write(t, boundaryRoot, ".fireweed/boundary-fail", "yes\n")
@@ -1607,7 +1620,9 @@ func Test_FLOW_062_LifecyclePreservesEvalZoneAndBoundaryCauses(t *testing.T) {
 		t.Fatalf("evals Done: %v", err)
 	}
 	write(t, boundaryRoot, "packages/alpha/internal/ready", "ready\n")
-	if _, err := verify(boundaryRoot, false); err == nil || !strings.HasPrefix(err.Error(), "X01:") || !strings.Contains(err.Error(), "alpha: forbidden dependency") {
+	_, err = verify(boundaryRoot, false)
+	assertErrorCode(t, "Verify with boundary violation", err, "X01")
+	if err == nil || !strings.Contains(err.Error(), "alpha: forbidden dependency") {
 		t.Errorf("boundary cause = %v; want X01 with %q", err, "alpha: forbidden dependency")
 	}
 	boundaryHook := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
