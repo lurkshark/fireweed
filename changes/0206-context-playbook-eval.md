@@ -1,7 +1,9 @@
 ---
-module: workflow
 eval_fix:
     - FLOW-005
+module: workflow
+phase: audit
+run: 20261111T030507-4fdc9908fee978c87d994c52
 ---
 
 ## Motivation
@@ -32,3 +34,5 @@ In `Test_FLOW_005_FLOW_051_FLOW_052_FLOW_053_ContextAndProvenanceAndRetainedRepo
 expectation with the full text returned by `assets.Playbook("evals")`, which
 the same file already uses for provenance hashes. Keep every other
 expectation unchanged.
+## Provenance
+- evals 2026-11-11T03:11:00.990913Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=181 failing=0 passing=181

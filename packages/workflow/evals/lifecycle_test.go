@@ -1239,7 +1239,11 @@ func Test_FLOW_005_FLOW_051_FLOW_052_FLOW_053_ContextAndProvenanceAndRetainedRep
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, want := range []string{"Users need a revised alpha value.", "Alpha MUST retain the second behavior.", "# Fixture system", "# Write evals", "package alpha"} {
+	playbook, err := assets.Playbook("evals")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{"Users need a revised alpha value.", "Alpha MUST retain the second behavior.", "# Fixture system", playbook, "package alpha"} {
 		if !strings.Contains(compact, want) {
 			t.Errorf("compact context misses %q", want)
 		}
