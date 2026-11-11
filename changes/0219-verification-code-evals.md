@@ -4,7 +4,7 @@ eval_fix:
     - RUN-024
     - RUN-043
 module: runner
-phase: audit
+phase: impl
 run: 20261111T105608-3583ab308996d9fbe7ac9b35
 ---
 
@@ -44,3 +44,7 @@ Audited eval_fix only. Edit only the runner evals zone and this change.
 Run after 0212 and before 0221.
 ## Provenance
 - evals 2026-11-11T11:09:17.124057Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=167 failing=0 passing=167
+- audit 2026-11-11T11:09:35.690696Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-astra -c model_reasoning_effort="medium" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+## Audit
+
+No findings; checked RUN-022, RUN-024, RUN-043
