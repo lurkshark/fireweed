@@ -1,4 +1,6 @@
 ---
+already_satisfied:
+    - CHK-048
 bases:
     CHK-002: 204cb146
     CHK-026: b775b51f
