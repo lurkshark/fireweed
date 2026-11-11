@@ -61,11 +61,10 @@ func Test_AST_041_P08Explanation(t *testing.T) {
 		t.Fatalf("Explain(P08): %v", err)
 	}
 
-	requirePattern(t, explanation, `(?i)warn`, "warning")
-	requirePattern(t, explanation, `(?i)(at least\s+(three|3)|(three|3)\s+or\s+more|>=\s*3|3\+)[^.\n]*(consecutive|in a row)|(consecutive|in a row)[^.\n]*(at least\s+(three|3)|(three|3)\s+or\s+more|>=\s*3|3\+)`, "at least three consecutive changes")
-	requirePattern(t, explanation, `(?i)applied[^.\n]*chang|chang[^.\n]*applied`, "applied changes")
-	requirePattern(t, explanation, `(?i)same[^.\n]*modul|modul[^.\n]*same`, "same module")
-	requirePattern(t, explanation, `(?i)review[^.\n]*scope`, "review sequence scope")
-	requirePattern(t, explanation, `(?i)project owner`, "project owner")
-	requirePattern(t, explanation, `(?i)(before|prior to)[^.\n]*continu|continu[^.\n]*(after|once|following)[^.\n]*review`, "review before continuing")
+	requirePattern(t, explanation, `(?i)\bwarn(?:s|ing)?\b`, "warning")
+	requirePattern(t, explanation, `(?i)\brecent(?:ly)? applied changes\b[^.!?]*\bchain\b|\bchain\b[^.!?]*\brecent(?:ly)? applied changes\b`, "chain of recently applied changes")
+	previous := `\b(?:previous|preceding|prior) (?:change|one|link)\b|\bpredecessor\b`
+	addedOrModified := `\b(?:added or modified|modified or added)\b`
+	requirePattern(t, explanation, `(?i)\b(?:each|every)\b[^.!?]*\b(?:reworks|revisits|touches)\b[^.!?]*\bspec IDs?\b[^.!?]*(?:(?:`+previous+`)[^.!?]*`+addedOrModified+`|`+addedOrModified+`[^.!?]*(?:`+previous+`))`, "each change reworks spec IDs its predecessor added or modified")
+	requirePattern(t, explanation, `(?i)\breview\b[^.!?]*\bchain\b[^.!?]*\bwith (?:the )?project owner\b[^.!?]*\b(?:before|prior to) continu\w*\b`, "review the chain with the project owner before continuing")
 }
