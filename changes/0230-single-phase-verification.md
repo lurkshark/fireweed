@@ -2,6 +2,8 @@
 bases:
     RUN-014: 7115e12f
 module: runner
+phase: audit
+run: 20261111T232906-bd2a07c548b6842a8b999677
 ---
 
 ## Motivation
@@ -43,3 +45,19 @@ verification output when Done reports a dependent failure.
 
 The controller is pinned, so the saving applies to queue runs only after
 the controller is rebuilt from a main that includes this change.
+
+Evals fail-first: `Test_RUN_014_NextRunsFullVerificationOncePerAttempt`
+observed dependent eval attempts `[1 1]` on a clean pass (expected `[1]`)
+and `[1 2 2]` after a dependent failure (expected `[1 2]`). Both scenarios
+reached `applied`, and the retry received the dependent hook output.
+The runner change belongs in `packages/runner/internal/next/run.go`.
+
+## Questions
+
+May workflow expose a structured verification-failure marker from `Done` in a
+separate workflow change? `Done` can return the same zone or validation codes
+from verification and from checks around the phase transition. Its result
+carries no failure stage, so runner cannot reliably tell which failures should
+consume an attempt.
+## Provenance
+- evals 2026-11-11T23:50:24.912475Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=170 failing=3 passing=167
