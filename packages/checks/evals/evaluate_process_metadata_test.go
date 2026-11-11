@@ -46,7 +46,7 @@ func Test_CHK_034_EvaluateRetainsHookOutputOnRejectedReports(t *testing.T) {
 			if tc.name == "unmapped PackageFailure" {
 				specs := []contracts.Item{{ID: "CHK-003"}}
 				requireDiagnosticError(t, checks.RequireCoverage(report, specs), "C10", "no coverage for CHK-003")
-				requireDiagnosticError(t, checks.RequireFailFirst(report, []string{"CHK-003"}, nil), "P2-01", "no fail-first case for CHK-003")
+				requireFailFirstError(t, checks.RequireFailFirst(report, []string{"CHK-003"}, nil), "CHK-003")
 			}
 		})
 	}

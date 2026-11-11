@@ -15,8 +15,21 @@ func requireDiagnosticError(t *testing.T, err error, code, cause string) {
 	if err == nil {
 		t.Fatalf("expected %s error containing %q", code, cause)
 	}
-	if !strings.HasPrefix(err.Error(), code+": ") || !strings.Contains(err.Error(), cause) || strings.HasPrefix(strings.TrimPrefix(err.Error(), code+": "), code+":") {
-		t.Errorf("error = %q; want %s prefix and cause %q", err, code, cause)
+	if got, _, ok := contracts.ErrorCode(err); !ok || got != code {
+		t.Errorf("contracts.ErrorCode(%q) = %q, present %t; want %s", err, got, ok, code)
+	}
+	if !strings.Contains(err.Error(), cause) {
+		t.Errorf("error = %q; want cause %q", err, cause)
+	}
+}
+
+func requireFailFirstError(t *testing.T, err error, id string) {
+	t.Helper()
+	const prefix = "P2-01: "
+	cause := "no fail-first case for " + id
+	if err == nil || !strings.HasPrefix(err.Error(), prefix) || !strings.Contains(err.Error(), cause) ||
+		strings.HasPrefix(strings.TrimPrefix(err.Error(), prefix), "P2-01:") {
+		t.Errorf("error = %v; want P2-01 prefix and cause %q", err, cause)
 	}
 }
 
@@ -132,6 +145,7 @@ func Test_CHK_028_RejectMissingAndUnknownIDs(t *testing.T) {
 	for _, xml := range []string{
 		`<testsuite><testcase name="ordinary" classname="unit"/></testsuite>`,
 		`<testsuite><testcase name="ordinary" classname="unit"><skipped/></testcase></testsuite>`,
+		`<testsuite><testcase name="case_00" classname="unit"/></testsuite>`,
 		`<testsuite><testcase name="CHK-999" classname="unit"/></testsuite>`,
 		`<testsuite><testcase name="OCHK001" classname="unit"/></testsuite>`,
 		`<testsuite><testcase name="CHK0010" classname="unit"/></testsuite>`,
@@ -181,7 +195,7 @@ func Test_CHK_028_ParseJUnitAcceptsNumberedLabels(t *testing.T) {
 func Test_CHK_028_ParseJUnitRejectsUnknownIDAlongsideKnownID(t *testing.T) {
 	data := []byte(`<testsuite><testcase name="ALP-001_ALP-009"/></testsuite>`)
 	_, err := checks.ParseJUnit(data, []contracts.Item{{ID: "ALP-001"}})
-	requireDiagnosticError(t, err, "C11", "")
+	requireDiagnosticError(t, err, "C11", `references unknown spec ID "ALP-009"`)
 }
 
 func Test_CHK_002_CoverageRequiresCurrentNonSkippedCases(t *testing.T) {
@@ -206,9 +220,9 @@ func Test_CHK_025_FailFirstRequiresEachRequestedFailure(t *testing.T) {
 		{IDs: []string{"CHK-002"}, Result: "skip"},
 		{IDs: []string{"CHK-003"}, Result: "fail"},
 	}
-	requireDiagnosticError(t, checks.RequireFailFirst(checks.Report{Cases: bad}, ids, nil), "P2-01", "no fail-first case for CHK-001")
-	requireDiagnosticError(t, checks.RequireFailFirst(checks.Report{}, ids, nil), "P2-01", "no fail-first case for CHK-001")
-	requireDiagnosticError(t, checks.RequireFailFirst(checks.Report{Cases: []checks.Case{{IDs: []string{"CHK-001"}, Result: "fail"}, {IDs: []string{"CHK-002"}, Result: "skip"}}}, ids, nil), "P2-01", "no fail-first case for CHK-002")
+	requireFailFirstError(t, checks.RequireFailFirst(checks.Report{Cases: bad}, ids, nil), "CHK-001")
+	requireFailFirstError(t, checks.RequireFailFirst(checks.Report{}, ids, nil), "CHK-001")
+	requireFailFirstError(t, checks.RequireFailFirst(checks.Report{Cases: []checks.Case{{IDs: []string{"CHK-001"}, Result: "fail"}, {IDs: []string{"CHK-002"}, Result: "skip"}}}, ids, nil), "CHK-002")
 	good := checks.Report{Cases: []checks.Case{{IDs: []string{"CHK-001"}, Result: "fail"}, {IDs: []string{"CHK-002"}, Result: "fail"}}}
 	if err := checks.RequireFailFirst(good, ids, nil); err != nil {
 		t.Errorf("both requested IDs failed: %v", err)

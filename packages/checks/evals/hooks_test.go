@@ -176,6 +176,10 @@ func Test_CHK_046_EvaluateHookSetupCauses(t *testing.T) {
 			evaluateSetupCause(t, tc.command, "alpha", "", "C11", tc.cause)
 		})
 	}
+	t.Run("unavailable report directory", func(t *testing.T) {
+		t.Setenv("TMPDIR", filepath.Join(t.TempDir(), "missing-temp-directory"))
+		evaluateSetupCause(t, `exit 0`, "alpha", "", "C11", "missing-temp-directory")
+	})
 }
 
 func Test_CHK_047_EvaluateUnknownModuleCause(t *testing.T) {

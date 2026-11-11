@@ -654,18 +654,16 @@ func Test_CHK_055_BaselineAndRecoveryFailures(t *testing.T) {
 		{"recovery eval failure", "echo recovery-eval-failed >&2; exit 9"},
 		{"recovery coverage failure", "printf '<testsuite/>' > \"$3\"; exit 0"},
 	} {
-		t.Run(tc.name, func(t *testing.T) {
-			f := localDoctorFixture(t)
-			original := string(mustRead(t, filepath.Join(f.root, ".fireweed/eval.sh")))
-			injection := "if test -f \"$2/evals/failing.txt\"; then printf '%s' \"$2\" > .fireweed/eval-recovery-module; fi\n" +
-				"if test -f .fireweed/eval-recovery-module && test \"$(cat .fireweed/eval-recovery-module)\" = \"$2\" && ! test -f \"$2/evals/failing.txt\"; then " + tc.failure + "; fi\n"
-			f.put(".fireweed/eval.sh", strings.Replace(original, "#!/bin/sh\n", "#!/bin/sh\n"+injection, 1))
-			f.commit()
-			r := checks.Doctor(context.Background(), f.request(true))
-			if !hasDoctorDiagnostic(r, "C14", false, "recovery", "failing_eval", "eval") {
-				t.Errorf("failed %s accepted: %s", tc.name, doctorText(r))
-			}
-		})
+		f := localDoctorFixture(t)
+		original := string(mustRead(t, filepath.Join(f.root, ".fireweed/eval.sh")))
+		injection := "if test -f \"$2/evals/failing.txt\"; then printf '%s' \"$2\" > .fireweed/eval-recovery-module; fi\n" +
+			"if test -f .fireweed/eval-recovery-module && test \"$(cat .fireweed/eval-recovery-module)\" = \"$2\" && ! test -f \"$2/evals/failing.txt\"; then " + tc.failure + "; fi\n"
+		f.put(".fireweed/eval.sh", strings.Replace(original, "#!/bin/sh\n", "#!/bin/sh\n"+injection, 1))
+		f.commit()
+		r := checks.Doctor(context.Background(), f.request(true))
+		if !hasDoctorDiagnostic(r, "C14", false, "recovery", "failing_eval", "eval") {
+			t.Errorf("failed %s accepted: %s", tc.name, doctorText(r))
+		}
 	}
 }
 

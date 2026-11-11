@@ -13,7 +13,7 @@ bases:
     CHK-047: 501d63ae
     CHK-048: 3b0dee08
 module: checks
-phase: evals
+phase: audit
 run: 20261111T051736-9640fdfd1590a860b50eb3a9
 ---
 
@@ -84,3 +84,21 @@ including the leading code, until 0221.
 Evals: change `requireDiagnosticError` and similar helpers to check
 `contracts.ErrorCode` and the cause text instead of a leading label. CHK-043's
 rule that the boundary error carries no leading X02 is unchanged.
+
+Focused Go evals failed on missing structured codes for CHK-002, CHK-026,
+CHK-027, CHK-028, CHK-036, CHK-037, CHK-038, CHK-046 and CHK-047. Both
+CHK-048 cases passed because Evaluate already preserves the C03 and C05
+errors from contracts.ParseItems. The author needs to mark CHK-048
+`already_satisfied` before claiming the updated change. The active claim
+locks the approved author metadata.
+
+Both CHK-055 recovery scenarios now run in their parent test with the same
+assertions. `fireweed verify checks-coded-errors` recorded 14 CHK-055 cases
+and cleared B02. Its only blocker was P2-01 for CHK-048. The other nine
+modified IDs had genuine fail-first evidence.
+
+The missing JUnit, coverage and pass codes can be implemented in
+`packages/checks/internal/engine/junit.go`. The missing Evaluate codes can
+be implemented in `packages/checks/internal/engine/hooks.go`.
+## Provenance
+- evals 2026-11-11T05:55:57.461239Z agent=manual fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=128 failing=19 passing=109
