@@ -56,41 +56,87 @@ func lineAt(source string, start int) (string, int) {
 	return strings.TrimSuffix(source[start:end], "\r"), end + 1
 }
 
-func sectionBounds(markdown, name string) (int, int, bool) {
+// sectionBounds returns a negative start for an absent section, along with any
+// fence left open at the end of the document.
+func sectionBounds(markdown, name string) (int, int, string) {
 	start := -1
+	var openFence string
 	for pos := 0; pos < len(markdown); {
 		line, next := lineAt(markdown, pos)
-		if strings.HasPrefix(line, "## ") {
-			if start >= 0 {
-				return start, pos, true
+		lineStart := pos
+		pos = next
+
+		content := strings.TrimLeft(line, " ")
+		if len(line)-len(content) > 3 {
+			continue
+		}
+		marker, rest := fenceMarker(content)
+		if openFence != "" {
+			if strings.HasPrefix(marker, openFence) && strings.Trim(rest, " \t") == "" {
+				openFence = ""
 			}
-			if line[3:] == name {
+			continue
+		}
+		if marker != "" && (marker[0] == '~' || !strings.ContainsRune(rest, '`')) {
+			openFence = marker
+			continue
+		}
+		if level, heading := sectionHeading(content); level != 0 {
+			if start >= 0 {
+				return start, lineStart, ""
+			}
+			if level == 2 && heading == name {
 				start = next
 			}
 		}
-		pos = next
 	}
-	if start >= 0 {
-		return start, len(markdown), true
+	return start, len(markdown), openFence
+}
+
+func fenceMarker(line string) (marker, rest string) {
+	if line == "" || (line[0] != '`' && line[0] != '~') {
+		return "", line
 	}
-	return 0, 0, false
+	rest = strings.TrimLeft(line, line[:1])
+	length := len(line) - len(rest)
+	if length < 3 {
+		return "", line
+	}
+	return line[:length], rest
+}
+
+func sectionHeading(line string) (level int, name string) {
+	rest := strings.TrimLeft(line, "#")
+	level = len(line) - len(rest)
+	if level < 1 || level > 2 || (rest != "" && rest[0] != ' ' && rest[0] != '\t') {
+		return 0, ""
+	}
+	name = strings.TrimRight(rest, " \t")
+	beforeClosing := strings.TrimRight(name, "#")
+	if strings.HasSuffix(beforeClosing, " ") || strings.HasSuffix(beforeClosing, "\t") {
+		name = beforeClosing
+	}
+	return level, strings.Trim(name, " \t")
 }
 
 func Section(markdown, name string) (string, bool) {
-	start, end, ok := sectionBounds(markdown, name)
-	if !ok {
+	start, end, _ := sectionBounds(markdown, name)
+	if start < 0 {
 		return "", false
 	}
 	return markdown[start:end], true
 }
 
 func ReplaceSection(markdown, name, body string) string {
-	start, end, ok := sectionBounds(markdown, name)
-	if ok {
+	start, end, openFence := sectionBounds(markdown, name)
+	if start >= 0 {
 		return markdown[:start] + body + markdown[end:]
 	}
 	if markdown != "" && !strings.HasSuffix(markdown, "\n") {
 		markdown += "\n"
+	}
+	if openFence != "" {
+		markdown += openFence + "\n"
 	}
 	return markdown + "## " + name + "\n" + body
 }
