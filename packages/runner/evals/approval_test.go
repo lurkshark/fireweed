@@ -1,9 +1,11 @@
 package evals_test
 
 import (
+	"context"
 	"errors"
 	"testing"
 
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/runner"
 )
 
@@ -15,6 +17,18 @@ func Test_RUN_041_UnapprovedChangeRequiresApproval(t *testing.T) {
 	}
 	if !runner.IsApprovalRequired(err) {
 		t.Errorf("IsApprovalRequired(%v) = false", err)
+	}
+	if code, _, ok := contracts.ErrorCode(err); !ok || code != "P01" {
+		t.Errorf("Next approval error code = %q (present: %t), want P01", code, ok)
+	}
+	f.noAgent(t)
+}
+
+func Test_RUN_041_RunPreservesApprovalRefusalCode(t *testing.T) {
+	f := newNextFixture(t, true, false, "normal")
+	_, err := runner.Run(context.Background(), runner.RunRequest{Root: f.root})
+	if code, _, ok := contracts.ErrorCode(err); !ok || code != "P01" {
+		t.Errorf("Run approval error code = %q (present: %t), want P01 (error: %v)", code, ok, err)
 	}
 	f.noAgent(t)
 }

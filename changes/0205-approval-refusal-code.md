@@ -2,6 +2,8 @@
 bases:
     RUN-041: dcfedf6a
 module: runner
+phase: audit
+run: 20261111T022657-c5c29652a3f4de7f915ac1c1
 ---
 
 ## Motivation
@@ -36,3 +38,5 @@ Wrap the existing approval error in a `contracts.CodedError` with code P01
 and the change path as subject, keeping `IsApprovalRequired` true through
 the wrap. The app evals for APP-075, APP-077 and APP-082 must keep passing
 unchanged.
+## Provenance
+- evals 2026-11-11T02:43:17.673524Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=166 failing=2 passing=164
