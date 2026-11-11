@@ -429,7 +429,7 @@ Status MUST count applied changes archived on HEAD whose change file is absent f
 The base and remote MUST use the existing configured/default base-ref resolution.
 
 ### FLOW-111
-Status MUST warn with P08 when the three or more most recently applied changes consecutively target one module, identifying the module and consecutive count.
+Status MUST warn with P08 when the most recently applied change ends a chain of three or more applied changes in which each modifies, removes, fixes or eval-fixes a spec ID that its predecessor added or modified. A change's predecessor is the latest of the ten applied changes before it that added or modified such an ID. The warning MUST name the chain's change files and shared IDs.
 
 ### FLOW-112
 Status MUST report the number of phase-changing commits reachable from HEAD for each applied archived change, matching Commits for that change.

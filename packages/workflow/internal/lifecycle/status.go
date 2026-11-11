@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -15,8 +16,10 @@ import (
 )
 
 type appliedChange struct {
-	name, module string
-	date         time.Time
+	name, module    string
+	date            time.Time
+	addedOrModified map[string]bool
+	reworked        map[string]bool
 }
 
 func Status(root string) (model.StatusReport, error) {
@@ -126,14 +129,8 @@ func Status(root string) (model.StatusReport, error) {
 		}
 		return archives[i].name < archives[j].name
 	})
-	if len(archives) >= 3 {
-		count := 1
-		for count < len(archives) && archives[count].module == archives[0].module {
-			count++
-		}
-		if count >= 3 {
-			r.Diagnostics = append(r.Diagnostics, diag("P08", fmt.Sprintf("%s: %d consecutive applied changes", archives[0].module, count), true))
-		}
+	if message := reworkChainWarning(archives); message != "" {
+		r.Diagnostics = append(r.Diagnostics, diag("P08", message, true))
 	}
 	r.PhaseCommits, err = phaseCommitCounts(root, repo.Head, archives)
 	if err != nil {
@@ -143,6 +140,40 @@ func Status(root string) (model.StatusReport, error) {
 		return model.StatusReport{}, err
 	}
 	return r, nil
+}
+
+// Archives are ordered newest first, so the first match is the predecessor.
+func reworkChainWarning(archives []appliedChange) string {
+	const lookback = 10
+	var chain []string
+	sharedIDs := map[string]bool{}
+	for current := 0; current < len(archives); {
+		change := archives[current]
+		chain = append(chain, change.name)
+		end := min(current+1+lookback, len(archives))
+		next := current + 1
+		for ; next < end; next++ {
+			matched := false
+			for id := range archives[next].addedOrModified {
+				if change.reworked[id] {
+					sharedIDs[id] = true
+					matched = true
+				}
+			}
+			if matched {
+				break
+			}
+		}
+		if next == end {
+			break
+		}
+		current = next
+	}
+	if len(chain) < 3 {
+		return ""
+	}
+	slices.Reverse(chain)
+	return fmt.Sprintf("spec rework chain %s (shared IDs %s)", strings.Join(chain, " -> "), strings.Join(sortedKeys(sharedIDs), ", "))
 }
 
 func appliedAtHead(root, head string) ([]appliedChange, error) {
@@ -176,7 +207,31 @@ func appliedAtHead(root, head string) ([]appliedChange, error) {
 				}
 			}
 		}
-		changes = append(changes, appliedChange{name: path.Base(p), module: str(doc.Frontmatter["module"]), date: date})
+		change := appliedChange{
+			name: path.Base(p), module: str(doc.Frontmatter["module"]), date: date,
+			addedOrModified: map[string]bool{}, reworked: map[string]bool{},
+		}
+		for _, name := range []string{"Added", "Modified", "Removed"} {
+			section, _ := contracts.Section(doc.Body, name)
+			items, err := contracts.ParseItems(section)
+			if err != nil {
+				return nil, fmt.Errorf("%s %s: %w", p, name, err)
+			}
+			for _, item := range items {
+				if name != "Removed" {
+					change.addedOrModified[item.ID] = true
+				}
+				if name != "Added" {
+					change.reworked[item.ID] = true
+				}
+			}
+		}
+		for _, key := range []string{"fixes", "eval_fix"} {
+			for _, id := range list(doc.Frontmatter[key]) {
+				change.reworked[id] = true
+			}
+		}
+		changes = append(changes, change)
 	}
 	return changes, nil
 }
