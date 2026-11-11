@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -161,6 +162,13 @@ func containsCode(ds []project.Diagnostic, code string) bool {
 		}
 	}
 	return false
+}
+
+func assertErrorCode(t *testing.T, operation string, err error, want string) {
+	t.Helper()
+	if code, _, ok := contracts.ErrorCode(err); !ok || code != want {
+		t.Errorf("%s ErrorCode(%v) = %q (found %t), want %s", operation, err, code, ok, want)
+	}
 }
 
 func Test_FLOW_001_FLOW_006_FLOW_007_FLOW_008_FLOW_012_FLOW_013_FLOW_014_FLOW_017_FLOW_018_FLOW_019_FLOW_053_StartAssignsLateIDsAndRetainsSnapshotWithoutCommit(t *testing.T) {
@@ -391,10 +399,14 @@ func Test_FLOW_055_VerifyAndDoneRejectUnsupportedHeldPhase(t *testing.T) {
 	root := fixture(t, "", "phase: review\n", "", "", "")
 	start(t, root)
 	before := head(t, root)
-	if _, err := verify(root, true); err == nil || !strings.HasPrefix(err.Error(), "P01: unsupported phase review") {
+	_, err := verify(root, true)
+	assertErrorCode(t, "Verify", err, "P01")
+	if err == nil || !strings.HasPrefix(err.Error(), "P01: unsupported phase review") {
 		t.Errorf("unsupported Verify phase = %v", err)
 	}
-	if _, err := done(root); err == nil || !strings.HasPrefix(err.Error(), "P01: unsupported phase review") || head(t, root) != before {
+	_, err = done(root)
+	assertErrorCode(t, "Done", err, "P01")
+	if err == nil || !strings.HasPrefix(err.Error(), "P01: unsupported phase review") || head(t, root) != before {
 		t.Errorf("unsupported Done phase = %v", err)
 	}
 }
@@ -440,30 +452,30 @@ func Test_FLOW_056_FLOW_061_CurrentAndContextIdentifyMissingClaimsAndChanges(t *
 	}
 }
 
-func Test_FLOW_058_FLOW_062_StaleLifecycleBaseKeepsCauseAndMissingBaseKeepsC08(t *testing.T) {
-	staleStart := fixture(t, "", "", "", "", "")
-	p := filepath.Join(staleStart, "changes/0001-manual.md")
-	b, err := os.ReadFile(p)
-	if err != nil {
-		t.Fatal(err)
+func Test_FLOW_058_StaleLifecycleBaseKeepsCodedCause(t *testing.T) {
+	assertStaleBase := func(operation string, err error) {
+		t.Helper()
+		assertErrorCode(t, operation, err, "P05")
+		const message = "stale base for ALP-001"
+		if err == nil || !strings.HasPrefix(err.Error(), "P05:") || !strings.Contains(err.Error(), message) {
+			t.Errorf("stale %s = %v", operation, err)
+		}
+		for cause := errors.Unwrap(err); cause != nil; cause = errors.Unwrap(cause) {
+			if code, _, ok := contracts.ErrorCode(cause); ok && code == "C08" && strings.Contains(cause.Error(), message) {
+				return
+			}
+		}
+		t.Errorf("stale %s error %v has no C08 stale-base cause in its chain", operation, err)
 	}
-	write(t, staleStart, "changes/0001-manual.md", regexp.MustCompile(`(?m)^  ALP-001: [0-9a-f]+$`).ReplaceAllString(string(b), "  ALP-001: deadbeef"))
+	staleStart := fixture(t, "", "", "", "", "")
+	change := readFile(t, staleStart, pendingCommitChange)
+	write(t, staleStart, pendingCommitChange, regexp.MustCompile(`(?m)^  ALP-001: [0-9a-f]+$`).ReplaceAllString(change, "  ALP-001: deadbeef"))
 	commit(t, staleStart, "stale approved base")
 	before := head(t, staleStart)
-	if _, err := workflow.Start(staleStart, "manual"); err == nil || !strings.HasPrefix(err.Error(), "P05:") || !strings.Contains(err.Error(), "stale base for ALP-001") || head(t, staleStart) != before {
-		t.Errorf("stale Start = %v", err)
-	}
-
-	missingBase := fixture(t, "", "", "", "", "")
-	p = filepath.Join(missingBase, "changes/0001-manual.md")
-	b, err = os.ReadFile(p)
-	if err != nil {
-		t.Fatal(err)
-	}
-	write(t, missingBase, "changes/0001-manual.md", regexp.MustCompile(`(?m)^  ALP-001: [0-9a-f]+$`).ReplaceAllString(string(b), "  ALP-001: "))
-	commit(t, missingBase, "missing approved base")
-	if _, err := workflow.Start(missingBase, "manual"); err == nil || !strings.HasPrefix(err.Error(), "C08: missing base for ALP-001") {
-		t.Errorf("missing-base static cause = %v", err)
+	_, err := workflow.Start(staleStart, "manual")
+	assertStaleBase("Start", err)
+	if head(t, staleStart) != before {
+		t.Error("stale Start moved HEAD")
 	}
 
 	root := fixture(t, "", "", "", "", "")
@@ -471,14 +483,25 @@ func Test_FLOW_058_FLOW_062_StaleLifecycleBaseKeepsCauseAndMissingBaseKeepsC08(t
 	start(t, root)
 	write(t, root, "packages/alpha/SPEC.md", strings.Replace(git(t, root, "show", "HEAD:packages/alpha/SPEC.md"), oldClause, "Alpha MUST return a changed base value.", 1)+"\n")
 	before = head(t, root)
-	if _, err := verify(root, true); err == nil || !strings.HasPrefix(err.Error(), "P05:") || !strings.Contains(err.Error(), "stale base for ALP-001") {
-		t.Errorf("stale Verify = %v", err)
-	}
-	if _, err := done(root); err == nil || !strings.HasPrefix(err.Error(), "P05:") || !strings.Contains(err.Error(), "stale base for ALP-001") || head(t, root) != before {
-		t.Errorf("stale Done = %v", err)
+	_, err = verify(root, true)
+	assertStaleBase("Verify", err)
+	_, err = done(root)
+	assertStaleBase("Done", err)
+	if head(t, root) != before {
+		t.Error("stale Verify or Done moved HEAD")
 	}
 	if _, err := os.Stat(marker); !os.IsNotExist(err) {
 		t.Errorf("hook ran before stale-base rejection: %v", err)
+	}
+}
+
+func Test_FLOW_062_MissingLifecycleBaseKeepsC08(t *testing.T) {
+	root := fixture(t, "", "", "", "", "")
+	change := readFile(t, root, pendingCommitChange)
+	write(t, root, pendingCommitChange, regexp.MustCompile(`(?m)^  ALP-001: [0-9a-f]+$`).ReplaceAllString(change, "  ALP-001: "))
+	commit(t, root, "missing approved base")
+	if _, err := workflow.Start(root, "manual"); err == nil || !strings.HasPrefix(err.Error(), "C08: missing base for ALP-001") {
+		t.Errorf("missing-base static cause = %v", err)
 	}
 }
 
@@ -1409,26 +1432,40 @@ printf '<testsuite><testcase name="CST-001" time="0.5"/></testsuite>' > "$1"
 func Test_FLOW_054_StartOperationalPreconditionsHaveP01(t *testing.T) {
 	dirty := fixture(t, "", "", "", "", "")
 	write(t, dirty, "stray.txt", "untracked\n")
-	if _, err := workflow.Start(dirty, "manual"); err == nil || !strings.HasPrefix(err.Error(), "P01: start requires clean worktree") {
+	_, err := workflow.Start(dirty, "manual")
+	assertErrorCode(t, "dirty Start", err, "P01")
+	if err == nil || !strings.HasPrefix(err.Error(), "P01: start requires clean worktree") {
 		t.Errorf("dirty Start = %v", err)
 	}
 	queued := fixture(t, "", "", "", "", "")
 	write(t, queued, "changes/0000-first.md", "---\nmodule: alpha\n---\n## Motivation\nFirst request.\n\n## Interface\n\n## Added\n\n## Modified\n\n## Removed\n\n## Decisions\n")
 	commit(t, queued, "earlier queued change")
-	if _, err := workflow.Start(queued, "manual"); err == nil || !strings.HasPrefix(err.Error(), "P01: change is not eligible queue head") {
+	_, err = workflow.Start(queued, "manual")
+	assertErrorCode(t, "ineligible Start", err, "P01")
+	if err == nil || !strings.HasPrefix(err.Error(), "P01: change is not eligible queue head") {
 		t.Errorf("ineligible Start = %v", err)
 	}
+	git(t, queued, "rm", "--", "changes/0000-first.md", pendingCommitChange)
+	git(t, queued, "commit", "-m", "empty queue")
+	_, err = workflow.Start(queued, "")
+	assertErrorCode(t, "Start with no eligible change", err, "P01")
 }
 
 func Test_FLOW_056_StartContentionAndCurrentForeignClaimHaveP02(t *testing.T) {
 	root := fixture(t, "", "", "", "", "")
 	other := filepath.Join(t.TempDir(), "linked")
 	git(t, root, "worktree", "add", "-b", "linked", other, "HEAD")
+	_, err := workflow.Current(root, "manual")
+	assertErrorCode(t, "unclaimed Current", err, "P02")
 	start(t, root)
-	if _, err := workflow.Start(other, "manual"); err == nil || !strings.HasPrefix(err.Error(), "P02: claim already held:") || !strings.Contains(err.Error(), "update-ref") {
+	_, err = workflow.Start(other, "manual")
+	assertErrorCode(t, "contended Start", err, "P02")
+	if err == nil || !strings.HasPrefix(err.Error(), "P02: claim already held:") || !strings.Contains(err.Error(), "update-ref") {
 		t.Errorf("contended Start = %v", err)
 	}
-	if _, err := workflow.Current(other, "manual"); err == nil || !strings.HasPrefix(err.Error(), "P02: claim belongs to another worktree") {
+	_, err = workflow.Current(other, "manual")
+	assertErrorCode(t, "foreign Current", err, "P02")
+	if err == nil || !strings.HasPrefix(err.Error(), "P02: claim belongs to another worktree") {
 		t.Errorf("foreign Current = %v", err)
 	}
 }
@@ -1457,10 +1494,14 @@ func Test_FLOW_057_VerifyAndDoneRejectApprovedStateEditsBeforeHooks(t *testing.T
 				want = "P03: approved audit state changed"
 			}
 			before := head(t, root)
-			if _, err := verify(root, true); err == nil || !strings.HasPrefix(err.Error(), want) {
+			_, err = verify(root, true)
+			assertErrorCode(t, "Verify", err, "P03")
+			if err == nil || !strings.HasPrefix(err.Error(), want) {
 				t.Errorf("%s Verify = %v", edit, err)
 			}
-			if _, err := done(root); err == nil || !strings.HasPrefix(err.Error(), want) || head(t, root) != before {
+			_, err = done(root)
+			assertErrorCode(t, "Done", err, "P03")
+			if err == nil || !strings.HasPrefix(err.Error(), want) || head(t, root) != before {
 				t.Errorf("%s Done = %v", edit, err)
 			}
 			if _, err := os.Stat(marker); !os.IsNotExist(err) {
@@ -1475,11 +1516,15 @@ func Test_FLOW_059_AuditNoFindingsErrorsHaveP09(t *testing.T) {
 	toAudit(t, root)
 	before := head(t, root)
 	audit(t, root, "No findings\n")
-	if _, err := done(root); err == nil || !strings.HasPrefix(err.Error(), "P09: audit requires Checked IDs and No findings") || head(t, root) != before {
+	_, err := done(root)
+	assertErrorCode(t, "Done with malformed submission", err, "P09")
+	if err == nil || !strings.HasPrefix(err.Error(), "P09: audit requires Checked IDs and No findings") || head(t, root) != before {
 		t.Errorf("malformed No findings = %v", err)
 	}
 	audit(t, root, "Checked IDs: ALP-002\nNo findings\n")
-	if _, err := done(root); err == nil || !strings.HasPrefix(err.Error(), "P09: audit did not check ALP-001") || head(t, root) != before {
+	_, err = done(root)
+	assertErrorCode(t, "Done with incomplete submission", err, "P09")
+	if err == nil || !strings.HasPrefix(err.Error(), "P09: audit did not check ALP-001") || head(t, root) != before {
 		t.Errorf("incomplete No findings = %v", err)
 	}
 }
@@ -1489,19 +1534,18 @@ func Test_FLOW_060_BlockedDoneKeepsCommitQuestionsAndReleasesClaim(t *testing.T)
 	toAudit(t, root)
 	audit(t, root, "- [untestable] ALP-001: \""+newClause+"\" — cannot observe the value\n")
 	before := head(t, root)
-	if _, err := done(root); err == nil || !strings.HasPrefix(err.Error(), "P06: change blocked") {
+	_, err := done(root)
+	assertErrorCode(t, "blocked Done", err, "P06")
+	if err == nil || !strings.HasPrefix(err.Error(), "P06: change blocked") {
 		t.Errorf("blocked Done = %v", err)
 	}
-	b, err := os.ReadFile(filepath.Join(root, "changes/0001-manual.md"))
-	if err != nil {
-		t.Fatal(err)
+	committed := git(t, root, "show", "HEAD:"+pendingCommitChange)
+	questions, ok := contracts.Section(committed, "Questions")
+	if head(t, root) == before || !strings.Contains(committed, "blocked:") || !ok || !strings.Contains(questions, newClause) {
+		t.Errorf("blocking state missing from commit: %s", committed)
 	}
-	questions, ok := contracts.Section(string(b), "Questions")
-	if head(t, root) == before || !strings.Contains(string(b), "blocked:") || !ok || !strings.Contains(questions, newClause) {
-		t.Errorf("blocking state missing from commit: %s", b)
-	}
-	if _, err := workflow.Current(root, "manual"); err == nil {
-		t.Error("blocked claim remained held")
+	if claim := git(t, root, "for-each-ref", "--format=%(objectname)", "refs/fireweed/claims/manual"); claim != "" {
+		t.Errorf("blocked claim remained held at %s", claim)
 	}
 }
 

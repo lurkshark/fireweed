@@ -8,6 +8,8 @@ bases:
     FLOW-059: cf833220
     FLOW-060: 25d56a42
 module: workflow
+phase: audit
+run: 20261111T063722-da5edaeff080d91cf6f4fc27
 ---
 
 ## Motivation
@@ -72,3 +74,5 @@ cause stays in the chain.
 
 Evals: assert `contracts.ErrorCode` for each modified item, including one
 P05 case whose cause has its own code.
+## Provenance
+- evals 2026-11-11T06:49:59.354718Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=182 failing=11 passing=171

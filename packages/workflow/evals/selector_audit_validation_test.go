@@ -26,6 +26,7 @@ func Test_FLOW_059_AuditVerifyChecksSubmissionWithoutAdvancing(t *testing.T) {
 		before := readFile(t, root, pendingCommitChange)
 		for _, quick := range []bool{true, false} {
 			result, err := verify(root, quick)
+			assertErrorCode(t, "audit Verify", err, "P09")
 			if err == nil || !strings.HasPrefix(err.Error(), tc.want) {
 				t.Errorf("audit Verify(quick=%t, %q) = phase %q, error %v; want %s", quick, tc.body, result.State.Phase, err, tc.want)
 			}
