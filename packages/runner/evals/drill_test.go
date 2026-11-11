@@ -79,8 +79,13 @@ case "$mode" in
   usage_always) printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; echo 'RATE LIMIT' >&2; exit 9;;
   usage_once) if [ "$count" -eq 1 ]; then printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; echo 'RATE LIMIT' >&2; exit 9; fi; [ "$(cat packages/alpha/internal/value.go 2>/dev/null)" = PARTIAL_WORK ] || { echo 'prior retry work missing' >&2; exit 8; }; printf 'new' > packages/alpha/internal/value.go;;
   agent_retry|mixed_exhaust) if [ "$count" -eq 1 ]; then printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; echo 'WORKER_FAILURE' >&2; exit 7; fi; if [ "$mode" = agent_retry ]; then [ "$(cat packages/alpha/internal/value.go 2>/dev/null)" = PARTIAL_WORK ] || { echo 'prior retry work missing' >&2; exit 8; }; printf 'new' > packages/alpha/internal/value.go; fi;;
-  agent_fail_always) printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; echo 'WORKER_FAILURE' >&2; exit 7;;
-  verify_retry) if [ "$count" -eq 1 ]; then printf 'wrong' > packages/alpha/internal/value.go; exit 0; fi; [ "$(cat packages/alpha/internal/value.go 2>/dev/null)" = wrong ] || { echo 'prior retry work missing' >&2; exit 8; }; printf 'new' > packages/alpha/internal/value.go;;
+  agent_fail_always) printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; printf 'failed worker observation'; echo 'WORKER_FAILURE' >&2; exit 7;;
+  verify_retry)
+    printf 'worker stdout attempt %s\n' "$count"
+    printf 'worker stderr attempt %s\n' "$count" >&2
+    if [ "$count" -eq 1 ]; then printf 'wrong' > packages/alpha/internal/value.go; exit 0; fi
+    [ "$(cat packages/alpha/internal/value.go 2>/dev/null)" = wrong ] || { echo 'prior retry work missing' >&2; exit 8; }
+    printf 'new' > packages/alpha/internal/value.go;;
   wrong|mixed_exhaust) printf 'wrong' > packages/alpha/internal/value.go;;
   *) printf 'new' > packages/alpha/internal/value.go;;
 esac
@@ -170,7 +175,10 @@ if [ "$1" = alpha ] && [ -f "$observations/omit-own-coverage" ]; then printf '<t
 if [ "$1" = aardvark ] && [ -f "$observations/omit-dependent-coverage" ]; then printf '<testsuite><testcase name="AAR-001_case"/></testsuite>' > "$report"; exit 0; fi
 fail=''
 if [ "$1" = alpha ] && [ "$(cat packages/alpha/internal/value.go 2>/dev/null)" != new ]; then fail='own verification failure'; fi
-if [ "$1" != alpha ] && [ -f "$observations/fail-dependents" ]; then fail="dependent $1 failure"; fi
+if [ "$1" != alpha ] && [ -f "$observations/fail-dependents" ]; then
+  fail="dependent $1 failure"
+  printf 'dependent %s stdout\n' "$1"
+fi
 if [ -z "$fail" ]; then printf '<testsuite><testcase name="%s_case" classname="fixture"/></testsuite>' "$id" > "$report"; exit $?; fi
 printf '<testsuite><testcase name="%s_case" classname="fixture"><failure message="%s"/></testcase></testsuite>' "$id" "$fail" > "$report" || exit 25
 printf '%s\n' "$fail" >&2
@@ -635,14 +643,6 @@ func Test_RUN_058_RUN_059_DrillReturnsAllReportsEvenWhenEvalsFail(t *testing.T) 
 		t.Errorf("own and transitive dependent order = %q", got)
 	}
 	drillCleaned(t, f)
-
-	dependent := newDrillFixture(t)
-	nextWrite(t, dependent.observations, "fail-dependents", "yes")
-	depResult, depErr := dependent.run(context.Background(), 0)
-	if depErr == nil || depResult.Result != "fail" || depResult.Own.Cases[0].Result != "pass" || depResult.Dependents["aardvark"].Cases[0].Result != "fail" || depResult.Dependents["zeta"].Cases[0].Result != "fail" {
-		t.Errorf("dependent-only failures passed or lost reports: %#v, %v", depResult, depErr)
-	}
-	drillCleaned(t, dependent)
 }
 
 func Test_RUN_058_OwnCoverageRequiredAfterPassingCases(t *testing.T) {
@@ -709,6 +709,91 @@ func drillEvalEntry(section, module, testcase, id, result string) bool {
 		}
 	}
 	return false
+}
+
+func Test_RUN_068_DependentOnlyFailuresEndDrill(t *testing.T) {
+	f := newDrillFixture(t)
+	nextWrite(t, f.observations, "fail-dependents", "yes")
+	r, err := f.run(context.Background(), 0)
+	if err == nil || r.Result != "fail" || len(r.Own.Cases) != 1 || r.Own.Cases[0].Result != "pass" {
+		t.Fatalf("dependent-only drill = result %q, own cases %#v, error %v", r.Result, r.Own.Cases, err)
+	}
+	if count := drillObserved(t, f, "count"); len(r.Steps) != 1 || count != "1" {
+		t.Errorf("dependent-only failure invoked reconstruction %s times and returned %d steps, want one", count, len(r.Steps))
+	}
+	report := nextRead(t, f.root, r.ReportPath)
+	if !strings.Contains(report, "\nresult: fail\n") {
+		t.Error("report did not record a failed drill")
+	}
+	section := drillReportSection(report, "Dependent evals")
+	for _, want := range []struct{ module, id string }{{"aardvark", "AAR-001"}, {"zeta", "ZET-001"}} {
+		cases := r.Dependents[want.module].Cases
+		if len(cases) != 1 || cases[0].Result != "fail" {
+			t.Errorf("%s dependent cases = %#v, want a failed case", want.module, cases)
+		}
+		if !drillEvalEntry(section, want.module, want.id+"_case", want.id, "fail") || !strings.Contains(section, "dependent "+want.module+" failure") {
+			t.Errorf("report lacks the %s dependent failure: %q", want.module, section)
+		}
+	}
+	drillCleaned(t, f)
+}
+
+func Test_RUN_068_OwnEvalRetryOmitsDependentEvalOutput(t *testing.T) {
+	f := newDrillFixture(t)
+	f.mode(t, "verify_retry")
+	nextWrite(t, f.observations, "fail-dependents", "yes")
+	r, err := f.run(context.Background(), 0)
+	if err == nil || r.Result != "fail" || len(r.Steps) != 2 || len(r.Own.Cases) != 1 || r.Own.Cases[0].Result != "pass" {
+		t.Fatalf("own-eval retry = result %q, %d steps, own cases %#v, error %v", r.Result, len(r.Steps), r.Own.Cases, err)
+	}
+	prompt := drillObserved(t, f, "prompt-2")
+	if !strings.Contains(prompt, "own verification failure") {
+		t.Error("retry prompt lacks the preceding own-eval failure")
+	}
+	for _, forbidden := range []string{
+		"AAR-001_case", "dependent aardvark stdout", "dependent aardvark failure",
+		"ZET-001_case", "dependent zeta stdout", "dependent zeta failure",
+	} {
+		if strings.Contains(prompt, forbidden) {
+			t.Errorf("retry prompt contains dependent eval output %q", forbidden)
+		}
+	}
+	drillCleaned(t, f)
+}
+
+func Test_RUN_069_DrillObservationsIncludeStdoutAndRelativeLogPerAttempt(t *testing.T) {
+	f := newDrillFixture(t)
+	f.mode(t, "verify_retry")
+	r, err := f.run(context.Background(), 0)
+	if err != nil || r.Result != "pass" || len(r.Steps) != 2 {
+		t.Fatalf("drill = result %q, %d steps, error %v", r.Result, len(r.Steps), err)
+	}
+	section := drillReportSection(nextRead(t, f.root, r.ReportPath), "Agent observations")
+	entries := strings.Split(section, "\n### ")[1:]
+	if len(entries) != len(r.Steps) {
+		t.Fatalf("Agent observations has %d entries, want %d: %q", len(entries), len(r.Steps), section)
+	}
+	for i, step := range r.Steps {
+		stdout := fmt.Sprintf("worker stdout attempt %d", i+1)
+		stderr := fmt.Sprintf("worker stderr attempt %d", i+1)
+		if !strings.Contains(entries[i], stdout) {
+			t.Errorf("attempt %d observations lack stdout %q", i+1, stdout)
+		}
+		if strings.Contains(section, stderr) {
+			t.Errorf("Agent observations contains stderr %q", stderr)
+		}
+		rel, err := filepath.Rel(f.root, step.LogPath)
+		if err != nil || !strings.HasPrefix(filepath.ToSlash(rel), ".fireweed/runs/") {
+			t.Fatalf("attempt %d log path %q is outside the repository runs directory: %v", i+1, step.LogPath, err)
+		}
+		if !strings.Contains(entries[i], filepath.ToSlash(rel)) || strings.Contains(section, step.LogPath) {
+			t.Errorf("attempt %d observations lack repository-relative log path %q or contain its absolute path", i+1, rel)
+		}
+		if log := nextRead(t, f.root, rel); !strings.Contains(log, stdout) || !strings.Contains(log, stderr) {
+			t.Errorf("attempt %d invocation log lacks one of its streams: %q", i+1, log)
+		}
+	}
+	drillCleaned(t, f)
 }
 
 func Test_RUN_060_RUN_061_DrillReportAndRetainedRef(t *testing.T) {
@@ -793,7 +878,7 @@ func Test_RUN_060_RUN_061_FailedDrillReportsFailuresAndRetainsCode(t *testing.T)
 	if agentErr == nil || failed.Result != "fail" || len(failed.Steps) != 2 || failed.ReportPath != ".fireweed/drills/alpha.md" {
 		t.Errorf("agent exhaustion report = %#v, %v", failed, agentErr)
 	}
-	if report := nextRead(t, agentFailure.root, ".fireweed/drills/alpha.md"); !strings.Contains(report, "WORKER_FAILURE") || !strings.Contains(report, "result: fail") {
+	if report := nextRead(t, agentFailure.root, ".fireweed/drills/alpha.md"); !strings.Contains(report, "failed worker observation") || !strings.Contains(report, "result: fail") {
 		t.Errorf("agent failure absent from report: %q", report)
 	}
 	drillCleaned(t, agentFailure)

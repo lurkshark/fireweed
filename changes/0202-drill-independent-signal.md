@@ -4,6 +4,8 @@ already_satisfied:
 bases:
     RUN-056: f6dd7bed
 module: runner
+phase: audit
+run: 20261111T002924-87fad14e6cf2106f6ce6245d
 ---
 
 ## Motivation
@@ -31,10 +33,10 @@ observations section change as specified.
 
 ## Added
 
-### new:dependent-signal
+### RUN-068
 Drill retry prompts MUST NOT include dependent modules' eval output. When the target's own evals pass and only dependent evals fail, Drill MUST NOT retry reconstruction and MUST return Result fail with those dependent failures in the report.
 
-### new:observation-summary
+### RUN-069
 Each attempt's Agent observations entry MUST contain that attempt's agent stdout and the repository-relative path of its invocation log, and MUST NOT contain the attempt's stderr.
 
 ## Modified
@@ -72,3 +74,16 @@ still holds both streams (RUN-063).
 After this applies, earlier passing drills are not invalidated, but the next
 drill of any module may fail where its dependents rely on unstated behavior.
 That failure is the measurement; turn agreed gaps into ordinary changes.
+
+On the current implementation, the focused public Drill tests observed two
+invocations after dependent-only failure and found both dependent testcase
+names and hook output in an own-eval retry prompt (RUN-068). Both Agent
+observations entries included stderr and lacked their relative log paths,
+while the invocation logs retained both streams (RUN-069). The existing
+RUN-056 retry test passed.
+
+The implementation-writable file is `packages/runner/internal/drill/drill.go`.
+The retry loop, eval failure collection and report writer are the affected
+paths. No stub is needed.
+## Provenance
+- evals 2026-11-11T00:46:49.43497Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=165 failing=3 passing=162
