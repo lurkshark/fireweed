@@ -305,7 +305,11 @@ func NewChange(root, module, slug string) (string, error) {
 				continue
 			}
 			if parts[2] == slug {
-				return "", fmt.Errorf("change slug %q already exists in %s", slug, directory)
+				return "", contracts.CodedError{
+					Code:    "C13",
+					Subject: slug,
+					Cause:   fmt.Errorf("change slug %q already exists in %s", slug, directory),
+				}
 			}
 			number, err := strconv.Atoi(parts[1])
 			if err != nil {

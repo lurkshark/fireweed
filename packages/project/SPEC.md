@@ -87,7 +87,7 @@ ValidateGraph MUST reject a graph containing a dependency cycle.
 NewChange MUST use the next number after the largest pending or archived change number.
 
 ### PRJ-024
-NewChange MUST reject a slug already present in the pending queue or archive without overwriting existing files.
+NewChange MUST reject a slug already present in the pending queue or archive with diagnostic C13, without overwriting existing files.
 
 ### PRJ-025
 NewChange MUST reject an unknown target module with an error beginning
