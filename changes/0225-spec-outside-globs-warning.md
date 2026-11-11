@@ -1,5 +1,7 @@
 ---
 module: project
+phase: audit
+run: 20261111T201023-bc783aa29bfe494ba1189352
 ---
 
 ## Motivation
@@ -16,7 +18,7 @@ None. Check returns one more warning diagnostic.
 
 ## Added
 
-### new:spec-outside-globs
+### PRJ-070
 Check MUST return a C20 warning naming each tracked file named SPEC.md that is neither a configured module's SPEC.md nor inside a configured module directory or `.fireweed/`.
 
 ## Modified
@@ -35,3 +37,5 @@ warning. This repository has no other SPEC.md outside its globs, so its own
 `check` stays clean.
 
 Run after 0224, which adds the C20 explanation.
+## Provenance
+- evals 2026-11-11T20:13:16.612468Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=135 failing=1 passing=134
