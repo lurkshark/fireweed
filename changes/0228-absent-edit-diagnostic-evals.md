@@ -2,6 +2,8 @@
 eval_fix:
     - PRJ-016
 module: project
+phase: audit
+run: 20261111T220010-7d6302a96fd7261e281b415c
 ---
 
 ## Motivation
@@ -29,3 +31,7 @@ Audited eval_fix only. Edit only the project evals zone and this change.
 In `Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics` (queue_test.go), require
 for each PRJ-016 case at least one non-warning C08 diagnostic whose message
 names ALP-999. Leave the PRJ-014 and PRJ-015 cases as they are.
+
+The project evals passed with `fireweed verify absent-edit-diagnostic-evals`.
+## Provenance
+- evals 2026-11-11T22:01:21.740696Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=135 failing=0 passing=135

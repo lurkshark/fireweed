@@ -306,8 +306,8 @@ func Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics(t *testing.T) {
 		{"PRJ-014", "undeclared_handle", "", "", "Needed.\n", "### new:local\nLocal MUST work.\n", "### ALP-001\nAlpha MUST refer to new:foreign.\n", "", "C09", "reference to undeclared handle new:foreign"},
 		{"PRJ-015", "missing_base", "", "", "Needed.\n", "", "### ALP-001\nAlpha MUST change.\n", "", "C08", "missing base for ALP-001"},
 		{"PRJ-015", "stale_base", "", "bases:\n  ALP-001: deadbeef\n", "Needed.\n", "", "### ALP-001\nAlpha MUST change.\n", "", "C08", "stale base for ALP-001"},
-		{"PRJ-016", "absent_modified", "", "bases:\n  ALP-999: deadbeef\n", "Needed.\n", "", "### ALP-999\nAbsent MUST change.\n", "", "C08", "ID ALP-999 absent from preceding projection"},
-		{"PRJ-016", "absent_removed", "", "bases:\n  ALP-999: deadbeef\n", "Needed.\n", "", "", "### ALP-999\n", "C08", "ID ALP-999 absent from preceding projection"},
+		{"PRJ-016", "absent_modified", "", "bases:\n  ALP-999: deadbeef\n", "Needed.\n", "", "### ALP-999\nAbsent MUST change.\n", "", "C08", "ALP-999"},
+		{"PRJ-016", "absent_removed", "", "bases:\n  ALP-999: deadbeef\n", "Needed.\n", "", "", "### ALP-999\n", "C08", "ALP-999"},
 	} {
 		t.Run(tc.id+"_"+tc.name, func(t *testing.T) {
 			root := fixture(t)
@@ -333,7 +333,6 @@ func Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics(t *testing.T) {
 			diagnostics := project.Check(root)
 			found := false
 			foundCause := false
-			foundApplyCause := false
 			for _, diagnostic := range diagnostics {
 				if !diagnostic.Warning && (strings.TrimSpace(diagnostic.Code) == "" || strings.TrimSpace(diagnostic.Message) == "") {
 					t.Errorf("Check returned error diagnostic without code and message: %#v", diagnostic)
@@ -341,18 +340,8 @@ func Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics(t *testing.T) {
 				if !diagnostic.Warning && strings.TrimSpace(diagnostic.Code) != "" && strings.TrimSpace(diagnostic.Message) != "" {
 					found = true
 				}
-				matchesCause := strings.Contains(diagnostic.Message, tc.cause)
-				if tc.id == "PRJ-016" {
-					matchesCause = diagnostic.Message == tc.cause
-				}
-				if tc.code != "" && !diagnostic.Warning && diagnostic.Code == tc.code && matchesCause {
+				if tc.code != "" && !diagnostic.Warning && diagnostic.Code == tc.code && strings.Contains(diagnostic.Message, tc.cause) {
 					foundCause = true
-				}
-				if tc.name == "absent_modified" && !diagnostic.Warning && diagnostic.Code == "C08" && strings.Contains(diagnostic.Message, "Modified ID ALP-999 absent from preceding projection") {
-					foundApplyCause = true
-				}
-				if tc.name == "absent_removed" && !diagnostic.Warning && diagnostic.Code == "C08" && strings.Contains(diagnostic.Message, "Removed ID ALP-999 absent from preceding projection") {
-					foundApplyCause = true
 				}
 			}
 			if !found {
@@ -360,9 +349,6 @@ func Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics(t *testing.T) {
 			}
 			if tc.code != "" && !foundCause {
 				t.Errorf("Check did not report %s for %s: %#v", tc.code, tc.cause, diagnostics)
-			}
-			if tc.id == "PRJ-016" && !foundApplyCause {
-				t.Errorf("Check did not report C08 for absent %s during projection application: %#v", tc.name, diagnostics)
 			}
 			if tc.name == "missing_base" || tc.name == "stale_base" {
 				queued(t, root, "0001-check.md", front, "Needed.\n", "", "", "### ALP-001\n")
