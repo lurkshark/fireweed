@@ -4,6 +4,8 @@ already_satisfied:
 bases:
     CHK-028: 31f5ab46
 module: checks
+phase: audit
+run: 20261111T014410-f7ffd23af86d40e5326ae401
 ---
 
 ## Motivation
@@ -37,3 +39,5 @@ Evals: a passing and a failing testcase named `ALP-001_case_00` (with
 `ALP-001` supplied) must parse with ID `ALP-001` and, for the failing one,
 its complete Case.Failure text. `ALP-001_ALP-009` with only `ALP-001`
 supplied must still return C11.
+## Provenance
+- evals 2026-11-11T01:54:31.755042Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=129 failing=0 passing=129

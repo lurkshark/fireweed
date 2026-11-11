@@ -147,6 +147,43 @@ func Test_CHK_028_RejectMissingAndUnknownIDs(t *testing.T) {
 	}
 }
 
+func Test_CHK_028_ParseJUnitAcceptsNumberedLabels(t *testing.T) {
+	const name = "ALP-001_case_00"
+	const message = "expected status 200"
+	const body = "got status 500\nassertion at example_test.go:17"
+	specs := []contracts.Item{{ID: "ALP-001"}}
+	for _, tc := range []struct {
+		result, diagnostic string
+	}{
+		{result: "pass"},
+		{result: "fail", diagnostic: `<failure message="` + message + `">` + body + `</failure>`},
+	} {
+		t.Run(tc.result, func(t *testing.T) {
+			data := []byte(`<testsuite><testcase name="` + name + `">` + tc.diagnostic + `</testcase></testsuite>`)
+			report, err := checks.ParseJUnit(data, specs)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(report.Cases) != 1 {
+				t.Fatalf("cases = %#v; want one", report.Cases)
+			}
+			got := report.Cases[0]
+			if !reflect.DeepEqual(got.IDs, []string{"ALP-001"}) || got.Result != tc.result {
+				t.Errorf("case = %#v; want ID ALP-001 and result %s", got, tc.result)
+			}
+			if tc.result == "fail" && (!strings.Contains(got.Failure, message) || !strings.Contains(got.Failure, body)) {
+				t.Errorf("failure = %q; want complete message %q and body %q", got.Failure, message, body)
+			}
+		})
+	}
+}
+
+func Test_CHK_028_ParseJUnitRejectsUnknownIDAlongsideKnownID(t *testing.T) {
+	data := []byte(`<testsuite><testcase name="ALP-001_ALP-009"/></testsuite>`)
+	_, err := checks.ParseJUnit(data, []contracts.Item{{ID: "ALP-001"}})
+	requireDiagnosticError(t, err, "C11", "")
+}
+
 func Test_CHK_002_CoverageRequiresCurrentNonSkippedCases(t *testing.T) {
 	specs := []contracts.Item{{ID: "CHK-001"}, {ID: "CHK-002"}}
 	requireDiagnosticError(t, checks.RequireCoverage(checks.Report{Cases: []checks.Case{{IDs: []string{"CHK-001"}, Result: "pass"}}}, specs), "C10", "no coverage for CHK-002")
