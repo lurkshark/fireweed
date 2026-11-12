@@ -101,24 +101,6 @@ func doctorCLIChecks(t *testing.T, output string) ([]map[string]json.RawMessage,
 	return data.Checks, diagnostics
 }
 
-func doctorCLIHasCheck(checks []map[string]json.RawMessage, name string, passed bool) bool {
-	for _, check := range checks {
-		var gotName string
-		var gotPassed bool
-		_ = json.Unmarshal(check["name"], &gotName)
-		_ = json.Unmarshal(check["passed"], &gotPassed)
-		if gotName == name && gotPassed == passed {
-			for _, field := range []string{"module", "detail"} {
-				if _, ok := check[field]; !ok {
-					return false
-				}
-			}
-			return true
-		}
-	}
-	return false
-}
-
 func doctorCLIPlainOutcome(output, name, outcome string) bool {
 	for _, line := range strings.Split(output, "\n") {
 		if strings.Contains(line, name) && strings.Contains(strings.ToLower(line), outcome) {
@@ -150,6 +132,14 @@ func Test_APP_062_APP_063_APP_064_APP_065_APP_066_APP_067_DoctorCLI(t *testing.T
 		t.Fatalf("APP-067 JSON status=%d stdout=%q stderr=%q", status, jsonOut, errOut)
 	}
 	checks, diagnostics := doctorCLIChecks(t, jsonOut)
+	canaryScopes := map[string]map[string]bool{
+		"baseline":      {"global eval": false, "global boundaries": false},
+		"undeclared":    {"global boundaries": false},
+		"internal_eval": {"global boundaries": false},
+		"failing_eval":  {"global eval": false},
+		"missing_id":    {"global eval": false},
+		"recovery":      {"global eval": false, "global boundaries": false},
+	}
 	for _, check := range checks {
 		var name string
 		var passed bool
@@ -168,10 +158,37 @@ func Test_APP_062_APP_063_APP_064_APP_065_APP_066_APP_067_DoctorCLI(t *testing.T
 		if !doctorCLIPlainOutcome(plain, name, outcome) {
 			t.Errorf("APP-065 plain output lacks %s outcome for reported %s: %q", outcome, name, plain)
 		}
+		scopes, ok := canaryScopes[name]
+		if !ok {
+			t.Errorf("APP-067 unexpected canary name %q", name)
+			continue
+		}
+		var detail string
+		if err := json.Unmarshal(check["detail"], &detail); err != nil {
+			t.Errorf("APP-067 canary %s lacks string detail: %v", name, err)
+			continue
+		}
+		if _, ok := check["module"]; !ok {
+			t.Errorf("APP-067 canary %s lacks module field", name)
+		}
+		foundScope := false
+		for scope := range scopes {
+			if strings.Contains(detail, scope) {
+				foundScope = true
+				if passed {
+					scopes[scope] = true
+				}
+			}
+		}
+		if !foundScope {
+			t.Errorf("APP-067 canary %s detail %q lacks its hook scope", name, detail)
+		}
 	}
-	for _, name := range []string{"baseline", "undeclared", "internal_eval", "failing_eval", "missing_id", "recovery"} {
-		if !doctorCLIHasCheck(checks, name, true) {
-			t.Errorf("APP-067 missing named passing check %s: %s", name, jsonOut)
+	for name, scopes := range canaryScopes {
+		for scope, seen := range scopes {
+			if !seen {
+				t.Errorf("APP-067 missing passing canary %s with hook scope %q", name, scope)
+			}
 		}
 	}
 	if len(diagnostics) != 0 {
