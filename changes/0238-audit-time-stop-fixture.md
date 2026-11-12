@@ -3,7 +3,7 @@ eval_fix:
     - RUN-048
     - RUN-049
 module: runner
-phase: audit
+phase: impl
 run: 20261112T213413-dfc069b359ab66e70c488a43
 ---
 
@@ -69,8 +69,13 @@ the correction in 15.227 seconds.
 
 Both `fireweed verify --quick audit-time-stop-fixture` and
 `fireweed verify audit-time-stop-fixture` passed in the evals phase.
-The configured independent auditor could not initialize in the restricted
-session (`Operation not permitted`). The audit remains pending.
+An extra auditor invocation from inside the eval worker's sandbox could not
+initialize (`Operation not permitted`). The owning controller runs the required
+restricted audit through its configured lifecycle after accepting evals.
 
 ## Provenance
 - evals 2026-11-12T21:45:45.731133Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=170 failing=0 passing=170
+- audit 2026-11-12T21:46:06.76796Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-astra -c model_reasoning_effort="medium" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+## Audit
+
+No findings; checked RUN-048, RUN-049
