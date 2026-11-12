@@ -119,40 +119,95 @@ func Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput(t *testing.T) {
 		failureStdout += fmt.Sprintf("later-%02d\n", i)
 	}
 	for _, tc := range []struct {
-		name, role, script, stdout, stderr string
-		timeout                            time.Duration
+		name, role, script, stdout, stderr, cause string
+		timeout                                   time.Duration
 	}{
-		{"failure", "worker", "#!/bin/bash\nprintf 'early worker stdout Ω\\n'; for i in $(seq 1 25); do printf 'later-%02d\\n' \"$i\"; done; printf 'failed worker stderr β' >&2; exit 7\n", failureStdout, "failed worker stderr β", 2 * time.Second},
-		{"timeout", "audit", "#!/bin/bash\nprintf 'partial audit stdout Ω'; printf 'partial audit stderr β' >&2; sleep 5\n", "partial audit stdout Ω", "partial audit stderr β", 150 * time.Millisecond},
+		{"failure", "worker", "#!/bin/bash\nprintf 'early worker stdout Ω\\n'; for i in $(seq 1 25); do printf 'later-%02d\\n' \"$i\"; done; printf 'failed worker stderr β' >&2; exit 7\n", failureStdout, "failed worker stderr β", "exit 7", 2 * time.Second},
+		{"timeout", "audit", `#!/bin/bash
+printf 'partial audit stdout Ω'
+printf 'partial audit stderr β' >&2
+printf ready > %q || exit 8
+sleep 5 && printf 'FIREWEED_DOCTOR_OK\n'
+`, "partial audit stdout Ω", "partial audit stderr β", context.DeadlineExceeded.Error(), 150 * time.Millisecond},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			f := localDoctorFixture(t)
+			var ready string
 			if tc.role == "worker" {
 				f.put(".fireweed/agent.sh", tc.script)
 			} else {
-				f.put(".fireweed/audit.sh", tc.script)
+				ready = filepath.Join(t.TempDir(), "audit-ready")
+				f.put(".fireweed/audit.sh", fmt.Sprintf(tc.script, ready))
 			}
 			f.commit()
 			status, registrations := f.git("status", "--porcelain", "--untracked-files=all"), worktrees(f)
 			req := f.request(false)
 			req.Timeout = tc.timeout
-			start := time.Now()
-			report := checks.Doctor(context.Background(), req)
-			if time.Since(start) > 4*time.Second {
-				t.Errorf("%s probe did not honor bounded request timeout", tc.name)
+			var report checks.DoctorReport
+			if ready == "" {
+				report = checks.Doctor(context.Background(), req)
+			} else {
+				report = doctorAfterAuditReady(t, req, ready)
 			}
-			if !hasDoctorCheck(report, tc.role, false) || !hasDoctorDiagnostic(report, "C15", false, tc.role, tc.stderr) {
+			if !hasDoctorCheck(report, tc.role, false) || !hasDoctorDiagnostic(report, "C15", false, tc.role, tc.cause, tc.stderr) {
 				t.Errorf("%s probe outcome/diagnostic lost: %s", tc.name, doctorText(report))
 			}
 			path := doctorProbeLog(t, f, report, tc.role, tc.stdout, tc.stderr)
 			if tc.name == "failure" && path != "" {
-				if !strings.Contains(string(mustRead(t, path)), "later-25") || strings.Contains(doctorText(report), "early worker stdout Ω") {
+				if !hasDoctorDiagnostic(report, "C15", false, tc.role, tc.cause, "later-25") || strings.Contains(doctorText(report), "early worker stdout Ω") {
 					t.Errorf("failed probe log or final-20-line diagnostic changed: %s", doctorText(report))
 				}
 			}
 			doctorCallerClean(t, f, status, registrations)
 		})
 	}
+}
+
+func doctorAfterAuditReady(t *testing.T, req checks.DoctorRequest, ready string) checks.DoctorReport {
+	t.Helper()
+	ctx, cancel := context.WithCancel(context.Background())
+	done := make(chan struct{})
+	var report checks.DoctorReport
+	go func() {
+		defer close(done)
+		report = checks.Doctor(ctx, req)
+	}()
+	defer func() {
+		cancel()
+		<-done
+	}()
+
+	startup := time.NewTimer(8 * time.Second)
+	defer startup.Stop()
+	poll := time.NewTicker(10 * time.Millisecond)
+	defer poll.Stop()
+	for {
+		if _, err := os.Stat(ready); err == nil {
+			break
+		} else if !os.IsNotExist(err) {
+			t.Fatal(err)
+		}
+		select {
+		case <-done:
+			// The probe can signal and time out between readiness checks.
+			if _, err := os.Stat(ready); err != nil {
+				t.Fatalf("Doctor returned without audit probe readiness: %v: %s", err, doctorText(report))
+			}
+			return report
+		case <-startup.C:
+			t.Fatal("audit probe never signalled readiness")
+		case <-poll.C:
+		}
+	}
+
+	watchdog := time.NewTimer(4 * time.Second)
+	defer watchdog.Stop()
+	select {
+	case <-done:
+	case <-watchdog.C:
+		t.Fatal("Doctor did not return within four seconds of audit probe readiness")
+	}
+	return report
 }
 
 func Test_CHK_081_DoctorPersistsCancelledProbeOutput(t *testing.T) {

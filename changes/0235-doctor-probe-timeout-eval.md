@@ -1,7 +1,9 @@
 ---
-module: checks
 eval_fix:
     - CHK-081
+module: checks
+phase: audit
+run: 20261112T153551-b4bf3cdbb2a2279abd81a47d
 ---
 
 ## Motivation
@@ -47,3 +49,20 @@ normal fireweed verify and independent audit. Five unmodified local race
 runs passed, consistent with the load-sensitive CI symptom; this is not a
 claim that the original failure reproduces on every machine.
 
+The four-second watchdog begins when the audit fixture signals readiness after
+writing both streams. The 150 ms request timeout remains in effect. The eval
+requires a C15 deadline-exceeded diagnostic, and the fake audit agent emits the
+fixed reply if its five-second sleep completes. The test cancels and joins
+Doctor before fixture cleanup on early exits.
+
+The affected test passed ten runs under the race detector. Temporary Go overlay
+controls confirmed that the timeout case rejects natural completion with a fixed
+reply, an ordinary nonzero exit, and a zero exit with a missing reply. The
+controller's `fireweed verify doctor-probe-timeout-eval` passed for checks.
+
+The configured independent auditor failed to start in the restricted workspace
+with `Operation not permitted` while initializing the Codex app-server client.
+Independent audit remains pending.
+
+## Provenance
+- evals 2026-11-12T15:46:37.94541Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=130 failing=0 passing=130
