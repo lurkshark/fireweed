@@ -1,0 +1,361 @@
+package fixture
+
+import (
+	"errors"
+	"fmt"
+	"io/fs"
+	"os"
+	"path/filepath"
+	"regexp"
+	"strconv"
+
+	"github.com/lurkshark/fireweed/packages/contracts"
+	"github.com/lurkshark/fireweed/packages/project/model"
+	"gopkg.in/yaml.v3"
+)
+
+type moduleDocumentError struct {
+	path string
+	err  error
+}
+
+func (e *moduleDocumentError) Error() string { return e.err.Error() }
+func (e *moduleDocumentError) Unwrap() error { return e.err }
+
+func configError(err error) error {
+	return contracts.CodedError{Code: "C01", Subject: "fireweed.yaml", Cause: err}
+}
+
+// LoadPath identifies the document responsible for a Load failure.
+func LoadPath(err error) string {
+	var failure *moduleDocumentError
+	if errors.As(err, &failure) {
+		return failure.path
+	}
+	return "fireweed.yaml"
+}
+
+func moduleParseError(path string, err error) error {
+	return &moduleDocumentError{
+		path: path,
+		err:  fmt.Errorf("parse %s: %w. Use valid frontmatter and unique spec item headings, then retry", path, err),
+	}
+}
+
+func Load(root string) (model.Snapshot, error) {
+	data, err := os.ReadFile(filepath.Join(root, "fireweed.yaml"))
+	if err != nil {
+		return model.Snapshot{}, configError(fmt.Errorf("read fireweed.yaml: %w", err))
+	}
+	config, patterns, defaults, err := parseConfig(data)
+	if err != nil {
+		return model.Snapshot{}, err
+	}
+
+	snapshot := model.Snapshot{Root: root, Config: config}
+	err = filepath.WalkDir(root, func(path string, entry fs.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return configError(walkErr)
+		}
+		if !entry.IsDir() {
+			return nil
+		}
+		if entry.Name() == ".git" {
+			return filepath.SkipDir
+		}
+		rel, err := filepath.Rel(root, path)
+		if err != nil {
+			return configError(err)
+		}
+		rel = filepath.ToSlash(rel)
+		if rel == "." || !matchesModule(patterns, rel) {
+			return nil
+		}
+		data, err := os.ReadFile(filepath.Join(path, "SPEC.md"))
+		if err != nil {
+			specPath := rel + "/SPEC.md"
+			cause := fmt.Errorf("read %s: %w", specPath, err)
+			return &moduleDocumentError{path: specPath, err: contracts.CodedError{Code: "C03", Subject: specPath, Cause: cause}}
+		}
+		module, err := parseModule(data, defaults, rel)
+		if err != nil {
+			return err
+		}
+		snapshot.Modules = append(snapshot.Modules, module)
+		return nil
+	})
+	if err != nil {
+		return model.Snapshot{}, err
+	}
+	return snapshot, nil
+}
+
+func parseConfig(data []byte) (map[string]any, []string, map[string]any, error) {
+	var config map[string]any
+	if err := yaml.Unmarshal(data, &config); err != nil {
+		return nil, nil, nil, configError(fmt.Errorf("parse fireweed.yaml: %w", err))
+	}
+	if config == nil {
+		return nil, nil, nil, configError(fmt.Errorf("fireweed.yaml must be a mapping"))
+	}
+	patterns, err := stringList(config["modules"], "fireweed.yaml modules")
+	if err != nil {
+		return nil, nil, nil, configError(err)
+	}
+	defaults := map[string]any{}
+	if value, ok := config["module_defaults"]; ok {
+		defaults, ok = value.(map[string]any)
+		if !ok {
+			return nil, nil, nil, configError(fmt.Errorf("fireweed.yaml module_defaults must be a mapping"))
+		}
+	}
+	if err := setSpecLimitDefaults(config); err != nil {
+		return nil, nil, nil, configError(err)
+	}
+	return config, patterns, defaults, nil
+}
+
+func setSpecLimitDefaults(config map[string]any) error {
+	limits := map[string]any{}
+	if value, ok := config["spec_limits"]; ok {
+		limits, ok = value.(map[string]any)
+		if !ok {
+			return fmt.Errorf("fireweed.yaml spec_limits must be a mapping")
+		}
+	}
+	for _, field := range []struct {
+		name         string
+		defaultValue int
+	}{
+		{"max_clauses", 3}, {"max_words", 80}, {"max_decision_words", 300},
+	} {
+		value, exists := limits[field.name]
+		if !exists {
+			limits[field.name] = field.defaultValue
+			continue
+		}
+		if limit, ok := value.(int); !ok || limit <= 0 {
+			return fmt.Errorf("fireweed.yaml spec_limits.%s must be a positive integer", field.name)
+		}
+	}
+	config["spec_limits"] = limits
+	return nil
+}
+
+func parseModule(data []byte, defaults map[string]any, rel string) (model.Module, error) {
+	path := rel + "/SPEC.md"
+	doc, err := contracts.ParseDocument(string(data))
+	if err != nil {
+		return model.Module{}, moduleParseError(path, err)
+	}
+	section, _ := contracts.Section(doc.Body, "Specs")
+	if _, err := contracts.ParseItems(section); err != nil {
+		return model.Module{}, moduleParseError(path, err)
+	}
+	name, ok := doc.Frontmatter["name"].(string)
+	if !ok {
+		return model.Module{}, contracts.CodedError{Code: "C12", Subject: path, Cause: fmt.Errorf("%s name must be a string", path)}
+	}
+	prefix, ok := doc.Frontmatter["id_prefix"].(string)
+	if !ok {
+		return model.Module{}, contracts.CodedError{Code: "C12", Subject: path, Cause: fmt.Errorf("%s id_prefix must be a string", path)}
+	}
+	var dependencies []string
+	if value, ok := doc.Frontmatter["depends_on"]; ok {
+		dependencies, err = stringList(value, path+" depends_on")
+		if err != nil {
+			return model.Module{}, contracts.CodedError{Code: "C12", Subject: path, Cause: err}
+		}
+	}
+	zones, err := moduleZones(doc.Frontmatter, defaults, rel)
+	if err != nil {
+		return model.Module{}, contracts.CodedError{Code: "C12", Cause: err}
+	}
+	return model.Module{
+		Name: name, IDPrefix: prefix, Dir: rel, DependsOn: dependencies,
+		Zones: zones, Document: doc,
+	}, nil
+}
+
+func matchesModule(patterns []string, dir string) bool {
+	for _, pattern := range patterns {
+		if contracts.MatchGlob(pattern, dir) {
+			return true
+		}
+	}
+	return false
+}
+
+func stringList(value any, label string) ([]string, error) {
+	items, ok := value.([]any)
+	if !ok {
+		return nil, fmt.Errorf("%s must be a list of strings", label)
+	}
+	result := make([]string, 0, len(items))
+	for _, item := range items {
+		text, ok := item.(string)
+		if !ok {
+			return nil, fmt.Errorf("%s must be a list of strings", label)
+		}
+		result = append(result, text)
+	}
+	return result, nil
+}
+
+func moduleZones(frontmatter, defaults map[string]any, dir string) (contracts.Zones, error) {
+	var zones contracts.Zones
+	fields := []struct {
+		name string
+		into *[]string
+	}{
+		{"protected", &zones.Protected},
+		{"evals", &zones.Evals},
+		{"interface", &zones.Interface},
+		{"append_only", &zones.AppendOnly},
+		{"preserve", &zones.Preserve},
+		{"disposable", &zones.Disposable},
+	}
+	for _, field := range fields {
+		value, exists := frontmatter[field.name]
+		label := dir + "/SPEC.md " + field.name
+		if !exists {
+			value, exists = defaults[field.name]
+			label = "fireweed.yaml module_defaults " + field.name
+		}
+		if exists {
+			list, err := stringList(value, label)
+			if err != nil {
+				return contracts.Zones{}, err
+			}
+			*field.into = list
+		}
+	}
+	return zones, nil
+}
+
+func ValidateGraph(modules []model.Module) error {
+	byName := make(map[string]model.Module, len(modules))
+	prefixes := make(map[string]string, len(modules))
+	for _, module := range modules {
+		if module.Name == "" {
+			return contracts.CodedError{Code: "C02", Cause: fmt.Errorf("empty module name")}
+		}
+		if module.IDPrefix == "" {
+			return contracts.CodedError{Code: "C02", Subject: module.Name, Cause: fmt.Errorf("empty ID prefix for module %s", module.Name)}
+		}
+		if _, exists := byName[module.Name]; exists {
+			return contracts.CodedError{Code: "C02", Subject: module.Name, Cause: fmt.Errorf("duplicate module name %q", module.Name)}
+		}
+		if other, exists := prefixes[module.IDPrefix]; exists {
+			return contracts.CodedError{Code: "C02", Subject: module.Name, Cause: fmt.Errorf("duplicate ID prefix %q for %s and %s", module.IDPrefix, other, module.Name)}
+		}
+		byName[module.Name] = module
+		prefixes[module.IDPrefix] = module.Name
+	}
+	state := make(map[string]uint8, len(modules))
+	var visit func(string) error
+	visit = func(name string) error {
+		state[name] = 1
+		for _, dependency := range byName[name].DependsOn {
+			if dependency == name {
+				return contracts.CodedError{Code: "C02", Subject: name, Cause: fmt.Errorf("module %s has a self-dependency", name)}
+			}
+			if _, exists := byName[dependency]; !exists {
+				return contracts.CodedError{Code: "C02", Subject: name, Cause: fmt.Errorf("module %s depends on missing module %s", name, dependency)}
+			}
+			if state[dependency] == 1 {
+				return contracts.CodedError{Code: "C02", Subject: name, Cause: fmt.Errorf("dependency cycle between %s and %s", name, dependency)}
+			}
+			if state[dependency] == 0 {
+				if err := visit(dependency); err != nil {
+					return err
+				}
+			}
+		}
+		state[name] = 2
+		return nil
+	}
+	for _, module := range modules {
+		if state[module.Name] == 0 {
+			if err := visit(module.Name); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+var slugPattern = regexp.MustCompile(`^[a-z0-9-]+$`)
+var changeNamePattern = regexp.MustCompile(`^([0-9]+)-(.+)\.md$`)
+
+func NewChange(root, module, slug string) (string, error) {
+	if !slugPattern.MatchString(slug) {
+		return "", contracts.CodedError{Code: "U01", Subject: slug, Cause: fmt.Errorf("invalid change slug %q", slug)}
+	}
+	snapshot, err := Load(root)
+	if err != nil {
+		return "", err
+	}
+	found := false
+	for _, item := range snapshot.Modules {
+		if item.Name == module {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return "", contracts.CodedError{Code: "U02", Subject: module, Cause: fmt.Errorf("unknown module %q", module)}
+	}
+	maxNumber := 0
+	for _, directory := range []string{"changes", "changes/archive"} {
+		entries, err := os.ReadDir(filepath.Join(root, directory))
+		if os.IsNotExist(err) {
+			continue
+		}
+		if err != nil {
+			return "", fmt.Errorf("read %s: %w", directory, err)
+		}
+		for _, entry := range entries {
+			if entry.IsDir() {
+				continue
+			}
+			parts := changeNamePattern.FindStringSubmatch(entry.Name())
+			if parts == nil {
+				continue
+			}
+			if parts[2] == slug {
+				return "", contracts.CodedError{
+					Code:    "C13",
+					Subject: slug,
+					Cause:   fmt.Errorf("change slug %q already exists in %s", slug, directory),
+				}
+			}
+			number, err := strconv.Atoi(parts[1])
+			if err != nil {
+				path := directory + "/" + entry.Name()
+				return "", contracts.CodedError{Code: "C13", Subject: path, Cause: fmt.Errorf("invalid change number in %s: %w", path, err)}
+			}
+			if number > maxNumber {
+				maxNumber = number
+			}
+		}
+	}
+	path := fmt.Sprintf("changes/%04d-%s.md", maxNumber+1, slug)
+	body := "\n## Motivation\n\n## Interface\n\n## Added\n\n## Modified\n\n## Removed\n\n## Decisions\n\n"
+	content, err := contracts.RenderDocument(contracts.Document{Frontmatter: map[string]any{"module": module}, Body: body})
+	if err != nil {
+		return "", err
+	}
+	if err := os.MkdirAll(filepath.Join(root, "changes"), 0755); err != nil {
+		return "", fmt.Errorf("create changes directory: %w", err)
+	}
+	file, err := os.OpenFile(filepath.Join(root, filepath.FromSlash(path)), os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
+	if err != nil {
+		return "", fmt.Errorf("create %s: %w", path, err)
+	}
+	defer file.Close()
+	if _, err := file.WriteString(content); err != nil {
+		return "", fmt.Errorf("write %s: %w", path, err)
+	}
+	return path, nil
+}

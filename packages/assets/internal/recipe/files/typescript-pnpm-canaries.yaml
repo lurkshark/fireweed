@@ -1,0 +1,31 @@
+version: 1
+baseline:
+  SPEC.md: |
+    ---
+    name: {{name}}
+    id_prefix: {{prefix}}
+    depends_on: []
+    ---
+    ## Specs
+    ### {{prefix}}-001
+    The canary MUST pass.
+  evals/baseline.test.ts: |
+    import { test } from 'node:test';
+    import { moduleName } from '../src/index.ts';
+    test('{{prefix}}001Baseline', () => { if (moduleName !== '{{name}}') throw Error('wrong module'); });
+undeclared:
+  undeclared.ts: |
+    import '{{other_dir}}/src/index.ts';
+internal_eval:
+  src/internal/canary.ts: |
+    export const value = 1;
+  evals/internal.test.ts: |
+    import '../src/internal/canary.ts';
+failing_eval:
+  evals/failing.test.ts: |
+    import { test } from 'node:test';
+    test('{{prefix}}001Fail', () => { throw Error('doctor canary'); });
+missing_id:
+  evals/unlinked.test.ts: |
+    import { test } from 'node:test';
+    test('Test_Unlinked', () => {});

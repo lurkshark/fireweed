@@ -1,0 +1,120 @@
+---
+audit_rounds: 0
+bases: {}
+module: workflow
+phase: applied
+run: 20261030T201956-3cf0390131e30297a8468ed5
+---
+
+
+
+## Motivation
+
+NEW pr-body <range> is still unimplemented. The design CLI table, Cost is measured,
+Tags and boundary opt-out clauses require a review description with range changes,
+review-relevant edits, audit/spec/Decision information, visible exceptions and
+budget/opaque-artifact warnings. Build only this missing report, then explain
+emitted B04 and wire app immediately with an actual NEW proof. Owner approved
+three changes starting at count1, stopping local at count4 without push or drill.
+
+## Interface
+
+Add public PRBody(root, revisionRange string) (PRBodyReport, error) through a thin
+api.go facade and model.PRBodyReport containing Body string and Diagnostics
+[]project.Diagnostic. All collection/rendering behavior belongs under internal/.
+Use existing Git/document/zone/project.LoadAt/cost interfaces; no dependency,
+existing API or model behavior changes. An evals-only new stub may return a
+non-P01 not-implemented error so tests compile and genuinely fail.
+
+## Added
+
+### FLOW-114
+PRBody MUST render a Markdown description for an explicit Git commit range, identifying its resolved endpoints.
+Project configuration, module/spec metadata and change documents MUST come from the range endpoint rather than later HEAD or working-tree edits.
+
+### FLOW-115
+PRBody MUST identify each pending or archived change present at the endpoint whose document identity was touched in the range, including its path, module and change kind.
+An empty selection MUST be reported explicitly.
+
+### FLOW-116
+For every selected change, PRBody MUST include its recorded eval result counts from Provenance and identify its eval-file edits.
+
+### FLOW-117
+PRBody MUST identify interface edits, new disposable stubs added in evals, module manifest/other-file edits and worker_writable edits associated with each selected change.
+
+### FLOW-118
+PRBody MUST identify preserved-file edits associated with selected changes.
+
+### FLOW-119
+PRBody MUST list every review-tagged Added or Modified spec of each selected change with its ID and normative text.
+It MUST not list an unrelated pre-existing review spec as changed.
+
+### FLOW-120
+PRBody MUST include each selected change's audit_rounds and recorded audit findings, including findings in earlier phase commits that were corrected before the endpoint.
+
+### FLOW-121
+PRBody MUST include the selected changes' added and removed Decisions.
+
+### FLOW-122
+PRBody MUST list all quarantined endpoint specs with module, ID and reason, every endpoint boundary opt-out with module and reason, and every blocked pending endpoint change with its reason.
+
+### FLOW-123
+PRBody MUST show the latest retained measurements and associated B01–B03 diagnostics for modules represented at the endpoint, without fabricating missing measurements.
+Saved local cost snapshots MUST remain the measurement source rather than later file counts or recalculated budgets.
+
+### FLOW-124
+PRBody MUST list every binary file and every file larger than 256 KB newly added to a disposable zone between the range endpoints, identifying path and byte size.
+Each such file MUST produce a B04 warning in Diagnostics and the Markdown body; ordinary smaller text additions MUST not produce B04.
+
+### FLOW-125
+An empty or unresolvable range MUST return an error with P01 and the rejected range or resolution cause.
+A valid empty range MUST return a report rather than an error.
+
+## Modified
+
+
+
+## Removed
+
+
+
+## Decisions
+
+Selected changes are identities touched by range commits and present at its end;
+removed change documents are absent from that endpoint report. Review context for
+a selected change includes its phase commits reachable at the endpoint, so a
+range covering only its final phase retains earlier eval/stub/audit information.
+Binary follows Git's text/binary classification; 256 KB is262144 bytes, with
+strictly larger text files warned. File categories use that phase's declared
+metadata; endpoint exceptions use the endpoint's declarations.
+Cost measurements use a Cost/Metric Markdown section with one row per measured
+module: module, seconds, cases per spec (`ID: count`), eval lines, disposable lines.
+
+## Rejected alternatives
+
+No live Status reuse for endpoint project data, second graph/index, unrelated
+library completion, PR publication, new diagnostics beyond emitted B04, or
+bootstrap implementation input.
+
+## Notes
+
+Fresh Sol/high eval/impl workers and isolated restricted independent auditors;
+max2 persisted finding round trips, re-audit only prior finding IDs. Own Verify
+under5m/full under15m; representative public fixtures only. No process/convention
+observers or calibration tests. All phase transitions/claims/commits belong to
+the controller; use write-capable native Done so Git commit persistence succeeds.
+Workers never commit or modify protected/other-module files. No phase exception.
+Cost snapshots are local records; endpoint source data is committed. Stop on a
+native block or required dependency expansion. After this report, only B04
+Explain and immediate app caller/NEW proof remain in the approved count4 slice.
+
+## Provenance
+
+- evals 2026-10-30T20:47:51.995456Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=475 failing=15 passing=460
+- audit 2026-10-30T20:49:13.58751Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-30T21:12:53.114284Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=475 failing=0 passing=475
+
+## Audit
+
+No findings
+Checked IDs: FLOW-114, FLOW-115, FLOW-116, FLOW-117, FLOW-118, FLOW-119, FLOW-120, FLOW-121, FLOW-122, FLOW-123, FLOW-124, FLOW-125

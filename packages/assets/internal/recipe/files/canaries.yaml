@@ -1,0 +1,38 @@
+version: 1
+baseline:
+  SPEC.md: |
+    ---
+    name: {{name}}
+    id_prefix: {{prefix}}
+    depends_on: []
+    ---
+    ## Specs
+    ### {{prefix}}-001
+    The canary MUST pass.
+  api.go: |
+    package {{package}}
+  evals/canary_eval_test.go: |
+    package evals
+    import "testing"
+    func Test_{{prefix}}001(t *testing.T) {}
+undeclared:
+  canary_import.go: |
+    package {{package}}
+    import _ "{{go_module}}/{{other_dir}}"
+internal_eval:
+  internal/canary/value.go: |
+    package canary
+    const Value = 1
+  evals/canary_internal_eval_test.go: |
+    package evals
+    import _ "{{go_module}}/{{module_dir}}/internal/canary"
+failing_eval:
+  evals/canary_fail_eval_test.go: |
+    package evals
+    import "testing"
+    func Test_{{prefix}}001Fail(t *testing.T) { t.Fatal("doctor canary") }
+missing_id:
+  evals/canary_noid_eval_test.go: |
+    package evals
+    import "testing"
+    func Test_Unlinked(t *testing.T) {}

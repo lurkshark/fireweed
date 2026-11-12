@@ -1,0 +1,79 @@
+---
+already_satisfied:
+    - CHK-039
+    - CHK-040
+    - CHK-041
+    - CHK-042
+    - CHK-043
+audit_rounds: 0
+bases: {}
+module: checks
+phase: applied
+run: 20261028T054107-b7e31d3bfecf376475df71dc
+---
+
+
+
+## Motivation
+
+Begin the identified CHK-005 split under SYSTEM's one-behavior spec shape.
+Retain the design's Language support boundary suppression and hook-completion
+rules under focused IDs. Keep CHK-005 until its remaining hook execution and
+missing-hook rules are separated in the next change. Existing behavior and
+public eval assertions already cover these requirements.
+
+## Interface
+
+
+
+## Added
+
+### CHK-039
+Boundaries MUST return errors for unsuppressed module-attributed violations.
+
+### CHK-040
+Boundaries MUST return a visible warning containing the reason for a reasoned boundaries_opt_out.
+
+### CHK-041
+Boundaries MUST suppress only exact baseline lines from normally exited hooks.
+
+### CHK-042
+Boundaries MUST suppress only the opted-out module's violation lines through a reasoned opt-out after a hook exits normally.
+
+### CHK-043
+Boundaries MUST report hook launch, cancellation or timeout failures as errors.
+
+## Modified
+
+
+
+## Removed
+
+
+
+## Decisions
+
+
+
+## Notes
+
+Retarget existing boundaries_test.go evals while retaining CHK-005. Add violation
+ID to GlobalAndModuleBoundaryHooks; warning/opt-out IDs to
+OptOutSuppressesOnlyItsModuleAndWarns; baseline ID to ExactBaselineOnly;
+baseline/opt-out IDs to NormalNonzeroExitCanUseBaselineAndOptOut; and failed-hook
+ID to LaunchCancellationAndTimeoutStayErrors. Preserve every assertion and
+all 28 checks cases. No new Test functions, t.Run cases, fixture instances,
+helpers, product code or interfaces. Implementation may edit only this change file.
+
+The evals phase retargeted the existing boundary cases to CHK-039–043 while
+retaining CHK-005. No product or interface change is needed for this split.
+
+## Provenance
+
+- evals 2026-10-28T05:41:57.09782Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=146 failing=0 passing=146
+- audit 2026-10-28T05:42:45.516454Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-28T05:43:40.812757Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=146 failing=0 passing=146
+
+## Audit
+
+No findings. Checked CHK-039, CHK-040, CHK-041, CHK-042, and CHK-043.

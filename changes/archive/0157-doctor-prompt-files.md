@@ -1,0 +1,96 @@
+---
+bases: {}
+module: checks
+phase: applied
+run: 20261103T092544-fc7c518c8bca8418b2986aee
+---
+
+## Motivation
+
+ACCEPTANCE C3 adds {prompt_file} to configured worker and audit commands.
+The design's Doctor agent probes execute those same templates independently
+of runner, so they must accept this transport too. Keep existing fixed-reply
+checks, fallback, diagnostics, logs, cleanup and {prompt} behavior intact.
+
+## Interface
+
+No public fields or signatures change. Doctor expands configured command
+templates and scopes any prompt file to one executed probe.
+
+## Added
+
+### CHK-082
+Doctor MUST expand {prompt}, {prompt_file} and {git_common_dir} once in selected worker/audit command templates and wrapper argv, quoting shell substitutions and preserving argv values literally.
+
+### CHK-083
+Doctor MUST create one temporary file containing the exact probe prompt only when a selected command or wrapper template uses {prompt_file}, and expand that placeholder to its absolute path. The file MUST remain available through execution and be removed afterward, including after launch failure, nonzero exit, timeout or cancellation.
+
+## Modified
+
+## Removed
+
+## Decisions
+
+## Notes
+
+Preserve every existing assertion, command/fallback selection, fixed-reply
+outcome, stream/log retention, diagnostic and scratch-cleanliness check.
+No interface work is needed. Do not change runner, app, module SPEC/Decisions,
+protected infrastructure or existing timeouts. This is C3 transport support,
+not CK review or additional hardening.
+
+Use public API evals and bounded bash fake agents. Reuse representative
+fixtures/assertions and keep own Verify below five minutes. For new cleanup
+checks, use a readiness signal for cancellation and a modest bounded timeout
+that permits the fake script to start; avoid depending on subsecond process
+startup. Preserve existing timeouts and all assertions. Do not duplicate
+expensive Doctor executions or add instrumentation. Fail-first requires real
+failed cases for both Added handles, not compile/collection failures.
+
+Workers run pinned fireweed context before work, verify with fireweed verify
+--quick, poll until terminal and return. They never commit, call lifecycle
+mutators, edit run/phase/Provenance or modify frozen evals/interfaces. Only the
+outside owning controller advances, commits, applies or archives, with normal
+full verification.
+
+The separate restricted auditor edits only the existing Audit body, retaining
+all other bytes. Findings use - ID: "exact clause" — missing assertion. Passing
+audit writes No findings and Checked IDs. Re-audits cover only previously
+flagged IDs, preserving earlier clearances and all counters/bounds.
+
+### Owner-authorized eval recovery
+
+The owner authorized audited recovery of CHK-083 and RUN-067 while retaining
+assertions, counters and bounds. The pinned claim was released for this author
+checkpoint; the original run and impl phase remain recorded unchanged for
+resumption. CHK-083 checks absolute paths and cleanup for both probes after
+the shared launch wrapper runs. RUN-067 uses direct Bash and a builtin read,
+retaining exact trailing-newline content and the original timeout.
+
+Separate restricted auditors received only projected specs, public evals,
+before/after eval diffs and the audit playbook in fresh input repositories.
+Each used codex exec --ephemeral --ignore-user-config -m gpt-6-sol
+-c 'model_reasoning_effort="high"' -s workspace-write with its audit prompt.
+Each modified only its audit result, and both reported:
+
+#### Recovery audit: CHK-083
+
+No findings
+Checked IDs: CHK-083
+
+The recovery preserves the original content, lifetime, cleanup, and failure-outcome assertions. It checks both absolute prompt-file paths created through the shared wrapper after a launch failure and removes neither configured bound nor any other CHK-083 assertion.
+
+#### Recovery audit: RUN-067
+
+No findings
+Checked IDs: RUN-067
+
+The recovery preserves the exact prompt-content, absolute-path, command-lifetime, cleanup, failure-outcome, and 150 ms timeout assertions.
+
+## Audit
+
+No findings; checked CHK-082, CHK-083
+## Provenance
+- evals 2026-11-03T09:52:03.045Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=114 failing=7 passing=107
+- audit 2026-11-04T07:22:56.399187Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-04T08:13:07.109649Z agent=manual fireweed=0.1.0 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=725 failing=0 passing=725

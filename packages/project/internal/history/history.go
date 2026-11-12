@@ -1,0 +1,157 @@
+package history
+
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+	"sort"
+	"strings"
+	"time"
+
+	"github.com/lurkshark/fireweed/packages/contracts"
+	"github.com/lurkshark/fireweed/packages/project/internal/fixture"
+	"github.com/lurkshark/fireweed/packages/project/model"
+)
+
+func SpecHistory(root, module, id string) ([]model.SpecHistoryEntry, error) {
+	snapshot, err := fixture.Load(root)
+	if err != nil {
+		return nil, err
+	}
+
+	var target *model.Module
+	for i := range snapshot.Modules {
+		if snapshot.Modules[i].Name == module {
+			target = &snapshot.Modules[i]
+			break
+		}
+	}
+	if target == nil {
+		return nil, contracts.CodedError{Code: "U02", Subject: module, Cause: fmt.Errorf("unknown module %q", module)}
+	}
+
+	result := make([]model.SpecHistoryEntry, 0)
+	const archiveDir = "changes/archive"
+	files, err := os.ReadDir(filepath.Join(root, filepath.FromSlash(archiveDir)))
+	if err != nil && !os.IsNotExist(err) {
+		return nil, historyDocumentError(archiveDir, fmt.Errorf("read %s: %w", archiveDir, err))
+	}
+	for _, file := range files {
+		if file.IsDir() || filepath.Ext(file.Name()) != ".md" {
+			continue
+		}
+		path := archiveDir + "/" + file.Name()
+		entry, err := readArchive(root, path)
+		if err != nil {
+			return nil, err
+		}
+		if entry.Module != module {
+			continue
+		}
+		if id != "" {
+			if !contains(entry.IDs, id) {
+				continue
+			}
+			entry.IDs = []string{id}
+		} else if len(entry.IDs) == 0 {
+			continue
+		}
+		result = append(result, entry)
+	}
+
+	if id != "" && len(result) == 0 {
+		body, _ := contracts.Section(target.Document.Body, "Specs")
+		items, err := contracts.ParseItems(body)
+		if err != nil {
+			path := target.Dir + "/SPEC.md"
+			return nil, historyDocumentError(path, fmt.Errorf("%s Specs: %w", path, err))
+		}
+		found := false
+		for _, item := range items {
+			if item.ID == id {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return nil, contracts.CodedError{Code: "U02", Subject: id, Cause: fmt.Errorf("unknown spec ID %q", id)}
+		}
+	}
+
+	sort.Slice(result, func(i, j int) bool {
+		a, b := result[i], result[j]
+		if a.ImplementationDate.IsZero() != b.ImplementationDate.IsZero() {
+			return !a.ImplementationDate.IsZero()
+		}
+		if !a.ImplementationDate.Equal(b.ImplementationDate) {
+			return a.ImplementationDate.After(b.ImplementationDate)
+		}
+		return a.Path < b.Path
+	})
+	return result, nil
+}
+
+func historyDocumentError(path string, err error) error {
+	return contracts.CodedError{Code: "C03", Subject: path, Cause: err}
+}
+
+func readArchive(root, path string) (model.SpecHistoryEntry, error) {
+	data, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(path)))
+	if err != nil {
+		return model.SpecHistoryEntry{}, historyDocumentError(path, fmt.Errorf("read %s: %w", path, err))
+	}
+	doc, err := contracts.ParseDocument(string(data))
+	if err != nil {
+		return model.SpecHistoryEntry{}, historyDocumentError(path, fmt.Errorf("parse %s: %w", path, err))
+	}
+	module, ok := doc.Frontmatter["module"].(string)
+	if !ok || module == "" {
+		return model.SpecHistoryEntry{}, historyDocumentError(path, fmt.Errorf("%s has no module", path))
+	}
+	ids := make(map[string]bool)
+	for _, name := range []string{"Added", "Modified"} {
+		body, _ := contracts.Section(doc.Body, name)
+		items, err := contracts.ParseItems(body)
+		if err != nil {
+			return model.SpecHistoryEntry{}, historyDocumentError(path, fmt.Errorf("%s %s: %w", path, name, err))
+		}
+		for _, item := range items {
+			ids[item.ID] = true
+		}
+	}
+	entry := model.SpecHistoryEntry{Path: path, Module: module, IDs: make([]string, 0, len(ids))}
+	for itemID := range ids {
+		entry.IDs = append(entry.IDs, itemID)
+	}
+	sort.Strings(entry.IDs)
+	entry.Motivation, _ = contracts.Section(doc.Body, "Motivation")
+	entry.Decisions, _ = contracts.Section(doc.Body, "Decisions")
+	entry.RemovedDecisions, _ = contracts.Section(doc.Body, "Removed decisions")
+	entry.Provenance, _ = contracts.Section(doc.Body, "Provenance")
+	entry.ImplementationDate = latestImplementationDate(entry.Provenance)
+	return entry, nil
+}
+
+func latestImplementationDate(provenance string) time.Time {
+	var latest time.Time
+	for _, line := range strings.Split(provenance, "\n") {
+		fields := strings.Fields(line)
+		if len(fields) < 3 || fields[0] != "-" || fields[1] != "impl" {
+			continue
+		}
+		date, err := time.Parse(time.RFC3339Nano, fields[2])
+		if err == nil && date.After(latest) {
+			latest = date
+		}
+	}
+	return latest
+}
+
+func contains(ids []string, id string) bool {
+	for _, candidate := range ids {
+		if candidate == id {
+			return true
+		}
+	}
+	return false
+}

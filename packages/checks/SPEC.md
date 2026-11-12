@@ -1,0 +1,286 @@
+---
+depends_on:
+    - contracts
+    - gitstore
+    - assets
+    - project
+id_prefix: CHK
+interface:
+    - api.go
+    - model/**
+name: checks
+---
+
+# checks
+
+## Specs
+
+### CHK-001
+ParseJUnit MUST accept testsuite or testsuites documents, including nested suites, returning testcase name, classname and time.
+
+### CHK-002
+RequireCoverage MUST cover each current spec except review or quarantine with a non-skipped referencing case. Missing coverage MUST return an error whose contracts ErrorCode is C10.
+
+### CHK-003
+Evaluate MUST run the configured eval hook, accepting shell strings or argv.
+
+### CHK-004
+During audit, Zones MUST allow edits only to the current change file.
+
+### CHK-005
+Boundaries MUST run applicable global and per-module boundary hooks.
+
+### CHK-006
+Zones MUST reject edits to protected paths in every phase.
+
+### CHK-007
+Zones MUST reject edits to module SPEC.md files in every phase.
+
+### CHK-008
+Zones MUST reject edits within another module in every phase.
+
+### CHK-009
+Zones MUST reject edits to change files other than the current change in every phase.
+
+### CHK-010
+During evals and impl, Zones MUST allow edits outside modules only when the path matches worker_writable, except for the current change file.
+
+### CHK-011
+During evals, Zones MUST allow edits in the target module's evals zone.
+
+### CHK-012
+During evals, Zones MUST allow edits in the target module's interface zone only when InterfaceDeclared is true.
+
+### CHK-013
+During evals, Zones MUST allow edits in the target module's disposable zone only for files absent from the phase base.
+
+### CHK-014
+During evals, Zones MUST allow edits in the target module's other zone.
+
+### CHK-015
+During evals, Zones MUST reject edits in the target module's preserve zone.
+
+### CHK-016
+During impl, Zones MUST reject edits in the target module's evals zone.
+
+### CHK-017
+During impl, Zones MUST reject edits in the target module's interface zone.
+
+### CHK-018
+During impl, Zones MUST allow edits in the target module's disposable zone.
+
+### CHK-019
+During impl, Zones MUST allow edits in the target module's preserve zone.
+
+### CHK-020
+During impl, Zones MUST allow edits in the target module's other zone.
+
+### CHK-021
+During evals and impl, Zones MUST allow edits to the current change file.
+
+### CHK-022
+During impl, Zones MUST allow only newly added files in the target module's append_only zone.
+
+### CHK-023
+During evals, Zones MUST reject edits in the target module's append_only zone.
+
+### CHK-024
+Zones MUST check both the source and destination of a rename against phase permissions.
+
+### CHK-025
+RequireFailFirst MUST find a failed or errored referencing case for every requested enforced ID except already_satisfied; passing, skipped, empty or unrelated failures do not qualify. Missing genuine fail-first evidence MUST return a P2-01-prefixed error.
+
+### CHK-026
+RequirePass MUST reject failed or errored cases referencing any non-quarantined spec with an error whose contracts ErrorCode is E01.
+
+### CHK-027
+ParseJUnit MUST reject malformed XML with an error whose contracts ErrorCode is C11.
+
+### CHK-028
+ParseJUnit MUST reject, with an error whose contracts ErrorCode is C11, a testcase that references no supplied spec ID or that contains a token with a supplied spec's prefix, matched under the ID rules, naming no supplied spec. Text without such a prefix, including numbered labels, MUST NOT count as an ID reference.
+
+### CHK-029
+ParseJUnit MUST map testcase name and classname to current spec IDs using contracts.MatchesID.
+
+### CHK-030
+ParseJUnit MUST classify failure and error elements as fail, and skipped elements as skip.
+
+### CHK-031
+Evaluate MUST prefer a module's eval hook override over the global eval hook.
+
+### CHK-032
+Evaluate MUST expand module, module_dir and report placeholders once in shell strings or argv, quoting substituted shell values.
+
+### CHK-033
+Evaluate MUST set the hook's FIREWEED_BIN environment variable to the request Bin.
+
+### CHK-034
+Evaluate MUST retain the hook process's stdout, stderr and exit code in its returned report.
+
+### CHK-035
+Evaluate MUST parse the hook's written JUnit report into the returned report's cases.
+
+### CHK-036
+Evaluate MUST fail with an error whose contracts ErrorCode is C11 when the eval hook cannot launch or exceeds its timeout.
+
+### CHK-037
+Evaluate MUST fail with an error whose contracts ErrorCode is C11 when the eval hook does not write its JUnit report.
+
+### CHK-038
+Evaluate MUST reject a zero exit with mapped failures or a nonzero exit without mapped failures with an error whose contracts ErrorCode is C11, while accepting a nonzero exit with mapped failures as valid report evidence.
+
+### CHK-039
+Boundaries MUST return errors with diagnostic X01 for unsuppressed module-attributed violations.
+
+### CHK-040
+Boundaries MUST return a visible X03 warning containing the reason for a reasoned boundaries_opt_out.
+
+### CHK-041
+Boundaries MUST suppress only exact baseline lines from normally exited hooks.
+
+### CHK-042
+Boundaries MUST suppress only the opted-out module's violation lines through a reasoned opt-out after a hook exits normally.
+
+### CHK-043
+Boundaries MUST report hook launch, cancellation or timeout failures as errors with a diagnostic whose Code is X02. The returned error MUST preserve the hook failure cause without a leading X02 prefix.
+If a hook exits nonzero without emitting any module-attributed violation, Boundaries MUST return an X02 diagnostic and an error identifying the exit status.
+
+### CHK-044
+Boundaries MUST fail with diagnostic X02 for a missing hook required by a module with disposable globs and no reasoned opt-out.
+
+### CHK-045
+Boundaries MUST warn with diagnostic X04 without an error for a missing hook when no boundary enforcement is required.
+
+### CHK-046
+Evaluate MUST return errors whose contracts ErrorCode is C11 for existing eval-hook setup failures, including missing or invalid hook commands.
+
+### CHK-047
+Evaluate MUST return an error whose contracts ErrorCode is U02 for an unknown requested module.
+
+### CHK-048
+Evaluate MUST return errors whose contracts ErrorCode is C03 for malformed module item syntax and C05 for duplicate module item identities.
+
+### CHK-049
+Doctor MUST retain project.Check diagnostics and prevent hook or agent probes when the current project has a static error.
+
+### CHK-050
+Doctor MUST run probes using current project files in a detached scratch worktree below the common Git directory's fireweed/worktrees, leaving the caller's checkout unchanged.
+
+### CHK-051
+Doctor MUST remove its scratch worktree and Git registration after successful or failed probes.
+
+### CHK-052
+Doctor MUST run the configured setup hook in scratch before probes; a setup failure MUST produce C14 naming the setup hook and prevent later probes.
+
+### CHK-053
+Doctor MUST render two uniquely named throwaway modules from project-owned module templates and the version-1 canary baseline, substituting name, prefix, package, go_module, module_dir and other_dir.
+
+### CHK-054
+Doctor MUST report C14 naming missing or malformed module templates or required canary maps and skip the affected probes.
+
+### CHK-055
+Doctor MUST require passing baseline evals and coverage for the throwaway canary modules, and applicable boundaries, before planting canaries and after removing each planted canary. This baseline coverage requirement applies to the canary modules used to prove hooks, rather than every existing module. Recovery failures MUST produce C14 naming the failed hook and canary.
+
+### CHK-056
+Doctor MUST plant the supplied undeclared canary and require its boundary hook to report a module-attributed violation; a missed canary MUST produce C14 naming the hook and canary.
+
+### CHK-057
+Doctor MUST plant the supplied internal_eval canary and require its boundary hook to report a module-attributed interface violation; a missed canary MUST produce C14 naming the hook and canary.
+
+### CHK-058
+Doctor MUST require the supplied failing_eval canary to produce a failed referencing testcase and nonzero eval exit; compile errors, missing reports and unrelated failures MUST NOT count as detection.
+
+### CHK-059
+Doctor MUST require the supplied missing_id canary to be rejected for its unmapped testcase ID; unrelated hook or report failures MUST NOT count as detection.
+
+### CHK-060
+Doctor MUST test applicable global eval and boundary hooks and every per-module override through their corresponding canary probes.
+
+### CHK-061
+Doctor MUST set probe hooks' FIREWEED_BIN to the request Bin and make the scratch canary modules discoverable through that executable's modules output.
+
+### CHK-062
+Doctor MUST retain each real module's reasoned X03 boundaries-opt-out warning and applicable X04 warning when no boundary enforcement is required.
+
+### CHK-063
+Doctor MUST run the worker and audit commands once each in scratch through the configured agent.wrap with a fixed-reply prompt, requiring exit 0 and the requested reply for success.
+
+### CHK-064
+Doctor MUST use agent.command for the audit probe when audit.command is unset and emit a C15 warning identifying the shared-command blind spot.
+
+### CHK-065
+Doctor MUST bound each agent probe by the request Timeout or three minutes when unset, and report C15 failures with the command and its final 20 output lines.
+
+### CHK-066
+Doctor MUST classify a configured limit_patterns match in an agent probe's final 20 output lines as a C15 usage-limit diagnostic rather than an ordinary command failure.
+
+### CHK-067
+Doctor with NoAgent MUST skip worker and audit command execution while retaining hook canary and recovery checks.
+
+### CHK-068
+Doctor MUST emit a C16 warning when the AGENTS.md managed block is missing or differs from the current fireweed guidance, while accepting a current block regardless of surrounding text.
+
+### CHK-069
+Doctor MUST emit a C16 warning when a project playbook override's embedded_base is missing or differs from the SHA-256 of its current embedded playbook; a matching base MUST avoid that warning.
+
+### CHK-070
+History MUST list full commit IDs selected by the supplied Git revision range in oldest-first topological order.
+For an empty range it MUST use the merge base of HEAD and the locally resolved configured base through HEAD.
+
+### CHK-071
+History MUST identify worker commits from new phase assignments in change-file contents across pending/archive moves, rather than commit subjects.
+Deleting a change document without assigning a phase MUST not by itself classify the commit as a worker commit.
+
+### CHK-072
+History MUST report H01 when a worker commit changes a protected path or a project playbook override.
+
+### CHK-073
+History MUST report H02 when an impl-to-applied phase commit changes evals or interface zones.
+
+### CHK-074
+History MUST report H03 when any commit modifies, deletes or renames an existing append_only path, including merge-resolution changes identified by combined Git diffs.
+
+### CHK-075
+History MUST report H04 when a commit modifies an existing file under changes/archive.
+Deleting an archived change file MUST remain allowed by H04.
+
+### CHK-076
+History MUST recognize each new applied phase whose parents lack an impl phase as squashed, listing its commit and change without a warning.
+H01 and H02 MUST not apply to those squashed commits.
+H03 and H04 MUST still apply.
+
+### CHK-077
+History MUST return each rule finding as a Diagnostic with its H01–H04 code, repository-relative Path and full commit ID in Message, using the recorded before/after zone maps and the worker change's projected set values.
+
+### CHK-078
+History MUST return an error when a revision range or required recorded project/change document cannot be read or parsed.
+
+### CHK-079
+ParseJUnit MUST retain the message attributes and text bodies of JUnit failure and error elements in each affected Case.Failure, including message-only and body-only diagnostics.
+A testcase without such text MUST have an empty Failure.
+
+### CHK-080
+Evaluate MUST retain parsed Case.Failure strings in its returned Report.Cases, including when failing testcases make the eval hook exit nonzero.
+
+### CHK-081
+Doctor MUST persist complete stdout and stderr from every executed worker and audit probe, including failed, timed-out and cancelled probes, under the invoking project's .fireweed/runs/<run>/<phase>-1.log. Each Doctor invocation MUST use a fresh shared run identity, with phases doctor-worker and doctor-audit. Each executed probe's Detail MUST identify its log file by absolute path.
+
+### CHK-082
+Doctor MUST expand {prompt}, {prompt_file} and {git_common_dir} once in selected worker/audit command templates and wrapper argv, quoting shell substitutions and preserving argv values literally.
+
+### CHK-083
+Doctor MUST create one temporary file containing the exact probe prompt only when a selected command or wrapper template uses {prompt_file}, and expand that placeholder to its absolute path. The file MUST remain available through execution and be removed afterward, including after launch failure, nonzero exit, timeout or cancellation.
+
+### CHK-084
+Each canary DoctorCheck Name MUST begin with its probe name (baseline, undeclared, internal_eval, failing_eval, missing_id or recovery), followed by a space and the hook scope when one applies.
+
+## Decisions
+
+[0071-doctor-probes] Doctor requests the literal reply FIREWEED_DOCTOR_OK; limit_patterns match
+case-insensitive literal substrings. Project playbook overrides use frontmatter
+embedded_base containing the hexadecimal SHA-256 of the embedded playbook text.
+
+[0114-history-validation] A merge merely retaining a phase value already held by a parent is not a new
+phase assignment; combined merge diffs still enforce append-only files.
+Squashed entries identify the change's repository-relative after-path; ordinary
+non-merge phase transitions compare the sole parent.

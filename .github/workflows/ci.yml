@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    env:
+      GOCACHE: /tmp/fireweed-rebuild-cache
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+      - run: make check build
+      - run: bin/fireweed check
+
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GOCACHE: /tmp/fireweed-rebuild-cache
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+      - uses: goreleaser/goreleaser-action@v7
+        with:
+          version: '~> v2'
+          install-only: true
+      - run: make release-snapshot
+      - run: ruby -c dist/fireweed.rb

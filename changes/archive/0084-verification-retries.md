@@ -1,0 +1,96 @@
+---
+audit_rounds: 0
+bases:
+    RUN-015: 5d5d135e
+module: runner
+phase: applied
+run: 20261029T032332-d2f9262403cce62e6c8ed149
+---
+
+
+
+## Motivation
+
+The design's Retries section requires bounded phase retries that retain work
+and add the last verification output to the next prompt. NEW next and run now
+complete successful Go changes, but a single failed phase verification stops
+them with no retry. Extend that existing runnable path with verification
+retries, then demonstrate an actual NEW next whose first implementation is
+wrong and whose second fixes it after receiving feedback. This slice does not
+claim saved-attempt/block recovery, nonzero-agent retries or usage/time stops;
+those remain subsequent focused steps.
+
+## Interface
+
+No public signature or retained type change. Next and its Run caller read the
+existing attempts configuration; invocation results remain ordered in Steps.
+
+## Added
+
+### RUN-021
+Next MUST permit at most the configured attempts count of agent invocations
+for a phase after verification failures, defaulting to two when unset. Each
+phase MUST have its own attempt allowance.
+
+### RUN-022
+When phase verification fails and an attempt remains, Next MUST retain the
+earlier work and retry that phase. The retry prompt MUST include the last
+verification output.
+
+## Modified
+
+### RUN-015
+When invocation fails, or phase verification still fails after its attempt
+allowance, Next MUST return an error and captured invocation results without
+advancing that phase.
+
+## Removed
+
+
+
+## Decisions
+
+
+
+## Rejected alternatives
+
+
+
+## Notes
+
+Keep this change limited to verification retry and its existing Next/Run
+composition. Do not prebuild a recovery subsystem or change approval, audit,
+claims, agent selection, timeout defaults, diagnostic classification or APIs.
+Do not treat usage limits as ordinary verification failures. Native Done
+failures retain their existing stop behavior; saved work/blocking and full
+recovery will follow in their own changes. Preserve audit round bounds.
+
+Use public interfaces, ordinary temporary repositories and bounded fake agents.
+Cover the default two-attempt retry success and exhaustion, one configured
+alternative bound, retained edits and actual verification feedback. Reuse the
+existing Go fixture where practical; preserve all old behavioral assertions,
+including phase retention and captured output, while adapting RUN-015's
+invocation count to its changed requirement. No test outside the target module
+may be changed. Keep own Verify below five minutes and full below fifteen.
+
+Workers never commit or invoke controller lifecycle commands, alter runtime
+state/bounds, edit SPEC/protected docs or other modules. The coordinator reads
+context and owns native phase operations. Separate auditors receive isolated
+change/projected specs/evals/permitted public interfaces only.
+
+## Provenance
+
+- evals 2026-10-29T03:38:08.317166Z agent=manual fireweed=0.1.0 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=214 failing=5 passing=209
+- audit 2026-10-29T03:41:11.208025Z agent=manual fireweed=0.1.0 playbook=0fb044cfaca1b9a844a25b4c86223177e52f2f35fb149eddf044e83822665c88 tests=0 failing=0 passing=0
+- impl 2026-10-29T04:33:37.423529Z agent=manual fireweed=0.1.0 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=214 failing=0 passing=214
+
+## Audit
+
+No findings
+Checked IDs: RUN-015, RUN-021, RUN-022
+
+The accepted separate Sol/high auditor ran from the isolated snapshot. Complete
+command-log inspection shows supplied snapshot reads only, without outside or
+implementation/history access, execution or writes. The earlier mislocated
+invocation was stopped and is not accepted as audit evidence; its log and the
+coordinator launch deviation remain recorded.

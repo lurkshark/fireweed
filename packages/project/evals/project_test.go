@@ -1,0 +1,256 @@
+package evals_test
+
+import (
+	"errors"
+	"os"
+	"path/filepath"
+	"reflect"
+	"regexp"
+	"strings"
+	"testing"
+
+	"github.com/lurkshark/fireweed/packages/contracts"
+	"github.com/lurkshark/fireweed/packages/project"
+)
+
+const fixtureConfig = `fireweed: ">=0.1, <0.2"
+version: 1
+base: main
+modules: ["packages/*"]
+module_defaults:
+  interface: [api.go]
+  evals: [evals/**]
+  disposable: [internal/**]
+  preserve: [data/**]
+`
+
+func put(t *testing.T, root, name, body string) {
+	t.Helper()
+	path := filepath.Join(root, filepath.FromSlash(name))
+	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, []byte(body), 0644); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func fixture(t *testing.T) string {
+	t.Helper()
+	root := t.TempDir()
+	put(t, root, "fireweed.yaml", fixtureConfig)
+	put(t, root, "packages/alpha/SPEC.md", "---\nname: alpha\nid_prefix: ALP\ndepends_on: []\nevals: []\n---\n# Alpha\n\n## Specs\n\n### ALP-001\nAlpha behavior.\n")
+	put(t, root, "packages/beta/SPEC.md", "---\nname: beta\nid_prefix: BET\ndepends_on: [alpha]\n---\n# Beta\n\n## Specs\n")
+	return root
+}
+
+func Test_PRJ_001_PRJ_017_LoadConfiguredModulesAndDefaults(t *testing.T) {
+	root := fixture(t)
+	put(t, root, "other/ignored/SPEC.md", "not a document")
+	got, err := project.Load(root)
+	if err != nil {
+		t.Fatalf("Load: %v", err)
+	}
+	if got.Root != root {
+		t.Errorf("Root = %q; want %q", got.Root, root)
+	}
+	if got.Config["version"] != 1 {
+		t.Errorf("decoded Config version = %#v", got.Config["version"])
+	}
+	byName := map[string]project.Module{}
+	for _, m := range got.Modules {
+		byName[m.Name] = m
+	}
+	if len(got.Modules) != 2 || len(byName) != 2 {
+		t.Fatalf("modules = %#v; want exactly alpha and beta", got.Modules)
+	}
+	alpha, beta := byName["alpha"], byName["beta"]
+	if alpha.IDPrefix != "ALP" || alpha.Dir != "packages/alpha" || len(alpha.DependsOn) != 0 {
+		t.Errorf("alpha identity = %#v", alpha)
+	}
+	if beta.IDPrefix != "BET" || beta.Dir != "packages/beta" || !reflect.DeepEqual(beta.DependsOn, []string{"alpha"}) {
+		t.Errorf("beta identity/dependencies = %#v", beta)
+	}
+	if alpha.Document.Frontmatter["name"] != "alpha" || !strings.Contains(alpha.Document.Body, "### ALP-001\nAlpha behavior.") {
+		t.Errorf("alpha Document = %#v", alpha.Document)
+	}
+	if !reflect.DeepEqual(alpha.Zones.Interface, []string{"api.go"}) || !reflect.DeepEqual(alpha.Zones.Disposable, []string{"internal/**"}) || !reflect.DeepEqual(alpha.Zones.Preserve, []string{"data/**"}) {
+		t.Errorf("inherited zones = %#v", alpha.Zones)
+	}
+	if alpha.Zones.Evals == nil || len(alpha.Zones.Evals) != 0 {
+		t.Errorf("explicit empty evals zone lost: %#v", alpha.Zones.Evals)
+	}
+	if !reflect.DeepEqual(beta.Zones.Evals, []string{"evals/**"}) {
+		t.Errorf("default evals zone = %#v", beta.Zones.Evals)
+	}
+}
+
+func Test_PRJ_018_LoadInvalidDocuments(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		edit func(*testing.T, string)
+	}{
+		{"missing_config", func(t *testing.T, root string) {
+			if err := os.Remove(filepath.Join(root, "fireweed.yaml")); err != nil {
+				t.Fatal(err)
+			}
+		}},
+		{"malformed_config", func(t *testing.T, root string) { put(t, root, "fireweed.yaml", "modules: [broken\n") }},
+		{"missing_module_document", func(t *testing.T, root string) {
+			if err := os.Remove(filepath.Join(root, "packages/alpha/SPEC.md")); err != nil {
+				t.Fatal(err)
+			}
+		}},
+		{"malformed_module_document", func(t *testing.T, root string) {
+			put(t, root, "packages/alpha/SPEC.md", "---\nname: [broken\n---\n# Alpha\n")
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := fixture(t)
+			tc.edit(t, root)
+			if _, err := project.Load(root); err == nil {
+				t.Error("Load accepted missing or malformed project document")
+			}
+		})
+	}
+}
+
+func Test_PRJ_002_Graph(t *testing.T) {
+	module := func(name, prefix string, deps ...string) project.Module {
+		return project.Module{Name: name, IDPrefix: prefix, DependsOn: deps}
+	}
+	for _, tc := range []struct {
+		id      string
+		name    string
+		modules []project.Module
+		valid   bool
+		explain []string
+	}{
+		{"PRJ-002", "acyclic", []project.Module{module("alpha", "ALP"), module("beta", "BET", "alpha"), module("gamma", "GAM", "beta")}, true, nil},
+		{"PRJ-019", "empty_name", []project.Module{module("", "ALP")}, false, []string{"empty", "name"}},
+		{"PRJ-020", "empty_prefix", []project.Module{module("alpha", "")}, false, []string{"empty", "prefix"}},
+		{"PRJ-019", "duplicate_name", []project.Module{module("alpha", "ALP"), module("alpha", "BET")}, false, []string{"duplicate", "alpha"}},
+		{"PRJ-020", "duplicate_prefix", []project.Module{module("alpha", "ALP"), module("beta", "ALP")}, false, []string{"duplicate", "alp"}},
+		{"PRJ-021", "missing_dependency", []project.Module{module("alpha", "ALP", "missing")}, false, []string{"depend", "missing"}},
+		{"PRJ-021", "self_dependency", []project.Module{module("alpha", "ALP", "alpha")}, false, []string{"self", "alpha"}},
+		{"PRJ-022", "cycle", []project.Module{module("alpha", "ALP", "beta"), module("beta", "BET", "alpha")}, false, []string{"cycl"}},
+	} {
+		t.Run(tc.id+"_"+tc.name, func(t *testing.T) {
+			err := project.ValidateGraph(tc.modules)
+			if tc.valid && err != nil {
+				t.Errorf("valid graph rejected: %v", err)
+			}
+			if !tc.valid && (err == nil || strings.TrimSpace(err.Error()) == "") {
+				t.Errorf("invalid graph needs an explanatory error; got %v", err)
+			} else if !tc.valid {
+				for _, part := range tc.explain {
+					if !strings.Contains(strings.ToLower(err.Error()), part) {
+						t.Errorf("error %q does not explain %s rejection (missing %q)", err, tc.name, part)
+					}
+				}
+			}
+		})
+	}
+}
+
+func Test_PRJ_003_PRJ_023_NewChangeSkeletonAndNumbering(t *testing.T) {
+	root := fixture(t)
+	put(t, root, "changes/0003-waiting.md", "pending marker")
+	put(t, root, "changes/archive/0007-finished.md", "archived marker")
+	rel, err := project.NewChange(root, "alpha", "new-feature")
+	if err != nil {
+		t.Fatalf("NewChange: %v", err)
+	}
+	if rel != "changes/0008-new-feature.md" {
+		t.Errorf("relative path = %q; want changes/0008-new-feature.md", rel)
+	}
+	data, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(rel)))
+	if err != nil {
+		t.Fatalf("read new change: %v", err)
+	}
+	doc, err := contracts.ParseDocument(string(data))
+	if err != nil {
+		t.Fatalf("new change document: %v", err)
+	}
+	if doc.Frontmatter["module"] != "alpha" {
+		t.Errorf("new change module = %#v", doc.Frontmatter["module"])
+	}
+	for _, field := range []string{"phase", "run", "blocked"} {
+		if value, present := doc.Frontmatter[field]; present {
+			t.Errorf("queued change has %s = %#v", field, value)
+		}
+	}
+	for _, heading := range []string{"Motivation", "Interface", "Added", "Modified", "Removed", "Decisions"} {
+		if _, ok := contracts.Section(doc.Body, heading); !ok {
+			t.Errorf("missing %s section", heading)
+		}
+	}
+	if regexp.MustCompile(`(?m)^### [A-Z]+-[0-9]+\b`).Match(data) {
+		t.Errorf("skeleton assigned a spec ID: %s", data)
+	}
+}
+
+func Test_PRJ_024_NewChangeRejectsDuplicatesWithoutOverwrite(t *testing.T) {
+	for _, archived := range []bool{false, true} {
+		name := "pending"
+		path := "changes/0002-repeat.md"
+		if archived {
+			name = "archived"
+			path = "changes/archive/0002-repeat.md"
+		}
+		t.Run(name, func(t *testing.T) {
+			root := fixture(t)
+			put(t, root, path, "original marker")
+			_, err := project.NewChange(root, "alpha", "repeat")
+			if code, _, ok := contracts.ErrorCode(err); !ok || code != "C13" {
+				t.Errorf("NewChange error code = (%q, %v); want (C13, true): %v", code, ok, err)
+			}
+			data, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(path)))
+			if err != nil || string(data) != "original marker" {
+				t.Errorf("existing change overwritten: %q, %v", data, err)
+			}
+		})
+	}
+}
+
+func Test_PRJ_025_PRJ_026_NewChangeInvalidArguments(t *testing.T) {
+	for _, tc := range []struct{ id, name, module, slug string }{
+		{"PRJ-025", "unknown_module", "missing", "valid"},
+		{"PRJ-026", "uppercase_slug", "alpha", "Bad"},
+		{"PRJ-026", "underscore_slug", "alpha", "bad_name"},
+		{"PRJ-026", "slash_slug", "alpha", "../bad"},
+		{"PRJ-026", "empty_slug", "alpha", ""},
+	} {
+		t.Run(tc.id+"_"+tc.name, func(t *testing.T) {
+			root := fixture(t)
+			_, err := project.NewChange(root, tc.module, tc.slug)
+			if err == nil {
+				t.Errorf("accepted module %q and slug %q", tc.module, tc.slug)
+			} else if tc.id == "PRJ-025" && (!strings.HasPrefix(err.Error(), "unknown module ") || !strings.Contains(err.Error(), tc.module)) {
+				t.Errorf("unknown module error = %q; want prefix and rejected module %q", err, tc.module)
+			}
+		})
+	}
+}
+
+func Test_PRJ_067_NewChangeBlockedQueuedPathPreservesCause(t *testing.T) {
+	root := fixture(t)
+	const queuedPath = "changes/0001-blocked.md"
+	if err := os.MkdirAll(filepath.Join(root, filepath.FromSlash(queuedPath)), 0755); err != nil {
+		t.Fatal(err)
+	}
+	path, err := project.NewChange(root, "alpha", "blocked")
+	if err == nil {
+		t.Fatal("NewChange accepted a queued path occupied by a directory")
+	}
+	if path != "" {
+		t.Errorf("rejected NewChange path = %q; want empty", path)
+	}
+	if !strings.HasPrefix(err.Error(), "create "+queuedPath+":") {
+		t.Errorf("NewChange error = %q; want repository-relative create prefix", err)
+	}
+	var pathErr *os.PathError
+	if !errors.As(err, &pathErr) || pathErr.Path != filepath.Join(root, filepath.FromSlash(queuedPath)) || pathErr.Err == nil {
+		t.Errorf("NewChange error = %v; want retained filesystem cause for %s", err, queuedPath)
+	}
+}

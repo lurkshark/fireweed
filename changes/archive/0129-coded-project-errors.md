@@ -1,0 +1,77 @@
+---
+audit_rounds: 0
+module: project
+phase: applied
+run: 20261031T033337-304bd319d25e3df24a16e023
+---
+
+
+
+## Motivation
+
+App assigns C08 to Stamp failures by matching ` bases must be a mapping`, U02 to
+missing pending changes by matching `pending change ... not found`, and project's
+own queue code classifies item errors by message prefix. The design requires
+stable diagnostic codes; these depend on unspecified wording, as the contracts
+drill showed. Return coded errors using the contracts CodedError from
+0128-coded-parse-errors.
+
+## Interface
+
+No new public functions. Stamp and the functions that look up pending changes
+return errors that carry a contracts CodedError in their chain.
+
+## Added
+
+### PRJ-057
+Stamp MUST return an error whose contracts ErrorCode is C08 when the change's bases frontmatter is not a mapping.
+
+### PRJ-058
+Stamp MUST return an error whose contracts ErrorCode is U02, with the requested change as subject, when no pending change matches it.
+
+### PRJ-059
+Load MUST return an error preserving the contracts ErrorCode C03 or C05 when a module SPEC.md fails to parse.
+
+## Modified
+
+
+
+## Removed
+
+
+
+## Decisions
+
+
+
+## Rejected alternatives
+
+
+
+## Notes
+
+Implementation should also replace the message-prefix check in
+internal/queue/cause.go with contracts.ErrorCode.
+
+Owner approved both the diagnostic-path and corrective-guidance recoveries on
+2026-10-30. Retain module SPEC.md path information through project-local Load
+failures and Check diagnostics: the existing doctor regression requires it.
+The next full check exposed Test_APP_109_APP_112_APP_113_CIStaticUsageAndConfiguration:
+C05/status 1 were correct, but the earlier Load error sends CI down a path whose
+advice fails the existing corrective-guidance assertion. Add actionable guidance
+to the module parse-error wrapper (for example, Use valid, unique spec item
+headings), retaining the contracts code, wrapped cause and module SPEC.md path.
+Preserve frozen evals and interfaces, and edit only allowed project internals.
+Run both focused app regressions and the full existing app eval suite before
+returning, along with verify --quick, so any remaining dependent regressions are
+visible within this bounded attempt. Keep the existing run, phase and audit.
+
+## Provenance
+
+- evals 2026-10-31T03:35:14.896424Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=b26da634732c7f1c7dc600115582a63cb8f82e1fd2bd1d522d608fe837a04ba7 tests=709 failing=7 passing=702
+- audit 2026-10-31T03:35:43.744961Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=5cb9f9dac24b0b6bb1b970edd4fab4406d2b4d0435ddefc3ef59a2cfdd267f18 tests=0 failing=0 passing=0
+- impl 2026-10-31T04:21:09.039564Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.1 playbook=07554a3249d8fca0ba70df7504135f297491465caa63458734a4b8351734d0e5 tests=709 failing=0 passing=709
+
+## Audit
+
+No findings. Checked PRJ-057, PRJ-058, PRJ-059.

@@ -1,0 +1,425 @@
+package evals_test
+
+import (
+	"crypto/sha256"
+	"encoding/hex"
+	"errors"
+	"fmt"
+	"reflect"
+	"strings"
+	"testing"
+
+	"github.com/lurkshark/fireweed/packages/contracts"
+)
+
+func Test_CON_001_ParseDocument(t *testing.T) {
+	source := "---\nname: contracts\ncount: 2\n---\n# Title\n\nBody  \n"
+	doc, err := contracts.ParseDocument(source)
+	if err != nil {
+		t.Fatalf("ParseDocument: %v", err)
+	}
+	if !reflect.DeepEqual(doc.Frontmatter, map[string]any{"name": "contracts", "count": 2}) {
+		t.Errorf("frontmatter = %#v", doc.Frontmatter)
+	}
+	if doc.Body != "# Title\n\nBody  \n" {
+		t.Errorf("body = %q", doc.Body)
+	}
+}
+
+func Test_CON_007_RejectInvalidFrontmatter(t *testing.T) {
+	for _, tc := range []struct{ name, source string }{
+		{"malformed", "---\nname: [broken\n---\nbody\n"},
+		{"non_mapping", "---\n- first\n---\nbody\n"},
+		{"unterminated", "---\nname: contracts\nbody\n"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if _, err := contracts.ParseDocument(tc.source); err == nil {
+				t.Errorf("ParseDocument(%q) accepted invalid frontmatter", tc.source)
+			}
+		})
+	}
+}
+
+func Test_CON_008_RenderRoundTrip(t *testing.T) {
+	want := contracts.Document{
+		Frontmatter: map[string]any{"name": "contracts", "enabled": true},
+		Body:        "# Title\n\nBody\n",
+	}
+	source, err := contracts.RenderDocument(want)
+	if err != nil {
+		t.Fatalf("RenderDocument: %v", err)
+	}
+	got, err := contracts.ParseDocument(source)
+	if err != nil {
+		t.Fatalf("parse rendered document: %v", err)
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("round trip = %#v; want %#v", got, want)
+	}
+}
+
+func Test_CON_008_YAMLRepresentationsAndNilFrontmatter(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		frontmatter map[string]any
+	}{
+		{"scalar", map[string]any{"name": "contracts", "enabled": true, "count": 2, "ratio": 1.5, "unset": nil}},
+		{"sequence", map[string]any{"items": []any{"alpha", 2, true}}},
+		{"mapping", map[string]any{"nested": map[string]any{"name": "contracts", "count": 2}}},
+		{"empty_mapping", map[string]any{}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			want := contracts.Document{Frontmatter: tc.frontmatter, Body: "# Title\n\nBody  \n"}
+			source, err := contracts.RenderDocument(want)
+			if err != nil {
+				t.Fatalf("RenderDocument: %v", err)
+			}
+			got, err := contracts.ParseDocument(source)
+			if err != nil {
+				t.Fatalf("ParseDocument: %v", err)
+			}
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("round trip = %#v; want %#v", got, want)
+			}
+		})
+	}
+	if _, err := contracts.RenderDocument(contracts.Document{Body: "body\n"}); err == nil {
+		t.Error("RenderDocument accepted nil frontmatter")
+	}
+}
+
+func Test_CON_002_CON_009_Sections(t *testing.T) {
+	source := "intro\n## Alpha\nA  \n\n## Beta\nB\n\n## Gamma\nC\n"
+	if got, ok := contracts.Section(source, "Beta"); !ok || got != "B\n\n" {
+		t.Errorf("Section(Beta) = %q, %v", got, ok)
+	}
+	if _, ok := contracts.Section(source, "Missing"); ok {
+		t.Error("Section(Missing) was reported present")
+	}
+	want := "intro\n## Alpha\nA  \n\n## Beta\nnew\n## Gamma\nC\n"
+	if got := contracts.ReplaceSection(source, "Beta", "new\n"); got != want {
+		t.Errorf("replacement changed section or surrounding bytes:\n got %q\nwant %q", got, want)
+	}
+}
+
+func Test_CON_009_CON_002_AppendSection(t *testing.T) {
+	source := "# Doc\n\n## Existing\nkeep\n"
+	got := contracts.ReplaceSection(source, "New", "added\n")
+	if !strings.HasPrefix(got, source) {
+		t.Errorf("append changed original bytes: %q", got)
+	}
+	if body, ok := contracts.Section(got, "New"); !ok || body != "added\n" {
+		t.Errorf("appended section = %q, %v", body, ok)
+	}
+}
+
+func Test_CON_002_CON_009_FirstDuplicateSection(t *testing.T) {
+	source := "intro\n## Alpha\nkeep  \n\n## Beta\nfirst\n\n## Gamma\nuntouched\n## Beta\nsecond\n## Delta\nend\n"
+	if got, ok := contracts.Section(source, "Beta"); !ok || got != "first\n\n" {
+		t.Errorf("Section(Beta) = %q, %v; want first body", got, ok)
+	}
+	want := "intro\n## Alpha\nkeep  \n\n## Beta\nreplacement\n## Gamma\nuntouched\n## Beta\nsecond\n## Delta\nend\n"
+	if got := contracts.ReplaceSection(source, "Beta", "replacement\n"); got != want {
+		t.Errorf("replacement changed duplicate or surrounding sections:\n got %q\nwant %q", got, want)
+	}
+}
+
+func Test_CON_010_ParseItems(t *testing.T) {
+	source := "### CON-001 [draft]\nFirst line\n\nSecond line\n### CON-002\nNext\n"
+	want := []contracts.Item{
+		{ID: "CON-001", Tag: "draft", Body: "First line\n\nSecond line\n"},
+		{ID: "CON-002", Body: "Next\n"},
+	}
+	got, err := contracts.ParseItems(source)
+	if err != nil {
+		t.Fatalf("ParseItems: %v", err)
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("items = %#v; want %#v", got, want)
+	}
+}
+
+func Test_CON_011_CON_012_RejectInvalidItems(t *testing.T) {
+	for _, tc := range []struct{ name, source string }{
+		{"CON_012_duplicate", "### CON-001\nFirst\n### CON-001\nSecond\n"},
+		{"CON_011_malformed_heading", "### CON-001 [draft\nBody\n"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if _, err := contracts.ParseItems(tc.source); err == nil {
+				t.Errorf("ParseItems(%q) accepted invalid items", tc.source)
+			}
+		})
+	}
+}
+
+func Test_CON_006_CON_010_ParseHandlesInSourceOrder(t *testing.T) {
+	source := "### new:alpha-2 [draft]\nFirst line\n\nSecond line\n### CON-007\nAssigned body\n### new:7-beta\nHandle body\n"
+	want := []contracts.Item{
+		{ID: "new:alpha-2", Tag: "draft", Body: "First line\n\nSecond line\n"},
+		{ID: "CON-007", Body: "Assigned body\n"},
+		{ID: "new:7-beta", Body: "Handle body\n"},
+	}
+	got, err := contracts.ParseItems(source)
+	if err != nil {
+		t.Fatalf("ParseItems: %v", err)
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("items = %#v; want %#v", got, want)
+	}
+}
+
+func Test_CON_010_AssignedIDGrammar(t *testing.T) {
+	source := "### 7CON-001 [draft]\nFirst\n\n### A2-3\nSecond\n### new:alpha-2\nHandle\n"
+	want := []contracts.Item{
+		{ID: "7CON-001", Tag: "draft", Body: "First\n\n"},
+		{ID: "A2-3", Body: "Second\n"},
+		{ID: "new:alpha-2", Body: "Handle\n"},
+	}
+	got, err := contracts.ParseItems(source)
+	if err != nil {
+		t.Errorf("ParseItems: %v", err)
+	} else if !reflect.DeepEqual(got, want) {
+		t.Errorf("items = %#v; want %#v", got, want)
+	}
+	for _, tc := range []struct{ name, heading string }{
+		{"lowercase_prefix", "### con-001"},
+		{"empty_prefix", "### -001"},
+		{"empty_suffix", "### CON-"},
+		{"punctuation", "### CO_N-001"},
+		{"nondecimal_suffix", "### CON-A"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if _, err := contracts.ParseItems(tc.heading + "\nBody\n"); err == nil {
+				t.Errorf("ParseItems accepted malformed assigned ID %q", tc.heading)
+			}
+		})
+	}
+}
+
+func Test_CON_015_CON_012_RejectInvalidOrDuplicateHandles(t *testing.T) {
+	for _, tc := range []struct{ name, source string }{
+		{"CON_015_empty", "### new:\nBody\n"},
+		{"CON_015_uppercase", "### new:Alpha\nBody\n"},
+		{"CON_015_underscore", "### new:alpha_beta\nBody\n"},
+		{"CON_015_punctuation", "### new:alpha.beta\nBody\n"},
+		{"CON_012_duplicate", "### new:alpha-2\nFirst\n### new:alpha-2\nSecond\n"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if _, err := contracts.ParseItems(tc.source); err == nil {
+				t.Errorf("ParseItems(%q) accepted invalid handles", tc.source)
+			}
+		})
+	}
+}
+
+func Test_CON_013_RenderItem(t *testing.T) {
+	for _, tc := range []struct {
+		item contracts.Item
+		want string
+	}{
+		{contracts.Item{ID: "CON-001", Tag: "draft", Body: "Body\n"}, "### CON-001 [draft]\nBody\n"},
+		{contracts.Item{ID: "CON-002", Body: "Line one\n\nLine two\n"}, "### CON-002\nLine one\n\nLine two\n"},
+	} {
+		if got := contracts.RenderItem(tc.item); got != tc.want {
+			t.Errorf("RenderItem(%#v) = %q; want %q", tc.item, got, tc.want)
+		}
+	}
+}
+
+func Test_CON_003_CanonicalHash(t *testing.T) {
+	item := contracts.Item{ID: "CON-013", Tag: "draft", Body: "alpha  \r\nbeta\t\r\n\r\n\r\n"}
+	canonical := "### CON-013 [draft]\nalpha\nbeta\n"
+	sum := sha256.Sum256([]byte(canonical))
+	want := hex.EncodeToString(sum[:])[:8]
+	if got := contracts.SpecHash(item); got != want {
+		t.Errorf("SpecHash = %q; want %q for canonical item %q", got, want, canonical)
+	}
+	if got := contracts.SpecHash(contracts.Item{ID: "CON-013", Tag: "draft", Body: "alpha\nbeta\n"}); got != want {
+		t.Errorf("equivalent LF item hash = %q; want %q", got, want)
+	}
+}
+
+func Test_CON_003_IDAndTagAffectHash(t *testing.T) {
+	base := contracts.Item{ID: "CON-013", Tag: "draft", Body: "body\n"}
+	baseHash := contracts.SpecHash(base)
+	withID := base
+	withID.ID = "CON-014"
+	withTag := base
+	withTag.Tag = "ready"
+	if baseHash == contracts.SpecHash(withID) || baseHash == contracts.SpecHash(withTag) {
+		t.Errorf("ID and tag must affect hash: base=%q id=%q tag=%q", baseHash, contracts.SpecHash(withID), contracts.SpecHash(withTag))
+	}
+}
+
+func Test_CON_004_PositiveMatches(t *testing.T) {
+	for _, tc := range []struct{ name, class string }{
+		{"Test_con-001_checks", "Suite"},
+		{"Test_CON_001", "Suite"},
+		{"Test_CON001", "Suite"},
+		{"unrelated", "checks.con_001"},
+	} {
+		if !contracts.MatchesID("CON-001", tc.name, tc.class) {
+			t.Errorf("MatchesID(CON-001, %q, %q) = false", tc.name, tc.class)
+		}
+	}
+}
+
+func Test_CON_004_Boundaries(t *testing.T) {
+	for _, tc := range []struct{ name, class string }{
+		{"XCON-001", "Suite"},
+		{"7CON_001", "Suite"},
+		{"CON0012", "Suite"},
+	} {
+		if contracts.MatchesID("CON-001", tc.name, tc.class) {
+			t.Errorf("MatchesID accepted embedded or extended ID in %q", tc.name)
+		}
+	}
+}
+
+func Test_CON_005_MatchGlob(t *testing.T) {
+	for _, tc := range []struct {
+		pattern, path string
+		want          bool
+	}{
+		{"evals/*.go", "evals/check_test.go", true},
+		{"evals/*.go", "evals/nested/check.go", false},
+		{"internal/**/test.go", "internal/test.go", true},
+		{"internal/**/test.go", "internal/a/b/test.go", true},
+		{"internal/**/*.go", "internal/a/b/test.go", true},
+		{"api.go", "sub/api.go", false},
+	} {
+		if got := contracts.MatchGlob(tc.pattern, tc.path); got != tc.want {
+			t.Errorf("MatchGlob(%q, %q) = %v; want %v", tc.pattern, tc.path, got, tc.want)
+		}
+	}
+}
+
+func Test_CON_014_ResolveZone(t *testing.T) {
+	for _, tc := range []struct {
+		name, path, want string
+		zones            contracts.Zones
+	}{
+		{"protected_first", "api.go", "protected", contracts.Zones{Protected: []string{"api.go"}, Interface: []string{"api.go"}}},
+		{"root_spec", "SPEC.md", "spec", contracts.Zones{Evals: []string{"*"}}},
+		{"evals_before_interface", "evals/check.go", "evals", contracts.Zones{Evals: []string{"evals/**"}, Interface: []string{"**"}}},
+		{"interface_before_append", "api.go", "interface", contracts.Zones{Interface: []string{"api.go"}, AppendOnly: []string{"*.go"}}},
+		{"append_before_preserve", "notes.md", "append_only", contracts.Zones{AppendOnly: []string{"*.md"}, Preserve: []string{"*.md"}}},
+		{"preserve_before_disposable", "scratch.go", "preserve", contracts.Zones{Preserve: []string{"*.go"}, Disposable: []string{"*.go"}}},
+		{"disposable", "internal/logic.go", "disposable", contracts.Zones{Disposable: []string{"internal/**"}}},
+		{"other", "sub/SPEC.md", "other", contracts.Zones{}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := contracts.ResolveZone(tc.path, tc.zones); got != tc.want {
+				t.Errorf("ResolveZone(%q) = %q; want %q", tc.path, got, tc.want)
+			}
+		})
+	}
+}
+
+func Test_CON_016_ErrorCode(t *testing.T) {
+	cause := errors.New("cause text")
+	inner := contracts.CodedError{Code: "C03", Subject: "inner", Cause: cause}
+	outer := contracts.CodedError{Code: "C05", Subject: "outer", Cause: inner}
+	noCause := contracts.CodedError{Code: "C07", Subject: "standalone"}
+	for _, tc := range []struct {
+		name, code, subject string
+		err                 error
+		ok                  bool
+	}{
+		{"direct", "C03", "inner", inner, true},
+		{"wrapped", "C03", "inner", fmt.Errorf("context: %w", &inner), true},
+		{"first_in_chain", "C05", "outer", fmt.Errorf("context: %w", &outer), true},
+		{"no_cause", "C07", "standalone", noCause, true},
+		{"plain", "", "", fmt.Errorf("context: %w", cause), false},
+		{"nil", "", "", nil, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			code, subject, ok := contracts.ErrorCode(tc.err)
+			if code != tc.code || subject != tc.subject || ok != tc.ok {
+				t.Errorf("ErrorCode(%v) = (%q, %q, %v); want (%q, %q, %v)", tc.err, code, subject, ok, tc.code, tc.subject, tc.ok)
+			}
+		})
+	}
+	if inner.Error() != cause.Error() || !errors.Is(inner, cause) {
+		t.Errorf("CodedError did not preserve and wrap its cause: %v", inner)
+	}
+}
+
+func Test_CON_017_ParseItemsDuplicateCode(t *testing.T) {
+	for _, tc := range []struct{ name, id string }{
+		{"assigned", "CON-001"},
+		{"handle", "new:alpha-2"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			id := tc.id
+			_, err := contracts.ParseItems("### " + id + "\nFirst\n### " + id + "\nSecond\n")
+			if err == nil {
+				t.Fatal("ParseItems accepted duplicate heading")
+			}
+			if !hasCodedError(err) {
+				t.Fatalf("duplicate error has no CodedError: %T: %v", err, err)
+			}
+			if code, subject, ok := contracts.ErrorCode(err); !ok || code != "C05" || subject != id {
+				t.Errorf("ErrorCode = (%q, %q, %v); want (C05, %q, true)", code, subject, ok, id)
+			}
+			if !strings.Contains(err.Error(), id) {
+				t.Errorf("duplicate message %q does not name ID %q", err, id)
+			}
+		})
+	}
+}
+
+func Test_CON_018_ParseItemsMalformedCode(t *testing.T) {
+	for _, tc := range []struct{ name, heading string }{
+		{"unclosed_tag", "### CON-001 [draft"},
+		{"invalid_handle", "### new:Alpha"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			heading := tc.heading
+			_, err := contracts.ParseItems(heading + "\nBody\n")
+			if err == nil {
+				t.Fatal("ParseItems accepted malformed heading")
+			}
+			if !hasCodedError(err) {
+				t.Fatalf("malformed heading error has no CodedError: %T: %v", err, err)
+			}
+			if code, _, ok := contracts.ErrorCode(err); !ok || code != "C03" {
+				t.Errorf("ErrorCode = (%q, _, %v); want (C03, _, true)", code, ok)
+			}
+			if !strings.Contains(err.Error(), heading) {
+				t.Errorf("malformed heading message %q does not name heading %q", err, heading)
+			}
+		})
+	}
+}
+
+func Test_CON_019_ParseDocumentFrontmatterCode(t *testing.T) {
+	for _, tc := range []struct{ name, source string }{
+		{"missing", "# Body\n"},
+		{"unterminated", "---\nname: contracts\nbody\n"},
+		{"invalid_yaml", "---\nname: [broken\n---\nbody\n"},
+		{"non_mapping", "---\n- first\n---\nbody\n"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := contracts.ParseDocument(tc.source)
+			if err == nil {
+				t.Fatal("ParseDocument accepted invalid frontmatter")
+			}
+			if !hasCodedError(err) {
+				t.Fatalf("frontmatter error has no CodedError: %T: %v", err, err)
+			}
+			if code, _, ok := contracts.ErrorCode(err); !ok || code != "C03" {
+				t.Errorf("ErrorCode = (%q, _, %v); want (C03, _, true)", code, ok)
+			}
+		})
+	}
+}
+
+func hasCodedError(err error) bool {
+	var pointer *contracts.CodedError
+	if errors.As(err, &pointer) {
+		return true
+	}
+	var value contracts.CodedError
+	return errors.As(err, &value)
+}

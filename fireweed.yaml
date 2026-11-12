@@ -1,0 +1,68 @@
+fireweed: '>=0.1, <0.2'
+version: 1
+remote: origin
+modules:
+    - packages/*
+module_defaults:
+    interface:
+        - api.go
+    evals:
+        - evals/**
+    disposable:
+        - internal/**
+hooks:
+    eval: go run .fireweed/hooks.go eval {module_dir} {report}
+    boundaries: go run .fireweed/hooks.go boundaries
+    setup: sh .fireweed/setup.sh
+protected:
+    - .github/**
+    - docs/**
+    - fireweed-design-v1.md
+    - go.mod
+    - main.go
+    - Makefile
+    - scripts/**
+    - .goreleaser.yaml
+    - README.md
+    - LICENSE
+    - .gitignore
+worker_writable:
+    - go.sum
+agent:
+    command:
+        - codex
+        - exec
+        - --ephemeral
+        - --ignore-user-config
+        - -m
+        - gpt-6.1-sol
+        - -c
+        - model_reasoning_effort="high"
+        - -s
+        - workspace-write
+        - '{prompt}'
+audit:
+    enabled: true
+    max_rounds: 2
+    command:
+        - codex
+        - exec
+        - --ephemeral
+        - --ignore-user-config
+        - -m
+        - gpt-6-astra
+        - -c
+        - model_reasoning_effort="medium"
+        - -s
+        - workspace-write
+        - '{prompt}'
+authoring:
+    max_unapproved: 10
+attempts: 2
+timeout: 90m
+verify_dependents: direct
+limit_patterns:
+    - usage limit
+    - rate limit
+limit_wait: 30m
+limit_budget: 4h

@@ -1,0 +1,108 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fireweed-release
+  cancel-in-progress: false
+
+jobs:
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    env:
+      GOCACHE: /tmp/fireweed-rebuild-cache
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+      - run: make check build
+      - run: bin/fireweed check
+      - name: Check release version
+        shell: bash
+        run: |
+          [[ "$GITHUB_REF_NAME" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]] || {
+            echo 'Release tags must be stable versions such as v0.1.0.' >&2
+            exit 1
+          }
+          test "$(bin/fireweed version)" = "${GITHUB_REF_NAME#v}"
+
+  publish:
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      GOCACHE: /tmp/fireweed-rebuild-cache
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+      - name: Check Homebrew tap access
+        env:
+          GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          test -n "$GH_TOKEN"
+          gh api repos/lurkshark/homebrew-tap/branches/main --silent
+      - name: Build release artifacts
+        uses: goreleaser/goreleaser-action@v7
+        with:
+          version: '~> v2'
+          args: release --clean --skip=publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate Homebrew formula
+        run: |
+          python3 scripts/homebrew.py dist > dist/fireweed.rb
+          ruby -c dist/fireweed.rb
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/*.tar.gz dist/fireweed_checksums.txt dist/fireweed.rb \
+            --verify-tag --generate-notes --title "$GITHUB_REF_NAME"
+
+  homebrew:
+    needs: publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out Homebrew tap
+        uses: actions/checkout@v7
+        with:
+          repository: lurkshark/homebrew-tap
+          ref: main
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: .tap
+      - name: Download released formula
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p .tap/Formula
+          gh release download "$GITHUB_REF_NAME" --repo lurkshark/fireweed \
+            --pattern fireweed.rb --dir .tap/Formula --clobber
+      - name: Update Homebrew tap
+        working-directory: .tap
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add Formula/fireweed.rb
+          if ! git diff --cached --quiet; then
+            git commit -m "Update fireweed to $GITHUB_REF_NAME"
+            git push
+          fi

@@ -1,0 +1,934 @@
+package evals_test
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"os"
+	"path/filepath"
+	"reflect"
+	"slices"
+	"sort"
+	"strings"
+	"testing"
+	"time"
+
+	"github.com/lurkshark/fireweed/packages/runner"
+)
+
+// Hooks are tracked in the fixture repository. The fake worker and its
+// observations live outside the fixture repository.
+type drillFixture struct{ root, observations, base string }
+
+func newDrillFixture(t *testing.T) drillFixture {
+	t.Helper()
+	root, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	observations, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	agent := filepath.Join(observations, "agent.sh")
+	wrapper := filepath.Join(observations, "wrapper.sh")
+	nextWrite(t, root, ".fireweed/setup.sh", `#!/bin/sh
+mkdir -p .fireweed/bin
+if [ -d .git ]; then
+  printf '%s\n%s\n' "$PWD" "$FIREWEED_BIN" > "$1/input.setup"
+  printf 'INPUT_SETUP' > .fireweed/bin/fireweed
+  exit 0
+fi
+printf '%s\n%s\n' "$PWD" "$FIREWEED_BIN" > "$1/setup"
+git symbolic-ref -q HEAD > "$1/setup.branch" || :
+git rev-parse HEAD > "$1/setup.head"
+printf 'SETUP_BINARY_SECRET' > .fireweed/bin/fireweed
+if [ -f "$1/setup-fail" ]; then echo SETUP_FAILURE >&2; exit 17; fi
+if [ -f "$1/cleanup-fail" ]; then chmod 0500 "$(dirname "$PWD")"; fi
+`)
+	nextWrite(t, observations, "wrapper.sh", `#!/bin/bash
+printf '%s\n' "$FIREWEED_BIN" >> "$1/wrapper.bin"
+shift
+exec "$@"
+`)
+	nextWrite(t, observations, "agent.sh", `#!/bin/bash
+count=0
+[ ! -f "$1/count" ] || count=$(cat "$1/count")
+count=$((count + 1))
+printf '%s' "$count" > "$1/count"
+: > "$1/invoked-$count"
+printf '%s' "$PWD" > "$1/agent.cwd"
+printf '%s' "$FIREWEED_BIN" > "$1/agent.bin"
+printf '%s' "$2" > "$1/prompt-$count"
+if [ "$count" -eq 1 ]; then
+  find . -path './.git' -prune -o ! -type d -print | sort > "$1/input.files"
+  git for-each-ref --format='%(refname)' > "$1/input.refs"
+  git rev-list --count HEAD > "$1/input.history"
+  if git cat-file -e "$(cat "$1/base")^{commit}" 2>/dev/null; then echo present > "$1/input.base"; else echo absent > "$1/input.base"; fi
+  if [ -f "$1/saved-attempt" ]; then
+    if git cat-file -e "$(cat "$1/saved-attempt")^{commit}" 2>/dev/null; then echo present; else echo absent; fi > "$1/input.saved-attempt"
+  fi
+  if [ -e .git/objects/info/alternates ]; then echo present > "$1/input.alternates"; else echo absent > "$1/input.alternates"; fi
+  if [ -f .fireweed/bin/fireweed ]; then cp .fireweed/bin/fireweed "$1/input.setup-output"; fi
+fi
+mode=success
+[ ! -f "$1/mode" ] || mode=$(cat "$1/mode")
+mkdir -p packages/alpha/internal
+case "$mode" in
+  timeout) printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; sleep 10;;
+  usage_always) printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; echo 'RATE LIMIT' >&2; exit 9;;
+  usage_once) if [ "$count" -eq 1 ]; then printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; echo 'RATE LIMIT' >&2; exit 9; fi; [ "$(cat packages/alpha/internal/value.go 2>/dev/null)" = PARTIAL_WORK ] || { echo 'prior retry work missing' >&2; exit 8; }; printf 'new' > packages/alpha/internal/value.go;;
+  agent_retry|mixed_exhaust) if [ "$count" -eq 1 ]; then printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; echo 'WORKER_FAILURE' >&2; exit 7; fi; if [ "$mode" = agent_retry ]; then [ "$(cat packages/alpha/internal/value.go 2>/dev/null)" = PARTIAL_WORK ] || { echo 'prior retry work missing' >&2; exit 8; }; printf 'new' > packages/alpha/internal/value.go; fi;;
+  agent_fail_always) printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; printf 'failed worker observation'; echo 'WORKER_FAILURE' >&2; exit 7;;
+  verify_retry)
+    printf 'worker stdout attempt %s\n' "$count"
+    printf 'worker stderr attempt %s\n' "$count" >&2
+    if [ "$count" -eq 1 ]; then printf 'wrong' > packages/alpha/internal/value.go; exit 0; fi
+    [ "$(cat packages/alpha/internal/value.go 2>/dev/null)" = wrong ] || { echo 'prior retry work missing' >&2; exit 8; }
+    printf 'new' > packages/alpha/internal/value.go;;
+  wrong|mixed_exhaust) printf 'wrong' > packages/alpha/internal/value.go;;
+  *) printf 'new' > packages/alpha/internal/value.go;;
+esac
+stray=''
+case "$mode" in
+  change_api) printf 'corrupted' > packages/alpha/api.go;;
+  delete_eval) rm packages/alpha/evals/alpha_test.go;;
+  add_foreign) stray=packages/core/internal/foreign.go;;
+  add_other) stray=packages/alpha/extra.txt;;
+  change_preserved) printf 'bad' > packages/alpha/internal/retained.go;;
+  add_project_protected) stray=packages/alpha/internal/project-new.txt;;
+  change_protected_dependency_interface) printf 'bad' > packages/core/api.go;;
+  change_setup|delete_setup)
+    [ "$(cat .fireweed/bin/fireweed)" = INPUT_SETUP ] || exit 12
+    if [ "$mode" = change_setup ]; then printf 'bad' > .fireweed/bin/fireweed; else rm .fireweed/bin/fireweed; fi;;
+  self_check)
+    # Read the advertised shell command from a fenced block, inline code, or a bare line.
+    command=$(awk '
+      /^[[:space:]]*\140\140\140/ {
+        fenced = !fenced
+        if (!fenced && block ~ /[.]fireweed\/eval[.]sh/) { print block; exit }
+        block = ""
+        next
+      }
+      fenced { block = block $0 "\n"; next }
+      /[.]fireweed\/eval[.]sh/ {
+        if (match($0, /\140[^\140]*[.]fireweed\/eval[.]sh[^\140]*\140/))
+          print substr($0, RSTART + 1, RLENGTH - 2)
+        else
+          print
+        exit
+      }
+    ' "$1/prompt-$count")
+    [ -n "$command" ] || { echo 'prompt omitted the local eval command' >&2; exit 12; }
+    printf 'wrong' > packages/alpha/internal/value.go
+    if output=$(sh -c "$command" 2>&1); then echo 'local eval passed the wrong candidate' >&2; exit 12; fi
+    case "$output" in
+      *'own verification failure'*) printf 'new' > packages/alpha/internal/value.go;;
+      *) printf '%s\n' "$output" >&2; exit 12;;
+    esac
+    sh -c "$command" || exit 12;;
+esac
+if [ -n "$stray" ]; then
+  mkdir -p "$(dirname "$stray")" && printf 'stray' > "$stray" || exit 12
+  printf '%s\n' "$stray" > "$1/worker.artifact"
+fi
+cat > DRILL_NOTES.md <<'NOTES'
+## Contradicted Decisions
+- ALP-001: ordered preference may be contradicted.
+
+## Gaps
+- ALP-001, module alpha: ordering needs a spec.
+- no spec, module aardvark: caller expectation may need a spec.
+NOTES
+printf 'worker observation'
+`)
+	nextWrite(t, root, ".fireweed/eval.sh", `#!/bin/sh
+report=$3
+observations=$4
+root=$(pwd -P)
+if [ "$(cd "$2" && pwd -P)" != "$root/packages/$1" ]; then echo invalid module directory >&2; exit 25; fi
+if [ ! -f go.mod ] || [ ! -f packages/core/internal/secret.txt ]; then echo build inputs missing >&2; exit 25; fi
+if [ -d .git ]; then
+  [ "$1" = alpha ] && [ "$(cat .fireweed/bin/fireweed)" = INPUT_SETUP ] || exit 25
+  case "$report" in ''|*'{report}'*) echo unexpanded local report path >&2; exit 25;; esac
+  mkdir -p "$(dirname "$report")" || exit 25
+  report_file="$(cd "$(dirname "$report")" && pwd -P)/$(basename "$report")"
+  case "$report_file" in
+    "$root/"*) ;;
+    *) echo local report outside input workspace >&2; exit 25;;
+  esac
+  printf '%s\n' "${report_file#"$root"/}" > "$observations/local-eval.report"
+  printf '%s\n' "$PWD" >> "$observations/local-eval.cwd"
+else
+  printf '%s\n' "$1" >> "$observations/eval.order"
+  printf '%s' "$PWD" > "$observations/eval.cwd"
+  if [ ! -f packages/aardvark/internal/secret.txt ] || [ ! -f packages/zeta/internal/secret.txt ]; then echo dependent internals missing >&2; exit 25; fi
+  for observation in "$observations/worker.artifact" "$observations/local-eval.report"; do
+    if [ -f "$observation" ] && [ -e "$(cat "$observation")" ]; then
+      echo "unexpected file in verifier: $(cat "$observation")" >&2
+      exit 25
+    fi
+  done
+fi
+case "$1" in alpha) id=ALP-001;; aardvark) id=AAR-001;; zeta) id=ZET-001;; *) exit 26;; esac
+if [ "$1" = alpha ] && [ -f "$observations/omit-own-coverage" ]; then printf '<testsuite><testcase name="ALP-001_case"/></testsuite>' > "$report"; exit 0; fi
+if [ "$1" = aardvark ] && [ -f "$observations/omit-dependent-coverage" ]; then printf '<testsuite><testcase name="AAR-001_case"/></testsuite>' > "$report"; exit 0; fi
+fail=''
+if [ "$1" = alpha ] && [ "$(cat packages/alpha/internal/value.go 2>/dev/null)" != new ]; then fail='own verification failure'; fi
+if [ "$1" != alpha ] && [ -f "$observations/fail-dependents" ]; then
+  fail="dependent $1 failure"
+  printf 'dependent %s stdout\n' "$1"
+fi
+if [ -z "$fail" ]; then printf '<testsuite><testcase name="%s_case" classname="fixture"/></testsuite>' "$id" > "$report"; exit $?; fi
+printf '<testsuite><testcase name="%s_case" classname="fixture"><failure message="%s"/></testcase></testsuite>' "$id" "$fail" > "$report" || exit 25
+printf '%s\n' "$fail" >&2
+exit 1
+`)
+	nextWrite(t, root, ".gitignore", ".fireweed/bin/\n.fireweed/drills/\n.fireweed/runs/\n")
+	nextWrite(t, root, "SYSTEM.md", "# Fixture guidance\nSYSTEM_RETAINED\n")
+	nextWrite(t, root, "AGENTS.md", "AGENT_INSTRUCTION_RETAINED\n")
+	nextWrite(t, root, "go.mod", "module example.invalid/drill-fixture\n\ngo 1.22\n")
+	nextWrite(t, root, "fireweed.yaml", fmt.Sprintf(`fireweed: ">=0.1, <0.2"
+version: 1
+base: main
+modules: ["packages/*"]
+module_defaults:
+  interface: [api.go]
+  evals: [evals/**]
+  preserve: [internal/retained.go]
+  disposable: [internal/**]
+hooks:
+  setup: [sh, .fireweed/setup.sh, %q]
+  eval: [sh, .fireweed/eval.sh, "{module}", "{module_dir}", "{report}", %q]
+agent:
+  command: [bash, %q, %q, "{prompt}"]
+  wrap: [bash, %q, %q]
+  model: fixture-model
+attempts: 2
+timeout: 2s
+limit_patterns: [RATE LIMIT]
+limit_wait: 2ms
+limit_budget: 4ms
+verify_dependents: false
+`, observations, observations, agent, observations, wrapper, observations))
+	for _, module := range []struct{ name, prefix, deps string }{
+		{"foundation", "FOU", "[]"}, {"core", "COR", "[foundation]"}, {"alpha", "ALP", "[core]"},
+		{"aardvark", "AAR", "[alpha]"}, {"zeta", "ZET", "[aardvark]"},
+	} {
+		nextWrite(t, root, "packages/"+module.name+"/SPEC.md", fmt.Sprintf("---\nname: %s\nid_prefix: %s\ndepends_on: %s\n---\n# %s\n\n## Specs\n\n### %s-001\n%s MUST preserve its value.\n\n## Decisions\n\n[ordering] Prefer ordered values.\n", module.name, module.prefix, module.deps, module.name, module.prefix, module.name))
+		nextWrite(t, root, "packages/"+module.name+"/api.go", "package "+module.name+"\n// INTERFACE_"+module.name+"\n")
+		nextWrite(t, root, "packages/"+module.name+"/evals/"+module.name+"_test.go", "package evals\n// EVAL_"+module.name+"\n")
+		nextWrite(t, root, "packages/"+module.name+"/internal/secret.txt", "INTERNAL_SECRET_"+module.name+"\n")
+	}
+	nextWrite(t, root, "packages/alpha/internal/value.go", "OLD_IMPLEMENTATION_SECRET")
+	nextWrite(t, root, "packages/alpha/internal/retained.go", "RETAINED_OVERLAP")
+	nextWrite(t, root, "packages/alpha/other.txt", "RETAINED_OTHER")
+	nextGit(t, root, "init", "-q")
+	nextGit(t, root, "checkout", "-q", "-b", "main")
+	nextGit(t, root, "config", "user.name", "Fixture")
+	nextGit(t, root, "config", "user.email", "fixture@example.invalid")
+	nextCommit(t, root, "drill fixture")
+	base := nextGit(t, root, "rev-parse", "HEAD")
+	nextWrite(t, observations, "base", base)
+	return drillFixture{root, observations, base}
+}
+
+func (f drillFixture) run(ctx context.Context, timeout time.Duration) (runner.DrillResult, error) {
+	return runner.Drill(ctx, runner.DrillRequest{Root: f.root, Module: "alpha", Bin: "/fixture/new-controller", Timeout: timeout})
+}
+
+func (f drillFixture) mode(t *testing.T, mode string) {
+	t.Helper()
+	nextWrite(t, f.observations, "mode", mode)
+}
+
+func drillProjectProtectedFixture(t *testing.T) drillFixture {
+	t.Helper()
+	f := newDrillFixture(t)
+	config := nextRead(t, f.root, "fireweed.yaml")
+	config = strings.Replace(config, "module_defaults:\n", "protected: [\"packages/alpha/internal/project-*.txt\", \"packages/core/api.go\"]\nmodule_defaults:\n", 1)
+	nextWrite(t, f.root, "fireweed.yaml", config)
+	nextWrite(t, f.root, "packages/alpha/internal/project-protected.txt", "PROJECT_PROTECTED_INPUT\n")
+	nextCommit(t, f.root, "project protected drill inputs")
+	f.base = nextGit(t, f.root, "rev-parse", "HEAD")
+	nextWrite(t, f.observations, "base", f.base)
+	return f
+}
+
+func drillObserved(t *testing.T, f drillFixture, path string) string {
+	t.Helper()
+	return nextRead(t, f.observations, path)
+}
+
+func drillNoSetupOrAgent(t *testing.T, f drillFixture) {
+	t.Helper()
+	for _, path := range []string{"setup", "input.setup", "count"} {
+		if _, err := os.Stat(filepath.Join(f.observations, path)); !os.IsNotExist(err) {
+			t.Errorf("%s exists: %v", path, err)
+		}
+	}
+}
+
+func drillCleaned(t *testing.T, f drillFixture) {
+	t.Helper()
+	for _, path := range []string{"setup", "input.setup", "agent.cwd"} {
+		b, err := os.ReadFile(filepath.Join(f.observations, path))
+		if os.IsNotExist(err) {
+			continue
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		cwd := strings.TrimSpace(strings.SplitN(string(b), "\n", 2)[0])
+		if cwd == f.root || cwd == "" {
+			t.Errorf("%s cwd = %q", path, cwd)
+			continue
+		}
+		if _, err := os.Stat(cwd); !os.IsNotExist(err) {
+			t.Errorf("%s workspace remains: %v", cwd, err)
+		}
+	}
+	if out := nextGit(t, f.root, "worktree", "list", "--porcelain"); strings.Count(out, "worktree ") != 1 {
+		t.Errorf("scratch worktree remains: %q", out)
+	}
+}
+
+func Test_RUN_050_DrillPreflightRejectsWithoutEffects(t *testing.T) {
+	for _, mode := range []string{"unknown", "dirty", "claim"} {
+		t.Run(mode, func(t *testing.T) {
+			f := newDrillFixture(t)
+			request := runner.DrillRequest{Root: f.root, Module: "alpha", Bin: "/fixture/new-controller"}
+			switch mode {
+			case "unknown":
+				request.Module = "missing"
+			case "dirty":
+				nextWrite(t, f.root, "stray.txt", "dirty")
+			case "claim":
+				nextGit(t, f.root, "update-ref", "refs/fireweed/claims/live", f.base)
+			}
+			before := nextGit(t, f.root, "for-each-ref", "--format=%(refname) %(objectname)", "refs/fireweed")
+			_, err := runner.Drill(context.Background(), request)
+			if err == nil {
+				t.Fatal("preflight accepted " + mode)
+			}
+			want := map[string]string{"unknown": "missing", "dirty": "dirty", "claim": "claim"}[mode]
+			if !strings.Contains(strings.ToLower(err.Error()), want) {
+				t.Errorf("%s preflight returned unrelated error: %v", mode, err)
+			}
+			if nextGit(t, f.root, "rev-parse", "HEAD") != f.base || nextGit(t, f.root, "for-each-ref", "--format=%(refname) %(objectname)", "refs/fireweed") != before {
+				t.Error("preflight changed invoking refs")
+			}
+			drillNoSetupOrAgent(t, f)
+			drillCleaned(t, f)
+		})
+	}
+}
+
+func Test_RUN_051_SetupRunsDetachedAtHeadAndFailureStops(t *testing.T) {
+	f := newDrillFixture(t)
+	nextWrite(t, f.observations, "setup-fail", "yes")
+	r, err := f.run(context.Background(), 0)
+	if err == nil || !strings.Contains(err.Error(), "SETUP_FAILURE") || !strings.Contains(err.Error(), "17") {
+		t.Errorf("setup failure = %#v, %v", r, err)
+	}
+	drillNoAgent(t, f)
+	setupRoot := strings.SplitN(drillObserved(t, f, "setup"), "\n", 2)[0]
+	common := nextGit(t, f.root, "rev-parse", "--git-common-dir")
+	if !filepath.IsAbs(common) {
+		common = filepath.Join(f.root, common)
+	}
+	if !strings.HasPrefix(setupRoot, filepath.Join(common, "fireweed", "worktrees")+string(os.PathSeparator)) || strings.TrimSpace(drillObserved(t, f, "setup.branch")) != "" || strings.TrimSpace(drillObserved(t, f, "setup.head")) != f.base || !strings.Contains(drillObserved(t, f, "setup"), "/fixture/new-controller") {
+		t.Errorf("setup did not run in detached scratch with requested binary: %q", drillObserved(t, f, "setup"))
+	}
+	drillCleaned(t, f)
+}
+
+func drillNoAgent(t *testing.T, f drillFixture) {
+	t.Helper()
+	if _, err := os.Stat(filepath.Join(f.observations, "count")); !os.IsNotExist(err) {
+		t.Errorf("agent invoked: %v", err)
+	}
+}
+
+func Test_RUN_052_RUN_053_RestrictedInputsAndIndependentGit(t *testing.T) {
+	f := newDrillFixture(t)
+	nextWrite(t, f.root, "changes/archive/prior.md", "prior change\n")
+	nextWrite(t, f.root, ".fireweed/drills/alpha.md", "prior drill report\n")
+	nextGit(t, f.root, "add", "-f", ".fireweed/drills/alpha.md")
+	nextCommit(t, f.root, "tracked changes and reports")
+	f.base = nextGit(t, f.root, "rev-parse", "HEAD")
+	nextWrite(t, f.observations, "base", f.base)
+	nextGit(t, f.root, "branch", "invoking-only")
+	attempt := nextGit(t, f.root, "commit-tree", "HEAD^{tree}", "-m", "saved attempt")
+	nextGit(t, f.root, "update-ref", "refs/fireweed/attempts/sentinel", attempt)
+	nextWrite(t, f.observations, "saved-attempt", attempt)
+	r, err := f.run(context.Background(), 0)
+	if err != nil || r.Result != "pass" {
+		t.Fatalf("drill = %#v, %v", r, err)
+	}
+	got := strings.Fields(drillObserved(t, f, "input.files"))
+	want := []string{
+		"./.gitignore", "./.fireweed/bin/fireweed", "./.fireweed/eval.sh", "./.fireweed/setup.sh",
+		"./AGENTS.md", "./SYSTEM.md", "./fireweed.yaml", "./go.mod",
+		"./packages/alpha/SPEC.md", "./packages/alpha/api.go", "./packages/alpha/evals/alpha_test.go",
+		"./packages/alpha/internal/retained.go", "./packages/alpha/other.txt",
+		"./packages/core/SPEC.md", "./packages/core/api.go", "./packages/core/evals/core_test.go", "./packages/core/internal/secret.txt",
+		"./packages/foundation/SPEC.md", "./packages/foundation/api.go", "./packages/foundation/evals/foundation_test.go", "./packages/foundation/internal/secret.txt",
+	}
+	sort.Strings(want)
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("reconstruction inputs = %q, want %q", got, want)
+	}
+	for path, want := range map[string]string{
+		"input.base": "absent", "input.saved-attempt": "absent", "input.alternates": "absent", "input.history": "1",
+	} {
+		if got := strings.TrimSpace(drillObserved(t, f, path)); got != want {
+			t.Errorf("%s = %q, want %q", path, got, want)
+		}
+	}
+	if refs := drillObserved(t, f, "input.refs"); strings.Contains(refs, "invoking-only") || strings.Contains(refs, "fireweed/") {
+		t.Errorf("input Git contains invoking refs: %q", refs)
+	}
+	agentRoot := drillObserved(t, f, "agent.cwd")
+	scratchRoot := strings.SplitN(drillObserved(t, f, "setup"), "\n", 2)[0]
+	if agentRoot == f.root || agentRoot == scratchRoot {
+		t.Errorf("agent used %q instead of a separate workspace", agentRoot)
+	}
+	if got, readErr := os.ReadFile(filepath.Join(f.observations, "input.setup")); readErr != nil || string(got) != agentRoot+"\n/fixture/new-controller\n" {
+		t.Errorf("input setup = %q, %v, want setup in %s before the worker", got, readErr, agentRoot)
+	}
+	if got, readErr := os.ReadFile(filepath.Join(f.observations, "input.setup-output")); readErr != nil || string(got) != "INPUT_SETUP" {
+		t.Errorf("worker saw setup output %q, %v", got, readErr)
+	}
+	if got := nextGit(t, f.root, "show", r.Ref+":packages/alpha/internal/retained.go"); got != "RETAINED_OVERLAP" {
+		t.Errorf("preserve precedence lost: %q", got)
+	}
+	if out := nextGit(t, f.root, "ls-tree", "-r", "--name-only", r.Ref, "packages/alpha/internal/secret.txt"); out != "" {
+		t.Errorf("target disposable secret survived deletion: %q", out)
+	}
+	for _, module := range []string{"foundation", "core", "aardvark", "zeta"} {
+		if got := nextGit(t, f.root, "show", r.Ref+":packages/"+module+"/internal/secret.txt"); got != "INTERNAL_SECRET_"+module {
+			t.Errorf("%s verifier internal changed: %q", module, got)
+		}
+	}
+	drillCleaned(t, f)
+}
+
+func Test_RUN_054_PromptLetsWorkerRunOwnEval(t *testing.T) {
+	f := newDrillFixture(t)
+	f.mode(t, "self_check")
+	r, err := f.run(context.Background(), 0)
+	prompt := drillObserved(t, f, "prompt-1")
+	for _, want := range []string{"ALP-001", "Prefer ordered values", "packages/alpha/api.go", "packages/alpha/evals/alpha_test.go", "DRILL_NOTES.md", "Contradicted Decisions", "Gaps", "no spec", "module", "disposable", "outside"} {
+		if !strings.Contains(prompt, want) {
+			t.Errorf("prompt lacks %q", want)
+		}
+	}
+	for _, forbidden := range []string{f.root, strings.SplitN(drillObserved(t, f, "setup"), "\n", 2)[0], "OLD_IMPLEMENTATION_SECRET"} {
+		if strings.Contains(prompt, forbidden) {
+			t.Errorf("prompt exposes %q", forbidden)
+		}
+	}
+	if err != nil || r.Result != "pass" || len(r.Steps) != 1 || r.Ref == "" {
+		t.Fatalf("drill with worker self-check: result=%q, steps=%#v, err=%v", r.Result, r.Steps, err)
+	}
+	inputRoot := drillObserved(t, f, "agent.cwd")
+	if got := strings.Split(strings.TrimSpace(drillObserved(t, f, "local-eval.cwd")), "\n"); !slices.Equal(got, []string{inputRoot, inputRoot}) {
+		t.Errorf("worker eval roots = %q, want two runs in %q", got, inputRoot)
+	}
+	if got := nextGit(t, f.root, "show", r.Ref+":packages/alpha/internal/value.go"); got != "new" {
+		t.Errorf("worker's self-checked rebuild = %q", got)
+	}
+	drillCleaned(t, f)
+}
+
+func Test_RUN_052_RUN_053_ProjectProtectedDisposableIsRetainedInputAndVerifierFile(t *testing.T) {
+	f := drillProjectProtectedFixture(t)
+	script := nextRead(t, f.observations, "agent.sh")
+	anchor := "mode=success\n"
+	if !strings.Contains(script, anchor) {
+		t.Fatal("fixture agent insertion point missing")
+	}
+	observe := `if [ -f packages/alpha/internal/project-protected.txt ]; then
+  cp packages/alpha/internal/project-protected.txt "$1/protected.input"
+fi
+if [ -f packages/core/api.go ]; then
+  cp packages/core/api.go "$1/protected-interface.input"
+fi
+`
+	nextWrite(t, f.observations, "agent.sh", strings.Replace(script, anchor, observe+anchor, 1))
+	r, err := f.run(context.Background(), 0)
+	if err != nil || r.Result != "pass" || r.Ref == "" {
+		t.Fatalf("protected-path drill = %#v, %v", r, err)
+	}
+	const protected = "packages/alpha/internal/project-protected.txt"
+	if paths := nextGit(t, f.root, "ls-tree", "-r", "--name-only", r.Ref, protected); paths != protected {
+		t.Errorf("rebuilt verifier lost project-protected file: %q", paths)
+	} else if got := nextGit(t, f.root, "show", r.Ref+":"+protected); got != "PROJECT_PROTECTED_INPUT" {
+		t.Errorf("rebuilt verifier changed project-protected file: %q", got)
+	}
+	if got, readErr := os.ReadFile(filepath.Join(f.observations, "protected.input")); readErr != nil || string(got) != "PROJECT_PROTECTED_INPUT\n" {
+		t.Errorf("retained reconstruction input = %q, %v", got, readErr)
+	}
+	if got, readErr := os.ReadFile(filepath.Join(f.observations, "protected-interface.input")); readErr != nil || string(got) != nextRead(t, f.root, "packages/core/api.go") {
+		t.Errorf("protected dependency interface = %q, %v", got, readErr)
+	}
+	files := strings.Fields(drillObserved(t, f, "input.files"))
+	for _, want := range []string{"./" + protected, "./packages/core/api.go"} {
+		if !slices.Contains(files, want) {
+			t.Errorf("reconstruction input omitted %s: %q", want, files)
+		}
+	}
+	drillCleaned(t, f)
+}
+
+func Test_RUN_055_ReconstructionRejectsModifiedOrDeletedInputs(t *testing.T) {
+	for _, mode := range []string{"change_api", "delete_eval", "change_preserved", "change_protected_dependency_interface", "change_setup", "delete_setup"} {
+		t.Run(mode, func(t *testing.T) {
+			f := drillProjectProtectedFixture(t)
+			f.mode(t, mode)
+			r, err := f.run(context.Background(), 0)
+			if err == nil || r.Result != "fail" || len(r.Steps) != 1 || r.Steps[0].ExitCode != 0 || r.Ref != "" {
+				t.Errorf("unauthorized %s reconstruction = %#v, %v", mode, r, err)
+			}
+			if nextGit(t, f.root, "rev-parse", "HEAD") != f.base || nextGit(t, f.root, "--no-optional-locks", "status", "--porcelain", "-uall") != "" {
+				t.Error("invalid submission changed invoking checkout")
+			}
+			if refs := nextGit(t, f.root, "for-each-ref", "--format=%(refname)", "refs/fireweed/drills"); refs != "" {
+				t.Errorf("invalid reconstruction retained rebuilt ref: %q", refs)
+			}
+			if _, statErr := os.Stat(filepath.Join(f.observations, "eval.order")); !os.IsNotExist(statErr) {
+				t.Errorf("invalid reconstruction reached evaluation: %v", statErr)
+			}
+			drillCleaned(t, f)
+		})
+	}
+}
+
+func Test_RUN_055_ReconstructionImportsOnlyTargetDisposableAdditions(t *testing.T) {
+	for _, mode := range []string{"add_foreign", "add_other", "add_project_protected"} {
+		t.Run(mode, func(t *testing.T) {
+			f := drillProjectProtectedFixture(t)
+			f.mode(t, mode)
+			r, err := f.run(context.Background(), 0)
+			if err != nil || r.Result != "pass" || len(r.Steps) != 1 || r.Ref == "" {
+				t.Fatalf("drill with stray file: result=%q, err=%v", r.Result, err)
+			}
+			if got := nextGit(t, f.root, "diff", "--name-only", f.base, r.Ref); got != "packages/alpha/internal/secret.txt\npackages/alpha/internal/value.go" {
+				t.Errorf("rebuilt ref changed files outside the expected disposable paths: %q", got)
+			}
+			if got := nextGit(t, f.root, "show", r.Ref+":packages/alpha/internal/value.go"); got != "new" {
+				t.Errorf("rebuilt ref lacks submitted code: %q", got)
+			}
+			if nextGit(t, f.root, "rev-parse", "HEAD") != f.base || nextGit(t, f.root, "--no-optional-locks", "status", "--porcelain", "-uall") != "" {
+				t.Error("accepted submission changed invoking checkout")
+			}
+			drillCleaned(t, f)
+		})
+	}
+}
+
+func Test_RUN_056_DrillRetriesAgentAndVerificationWithinOneBound(t *testing.T) {
+	for _, mode := range []string{"agent_retry", "verify_retry"} {
+		t.Run(mode, func(t *testing.T) {
+			f := newDrillFixture(t)
+			f.mode(t, mode)
+			r, err := f.run(context.Background(), 0)
+			if err != nil || r.Result != "pass" || len(r.Steps) != 2 {
+				t.Fatalf("retry = %#v, %v", r, err)
+			}
+			if !strings.Contains(drillObserved(t, f, "prompt-2"), map[string]string{"agent_retry": "WORKER_FAILURE", "verify_retry": "own verification failure"}[mode]) {
+				t.Errorf("retry prompt lacks prior failure: %q", drillObserved(t, f, "prompt-2"))
+			}
+			if got := nextGit(t, f.root, "show", r.Ref+":packages/alpha/internal/value.go"); got != "new" {
+				t.Errorf("retry did not retain rebuilt work: %q", got)
+			}
+			drillCleaned(t, f)
+		})
+	}
+	mixed := newDrillFixture(t)
+	mixed.mode(t, "mixed_exhaust")
+	mixedResult, mixedErr := mixed.run(context.Background(), 0)
+	if mixedErr == nil || mixedResult.Result != "fail" || len(mixedResult.Steps) != 2 || !strings.Contains(drillObserved(t, mixed, "prompt-2"), "WORKER_FAILURE") {
+		t.Errorf("agent and verification failures did not share attempts: %#v, %v", mixedResult, mixedErr)
+	}
+	drillCleaned(t, mixed)
+	f := newDrillFixture(t)
+	f.mode(t, "usage_always")
+	nextWrite(t, f.root, "fireweed.yaml", strings.Replace(nextRead(t, f.root, "fireweed.yaml"), "limit_budget: 4ms", "limit_budget: 0s", 1))
+	nextCommit(t, f.root, "no usage wait")
+	r, err := f.run(context.Background(), 0)
+	if err == nil || !runner.IsUsageStop(err) || r.Result != "stopped" || len(r.Steps) != 1 {
+		t.Errorf("usage bounded attempts = %#v, %v", r, err)
+	}
+	drillCleaned(t, f)
+}
+
+func Test_RUN_056_ConfiguredTimeoutBoundsDrillWorker(t *testing.T) {
+	f := newDrillFixture(t)
+	f.mode(t, "timeout")
+	config := strings.Replace(nextRead(t, f.root, "fireweed.yaml"), "timeout: 2s", "timeout: 200ms", 1)
+	nextWrite(t, f.root, "fireweed.yaml", config)
+	nextCommit(t, f.root, "short configured worker timeout")
+	start := time.Now()
+	r, err := f.run(context.Background(), 0)
+	if err == nil || r.Result == "pass" || len(r.Steps) != 1 || time.Since(start) > 4*time.Second {
+		t.Errorf("configured drill timeout = %#v, %v after %s", r, err, time.Since(start))
+	}
+	drillCleaned(t, f)
+}
+
+func Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted(t *testing.T) {
+	f := newDrillFixture(t)
+	f.mode(t, "usage_once")
+	config := strings.Replace(nextRead(t, f.root, "fireweed.yaml"), "attempts: 2", "attempts: 1", 1)
+	config = strings.Replace(config, "limit_wait: 2ms\nlimit_budget: 4ms", "limit_wait: 800ms\nlimit_budget: 800ms", 1)
+	nextWrite(t, f.root, "fireweed.yaml", config)
+	nextCommit(t, f.root, "one attempt")
+	r, err := f.run(context.Background(), 0)
+	if err != nil || r.Result != "pass" || len(r.Steps) != 2 || !r.Steps[0].UsageLimit {
+		t.Errorf("usage retry = %#v, %v", r, err)
+	}
+	first, firstErr := os.Stat(filepath.Join(f.observations, "invoked-1"))
+	second, secondErr := os.Stat(filepath.Join(f.observations, "invoked-2"))
+	if firstErr != nil || secondErr != nil {
+		t.Errorf("usage invocation timestamps: first=%v second=%v", firstErr, secondErr)
+	} else if gap := second.ModTime().Sub(first.ModTime()); gap < 700*time.Millisecond {
+		t.Errorf("configured 800ms usage wait lasted only %s", gap)
+	}
+	drillCleaned(t, f)
+
+	stopped := newDrillFixture(t)
+	stopped.mode(t, "usage_always")
+	r, err = stopped.run(context.Background(), 0)
+	if err == nil || !runner.IsUsageStop(err) || r.Result != "stopped" || len(r.Steps) != 3 || !r.Steps[2].UsageLimit {
+		t.Errorf("usage budget = %#v, %v", r, err)
+	}
+	drillCleaned(t, stopped)
+
+	cancelled := newDrillFixture(t)
+	cancelled.mode(t, "timeout")
+	ctx, cancel := context.WithTimeout(context.Background(), 250*time.Millisecond)
+	defer cancel()
+	r, err = cancelled.run(ctx, 5*time.Second)
+	if !errors.Is(err, context.DeadlineExceeded) || r.Result == "pass" {
+		t.Errorf("cancelled drill = %#v, %v", r, err)
+	}
+	drillCleaned(t, cancelled)
+
+	timed := newDrillFixture(t)
+	timed.mode(t, "timeout")
+	r, err = timed.run(context.Background(), 250*time.Millisecond)
+	if err == nil || r.Result == "pass" || len(r.Steps) != 1 {
+		t.Errorf("timed drill = %#v, %v", r, err)
+	}
+	drillCleaned(t, timed)
+}
+
+func Test_RUN_058_RUN_059_DrillReturnsAllReportsEvenWhenEvalsFail(t *testing.T) {
+	f := newDrillFixture(t)
+	f.mode(t, "wrong")
+	nextWrite(t, f.observations, "fail-dependents", "yes")
+	r, err := f.run(context.Background(), 0)
+	if err == nil || r.Result != "fail" || len(r.Steps) != 2 {
+		t.Errorf("failed verification = %#v, %v", r, err)
+	}
+	if len(r.Own.Cases) != 1 || r.Own.Cases[0].Result != "fail" || !strings.Contains(r.Own.Cases[0].Failure, "own verification failure") {
+		t.Errorf("own failure details lost: %#v", r.Own)
+	}
+	if len(r.Dependents) != 2 || r.Dependents["aardvark"].Cases[0].Result != "fail" || r.Dependents["zeta"].Cases[0].Result != "fail" {
+		t.Errorf("dependent reports lost: %#v", r.Dependents)
+	}
+	if got := strings.Fields(drillObserved(t, f, "eval.order")); !reflect.DeepEqual(got, []string{"alpha", "aardvark", "zeta", "alpha", "aardvark", "zeta"}) {
+		t.Errorf("own and transitive dependent order = %q", got)
+	}
+	drillCleaned(t, f)
+}
+
+func Test_RUN_058_OwnCoverageRequiredAfterPassingCases(t *testing.T) {
+	f := newDrillFixture(t)
+	spec := nextRead(t, f.root, "packages/alpha/SPEC.md")
+	nextWrite(t, f.root, "packages/alpha/SPEC.md", strings.Replace(spec, "## Decisions", "### ALP-002\nAlpha MUST also preserve a second value.\n\n## Decisions", 1))
+	nextCommit(t, f.root, "second own coverage obligation")
+	nextWrite(t, f.observations, "omit-own-coverage", "yes")
+	r, err := f.run(context.Background(), 0)
+	if err == nil || r.Result != "fail" || !strings.Contains(err.Error(), "ALP-002") || len(r.Own.Cases) != 1 || r.Own.Cases[0].Result != "pass" || len(r.Dependents) != 2 {
+		t.Errorf("missing own coverage = %#v, %v", r, err)
+	}
+	if got := strings.Fields(drillObserved(t, f, "eval.order")); !reflect.DeepEqual(got, []string{"alpha", "aardvark", "zeta", "alpha", "aardvark", "zeta"}) {
+		t.Errorf("coverage failure skipped other evals: %q", got)
+	}
+	drillCleaned(t, f)
+}
+
+func Test_RUN_059_DependentCoverageRequiredAfterPassingCases(t *testing.T) {
+	f := newDrillFixture(t)
+	spec := nextRead(t, f.root, "packages/aardvark/SPEC.md")
+	nextWrite(t, f.root, "packages/aardvark/SPEC.md", strings.Replace(spec, "## Decisions", "### AAR-002\nAardvark MUST also preserve a second value.\n\n## Decisions", 1))
+	nextCommit(t, f.root, "second dependent coverage obligation")
+	nextWrite(t, f.observations, "omit-dependent-coverage", "yes")
+	r, err := f.run(context.Background(), 0)
+	if err == nil || r.Result != "fail" || !strings.Contains(err.Error(), "AAR-002") || len(r.Own.Cases) != 1 || r.Own.Cases[0].Result != "pass" || len(r.Dependents) != 2 || len(r.Dependents["aardvark"].Cases) != 1 || r.Dependents["aardvark"].Cases[0].Result != "pass" || len(r.Dependents["zeta"].Cases) != 1 || r.Dependents["zeta"].Cases[0].Result != "pass" {
+		t.Errorf("missing dependent coverage = %#v, %v", r, err)
+	}
+	drillCleaned(t, f)
+}
+
+func drillReportSection(report, heading string) string {
+	start := strings.Index(report, "## "+heading+"\n")
+	if start < 0 {
+		return ""
+	}
+	section := report[start+len("## "+heading+"\n"):]
+	if end := strings.Index(section, "\n## "); end >= 0 {
+		section = section[:end]
+	}
+	return section
+}
+
+func drillReportLine(section string, tokens ...string) bool {
+	for _, line := range strings.Split(section, "\n") {
+		all := true
+		for _, token := range tokens {
+			if !strings.Contains(line, token) {
+				all = false
+				break
+			}
+		}
+		if all {
+			return true
+		}
+	}
+	return false
+}
+
+func drillEvalEntry(section, module, testcase, id, result string) bool {
+	for _, line := range strings.Split(section, "\n") {
+		if strings.Contains(line, testcase) && strings.Contains(line, module) && strings.Contains(line, result) && strings.Contains(strings.ReplaceAll(line, testcase, ""), id) {
+			return true
+		}
+	}
+	return false
+}
+
+func Test_RUN_068_DependentOnlyFailuresEndDrill(t *testing.T) {
+	f := newDrillFixture(t)
+	nextWrite(t, f.observations, "fail-dependents", "yes")
+	r, err := f.run(context.Background(), 0)
+	if err == nil || r.Result != "fail" || len(r.Own.Cases) != 1 || r.Own.Cases[0].Result != "pass" {
+		t.Fatalf("dependent-only drill = result %q, own cases %#v, error %v", r.Result, r.Own.Cases, err)
+	}
+	if count := drillObserved(t, f, "count"); len(r.Steps) != 1 || count != "1" {
+		t.Errorf("dependent-only failure invoked reconstruction %s times and returned %d steps, want one", count, len(r.Steps))
+	}
+	report := nextRead(t, f.root, r.ReportPath)
+	if !strings.Contains(report, "\nresult: fail\n") {
+		t.Error("report did not record a failed drill")
+	}
+	section := drillReportSection(report, "Dependent evals")
+	for _, want := range []struct{ module, id string }{{"aardvark", "AAR-001"}, {"zeta", "ZET-001"}} {
+		cases := r.Dependents[want.module].Cases
+		if len(cases) != 1 || cases[0].Result != "fail" {
+			t.Errorf("%s dependent cases = %#v, want a failed case", want.module, cases)
+		}
+		if !drillEvalEntry(section, want.module, want.id+"_case", want.id, "fail") || !strings.Contains(section, "dependent "+want.module+" failure") {
+			t.Errorf("report lacks the %s dependent failure: %q", want.module, section)
+		}
+	}
+	drillCleaned(t, f)
+}
+
+func Test_RUN_068_OwnEvalRetryOmitsDependentEvalOutput(t *testing.T) {
+	f := newDrillFixture(t)
+	f.mode(t, "verify_retry")
+	nextWrite(t, f.observations, "fail-dependents", "yes")
+	r, err := f.run(context.Background(), 0)
+	if err == nil || r.Result != "fail" || len(r.Steps) != 2 || len(r.Own.Cases) != 1 || r.Own.Cases[0].Result != "pass" {
+		t.Fatalf("own-eval retry = result %q, %d steps, own cases %#v, error %v", r.Result, len(r.Steps), r.Own.Cases, err)
+	}
+	prompt := drillObserved(t, f, "prompt-2")
+	if !strings.Contains(prompt, "own verification failure") {
+		t.Error("retry prompt lacks the preceding own-eval failure")
+	}
+	for _, forbidden := range []string{
+		"AAR-001_case", "dependent aardvark stdout", "dependent aardvark failure",
+		"ZET-001_case", "dependent zeta stdout", "dependent zeta failure",
+	} {
+		if strings.Contains(prompt, forbidden) {
+			t.Errorf("retry prompt contains dependent eval output %q", forbidden)
+		}
+	}
+	drillCleaned(t, f)
+}
+
+func Test_RUN_069_DrillObservationsIncludeStdoutAndRelativeLogPerAttempt(t *testing.T) {
+	f := newDrillFixture(t)
+	f.mode(t, "verify_retry")
+	r, err := f.run(context.Background(), 0)
+	if err != nil || r.Result != "pass" || len(r.Steps) != 2 {
+		t.Fatalf("drill = result %q, %d steps, error %v", r.Result, len(r.Steps), err)
+	}
+	section := drillReportSection(nextRead(t, f.root, r.ReportPath), "Agent observations")
+	entries := strings.Split(section, "\n### ")[1:]
+	if len(entries) != len(r.Steps) {
+		t.Fatalf("Agent observations has %d entries, want %d: %q", len(entries), len(r.Steps), section)
+	}
+	for i, step := range r.Steps {
+		stdout := fmt.Sprintf("worker stdout attempt %d", i+1)
+		stderr := fmt.Sprintf("worker stderr attempt %d", i+1)
+		if !strings.Contains(entries[i], stdout) {
+			t.Errorf("attempt %d observations lack stdout %q", i+1, stdout)
+		}
+		if strings.Contains(section, stderr) {
+			t.Errorf("Agent observations contains stderr %q", stderr)
+		}
+		rel, err := filepath.Rel(f.root, step.LogPath)
+		if err != nil || !strings.HasPrefix(filepath.ToSlash(rel), ".fireweed/runs/") {
+			t.Fatalf("attempt %d log path %q is outside the repository runs directory: %v", i+1, step.LogPath, err)
+		}
+		if !strings.Contains(entries[i], filepath.ToSlash(rel)) || strings.Contains(section, step.LogPath) {
+			t.Errorf("attempt %d observations lack repository-relative log path %q or contain its absolute path", i+1, rel)
+		}
+		if log := nextRead(t, f.root, rel); !strings.Contains(log, stdout) || !strings.Contains(log, stderr) {
+			t.Errorf("attempt %d invocation log lacks one of its streams: %q", i+1, log)
+		}
+	}
+	drillCleaned(t, f)
+}
+
+func Test_RUN_060_RUN_061_DrillReportAndRetainedRef(t *testing.T) {
+	f := newDrillFixture(t)
+	const priorMarker = "PRIOR_REVIEWED_DRILL_REPORT_MARKER"
+	const reportPath = ".fireweed/drills/alpha.md"
+	nextWrite(t, f.root, reportPath, "---\nresult: fail\n---\n\nPrior review: "+priorMarker+"\n")
+	nextGit(t, f.root, "add", "-f", reportPath)
+	nextGit(t, f.root, "commit", "-q", "-m", "reviewed prior drill report")
+	f.base = nextGit(t, f.root, "rev-parse", "HEAD")
+	nextWrite(t, f.observations, "base", f.base)
+	if prior := nextGit(t, f.root, "show", f.base+":"+reportPath); !strings.Contains(prior, priorMarker) {
+		t.Fatalf("committed prior report lacks marker: %q", prior)
+	}
+	r, err := f.run(context.Background(), 0)
+	if err != nil || r.Result != "pass" || r.Module != "alpha" || r.Base != f.base || r.Date == "" || r.Agent == "" || r.Model == "" || r.ReportPath != ".fireweed/drills/alpha.md" || r.Ref != "refs/fireweed/drills/alpha/"+r.Date || len(r.Steps) != 1 {
+		t.Fatalf("passing result = %#v, %v", r, err)
+	}
+	if nextGit(t, f.root, "rev-parse", "HEAD") != f.base || nextGit(t, f.root, "for-each-ref", "--format=%(refname)", r.Ref) != r.Ref || nextGit(t, f.root, "show", r.Ref+":packages/alpha/internal/value.go") != "new" || nextGit(t, f.root, "show", "HEAD:packages/alpha/internal/value.go") != "OLD_IMPLEMENTATION_SECRET" {
+		t.Error("retained rebuilt ref or invoking checkout wrong")
+	}
+	report := nextRead(t, f.root, r.ReportPath)
+	if strings.Contains(report, priorMarker) {
+		t.Errorf("current report retained prior review marker: %q", report)
+	}
+	if prior := nextGit(t, f.root, "show", f.base+":"+reportPath); !strings.Contains(prior, priorMarker) {
+		t.Errorf("reviewed prior report is not readable in Git: %q", prior)
+	}
+	for _, want := range []string{"date:", "base_commit: " + f.base, "agent:", "model:", "result: pass", "## Own evals", "## Dependent evals", "## Contradicted Decisions", "## Gaps", "ALP-001_case", "AAR-001_case", "ZET-001_case", "ALP-001", "AAR-001", "ZET-001", "pass", "ordered preference may be contradicted", "module alpha", "no spec", "module aardvark"} {
+		if !strings.Contains(report, want) {
+			t.Errorf("report lacks %q: %q", want, report)
+		}
+	}
+	for _, entry := range []struct{ section, module, testcase, id, result string }{
+		{"Own evals", "alpha", "ALP-001_case", "ALP-001", "pass"},
+		{"Dependent evals", "aardvark", "AAR-001_case", "AAR-001", "pass"},
+		{"Dependent evals", "zeta", "ZET-001_case", "ZET-001", "pass"},
+	} {
+		if !drillEvalEntry(drillReportSection(report, entry.section), entry.module, entry.testcase, entry.id, entry.result) {
+			t.Errorf("%s lacks a complete %s eval entry: %q", entry.section, entry.module, report)
+		}
+	}
+	if !drillReportLine(drillReportSection(report, "Gaps"), "ALP-001", "alpha", "ordering needs a spec") || !drillReportLine(drillReportSection(report, "Gaps"), "no spec", "aardvark", "caller expectation") {
+		t.Errorf("gap entries do not each identify nearest spec and target module: %q", report)
+	}
+	if !strings.Contains(report, "worker observation") {
+		t.Errorf("successful worker observation absent from report: %q", report)
+	}
+	if len(r.Own.Cases) != 1 || len(r.Dependents) != 2 {
+		t.Errorf("passing reports = %#v, %#v", r.Own, r.Dependents)
+	}
+	if drillObserved(t, f, "agent.bin") != "/fixture/new-controller" || strings.TrimSpace(drillObserved(t, f, "wrapper.bin")) != "/fixture/new-controller" {
+		t.Error("worker or wrapper did not receive configured binary")
+	}
+	drillCleaned(t, f)
+}
+
+func Test_RUN_060_RUN_061_FailedDrillReportsFailuresAndRetainsCode(t *testing.T) {
+	f := newDrillFixture(t)
+	f.mode(t, "wrong")
+	r, err := f.run(context.Background(), 0)
+	if err == nil || r.Result != "fail" || r.Ref == "" || r.ReportPath != ".fireweed/drills/alpha.md" {
+		t.Fatalf("failed drill = %#v, %v", r, err)
+	}
+	if nextGit(t, f.root, "show", r.Ref+":packages/alpha/internal/value.go") != "wrong" {
+		t.Error("failed rebuilt code was not retained")
+	}
+	report := nextRead(t, f.root, r.ReportPath)
+	for _, want := range []string{"result: fail", "own verification failure", "ALP-001_case", "ALP-001", "fail", "## Contradicted Decisions", "## Gaps"} {
+		if !strings.Contains(report, want) {
+			t.Errorf("failure report lacks %q", want)
+		}
+	}
+	if !drillEvalEntry(drillReportSection(report, "Own evals"), "alpha", "ALP-001_case", "ALP-001", "fail") {
+		t.Errorf("failed own eval entry lacks module, testcase, spec ID or result: %q", report)
+	}
+	drillCleaned(t, f)
+
+	agentFailure := newDrillFixture(t)
+	agentFailure.mode(t, "agent_fail_always")
+	failed, agentErr := agentFailure.run(context.Background(), 0)
+	if agentErr == nil || failed.Result != "fail" || len(failed.Steps) != 2 || failed.ReportPath != ".fireweed/drills/alpha.md" {
+		t.Errorf("agent exhaustion report = %#v, %v", failed, agentErr)
+	}
+	if report := nextRead(t, agentFailure.root, ".fireweed/drills/alpha.md"); !strings.Contains(report, "failed worker observation") || !strings.Contains(report, "result: fail") {
+		t.Errorf("agent failure absent from report: %q", report)
+	}
+	drillCleaned(t, agentFailure)
+}
+
+func Test_RUN_062_CleanupOnSuccessAndFailures(t *testing.T) {
+	for _, mode := range []string{"success", "agent_retry", "change_api", "usage_always", "timeout"} {
+		t.Run(mode, func(t *testing.T) {
+			f := newDrillFixture(t)
+			f.mode(t, mode)
+			if mode == "timeout" {
+				_, _ = f.run(context.Background(), 150*time.Millisecond)
+			} else {
+				_, _ = f.run(context.Background(), 0)
+			}
+			for _, path := range []string{"setup", "agent.cwd"} {
+				if _, err := os.Stat(filepath.Join(f.observations, path)); err != nil {
+					t.Errorf("%s scenario did not reach %s: %v", mode, path, err)
+				}
+			}
+			drillCleaned(t, f)
+		})
+	}
+}
+
+func Test_RUN_062_CleanupFailureCannotPass(t *testing.T) {
+	f := newDrillFixture(t)
+	nextWrite(t, f.observations, "cleanup-fail", "yes")
+	common := nextGit(t, f.root, "rev-parse", "--git-common-dir")
+	if !filepath.IsAbs(common) {
+		common = filepath.Join(f.root, common)
+	}
+	parent := filepath.Join(common, "fireweed", "worktrees")
+	defer func() {
+		_ = os.Chmod(parent, 0755)
+		setup, err := os.ReadFile(filepath.Join(f.observations, "setup"))
+		if err != nil {
+			return
+		}
+		scratch := strings.TrimSpace(strings.SplitN(string(setup), "\n", 2)[0])
+		if _, err := os.Stat(scratch); err == nil {
+			nextGit(t, f.root, "worktree", "remove", "--force", scratch)
+		}
+	}()
+	r, err := f.run(context.Background(), 0)
+	if err == nil || r.Result == "pass" || len(r.Steps) != 1 {
+		t.Errorf("cleanup failure reported a passing drill: %#v, %v", r, err)
+	}
+	setup := strings.SplitN(drillObserved(t, f, "setup"), "\n", 2)[0]
+	if _, statErr := os.Stat(setup); statErr != nil {
+		t.Errorf("fixture did not make scratch removal fail: %v", statErr)
+	}
+}
