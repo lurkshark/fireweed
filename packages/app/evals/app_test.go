@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"regexp"
 	"runtime"
 	"strings"
@@ -291,8 +292,17 @@ func Test_APP_001_ReadCommandsDoNotInvokeGitHooksOrAgents(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	appPut(t, root, "fireweed.yaml", appFixtureConfig+`hooks:
+  setup: [hook]
+  eval: [hook, "{module}", "{report}"]
+  boundaries: [hook]
+agent:
+  command: [codex, "{prompt}"]
+`)
+	appPut(t, root, "AGENTS.md", "<!-- fireweed:start -->\nstale guidance\n<!-- fireweed:end -->\n")
 	cliGit(t, root, "init", "-q", "-b", "main")
 	cliCommit(t, root, "read command fixture")
+	beforeHelp := migrateCapture(t, root)
 	// Status may read Git. This recorder forwards every invocation without
 	// inspecting its arguments; the existing hook and agent sentinels remain.
 	gitRecorder := []byte("#!/bin/sh\nprintf '%s\\n' \"$0 $*\" >> \"$FIREWEED_RECORDER\"\nexec \"$FIREWEED_REAL_GIT\" \"$@\"\n")
@@ -300,6 +310,17 @@ func Test_APP_001_ReadCommandsDoNotInvokeGitHooksOrAgents(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Setenv("FIREWEED_REAL_GIT", realGit)
+	for _, args := range [][]string{{"doctor", "help"}, {"agents-md", "--help"}, {"gc", "-h"}} {
+		runAppBinary(t, bin, nested, args...)
+	}
+	if calls, err := os.ReadFile(logPath); err == nil {
+		t.Errorf("help invoked external tools: %s", calls)
+	} else if !os.IsNotExist(err) {
+		t.Fatal(err)
+	}
+	if afterHelp := migrateCapture(t, root); !reflect.DeepEqual(afterHelp, beforeHelp) {
+		t.Error("help changed working files, index, HEAD or refs")
+	}
 	for _, args := range [][]string{{"status"}, {"status", "--json"}, {"pr-body", "HEAD..HEAD"}, {"pr-body", "HEAD..HEAD", "--json"}} {
 		runAppBinary(t, bin, nested, args...)
 	}

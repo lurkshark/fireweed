@@ -399,15 +399,14 @@ func Test_RUN_048_RUN_049_PermittedAuditWorkSurvivesFailureAndStops(t *testing.T
 				nextWrite(t, f.root, "fireweed.yaml", nextRead(t, f.root, "fireweed.yaml")+tc.policy)
 				nextCommit(t, f.root, "audit limit policy")
 			}
-			if tc.timeStop {
-				fastAuditHook(t, f)
-			}
 			auditAction(t, f, tc.action)
 			base := nextGit(t, f.root, "rev-parse", "HEAD")
 			var r runner.NextResult
 			var err error
 			if tc.timeStop {
-				result, runErr := runner.Run(context.Background(), runner.RunRequest{Root: f.root, Bin: "/fixture/next-bin", For: 3 * time.Second, Timeout: 10 * time.Second})
+				request := runner.RunRequest{Root: f.root, Bin: "/fixture/next-bin", For: 3 * time.Second, Timeout: 10 * time.Second}
+				prepareHeldAudit(t, request)
+				result, runErr := runner.Run(context.Background(), request)
 				err = runErr
 				if len(result.Applied) != 0 {
 					t.Errorf("time stop applied %d changes", len(result.Applied))
@@ -439,14 +438,29 @@ func Test_RUN_048_RUN_049_PermittedAuditWorkSurvivesFailureAndStops(t *testing.T
 	}
 }
 
-func fastAuditHook(t *testing.T, f nextFixture) {
+// Complete evals before starting the clock so Run can exercise an interrupted auditor.
+func prepareHeldAudit(t *testing.T, request runner.RunRequest) {
 	t.Helper()
-	nextWrite(t, f.root, ".fireweed/eval.sh", `#!/bin/sh
-if [ -f packages/alpha/evals/next_test.go ]; then
-  printf '<testsuite><testcase name="ALP-001" classname="fixture"/><testcase name="ALP-002" classname="fixture"><failure message="not implemented"/></testcase></testsuite>' > "$2"
-  exit 1
-fi
-exit 30
-`)
-	nextCommit(t, f.root, "fast audit fixture hook")
+	ctx := context.Background()
+	state, err := workflow.Start(request.Root, nextChange)
+	if err != nil {
+		t.Fatalf("start fixture evals: %v", err)
+	}
+	prompt, err := workflow.Context(request.Root, nextChange, true)
+	if err != nil {
+		t.Fatalf("prepare fixture evals context: %v", err)
+	}
+	agent, err := runner.InvokeAgent(ctx, runner.AgentRequest{
+		Snapshot: state.Snapshot, Role: "worker", Prompt: prompt,
+		Bin: request.Bin, Timeout: request.Timeout, Run: state.Run, Phase: state.Phase,
+	})
+	if err != nil || agent.ExitCode != 0 {
+		t.Fatalf("invoke fixture evals worker: %#v, %v", agent, err)
+	}
+	done, err := workflow.Done(ctx, workflow.Request{
+		Root: request.Root, Change: nextChange, Bin: request.Bin, Agent: "bash", Timeout: request.Timeout,
+	})
+	if err != nil || done.State.Phase != "audit" || done.State.ClaimOID == "" {
+		t.Fatalf("prepare held audit: phase=%q claim=%q error=%v", done.State.Phase, done.State.ClaimOID, err)
+	}
 }

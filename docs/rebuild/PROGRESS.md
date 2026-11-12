@@ -1,13 +1,35 @@
 # Rebuild progress
 
-## Current state (2026-11-11)
+## Current state (2026-11-12)
 
 The regeneration milestone is complete. All eight modules have passing native
 drill reports, and the owner accepted each proof and deferred its remaining
 gaps. Earlier milestone narratives, failed proofs and recovery notes are in
 Git history before this revision.
 
-Fireweed applied all 38 queue entries: 0202–0234 and five approved
+The owner-approved help changes [0236](../../changes/archive/0236-progressive-help-content.md)
+and [0237](../../changes/archive/0237-command-help.md) are applied on
+`codex/progressive-help`, through product commit `31ee0dc`. Help now has a
+compact overview, 31 command pages and command-specific help aliases. The
+owner approved recovery of 0236's malformed audit submission; Fireweed accepted
+the corrected findings, the missing assertions were added, and the restricted
+re-audit passed with the original round count retained. Both changes passed
+independent audit and full implementation verification: 1,116 cases across
+assets and its dependents for 0236, and 359 app cases for 0237. The original
+CLI examples, help aliases, JSON and invalid-config behavior passed binary
+smoke checks. The queue is empty and no claim remains active. The controller
+pin is unchanged; no drill was repeated.
+
+PR #1's macOS race check exposed an existing runner fixture whose three-second
+budget expired after evals but before its auditor started. The audited eval
+fix [0238](../../changes/archive/0238-audit-time-stop-fixture.md), applied in
+`8cde952`, prepares the held audit through public APIs before starting that
+budget. It preserves every existing stop, retained-work, claim and cleanup
+assertion without increasing timeouts or changing product code. Three focused
+macOS arm64 race runs and all 529 runner/dependent-app cases passed, and the
+independent audit cleared RUN-048 and RUN-049.
+
+Earlier, Fireweed applied all 38 queue entries: 0202–0234 and five approved
 prerequisites. The queue is empty and no claim is active. In 0210, Fireweed
 resumed the saved attempt with both CHK-048 assertions intact after the owner
 approved marking that ID `already_satisfied`.
@@ -145,7 +167,7 @@ The owner deferred these gaps. The queued change that addresses one is linked.
 
 ## Next step
 
-Await owner direction on the remaining
+The approved CLI help work is complete. Await owner direction on the remaining
 [full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required).
 
 ## Suggested follow-ups

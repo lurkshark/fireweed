@@ -34,7 +34,11 @@ The Go boundaries hook MUST query FIREWEED_BIN modules --json and use its module
 The Go bundle MUST provide module SPEC/api.go templates and version-1 baseline, undeclared, internal_eval, failing_eval and missing_id canary maps.
 
 ### AST-008
-Help MUST identify fireweed and list every command in the design's CLI table, including version, explain and playbook.
+Help MUST identify fireweed and list every command in the design's CLI table,
+including help, version, explain and playbook, grouped by purpose. It MUST
+advertise help <command> and <command> --help, with a concrete command example.
+It MUST keep command-specific option and configuration descriptions on the
+command pages rather than the overview.
 
 ### AST-009
 The audit playbook MUST restrict findings to exact spec clauses without assertions.
@@ -173,7 +177,10 @@ Each of those playbooks MUST include short illustrative examples classifying a l
 The Go recipe instructions and module SPEC template MUST explain that a letter immediately before a spec prefix prevents ID matching, showing Test_GRT_001_Name as a matching name for GRT-001 and TestGRT001 as a name that does not match.
 
 ### AST-048
-Help MUST document that gc prunes stale claims, attempt refs for archived changes and drill refs older than gc.drill_max_age. It MUST identify gc.drill_max_age as a positive Go duration in fireweed.yaml with default 720h (30 days).
+CommandHelp("gc") MUST document that gc prunes stale claims, attempt refs for
+archived changes and drill refs older than gc.drill_max_age. It MUST identify
+gc.drill_max_age as a positive Go duration in fireweed.yaml with default 720h
+(30 days).
 
 ### AST-049
 BuiltinRecipe for typescript-pnpm and python-uv MUST provide nonempty instructions, interface/evals/disposable defaults, eval/boundaries/setup commands, protected glue, language lockfile worker_writable entries and project-relative instruction, hook, module-template and canary files.
@@ -210,6 +217,25 @@ Explain MUST describe C20 as a warning for a SPEC.md file outside the configured
 
 ### AST-060
 Explain MUST describe C17 as a spec item over spec_limits.max_clauses normative keywords or max_words words, C18 as a sentence repeated in three or more spec items, and C19 as a module Decisions section over spec_limits.max_decision_words, each as a warning with a corrective action.
+
+### AST-061
+CommandHelp MUST return a command page containing its purpose, usage syntax,
+descriptions of its accepted arguments and options, and at least one invocation
+example for each command listed by Help. Each page MUST document --help, -h
+and --json and point to related command help. Unknown command names MUST return
+an error naming the rejected command.
+
+### AST-062
+CommandHelp("help") MUST describe the overview, help <command>, <command> help,
+<command> --help and <command> -h forms, and the schema-1 JSON envelope.
+It MUST explain exit statuses 0 (success or empty queue), 1 (failed checks or
+blocked execution), 2 (usage or configuration failure) and 3 (clean early stop).
+
+### AST-063
+CommandHelp("playbook") MUST list author-change, evals, audit, impl and
+regenerate with their purposes and show how to read one. CommandHelp("explain")
+MUST describe diagnostic-code lookup with a concrete code example and point to
+playbook help for workflow guidance.
 
 ## Decisions
 

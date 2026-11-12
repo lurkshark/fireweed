@@ -6,18 +6,17 @@ func Version() string { return "0.1.0" }
 
 const help = `fireweed 0.1.0
 
-Setup:        init, doctor
-Authoring:    new-module, new-change, stamp
-Reading:      list, status, show, modules, context, explain, playbook
-Checks:       check, coverage, check-commits, ci, pr-body
-Lifecycle:    start, verify, done, next, run, release, commits, abandon
-Regeneration: drill
-Maintenance:  gc, migrate, agents-md
-Information:  version
+Setup         init, doctor
+Authoring     new-module, new-change, stamp
+Reading       list, status, show, modules, context
+Checks        check, coverage, check-commits, ci, pr-body
+Lifecycle     start, verify, done, next, run, release, commits, abandon
+Regeneration  drill
+Maintenance   gc, migrate, agents-md
+Information   help, version, explain, playbook
 
-gc prunes stale claims, attempt refs for archived changes, and drill refs older than gc.drill_max_age.
-gc.drill_max_age is a positive Go duration in fireweed.yaml.
-gc.drill_max_age has a default of 720h (30 days).
+Use fireweed help <command> or fireweed <command> --help for usage.
+Example       fireweed help agents-md
 `
 
 func Help() string { return help }
