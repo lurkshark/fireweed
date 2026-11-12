@@ -20,6 +20,15 @@ CLI examples, help aliases, JSON and invalid-config behavior passed binary
 smoke checks. The queue is empty and no claim remains active. The controller
 pin is unchanged; no drill was repeated.
 
+PR #1's macOS race check exposed an existing runner fixture whose three-second
+budget expired after evals but before its auditor started. The audited eval
+fix [0238](../../changes/archive/0238-audit-time-stop-fixture.md), applied in
+`8cde952`, prepares the held audit through public APIs before starting that
+budget. It preserves every existing stop, retained-work, claim and cleanup
+assertion without increasing timeouts or changing product code. Three focused
+macOS arm64 race runs and all 529 runner/dependent-app cases passed, and the
+independent audit cleared RUN-048 and RUN-049.
+
 Earlier, Fireweed applied all 38 queue entries: 0202–0234 and five approved
 prerequisites. The queue is empty and no claim is active. In 0210, Fireweed
 resumed the saved attempt with both CHK-048 assertions intact after the owner
