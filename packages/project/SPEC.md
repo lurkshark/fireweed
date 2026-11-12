@@ -251,6 +251,18 @@ When `changes` is a regular file, Queue MUST return an error identifying `change
 ### PRJ-070
 Check MUST return a C20 warning naming each tracked file named SPEC.md that is neither a configured module's SPEC.md nor inside a configured module directory or `.fireweed/`.
 
+### PRJ-071
+Load MUST read spec_limits.max_clauses, max_words and max_decision_words as positive integers, defaulting to 3, 80 and 300 when unset, and MUST reject other values with C01.
+
+### PRJ-072
+Check MUST return a C17 warning naming each current or pending Added or Modified spec item with more than max_clauses normative keywords or more than max_words whitespace-separated words.
+
+### PRJ-073
+Check MUST return a C18 warning naming the items when the same sentence, compared ignoring case, punctuation and whitespace, appears in three or more spec items of the projection after the last pending change.
+
+### PRJ-074
+Check MUST return a C19 warning naming the module when a module's Decisions section has more than max_decision_words words.
+
 ## Decisions
 
 [0126-spec-history-query] History reads the project's current archive files, as the archive-backed show

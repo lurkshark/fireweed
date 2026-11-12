@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"fmt"
 	"regexp"
 	"slices"
 	"strings"
@@ -11,7 +12,7 @@ import (
 )
 
 var handleReference = regexp.MustCompile(`new:[a-z0-9-]+`)
-var normative = regexp.MustCompile(`\b(MUST|SHOULD)\b`)
+var normative = regexp.MustCompile(`\b(?:MUST|SHOULD)\b`)
 
 func Check(root string) []model.Diagnostic {
 	var diagnostics []model.Diagnostic
@@ -23,9 +24,14 @@ func Check(root string) []model.Diagnostic {
 		addCode(errorCode(err, "C01"), fixture.LoadPath(err), err.Error())
 		return diagnostics
 	}
-	if err := fixture.ValidateGraph(snapshot.Modules); err != nil {
-		addCode("C02", "fireweed.yaml", err.Error())
+	graphErr := fixture.ValidateGraph(snapshot.Modules)
+	if graphErr != nil {
+		addCode("C02", "fireweed.yaml", graphErr.Error())
 	}
+	limits := snapshot.Config["spec_limits"].(map[string]any)
+	maxClauses := limits["max_clauses"].(int)
+	maxWords := limits["max_words"].(int)
+	maxDecisionWords := limits["max_decision_words"].(int)
 	diagnostics = append(diagnostics, specsOutsideModules(snapshot)...)
 	p, err := newProjection(snapshot)
 	if err != nil {
@@ -34,12 +40,19 @@ func Check(root string) []model.Diagnostic {
 	}
 	for _, module := range snapshot.Modules {
 		path := module.Dir + "/SPEC.md"
+		decisions, _ := contracts.Section(module.Document.Body, "Decisions")
+		if words := len(strings.Fields(decisions)); words > maxDecisionWords {
+			diagnostics = append(diagnostics, model.Diagnostic{
+				Code: "C19", Path: path, Warning: true,
+				Message: fmt.Sprintf("module %s has %d Decisions words (limit %d)", module.Name, words, maxDecisionWords),
+			})
+		}
 		for _, entry := range p.items[module.Name] {
 			item := entry.item
 			if !strings.HasPrefix(item.ID, module.IDPrefix+"-") {
 				addCode("C05", path, "foreign spec ID "+item.ID)
 			}
-			checkItem(path, item, true, addCode)
+			diagnostics = append(diagnostics, checkItem(path, item, true, maxClauses, maxWords)...)
 		}
 	}
 	changes, err := readQueue(root, snapshot)
@@ -47,6 +60,7 @@ func Check(root string) []model.Diagnostic {
 		addCode(errorCode(err, "C03"), "changes", err.Error())
 		return diagnostics
 	}
+	projectable := graphErr == nil
 	for _, change := range changes {
 		path := change.Path
 		motivation, exists := contracts.Section(change.Document.Body, "Motivation")
@@ -79,7 +93,7 @@ func Check(root string) []model.Diagnostic {
 				if !strings.HasPrefix(item.ID, "new:") && !strings.HasPrefix(item.ID, modulePrefix(snapshot, change.Module)+"-") {
 					addCode("C05", path, "foreign module ID "+item.ID)
 				}
-				checkItem(path, item, group.normative, addCode)
+				diagnostics = append(diagnostics, checkItem(path, item, group.normative, maxClauses, maxWords)...)
 			}
 		}
 		for _, ref := range handleReference.FindAllString(change.Document.Body, -1) {
@@ -106,7 +120,11 @@ func Check(root string) []model.Diagnostic {
 		}
 		if err := p.apply(change); err != nil {
 			addCode(errorCode(err, "C02"), path, err.Error())
+			projectable = false
 		}
+	}
+	if projectable {
+		diagnostics = append(diagnostics, repeatedSentenceWarnings(p)...)
 	}
 	return diagnostics
 }
@@ -148,11 +166,25 @@ func modulePrefix(snapshot model.Snapshot, name string) string {
 	return ""
 }
 
-func checkItem(path string, item contracts.Item, requireNormative bool, addCode func(string, string, string)) {
+func checkItem(path string, item contracts.Item, requireNormative bool, maxClauses, maxWords int) []model.Diagnostic {
+	var diagnostics []model.Diagnostic
 	if tag := item.Tag; tag != "" && tag != "review" && !(strings.HasPrefix(tag, "quarantine: ") && strings.TrimSpace(strings.TrimPrefix(tag, "quarantine: ")) != "") {
-		addCode("C06", path, "invalid review/quarantine tag "+tag)
+		diagnostics = append(diagnostics, model.Diagnostic{Code: "C06", Path: path, Message: "invalid review/quarantine tag " + tag})
 	}
-	if requireNormative && !normative.MatchString(item.Body) {
-		addCode("C04", path, "non-normative spec body for "+item.ID)
+	if !requireNormative {
+		return diagnostics
 	}
+	// Matching MUST once also counts MUST NOT as a single clause.
+	clauses := len(normative.FindAllStringIndex(item.Body, -1))
+	if clauses == 0 {
+		diagnostics = append(diagnostics, model.Diagnostic{Code: "C04", Path: path, Message: "non-normative spec body for " + item.ID})
+	}
+	words := len(strings.Fields(item.Body))
+	if clauses > maxClauses || words > maxWords {
+		diagnostics = append(diagnostics, model.Diagnostic{
+			Code: "C17", Path: path, Warning: true,
+			Message: fmt.Sprintf("spec item %s has %d normative clauses (limit %d) and %d words (limit %d)", item.ID, clauses, maxClauses, words, maxWords),
+		})
+	}
+	return diagnostics
 }

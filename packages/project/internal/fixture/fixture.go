@@ -109,7 +109,37 @@ func parseConfig(data []byte) (map[string]any, []string, map[string]any, error) 
 			return nil, nil, nil, configError(fmt.Errorf("fireweed.yaml module_defaults must be a mapping"))
 		}
 	}
+	if err := setSpecLimitDefaults(config); err != nil {
+		return nil, nil, nil, configError(err)
+	}
 	return config, patterns, defaults, nil
+}
+
+func setSpecLimitDefaults(config map[string]any) error {
+	limits := map[string]any{}
+	if value, ok := config["spec_limits"]; ok {
+		limits, ok = value.(map[string]any)
+		if !ok {
+			return fmt.Errorf("fireweed.yaml spec_limits must be a mapping")
+		}
+	}
+	for _, field := range []struct {
+		name         string
+		defaultValue int
+	}{
+		{"max_clauses", 3}, {"max_words", 80}, {"max_decision_words", 300},
+	} {
+		value, exists := limits[field.name]
+		if !exists {
+			limits[field.name] = field.defaultValue
+			continue
+		}
+		if limit, ok := value.(int); !ok || limit <= 0 {
+			return fmt.Errorf("fireweed.yaml spec_limits.%s must be a positive integer", field.name)
+		}
+	}
+	config["spec_limits"] = limits
+	return nil
 }
 
 func parseModule(data []byte, defaults map[string]any, rel string) (model.Module, error) {
