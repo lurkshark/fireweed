@@ -1,0 +1,49 @@
+---
+bases:
+    RUN-014: 7115e12f
+module: runner
+---
+
+## Motivation
+
+RUN-014 makes Next verify each successful agent attempt and then call
+`workflow.Done`, and FLOW-003 requires Done to run full verification before it
+commits. So every successful phase runs the full verification twice
+(`run.go` calls `workflow.Verify` and then `workflow.Done`). SYSTEM.md
+allows up to 35 minutes for full implementation verification, so an impl
+phase can spend that long again for no new information. The runner drill
+lists this as a gap.
+
+## Interface
+
+None. Next's verification sequence changes.
+
+## Added
+
+## Modified
+
+### RUN-014
+After each successful agent invocation, Next MUST run full verification of that attempt at most once and call workflow.Done, continuing until applied. A verification failure reported by Done MUST count as a failed attempt under RUN-021 and RUN-022. Next MUST return the applied state and the ordered phase invocation results.
+
+## Removed
+
+## Decisions
+
+## Notes
+
+Drop the separate full Verify and call Done. Use the workflow prerequisite's
+`workflow.IsVerificationFailure` predicate to count verification failures as
+failed attempts and build retry feedback from Done's verification result.
+Propagate other Done errors with their existing diagnostics. A quick Verify
+(target module only) before Done is allowed.
+
+Evals: count eval-hook invocations in a fixture project and require one
+full verification per successful attempt, and a retry with the last
+verification output when Done reports a dependent failure.
+
+This replays the existing RUN-014 change after the workflow prerequisite.
+Reuse the previously audited eval from commit `4ff5a9b` and verify it against
+the current phase base before applying the implementation.
+
+The controller is pinned, so the saving applies to queue runs only after
+the controller is rebuilt from a main that includes this change.
