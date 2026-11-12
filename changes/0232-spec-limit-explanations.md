@@ -1,6 +1,6 @@
 ---
 module: assets
-phase: audit
+phase: impl
 run: 20261112T024709-8a7cd75303833a0d8b458750
 ---
 
@@ -39,3 +39,7 @@ The implementation can add the entries in
 `packages/assets/internal/content/content.go`.
 ## Provenance
 - evals 2026-11-12T02:50:33.803783Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=129 failing=3 passing=126
+- audit 2026-11-12T02:51:12.668506Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-astra -c model_reasoning_effort="medium" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+## Audit
+
+No findings; checked AST-060
