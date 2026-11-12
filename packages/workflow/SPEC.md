@@ -515,6 +515,9 @@ MAY stop further evaluation.
 A phase commit created by Done MUST exclude generated run artifacts under
 `.fireweed/runs/`, including when Git does not ignore those files.
 
+### FLOW-136
+Done MUST mark errors returned by its full verification step so callers can distinguish them from precondition and phase-transition errors. Marking MUST preserve the original error text, cause and `contracts.ErrorCode`, along with the verification result. `IsVerificationFailure` MUST recognize the marker through error wrapping.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.

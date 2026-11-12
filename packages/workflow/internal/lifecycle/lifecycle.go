@@ -982,7 +982,7 @@ func Done(ctx context.Context, req model.Request) (model.Result, error) {
 	}
 	result, e = Verify(ctx, req)
 	if e != nil {
-		return result, e
+		return result, &verificationFailure{cause: e}
 	}
 	s = result.State
 	// A hook can write files. Check its aftermath before committing or applying.
