@@ -2,7 +2,6 @@
 bases:
     AST-008: 581b745d
     AST-048: 9a5d6a47
-blocked: audit verification attempts exhausted
 module: assets
 phase: audit
 run: 20261112T192706-b138d77f5fa82c3569d46a5e
