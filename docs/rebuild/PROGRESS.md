@@ -7,7 +7,7 @@ drill reports, and the owner accepted each proof and deferred its remaining
 gaps. Earlier milestone narratives, failed proofs and recovery notes are in
 Git history before this revision.
 
-The owner approved changes 0202–0233. Changes 0202–0222 have applied. In 0210,
+The owner approved changes 0202–0233. Changes 0202–0229 have applied. In 0210,
 Fireweed resumed the saved attempt with both CHK-048 assertions intact after
 the owner approved marking that ID `already_satisfied`.
 
@@ -25,8 +25,15 @@ against the unlabeled checks errors.
 0222 exposed dependent evals that asserted workflow code labels. The owner
 approved separate app and runner eval fixes. Both passed audit and applied.
 Fireweed restored 0222's saved implementation and verified 188 workflow, 167
-runner and 323 app cases. Changes 0223–0234 remain queued, including the
-separately requested worker-declared blocking change.
+runner and 323 app cases.
+
+Fireweed blocked 0230 after two implementation attempts with E01 for RUN-014.
+Its eval still observes two full verifications on successful attempts. The
+worker's Question identifies the workflow prerequisite: `Done` needs to mark
+verification failures so `Next` can retry them without retrying transition
+failures that carry the same code. Fireweed saved the attempt at
+`refs/fireweed/attempts/single-phase-verification/1` and released the claim.
+Changes 0231–0234 remain queued, including worker-declared blocking.
 
 ## Controller
 
@@ -133,11 +140,13 @@ The owner deferred these gaps. The queued change that addresses one is linked.
 
 ## Next step
 
-1. Run the remaining changes in queue order with the recorded controller.
-2. After 0230 applies, rebuild the controller from clean main with no run or
+1. Review a workflow prerequisite for `Done` to identify verification
+   failures through a structured marker that preserves the cause and code.
+2. Resume 0230. After it applies, rebuild the controller from clean main with no run or
    claim active and record the new source here. This lets each successful
    phase run full verification once.
-3. Await owner direction on the remaining
+3. Run 0231–0234 with the rebuilt controller.
+4. Await owner direction on the remaining
    [full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required).
    Gate 2 requires the queue to be empty again.
 
