@@ -3,6 +3,8 @@ eval_fix:
     - RUN-048
     - RUN-049
 module: runner
+phase: audit
+run: 20261112T213413-dfc069b359ab66e70c488a43
 ---
 
 ## Motivation
@@ -60,3 +62,15 @@ A passing audit includes No findings and Checked IDs for RUN-048 and RUN-049.
 Before correction, three focused local race runs passed in 11.294 seconds,
 consistent with the CI failure depending on setup cost under load.
 
+The time-stop fixture now starts the change, invokes the existing fake worker,
+and verifies and commits evals with the ordinary fixture hook before the timed
+Run resumes the held audit. Three focused macOS arm64 race runs passed after
+the correction in 15.227 seconds.
+
+Both `fireweed verify --quick audit-time-stop-fixture` and
+`fireweed verify audit-time-stop-fixture` passed in the evals phase.
+The configured independent auditor could not initialize in the restricted
+session (`Operation not permitted`). The audit remains pending.
+
+## Provenance
+- evals 2026-11-12T21:45:45.731133Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=170 failing=0 passing=170
