@@ -1,15 +1,16 @@
 # Rebuild progress
 
-## Current state (2026-11-10)
+## Current state (2026-11-11)
 
 The regeneration milestone is complete. All eight modules have passing native
 drill reports, and the owner accepted each proof and deferred its remaining
 gaps. Earlier milestone narratives, failed proofs and recovery notes are in
 Git history before this revision.
 
-The owner approved changes 0202–0233. Changes 0202–0230 have applied. In 0210,
-Fireweed resumed the saved attempt with both CHK-048 assertions intact after
-the owner approved marking that ID `already_satisfied`.
+Fireweed applied all 38 queue entries: 0202–0234 and five approved
+prerequisites. The queue is empty and no claim is active. In 0210, Fireweed
+resumed the saved attempt with both CHK-048 assertions intact after the owner
+approved marking that ID `already_satisfied`.
 
 The owner approved [the app prerequisite](../../changes/archive/0220-app-history-coded-errors.md)
 after the first 0220 run exposed the remaining text-based diagnostic lookup in
@@ -32,7 +33,11 @@ Fireweed abandoned the initial 0230 run to remove its committed fail-first eval
 from the live tree while retaining the commits and saved attempts. It restored
 the workflow prerequisite's saved implementation and applied it. Fireweed then
 replayed 0230 with the same eval, passed independent audit and implementation
-verification, and applied it. Changes 0231–0234 remain queued.
+verification, and applied it. The rebuilt controller applied 0231–0234.
+
+On the final product revision `1a0822f`, `go test ./...` passed. The controller
+passed `check` and `check-commits c98ddaa..1a0822f` over 136 commits. The product
+passed `check` with two C18 warnings for repeated app clauses.
 
 ## Controller
 
@@ -139,10 +144,8 @@ The owner deferred these gaps. The queued change that addresses one is linked.
 
 ## Next step
 
-1. Run 0231–0234 in queue order with the rebuilt controller.
-2. Await owner direction on the remaining
-   [full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required).
-   Gate 2 requires the queue to be empty again.
+Await owner direction on the remaining
+[full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required).
 
 ## Suggested follow-ups
 
@@ -162,7 +165,7 @@ Not yet approved; each needs owner agreement before a change is written.
   (`go test -count=20 ./packages/app/...`) to find it. If the work simply
   takes longer than the timer allows, ease the bound, as 0207 does, so that
   timers only catch extreme outliers.
-- **App C18 warnings.** After 0233, `check` will warn C18 for two app
-  sentences repeated across five and three items ("It MUST leave stderr
+- **App C18 warnings.** The product's `check` warns C18 for two app
+  sentences repeated across eight and three items ("It MUST leave stderr
   empty." and the null-data failure rule). Decide whether they become
   SYSTEM.md conventions or stay as specs.
