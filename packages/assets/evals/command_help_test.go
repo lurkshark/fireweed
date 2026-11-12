@@ -70,6 +70,13 @@ func Test_AST_008_Help(t *testing.T) {
 	if regexp.MustCompile(`gc\.drill_max_age|720h`).MatchString(overview) {
 		t.Error("Help() includes gc configuration details that belong on the gc page")
 	}
+	for _, option := range regexp.MustCompile(`\B--[a-z][a-z0-9-]*\b`).FindAllString(overview, -1) {
+		switch option {
+		case "--help", "--json":
+		default:
+			t.Errorf("Help() includes command-specific option %s, which belongs on its command page", option)
+		}
+	}
 }
 
 func Test_AST_061_CommandPages(t *testing.T) {
@@ -171,6 +178,24 @@ func Test_AST_061_CommandInputDetails(t *testing.T) {
 	} {
 		page := mustCommandHelp(t, input.command)
 		requirePattern(t, page, `(?i)`+input.meaning, input.command+" "+input.description)
+	}
+}
+
+func Test_AST_061_CommandSelectors(t *testing.T) {
+	for _, input := range []struct{ command, meaning, description string }{
+		{"start", `eligible[^.!?]*(?:queue\w*|pending)|(?:queue\w*|pending)[^.!?]*eligible|head of the queue|queue head|first eligible change`, "eligible queued change to start"},
+		{"release", `(?:claim\w*|held|owned)[^.!?]*(?:this|current|your) worktree|(?:this|current|your) worktree[^.!?]*(?:claim\w*|holds?|owns?)`, "change claimed by the current worktree"},
+		{"commits", `(?:pending|queue\w*)[^.!?]*archiv\w*|archiv\w*[^.!?]*(?:pending|queue\w*)`, "pending or archived change to look up"},
+		{"drill", `(?:existing|declared|configured|name)\b[^.!?]*\bmodule\b|\bmodule\b[^.!?]*\bname\b`, "name of the module to rebuild"},
+	} {
+		t.Run(input.command, func(t *testing.T) {
+			page := strings.Join(strings.Fields(mustCommandHelp(t, input.command)), " ")
+			requirePattern(t, page, `(?i)`+input.meaning, input.description)
+			if input.command != "drill" {
+				requirePattern(t, page, `(?i)\bslug\b`, "change slug selector")
+				requirePattern(t, page, `(?i)\b(?:file ?name|(?:file )?path)\b`, "change file selector")
+			}
+		})
 	}
 }
 

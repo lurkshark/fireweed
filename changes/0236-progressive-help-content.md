@@ -7,7 +7,7 @@ bases:
     AST-008: 581b745d
     AST-048: 9a5d6a47
 module: assets
-phase: evals
+phase: audit
 run: 20261112T192706-b138d77f5fa82c3569d46a5e
 ---
 
@@ -67,6 +67,15 @@ gc.drill_max_age as a positive Go duration in fireweed.yaml with default 720h
 
 ## Notes
 
+The owner approved recovery after malformed audit submissions exhausted the
+initial attempts. The original findings are retained and were accepted by
+the controller after formatting correction. Address AST-008 and AST-061;
+previously passed IDs remain passed. Audit findings must each occupy one line,
+using `- ID: "exact single-line substring of the spec" — missing assertion`.
+A passing re-audit reports `No findings` and a `Checked IDs:` line listing all
+five changed IDs, including the earlier clearances; only pending IDs are
+re-audited. Keep the controller's audit round count and limits intact.
+
 Use the design CLI table and current app command contracts to author accurate
 pages. Cover options absent from the abbreviated design table too:
 init --audit-agent, doctor --no-agent, new-module --prefix, show --stale,
@@ -96,9 +105,16 @@ The command pages belong in the disposable
 `packages/assets/internal/content/command_help.go` stub file. The overview
 lives in `packages/assets/internal/content/content.go`, also disposable.
 
+The audit correction checks for command-specific flags in the overview and
+checks the argument descriptions for start, release, commits and drill.
+The focused overview and selector evals failed against the existing overview
+and command-help stub. `fireweed verify progressive-help-content` passed in
+the evals phase.
+
 ## Provenance
 - evals 2026-11-12T19:34:26.323341Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=135 failing=8 passing=127
 - audit 2026-11-12T19:37:54.541Z agent=manual fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- evals 2026-11-12T19:42:14.992579Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=140 failing=13 passing=127
 ## Audit
 
 - AST-008: "command-specific option and configuration descriptions" — `Test_AST_008_Help` excludes gc configuration details, but no assertion excludes command-specific option descriptions from the overview.
