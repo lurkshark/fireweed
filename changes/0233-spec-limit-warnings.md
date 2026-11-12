@@ -1,6 +1,6 @@
 ---
 module: project
-phase: audit
+phase: impl
 run: 20261112T032808-90472063d366a5043a1c6d0d
 ---
 
@@ -69,3 +69,7 @@ for configuration and `packages/project/internal/queue/check.go` for warnings,
 using the existing projection in `packages/project/internal/queue/project.go`.
 ## Provenance
 - evals 2026-11-12T03:32:35.370871Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=156 failing=20 passing=136
+- audit 2026-11-12T03:32:55.456689Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-astra -c model_reasoning_effort="medium" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+## Audit
+
+No findings; checked PRJ-071, PRJ-072, PRJ-073, PRJ-074
