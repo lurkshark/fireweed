@@ -221,7 +221,7 @@ Plain doctor output MUST identify each reported probe's outcome and retain repor
 doctor MUST return exit 0 when no error diagnostics remain, including warning-only results, exit 1 for static or probe failures, and exit 2 for usage or configuration-loading errors.
 
 ### APP-067
-doctor --json MUST emit schema 1 with an object containing a checks array on success or null data on failure, retaining code/message/path/warning diagnostics and leaving stderr empty.
+doctor --json MUST emit schema 1 with an object containing a checks array on success or null data on failure, retaining code/message/path/warning diagnostics and leaving stderr empty. Each canary check MUST use its probe name as name and keep the hook scope in detail.
 
 ### APP-068
 agents-md --write MUST discover the nearest ancestor fireweed.yaml and refresh AGENTS.md at that project root.
