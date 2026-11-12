@@ -1,9 +1,13 @@
 ---
+audit_pending:
+    - AST-008
+    - AST-061
+audit_rounds: 1
 bases:
     AST-008: 581b745d
     AST-048: 9a5d6a47
 module: assets
-phase: audit
+phase: evals
 run: 20261112T192706-b138d77f5fa82c3569d46a5e
 ---
 
@@ -94,3 +98,8 @@ lives in `packages/assets/internal/content/content.go`, also disposable.
 
 ## Provenance
 - evals 2026-11-12T19:34:26.323341Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=135 failing=8 passing=127
+- audit 2026-11-12T19:37:54.541Z agent=manual fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+## Audit
+
+- AST-008: "command-specific option and configuration descriptions" — `Test_AST_008_Help` excludes gc configuration details, but no assertion excludes command-specific option descriptions from the overview.
+- AST-061: "descriptions of its accepted arguments and options" — No assertion checks descriptions of the accepted arguments for `start`, `release`, `commits` or `drill`. Their page assertions check purpose, argument-shaped syntax and examples, but `Test_AST_061_CommandInputDetails` does not check these commands' argument descriptions.
