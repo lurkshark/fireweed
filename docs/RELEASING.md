@@ -3,8 +3,9 @@
 The release workflow publishes GitHub release archives for macOS and Linux on
 amd64 and arm64, SHA-256 checksums, a source archive, and a Homebrew formula.
 Pushing a stable `vMAJOR.MINOR.PATCH` tag runs the checks and publishes the
-release, then updates `lurkshark/homebrew-tap`. Nothing is published by a branch
-push, pull request, or local snapshot build.
+release, then builds and tests Homebrew bottles and updates
+`lurkshark/homebrew-tap`. Nothing is published by a branch push, pull request,
+or local snapshot build.
 
 Release infrastructure lives in the protected author paths listed in
 `fireweed.yaml`. It is maintained between lifecycle changes, separately from
@@ -80,8 +81,10 @@ protected release-infrastructure edits.
 
 4. Watch the **Release** workflow. It tests Linux and macOS, rejects a malformed
    tag or binary/tag version mismatch, builds the archives, verifies the
-   generated formula, publishes the GitHub release, and updates the tap. Stable
-   releases only are supported by this workflow and the installer.
+   generated formula, and publishes the GitHub release. Its reusable
+   **Homebrew bottles** workflow then packages and tests all four native
+   bottles, uploads them, and updates the tap. Stable releases only are
+   supported by these workflows and the installer.
 5. In a clean installation, run:
 
    ```sh
@@ -94,15 +97,46 @@ Existing Homebrew users update with `brew update && brew upgrade fireweed`.
 Users who need an older version can use the explicit-version installer or
 `go install github.com/lurkshark/fireweed@v0.1.0`.
 
-If the Homebrew job fails after GitHub publication, fix the tap permissions or
-token and rerun only the failed job. It downloads the formula attached to the
-existing release and does not rebuild or republish binaries. Do not move a
-published release tag; use a new version for artifact corrections.
+If a bottle or tap job fails after GitHub publication, fix the cause and rerun
+only the failed jobs. Successful bottle jobs retain their workflow artifacts
+for the merge job. The upload step reuses identical existing assets but refuses
+to overwrite different published bytes. The tap job downloads the published
+`fireweed-bottled.rb` without rebuilding anything. Do not move a published
+release tag or replace its original archives.
+
+To add bottles to an existing release that does not have them, run:
+
+```sh
+gh workflow run homebrew-bottles.yml --ref main -f tag=v0.1.0
+```
+
+This uses the existing release's `fireweed.rb` and checksum-verified binary
+archives. It adds bottle assets and a separate `fireweed-bottled.rb`; it does
+not replace the original formula asset, archives, checksums, or release tag.
 
 ## Homebrew implementation
 
 `scripts/homebrew.py` emits a formula with the matching binary URL and SHA-256
 for each OS/architecture and a `brew test` that checks `fireweed version`.
+The formula is the input to native `brew install --build-bottle` and
+`brew bottle --json` jobs on macOS 15 (Intel and Apple Silicon) and Ubuntu
+24.04 (amd64 and arm64). Each job uninstalls the source installation, pours
+its bottle, checks the installed receipt, and runs `brew test`. The Intel
+macOS runner first installs current dependencies, building them when needed:
+Homebrew no longer publishes new Intel macOS core bottles. This does not
+remove Homebrew's developer-tool requirements for Intel users.
+
+Homebrew merges the four metadata files into the final formula's `bottle`
+block. Bottle archives use a single hyphen in their release URLs even though
+Homebrew creates local filenames with a double hyphen; the publishing job
+uses the names in Homebrew's JSON metadata. Only after every bottle passes
+and all assets are uploaded does the workflow update the tap.
+
+Matching bottles avoid Fireweed's source-install SDK checks. macOS 15 bottles
+also work on newer macOS versions. Homebrew's platform requirements and the
+Git dependency still apply; unsupported systems or explicit source installs
+may still require developer tools.
+
 Homebrew installs the binary without compiling Go. This small generator avoids
 GoReleaser's [deprecated formula publisher](https://goreleaser.com/customization/publish/homebrew_formulas/)
 while keeping Linux support. It follows Homebrew's

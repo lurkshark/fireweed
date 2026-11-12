@@ -15,12 +15,16 @@ in Git.
 
 ## Get started
 
-Once the first release and tap are published, install on macOS or Linux with
-Homebrew:
+Install on macOS or Linux with Homebrew:
 
 ```sh
 brew install lurkshark/tap/fireweed
 ```
+
+The tap provides native bottles for macOS 15 or newer and Linux on amd64 and
+arm64. Homebrew installs a matching bottle without compiling Fireweed or
+running its source-install SDK checks. Homebrew's own platform requirements
+and the Git dependency still apply.
 
 Release archives support amd64 and arm64 on both systems. To install a specific
 release without Homebrew, download and inspect its installer, then run it:
