@@ -595,6 +595,25 @@ migrate --json MUST emit schema 1 with string data equal to the plain confirmati
 ### APP-155
 migrate MUST return exit 2 for usage, project discovery or loading failures and unsupported format versions, using U01 for usage, C01 for unsupported formats and the existing loading cause code otherwise. Static validation errors MUST return exit 1 with their existing cause codes. All failures MUST include corrective guidance.
 
+### APP-156
+The CLI MUST return assets.Help for help, --help and -h, and assets.CommandHelp
+for help <command>, <command> help, <command> --help and <command> -h, with
+exit 0 and empty stderr for supported commands. These forms MUST work outside
+a project and with an invalid fireweed.yaml, without requiring the command's
+ordinary arguments or options.
+
+### APP-157
+Every successful help form MUST accept --json and emit the schema-1 envelope
+with string data identical to the corresponding plain output, an empty
+diagnostics array and empty stderr.
+
+### APP-158
+An unknown command requested through a help form MUST return exit 2 with U02,
+the rejected name and guidance to fireweed help. Extra arguments or unsupported
+options in a help request MUST return exit 2 with corrective U01 guidance
+showing a valid help form. JSON failures MUST use the existing schema-1 null
+data and diagnostics envelope with empty stderr.
+
 ## Decisions
 
 
