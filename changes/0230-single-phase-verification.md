@@ -2,6 +2,8 @@
 bases:
     RUN-014: 7115e12f
 module: runner
+phase: audit
+run: 20261112T014811-37a2c5be230bf289938126db
 ---
 
 ## Motivation
@@ -47,3 +49,5 @@ the current phase base before applying the implementation.
 
 The controller is pinned, so the saving applies to queue runs only after
 the controller is rebuilt from a main that includes this change.
+## Provenance
+- evals 2026-11-12T01:59:51.729717Z agent=manual fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=170 failing=3 passing=167
