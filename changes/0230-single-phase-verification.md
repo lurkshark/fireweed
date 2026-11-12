@@ -1,6 +1,7 @@
 ---
 bases:
     RUN-014: 7115e12f
+blocked: impl verification attempts exhausted
 module: runner
 phase: impl
 run: 20261111T232906-bd2a07c548b6842a8b999677
