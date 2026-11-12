@@ -518,6 +518,12 @@ A phase commit created by Done MUST exclude generated run artifacts under
 ### FLOW-136
 Done MUST mark errors returned by its full verification step so callers can distinguish them from precondition and phase-transition errors. Marking MUST preserve the original error text, cause and `contracts.ErrorCode`, along with the verification result. `IsVerificationFailure` MUST recognize the marker through error wrapping.
 
+### FLOW-137
+For a held evals or impl step with a nonempty `blocked` reason and nonempty `## Questions`, Done MUST save the attempt and block the change before it can advance. The block commit MUST preserve the reason and Questions alongside the approved lifecycle state. Done MUST release the claim and return P06.
+
+### FLOW-138
+Context for a held evals or impl step MUST tell the worker how to declare a block using the current change's `blocked` reason and `## Questions`.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.

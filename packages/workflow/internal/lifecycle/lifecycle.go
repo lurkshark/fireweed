@@ -980,6 +980,18 @@ func Done(ctx context.Context, req model.Request) (model.Result, error) {
 	if e = validate(s, c); e != nil {
 		return result, e
 	}
+	if c.Phase == "evals" || c.Phase == "impl" {
+		reason := str(s.Change.Document.Frontmatter["blocked"])
+		questions, _ := contracts.Section(s.Change.Document.Body, "Questions")
+		if strings.TrimSpace(reason) != "" && strings.TrimSpace(questions) != "" {
+			blocked, err := blockHeld(s, c, reason, questions)
+			result.State = blocked.State
+			if err != nil {
+				return result, err
+			}
+			return result, codedErrorf("P06", c.Change, "change blocked")
+		}
+	}
 	result, e = Verify(ctx, req)
 	if e != nil {
 		return result, &verificationFailure{cause: e}
@@ -1127,6 +1139,9 @@ func Context(root, target string, full bool) (string, error) {
 	if e == nil {
 		b.WriteString("\n# Playbook\n")
 		b.WriteString(play)
+	}
+	if s.Phase == "evals" || s.Phase == "impl" {
+		fmt.Fprintf(&b, "\nTo declare a block, set `blocked` to a nonempty reason in the YAML frontmatter of `%s` and write your questions under `## Questions`. The controller will save the attempt and record the block.\n", s.Change.Path)
 	}
 	b.WriteString("\n# Other relevant files\n")
 	_ = filepath.WalkDir(file(s.Snapshot.Root, m.Dir), func(path string, d os.DirEntry, err error) error {

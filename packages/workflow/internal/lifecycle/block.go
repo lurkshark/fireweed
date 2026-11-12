@@ -100,19 +100,22 @@ func nextAttempt(root, slug, oid string) (string, error) {
 }
 
 func Block(request model.BlockRequest) (model.BlockResult, error) {
-	var result model.BlockResult
 	s, c, err := loadCurrent(request.Root, request.Change)
-	result.State = s
 	if err != nil {
-		return result, err
+		return model.BlockResult{State: s}, err
 	}
 	if err := validate(s, c); err != nil {
-		return result, err
+		return model.BlockResult{State: s}, err
 	}
+	return blockHeld(s, c, request.Reason, "")
+}
+
+func blockHeld(s model.State, c claim, reason, questions string) (model.BlockResult, error) {
+	result := model.BlockResult{State: s}
 	if s.Head != c.PhaseBase {
 		return result, codedErrorf("P05", c.Change, "HEAD differs from the held phase base")
 	}
-	if strings.TrimSpace(request.Reason) == "" {
+	if strings.TrimSpace(reason) == "" {
 		return result, errors.New("blocked reason is empty")
 	}
 	switch c.Phase {
@@ -122,6 +125,17 @@ func Block(request model.BlockRequest) (model.BlockResult, error) {
 	}
 	root := s.Snapshot.Root
 	doc, err := blockDocument(root, s, c)
+	if err != nil {
+		return result, err
+	}
+	doc.Frontmatter["blocked"] = reason
+	if questions != "" {
+		if !strings.HasSuffix(questions, "\n") {
+			questions += "\n"
+		}
+		doc.Body = contracts.ReplaceSection(doc.Body, "Questions", questions)
+	}
+	rendered, err := contracts.RenderDocument(doc)
 	if err != nil {
 		return result, err
 	}
@@ -160,11 +174,6 @@ func Block(request model.BlockRequest) (model.BlockResult, error) {
 	}
 	result.AttemptRef, result.AttemptOID = attemptRef, attemptOID
 	if _, err := blockGit(root, nil, "restore", "--source="+c.PhaseBase, "--staged", "--worktree", "--", ".", ":(exclude,literal)"+runArtifactsDir); err != nil {
-		return result, err
-	}
-	doc.Frontmatter["blocked"] = request.Reason
-	rendered, err := contracts.RenderDocument(doc)
-	if err != nil {
 		return result, err
 	}
 	if err = write(root, s.Change.Path, []byte(rendered)); err != nil {
