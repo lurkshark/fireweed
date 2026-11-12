@@ -7,7 +7,7 @@ drill reports, and the owner accepted each proof and deferred its remaining
 gaps. Earlier milestone narratives, failed proofs and recovery notes are in
 Git history before this revision.
 
-The owner approved changes 0202–0233. Changes 0202–0229 have applied. In 0210,
+The owner approved changes 0202–0233. Changes 0202–0230 have applied. In 0210,
 Fireweed resumed the saved attempt with both CHK-048 assertions intact after
 the owner approved marking that ID `already_satisfied`.
 
@@ -27,21 +27,20 @@ approved separate app and runner eval fixes. Both passed audit and applied.
 Fireweed restored 0222's saved implementation and verified 188 workflow, 167
 runner and 323 app cases.
 
-Fireweed blocked 0230 after its RUN-014 eval observed two full verifications.
-The owner approved the workflow prerequisite `0230-done-verification-error`
-to let Next distinguish verification and transition failures. Its independent
-audit, 190 workflow cases and 323 app cases passed. Full verification still
-blocked on the runner's committed RUN-014 fail-first eval, which runs before
-0230 can use the new marker. Both changes are blocked and both attempts are
-retained. No claim is active. Changes 0231–0234 remain queued.
+The owner approved the workflow prerequisite `0230-done-verification-error`.
+Fireweed abandoned the initial 0230 run to remove its committed fail-first eval
+from the live tree while retaining the commits and saved attempts. It restored
+the workflow prerequisite's saved implementation and applied it. Fireweed then
+replayed 0230 with the same eval, passed independent audit and implementation
+verification, and applied it. Changes 0231–0234 remain queued.
 
 ## Controller
 
 `.fireweed/bin/fireweed` was rebuilt with `-trimpath` from clean main after
-0207 applied and its claim was released. Go build metadata confirms the
+0230 applied and its claim was released. Go build metadata confirms the
 revision and a clean tree.
 
-Controller source: `c5197f710986119ba4370f7e483e7ff4f0b14f37`
+Controller source: `19a184b2616386f76604f92a87d148259f79eed6`
 
 On a fresh macOS arm64 clone of the previous controller source
 (`e1e1869131833778f1f8f1a23cf62b0d3b3869b3`), with
@@ -140,15 +139,8 @@ The owner deferred these gaps. The queued change that addresses one is linked.
 
 ## Next step
 
-1. Review using `fireweed abandon single-phase-verification` to remove 0230's
-   unapplied evals from the live tree, keeping the existing commits and saved
-   attempts in Git. Then restore and verify the workflow prerequisite's saved
-   implementation.
-2. Requeue 0230 with its existing scope and replay evals, audit and
-   implementation against the completed workflow prerequisite.
-3. After 0230 applies, rebuild the controller from clean main with no run or
-   claim active, record the new source here, and run 0231–0234.
-4. Await owner direction on the remaining
+1. Run 0231–0234 in queue order with the rebuilt controller.
+2. Await owner direction on the remaining
    [full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required).
    Gate 2 requires the queue to be empty again.
 
