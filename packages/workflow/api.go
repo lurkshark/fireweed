@@ -38,6 +38,10 @@ func Verify(ctx context.Context, request Request) (Result, error) {
 func Done(ctx context.Context, request Request) (Result, error) {
 	return lifecycle.Done(ctx, request)
 }
+
+// IsVerificationFailure reports whether err wraps a failure from Done's full verification.
+func IsVerificationFailure(err error) bool { return lifecycle.IsVerificationFailure(err) }
+
 func Block(request BlockRequest) (BlockResult, error) {
 	return lifecycle.Block(request)
 }

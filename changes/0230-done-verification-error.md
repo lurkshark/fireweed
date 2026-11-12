@@ -1,5 +1,7 @@
 ---
 module: workflow
+phase: audit
+run: 20261112T001352-f31d70a3b6373e93f6711a3f
 ---
 
 ## Motivation
@@ -16,7 +18,7 @@ from Done's full verification step, including when the caller wraps that error.
 
 ## Added
 
-### new:done-verification-error
+### FLOW-136
 Done MUST mark errors returned by its full verification step so callers can distinguish them from precondition and phase-transition errors. Marking MUST preserve the original error text, cause and `contracts.ErrorCode`, along with the verification result. `IsVerificationFailure` MUST recognize the marker through error wrapping.
 
 ## Modified
@@ -38,3 +40,5 @@ verification with its original cause and diagnostic, a wrapped marked error,
 and a phase-transition rejection with a code that verification can also
 return. An eval-phase interface stub can return false until implementation.
 This workflow change precedes 0230-single-phase-verification.
+## Provenance
+- evals 2026-11-12T00:23:23.262782Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=190 failing=2 passing=188
