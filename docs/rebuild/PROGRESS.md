@@ -27,13 +27,13 @@ approved separate app and runner eval fixes. Both passed audit and applied.
 Fireweed restored 0222's saved implementation and verified 188 workflow, 167
 runner and 323 app cases.
 
-Fireweed blocked 0230 after two implementation attempts with E01 for RUN-014.
-Its eval still observes two full verifications on successful attempts. The
-worker's Question identifies the workflow prerequisite: `Done` needs to mark
-verification failures so `Next` can retry them without retrying transition
-failures that carry the same code. Fireweed saved the attempt at
-`refs/fireweed/attempts/single-phase-verification/1` and released the claim.
-Changes 0231–0234 remain queued, including worker-declared blocking.
+Fireweed blocked 0230 after its RUN-014 eval observed two full verifications.
+The owner approved the workflow prerequisite `0230-done-verification-error`
+to let Next distinguish verification and transition failures. Its independent
+audit, 190 workflow cases and 323 app cases passed. Full verification still
+blocked on the runner's committed RUN-014 fail-first eval, which runs before
+0230 can use the new marker. Both changes are blocked and both attempts are
+retained. No claim is active. Changes 0231–0234 remain queued.
 
 ## Controller
 
@@ -140,12 +140,14 @@ The owner deferred these gaps. The queued change that addresses one is linked.
 
 ## Next step
 
-1. Review a workflow prerequisite for `Done` to identify verification
-   failures through a structured marker that preserves the cause and code.
-2. Resume 0230. After it applies, rebuild the controller from clean main with no run or
-   claim active and record the new source here. This lets each successful
-   phase run full verification once.
-3. Run 0231–0234 with the rebuilt controller.
+1. Review using `fireweed abandon single-phase-verification` to remove 0230's
+   unapplied evals from the live tree, keeping the existing commits and saved
+   attempts in Git. Then restore and verify the workflow prerequisite's saved
+   implementation.
+2. Requeue 0230 with its existing scope and replay evals, audit and
+   implementation against the completed workflow prerequisite.
+3. After 0230 applies, rebuild the controller from clean main with no run or
+   claim active, record the new source here, and run 0231–0234.
 4. Await owner direction on the remaining
    [full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required).
    Gate 2 requires the queue to be empty again.
