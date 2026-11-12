@@ -31,7 +31,8 @@ checks. The tap and token are setup requirements, not created by these files.
 
 ## Validate without publishing
 
-Install Go, Python 3, and GoReleaser v2 (validated with 2.20.1), then run:
+Install Go, Node.js 24 or newer, pnpm 10.15.1, Python 3.11 or newer, uv,
+and GoReleaser v2 (validated with 2.20.1), then run:
 
 ```sh
 export PATH="$PWD/.fireweed/bin:$PATH"
@@ -48,6 +49,10 @@ formula after verifying each archive against its checksum. It never publishes
 or updates the tap. Snapshot versions name the packages only; the binary still
 reports the version required by its assets spec. The source archive contains
 the committed tree, so commit author infrastructure before a real release.
+
+`make test` and `make check` give fixture subprocesses an explicit Git identity
+and the `C` locale so commits and filename sorting do not depend on the host.
+Both CI and release checks install the Node/pnpm and Python/uv recipe tools.
 
 GitHub CI runs the race suite, vet, build and project checks on Linux and macOS,
 and separately exercises snapshot packaging. It builds the product at
