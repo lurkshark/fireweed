@@ -208,6 +208,9 @@ Each supplied additional-recipe canary MUST expose its named violation through t
 ### AST-059
 Explain MUST describe C20 as a warning for a SPEC.md file outside the configured modules globs and advise adding a matching glob or moving or renaming the file.
 
+### AST-060
+Explain MUST describe C17 as a spec item over spec_limits.max_clauses normative keywords or max_words words, C18 as a sentence repeated in three or more spec items, and C19 as a module Decisions section over spec_limits.max_decision_words, each as a warning with a corrective action.
+
 ## Decisions
 
 [0014-go-setup-bundle] Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,
