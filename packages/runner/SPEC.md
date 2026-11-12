@@ -63,9 +63,7 @@ Worker prompts MUST include full workflow context.
 Audit prompts MUST include the change, projected spec, eval contents and audit playbook without implementation contents.
 
 ### RUN-014
-After each successful agent invocation, Next MUST verify the current phase and
-call workflow.Done only when verification passes, continuing until applied.
-It MUST return the applied state and the ordered phase invocation results.
+After each successful agent invocation, Next MUST run full verification of that attempt at most once and call workflow.Done, continuing until applied. A verification failure reported by Done MUST count as a failed attempt under RUN-021 and RUN-022. Next MUST return the applied state and the ordered phase invocation results.
 
 ### RUN-015
 For a non-usage-limit agent invocation failure, Next MUST return an error and

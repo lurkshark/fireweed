@@ -167,43 +167,36 @@ func RunWithBudget(ctx context.Context, request model.NextRequest, budget *Usage
 			if agent.ExitCode != 0 {
 				return result, fmt.Errorf("%s agent exited with code %d", phase, agent.ExitCode)
 			}
-			attempt++
-			verification, verifyErr := workflow.Verify(ctx, step)
-			if stop := budget.TimeStop(ctx); stop != nil {
-				return result, stop
-			}
-			if verifyErr == nil {
+			done, doneErr := workflow.Done(ctx, step)
+			if doneErr == nil {
+				state = done.State
+				result.State = withRecoveryWarnings(state, recoveryWarnings)
 				break
 			}
-			if attempt == attempts {
-				blocked, blockErr := workflow.Block(workflow.BlockRequest{
-					Root: state.Snapshot.Root, Change: state.Change.Path,
-					Reason: phase + " verification attempts exhausted",
-				})
-				if blockErr != nil {
-					err := fmt.Errorf("verify %s: %w; block exhausted step: %w", phase, verifyErr, blockErr)
-					return result, diagnostic.PreserveCode(err, verifyErr, blockErr)
-				}
-				result.State = withRecoveryWarnings(blocked.State, recoveryWarnings)
-				return result, &BlockedError{Phase: phase, AttemptRef: blocked.AttemptRef, Cause: verifyErr}
-			}
-			feedback = verificationFeedback(phase, verification, verifyErr)
-		}
-		if stop := budget.TimeStop(ctx); stop != nil {
-			return result, stop
-		}
-		done, err := workflow.Done(ctx, step)
-		if err != nil {
 			if done.State.Phase != "" {
 				result.State = withRecoveryWarnings(done.State, recoveryWarnings)
 			}
 			if stop := budget.TimeStop(ctx); stop != nil {
 				return result, stop
 			}
-			return result, fmt.Errorf("complete %s: %w", phase, err)
+			if !workflow.IsVerificationFailure(doneErr) {
+				return result, fmt.Errorf("complete %s: %w", phase, doneErr)
+			}
+			attempt++
+			if attempt == attempts {
+				blocked, blockErr := workflow.Block(workflow.BlockRequest{
+					Root: state.Snapshot.Root, Change: state.Change.Path,
+					Reason: phase + " verification attempts exhausted",
+				})
+				if blockErr != nil {
+					err := fmt.Errorf("verify %s: %w; block exhausted step: %w", phase, doneErr, blockErr)
+					return result, diagnostic.PreserveCode(err, doneErr, blockErr)
+				}
+				result.State = withRecoveryWarnings(blocked.State, recoveryWarnings)
+				return result, &BlockedError{Phase: phase, AttemptRef: blocked.AttemptRef, Cause: doneErr}
+			}
+			feedback = verificationFeedback(phase, done, doneErr)
 		}
-		state = done.State
-		result.State = withRecoveryWarnings(state, recoveryWarnings)
 	}
 	return result, nil
 }
