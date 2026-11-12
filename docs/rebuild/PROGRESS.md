@@ -33,7 +33,8 @@ Fireweed abandoned the initial 0230 run to remove its committed fail-first eval
 from the live tree while retaining the commits and saved attempts. It restored
 the workflow prerequisite's saved implementation and applied it. Fireweed then
 replayed 0230 with the same eval, passed independent audit and implementation
-verification, and applied it. The rebuilt controller applied 0231–0234.
+verification, and applied it. The controller built from `19a184b` applied
+0231–0234.
 
 On the final product revision `1a0822f`, `go test ./...` passed. The controller
 passed `check` and `check-commits c98ddaa..1a0822f` over 136 commits. The product
@@ -42,12 +43,12 @@ passed `check` with two C18 warnings for repeated app clauses.
 ## Controller
 
 `.fireweed/bin/fireweed` was rebuilt with `-trimpath` from clean main after
-0230 applied and its claim was released. Go build metadata confirms the
-revision and a clean tree.
+the queue completed and all claims were released. Go build metadata confirms
+the revision and a clean tree.
 
-Controller source: `19a184b2616386f76604f92a87d148259f79eed6`
+Controller source: `b5bd03de200cf9b977cb4f8ec9f976f6c0575151`
 
-On a fresh macOS arm64 clone of the previous controller source
+On a fresh macOS arm64 clone of an earlier controller source
 (`e1e1869131833778f1f8f1a23cf62b0d3b3869b3`), with
 `GOCACHE=/tmp/fireweed-rebuild-cache`, the product build, `go test ./...`,
 `go test -race ./...`, `go vet ./...`, `fireweed check` and standalone
