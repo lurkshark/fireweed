@@ -3,6 +3,8 @@ bases:
     AST-008: 581b745d
     AST-048: 9a5d6a47
 module: assets
+phase: audit
+run: 20261112T192706-b138d77f5fa82c3569d46a5e
 ---
 
 ## Motivation
@@ -21,20 +23,20 @@ pages include help itself and every command in the overview.
 
 ## Added
 
-### new:command-help-content
+### AST-061
 CommandHelp MUST return a command page containing its purpose, usage syntax,
 descriptions of its accepted arguments and options, and at least one invocation
 example for each command listed by Help. Each page MUST document --help, -h
 and --json and point to related command help. Unknown command names MUST return
 an error naming the rejected command.
 
-### new:help-navigation
+### AST-062
 CommandHelp("help") MUST describe the overview, help <command>, <command> help,
 <command> --help and <command> -h forms, and the schema-1 JSON envelope.
 It MUST explain exit statuses 0 (success or empty queue), 1 (failed checks or
 blocked execution), 2 (usage or configuration failure) and 3 (clean early stop).
 
-### new:playbook-discovery
+### AST-063
 CommandHelp("playbook") MUST list author-change, evals, audit, impl and
 regenerate with their purposes and show how to read one. CommandHelp("explain")
 MUST describe diagnostic-code lookup with a concrete code example and point to
@@ -82,3 +84,13 @@ content and syntax, not exact prose or whitespace. New interface code delegates
 to an implementation-writable disposable stub during evals. No recipe,
 playbook, diagnostic-allocation or unrelated module changes are needed.
 
+The focused assets evals failed against the existing overview and temporary
+stub for AST-008, AST-048 and AST-061 through AST-063. The controller's
+`fireweed verify progressive-help-content` passed in the evals phase.
+
+The command pages belong in the disposable
+`packages/assets/internal/content/command_help.go` stub file. The overview
+lives in `packages/assets/internal/content/content.go`, also disposable.
+
+## Provenance
+- evals 2026-11-12T19:34:26.323341Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=135 failing=8 passing=127
