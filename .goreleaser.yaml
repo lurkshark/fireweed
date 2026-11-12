@@ -1,0 +1,40 @@
+version: 2
+project_name: fireweed
+
+builds:
+  - id: fireweed
+    main: .
+    binary: fireweed
+    env:
+      - CGO_ENABLED=0
+    goos: [darwin, linux]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+    # assets.Version is governed by AST-001, including for go install builds.
+    # The release workflow checks it against the tag before publishing.
+    ldflags: [-s -w]
+
+archives:
+  - id: fireweed
+    formats: [tar.gz]
+    name_template: 'fireweed_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: fireweed_checksums.txt
+  algorithm: sha256
+
+source:
+  enabled: true
+  name_template: 'fireweed_{{ .Version }}_source'
+
+release:
+  github:
+    owner: lurkshark
+    name: fireweed
+  prerelease: auto
+
+changelog:
+  use: github-native

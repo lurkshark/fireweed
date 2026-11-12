@@ -1,4 +1,6 @@
 .fireweed/runs/
 .fireweed/bin/
 bin/
+dist/
+.tap/
 .fireweed/evidence/

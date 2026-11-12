@@ -15,12 +15,36 @@ in Git.
 
 ## Get started
 
-Build from this checkout with Go 1.23 or later. Add this checkout’s `bin/`
-directory to your `PATH` to use the build in another repository.
+Once the first release and tap are published, install on macOS or Linux with
+Homebrew:
+
+```sh
+brew install lurkshark/tap/fireweed
+```
+
+Release archives support amd64 and arm64 on both systems. To install a specific
+release without Homebrew, download and inspect its installer, then run it:
+
+```sh
+curl -fsSLo install-fireweed.sh https://raw.githubusercontent.com/lurkshark/fireweed/v0.1.0/scripts/install.sh
+sh install-fireweed.sh v0.1.0
+```
+
+The installer verifies the archive's SHA-256 checksum and installs to
+`~/.local/bin`; add that directory to your `PATH`, or pass a different directory
+as its second argument. It requires curl, tar, and sha256sum or shasum. Git and
+your chosen agent CLI must be installed separately.
+
+With Go 1.23 or later, a published version can also be installed with
+`go install github.com/lurkshark/fireweed@v0.1.0`. To build from this checkout,
+run the following and add this checkout's `bin/` directory to your `PATH`:
 
 ```sh
 make build
 ```
+
+See [Releasing](docs/RELEASING.md) for the one-time tap setup, release steps,
+and a local packaging dry run.
 
 In a new project directory, initialize Git and choose a recipe and an agent CLI.
 This example uses Go and Codex.
