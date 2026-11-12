@@ -1,5 +1,7 @@
 ---
 module: app
+phase: audit
+run: 20261112T201656-04580206e513d285b4be2d42
 ---
 
 ## Motivation
@@ -17,19 +19,19 @@ execution and project loading.
 
 ## Added
 
-### new:help-aliases
+### APP-156
 The CLI MUST return assets.Help for help, --help and -h, and assets.CommandHelp
 for help <command>, <command> help, <command> --help and <command> -h, with
 exit 0 and empty stderr for supported commands. These forms MUST work outside
 a project and with an invalid fireweed.yaml, without requiring the command's
 ordinary arguments or options.
 
-### new:help-json
+### APP-157
 Every successful help form MUST accept --json and emit the schema-1 envelope
 with string data identical to the corresponding plain output, an empty
 diagnostics array and empty stderr.
 
-### new:help-errors
+### APP-158
 An unknown command requested through a help form MUST return exit 2 with U02,
 the rejected name and guidance to fireweed help. Extra arguments or unsupported
 options in a help request MUST return exit 2 with corrective U01 guidance
@@ -43,6 +45,13 @@ data and diagnostics envelope with empty stderr.
 ## Decisions
 
 ## Notes
+
+Use the controller's audit submission format: each finding is one line,
+`- ID: "exact single-line substring of the spec" — missing assertion`.
+A passing audit says `No findings` and includes `Checked IDs:` listing all
+changed IDs. Re-audits inspect only pending IDs while retaining earlier
+clearances. This avoids the formatting rejection recovered in the preceding
+change; keep audit enabled and preserve all round and attempt limits.
 
 Run after progressive-help-content. Help forms accept only their shown tokens
 plus optional --json; ordinary execution flags or positional values do not
@@ -64,3 +73,12 @@ command convention: help must not execute hooks/agents or change files, index
 or refs. Do not introduce per-command instrumentation or a Cartesian product
 of aliases, commands and environments.
 
+The public app evals failed first for APP-156, APP-157 and APP-158. Existing
+dispatch rejects the new help forms with U01, including unknown command help
+requests that require U02. The targeted run also passed APP-001 through APP-003.
+The implementation can route help in `packages/app/internal/entry/entry.go`
+before the special dispatch paths and reuse `cliResponse` and `cliFailure`
+from `packages/app/internal/entry/lifecycle.go` for both formats.
+
+## Provenance
+- evals 2026-11-12T20:29:48.80213Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=359 failing=27 passing=332
