@@ -595,6 +595,10 @@ migrate --json MUST emit schema 1 with string data equal to the plain confirmati
 ### APP-155
 migrate MUST return exit 2 for usage, project discovery or loading failures and unsupported format versions, using U01 for usage, C01 for unsupported formats and the existing loading cause code otherwise. Static validation errors MUST return exit 1 with their existing cause codes. All failures MUST include corrective guidance.
 
+### APP-156
+new-module MUST accept names matching `[a-z][a-z0-9]*(?:-[a-z0-9]+)*` and prefixes matching `[A-Z][A-Z0-9]*`, with each match covering the entire value. Values outside those ASCII grammars MUST produce corrective U01 and exit 2 before writing module files.
+
+
 ## Decisions
 
 
