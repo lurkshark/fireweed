@@ -228,6 +228,10 @@ func Test_PRJ_025_PRJ_026_NewChangeInvalidArguments(t *testing.T) {
 				t.Errorf("accepted module %q and slug %q", tc.module, tc.slug)
 			} else if tc.id == "PRJ-025" && (!strings.HasPrefix(err.Error(), "unknown module ") || !strings.Contains(err.Error(), tc.module)) {
 				t.Errorf("unknown module error = %q; want prefix and rejected module %q", err, tc.module)
+			} else if tc.id == "PRJ-026" {
+				if code, _, ok := contracts.ErrorCode(err); !ok || code != "U01" {
+					t.Errorf("NewChange error code for slug %q = (%q, %v); want (U01, true): %v", tc.slug, code, ok, err)
+				}
 			}
 		})
 	}
