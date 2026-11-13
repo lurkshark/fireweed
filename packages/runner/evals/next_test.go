@@ -421,7 +421,10 @@ func Test_RUN_011_WaitingHeadSelectsIndependent(t *testing.T) {
 	f := runBlockedDependencyFixture(t)
 	request := runner.NextRequest{Root: f.root, Bin: "/fixture/run-bin", Timeout: 20 * time.Second}
 	blocked, blockErr := runner.Next(context.Background(), request)
-	if blockErr == nil || !strings.Contains(blockErr.Error(), "P2-01: no fail-first case for ALP-002") || blocked.State.Change.Slug != "alpha" || blocked.State.Phase != "evals" {
+	if code, _, ok := contracts.ErrorCode(blockErr); !ok || code != "P2-01" {
+		t.Errorf("Next blocking error code = %q (present: %t), want P2-01 (error: %v)", code, ok, blockErr)
+	}
+	if blockErr == nil || !strings.Contains(blockErr.Error(), "no fail-first case for ALP-002") || blocked.State.Change.Slug != "alpha" || blocked.State.Phase != "evals" {
 		t.Fatalf("fixture alpha did not block: %#v, %v", blocked, blockErr)
 	}
 	eligible, err := workflow.Eligible(f.root)
@@ -439,7 +442,10 @@ func Test_RUN_010_EntirelyWaitingQueue(t *testing.T) {
 	f := runBlockedDependencyFixture(t)
 	request := runner.NextRequest{Root: f.root, Bin: "/fixture/run-bin", Timeout: 20 * time.Second}
 	blocked, blockErr := runner.Next(context.Background(), request)
-	if blockErr == nil || !strings.Contains(blockErr.Error(), "P2-01: no fail-first case for ALP-002") || blocked.State.Change.Slug != "alpha" || blocked.State.Phase != "evals" {
+	if code, _, ok := contracts.ErrorCode(blockErr); !ok || code != "P2-01" {
+		t.Errorf("Next blocking error code = %q (present: %t), want P2-01 (error: %v)", code, ok, blockErr)
+	}
+	if blockErr == nil || !strings.Contains(blockErr.Error(), "no fail-first case for ALP-002") || blocked.State.Change.Slug != "alpha" || blocked.State.Phase != "evals" {
 		t.Fatalf("fixture alpha did not block: %#v, %v", blocked, blockErr)
 	}
 	if err := os.Remove(filepath.Join(f.root, "changes/0003-gamma.md")); err != nil {
@@ -658,7 +664,7 @@ func Test_RUN_023_RUN_024_DefaultEvalsExhaustionBlocks(t *testing.T) {
 	if code, _, ok := contracts.ErrorCode(err); !ok || code != "P2-01" {
 		t.Errorf("Next error code = %q (present: %t), want P2-01 (error: %v)", code, ok, err)
 	}
-	if err == nil || !strings.Contains(err.Error(), "P2-01: no fail-first case for ALP-002") {
+	if err == nil || !strings.Contains(err.Error(), "no fail-first case for ALP-002") {
 		t.Errorf("evals exhaustion cause = %v", err)
 	}
 	if len(r.Steps) != 2 {
