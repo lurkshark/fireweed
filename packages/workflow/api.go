@@ -9,6 +9,7 @@ import (
 )
 
 type State = model.State
+type ApprovedSnapshot = model.ApprovedSnapshot
 type Request = model.Request
 type Result = model.Result
 type ModuleCost = model.ModuleCost
@@ -29,9 +30,12 @@ func StartFromAttempt(root, change string, attempt int) (State, error) {
 }
 func Eligible(root string) ([]project.Change, error) { return lifecycle.Eligible(root) }
 func Current(root, change string) (State, error)     { return lifecycle.Current(root, change) }
-func Commits(root, change string) ([]string, error)  { return lifecycle.Commits(root, change) }
-func Abandon(root, change string) (string, error)    { return lifecycle.Abandon(root, change) }
-func Release(root, change string) error              { return lifecycle.Release(root, change) }
+func Approved(root string) (ApprovedSnapshot, bool, error) {
+	return lifecycle.Approved(root)
+}
+func Commits(root, change string) ([]string, error) { return lifecycle.Commits(root, change) }
+func Abandon(root, change string) (string, error)   { return lifecycle.Abandon(root, change) }
+func Release(root, change string) error             { return lifecycle.Release(root, change) }
 func Verify(ctx context.Context, request Request) (Result, error) {
 	return lifecycle.Verify(ctx, request)
 }

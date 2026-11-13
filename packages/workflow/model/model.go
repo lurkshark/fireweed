@@ -18,6 +18,12 @@ type State struct {
 	Diagnostics []project.Diagnostic
 }
 
+type ApprovedSnapshot struct {
+	Snapshot project.Snapshot
+	Slug     string
+	Path     string
+}
+
 type Request struct {
 	Root    string
 	Change  string
