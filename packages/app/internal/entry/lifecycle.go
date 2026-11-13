@@ -1,276 +1,244 @@
 package entry
 
 import (
-	"context"
-	"encoding/json"
 	"fmt"
-	"io"
-	"os"
-	"path/filepath"
 	"slices"
 	"strings"
-	"time"
-	"unicode"
 
-	"github.com/lurkshark/fireweed/packages/checks"
-	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project"
+	"github.com/lurkshark/fireweed/packages/runner"
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
 
-func contains(values []string, value string) bool {
-	for _, item := range values {
-		if item == value {
-			return true
+func (c command) workflowCommand(root string) response {
+	selector := c.arg(0)
+	if c.name == "status" {
+		return status(root)
+	}
+	if c.name == "pr-body" {
+		report, err := workflow.PRBody(root, selector)
+		if err != nil {
+			if workflow.IsEndpointConfigError(err) {
+				return configFailure(err)
+			}
+			return operationFailure(err, "Use a range whose endpoints resolve to local commits.")
 		}
+		result := verbatim(report.Body)
+		result.diagnostics = report.Diagnostics
+		return result
 	}
-	return false
-}
-
-func cliFailure(status int, jsonMode bool, out, errOut io.Writer, code, message string) int {
-	return cliResponse(status, jsonMode, out, errOut, nil, "", []diagnostic{{Code: code, Message: trimDiagnosticLabel(code, message)}})
-}
-
-func cliResponse(status int, jsonMode bool, out, errOut io.Writer, data any, plain string, diagnostics []diagnostic) int {
-	if diagnostics == nil {
-		diagnostics = []diagnostic{}
+	if _, err := project.Load(root); err != nil && cause(err, "") == "C01" {
+		return configFailure(err)
 	}
-	if jsonMode {
-		_ = json.NewEncoder(out).Encode(envelope{Schema: 1, Data: data, Diagnostics: diagnostics})
-	} else {
-		if plain != "" {
-			_, _ = io.WriteString(out, plain)
-		}
-		for _, d := range diagnostics {
-			fmt.Fprintf(errOut, "%s: %s\n", d.Code, d.Message)
-		}
-	}
-	return status
-}
-
-func reported(ds []project.Diagnostic) []diagnostic {
-	result := make([]diagnostic, 0, len(ds))
-	for _, d := range ds {
-		result = append(result, diagnostic{Code: d.Code, Message: d.Message, Path: d.Path, Warning: d.Warning})
-	}
-	return result
-}
-
-func errorCode(err error, fallback string) string {
-	if code, _, ok := contracts.ErrorCode(err); ok {
-		return code
-	}
-	return fallback
-}
-
-func trimDiagnosticLabel(code, message string) string {
-	if rest, ok := strings.CutPrefix(message, code+":"); ok {
-		return strings.TrimLeftFunc(rest, unicode.IsSpace)
-	}
-	return message
-}
-
-func appendErrorDiagnostic(ds []diagnostic, err error, fallback, action string) []diagnostic {
-	code := errorCode(err, fallback)
-	return append(ds, diagnostic{Code: code, Message: trimDiagnosticLabel(code, err.Error()) + ". " + action})
-}
-
-func hookTimeout(snapshot project.Snapshot) time.Duration {
-	if value, ok := snapshot.Config["timeout"].(string); ok {
-		if duration, err := time.ParseDuration(value); err == nil && duration > 0 {
-			return duration
-		}
-	}
-	return 2 * time.Minute
-}
-
-func runLifecycle(command string, args []string, jsonMode, quick, full bool, withChange string, fromAttempt int, out, errOut io.Writer) int {
-	fail := func(status int, code, message string) int {
-		return cliFailure(status, jsonMode, out, errOut, code, message)
-	}
-	if command == "start" || command == "context" || command == "release" || command == "commits" || command == "abandon" {
-		if len(args) != 1 {
-			return fail(2, "U01", "Use "+command+" <change> with exactly one change.")
-		}
-	} else if command == "coverage" {
-		if len(args) != 1 {
-			return fail(2, "U01", "Use coverage <module> [--with-change <change>].")
-		}
-		return runCoverage(args[0], withChange, jsonMode, out, errOut)
-	} else if len(args) > 1 {
-		return fail(2, "U01", "Use "+command+" [change] with at most one change.")
-	}
-	snapshot, err := loadValidatedProject()
-	if err != nil {
-		return fail(2, errorCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
-	}
-	root := snapshot.Root
-	if command == "start" {
+	action := "Use fireweed list and fireweed context to check the change and correct its state."
+	switch c.name {
+	case "start":
 		var state workflow.State
-		if fromAttempt > 0 {
-			state, err = workflow.StartFromAttempt(root, args[0], fromAttempt)
+		var err error
+		if c.attempt > 0 {
+			state, err = workflow.StartFromAttempt(root, selector, c.attempt)
 		} else {
-			state, err = workflow.Start(root, args[0])
+			state, err = workflow.Start(root, selector)
 		}
-		ds := reported(state.Diagnostics)
+		var result response
+		if err == nil {
+			var body string
+			body, err = workflow.Context(root, selector, false)
+			result = verbatim(body)
+		}
 		if err != nil {
-			return cliResponse(1, jsonMode, out, errOut, nil, "", appendErrorDiagnostic(ds, err, "P01", "Use an eligible queued change and clear conflicting claims, then retry start."))
+			result = configuredOperationFailure(err, action)
 		}
-		body, err := workflow.Context(root, args[0], false)
+		result.diagnostics = append(result.diagnostics, state.Diagnostics...)
+		return result
+	case "context":
+		body, err := workflow.Context(root, selector, c.has("--full"))
 		if err != nil {
-			return cliResponse(1, jsonMode, out, errOut, nil, "", appendErrorDiagnostic(ds, err, "P01", "Use context <change> after checking the held claim."))
+			return configuredOperationFailure(err, action)
 		}
-		return cliResponse(0, jsonMode, out, errOut, body, body, ds)
-	}
-	if command == "context" {
-		body, err := workflow.Context(root, args[0], full)
+		return verbatim(body)
+	case "verify", "done":
+		request := workflow.Request{Root: root, Change: selector, Bin: invokingBin(), Quick: c.has("--quick")}
+		check := workflow.Verify
+		if c.name == "done" {
+			check = workflow.Done
+		}
+		report, err := check(background(), request)
+		diagnostics := slices.Concat(report.Diagnostics, report.State.Diagnostics)
 		if err != nil {
-			return cliResponse(1, jsonMode, out, errOut, nil, "", appendErrorDiagnostic(nil, err, "P01", "Use a change held by this worktree and retry context."))
-		}
-		return cliResponse(0, jsonMode, out, errOut, body, body, nil)
-	}
-	if command == "release" {
-		if err := workflow.Release(root, args[0]); err != nil {
-			return cliResponse(1, jsonMode, out, errOut, nil, "", appendErrorDiagnostic(nil, err, "P01", "Use a change claimed by this worktree and retry release."))
-		}
-		body := fmt.Sprintf("Released %s\n", args[0])
-		return cliResponse(0, jsonMode, out, errOut, body, body, nil)
-	}
-	if command == "commits" {
-		ids, err := workflow.Commits(root, args[0])
-		if err != nil {
-			ds := appendErrorDiagnostic(nil, err, "P01", "Use a valid pending or archived change selector in a Git project, then retry commits.")
-			status := 1
-			if ds[0].Code == "U02" {
-				status = 2
+			result := configuredOperationFailure(err, "Correct the reported issue and run fireweed verify again.")
+			// The workflow can return the same cause both as a diagnostic and
+			// as the command error. Retain the report without repeating it.
+			for _, d := range diagnostics {
+				if !d.Warning && d.Code == result.diagnostics[0].Code && strings.Contains(err.Error(), d.Message) {
+					result.diagnostics = nil
+					break
+				}
 			}
-			return cliResponse(status, jsonMode, out, errOut, nil, "", ds)
+			result.diagnostics = append(result.diagnostics, diagnostics...)
+			return result
 		}
-		if ids == nil {
-			ids = []string{}
+		result := output(fmt.Sprintf("%s passed (%s).\n", c.name, report.State.Phase), report)
+		result.diagnostics = diagnostics
+		return result
+	case "release":
+		if err := workflow.Release(root, selector); err != nil {
+			return configuredOperationFailure(err, "Use fireweed release from the worktree that owns the claim and check the change selector.")
 		}
-		plain := ""
-		if len(ids) > 0 {
-			plain = strings.Join(ids, "\n") + "\n"
-		}
-		return cliResponse(0, jsonMode, out, errOut, ids, plain, nil)
-	}
-	if command == "abandon" {
-		oid, err := workflow.Abandon(root, args[0])
-		if err != nil {
-			ds := appendErrorDiagnostic(nil, err, "P01", "Use an eligible pending change in a clean Git project, resolve any conflicting claim, then retry abandon.")
-			status := 1
-			if ds[0].Code == "U02" {
-				status = 2
+		return message("Released " + selector + ".")
+	case "commits", "abandon":
+		var err error
+		if c.name == "commits" {
+			var commits []string
+			commits, err = workflow.Commits(root, selector)
+			if err == nil {
+				var plain strings.Builder
+				for _, commit := range commits {
+					fmt.Fprintln(&plain, commit)
+				}
+				return output(plain.String(), array(commits))
 			}
-			return cliResponse(status, jsonMode, out, errOut, nil, "", ds)
+		} else {
+			var commit string
+			commit, err = workflow.Abandon(root, selector)
+			if err == nil {
+				return message(fmt.Sprintf("Abandoned %s in commit %s.", selector, commit))
+			}
 		}
-		body := fmt.Sprintf("Abandoned %s in %s\n", args[0], oid)
-		return cliResponse(0, jsonMode, out, errOut, body, body, nil)
+		if cause(err, "") == "U02" {
+			return failed(2, err, "U02", "Use fireweed list to check the change selector.")
+		}
+		return configuredOperationFailure(err, action)
+	case "gc":
+		if _, err := project.Load(root); err != nil {
+			return configFailure(err)
+		}
+		result, err := workflow.GC(background(), workflow.GCRequest{Root: root})
+		if err != nil {
+			return configuredOperationFailure(err, "Correct the reported cleanup problem and run fireweed gc again.")
+		}
+		slices.Sort(result.Pruned)
+		var plain strings.Builder
+		if len(result.Pruned) == 0 {
+			fmt.Fprintln(&plain, "No refs pruned.")
+		}
+		for _, ref := range result.Pruned {
+			fmt.Fprintln(&plain, ref)
+		}
+		return output(plain.String(), struct {
+			Pruned []string `json:"pruned"`
+		}{array(result.Pruned)})
 	}
-	bin, err := os.Executable()
-	if err != nil {
-		return fail(2, "P01", fmt.Sprintf("Find invoking executable: %v. Run the installed fireweed executable.", err))
-	}
-	change := ""
-	if len(args) == 1 {
-		change = args[0]
-	}
-	request := workflow.Request{Root: root, Change: change, Bin: bin, Quick: quick, Timeout: hookTimeout(snapshot)}
-	var result workflow.Result
-	if command == "done" {
-		result, err = workflow.Done(context.Background(), request)
-	} else {
-		result, err = workflow.Verify(context.Background(), request)
-	}
-	ds := reported(result.Diagnostics)
-	if err != nil {
-		return cliResponse(1, jsonMode, out, errOut, nil, "", appendErrorDiagnostic(ds, err, "P01", "Use the held change and correct its checks, then retry "+command+"."))
-	}
-	return cliResponse(0, jsonMode, out, errOut, result, fmt.Sprintf("%s: %s\n", command, result.State.Phase), ds)
+	panic("unexpected workflow command: " + c.name)
 }
 
-func runCoverage(name, withChange string, jsonMode bool, out, errOut io.Writer) int {
-	fail := func(code, message string) int {
-		return cliFailure(2, jsonMode, out, errOut, code, message)
+type changeSummary struct {
+	Change string `json:"change"`
+	Run    string `json:"run"`
+	Phase  string `json:"phase"`
+}
+
+func summarize(state workflow.State) changeSummary {
+	return changeSummary{state.Change.Slug, state.Run, state.Phase}
+}
+
+func (c command) runCommand(root string) response {
+	if c.name == "drill" {
+		return drill(root, c.arg(0))
 	}
-	root, approved, err := discoverProject(true)
-	if err != nil {
-		return fail(errorCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
-	}
-	var snapshot project.Snapshot
-	if approved != nil {
-		snapshot = approved.Snapshot
-	} else {
-		snapshot, err = loadValidatedProjectAt(root)
-		if err != nil {
-			return fail(errorCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
-		}
-		if withChange != "" {
-			snapshot, err = project.Project(root, withChange)
-			if err != nil {
-				return fail(errorCode(err, "P01"), fmt.Sprintf("%v. Use a valid queued change alias.", err))
-			}
-		}
-	}
-	matchesModule := func(module project.Module) bool { return module.Name == name }
-	unknownModule := func() int {
-		return fail("U02", fmt.Sprintf("Unknown module %q. Use modules to choose a valid module.", name))
-	}
-	index := slices.IndexFunc(snapshot.Modules, matchesModule)
-	if index < 0 {
-		return unknownModule()
-	}
-	module := &snapshot.Modules[index]
-	specPath := filepath.Join(module.Dir, "SPEC.md")
-	if approved != nil {
-		switch withChange {
-		case "":
-			data, err := os.ReadFile(filepath.Join(root, specPath))
-			if err != nil {
-				return fail("C03", fmt.Sprintf("Read %s: %v. Provide a readable module SPEC.md and retry coverage.", specPath, err))
-			}
-			doc, err := contracts.ParseDocument(string(data))
-			if err != nil {
-				return fail(errorCode(err, "C03"), fmt.Sprintf("Parse %s: %v. Correct the module Specs and retry coverage.", specPath, err))
-			}
-			module.Document.Body = doc.Body
-		case approved.Slug, approved.Path, filepath.Base(approved.Path):
-			// The approved snapshot already has the selected projected text.
+	bin, allow := invokingBin(), c.has("--allow-unmerged")
+	action := "Correct the reported problem and use fireweed " + c.name + " to resume."
+	if c.name == "next" {
+		step, err := runner.Next(background(), runner.NextRequest{Root: root, Bin: bin, AllowUnmerged: allow})
+		var reason string
+		var plain string
+		status := 0
+		switch {
+		case runner.IsUsageStop(err):
+			status, reason = 3, err.Error()
+			plain = fmt.Sprintf("Stopped on %s: %s. Use fireweed next to resume.\n", step.State.Change.Slug, reason)
+		case err != nil:
+			result := configuredOperationFailure(err, action)
+			result.diagnostics = append(result.diagnostics, step.State.Diagnostics...)
+			return result
+		case step.Empty:
+			plain = "Queue is empty.\n"
 		default:
-			projection, err := project.Project(root, withChange)
-			if err != nil {
-				return fail(errorCode(err, "P01"), fmt.Sprintf("%v. Use a valid queued change alias.", err))
-			}
-			index := slices.IndexFunc(projection.Modules, matchesModule)
-			if index < 0 {
-				return unknownModule()
-			}
-			module.Document.Body = projection.Modules[index].Document.Body
+			plain = fmt.Sprintf("Applied %s.\n", step.State.Change.Slug)
 		}
+		data := struct {
+			changeSummary
+			Empty  bool   `json:"empty"`
+			Reason string `json:"reason,omitempty"`
+		}{summarize(step.State), step.Empty, reason}
+		return response{status: status, plain: plain, data: data, diagnostics: step.State.Diagnostics}
 	}
-	section, _ := contracts.Section(module.Document.Body, "Specs")
-	specs, err := contracts.ParseItems(section)
-	if err != nil {
-		return fail(errorCode(err, "C03"), fmt.Sprintf("Parse %s: %v. Correct the module Specs and retry coverage.", specPath, err))
+
+	run, err := runner.Run(background(), runner.RunRequest{Root: root, Bin: bin, AllowUnmerged: allow, Max: c.max, For: c.duration})
+	status, reason := 0, ""
+	switch {
+	case runner.IsUsageStop(err) || runner.IsTimeStop(err):
+		status, reason = 3, err.Error()
+	case err != nil:
+		return configuredOperationFailure(err, action)
 	}
-	bin, err := os.Executable()
-	if err != nil {
-		return fail("P01", fmt.Sprintf("Find invoking executable: %v. Run the installed fireweed executable.", err))
-	}
-	report, err := checks.Evaluate(context.Background(), checks.HookRequest{Snapshot: snapshot, Module: name, Bin: bin, Timeout: hookTimeout(snapshot)})
-	if err == nil {
-		err = checks.RequireCoverage(report, specs)
-	}
-	if err == nil {
-		err = checks.RequirePass(report, specs)
-	}
-	if err != nil {
-		return cliResponse(1, jsonMode, out, errOut, nil, "", appendErrorDiagnostic(nil, err, "P01", "Use a valid eval hook with covered, passing spec cases, then retry coverage."))
-	}
+	applied := make([]changeSummary, 0, len(run.Applied))
+	var diagnostics []project.Diagnostic
 	var plain strings.Builder
-	for _, c := range report.Cases {
-		fmt.Fprintf(&plain, "%s: %s\n", strings.Join(c.IDs, ", "), c.Result)
+	fmt.Fprintf(&plain, "Applied %d changes.\n", len(run.Applied))
+	for _, step := range run.Applied {
+		summary := summarize(step.State)
+		applied = append(applied, summary)
+		diagnostics = append(diagnostics, step.State.Diagnostics...)
+		fmt.Fprintln(&plain, summary.Change)
 	}
-	return cliResponse(0, jsonMode, out, errOut, report, plain.String(), nil)
+	switch {
+	case status == 3:
+		fmt.Fprintf(&plain, "Stopped: %s. Use fireweed run to resume.\n", reason)
+	case run.Empty:
+		fmt.Fprintln(&plain, "Queue is empty.")
+	case run.Limited:
+		fmt.Fprintln(&plain, "Reached the maximum. Changes remain queued.")
+	}
+	data := struct {
+		Applied []changeSummary `json:"applied"`
+		Empty   bool            `json:"empty"`
+		Limited bool            `json:"limited"`
+		Reason  string          `json:"reason,omitempty"`
+	}{applied, run.Empty, run.Limited, reason}
+	return response{status: status, plain: plain.String(), data: data, diagnostics: diagnostics}
+}
+
+func drill(root, name string) response {
+	snapshot, err := loadGraph(root)
+	if err != nil {
+		return configFailure(err)
+	}
+	if _, found := moduleByName(snapshot, name); !found {
+		return failure(2, "U02", "", fmt.Sprintf("Unknown module %q. Use fireweed modules to list modules.", name))
+	}
+	result, err := runner.Drill(background(), runner.DrillRequest{Root: root, Module: name, Bin: invokingBin()})
+	data := struct {
+		Module string `json:"module"`
+		Result string `json:"result"`
+		Report string `json:"report"`
+		Ref    string `json:"ref"`
+		Base   string `json:"base_commit"`
+		Reason string `json:"reason,omitempty"`
+	}{result.Module, result.Result, result.ReportPath, result.Ref, result.Base, ""}
+	var artifacts string
+	if result.ReportPath != "" {
+		artifacts += " Report: " + result.ReportPath + "."
+	}
+	if result.Ref != "" {
+		artifacts += " Rebuilt ref: " + result.Ref + "."
+	}
+	if runner.IsUsageStop(err) && result.Result == "stopped" {
+		data.Reason = err.Error()
+		return response{status: 3, data: data, plain: fmt.Sprintf("Drill %s stopped: %s.%s\n", name, data.Reason, artifacts)}
+	}
+	if err != nil {
+		return configuredOperationFailure(err, "Correct the reported issue before retrying."+artifacts)
+	}
+	return output(fmt.Sprintf("Drill %s: %s.%s\n", name, result.Result, artifacts), data)
 }

@@ -1,50 +1,47 @@
 # Rebuild progress
 
-## Current state (2026-11-12)
+## Current state (2026-11-13)
 
-The five owner-approved regeneration prerequisites are complete on
-`dev/regeneration-prerequisites` at product revision `0d1bef4`. Fireweed applied
-and archived eight module-local changes, 0236–0243: structured fail-first
-errors and the prerequisite runner eval correction; module identity grammar;
-independent approved-snapshot access and CLI use; report-retention scope;
-and consistent shell/argv placeholder contracts in checks and runner.
+The four owner-approved regenerations are complete on
+`dev/regenerate-core-modules` at product revision `466a0ba`, based on clean
+main `a74c362` containing prerequisite PR #2 and progressive-help PR #1.
+Fireweed removed each module's disposable implementation, then verified,
+committed and archived its replacement in dependency order.
 
-Main's progressive help and audit timeout fixture fixes from PR #1 are merged
-into this branch. The help overview, command pages, help aliases and their
-validation are preserved, along with the audited RUN-048/RUN-049 fixture fix.
+| Module | Archived change | Applied commit | Passing cases, including dependents |
+| --- | --- | --- | --- |
+| project | [0244](../../changes/archive/0244-regenerate-project.md) | `02f7414` | 1,025 |
+| workflow | [0245](../../changes/archive/0245-regenerate-workflow.md) | `6bb22fa` | 739 |
+| runner | [0246](../../changes/archive/0246-regenerate-runner.md) | `9809d17` | 539 |
+| app | [0247](../../changes/archive/0247-regenerate-app.md) | `466a0ba` | 369 |
 
-The branches independently allocated APP-156 and APP-157. Main retains
-APP-156–APP-158 for help; this branch's module grammar and held coverage items
-are now APP-159 and APP-160, with matching eval labels. Their contract text is
-unchanged. The owner authorized a one-time correction of these IDs in the two
-affected archives, including their audit references. Run IDs and Provenance
-remain unchanged. H04 is expected for these two archive edits in the merge
-commit; no history rule or enforcement setting is disabled. The merged app
-passed the controller coverage check for all 369 cases; static check passed
-with the same three C18 warnings.
+Each archived change retains its implementation Provenance. These maintenance
+regenerations followed the normal implementation-only lifecycle with audit
+configuration and all enforcement limits unchanged. Specs, retained interfaces,
+evals, unrelated modules and pre-existing archives are unchanged, including
+APP-156–APP-158 help and APP-159/APP-160 prerequisite contracts. No drill ran.
+The queue and claims are clear; four applied changes await base-branch review.
+The controller stayed pinned to the source revision below throughout the queue.
 
-Every prerequisite change passed a separate restricted audit with no findings
-and full implementation verification. Archived changes retain the phase Provenance.
-The queue is empty, no claim is active, and eight applied changes await base
-branch review. No regeneration or drill ran for this prerequisite queue.
+`make check build` passed all race-enabled Go tests, vet and the product build.
+Controller static and history checks passed over `a74c362..466a0ba`, and full
+controller CI over that range passed, including every module's evals, boundaries
+and doctor canaries with agent probes disabled. The initial CI attempt reported
+`Test_CHK_003_CHK_031_CHK_032_CHK_033_CHK_034_CHK_035_ModuleOverrideArgvAndOutput`;
+the isolated rerun and full CI retry passed without code, test or limit changes.
 
-The controller `check-commits a9dadba..0d1bef4` passed all 25 task commits.
-The controller `check` passes with three C18 repeated-clause warnings: two
-existing app clauses and the shared exclusion of already-quoted shell
-placeholders. The existing B02 case-count warnings remain for APP-103 (17)
-and APP-104 (19). The controller remains pinned to the revision below.
-
-The earlier regeneration milestone has passing native drill reports for all
-eight modules; the owner accepted those proofs and deferred the remaining
-gaps. Earlier milestone and queue narratives remain in Git history.
+Nonblocking warnings remain: three C18 repeated-clause warnings, B02 for
+APP-103 (17 cases) and APP-104 (19), and B03 for app's eval/disposable line
+ratio of 8,647/2,105, slightly above the limit of 4. Earlier drill proofs and
+owner-deferred gaps remain below; no new drill evidence is claimed.
 
 ## Controller
 
-`.fireweed/bin/fireweed` was rebuilt with `-trimpath` from clean main after
-the queue completed and all claims were released. Go build metadata confirms
-the revision and a clean tree.
+`.fireweed/bin/fireweed` was rebuilt with `-trimpath` on 2026-11-12 from a
+clean checkout of main's current revision, with an empty queue and no active
+claims. Go build metadata confirms the revision and a clean tree.
 
-Controller source: `b5bd03de200cf9b977cb4f8ec9f976f6c0575151`
+Controller source: `a74c362ff2af12aa5c9bdd2fb9389e162be18a78`
 
 On a fresh macOS arm64 clone of an earlier controller source
 (`e1e1869131833778f1f8f1a23cf62b0d3b3869b3`), with
@@ -150,8 +147,9 @@ The owner deferred these gaps or addressed them through the linked changes.
 
 ## Next step
 
-Stop before regeneration, as requested. Await owner direction on regeneration
-and the remaining [full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required).
+Owner review of the four-regeneration PR against main. Further drills, fixes
+and the remaining [full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required)
+require owner direction; this task does not authorize merging or a release.
 
 ## Suggested follow-ups
 
