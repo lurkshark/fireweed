@@ -1,5 +1,7 @@
 ---
 module: app
+phase: audit
+run: 20261113T224513-c7aa4d0531459aad633ca7ab
 ---
 
 ## Motivation
@@ -15,10 +17,10 @@ No public signature or type changes.
 
 ## Added
 
-### new:queue-directories
+### APP-161
 Successful init MUST create changes/ and changes/archive/ as directories, including with --no-app and every supported recipe selection. Existing queue and archive directories and their contents MUST be retained.
 
-### new:queue-directory-conflicts
+### APP-162
 If changes or changes/archive is occupied by a regular file, init MUST reject with P01 and exit 2 before writing setup files. The diagnostic MUST identify the conflicting path.
 
 ## Modified
@@ -42,3 +44,17 @@ Drafted at the owner's request after the R01–R29 traceability review.
 No lifecycle execution, agent invocation, drill or release is authorized by
 this drafting request. Workers must obtain context before their step and use
 fireweed verify; only the controller may advance or commit lifecycle work.
+
+The binary init evals failed against the current implementation for both IDs.
+For APP-161, fresh projects lacked both directories for none, Go, TypeScript,
+Python and the local recipe. For APP-162, a regular file at either required path
+still allowed init to exit 0 and write setup files. The fixture with existing
+pending and archived contents passed.
+
+Both behaviors belong in the disposable `packages/app/internal/entry/setup.go`,
+where init assembles the directory list for preflight and setup writes. No stub
+is needed.
+## Provenance
+
+- evals 2026-11-13T22:54:59.566983Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=375 failing=9 passing=366
+
