@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 	"unicode"
@@ -74,21 +75,6 @@ func appendErrorDiagnostic(ds []diagnostic, err error, fallback, action string) 
 	return append(ds, diagnostic{Code: code, Message: trimDiagnosticLabel(code, err.Error()) + ". " + action})
 }
 
-func loadModuleProject() (project.Snapshot, error) {
-	snapshot, err := loadValidatedProject()
-	if err != nil {
-		return project.Snapshot{}, err
-	}
-	// A plain project fixture is valid without Git. Only inspect claims in a
-	// repository; Current supplies the approved graph saved with the claim.
-	if _, err := os.Stat(filepath.Join(snapshot.Root, ".git")); err == nil {
-		if state, err := workflow.Current(snapshot.Root, ""); err == nil {
-			return state.Snapshot, nil
-		}
-	}
-	return snapshot, nil
-}
-
 func hookTimeout(snapshot project.Snapshot) time.Duration {
 	if value, ok := snapshot.Config["timeout"].(string); ok {
 		if duration, err := time.ParseDuration(value); err == nil && duration > 0 {
@@ -110,6 +96,7 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 		if len(args) != 1 {
 			return fail(2, "U01", "Use coverage <module> [--with-change <change>].")
 		}
+		return runCoverage(args[0], withChange, jsonMode, out, errOut)
 	} else if len(args) > 1 {
 		return fail(2, "U01", "Use "+command+" [change] with at most one change.")
 	}
@@ -185,67 +172,6 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 	if err != nil {
 		return fail(2, "P01", fmt.Sprintf("Find invoking executable: %v. Run the installed fireweed executable.", err))
 	}
-	if command == "coverage" {
-		if withChange != "" {
-			if _, statErr := os.Stat(filepath.Join(root, ".git")); statErr == nil {
-				if state, currentErr := workflow.Current(root, withChange); currentErr == nil {
-					snapshot = state.Snapshot
-				} else {
-					snapshot, err = project.Project(root, withChange)
-				}
-			} else {
-				snapshot, err = project.Project(root, withChange)
-			}
-			if err != nil {
-				return fail(2, errorCode(err, "P01"), fmt.Sprintf("%v. Use a valid queued change alias.", err))
-			}
-		}
-		var module *project.Module
-		for i := range snapshot.Modules {
-			if snapshot.Modules[i].Name == args[0] {
-				module = &snapshot.Modules[i]
-				break
-			}
-		}
-		if module == nil {
-			return fail(2, "U02", fmt.Sprintf("Unknown module %q. Use modules to choose a valid module.", args[0]))
-		}
-		if withChange == "" {
-			if _, statErr := os.Stat(filepath.Join(root, ".git")); statErr == nil {
-				if state, currentErr := workflow.Current(root, ""); currentErr == nil {
-					snapshot.Config = state.Snapshot.Config
-					for _, approved := range state.Snapshot.Modules {
-						if approved.Name == module.Name {
-							currentBody := module.Document.Body
-							*module = approved
-							module.Document.Body = currentBody
-							break
-						}
-					}
-				}
-			}
-		}
-		section, _ := contracts.Section(module.Document.Body, "Specs")
-		specs, err := contracts.ParseItems(section)
-		if err != nil {
-			return fail(2, errorCode(err, "C03"), fmt.Sprintf("%v. Correct the module Specs and retry coverage.", err))
-		}
-		report, err := checks.Evaluate(context.Background(), checks.HookRequest{Snapshot: snapshot, Module: module.Name, Bin: bin, Timeout: hookTimeout(snapshot)})
-		if err == nil {
-			err = checks.RequireCoverage(report, specs)
-		}
-		if err == nil {
-			err = checks.RequirePass(report, specs)
-		}
-		if err != nil {
-			return cliResponse(1, jsonMode, out, errOut, nil, "", appendErrorDiagnostic(nil, err, "P01", "Use a valid eval hook with covered, passing spec cases, then retry coverage."))
-		}
-		var plain strings.Builder
-		for _, c := range report.Cases {
-			fmt.Fprintf(&plain, "%s: %s\n", strings.Join(c.IDs, ", "), c.Result)
-		}
-		return cliResponse(0, jsonMode, out, errOut, report, plain.String(), nil)
-	}
 	change := ""
 	if len(args) == 1 {
 		change = args[0]
@@ -262,4 +188,89 @@ func runLifecycle(command string, args []string, jsonMode, quick, full bool, wit
 		return cliResponse(1, jsonMode, out, errOut, nil, "", appendErrorDiagnostic(ds, err, "P01", "Use the held change and correct its checks, then retry "+command+"."))
 	}
 	return cliResponse(0, jsonMode, out, errOut, result, fmt.Sprintf("%s: %s\n", command, result.State.Phase), ds)
+}
+
+func runCoverage(name, withChange string, jsonMode bool, out, errOut io.Writer) int {
+	fail := func(code, message string) int {
+		return cliFailure(2, jsonMode, out, errOut, code, message)
+	}
+	root, approved, err := discoverProject(true)
+	if err != nil {
+		return fail(errorCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
+	}
+	var snapshot project.Snapshot
+	if approved != nil {
+		snapshot = approved.Snapshot
+	} else {
+		snapshot, err = loadValidatedProjectAt(root)
+		if err != nil {
+			return fail(errorCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry.", err))
+		}
+		if withChange != "" {
+			snapshot, err = project.Project(root, withChange)
+			if err != nil {
+				return fail(errorCode(err, "P01"), fmt.Sprintf("%v. Use a valid queued change alias.", err))
+			}
+		}
+	}
+	matchesModule := func(module project.Module) bool { return module.Name == name }
+	unknownModule := func() int {
+		return fail("U02", fmt.Sprintf("Unknown module %q. Use modules to choose a valid module.", name))
+	}
+	index := slices.IndexFunc(snapshot.Modules, matchesModule)
+	if index < 0 {
+		return unknownModule()
+	}
+	module := &snapshot.Modules[index]
+	specPath := filepath.Join(module.Dir, "SPEC.md")
+	if approved != nil {
+		switch withChange {
+		case "":
+			data, err := os.ReadFile(filepath.Join(root, specPath))
+			if err != nil {
+				return fail("C03", fmt.Sprintf("Read %s: %v. Provide a readable module SPEC.md and retry coverage.", specPath, err))
+			}
+			doc, err := contracts.ParseDocument(string(data))
+			if err != nil {
+				return fail(errorCode(err, "C03"), fmt.Sprintf("Parse %s: %v. Correct the module Specs and retry coverage.", specPath, err))
+			}
+			module.Document.Body = doc.Body
+		case approved.Slug, approved.Path, filepath.Base(approved.Path):
+			// The approved snapshot already has the selected projected text.
+		default:
+			projection, err := project.Project(root, withChange)
+			if err != nil {
+				return fail(errorCode(err, "P01"), fmt.Sprintf("%v. Use a valid queued change alias.", err))
+			}
+			index := slices.IndexFunc(projection.Modules, matchesModule)
+			if index < 0 {
+				return unknownModule()
+			}
+			module.Document.Body = projection.Modules[index].Document.Body
+		}
+	}
+	section, _ := contracts.Section(module.Document.Body, "Specs")
+	specs, err := contracts.ParseItems(section)
+	if err != nil {
+		return fail(errorCode(err, "C03"), fmt.Sprintf("Parse %s: %v. Correct the module Specs and retry coverage.", specPath, err))
+	}
+	bin, err := os.Executable()
+	if err != nil {
+		return fail("P01", fmt.Sprintf("Find invoking executable: %v. Run the installed fireweed executable.", err))
+	}
+	report, err := checks.Evaluate(context.Background(), checks.HookRequest{Snapshot: snapshot, Module: name, Bin: bin, Timeout: hookTimeout(snapshot)})
+	if err == nil {
+		err = checks.RequireCoverage(report, specs)
+	}
+	if err == nil {
+		err = checks.RequirePass(report, specs)
+	}
+	if err != nil {
+		return cliResponse(1, jsonMode, out, errOut, nil, "", appendErrorDiagnostic(nil, err, "P01", "Use a valid eval hook with covered, passing spec cases, then retry coverage."))
+	}
+	var plain strings.Builder
+	for _, c := range report.Cases {
+		fmt.Fprintf(&plain, "%s: %s\n", strings.Join(c.IDs, ", "), c.Result)
+	}
+	return cliResponse(0, jsonMode, out, errOut, report, plain.String(), nil)
 }

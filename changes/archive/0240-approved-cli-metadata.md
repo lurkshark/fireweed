@@ -3,7 +3,7 @@ bases:
     APP-004: e6774676
     APP-012: f47e7f91
 module: app
-phase: impl
+phase: applied
 run: 20261113T021756-6c666d67bfecadc626e28d3a
 ---
 
@@ -43,6 +43,7 @@ Evals verification passed with fail-first cases for APP-004, APP-012 and APP-157
 ## Provenance
 - evals 2026-11-13T02:29:17.937238Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=333 failing=2 passing=331
 - audit 2026-11-13T02:29:48.855258Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-astra -c model_reasoning_effort="medium" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-13T02:42:04.00523Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=333 failing=0 passing=333
 ## Audit
 
 No findings; checked APP-004, APP-012, APP-157

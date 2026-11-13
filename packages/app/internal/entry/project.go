@@ -8,6 +8,7 @@ import (
 
 	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project"
+	"github.com/lurkshark/fireweed/packages/workflow"
 )
 
 type moduleResult struct {
@@ -32,6 +33,10 @@ func loadValidatedProject() (project.Snapshot, error) {
 	if err != nil {
 		return project.Snapshot{}, err
 	}
+	return loadValidatedProjectAt(root)
+}
+
+func loadValidatedProjectAt(root string) (project.Snapshot, error) {
 	snapshot, err := project.Load(root)
 	if err != nil {
 		return project.Snapshot{}, err
@@ -42,22 +47,51 @@ func loadValidatedProject() (project.Snapshot, error) {
 	return snapshot, nil
 }
 
+func loadModuleProject() (project.Snapshot, error) {
+	root, approved, err := discoverProject(true)
+	if err != nil {
+		return project.Snapshot{}, err
+	}
+	if approved != nil {
+		return approved.Snapshot, nil
+	}
+	return loadValidatedProjectAt(root)
+}
+
 func findProjectRoot() (string, error) {
+	root, _, err := discoverProject(false)
+	return root, err
+}
+
+func discoverProject(useApproved bool) (string, *workflow.ApprovedSnapshot, error) {
 	dir, err := os.Getwd()
 	if err != nil {
-		return "", fmt.Errorf("find current directory: %w", err)
+		return "", nil, fmt.Errorf("find current directory: %w", err)
 	}
 	for {
+		if useApproved {
+			// A Git worktree can retain an approved project after fireweed.yaml
+			// is removed. A closer project with its own config still wins.
+			if _, err := os.Stat(filepath.Join(dir, ".git")); err == nil {
+				approved, held, err := workflow.Approved(dir)
+				if err != nil {
+					return "", nil, err
+				}
+				if held {
+					return dir, &approved, nil
+				}
+			}
+		}
 		_, err := os.Stat(filepath.Join(dir, "fireweed.yaml"))
 		if err == nil {
-			return dir, nil
+			return dir, nil, nil
 		}
 		if !os.IsNotExist(err) {
-			return "", fmt.Errorf("inspect fireweed.yaml in %s: %w", dir, err)
+			return "", nil, fmt.Errorf("inspect fireweed.yaml in %s: %w", dir, err)
 		}
 		parent := filepath.Dir(dir)
 		if parent == dir {
-			return "", fmt.Errorf("fireweed.yaml not found in the current directory or its ancestors")
+			return "", nil, fmt.Errorf("fireweed.yaml not found in the current directory or its ancestors")
 		}
 		dir = parent
 	}
