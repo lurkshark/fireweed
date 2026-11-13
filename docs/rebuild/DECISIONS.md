@@ -71,3 +71,10 @@ latest applied change ends a chain of three changes that rework the same spec
 IDs within the last ten applied changes.
 [0217](../../changes/archive/0217-rework-chain-warning.md) specifies this; the
 purpose is unchanged.
+
+## D011 — First project format
+
+The owner confirmed on 2026-11-13 that format 1 is the first project format
+and has no predecessor. The design's current/previous-format reading and
+forward-migration obligation remains in force when a later format is defined;
+do not invent a format 0 or a migration solely to exercise it now.
