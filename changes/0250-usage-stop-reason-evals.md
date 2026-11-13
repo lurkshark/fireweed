@@ -1,6 +1,12 @@
 ---
+eval_fix:
+    - APP-076
+    - APP-079
+    - APP-083
+    - APP-086
 module: app
-eval_fix: [APP-076, APP-079, APP-083, APP-086]
+phase: audit
+run: 20261113T174045-21b82b77f9fff1ea9f8ac8c6
 ---
 
 ## Motivation
@@ -40,3 +46,7 @@ all existing timeout and usage-budget settings.
 Do not change runner or app implementation, specs or enforcement limits.
 Drafted and queued only. No lifecycle execution is authorized by the drafting
 request.
+## Provenance
+
+- evals 2026-11-13T17:50:20.579448Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=369 failing=0 passing=369
+
