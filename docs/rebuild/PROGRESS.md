@@ -37,11 +37,12 @@ owner-deferred gaps remain below; no new drill evidence is claimed.
 
 ## Controller
 
-`.fireweed/bin/fireweed` was rebuilt with `-trimpath` on 2026-11-12 from a
-clean checkout of main's current revision, with an empty queue and no active
-claims. Go build metadata confirms the revision and a clean tree.
+`.fireweed/bin/fireweed` was rebuilt with `-trimpath` on 2026-11-13 from a
+clean checkout of main's current revision before processing changes 0248–0255.
+No run or claim was active. Go build metadata confirms the revision and a clean
+tree.
 
-Controller source: `a74c362ff2af12aa5c9bdd2fb9389e162be18a78`
+Controller source: `40b33c70f3de176eda058a96b06d2be1437da972`
 
 On a fresh macOS arm64 clone of an earlier controller source
 (`e1e1869131833778f1f8f1a23cf62b0d3b3869b3`), with
