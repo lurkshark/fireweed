@@ -2,36 +2,108 @@ package entry
 
 import (
 	"fmt"
-	"io"
-	"sort"
+	"maps"
+	"slices"
 	"strings"
 
+	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
 
-type statusQueueEntry struct {
+type zoneRow struct {
+	Protected  []string `json:"protected"`
+	Evals      []string `json:"evals"`
+	Interface  []string `json:"interface"`
+	AppendOnly []string `json:"append_only"`
+	Preserve   []string `json:"preserve"`
+	Disposable []string `json:"disposable"`
+}
+
+type moduleRow struct {
+	Name      string   `json:"name"`
+	IDPrefix  string   `json:"id_prefix"`
+	Dir       string   `json:"dir"`
+	DependsOn []string `json:"depends_on"`
+	Zones     zoneRow  `json:"zones"`
+}
+
+func moduleRows(modules []project.Module) []moduleRow {
+	rows := make([]moduleRow, 0, len(modules))
+	for _, m := range modules {
+		z := m.Zones
+		rows = append(rows, moduleRow{m.Name, m.IDPrefix, m.Dir, array(m.DependsOn), zoneRow{
+			Protected: array(z.Protected), Evals: array(z.Evals), Interface: array(z.Interface),
+			AppendOnly: array(z.AppendOnly), Preserve: array(z.Preserve), Disposable: array(z.Disposable),
+		}})
+	}
+	return rows
+}
+
+func (m moduleRow) text() string {
+	z := m.Zones
+	return fmt.Sprintf("%s (%s) %s depends_on=%v protected=%v evals=%v interface=%v append_only=%v preserve=%v disposable=%v",
+		m.Name, m.IDPrefix, m.Dir, m.DependsOn, z.Protected, z.Evals, z.Interface, z.AppendOnly, z.Preserve, z.Disposable)
+}
+
+func modules(root string, approved *workflow.ApprovedSnapshot) response {
+	var snapshot project.Snapshot
+	var err error
+	if approved != nil {
+		snapshot = approved.Snapshot
+		err = validateGraph(snapshot.Modules)
+	} else {
+		snapshot, err = loadGraph(root)
+	}
+	if err != nil {
+		return configFailure(err)
+	}
+	rows := moduleRows(snapshot.Modules)
+	var plain strings.Builder
+	for _, m := range rows {
+		fmt.Fprintln(&plain, m.text())
+	}
+	return output(plain.String(), rows)
+}
+
+type queueRow struct {
 	Slug        string `json:"slug"`
 	Path        string `json:"path"`
 	Module      string `json:"module"`
 	Phase       string `json:"phase"`
 	Blocked     string `json:"blocked"`
 	AuditRounds int    `json:"audit_rounds"`
+}
+
+func makeQueueRow(slug, path, module, phase, blocked string, rounds int) queueRow {
+	if phase == "" {
+		phase = "queued"
+	}
+	return queueRow{slug, path, module, phase, blocked, rounds}
+}
+
+func (q queueRow) text() string {
+	return fmt.Sprintf("%s %s module=%s phase=%s blocked=%q audit_rounds=%d",
+		q.Slug, q.Path, q.Module, q.Phase, q.Blocked, q.AuditRounds)
+}
+
+type statusQueueRow struct {
+	queueRow
 	WaitingOn   string `json:"waiting_on"`
 	WaitingRule string `json:"waiting_rule"`
 }
 
-type statusQuarantine struct {
+type quarantineRow struct {
 	Module string `json:"module"`
 	ID     string `json:"id"`
 	Reason string `json:"reason"`
 }
 
-type statusOptOut struct {
+type optOutRow struct {
 	Module string `json:"module"`
 	Reason string `json:"reason"`
 }
 
-type statusMetric struct {
+type metricRow struct {
 	Module          string         `json:"module"`
 	Seconds         float64        `json:"seconds"`
 	CasesPerSpec    map[string]int `json:"cases_per_spec"`
@@ -40,115 +112,76 @@ type statusMetric struct {
 }
 
 type statusData struct {
-	Modules         []moduleResult     `json:"modules"`
-	Queue           []statusQueueEntry `json:"queue"`
-	Quarantines     []statusQuarantine `json:"quarantines"`
-	BoundaryOptOuts []statusOptOut     `json:"boundary_opt_outs"`
-	DriftSinceDrill map[string]int     `json:"drift_since_drill"`
-	Unapproved      int                `json:"unapproved"`
-	PhaseCommits    map[string]int     `json:"phase_commits"`
-	Metrics         []statusMetric     `json:"metrics"`
+	Modules         []moduleRow      `json:"modules"`
+	Queue           []statusQueueRow `json:"queue"`
+	Quarantines     []quarantineRow  `json:"quarantines"`
+	BoundaryOptOuts []optOutRow      `json:"boundary_opt_outs"`
+	DriftSinceDrill map[string]int   `json:"drift_since_drill"`
+	Unapproved      int              `json:"unapproved"`
+	PhaseCommits    map[string]int   `json:"phase_commits"`
+	Metrics         []metricRow      `json:"metrics"`
 }
 
-func statusCounts(counts map[string]int) map[string]int {
-	if counts == nil {
+func counts(values map[string]int) map[string]int {
+	if values == nil {
 		return map[string]int{}
 	}
-	return counts
+	return values
 }
 
-func runStatus(jsonMode bool, out, errOut io.Writer) int {
-	snapshot, err := loadValidatedProject()
-	if err != nil {
-		return cliFailure(2, jsonMode, out, errOut, errorCode(err, "C01"), fmt.Sprintf("%v. Provide a valid fireweed.yaml and module declarations, then retry status.", err))
+func status(root string) response {
+	if _, err := project.Load(root); err != nil {
+		return configFailure(err)
 	}
-	report, err := workflow.Status(snapshot.Root)
-	diagnostics := reported(report.Diagnostics)
+	report, err := workflow.Status(root)
 	if err != nil {
-		diagnostics = appendErrorDiagnostic(diagnostics, err, "P01", "Use the reported cause to correct the project or Git state, then retry status.")
-		return cliResponse(1, jsonMode, out, errOut, nil, "", diagnostics)
+		result := configuredOperationFailure(err, "Correct the reported project state and check that the configured base ref is available locally.")
+		result.diagnostics = append(result.diagnostics, report.Diagnostics...)
+		return result
 	}
 
 	data := statusData{
-		Modules:         moduleResults(report.Modules),
-		Queue:           make([]statusQueueEntry, 0, len(report.Queue)),
-		Quarantines:     make([]statusQuarantine, 0, len(report.Quarantines)),
-		BoundaryOptOuts: make([]statusOptOut, 0, len(report.BoundaryOptOuts)),
-		DriftSinceDrill: statusCounts(report.DriftSinceDrill),
+		Modules:         moduleRows(report.Modules),
+		Queue:           make([]statusQueueRow, 0, len(report.Queue)),
+		Quarantines:     make([]quarantineRow, 0, len(report.Quarantines)),
+		BoundaryOptOuts: make([]optOutRow, 0, len(report.BoundaryOptOuts)),
+		DriftSinceDrill: counts(report.DriftSinceDrill),
 		Unapproved:      report.Unapproved,
-		PhaseCommits:    statusCounts(report.PhaseCommits),
-		Metrics:         make([]statusMetric, 0, len(report.Costs)),
-	}
-	for _, entry := range report.Queue {
-		data.Queue = append(data.Queue, statusQueueEntry{
-			Slug: entry.Slug, Path: entry.Path, Module: entry.Module, Phase: entry.Phase,
-			Blocked: entry.Blocked, AuditRounds: entry.AuditRounds,
-			WaitingOn: entry.WaitingOn, WaitingRule: entry.WaitingRule,
-		})
-	}
-	for _, q := range report.Quarantines {
-		data.Quarantines = append(data.Quarantines, statusQuarantine{Module: q.Module, ID: q.ID, Reason: q.Reason})
-	}
-	for _, optOut := range report.BoundaryOptOuts {
-		data.BoundaryOptOuts = append(data.BoundaryOptOuts, statusOptOut{Module: optOut.Module, Reason: optOut.Reason})
-	}
-	for _, cost := range report.Costs {
-		data.Metrics = append(data.Metrics, statusMetric{
-			Module: cost.Module, Seconds: cost.Seconds, CasesPerSpec: statusCounts(cost.CasesPerSpec),
-			EvalLines: cost.EvalLines, DisposableLines: cost.DisposableLines,
-		})
+		PhaseCommits:    counts(report.PhaseCommits),
+		Metrics:         make([]metricRow, 0, len(report.Costs)),
 	}
 	var plain strings.Builder
-	plain.WriteString("Modules:\n")
-	printModules(&plain, data.Modules)
-	plain.WriteString("Queue:\n")
-	if len(data.Queue) == 0 {
-		plain.WriteString("  empty\n")
+	if len(report.Queue) == 0 {
+		fmt.Fprintln(&plain, "Queue is empty.")
 	}
-	for _, entry := range data.Queue {
-		fmt.Fprintf(&plain, "  slug=%s path=%s module=%s phase=%s blocked=%q audit_rounds=%d waiting_on=%q waiting_rule=%q\n",
-			entry.Slug, entry.Path, entry.Module, entry.Phase, entry.Blocked, entry.AuditRounds, entry.WaitingOn, entry.WaitingRule)
+	for _, entry := range report.Queue {
+		row := makeQueueRow(entry.Slug, entry.Path, entry.Module, entry.Phase, entry.Blocked, entry.AuditRounds)
+		fmt.Fprintf(&plain, "%s waiting_on=%q waiting_rule=%q\n", row.text(), entry.WaitingOn, entry.WaitingRule)
+		data.Queue = append(data.Queue, statusQueueRow{row, entry.WaitingOn, entry.WaitingRule})
 	}
-	plain.WriteString("Quarantines:\n")
-	for _, q := range data.Quarantines {
-		fmt.Fprintf(&plain, "  module=%s id=%s reason=%q\n", q.Module, q.ID, q.Reason)
+	for _, m := range data.Modules {
+		fmt.Fprintln(&plain, m.text())
 	}
-	plain.WriteString("Boundary opt-outs:\n")
-	for _, optOut := range data.BoundaryOptOuts {
-		fmt.Fprintf(&plain, "  module=%s reason=%q\n", optOut.Module, optOut.Reason)
+	for _, q := range report.Quarantines {
+		data.Quarantines = append(data.Quarantines, quarantineRow(q))
+		fmt.Fprintf(&plain, "Quarantine %s %s: %s\n", q.Module, q.ID, q.Reason)
 	}
-	writeStatusCounts(&plain, "Drift since drill", data.DriftSinceDrill)
-	fmt.Fprintf(&plain, "Unapproved: %d\n", data.Unapproved)
-	writeStatusCounts(&plain, "Phase commits", data.PhaseCommits)
-	plain.WriteString("Costs:\n")
-	for _, cost := range data.Metrics {
-		fmt.Fprintf(&plain, "Cost %s: seconds=%g cases_per_spec=%s eval_lines=%d disposable_lines=%d\n",
-			cost.Module, cost.Seconds, formatStatusCounts(cost.CasesPerSpec), cost.EvalLines, cost.DisposableLines)
+	for _, optOut := range report.BoundaryOptOuts {
+		data.BoundaryOptOuts = append(data.BoundaryOptOuts, optOutRow(optOut))
+		fmt.Fprintf(&plain, "Boundary opt-out %s: %s\n", optOut.Module, optOut.Reason)
 	}
-	return cliResponse(0, jsonMode, out, errOut, data, plain.String(), diagnostics)
-}
-
-func writeStatusCounts(out io.Writer, label string, counts map[string]int) {
-	fmt.Fprintf(out, "%s:\n", label)
-	keys := make([]string, 0, len(counts))
-	for key := range counts {
-		keys = append(keys, key)
+	for _, name := range slices.Sorted(maps.Keys(data.DriftSinceDrill)) {
+		fmt.Fprintf(&plain, "Drift since drill %s: %d\n", name, data.DriftSinceDrill[name])
 	}
-	sort.Strings(keys)
-	for _, key := range keys {
-		fmt.Fprintf(out, "  %s=%d\n", key, counts[key])
+	fmt.Fprintf(&plain, "Unapproved changes: %d\n", data.Unapproved)
+	for _, change := range slices.Sorted(maps.Keys(data.PhaseCommits)) {
+		fmt.Fprintf(&plain, "Phase commits %s: %d\n", change, data.PhaseCommits[change])
 	}
-}
-
-func formatStatusCounts(counts map[string]int) string {
-	keys := make([]string, 0, len(counts))
-	for key := range counts {
-		keys = append(keys, key)
+	for _, cost := range report.Costs {
+		data.Metrics = append(data.Metrics, metricRow{cost.Module, cost.Seconds, counts(cost.CasesPerSpec), cost.EvalLines, cost.DisposableLines})
+		fmt.Fprintf(&plain, "Cost %s: %gs cases_per_spec=%v eval_lines=%d disposable_lines=%d\n", cost.Module, cost.Seconds, cost.CasesPerSpec, cost.EvalLines, cost.DisposableLines)
 	}
-	sort.Strings(keys)
-	parts := make([]string, 0, len(keys))
-	for _, key := range keys {
-		parts = append(parts, fmt.Sprintf("%s=%d", key, counts[key]))
-	}
-	return "[" + strings.Join(parts, " ") + "]"
+	result := output(plain.String(), data)
+	result.diagnostics = report.Diagnostics
+	return result
 }

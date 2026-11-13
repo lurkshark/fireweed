@@ -1,6 +1,8 @@
 ---
 module: app
+phase: applied
 regenerate: true
+run: 20261113T080051-e932d41201449e7052fb4bb3
 ---
 
 ## Motivation
@@ -40,3 +42,5 @@ eval fixes, compatibility scaffolding or new Decisions. If a genuine spec or
 interface ambiguity prevents reconstruction, record the concrete issue in
 Questions and block rather than changing the contract.
 
+## Provenance
+- impl 2026-11-13T08:28:17.7534Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=369 failing=0 passing=369
