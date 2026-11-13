@@ -1,5 +1,4 @@
 ---
-blocked: FLOW-098 uses a frozen workflow eval fixture with an evals and disposable overlap
 module: project
 phase: impl
 run: 20261113T230327-76aae603f900d8b331584964
