@@ -1,11 +1,10 @@
 package lifecycle
 
 import (
+	"cmp"
 	"fmt"
-	"os"
 	"path"
 	"slices"
-	"sort"
 	"strings"
 	"time"
 
@@ -15,223 +14,214 @@ import (
 	"github.com/lurkshark/fireweed/packages/workflow/model"
 )
 
-type appliedChange struct {
-	name, module    string
-	date            time.Time
-	addedOrModified map[string]bool
-	reworked        map[string]bool
-}
-
 func Status(root string) (model.StatusReport, error) {
+	result := model.StatusReport{
+		DriftSinceDrill: make(map[string]int),
+		PhaseCommits:    make(map[string]int),
+	}
 	repo, err := gitstore.Inspect(root)
 	if err != nil {
-		return model.StatusReport{}, err
+		return result, err
 	}
 	root = repo.Root
 	snapshot, err := project.Load(root)
 	if err != nil {
-		return model.StatusReport{}, err
+		return result, err
 	}
-	r := model.StatusReport{Modules: snapshot.Modules, DriftSinceDrill: map[string]int{}, PhaseCommits: map[string]int{}}
-	for _, m := range snapshot.Modules {
-		r.DriftSinceDrill[m.Name] = 0
-		section, _ := contracts.Section(m.Document.Body, "Specs")
-		items, err := contracts.ParseItems(section)
-		if err != nil {
-			return model.StatusReport{}, fmt.Errorf("%s/SPEC.md: %w", m.Dir, err)
-		}
-		for _, item := range items {
-			if reason, ok := strings.CutPrefix(item.Tag, "quarantine:"); ok {
-				r.Quarantines = append(r.Quarantines, model.Quarantine{Module: m.Name, ID: item.ID, Reason: strings.TrimSpace(reason)})
-			}
-		}
-		if reason := str(m.Document.Frontmatter["boundaries_opt_out"]); reason != "" {
-			r.BoundaryOptOuts = append(r.BoundaryOptOuts, model.BoundaryOptOut{Module: m.Name, Reason: reason})
-		}
-	}
+	result.Modules = snapshot.Modules
 	queue, err := project.Queue(root)
 	if err != nil {
-		return model.StatusReport{}, err
+		return result, err
 	}
-	var blocked []project.Change
-	for _, candidate := range queue {
-		e := model.StatusEntry{Slug: candidate.Slug, Path: candidate.Path, Module: candidate.Module,
-			Phase: str(candidate.Document.Frontmatter["phase"]), Blocked: str(candidate.Document.Frontmatter["blocked"]),
-			AuditRounds: num(candidate.Document.Frontmatter["audit_rounds"], 0)}
-		if e.Phase == "" {
-			e.Phase = "queued"
-		}
-		if e.Blocked != "" {
-			blocked = append(blocked, candidate)
-		} else if len(blocked) > 0 {
-			projected, err := project.Project(root, candidate.Slug)
-			if err != nil {
-				return model.StatusReport{}, err
-			}
-			graph := map[string][]string{}
-			for _, m := range projected.Modules {
-				graph[m.Name] = m.DependsOn
-			}
-			section, _ := contracts.Section(candidate.Document.Body, "Interface")
-			for _, earlier := range blocked {
-				if rule := blockingRule(graph, candidate.Module, earlier.Module, strings.TrimSpace(section) != ""); rule != "" {
-					e.WaitingOn = strings.TrimSuffix(path.Base(earlier.Path), ".md")
-					e.WaitingRule = rule
-					break
-				}
-			}
-		}
-		r.Queue = append(r.Queue, e)
-	}
-	archives, err := appliedAtHead(root, repo.Head)
+	result.Queue, err = queuedStatus(root, queue)
 	if err != nil {
-		return model.StatusReport{}, err
+		return result, err
 	}
-	base, err := gitstore.BaseRef(root, str(snapshot.Config["remote"]), str(snapshot.Config["base"]))
+	result.Quarantines, result.BoundaryOptOuts, err = exceptions(snapshot)
 	if err != nil {
-		return model.StatusReport{}, err
+		return result, err
 	}
-	basePaths, err := commitChangePaths(root, base)
+	_, shared, err := baseRefs(snapshot)
 	if err != nil {
-		return model.StatusReport{}, err
+		return result, err
 	}
-	known := map[string]bool{}
-	for _, p := range basePaths {
-		known[path.Base(p)] = true
-	}
-	drillDates := map[string]time.Time{}
-	hasDrill := map[string]bool{}
-	for _, m := range snapshot.Modules {
-		data, err := os.ReadFile(file(root, ".fireweed/drills/"+m.Name+".md"))
-		if err != nil && !os.IsNotExist(err) {
-			return model.StatusReport{}, err
-		}
-		if err == nil {
-			hasDrill[m.Name] = true
-			doc, err := contracts.ParseDocument(string(data))
-			if err != nil {
-				return model.StatusReport{}, fmt.Errorf("drill %s: %w", m.Name, err)
-			}
-			drillDates[m.Name] = documentDate(doc.Frontmatter["date"])
-		}
-	}
-	for _, change := range archives {
-		if !known[change.name] {
-			r.Unapproved++
-		}
-		if !hasDrill[change.module] || change.date.After(drillDates[change.module]) {
-			r.DriftSinceDrill[change.module]++
-		}
-	}
-	sort.Slice(archives, func(i, j int) bool {
-		if !archives[i].date.Equal(archives[j].date) {
-			return archives[i].date.After(archives[j].date)
-		}
-		return archives[i].name < archives[j].name
-	})
-	if message := reworkChainWarning(archives); message != "" {
-		r.Diagnostics = append(r.Diagnostics, diag("P08", message, true))
-	}
-	r.PhaseCommits, err = phaseCommitCounts(root, repo.Head, archives)
+	result.Unapproved, err = unapprovedCount(root, repo.Head, shared)
 	if err != nil {
-		return model.StatusReport{}, err
+		return result, err
 	}
-	if err := statusCosts(root, &r); err != nil {
-		return model.StatusReport{}, err
+	applied, err := appliedChanges(root, "")
+	if err != nil {
+		return result, err
 	}
-	return r, nil
+	dates := make(map[string]time.Time)
+	for _, module := range snapshot.Modules {
+		dates[module.Name], _ = drillDate(root, module.Name)
+		result.DriftSinceDrill[module.Name] = 0
+	}
+	for _, entry := range applied {
+		name := entry.change.Module
+		if dates[name].IsZero() || entry.date.After(dates[name]) {
+			result.DriftSinceDrill[name]++
+		}
+		commits, err := phaseCommits(root, repo.Head, entry.change)
+		if err != nil {
+			return result, err
+		}
+		result.PhaseCommits[numberedName(entry.change)] = len(commits)
+	}
+	result.Costs, result.Diagnostics, err = latestCosts(root, snapshot.Modules, false)
+	if d, ok := reworkWarning(applied); ok {
+		result.Diagnostics = append(result.Diagnostics, d)
+	}
+	return result, err
 }
 
-// Archives are ordered newest first, so the first match is the predecessor.
-func reworkChainWarning(archives []appliedChange) string {
-	const lookback = 10
-	var chain []string
-	sharedIDs := map[string]bool{}
-	for current := 0; current < len(archives); {
-		change := archives[current]
-		chain = append(chain, change.name)
-		end := min(current+1+lookback, len(archives))
-		next := current + 1
-		for ; next < end; next++ {
-			matched := false
-			for id := range archives[next].addedOrModified {
-				if change.reworked[id] {
-					sharedIDs[id] = true
-					matched = true
-				}
-			}
-			if matched {
-				break
+func exceptions(snapshot project.Snapshot) ([]model.Quarantine, []model.BoundaryOptOut, error) {
+	var quarantines []model.Quarantine
+	var optOuts []model.BoundaryOptOut
+	for _, module := range snapshot.Modules {
+		specs, err := items(module.Document, "Specs")
+		if err != nil {
+			return nil, nil, err
+		}
+		for _, spec := range specs {
+			if tag, reason, found := strings.Cut(spec.Tag, ":"); found && strings.EqualFold(strings.TrimSpace(tag), "quarantine") {
+				quarantines = append(quarantines, model.Quarantine{Module: module.Name, ID: spec.ID, Reason: strings.TrimSpace(reason)})
 			}
 		}
-		if next == end {
-			break
+		if reason := str(module.Document.Frontmatter["boundaries_opt_out"]); reason != "" {
+			optOuts = append(optOuts, model.BoundaryOptOut{Module: module.Name, Reason: reason})
 		}
-		current = next
 	}
-	if len(chain) < 3 {
-		return ""
-	}
-	slices.Reverse(chain)
-	return fmt.Sprintf("spec rework chain %s (shared IDs %s)", strings.Join(chain, " -> "), strings.Join(sortedKeys(sharedIDs), ", "))
+	return quarantines, optOuts, nil
 }
 
-func appliedAtHead(root, head string) ([]appliedChange, error) {
-	paths, err := commitChangePaths(root, head)
+type appliedChange struct {
+	change project.Change
+	date   time.Time
+}
+
+func appliedChanges(root, revision string) ([]appliedChange, error) {
+	paths, err := changePaths(root, revision, archiveDir)
 	if err != nil {
 		return nil, err
 	}
-	var changes []appliedChange
-	for _, p := range paths {
-		if path.Dir(p) != "changes/archive" {
-			continue
-		}
-		data, err := gitstore.ReadAt(root, head, p)
+	var result []appliedChange
+	for _, identity := range paths {
+		change, err := readChange(root, revision, identity)
 		if err != nil {
 			return nil, err
 		}
-		doc, err := contracts.ParseDocument(string(data))
-		if err != nil {
-			return nil, fmt.Errorf("%s: %w", p, err)
+		if str(change.Document.Frontmatter["phase"]) == "applied" {
+			result = append(result, appliedChange{change, provenanceDate(change.Document)})
 		}
-		if str(doc.Frontmatter["phase"]) != "applied" {
-			continue
-		}
-		provenance, _ := contracts.Section(doc.Body, "Provenance")
-		var date time.Time
-		for _, line := range strings.Split(provenance, "\n") {
-			fields := strings.Fields(line)
-			if len(fields) >= 3 && fields[0] == "-" && fields[1] == "impl" {
-				if parsed := documentDate(fields[2]); parsed.After(date) {
-					date = parsed
-				}
-			}
-		}
-		change := appliedChange{
-			name: path.Base(p), module: str(doc.Frontmatter["module"]), date: date,
-			addedOrModified: map[string]bool{}, reworked: map[string]bool{},
-		}
-		for _, name := range []string{"Added", "Modified", "Removed"} {
-			section, _ := contracts.Section(doc.Body, name)
-			items, err := contracts.ParseItems(section)
-			if err != nil {
-				return nil, fmt.Errorf("%s %s: %w", p, name, err)
-			}
-			for _, item := range items {
-				if name != "Removed" {
-					change.addedOrModified[item.ID] = true
-				}
-				if name != "Added" {
-					change.reworked[item.ID] = true
-				}
-			}
-		}
-		for _, key := range []string{"fixes", "eval_fix"} {
-			for _, id := range list(doc.Frontmatter[key]) {
-				change.reworked[id] = true
-			}
-		}
-		changes = append(changes, change)
 	}
-	return changes, nil
+	slices.SortFunc(result, func(a, b appliedChange) int {
+		if byDate := b.date.Compare(a.date); byDate != 0 {
+			return byDate
+		}
+		return cmp.Compare(a.change.Path, b.change.Path)
+	})
+	return result, nil
+}
+
+func latestImplementation(root, module string) (time.Time, error) {
+	applied, err := appliedChanges(root, "")
+	if err != nil {
+		return time.Time{}, err
+	}
+	for _, entry := range applied {
+		if entry.change.Module == module {
+			return entry.date, nil
+		}
+	}
+	return time.Time{}, nil
+}
+
+func unapprovedCount(root, head, shared string) (int, error) {
+	applied, err := appliedChanges(root, head)
+	if err != nil {
+		return 0, err
+	}
+	base, err := changePaths(root, shared, archiveDir)
+	if err != nil {
+		return 0, err
+	}
+	pending, err := changePaths(root, shared, pendingDir)
+	if err != nil {
+		return 0, err
+	}
+	approved := make(map[string]bool)
+	for _, change := range append(base, pending...) {
+		approved[path.Base(change.Path)] = true
+	}
+	count := 0
+	for _, entry := range applied {
+		if !approved[path.Base(entry.change.Path)] {
+			count++
+		}
+	}
+	return count, nil
+}
+
+func reworkWarning(applied []appliedChange) (project.Diagnostic, bool) {
+	if len(applied) < 3 {
+		return project.Diagnostic{}, false
+	}
+	chain := []string{path.Base(applied[0].change.Path)}
+	var shared []string
+	for i := 0; i < len(applied); {
+		current := applied[i].change
+		touched := itemIDs(slices.Concat(current.Modified, current.Removed))
+		touched = append(touched, stringsOf(current.Document.Frontmatter["fixes"])...)
+		touched = append(touched, stringsOf(current.Document.Frontmatter["eval_fix"])...)
+		found := false
+		for j := i + 1; j < len(applied) && j <= i+10; j++ {
+			previous := applied[j].change
+			var common []string
+			for _, id := range itemIDs(slices.Concat(previous.Added, previous.Modified)) {
+				if slices.Contains(touched, id) {
+					common = append(common, id)
+				}
+			}
+			if len(common) > 0 {
+				chain = append(chain, path.Base(previous.Path))
+				shared = append(shared, common...)
+				i, found = j, true
+				break
+			}
+		}
+		if !found {
+			break
+		}
+	}
+	if len(chain) < 3 {
+		return project.Diagnostic{}, false
+	}
+	slices.Sort(shared)
+	return warning("P08", applied[0].change.Path, "rework chain %s shares %s",
+		strings.Join(chain, " <- "), strings.Join(slices.Compact(shared), ", ")), true
+}
+
+func itemIDs(items []contracts.Item) []string {
+	var result []string
+	for _, item := range items {
+		result = append(result, item.ID)
+	}
+	return result
+}
+
+func writeExceptions(body *strings.Builder, quarantines []model.Quarantine, optOuts []model.BoundaryOptOut, blocked []project.Change) {
+	body.WriteString("\n## Project exceptions\n")
+	for _, q := range quarantines {
+		fmt.Fprintf(body, "- Quarantine %s %s: %s\n", q.Module, q.ID, q.Reason)
+	}
+	for _, opt := range optOuts {
+		fmt.Fprintf(body, "- Boundary opt-out %s: %s\n", opt.Module, opt.Reason)
+	}
+	for _, change := range blocked {
+		if reason := str(change.Document.Frontmatter["blocked"]); reason != "" {
+			fmt.Fprintf(body, "- Blocked %s: %s\n", change.Path, reason)
+		}
+	}
 }
