@@ -2,7 +2,7 @@
 eval_fix:
     - APP-038
 module: app
-phase: impl
+phase: applied
 run: 20261113T172337-69d40369829ae74d6220dd79
 ---
 
@@ -54,4 +54,5 @@ No findings; checked APP-038
 
 - evals 2026-11-13T17:32:23.65404Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=369 failing=0 passing=369
 - audit 2026-11-13T17:32:42.243399Z agent=codex fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-13T17:40:43.368925Z agent=codex fireweed=0.1.0 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=369 failing=0 passing=369
 
