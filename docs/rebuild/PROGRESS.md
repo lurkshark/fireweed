@@ -2,6 +2,34 @@
 
 ## Current state (2026-11-13)
 
+Main is `3b3b64d`, including merged regenerations and follow-ups 0244–0255.
+The owner requested an R01–R29 traceability review and drafts only. The completed
+[mapping in ACCEPTANCE](ACCEPTANCE.md#traceability-review--2026-11-13) identifies
+existing spec/eval/archive support, confirmed gaps and remaining acceptance
+evidence. The revised queue has 16 drafts: 0256 and 0258–0272. The owner
+requested removal of the unsupported nested-root restriction (0257), narrowing
+of compatibility and override contracts, full Removed-section validation, and
+a runner follow-up retaining Start warnings (0272). The remaining drafts cover
+initialization, zones, document grammar, targets, guidance and audit attempts.
+None has started; no claims, phase commits, agents or drills were created for
+this queue.
+
+The review worktree uses a copy of the clean controller built from `40b33c7`,
+matching the recorded pin below. D011 records the owner's clarification that
+format 1 has no predecessor; future format compatibility/migration remains due.
+The historical gate-4 baseline still needs reconciliation with the new main
+root, not an unreviewed baseline substitution.
+
+Draft validation: pinned-controller check passes with five nonblocking C18
+warnings (four pre-existing and one involving compatibility text). The 16
+drafts contain 29 proposed spec items within the shape limits; all R01–R29
+mapping rows, local document links and whitespace checks pass. No draft has
+run/phase fields or Provenance. Context and verify stop with P02 because no
+change is held; no phase verification, agents or acceptance exercise ran.
+Do not start a draft just to obtain claim-bound context.
+
+## Completed regeneration follow-ups
+
 Fireweed applied and archived changes 0248–0255 on
 `dev/queued-regeneration-followups` at product revision `b220afc`. The queue
 is empty and all claims are clear. All required phase checks passed, including
@@ -160,19 +188,20 @@ The owner deferred these gaps or addressed them through the linked changes.
 
 ## Next step
 
-The eight applied follow-ups are ready for base-branch review. Further drills,
-fixes and the remaining
-[full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required)
-require owner direction.
+Owner review of the revised 16 drafts (0256, 0258–0272), then separate
+direction for execution if desired. The current request explicitly forbids
+running them. Sequence 0263 → 0264 → 0265 and 0262 → 0272; coordinate 0268
+with its diagnostic-producing changes before closing their acceptance gaps.
+ACCEPTANCE retains the binary next/run warning check and other open evidence.
+Do not run drills or the final completion gates as part of drafting.
 
 ## Suggested follow-ups
 
 Not yet approved; each needs owner agreement before a change is written.
 
-- **Acceptance audit.** Map every R-row in ACCEPTANCE.md to the spec IDs that
-  implement it and list rows with no spec. The C17–C19 warnings (0232, 0233)
-  were missing although R25 lists them, so other rows may be too. A
-  coordinating session or its subagent can do this; it is not worker input.
+- **Acceptance closure.** The R01–R29 mapping is complete. Review the drafted
+  fixes and the explicitly open runtime/history/delivery evidence in ACCEPTANCE;
+  the mapping alone does not close those gates and is not worker input.
 - **GIT-007 failed-commit state.** The gitstore drill found that a failed
   commit can leave intent-to-add entries for selected new paths. Probe the
   current code: if a failed lifecycle commit leaves the index changed, the
