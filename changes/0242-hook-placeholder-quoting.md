@@ -1,0 +1,39 @@
+---
+already_satisfied:
+    - CHK-032
+    - CHK-082
+bases:
+    CHK-032: 08797d68
+    CHK-082: d043c28e
+module: checks
+---
+
+## Motivation
+
+The owner approved a consistent placeholder contract before regeneration. CHK-032 and CHK-082 promise shell quoting but leave prequoted placeholders ambiguous. Specify the existing supported template form: placeholders in shell strings are unquoted because Fireweed supplies quoting; argv substitution is literal. This does not require a shell parser.
+
+## Interface
+
+No public API changes.
+
+## Added
+
+
+
+## Modified
+
+### CHK-032
+For shell templates whose {module}, {module_dir} and {report} placeholders occur outside shell quotes, Evaluate MUST replace each placeholder once with a shell-quoted value. For argv templates it MUST replace placeholders once with literal values. Placeholders already inside shell quotes are outside this contract.
+
+### CHK-082
+For shell templates whose {prompt}, {prompt_file} and {git_common_dir} placeholders occur outside shell quotes, Doctor MUST replace each placeholder once with a shell-quoted value. For selected command and wrapper argv it MUST substitute literal values once. Placeholders already inside shell quotes are outside this contract.
+
+
+## Removed
+
+## Decisions
+
+## Notes
+
+Retain the existing literal-space/apostrophe/one-pass shell and argv assertions, including prompt-file and wrapper behavior. YAML quoting around an argv item is not shell quoting and remains supported. Do not add rejection/validation of prequoted shell placeholders, a shell parser or unrelated command semantics. Current expansion already satisfies this supported-input clarification.
+Owner authorized these five regeneration prerequisites and their necessary module-local changes. Stop after this queue; no regeneration or drill is authorized. Follow SYSTEM.md and the controller context. Workers must not read docs/rebuild/PROGRESS.md or ACCEPTANCE.md. Preserve unrelated assertions and retained interfaces after evals. Use existing public-interface fixtures and focused assertions; do not redesign helpers or add a test matrix. Evals and implementation workers run fireweed context for this change before each step and fireweed verify for verification. Restricted auditors follow only the supplied audit playbook and inputs. Only the controller advances phases and commits.
