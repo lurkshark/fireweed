@@ -40,11 +40,11 @@ gaps. Earlier milestone and queue narratives remain in Git history.
 
 ## Controller
 
-`.fireweed/bin/fireweed` was rebuilt with `-trimpath` from clean main after
-the queue completed and all claims were released. Go build metadata confirms
-the revision and a clean tree.
+`.fireweed/bin/fireweed` was rebuilt with `-trimpath` on 2026-11-12 from a
+clean checkout of main's current revision, with an empty queue and no active
+claims. Go build metadata confirms the revision and a clean tree.
 
-Controller source: `b5bd03de200cf9b977cb4f8ec9f976f6c0575151`
+Controller source: `a74c362ff2af12aa5c9bdd2fb9389e162be18a78`
 
 On a fresh macOS arm64 clone of an earlier controller source
 (`e1e1869131833778f1f8f1a23cf62b0d3b3869b3`), with
