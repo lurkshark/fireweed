@@ -75,7 +75,8 @@ Current MUST resolve only a claim owned by the calling worktree.
 Start MUST use the current HEAD as the initial phase base of its claim.
 
 ### FLOW-019
-While a claim is held, Current MUST return the project snapshot approved at Start.
+When its queued change can be resolved, Current MUST return the project snapshot approved at Start while the calling worktree holds the claim. Approved MUST expose that same snapshot independently of live project and queue parsing.
+
 
 ### FLOW-020
 Verify MUST reject an unapproved alteration of the active change's author fields before running a hook.
@@ -523,6 +524,13 @@ For a held evals or impl step with a nonempty `blocked` reason and nonempty `## 
 
 ### FLOW-138
 Context for a held evals or impl step MUST tell the worker how to declare a block using the current change's `blocked` reason and `## Questions`.
+
+### FLOW-139
+Approved MUST return the calling worktree's held approved snapshot and canonical change slug and repository-relative queued path, with found true, even when working configuration, module specs or change documents are malformed, changed or missing. It MUST use the canonical worktree root in the returned snapshot.
+
+### FLOW-140
+Approved MUST return found false without an error when the calling worktree owns no claim, including when another worktree owns a claim. It MUST return an error whose contracts.ErrorCode is P02 for unreadable or malformed claim data rather than report an approved snapshot.
+
 
 ## Decisions
 

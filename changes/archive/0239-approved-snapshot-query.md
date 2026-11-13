@@ -2,7 +2,7 @@
 bases:
     FLOW-019: 0b34bdcb
 module: workflow
-phase: impl
+phase: applied
 run: 20261113T014957-b01b479201ec3a4621b76fd8
 ---
 
@@ -40,6 +40,7 @@ Owner authorized these five regeneration prerequisites and their necessary modul
 ## Provenance
 - evals 2026-11-13T01:55:09.431978Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=200 failing=2 passing=198
 - audit 2026-11-13T01:55:44.128127Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-astra -c model_reasoning_effort="medium" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-13T02:17:41.740504Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=702 failing=0 passing=702
 ## Audit
 
 No findings; checked FLOW-019, FLOW-139, FLOW-140

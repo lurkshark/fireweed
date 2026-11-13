@@ -176,15 +176,22 @@ func existing(root, slug string) (claim, string, error) {
 	if !ok {
 		return claim{}, "", codedErrorf("P02", slug, "change has no claim")
 	}
-	b, e := gitstore.ReadBlob(root, oid)
-	if e != nil {
-		return claim{}, "", codedErrorf("P02", slug, "read claim: %w", e)
-	}
-	var c claim
-	if e = json.Unmarshal(b, &c); e != nil {
-		return claim{}, "", codedErrorf("P02", slug, "decode claim: %w", e)
+	c, err := readClaim(root, slug, oid)
+	if err != nil {
+		return claim{}, "", err
 	}
 	return c, oid, nil
+}
+func readClaim(root, slug, oid string) (claim, error) {
+	b, err := gitstore.ReadBlob(root, oid)
+	if err != nil {
+		return claim{}, codedErrorf("P02", slug, "read claim: %w", err)
+	}
+	var c claim
+	if err := json.Unmarshal(b, &c); err != nil {
+		return claim{}, codedErrorf("P02", slug, "decode claim: %w", err)
+	}
+	return c, nil
 }
 func state(root string, ch project.Change, c claim, oid, head string) model.State {
 	return model.State{Change: ch, Snapshot: c.Snapshot, Run: c.Run, Phase: c.Phase, Head: head, PhaseBase: c.PhaseBase, ClaimOID: oid}
