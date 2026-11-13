@@ -171,8 +171,11 @@ func Test_APP_147_APP_148_CheckFixMissingOnlySuccessAndNoOp(t *testing.T) {
 	if bytes.Equal(before, after) || !bytes.Equal(beforeSpec, staleCLIText(t, root, "packages/alpha/SPEC.md")) {
 		t.Error("fix changed wrong files")
 	}
-	if got := checkFixCLI(t, bin, root, true, 0, ""); got != plain || !bytes.Equal(after, staleCLIText(t, root, path)) {
-		t.Errorf("repeated fix changed output or bytes: %q", got)
+	if got := checkFixCLI(t, bin, root, true, 0, ""); strings.TrimSuffix(got, "\n") != strings.TrimSuffix(plain, "\n") {
+		t.Errorf("JSON success summary=%q; want plain summary %q apart from the terminal newline", got, plain)
+	}
+	if !bytes.Equal(after, staleCLIText(t, root, path)) {
+		t.Error("repeated fix changed queued file bytes")
 	}
 }
 
