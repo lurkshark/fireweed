@@ -132,7 +132,7 @@ printf '<testsuite><testcase name="BET-001" time="0.2"/></testsuite>' > "$2"
 }
 
 func Test_FLOW_098_ModuleJUnitCostsAndHeldZoneLineCounts(t *testing.T) {
-	root := fixture(t, "audit:\n  enabled: false\n", "set:\n  evals: [evals/**, internal/overlap.txt]\n", "", "", "")
+	root := fixture(t, "audit:\n  enabled: false\n", "set:\n  evals: [evals/**, projected-eval.txt]\n", "", "", "")
 	path := filepath.Join(root, "packages/alpha/SPEC.md")
 	b, err := os.ReadFile(path)
 	if err != nil {
@@ -140,7 +140,7 @@ func Test_FLOW_098_ModuleJUnitCostsAndHeldZoneLineCounts(t *testing.T) {
 	}
 	write(t, root, "packages/alpha/SPEC.md", strings.Replace(string(b), "depends_on: []\n", "depends_on: []\nprotected: [internal/protected.txt]\npreserve: [internal/preserve.txt]\n", 1))
 	write(t, root, "packages/alpha/evals/one.txt", "a\nb")
-	write(t, root, "packages/alpha/internal/overlap.txt", "x\n")
+	write(t, root, "packages/alpha/projected-eval.txt", "x\n")
 	write(t, root, "packages/alpha/internal/code.txt", "p\nq")
 	write(t, root, "packages/alpha/internal/preserve.txt", "r\n")
 	write(t, root, "packages/alpha/internal/protected.txt", "s\n")
