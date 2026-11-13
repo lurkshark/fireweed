@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/lurkshark/fireweed/packages/checks"
@@ -258,12 +257,6 @@ func addWorktree(ctx context.Context, repo gitstore.Repository, run string) (str
 }
 
 func removeWorktree(root, scratch string) error {
-	// Git may drop the registration even when it cannot remove the directory.
-	// Check access first so the caller can still retry cleanup after a failure.
-	const writeAndSearch = 3
-	if err := syscall.Access(filepath.Dir(scratch), writeAndSearch); err != nil {
-		return fmt.Errorf("remove verification worktree %s: %w", scratch, err)
-	}
 	_, err := workspace.Git(context.Background(), root, "worktree", "remove", "--force", scratch)
 	return err
 }
