@@ -1,6 +1,9 @@
 ---
+eval_fix:
+    - APP-038
 module: app
-eval_fix: [APP-038]
+phase: audit
+run: 20261113T172337-69d40369829ae74d6220dd79
 ---
 
 ## Motivation
@@ -39,3 +42,11 @@ from unrelated tests or alter product messages, specs or implementation.
 
 Drafted and queued only. No lifecycle execution is authorized by the drafting
 request.
+
+Eval verification passed with `fireweed verify lookup-diagnostic-evals`.
+The controller reported B02 case-count warnings for APP-103 and APP-104 and
+a B03 eval-to-disposable-lines warning for app.
+## Provenance
+
+- evals 2026-11-13T17:32:23.65404Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=369 failing=0 passing=369
+
