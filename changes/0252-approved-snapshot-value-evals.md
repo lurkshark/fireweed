@@ -1,6 +1,10 @@
 ---
+eval_fix:
+    - FLOW-019
+    - FLOW-139
 module: workflow
-eval_fix: [FLOW-019, FLOW-139]
+phase: audit
+run: 20261113T181346-47231e30e8af21ec3057e102
 ---
 
 ## Motivation
@@ -41,3 +45,7 @@ Do not change claim serialization or workflow implementation in this eval_fix.
 
 Drafted and queued only. No lifecycle execution is authorized by the drafting
 request.
+## Provenance
+
+- evals 2026-11-13T18:18:23.601549Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=200 failing=0 passing=200
+
