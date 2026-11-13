@@ -1,6 +1,9 @@
 ---
+eval_fix:
+    - RUN-062
 module: runner
-eval_fix: [RUN-062]
+phase: audit
+run: 20261113T185444-4997d2d4befa0cbd3af0c434
 ---
 
 ## Motivation
@@ -43,3 +46,10 @@ precheck that was introduced for this fixture.
 
 Drafted and queued only. No lifecycle execution is authorized by the drafting
 request.
+
+Both RUN-062 cases and `fireweed verify drill-cleanup-fixture` passed after the
+fixture teardown repair.
+## Provenance
+
+- evals 2026-11-13T19:04:42.22217Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=170 failing=0 passing=170
+

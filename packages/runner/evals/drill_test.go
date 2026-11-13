@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"reflect"
 	"slices"
@@ -913,14 +914,33 @@ func Test_RUN_062_CleanupFailureCannotPass(t *testing.T) {
 	}
 	parent := filepath.Join(common, "fireweed", "worktrees")
 	defer func() {
-		_ = os.Chmod(parent, 0755)
+		if err := os.Chmod(parent, 0755); err != nil && !os.IsNotExist(err) {
+			t.Errorf("restore fixture worktree parent permissions: %v", err)
+		}
 		setup, err := os.ReadFile(filepath.Join(f.observations, "setup"))
-		if err != nil {
+		if os.IsNotExist(err) {
 			return
 		}
-		scratch := strings.TrimSpace(strings.SplitN(string(setup), "\n", 2)[0])
-		if _, err := os.Stat(scratch); err == nil {
+		if err != nil {
+			t.Errorf("read fixture setup for teardown: %v", err)
+			return
+		}
+		scratch, _, _ := strings.Cut(string(setup), "\n")
+		if filepath.Dir(scratch) != parent {
+			t.Errorf("fixture scratch path %q is outside %q", scratch, parent)
+			return
+		}
+		worktrees, err := exec.Command("git", "-C", f.root, "worktree", "list", "--porcelain", "-z").Output()
+		if err != nil {
+			t.Errorf("list fixture worktrees: %v", err)
+			return
+		}
+		if slices.Contains(strings.Split(string(worktrees), "\x00"), "worktree "+scratch) {
 			nextGit(t, f.root, "worktree", "remove", "--force", scratch)
+			return
+		}
+		if err := os.RemoveAll(scratch); err != nil {
+			t.Errorf("remove unregistered fixture scratch directory: %v", err)
 		}
 	}()
 	r, err := f.run(context.Background(), 0)
