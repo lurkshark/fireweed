@@ -1,4 +1,5 @@
 ---
+blocked: FLOW-098 uses a frozen workflow eval fixture with an evals and disposable overlap
 module: project
 phase: impl
 run: 20261113T230327-76aae603f900d8b331584964
@@ -62,4 +63,11 @@ No findings; checked PRJ-075, PRJ-076
 
 - evals 2026-11-13T23:07:21.603372Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=168 failing=9 passing=159
 - audit 2026-11-13T23:07:38.255016Z agent=codex fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+
+## Questions
+
+Can the owner authorize a workflow eval correction that moves the extra eval
+file and its queued glob outside `internal/**`? This would retain the check
+that the held projection contributes the extra eval line, the exclusions for
+protected and preserved files, and all expected cost totals.
 
