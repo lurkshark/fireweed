@@ -88,7 +88,8 @@ During evals, Zones MUST reject edits in the target module's append_only zone.
 Zones MUST check both the source and destination of a rename against phase permissions.
 
 ### CHK-025
-RequireFailFirst MUST find a failed or errored referencing case for every requested enforced ID except already_satisfied; passing, skipped, empty or unrelated failures do not qualify. Missing genuine fail-first evidence MUST return a P2-01-prefixed error.
+RequireFailFirst MUST find a failed or errored referencing case for every requested enforced ID except already_satisfied; passing, skipped, empty or unrelated failures do not qualify. Missing genuine fail-first evidence MUST return an error whose contracts.ErrorCode is P2-01 and whose subject identifies the uncovered spec ID.
+
 
 ### CHK-026
 RequirePass MUST reject failed or errored cases referencing any non-quarantined spec with an error whose contracts ErrorCode is E01.
@@ -109,7 +110,7 @@ ParseJUnit MUST classify failure and error elements as fail, and skipped element
 Evaluate MUST prefer a module's eval hook override over the global eval hook.
 
 ### CHK-032
-Evaluate MUST expand module, module_dir and report placeholders once in shell strings or argv, quoting substituted shell values.
+For shell templates whose {module}, {module_dir} and {report} placeholders occur outside shell quotes, Evaluate MUST replace each placeholder once with a shell-quoted value. For argv templates it MUST replace placeholders once with literal values. Placeholders already inside shell quotes are outside this contract.
 
 ### CHK-033
 Evaluate MUST set the hook's FIREWEED_BIN environment variable to the request Bin.
@@ -266,7 +267,8 @@ Evaluate MUST retain parsed Case.Failure strings in its returned Report.Cases, i
 Doctor MUST persist complete stdout and stderr from every executed worker and audit probe, including failed, timed-out and cancelled probes, under the invoking project's .fireweed/runs/<run>/<phase>-1.log. Each Doctor invocation MUST use a fresh shared run identity, with phases doctor-worker and doctor-audit. Each executed probe's Detail MUST identify its log file by absolute path.
 
 ### CHK-082
-Doctor MUST expand {prompt}, {prompt_file} and {git_common_dir} once in selected worker/audit command templates and wrapper argv, quoting shell substitutions and preserving argv values literally.
+For shell templates whose {prompt}, {prompt_file} and {git_common_dir} placeholders occur outside shell quotes, Doctor MUST replace each placeholder once with a shell-quoted value. For selected command and wrapper argv it MUST substitute literal values once. Placeholders already inside shell quotes are outside this contract.
+
 
 ### CHK-083
 Doctor MUST create one temporary file containing the exact probe prompt only when a selected command or wrapper template uses {prompt_file}, and expand that placeholder to its absolute path. The file MUST remain available through execution and be removed afterward, including after launch failure, nonzero exit, timeout or cancellation.

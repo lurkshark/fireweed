@@ -25,11 +25,15 @@ func requireDiagnosticError(t *testing.T, err error, code, cause string) {
 
 func requireFailFirstError(t *testing.T, err error, id string) {
 	t.Helper()
-	const prefix = "P2-01: "
 	cause := "no fail-first case for " + id
-	if err == nil || !strings.HasPrefix(err.Error(), prefix) || !strings.Contains(err.Error(), cause) ||
-		strings.HasPrefix(strings.TrimPrefix(err.Error(), prefix), "P2-01:") {
-		t.Errorf("error = %v; want P2-01 prefix and cause %q", err, cause)
+	if err == nil {
+		t.Fatalf("expected P2-01 error for %s", id)
+	}
+	if code, subject, ok := contracts.ErrorCode(err); !ok || code != "P2-01" || subject != id {
+		t.Errorf("contracts.ErrorCode(%q) = %q, %q, %t; want P2-01, %s, true", err, code, subject, ok, id)
+	}
+	if !strings.Contains(err.Error(), cause) || strings.HasPrefix(err.Error(), "P2-01:") {
+		t.Errorf("error = %q; want cause %q without a P2-01 prefix", err, cause)
 	}
 }
 

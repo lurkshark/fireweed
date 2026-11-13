@@ -2,65 +2,41 @@
 
 ## Current state (2026-11-12)
 
-The regeneration milestone is complete. All eight modules have passing native
-drill reports, and the owner accepted each proof and deferred its remaining
-gaps. Earlier milestone narratives, failed proofs and recovery notes are in
-Git history before this revision.
+The five owner-approved regeneration prerequisites are complete on
+`dev/regeneration-prerequisites` at product revision `0d1bef4`. Fireweed applied
+and archived eight module-local changes, 0236–0243: structured fail-first
+errors and the prerequisite runner eval correction; module identity grammar;
+independent approved-snapshot access and CLI use; report-retention scope;
+and consistent shell/argv placeholder contracts in checks and runner.
 
-The owner-approved help changes [0236](../../changes/archive/0236-progressive-help-content.md)
-and [0237](../../changes/archive/0237-command-help.md) are applied on
-`codex/progressive-help`, through product commit `31ee0dc`. Help now has a
-compact overview, 31 command pages and command-specific help aliases. The
-owner approved recovery of 0236's malformed audit submission; Fireweed accepted
-the corrected findings, the missing assertions were added, and the restricted
-re-audit passed with the original round count retained. Both changes passed
-independent audit and full implementation verification: 1,116 cases across
-assets and its dependents for 0236, and 359 app cases for 0237. The original
-CLI examples, help aliases, JSON and invalid-config behavior passed binary
-smoke checks. The queue is empty and no claim remains active. The controller
-pin is unchanged; no drill was repeated.
+Main's progressive help and audit timeout fixture fixes from PR #1 are merged
+into this branch. The help overview, command pages, help aliases and their
+validation are preserved, along with the audited RUN-048/RUN-049 fixture fix.
 
-PR #1's macOS race check exposed an existing runner fixture whose three-second
-budget expired after evals but before its auditor started. The audited eval
-fix [0238](../../changes/archive/0238-audit-time-stop-fixture.md), applied in
-`8cde952`, prepares the held audit through public APIs before starting that
-budget. It preserves every existing stop, retained-work, claim and cleanup
-assertion without increasing timeouts or changing product code. Three focused
-macOS arm64 race runs and all 529 runner/dependent-app cases passed, and the
-independent audit cleared RUN-048 and RUN-049.
+The branches independently allocated APP-156 and APP-157. Main retains
+APP-156–APP-158 for help; this branch's module grammar and held coverage items
+are now APP-159 and APP-160, with matching eval labels. Their contract text is
+unchanged. The owner authorized a one-time correction of these IDs in the two
+affected archives, including their audit references. Run IDs and Provenance
+remain unchanged. H04 is expected for these two archive edits in the merge
+commit; no history rule or enforcement setting is disabled. The merged app
+passed the controller coverage check for all 369 cases; static check passed
+with the same three C18 warnings.
 
-Earlier, Fireweed applied all 38 queue entries: 0202–0234 and five approved
-prerequisites. The queue is empty and no claim is active. In 0210, Fireweed
-resumed the saved attempt with both CHK-048 assertions intact after the owner
-approved marking that ID `already_satisfied`.
+Every prerequisite change passed a separate restricted audit with no findings
+and full implementation verification. Archived changes retain the phase Provenance.
+The queue is empty, no claim is active, and eight applied changes await base
+branch review. No regeneration or drill ran for this prerequisite queue.
 
-The owner approved [the app prerequisite](../../changes/archive/0220-app-history-coded-errors.md)
-after the first 0220 run exposed the remaining text-based diagnostic lookup in
-`show --history`. Fireweed applied the prerequisite, restored 0220's saved
-implementation, and verified all APP-135 cases against the unlabeled project
-errors.
+The controller `check-commits a9dadba..0d1bef4` passed all 25 task commits.
+The controller `check` passes with three C18 repeated-clause warnings: two
+existing app clauses and the shared exclusion of already-quoted shell
+placeholders. The existing B02 case-count warnings remain for APP-103 (17)
+and APP-104 (19). The controller remains pinned to the revision below.
 
-The owner approved [the CLI migration prerequisite](../../changes/archive/0221-app-structured-diagnostics.md)
-after the first 0221 run exposed remaining text classifiers. Fireweed applied
-it, restored 0221's saved implementation, and verified all 323 app cases
-against the unlabeled checks errors.
-
-0222 exposed dependent evals that asserted workflow code labels. The owner
-approved separate app and runner eval fixes. Both passed audit and applied.
-Fireweed restored 0222's saved implementation and verified 188 workflow, 167
-runner and 323 app cases.
-
-The owner approved the workflow prerequisite `0230-done-verification-error`.
-Fireweed abandoned the initial 0230 run to remove its committed fail-first eval
-from the live tree while retaining the commits and saved attempts. It restored
-the workflow prerequisite's saved implementation and applied it. Fireweed then
-replayed 0230 with the same eval, passed independent audit and implementation
-verification, and applied it. The controller built from `19a184b` applied
-0231–0234.
-
-On the final product revision `1a0822f`, `go test ./...` passed. The controller
-passed `check` and `check-commits c98ddaa..1a0822f` over 136 commits. The product
-passed `check` with two C18 warnings for repeated app clauses.
+The earlier regeneration milestone has passing native drill reports for all
+eight modules; the owner accepted those proofs and deferred the remaining
+gaps. Earlier milestone and queue narratives remain in Git history.
 
 ## Controller
 
@@ -120,7 +96,7 @@ that dependent failures are reported, not fed back.
 
 ## Deferred gaps
 
-The owner deferred these gaps. The queued change that addresses one is linked.
+The owner deferred these gaps or addressed them through the linked changes.
 
 - **contracts:** fenced headings and level-one section boundaries (CON-002,
   CON-009; [0226](../../changes/archive/0226-fenced-section-boundaries.md)); YAML NaN and offset-timestamp key equality (CON-008); evals that
@@ -147,28 +123,35 @@ The owner deferred these gaps. The queued change that addresses one is linked.
   [0225](../../changes/archive/0225-spec-outside-globs-warning.md)).
 - **checks:** which testcase-name tokens count as IDs (CHK-028, CHK-080;
   [0204](../../changes/archive/0204-junit-label-tokens.md)); shell quoting around hook
-  placeholders (CHK-032); boundary rule attribution (CHK-057); canary
+  placeholders (CHK-032, CHK-082;
+  [0242](../../changes/archive/0242-hook-placeholder-quoting.md)); boundary rule attribution (CHK-057); canary
   identity (CHK-059); probe output ordering (CHK-065); Doctor fixtures that
   cannot build the root binary in the reconstruction workspace (CHK-061).
-- **workflow:** raw boundary-hook output retention (FLOW-052); P08 flags module runs rather than rework chains (FLOW-111;
+- **workflow:** report-retention scope (FLOW-052;
+  [0241](../../changes/archive/0241-eval-report-retention-scope.md) narrows it to
+  module reports and eval-hook output); P08 flags module runs rather than rework chains (FLOW-111;
   [0217](../../changes/archive/0217-rework-chain-warning.md), see
   [D010](DECISIONS.md#d010--p08-warns-on-rework-chains)).
 - **runner:** P01 for approval refusals (RUN-041;
   [0205](../../changes/archive/0205-approval-refusal-code.md)); shell quoting for
-  already-quoted placeholders (RUN-003); repeated verification on successful
+  already-quoted placeholders (RUN-003;
+  [0243](../../changes/archive/0243-agent-placeholder-quoting.md)); repeated verification on successful
   phases (RUN-014; [0230](../../changes/archive/0230-single-phase-verification.md)).
 - **app:** approved-snapshot access when the live queue cannot be parsed
-  (APP-004, APP-012); recovering lower-module codes by matching messages
+  (APP-004, APP-012;
+  [0239](../../changes/archive/0239-approved-snapshot-query.md),
+  [0240](../../changes/archive/0240-approved-cli-metadata.md)); recovering lower-module codes by matching messages
   (APP-037, APP-078, APP-085; 0209–0212 give lower-module errors their
   codes and [0214](../../changes/archive/0214-app-reads-error-codes.md) reads them); Doctor probe names in JSON (APP-067;
   [0229](../../changes/archive/0229-doctor-probe-names.md),
   [0231](../../changes/archive/0231-doctor-json-probe-names.md)); the
-  module name and prefix grammar (APP-103).
+  module name and prefix grammar (APP-103, APP-159;
+  [0238](../../changes/archive/0238-module-identity-grammar.md)).
 
 ## Next step
 
-The approved CLI help work is complete. Await owner direction on the remaining
-[full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required).
+Stop before regeneration, as requested. Await owner direction on regeneration
+and the remaining [full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required).
 
 ## Suggested follow-ups
 

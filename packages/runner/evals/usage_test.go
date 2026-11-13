@@ -290,7 +290,7 @@ func Test_RUN_030_UsageRetryPreservesVerificationFeedback(t *testing.T) {
 	if r.Steps[0].Agent.Stdout != "first verification" || !r.Steps[1].Agent.UsageLimit || r.Steps[1].Phase != "evals" || r.Steps[2].Phase != "evals" || r.Steps[2].Agent.ExitCode != 0 {
 		t.Errorf("evals attempt order = %#v", r.Steps)
 	}
-	if prompt := nextRead(t, f.logDir, "worker-evals-3.prompt"); !strings.Contains(prompt, "P2-01: no fail-first case for ALP-002") {
+	if prompt := nextRead(t, f.logDir, "worker-evals-3.prompt"); !strings.Contains(prompt, "no fail-first case for ALP-002") {
 		t.Errorf("post-limit retry lost verification feedback: %q", prompt)
 	}
 	if !strings.Contains(nextRead(t, f.root, "packages/alpha/evals/retained_test.go"), "RETAINED_EVAL_WORK") {
@@ -367,7 +367,10 @@ func Test_RUN_035_EarlierBlockMakesLaterUsageStopFailure(t *testing.T) {
 	usagePolicy(t, f.root, "limit_wait: 5ms\nlimit_budget: 0s\n")
 	runUsageAgent(t, f, "gamma/evals")
 	r, err := runner.Run(context.Background(), f.request(0, false))
-	if err == nil || !strings.Contains(err.Error(), "P2-01: no fail-first case for ALP-002") || !strings.Contains(err.Error(), "refs/fireweed/attempts/alpha/1") || !strings.Contains(err.Error(), "5ms") || runner.IsUsageStop(err) || len(r.Applied) != 0 {
+	if code, _, ok := contracts.ErrorCode(err); !ok || code != "P2-01" {
+		t.Errorf("combined block and usage error code = %q (present: %t), want P2-01 (error: %v)", code, ok, err)
+	}
+	if err == nil || !strings.Contains(err.Error(), "no fail-first case for ALP-002") || !strings.Contains(err.Error(), "refs/fireweed/attempts/alpha/1") || !strings.Contains(err.Error(), "5ms") || runner.IsUsageStop(err) || len(r.Applied) != 0 {
 		t.Errorf("combined block and usage failure = %#v, %v", r, err)
 	}
 	if saved := nextGit(t, f.root, "for-each-ref", "--format=%(objectname)", "refs/fireweed/attempts/alpha/1"); saved == "" {

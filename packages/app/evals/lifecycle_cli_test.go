@@ -301,6 +301,22 @@ func Test_APP_004_HeldModulesUseApprovedProjection(t *testing.T) {
 	if err := json.Unmarshal(envelope["diagnostics"], &diagnostics); err != nil || len(diagnostics) != 0 {
 		t.Errorf("held diagnostics=%s, %v", envelope["diagnostics"], err)
 	}
+
+	appPut(t, root, "fireweed.yaml", "modules: [broken\n")
+	appPut(t, root, "packages/alpha/SPEC.md", "---\nname: [broken\n---\n")
+	appPut(t, root, "changes/0001-manual.md", "---\nmodule: [broken\n---\n")
+	dir := appNestedDir(t, root)
+	if status, got, stderr := runLifecycleBinary(t, bin, dir, "modules", "--json"); status != 0 || stderr != "" || got != output {
+		t.Errorf("held graph with malformed live inputs: exit=%d stdout=%q stderr=%q; want approved graph %q", status, got, stderr, output)
+	}
+	for _, path := range []string{"fireweed.yaml", "packages/alpha/SPEC.md", "changes/0001-manual.md"} {
+		if err := os.Remove(filepath.Join(root, path)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if status, got, stderr := runLifecycleBinary(t, bin, dir, "modules"); status != 0 || stderr != "" || got != plain {
+		t.Errorf("held graph with missing live inputs: exit=%d stdout=%q stderr=%q; want approved graph %q", status, got, stderr, plain)
+	}
 }
 
 func Test_APP_011_APP_032_APP_033_ContextCompactFullAndErrors(t *testing.T) {
@@ -403,6 +419,88 @@ func Test_APP_012_APP_034_APP_035_APP_036_CoverageCurrentProjectionAndErrors(t *
 	appPut(t, bad, "fireweed.yaml", "modules: [broken\n")
 	status, out, errOut = runLifecycleBinary(t, bin, bad, "coverage", "alpha", "--json")
 	lifecycleCommandFailure(t, status, 2, out, errOut, true)
+}
+
+func Test_APP_012_APP_160_CoverageUsesApprovedHooksWithSelectedSpecs(t *testing.T) {
+	bin := buildAppBinary(t)
+	root := lifecycleCLIProject(t, bin, false)
+	appPut(t, root, ".fireweed/eval.sh", `#!/bin/sh
+printf 'approved %s\n' "$FIREWEED_BIN" >> .fireweed/runs/coverage-hooks
+{
+  printf '<testsuite>'
+  while IFS= read -r id; do
+    printf '<testcase name="%s"/>' "$id"
+  done < .fireweed/runs/coverage-ids
+  printf '</testsuite>'
+} > "$2"
+`)
+	appPut(t, root, ".fireweed/unapproved-eval.sh", `#!/bin/sh
+printf 'unapproved %s\n' "$FIREWEED_BIN" >> .fireweed/runs/coverage-hooks
+exit 7
+`)
+	cliCommit(t, root, "coverage marker hooks")
+	cliHold(t, root)
+	dir := appNestedDir(t, root)
+	const hookLog = ".fireweed/runs/coverage-hooks"
+	appPut(t, root, hookLog, "")
+	readLog := func() string { return string(staleCLIText(t, root, hookLog)) }
+	assertCoverage := func(ids []string, args ...string) {
+		t.Helper()
+		appPut(t, root, ".fireweed/runs/coverage-ids", strings.Join(ids, "\n")+"\n")
+		before := readLog()
+		status, out, stderr := runLifecycleBinary(t, bin, dir, append([]string{"coverage", "alpha"}, args...)...)
+		want := strings.Join(ids, ": pass\n") + ": pass\n"
+		if status != 0 || stderr != "" || out != want {
+			t.Errorf("coverage %v: exit=%d stdout=%q stderr=%q; want %q", args, status, out, stderr, want)
+		}
+		if got := strings.TrimPrefix(readLog(), before); got != "approved "+bin+"\n" {
+			t.Errorf("coverage %v hook invocation=%q; want approved hook with executable %q", args, got, bin)
+		}
+	}
+	assertRejection := func(code, cause string, args ...string) {
+		t.Helper()
+		before := readLog()
+		status, out, stderr := runLifecycleBinary(t, bin, dir, append(append([]string{"coverage"}, args...), "--json")...)
+		if status != 2 || stderr != "" {
+			t.Errorf("coverage %v: exit=%d stdout=%q stderr=%q; want exit 2 with %s", args, status, out, stderr, code)
+		}
+		if message := assertFailedJSON(t, out, code); !strings.Contains(message, cause) || !corrective(message) {
+			t.Errorf("coverage %v diagnostic %q lacks %q or corrective guidance", args, message, cause)
+		}
+		if got := readLog(); got != before {
+			t.Errorf("rejected coverage %v invoked a hook: before=%q after=%q", args, before, got)
+		}
+	}
+
+	const other = "changes/0002-other.md"
+	staleCLIChange(t, root, other, "set:\n  hooks:\n    eval: [sh, .fireweed/unapproved-eval.sh]\n", "Retire the first requirement.\n", "", "### ALP-001\n")
+	if _, err := project.Project(root, "other"); err != nil {
+		t.Fatalf("fixture projection for other: %v", err)
+	}
+	assertCoverage([]string{"ALP-002"}, "--with-change", "other")
+	appPut(t, root, "packages/gamma/SPEC.md", "---\nname: gamma\nid_prefix: GAM\nhooks:\n  eval: [sh, .fireweed/unapproved-eval.sh]\n---\n# Gamma\n\n## Specs\n")
+	assertRejection("U02", "gamma", "gamma", "--with-change", "other")
+	appPut(t, root, other, "---\nmodule: [broken\n---\n")
+	assertRejection("C03", other, "alpha", "--with-change", "other")
+
+	const held = "changes/0001-manual.md"
+	const spec = "packages/alpha/SPEC.md"
+	appPut(t, root, "fireweed.yaml", "modules: [broken\n")
+	appPut(t, root, held, "---\nmodule: [broken\n---\n")
+	appPut(t, root, spec, authoringSpec+"\n### ALP-003\nAlpha MUST cover current-only text.\n")
+	assertCoverage([]string{"ALP-001", "ALP-003"})
+	appPut(t, root, spec, "---\nname: [broken\n---\n")
+	assertCoverage([]string{"ALP-001", "ALP-002"}, "--with-change", "manual")
+	assertRejection("C03", "SPEC.md", "alpha")
+
+	for _, path := range []string{"fireweed.yaml", held, spec} {
+		if err := os.Remove(filepath.Join(root, path)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, alias := range []string{"0001-manual.md", held} {
+		assertCoverage([]string{"ALP-001", "ALP-002"}, "--with-change", alias)
+	}
 }
 
 func Test_APP_010_APP_029_APP_030_APP_031_VerifyDoneAuditAndFullChecks(t *testing.T) {

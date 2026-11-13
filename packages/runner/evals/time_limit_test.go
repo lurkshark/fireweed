@@ -11,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/runner"
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
@@ -299,7 +300,10 @@ fi
 	req.For = 20 * time.Second
 	req.Timeout = time.Minute
 	r, err := runner.Run(context.Background(), req)
-	if err == nil || !strings.Contains(err.Error(), "P2-01: no fail-first case for ALP-002") || !strings.Contains(err.Error(), "refs/fireweed/attempts/alpha/1") || !strings.Contains(err.Error(), req.For.String()) || runner.IsTimeStop(err) {
+	if code, _, ok := contracts.ErrorCode(err); !ok || code != "P2-01" {
+		t.Errorf("combined block and time error code = %q (present: %t), want P2-01 (error: %v)", code, ok, err)
+	}
+	if err == nil || !strings.Contains(err.Error(), "no fail-first case for ALP-002") || !strings.Contains(err.Error(), "refs/fireweed/attempts/alpha/1") || !strings.Contains(err.Error(), req.For.String()) || runner.IsTimeStop(err) {
 		t.Errorf("combined block and time failure: Applied=%d, err=%v", len(r.Applied), err)
 	}
 	if saved := nextGit(t, f.root, "for-each-ref", "--format=%(objectname)", "refs/fireweed/attempts/alpha/1"); saved == "" {

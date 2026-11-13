@@ -188,7 +188,7 @@ func RequireFailFirst(report model.Report, ids, already []string) error {
 			}
 		}
 		if !satisfied {
-			return fmt.Errorf("P2-01: no fail-first case for %s", id)
+			return contracts.CodedError{Code: "P2-01", Subject: id, Cause: fmt.Errorf("no fail-first case for %s", id)}
 		}
 	}
 	return nil

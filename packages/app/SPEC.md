@@ -30,7 +30,7 @@ It MUST return exit 0 and leave stderr empty.
 Unknown commands or options and missing or extra arguments MUST return exit 2 with a nonempty corrective U01 diagnostic.
 
 ### APP-004
-modules MUST report the validated graph, using the held approved projected snapshot while this worktree owns a change.
+modules MUST report the validated graph from the held approved snapshot while this worktree owns a change, even when live configuration, module specs or queued documents are malformed or missing. Without an owned claim it MUST report the validated current graph.
 
 ### APP-005
 new-change <module> <slug> MUST use the discovered project root to create the project API's queued skeleton and print its repository-relative path with exit 0.
@@ -56,7 +56,8 @@ verify [change] MUST invoke workflow with the actual invoking executable as Bin,
 context <change> [--full] MUST return the held workflow.Context text, using compact or full behavior as requested, with exit 0 and empty diagnostics.
 
 ### APP-012
-coverage <module> MUST evaluate current specs, or the selected projection with --with-change <change>, using approved metadata while held and setting FIREWEED_BIN to the actual executable.
+coverage MUST evaluate current module spec text by default, the held approved projected spec text when --with-change selects the held change, or the requested live projection's spec text for another queued change. While held, execution MUST use the approved configuration, module graph, zones and hooks, including for another selected projection. It MUST set FIREWEED_BIN to the actual executable.
+
 
 ### APP-013
 Unknown explain codes or playbook names MUST return exit 2 with a nonempty corrective U02 diagnostic.
@@ -613,6 +614,14 @@ the rejected name and guidance to fireweed help. Extra arguments or unsupported
 options in a help request MUST return exit 2 with corrective U01 guidance
 showing a valid help form. JSON failures MUST use the existing schema-1 null
 data and diagnostics envelope with empty stderr.
+
+### APP-159
+new-module MUST accept names matching `[a-z][a-z0-9]*(?:-[a-z0-9]+)*` and prefixes matching `[A-Z][A-Z0-9]*`, with each match covering the entire value. Values outside those ASCII grammars MUST produce corrective U01 and exit 2 before writing module files.
+
+
+### APP-160
+coverage --with-change selecting the held change MUST accept its canonical slug, queued basename or repository-relative path and work despite malformed or missing live configuration, module specs or change documents. Default coverage and coverage selecting another change MUST report the existing cause when their required live spec text or projection cannot be read, without running an eval hook.
+
 
 ## Decisions
 

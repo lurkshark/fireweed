@@ -49,6 +49,7 @@ func Test_CHK_082_CHK_083_DoctorExpandsSelectedCommandsAndWrapperOnce(t *testing
 	f := localDoctorFixture(t)
 	f.editConfig(func(config map[string]any) {
 		config["agent"].(map[string]any)["command"] = []any{"bash", ".fireweed/agent.sh", "pre{prompt}post", "file={prompt_file}", "common={git_common_dir}", "literal {unknown}"}
+		// The shell command leaves placeholders unquoted. The worker and wrapper use YAML sequences.
 		config["audit"].(map[string]any)["command"] = "bash .fireweed/audit.sh {prompt} {prompt_file} {git_common_dir}"
 		config["agent"].(map[string]any)["wrap"] = []any{"bash", ".fireweed/prompt-wrap.sh", "{prompt_file}", "{prompt}", "{git_common_dir}"}
 	})
@@ -59,6 +60,7 @@ shift 3
 exec "$@"
 `, f.log))
 	f.put(".fireweed/agent.sh", fmt.Sprintf(`#!/bin/bash
+test "$#" -eq 4 || exit 12
 printf 'worker-prompt:%%s\nworker-file:%%s\nworker-common:%%s\nworker-literal:%%s\n' "$1" "${2#file=}" "${3#common=}" "$4" >> %q
 test "$1" = "pre%spost" || exit 12
 test "$2" != "file=" || exit 13
@@ -66,6 +68,7 @@ test -f "${2#file=}" && printf '%%s' %q | cmp -s - "${2#file=}" || exit 14
 printf 'FIREWEED_DOCTOR_OK\n'
 `, f.log, doctorProbePrompt, doctorProbePrompt))
 	f.put(".fireweed/audit.sh", fmt.Sprintf(`#!/bin/bash
+test "$#" -eq 3 || exit 15
 printf 'audit-prompt:%%s\naudit-file:%%s\naudit-common:%%s\n' "$1" "$2" "$3" >> %q
 test -f "$2" && printf '%%s' "$1" | cmp -s - "$2" || exit 15
 printf 'FIREWEED_DOCTOR_OK\n'

@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/lurkshark/fireweed/packages/checks"
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/runner"
 	"github.com/lurkshark/fireweed/packages/workflow"
@@ -266,8 +267,11 @@ func runBlockedDependencyFixture(t *testing.T) runFixture {
 
 func assertRunBlockedAlpha(t *testing.T, f runFixture, err error) {
 	t.Helper()
-	const cause = "P2-01: no fail-first case for ALP-002"
+	const cause = "no fail-first case for ALP-002"
 	const ref = "refs/fireweed/attempts/alpha/1"
+	if code, _, ok := contracts.ErrorCode(err); !ok || code != "P2-01" {
+		t.Errorf("Run blocking error code = %q (present: %t), want P2-01 (error: %v)", code, ok, err)
+	}
 	if err == nil || !strings.Contains(err.Error(), cause) || !strings.Contains(err.Error(), ref) {
 		t.Errorf("Run blocking error = %v, want verification cause and %s", err, ref)
 	}
