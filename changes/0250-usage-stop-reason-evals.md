@@ -13,8 +13,6 @@ evals while retaining all observable stop behavior.
 
 ## Interface
 
-Audited eval_fix only. Edit only the app evals zone and this change.
-
 ## Added
 
 ## Modified
@@ -24,6 +22,8 @@ Audited eval_fix only. Edit only the app evals zone and this change.
 ## Decisions
 
 ## Notes
+
+Audited eval_fix only. Edit only the app evals zone and this change.
 
 Revise cliStopReason in packages/app/evals/usage_cli_test.go and only the
 call sites needed for this correction. Check that completed wait, next wait

@@ -14,8 +14,6 @@ snapshot contents.
 
 ## Interface
 
-Audited eval_fix only. Edit only the workflow evals zone and this change.
-
 ## Added
 
 ## Modified
@@ -25,6 +23,8 @@ Audited eval_fix only. Edit only the workflow evals zone and this change.
 ## Decisions
 
 ## Notes
+
+Audited eval_fix only. Edit only the workflow evals zone and this change.
 
 In Test_FLOW_019_FLOW_139_ApprovedSurvivesLiveEdits in
 packages/workflow/evals/approved_test.go, compare snapshot contents while

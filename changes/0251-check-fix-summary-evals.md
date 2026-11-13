@@ -14,8 +14,6 @@ from the exact file-idempotence assertion.
 
 ## Interface
 
-Audited eval_fix only. Edit only the app evals zone and this change.
-
 ## Added
 
 ## Modified
@@ -25,6 +23,8 @@ Audited eval_fix only. Edit only the app evals zone and this change.
 ## Decisions
 
 ## Notes
+
+Audited eval_fix only. Edit only the app evals zone and this change.
 
 Correct Test_APP_147_APP_148_CheckFixMissingOnlySuccessAndNoOp in
 packages/app/evals/check_fix_cli_test.go. Validate each plain/JSON success

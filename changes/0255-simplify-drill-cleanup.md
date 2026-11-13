@@ -13,9 +13,6 @@ cleanup and failure reporting.
 
 ## Interface
 
-No retained interface or behavior changes. Maintenance is limited to runner's
-disposable cleanup implementation.
-
 ## Added
 
 ## Modified
@@ -25,6 +22,9 @@ disposable cleanup implementation.
 ## Decisions
 
 ## Notes
+
+No retained interface or behavior changes. Maintenance is limited to runner's
+disposable cleanup implementation.
 
 Run only after drill-cleanup-fixture has applied through its audited eval_fix
 lifecycle. Keep this change separate because an eval_fix's impl phase cannot

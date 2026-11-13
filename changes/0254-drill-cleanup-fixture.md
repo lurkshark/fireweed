@@ -13,8 +13,6 @@ repairing teardown so this eval measures that contract.
 
 ## Interface
 
-Audited eval_fix only. Edit only the runner evals zone and this change.
-
 ## Added
 
 ## Modified
@@ -24,6 +22,8 @@ Audited eval_fix only. Edit only the runner evals zone and this change.
 ## Decisions
 
 ## Notes
+
+Audited eval_fix only. Edit only the runner evals zone and this change.
 
 Correct teardown in Test_RUN_062_CleanupFailureCannotPass in
 packages/runner/evals/drill_test.go. Restore fixture permissions and clean up

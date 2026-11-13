@@ -14,8 +14,6 @@ against the diagnostic contract rather than incidental prose.
 
 ## Interface
 
-Audited eval_fix only. Edit only the app evals zone and this change.
-
 ## Added
 
 ## Modified
@@ -25,6 +23,8 @@ Audited eval_fix only. Edit only the app evals zone and this change.
 ## Decisions
 
 ## Notes
+
+Audited eval_fix only. Edit only the app evals zone and this change.
 
 In Test_APP_038_LookupCauses in
 packages/app/evals/diagnostic_causes_test.go, replace the "not found"

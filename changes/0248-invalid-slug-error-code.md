@@ -16,9 +16,6 @@ U01 behavior explicit under SYSTEM.md's coded-error convention.
 
 ## Interface
 
-No signature or type changes. Clarify the code returned by NewChange for an
-invalid slug.
-
 ## Added
 
 ## Modified
@@ -31,6 +28,9 @@ NewChange MUST reject an empty slug or a slug containing characters other than l
 ## Decisions
 
 ## Notes
+
+No signature or type changes. Clarify the code returned by NewChange for an
+invalid slug.
 
 The current implementation already returns U01 for this condition, so
 PRJ-026 is legitimately already_satisfied.
