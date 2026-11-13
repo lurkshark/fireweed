@@ -623,6 +623,12 @@ new-module MUST accept names matching `[a-z][a-z0-9]*(?:-[a-z0-9]+)*` and prefix
 coverage --with-change selecting the held change MUST accept its canonical slug, queued basename or repository-relative path and work despite malformed or missing live configuration, module specs or change documents. Default coverage and coverage selecting another change MUST report the existing cause when their required live spec text or projection cannot be read, without running an eval hook.
 
 
+### APP-161
+Successful init MUST create changes/ and changes/archive/ as directories, including with --no-app and every supported recipe selection. Existing queue and archive directories and their contents MUST be retained.
+
+### APP-162
+If changes or changes/archive is occupied by a regular file, init MUST reject with P01 and exit 2 before writing setup files. The diagnostic MUST identify the conflicting path.
+
 ## Decisions
 
 

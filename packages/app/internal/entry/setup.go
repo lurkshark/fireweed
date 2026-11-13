@@ -323,7 +323,7 @@ func (c command) initProject(root string) response {
 		}
 	}
 
-	var moduleDirs []string
+	dirs := []string{"changes", "changes/archive"}
 	if !c.has("--no-app") {
 		templates := map[string]string{}
 		for name, body := range recipe.Files {
@@ -343,7 +343,7 @@ func (c command) initProject(root string) response {
 				return refused(err)
 			}
 		}
-		moduleDirs = scaffoldDirs("packages/app", recipe.ModuleDefaults)
+		dirs = append(dirs, scaffoldDirs("packages/app", recipe.ModuleDefaults)...)
 	}
 
 	updates := map[string]string{}
@@ -370,12 +370,12 @@ func (c command) initProject(root string) response {
 			}
 		}
 	}
-	if err := preflightFiles(root, files, moduleDirs); err != nil {
+	if err := preflightFiles(root, files, dirs); err != nil {
 		return refused(err)
 	}
 	configBody := files["fireweed.yaml"]
 	delete(files, "fireweed.yaml")
-	if err := writeFiles(root, files, moduleDirs); err != nil {
+	if err := writeFiles(root, files, dirs); err != nil {
 		return refused(err)
 	}
 	for _, name := range slices.Sorted(maps.Keys(updates)) {
