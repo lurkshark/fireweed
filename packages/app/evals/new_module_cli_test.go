@@ -179,8 +179,8 @@ func Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors(t *testing.T) 
 	}{
 		{"missing-name", "U01", "packages/new", []string{"new-module", "--prefix", "NEW"}, nil},
 		{"missing-prefix", "U01", "packages/new", []string{"new-module", "new"}, nil},
-		{"invalid-name", "U01", "packages/new", []string{"new-module", "bad/name", "--prefix", "NEW"}, nil},
-		{"invalid-prefix", "U01", "packages/new", []string{"new-module", "new", "--prefix", "bad-prefix"}, nil},
+		{"APP_156_invalid-name", "U01", "packages/bad", []string{"new-module", "bad/name", "--prefix", "NEW"}, nil},
+		{"APP_156_invalid-prefix", "U01", "packages/new", []string{"new-module", "new", "--prefix", "bad-prefix"}, nil},
 		{"repeated-prefix", "U01", "packages/new", []string{"new-module", "new", "--prefix", "NEW", "--prefix", "AGAIN"}, nil},
 		{"extra-argument", "U01", "packages/new", []string{"new-module", "new", "--prefix", "NEW", "extra"}, nil},
 		{"unknown-option", "U01", "packages/new", []string{"new-module", "new", "--prefix", "NEW", "--bogus"}, nil},
@@ -215,16 +215,40 @@ func Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors(t *testing.T) 
 	}
 }
 
-func Test_APP_101_APP_104_NewModuleEmptyGoModule(t *testing.T) {
+func Test_APP_156_NewModuleRejectsInvalidIdentities(t *testing.T) {
+	bin := buildAppBinary(t)
+	for _, tc := range []struct{ label, name, prefix string }{
+		{"uppercase-name", "newCore", "NEW"},
+		{"repeated-name-hyphen", "new--core", "NEW"},
+		{"digit-led-name", "2new", "NEW"},
+		{"non-ASCII-name", "café", "NEW"},
+		{"lowercase-prefix", "new", "NEw"},
+		{"prefix-hyphen", "new", "NEW-"},
+		{"digit-led-prefix", "new", "2NEW"},
+		{"non-ASCII-prefix", "new", "NÉW"},
+	} {
+		t.Run(tc.label, func(t *testing.T) {
+			root := appProjectFixture(t)
+			newModuleTemplates(t, root)
+			newModuleFailure(t, bin, root, []string{"new-module", tc.name, "--prefix", tc.prefix}, "U01")
+			newModuleAbsent(t, root, "packages/"+tc.name)
+		})
+	}
+}
+
+func Test_APP_101_APP_104_APP_156_NewModuleEmptyGoModule(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := appProjectFixture(t)
 	newModuleTemplates(t, root)
 	appPut(t, root, ".fireweed/templates/module/README.tmpl", "go_module={{go_module}}\nmodule_dir={{module_dir}}\n")
-	status, stdout, stderr := runAppBinary(t, bin, root, "new-module", "empty-mod", "--prefix", "EMP", "--json")
-	if status != 0 || stderr != "" || commandStringData(t, stdout) != "packages/empty-mod" {
+	status, stdout, stderr := runAppBinary(t, bin, root, "new-module", "empty2-3-mod", "--prefix", "E2M", "--json")
+	if status != 0 || stderr != "" || commandStringData(t, stdout) != "packages/empty2-3-mod" {
 		t.Errorf("creation without go.mod: status=%d stdout=%q stderr=%q", status, stdout, stderr)
 	}
-	if got := readInitFile(t, root, "packages/empty-mod/README"); got != "go_module=\nmodule_dir=packages/empty-mod\n" {
+	if got := readInitFile(t, root, "packages/empty2-3-mod/README"); got != "go_module=\nmodule_dir=packages/empty2-3-mod\n" {
 		t.Errorf("empty go_module substitution=%q", got)
+	}
+	if got := readInitFile(t, root, "packages/empty2-3-mod/SPEC.md"); !strings.Contains(got, "name: empty2-3-mod\nid_prefix: E2M\n") {
+		t.Errorf("rendered module identity: %q", got)
 	}
 }
