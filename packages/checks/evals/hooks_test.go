@@ -34,6 +34,12 @@ func hookSnapshot(t *testing.T, global, override any) project.Snapshot {
 }
 
 func Test_CHK_003_CHK_032_CHK_033_CHK_034_CHK_035_GlobalShellHookQuotesAndOnePassExpansion(t *testing.T) {
+	temp := filepath.Join(t.TempDir(), "reports '{module}'")
+	if err := os.Mkdir(temp, 0700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("TMPDIR", temp)
+	// The shell template leaves placeholders unquoted so Evaluate supplies the quoting.
 	cmd := `printf '%s|%s|%s' {module} {module_dir} "$FIREWEED_BIN"; printf '%s' '` + passXML + `' > {report}`
 	snap := hookSnapshot(t, cmd, nil)
 	snap.Modules[0].Name = "alpha {report}'s"
@@ -206,9 +212,14 @@ func Test_CHK_028_EvaluatePreservesJUnitDiagnostic(t *testing.T) {
 }
 
 func Test_CHK_003_CHK_032_ArgvPlaceholdersAreOnePass(t *testing.T) {
+	temp := filepath.Join(t.TempDir(), "reports '{module}'")
+	if err := os.Mkdir(temp, 0700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("TMPDIR", temp)
 	snap := hookSnapshot(t, nil, nil)
-	snap.Modules[0].Name = "alpha-{report}"
-	snap.Modules[0].Dir = "dir-{module}"
+	snap.Modules[0].Name = "alpha {report}'s"
+	snap.Modules[0].Dir = "dir {module}'s"
 	script := filepath.Join(snap.Root, "fixture.sh")
 	code := `#!/bin/sh
 printf '%s|%s' "$1" "$2"
@@ -222,7 +233,8 @@ printf '%s' '` + passXML + `' > "$3"
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(report.Stdout, "alpha-{report}|"+snap.Modules[0].Dir) {
-		t.Errorf("placeholders expanded recursively: %q", report.Stdout)
+	want := snap.Modules[0].Name + "|" + snap.Modules[0].Dir
+	if report.Stdout != want {
+		t.Errorf("literal argv output = %q; want %q", report.Stdout, want)
 	}
 }

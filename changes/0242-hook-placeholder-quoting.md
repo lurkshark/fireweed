@@ -6,6 +6,8 @@ bases:
     CHK-032: 08797d68
     CHK-082: d043c28e
 module: checks
+phase: audit
+run: 20261113T030643-8d27e4716722e0127834f442
 ---
 
 ## Motivation
@@ -37,3 +39,5 @@ For shell templates whose {prompt}, {prompt_file} and {git_common_dir} placehold
 
 Retain the existing literal-space/apostrophe/one-pass shell and argv assertions, including prompt-file and wrapper behavior. YAML quoting around an argv item is not shell quoting and remains supported. Do not add rejection/validation of prequoted shell placeholders, a shell parser or unrelated command semantics. Current expansion already satisfies this supported-input clarification.
 Owner authorized these five regeneration prerequisites and their necessary module-local changes. Stop after this queue; no regeneration or drill is authorized. Follow SYSTEM.md and the controller context. Workers must not read docs/rebuild/PROGRESS.md or ACCEPTANCE.md. Preserve unrelated assertions and retained interfaces after evals. Use existing public-interface fixtures and focused assertions; do not redesign helpers or add a test matrix. Evals and implementation workers run fireweed context for this change before each step and fireweed verify for verification. Restricted auditors follow only the supplied audit playbook and inputs. Only the controller advances phases and commits.
+## Provenance
+- evals 2026-11-13T03:18:08.865022Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=130 failing=0 passing=130
