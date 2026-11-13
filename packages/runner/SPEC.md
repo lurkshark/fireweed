@@ -24,7 +24,8 @@ InvokeAgent MUST select agent.command for the worker role and audit.command for 
 InvokeAgent MUST run the selected command from Snapshot.Root.
 
 ### RUN-003
-InvokeAgent MUST expand {prompt}, {prompt_file} and {git_common_dir} once in command templates and wrapper argv. Commands MUST accept shell strings or argv, quoting shell substitutions and preserving argv values literally.
+InvokeAgent MUST accept shell strings or argv for selected commands and expand {prompt}, {prompt_file} and {git_common_dir} once in command templates and wrapper argv. For shell placeholders outside shell quotes it MUST shell-quote substituted values; argv substitutions MUST preserve literal values. Placeholders already inside shell quotes are outside this contract.
+
 
 ### RUN-004
 InvokeAgent MUST prepend the configured agent.wrap argv prefix for both worker and audit commands.
