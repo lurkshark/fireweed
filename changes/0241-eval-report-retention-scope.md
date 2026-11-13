@@ -4,6 +4,8 @@ already_satisfied:
 bases:
     FLOW-052: 2d9e57ca
 module: workflow
+phase: audit
+run: 20261113T024216-8a00b31e6c6414295a863990
 ---
 
 ## Motivation
@@ -32,3 +34,5 @@ Successful Done MUST retain evaluated modules' reports, including their eval-hoo
 
 This narrows the ambiguous reference to process output to output present in each evaluated module's checks.Report. Existing report-path, output and costs-name coexistence assertions remain authoritative; reuse them and add no boundary-output API or new logging infrastructure. No runtime change is intended.
 Owner authorized these five regeneration prerequisites and their necessary module-local changes. Stop after this queue; no regeneration or drill is authorized. Follow SYSTEM.md and the controller context. Workers must not read docs/rebuild/PROGRESS.md or ACCEPTANCE.md. Preserve unrelated assertions and retained interfaces after evals. Use existing public-interface fixtures and focused assertions; do not redesign helpers or add a test matrix. Evals and implementation workers run fireweed context for this change before each step and fireweed verify for verification. Restricted auditors follow only the supplied audit playbook and inputs. Only the controller advances phases and commits.
+## Provenance
+- evals 2026-11-13T02:50:39.843472Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=200 failing=0 passing=200

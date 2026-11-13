@@ -85,6 +85,7 @@ hooks:
 	write(t, root, ".fireweed/eval.sh", `#!/bin/sh
 printf 'fixture-hook-output\n'
 module="$1"
+printf 'fixture-hook-stderr for %s\n' "$module" >&2
 report="$2"
 if [ "$module" = alpha ]; then
   if [ -f packages/alpha/internal/ready ]; then result=''; exitcode=0
@@ -1348,6 +1349,9 @@ func Test_FLOW_005_FLOW_051_FLOW_052_FLOW_053_ContextAndProvenanceAndRetainedRep
 			if !strings.Contains(retained.Stdout, "fixture-hook-output") {
 				t.Errorf("retained report at %s lost fixture hook output: %q", path, retained.Stdout)
 			}
+			if want := "fixture-hook-stderr for " + module + "\n"; retained.Stderr != want {
+				t.Errorf("retained stderr at %s = %q, want %q", path, retained.Stderr, want)
+			}
 			for _, c := range report.Cases {
 				total++
 				switch c.Result {
@@ -1406,6 +1410,7 @@ The cost module MUST follow alpha.
 `, module))
 			write(t, root, ".fireweed/cost-module.sh", `#!/bin/sh
 printf 'cost-module-hook-output\n'
+printf 'cost-module-hook-stderr\n' >&2
 printf '<testsuite><testcase name="CST-001" time="0.5"/></testsuite>' > "$1"
 `)
 			commit(t, root, "add cost module fixture")
@@ -1433,6 +1438,9 @@ printf '<testsuite><testcase name="CST-001" time="0.5"/></testsuite>' > "$1"
 			if len(report.Cases) != 1 || !reflect.DeepEqual(report.Cases[0].IDs, []string{"CST-001"}) || report.Cases[0].Result != "pass" ||
 				!strings.Contains(report.Stdout, "cost-module-hook-output") {
 				t.Errorf("retained report at %s = %#v, want passing CST-001 and cost-module hook output", path, report)
+			}
+			if want := "cost-module-hook-stderr\n"; report.Stderr != want {
+				t.Errorf("retained stderr at %s = %q, want %q", path, report.Stderr, want)
 			}
 		})
 	}
