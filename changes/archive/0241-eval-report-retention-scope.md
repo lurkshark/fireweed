@@ -4,7 +4,7 @@ already_satisfied:
 bases:
     FLOW-052: 2d9e57ca
 module: workflow
-phase: impl
+phase: applied
 run: 20261113T024216-8a00b31e6c6414295a863990
 ---
 
@@ -37,6 +37,7 @@ Owner authorized these five regeneration prerequisites and their necessary modul
 ## Provenance
 - evals 2026-11-13T02:50:39.843472Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=200 failing=0 passing=200
 - audit 2026-11-13T02:51:01.078976Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6-astra -c model_reasoning_effort="medium" -s workspace-write {prompt} fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-13T03:06:31.059051Z agent=codex exec --ephemeral --ignore-user-config -m gpt-6.1-sol -c model_reasoning_effort="high" -s workspace-write {prompt} fireweed=0.1.0 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=703 failing=0 passing=703
 ## Audit
 
 No findings; checked FLOW-052
