@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -14,8 +15,21 @@ func appCause(t *testing.T, bin, root string, args []string, wantStatus int, cod
 	appDiagnostic(t, bin, root, args, wantStatus, code, cause, false)
 }
 
-func appDiagnostic(t *testing.T, bin, root string, args []string, wantStatus int, code, subject string, wantGuidance bool) {
+func appDiagnostic(t *testing.T, bin, root string, args []string, wantStatus int, code, subject string, wantGuidance bool, pendingSlugs ...string) {
 	t.Helper()
+	matches := func(message string) bool {
+		if !strings.Contains(message, subject) {
+			return false
+		}
+		for _, slug := range pendingSlugs {
+			// A queued basename includes the slug after a numeric prefix and hyphen.
+			pattern := `(?:^|[^a-z0-9-])` + regexp.QuoteMeta(slug) + `(?:$|[^a-z0-9-])`
+			if !regexp.MustCompile(pattern).MatchString(message) {
+				return false
+			}
+		}
+		return true
+	}
 	for _, jsonMode := range []bool{false, true} {
 		call := append([]string(nil), args...)
 		if jsonMode {
@@ -40,7 +54,7 @@ func appDiagnostic(t *testing.T, bin, root string, args []string, wantStatus int
 			}
 			found := false
 			for _, diagnostic := range diagnostics {
-				if diagnostic.Code == code && strings.Contains(diagnostic.Message, subject) {
+				if diagnostic.Code == code && matches(diagnostic.Message) {
 					found = true
 					if wantGuidance && !corrective(diagnostic.Message) {
 						t.Errorf("JSON %s diagnostic lacks corrective action: %q", code, diagnostic.Message)
@@ -48,12 +62,12 @@ func appDiagnostic(t *testing.T, bin, root string, args []string, wantStatus int
 				}
 			}
 			if !found {
-				t.Errorf("missing %s diagnostic with subject %q in %s", code, subject, stdout)
+				t.Errorf("missing %s diagnostic with subject %q and pending slugs %q in %s", code, subject, pendingSlugs, stdout)
 			}
 		} else {
 			output := stdout + stderr
-			if !strings.Contains(output, code+": ") || !strings.Contains(output, subject) {
-				t.Errorf("missing %s diagnostic with subject %q in plain output %q", code, subject, output)
+			if !strings.Contains(output, code+": ") || !matches(output) {
+				t.Errorf("missing %s diagnostic with subject %q and pending slugs %q in plain output %q", code, subject, pendingSlugs, output)
 			} else if strings.Contains(output, code+": "+code+":") {
 				t.Errorf("duplicate %s prefix in %q", code, output)
 			}
@@ -154,7 +168,6 @@ func Test_APP_038_LookupCauses(t *testing.T) {
 		edit        func(*testing.T, string)
 	}{
 		{"author-module", "unknown module", []string{"new-change", "unknown", "valid"}, 2, nil},
-		{"stamp-change", "not found", []string{"stamp", "absent"}, 1, nil},
 		{"show-module", "unknown module", []string{"show", "absent"}, 2, nil},
 		{"show-item", "unknown item", []string{"show", "alpha", "ALP-999"}, 2, nil},
 		{"show-ambiguous-item", "duplicate item ID", []string{"show", "alpha", "new:shared", "--projected"}, 2, func(t *testing.T, root string) {
@@ -162,7 +175,6 @@ func Test_APP_038_LookupCauses(t *testing.T) {
 			authoringChange(t, root, "0002-second.md", "Second need.\n", "### new:shared\nSecond MUST work.\n", "")
 		}},
 		{"coverage-module", "Unknown module", []string{"coverage", "missing"}, 2, nil},
-		{"coverage-change", "not found", []string{"coverage", "alpha", "--with-change", "missing"}, 2, nil},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			root := authoringFixture(t)
@@ -170,6 +182,24 @@ func Test_APP_038_LookupCauses(t *testing.T) {
 				tc.edit(t, root)
 			}
 			appCause(t, bin, root, tc.args, tc.status, "U02", tc.cause)
+		})
+	}
+
+	// PRJ-004 requires the rejected selector and the valid pending slugs.
+	root := authoringFixture(t)
+	const first, second = "queued-first", "queued-second"
+	authoringChange(t, root, "0001-"+first+".md", "First need.\n", "### new:first\nFirst MUST work.\n", "")
+	authoringChange(t, root, "0002-"+second+".md", "Second need.\n", "### new:second\nSecond MUST work.\n", "")
+	for _, tc := range []struct {
+		name, selector string
+		args           []string
+		status         int
+	}{
+		{"stamp-change", "absent-stamp-target", []string{"stamp"}, 1},
+		{"coverage-change", "absent-coverage-target", []string{"coverage", "alpha", "--with-change"}, 2},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			appDiagnostic(t, bin, root, append(tc.args, tc.selector), tc.status, "U02", tc.selector, false, first, second)
 		})
 	}
 }

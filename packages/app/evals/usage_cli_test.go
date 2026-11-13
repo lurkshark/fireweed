@@ -57,7 +57,7 @@ func cliUsagePolicy(t *testing.T, root, budget string) {
 	cliCommit(t, root, "fixture usage policy")
 }
 
-func cliStopEnvelope(t *testing.T, output, wait, budget string) (map[string]json.RawMessage, string) {
+func cliStopEnvelope(t *testing.T, output, completed, next, budget string) (map[string]json.RawMessage, string) {
 	t.Helper()
 	env := decodeEnvelope(t, output)
 	var data map[string]json.RawMessage
@@ -69,7 +69,7 @@ func cliStopEnvelope(t *testing.T, output, wait, budget string) (map[string]json
 	if err := json.Unmarshal(data["reason"], &reason); err != nil {
 		t.Errorf("clean stop reason=%s: %v", data["reason"], err)
 	}
-	cliStopReason(t, reason, wait, budget)
+	cliStopReason(t, reason, completed, next, budget)
 	var diagnostics []struct {
 		Code    string `json:"code"`
 		Message string `json:"message"`
@@ -86,12 +86,22 @@ func cliStopEnvelope(t *testing.T, output, wait, budget string) (map[string]json
 	return data, reason
 }
 
-func cliStopReason(t *testing.T, reason, wait, budget string) {
+func cliStopReason(t *testing.T, reason, completed, next, budget string) {
 	t.Helper()
-	lower := strings.ToLower(reason)
-	for _, marker := range []string{"completed", "next", "budget", wait, budget} {
-		if !strings.Contains(lower, strings.ToLower(marker)) {
-			t.Errorf("stop reason %q lacks %q", reason, marker)
+	for _, field := range []struct{ role, label, want string }{
+		{"completed wait", `(?:completed\s+wait|waited(?:\s+for)?)`, completed},
+		{"next wait", `next(?:\s+wait)?`, next},
+		{"budget", `budget`, budget},
+	} {
+		pattern := regexp.MustCompile(`(?i)\b` + field.label + `\b(?:\s*[:=]\s*|\s+)([+-]?[0-9][^\s,;\)\]]*)`)
+		matches := pattern.FindAllStringSubmatch(reason, -1)
+		if len(matches) == 0 {
+			t.Errorf("stop reason %q lacks a labeled %s of %s", reason, field.role, field.want)
+		}
+		for _, match := range matches {
+			if got := strings.TrimSuffix(match[1], "."); got != field.want {
+				t.Errorf("stop reason %q reports %s of %q; want %s", reason, field.role, got, field.want)
+			}
 		}
 	}
 }
@@ -128,7 +138,7 @@ func Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume(t *testing.T) 
 	if status != 3 || stderr != "" {
 		t.Errorf("clean next stop exit=%d stderr=%q stdout=%q", status, stderr, out)
 	}
-	data, _ := cliStopEnvelope(t, out, "5ms", "0s")
+	data, _ := cliStopEnvelope(t, out, "0s", "5ms", "0s")
 	if data != nil {
 		var got struct {
 			Change string `json:"change"`
@@ -227,7 +237,7 @@ func Test_APP_076_APP_077_NextPlainUsageStop(t *testing.T) {
 	if !strings.Contains(out, "held-quota-work") {
 		t.Errorf("plain stop lacks held change: %q", out)
 	}
-	cliStopReason(t, out, "5ms", "0s")
+	cliStopReason(t, out, "0s", "5ms", "0s")
 	cliHeldState(t, root, "held-quota-work", "ALP", head)
 }
 
@@ -241,7 +251,7 @@ func Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume(t *testing.T) 
 	if status != 3 || stderr != "" {
 		t.Errorf("run stop exit=%d stdout=%q stderr=%q", status, out, stderr)
 	}
-	data, _ := cliStopEnvelope(t, out, "5ms", "5ms")
+	data, _ := cliStopEnvelope(t, out, "5ms", "5ms", "5ms")
 	if data != nil {
 		for _, key := range []string{"applied", "empty", "limited"} {
 			if _, ok := data[key]; !ok {
@@ -324,7 +334,7 @@ func Test_APP_083_APP_084_RunPlainSharedUsageStop(t *testing.T) {
 	if !regexp.MustCompile(`(?i)resum|retry|run next|run run`).MatchString(out) {
 		t.Errorf("plain run lacks resume guidance: %q", out)
 	}
-	cliStopReason(t, out, "5ms", "5ms")
+	cliStopReason(t, out, "5ms", "5ms", "5ms")
 	if _, err := os.Stat(filepath.Join(f.root, "changes/archive/0001-alpha.md")); err != nil {
 		t.Errorf("alpha not applied: %v", err)
 	}

@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
 	"github.com/lurkshark/fireweed/packages/gitstore"
+	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
 
@@ -19,7 +21,7 @@ func Test_FLOW_019_FLOW_139_ApprovedSurvivesLiveEdits(t *testing.T) {
 		t.Fatal(err)
 	}
 	started := start(t, root)
-	want, err := json.Marshal(started.Snapshot)
+	want, err := snapshotJSON(started.Snapshot)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,7 +36,7 @@ func Test_FLOW_019_FLOW_139_ApprovedSurvivesLiveEdits(t *testing.T) {
 			t.Errorf("Approved with %s inputs = slug %q, path %q, root %q; want manual, %s, %s",
 				label, approved.Slug, approved.Path, approved.Snapshot.Root, pendingCommitChange, root)
 		}
-		got, err := json.Marshal(approved.Snapshot)
+		got, err := snapshotJSON(approved.Snapshot)
 		if err != nil || !bytes.Equal(got, want) {
 			t.Errorf("Approved with %s inputs differs from Start snapshot: got %s, want %s, error %v", label, got, want, err)
 		}
@@ -58,6 +60,23 @@ func Test_FLOW_019_FLOW_139_ApprovedSurvivesLiveEdits(t *testing.T) {
 		}
 	}
 	assertApproved("missing")
+}
+
+func snapshotJSON(snapshot project.Snapshot) ([]byte, error) {
+	// Empty resolved zone lists have the same meaning regardless of slice representation.
+	snapshot.Modules = slices.Clone(snapshot.Modules)
+	for i := range snapshot.Modules {
+		zones := &snapshot.Modules[i].Zones
+		for _, patterns := range []*[]string{
+			&zones.Protected, &zones.Evals, &zones.Interface,
+			&zones.AppendOnly, &zones.Preserve, &zones.Disposable,
+		} {
+			if len(*patterns) == 0 {
+				*patterns = nil
+			}
+		}
+	}
+	return json.Marshal(snapshot)
 }
 
 func Test_FLOW_140_ApprovedReportsNoOwnedClaim(t *testing.T) {

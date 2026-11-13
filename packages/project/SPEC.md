@@ -94,7 +94,7 @@ NewChange MUST reject an unknown target module with an error beginning
 `unknown module ` and naming the rejected module.
 
 ### PRJ-026
-NewChange MUST reject an empty slug or a slug containing characters other than lowercase letters, digits and hyphens.
+NewChange MUST reject an empty slug or a slug containing characters other than lowercase letters, digits and hyphens with an error whose contracts.ErrorCode is U01.
 
 ### PRJ-027
 Queue MUST return pending NNNN-slug.md changes in numeric-then-slug order, allowing tied numbers and excluding archives.

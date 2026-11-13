@@ -62,8 +62,8 @@ func retryDetailSection(t *testing.T, f nextFixture) (string, string) {
 	t.Helper()
 	first := nextRead(t, f.logDir, "worker-impl-1.prompt")
 	retry := nextRead(t, f.logDir, "worker-impl-2.prompt")
-	if !strings.HasPrefix(retry, first) {
-		t.Fatal("retry did not retain the original worker context")
+	if first == "" || !strings.HasPrefix(retry, first) {
+		t.Fatal("impl verification retry must start with the first impl worker's full prompt")
 	}
 	const marker = retryDetailHookMarker + "\n"
 	i := strings.LastIndex(retry, marker)
@@ -73,7 +73,7 @@ func retryDetailSection(t *testing.T, f nextFixture) (string, string) {
 	return retry[len(first) : i+len(marker)], retry[i+len(marker):]
 }
 
-func Test_RUN_043_RetryIncludesJUnitOnlyCasesFromOwnAndDependentModules(t *testing.T) {
+func Test_RUN_022_RUN_043_RetryRetainsContextAndIncludesJUnitOnlyFailures(t *testing.T) {
 	alpha := `<testsuite>
 <testcase name="ALP-001_pass_only" classname="pass.class"/>
 <testcase name="ALP-002_first" classname="alpha.first"><failure message="RUN043_ALPHA_FIRST_ASSERTION"/></testcase>

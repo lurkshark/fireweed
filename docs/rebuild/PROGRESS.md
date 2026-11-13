@@ -2,6 +2,19 @@
 
 ## Current state (2026-11-13)
 
+Fireweed applied and archived changes 0248–0255 on
+`dev/queued-regeneration-followups` at product revision `b220afc`. The queue
+is empty and all claims are clear. All required phase checks passed, including
+separate audits for 0248–0254. Change 0255 removed the drill cleanup permission
+precheck and passed 539 runner and app cases, including the repaired RUN-062
+fixture. No standalone drill ran.
+
+Controller `check` passed with C18 repeated-sentence warnings. Phase
+verification reported app B02 warnings for APP-103 and APP-104 and a B03
+warning for the app eval-to-disposable line ratio (8,690/2,105).
+
+## Core module regeneration
+
 The four owner-approved regenerations are complete on
 `dev/regenerate-core-modules` at product revision `466a0ba`, based on clean
 main `a74c362` containing prerequisite PR #2 and progressive-help PR #1.
@@ -20,8 +33,7 @@ regenerations followed the normal implementation-only lifecycle with audit
 configuration and all enforcement limits unchanged. Specs, retained interfaces,
 evals, unrelated modules and pre-existing archives are unchanged, including
 APP-156–APP-158 help and APP-159/APP-160 prerequisite contracts. No drill ran.
-The queue and claims are clear; four applied changes await base-branch review.
-The controller stayed pinned to the source revision below throughout the queue.
+The controller stayed pinned to `a74c362` throughout those regenerations.
 
 `make check build` passed all race-enabled Go tests, vet and the product build.
 Controller static and history checks passed over `a74c362..466a0ba`, and full
@@ -37,11 +49,12 @@ owner-deferred gaps remain below; no new drill evidence is claimed.
 
 ## Controller
 
-`.fireweed/bin/fireweed` was rebuilt with `-trimpath` on 2026-11-12 from a
-clean checkout of main's current revision, with an empty queue and no active
-claims. Go build metadata confirms the revision and a clean tree.
+`.fireweed/bin/fireweed` was rebuilt with `-trimpath` on 2026-11-13 from a
+clean checkout of main's current revision before processing changes 0248–0255.
+No run or claim was active. Go build metadata confirms the revision and a clean
+tree.
 
-Controller source: `a74c362ff2af12aa5c9bdd2fb9389e162be18a78`
+Controller source: `40b33c70f3de176eda058a96b06d2be1437da972`
 
 On a fresh macOS arm64 clone of an earlier controller source
 (`e1e1869131833778f1f8f1a23cf62b0d3b3869b3`), with
@@ -147,9 +160,10 @@ The owner deferred these gaps or addressed them through the linked changes.
 
 ## Next step
 
-Owner review of the four-regeneration PR against main. Further drills, fixes
-and the remaining [full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required)
-require owner direction; this task does not authorize merging or a release.
+The eight applied follow-ups are ready for base-branch review. Further drills,
+fixes and the remaining
+[full-completion gates](ACCEPTANCE.md#full-completion-gates-still-required)
+require owner direction.
 
 ## Suggested follow-ups
 
