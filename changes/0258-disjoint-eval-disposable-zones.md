@@ -1,5 +1,7 @@
 ---
 module: project
+phase: audit
+run: 20261113T230327-76aae603f900d8b331584964
 ---
 
 ## Motivation
@@ -15,10 +17,10 @@ No public signature or type changes.
 
 ## Added
 
-### new:disjoint-eval-disposable-globs
+### PRJ-075
 Check MUST reject with non-warning C12 when any module's resolved evals and disposable globs match a common possible module-relative file path, whether or not that file exists. The diagnostic MUST identify the module and conflicting globs.
 
-### new:projected-zone-overlap
+### PRJ-076
 Check MUST apply the eval/disposable overlap rule to the current graph and each preceding-through-current queued projection, including inherited defaults, explicit empty lists and set edits.
 
 ## Modified
@@ -44,3 +46,15 @@ Drafted at the owner's request after the R01–R29 traceability review.
 No lifecycle execution, agent invocation, drill or release is authorized by
 this drafting request. Workers must obtain context before their step and use
 fireweed verify; only the controller may advance or commit lifecycle work.
+
+Evals recorded fail-first for PRJ-075 and PRJ-076. The targeted Go run found
+missing C12 diagnostics for identical and intersecting globs, an inherited
+current overlap, and a queued overlap both before and after a later edit
+cleared it. The disjoint and explicit-empty cases passed. Controller
+`fireweed verify disjoint-eval-disposable-zones` passed in the evals phase.
+Both checks can be implemented in `packages/project/internal/queue/`, where
+`Check` reads the current modules and applies each queued change.
+## Provenance
+
+- evals 2026-11-13T23:07:21.603372Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=168 failing=9 passing=159
+
