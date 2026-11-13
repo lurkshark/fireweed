@@ -100,9 +100,7 @@ for a phase after verification failures, defaulting to two when unset. Each
 phase MUST have its own attempt allowance.
 
 ### RUN-022
-When phase verification fails and an attempt remains, Next MUST retain the
-earlier work and retry that phase. The retry prompt MUST include the last
-verification output.
+When phase verification fails and an attempt remains, Next MUST retain the earlier work and retry that phase. The retry prompt MUST include the last verification output. Within one Next invocation and one phase attempt sequence, worker verification-retry prompts MUST retain that sequence's initial full workflow context as their prefix.
 
 ### RUN-023
 For exhausted phase verification with the worktree's approved claim and an
