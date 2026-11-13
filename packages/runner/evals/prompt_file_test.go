@@ -15,7 +15,7 @@ import (
 
 func promptFileTempDir(t *testing.T) string {
 	t.Helper()
-	root := filepath.Join(t.TempDir(), "temporary files with spaces")
+	root := filepath.Join(t.TempDir(), "prompt files' {git_common_dir}")
 	if err := os.Mkdir(root, 0755); err != nil {
 		t.Fatal(err)
 	}
@@ -49,12 +49,14 @@ func Test_RUN_003_PromptFileExpansionInShellAndArgvPreservesValuesOnce(t *testin
 		t.Fatal(err)
 	}
 	observations := t.TempDir()
-	script := agentScript(t, snap.Root, "prompt-file-args.sh", `printf '%s' "$2" > "$1/prompt"
+	script := agentScript(t, snap.Root, "prompt-file-args.sh", `test "$#" -eq 4 || exit 12
+printf '%s' "$2" > "$1/prompt"
 printf '%s' "$3" > "$1/path"
 printf '%s' "$4" > "$1/common"
 cat "$3" > "$1/content" || exit 12
 printf 'agent-ok'`)
 	prompt := "a'b ; $(printf injected) {git_common_dir} {prompt_file}\nsecond line Ω"
+	// Leave the shell placeholders unquoted so InvokeAgent supplies the quoting.
 	for _, tc := range []struct {
 		name, role string
 		command    any

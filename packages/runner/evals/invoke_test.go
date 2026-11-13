@@ -20,7 +20,7 @@ func agentFixture(t *testing.T) project.Snapshot {
 	if err != nil {
 		t.Fatal(err)
 	}
-	root := filepath.Join(parent, "repo with spaces")
+	root := filepath.Join(parent, "fixture's repo")
 	for _, args := range [][]string{
 		{"init", "-q", root},
 		{"-C", root, "config", "user.name", "Fixture"},
