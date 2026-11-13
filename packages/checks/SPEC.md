@@ -88,7 +88,8 @@ During evals, Zones MUST reject edits in the target module's append_only zone.
 Zones MUST check both the source and destination of a rename against phase permissions.
 
 ### CHK-025
-RequireFailFirst MUST find a failed or errored referencing case for every requested enforced ID except already_satisfied; passing, skipped, empty or unrelated failures do not qualify. Missing genuine fail-first evidence MUST return a P2-01-prefixed error.
+RequireFailFirst MUST find a failed or errored referencing case for every requested enforced ID except already_satisfied; passing, skipped, empty or unrelated failures do not qualify. Missing genuine fail-first evidence MUST return an error whose contracts.ErrorCode is P2-01 and whose subject identifies the uncovered spec ID.
+
 
 ### CHK-026
 RequirePass MUST reject failed or errored cases referencing any non-quarantined spec with an error whose contracts ErrorCode is E01.
