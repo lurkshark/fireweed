@@ -597,10 +597,29 @@ migrate --json MUST emit schema 1 with string data equal to the plain confirmati
 migrate MUST return exit 2 for usage, project discovery or loading failures and unsupported format versions, using U01 for usage, C01 for unsupported formats and the existing loading cause code otherwise. Static validation errors MUST return exit 1 with their existing cause codes. All failures MUST include corrective guidance.
 
 ### APP-156
+The CLI MUST return assets.Help for help, --help and -h, and assets.CommandHelp
+for help <command>, <command> help, <command> --help and <command> -h, with
+exit 0 and empty stderr for supported commands. These forms MUST work outside
+a project and with an invalid fireweed.yaml, without requiring the command's
+ordinary arguments or options.
+
+### APP-157
+Every successful help form MUST accept --json and emit the schema-1 envelope
+with string data identical to the corresponding plain output, an empty
+diagnostics array and empty stderr.
+
+### APP-158
+An unknown command requested through a help form MUST return exit 2 with U02,
+the rejected name and guidance to fireweed help. Extra arguments or unsupported
+options in a help request MUST return exit 2 with corrective U01 guidance
+showing a valid help form. JSON failures MUST use the existing schema-1 null
+data and diagnostics envelope with empty stderr.
+
+### APP-159
 new-module MUST accept names matching `[a-z][a-z0-9]*(?:-[a-z0-9]+)*` and prefixes matching `[A-Z][A-Z0-9]*`, with each match covering the entire value. Values outside those ASCII grammars MUST produce corrective U01 and exit 2 before writing module files.
 
 
-### APP-157
+### APP-160
 coverage --with-change selecting the held change MUST accept its canonical slug, queued basename or repository-relative path and work despite malformed or missing live configuration, module specs or change documents. Default coverage and coverage selecting another change MUST report the existing cause when their required live spec text or projection cannot be read, without running an eval hook.
 
 

@@ -14,30 +14,11 @@ func Test_AST_001_Version(t *testing.T) {
 	}
 }
 
-func Test_AST_008_Help(t *testing.T) {
-	help := assets.Help()
-	if !regexp.MustCompile(`(?i)\bfireweed\b`).MatchString(help) {
-		t.Errorf("Help() must identify fireweed; got %q", help)
-	}
-	// Every command in the design's CLI table, plus the explicitly required
-	// version command, must be discoverable by its complete command name.
-	commands := []string{
-		"init", "doctor", "new-module", "new-change", "stamp", "list", "status",
-		"show", "modules", "context", "explain", "playbook", "check", "coverage",
-		"check-commits", "ci", "pr-body", "start", "verify", "done", "next", "run",
-		"release", "commits", "abandon", "drill", "gc", "migrate", "agents-md",
-		"version",
-	}
-	for _, command := range commands {
-		pattern := `(^|[^[:alnum:]_-])` + regexp.QuoteMeta(command) + `($|[^[:alnum:]_-])`
-		if !regexp.MustCompile(pattern).MatchString(help) {
-			t.Errorf("Help() omits command %q", command)
-		}
-	}
-}
-
 func Test_AST_048_GCHelp(t *testing.T) {
-	help := assets.Help()
+	help, err := assets.CommandHelp("gc")
+	if err != nil {
+		t.Fatalf("CommandHelp(gc): %v", err)
+	}
 	for _, check := range []struct{ pattern, description string }{
 		{`(?i)\bgc\b[^.\n]*prunes?[^.\n]*stale claims`, "gc prunes stale claims"},
 		{`(?i)\bgc\b[^.\n]*prunes?[^.\n]*attempt refs? for archived changes`, "gc prunes attempt refs for archived changes"},

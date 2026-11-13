@@ -179,8 +179,8 @@ func Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors(t *testing.T) 
 	}{
 		{"missing-name", "U01", "packages/new", []string{"new-module", "--prefix", "NEW"}, nil},
 		{"missing-prefix", "U01", "packages/new", []string{"new-module", "new"}, nil},
-		{"APP_156_invalid-name", "U01", "packages/bad", []string{"new-module", "bad/name", "--prefix", "NEW"}, nil},
-		{"APP_156_invalid-prefix", "U01", "packages/new", []string{"new-module", "new", "--prefix", "bad-prefix"}, nil},
+		{"APP_159_invalid-name", "U01", "packages/bad", []string{"new-module", "bad/name", "--prefix", "NEW"}, nil},
+		{"APP_159_invalid-prefix", "U01", "packages/new", []string{"new-module", "new", "--prefix", "bad-prefix"}, nil},
 		{"repeated-prefix", "U01", "packages/new", []string{"new-module", "new", "--prefix", "NEW", "--prefix", "AGAIN"}, nil},
 		{"extra-argument", "U01", "packages/new", []string{"new-module", "new", "--prefix", "NEW", "extra"}, nil},
 		{"unknown-option", "U01", "packages/new", []string{"new-module", "new", "--prefix", "NEW", "--bogus"}, nil},
@@ -215,7 +215,7 @@ func Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors(t *testing.T) 
 	}
 }
 
-func Test_APP_156_NewModuleRejectsInvalidIdentities(t *testing.T) {
+func Test_APP_159_NewModuleRejectsInvalidIdentities(t *testing.T) {
 	bin := buildAppBinary(t)
 	for _, tc := range []struct{ label, name, prefix string }{
 		{"uppercase-name", "newCore", "NEW"},
@@ -236,7 +236,7 @@ func Test_APP_156_NewModuleRejectsInvalidIdentities(t *testing.T) {
 	}
 }
 
-func Test_APP_101_APP_104_APP_156_NewModuleEmptyGoModule(t *testing.T) {
+func Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := appProjectFixture(t)
 	newModuleTemplates(t, root)

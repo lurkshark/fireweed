@@ -9,8 +9,22 @@ errors and the prerequisite runner eval correction; module identity grammar;
 independent approved-snapshot access and CLI use; report-retention scope;
 and consistent shell/argv placeholder contracts in checks and runner.
 
-Every change passed a separate restricted audit with no findings and full
-implementation verification. Archived changes retain the phase Provenance.
+Main's progressive help and audit timeout fixture fixes from PR #1 are merged
+into this branch. The help overview, command pages, help aliases and their
+validation are preserved, along with the audited RUN-048/RUN-049 fixture fix.
+
+The branches independently allocated APP-156 and APP-157. Main retains
+APP-156–APP-158 for help; this branch's module grammar and held coverage items
+are now APP-159 and APP-160, with matching eval labels. Their contract text is
+unchanged. The owner authorized a one-time correction of these IDs in the two
+affected archives, including their audit references. Run IDs and Provenance
+remain unchanged. H04 is expected for these two archive edits in the merge
+commit; no history rule or enforcement setting is disabled. The merged app
+passed the controller coverage check for all 369 cases; static check passed
+with the same three C18 warnings.
+
+Every prerequisite change passed a separate restricted audit with no findings
+and full implementation verification. Archived changes retain the phase Provenance.
 The queue is empty, no claim is active, and eight applied changes await base
 branch review. No regeneration or drill ran for this prerequisite queue.
 
@@ -131,7 +145,7 @@ The owner deferred these gaps or addressed them through the linked changes.
   codes and [0214](../../changes/archive/0214-app-reads-error-codes.md) reads them); Doctor probe names in JSON (APP-067;
   [0229](../../changes/archive/0229-doctor-probe-names.md),
   [0231](../../changes/archive/0231-doctor-json-probe-names.md)); the
-  module name and prefix grammar (APP-103, APP-156;
+  module name and prefix grammar (APP-103, APP-159;
   [0238](../../changes/archive/0238-module-identity-grammar.md)).
 
 ## Next step

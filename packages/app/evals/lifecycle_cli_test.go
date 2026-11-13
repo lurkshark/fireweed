@@ -421,7 +421,7 @@ func Test_APP_012_APP_034_APP_035_APP_036_CoverageCurrentProjectionAndErrors(t *
 	lifecycleCommandFailure(t, status, 2, out, errOut, true)
 }
 
-func Test_APP_012_APP_157_CoverageUsesApprovedHooksWithSelectedSpecs(t *testing.T) {
+func Test_APP_012_APP_160_CoverageUsesApprovedHooksWithSelectedSpecs(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := lifecycleCLIProject(t, bin, false)
 	appPut(t, root, ".fireweed/eval.sh", `#!/bin/sh

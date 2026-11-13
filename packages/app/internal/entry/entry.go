@@ -27,6 +27,9 @@ type envelope struct {
 }
 
 func Run(args []string, out, errOut io.Writer) int {
+	if status, handled := runHelp(args, out, errOut); handled {
+		return status
+	}
 	if contains(args, "--stale") || contains(args, "--fix") {
 		remaining := make([]string, 0, len(args))
 		staleCount, fixCount := 0, 0
@@ -215,11 +218,6 @@ func Run(args []string, out, errOut io.Writer) int {
 	var body string
 	var err error
 	switch command {
-	case "help":
-		if count != 0 {
-			return fail("U01", "help takes no arguments. Use help alone.")
-		}
-		body = assets.Help()
 	case "version":
 		if count != 0 {
 			return fail("U01", "version takes no arguments. Use version alone.")
@@ -456,6 +454,53 @@ func Run(args []string, out, errOut io.Writer) int {
 		_, _ = io.WriteString(out, body)
 	}
 	return 0
+}
+
+func runHelp(args []string, out, errOut io.Writer) (int, bool) {
+	var tokens [2]string
+	count, jsonCount := 0, 0
+	helpFlag := false
+	for _, arg := range args {
+		switch arg {
+		case "--json":
+			jsonCount++
+			continue
+		case "--help", "-h":
+			helpFlag = true
+		}
+		if count < len(tokens) {
+			tokens[count] = arg
+		}
+		count++
+	}
+	first, second := tokens[0], tokens[1]
+	startsWithCommand := !strings.HasPrefix(first, "-")
+	// The word help can also be an ordinary positional value, as in show help ID.
+	helpWord := count == 2 && startsWithCommand && second == "help"
+	if first != "help" && !helpFlag && !helpWord {
+		return 0, false
+	}
+	jsonMode := jsonCount != 0
+	var command string
+	switch {
+	case jsonCount > 1:
+		return cliFailure(2, jsonMode, out, errOut, "U01", "Use fireweed help or fireweed help <command> with at most one --json option."), true
+	case count == 1:
+		body := assets.Help()
+		return cliResponse(0, jsonMode, out, errOut, body, body, nil), true
+	case count == 2 && startsWithCommand && (helpWord || second == "--help" || second == "-h"):
+		command = first
+	case count == 2 && first == "help" && !strings.HasPrefix(second, "-"):
+		command = second
+	default:
+		message := fmt.Sprintf("Invalid help arguments %q. Use fireweed help or fireweed help <command>, optionally with --json.", args)
+		return cliFailure(2, jsonMode, out, errOut, "U01", message), true
+	}
+	body, err := assets.CommandHelp(command)
+	if err != nil {
+		return cliFailure(2, jsonMode, out, errOut, "U02", fmt.Sprintf("%v. Run fireweed help to see available commands.", err)), true
+	}
+	return cliResponse(0, jsonMode, out, errOut, body, body, nil), true
 }
 
 func lookupKind(command string) string {
