@@ -1,5 +1,8 @@
 ---
+blocked: APP-165 already passes before implementation and needs an author decision for fail-first.
 module: app
+phase: evals
+run: 20261114T045429-ac71eb4f31d11ddab1f3c00e
 ---
 
 ## Motivation
@@ -17,13 +20,13 @@ No public signature or type changes.
 
 ## Added
 
-### new:project-command-compatibility
+### APP-163
 For commands using live project configuration, the CLI MUST require project.CheckCompatibility to accept that configuration before command effects or hook/agent execution. A compatibility rejection MUST return exit 2 with C01 and corrective guidance.
 
-### new:approved-command-compatibility
+### APP-164
 While a change is owned, modules, coverage, next and run MUST check compatibility against the held approved configuration used by their operations. Compatibility admission MUST NOT add live-config parsing to their approved-snapshot paths or replace live configuration required by other commands with a held snapshot. An approved-configuration rejection MUST return exit 2 with C01 and corrective guidance before command effects or hook/agent execution.
 
-### new:compatibility-command-exceptions
+### APP-165
 Help forms, version, explain and playbook MUST retain their specified standalone behavior. init and migrate MUST retain their setup and format-validation preconditions. pr-body MUST preserve APP-127's endpoint authority without compatibility admission against live configuration or the recorded endpoint, including when live configuration is malformed.
 
 ## Modified
@@ -59,3 +62,8 @@ Drafted at the owner's request after the R01–R29 traceability review.
 No lifecycle execution, agent invocation, drill or release is authorized by
 this drafting request. Workers must obtain context before their step and use
 fireweed verify; only the controller may advance or commit lifecycle work.
+## Questions
+
+Can the author mark APP-165 `already_satisfied` while retaining its passing
+regression evals? The current implementation already meets this preservation
+requirement, and `already_satisfied` is author-owned metadata.
