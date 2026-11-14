@@ -263,6 +263,12 @@ Check MUST return a C18 warning naming the items when the same sentence, compare
 ### PRJ-074
 Check MUST return a C19 warning naming the module when a module's Decisions section has more than max_decision_words words.
 
+### PRJ-075
+Check MUST reject with non-warning C12 when any module's resolved evals and disposable globs match a common possible module-relative file path, whether or not that file exists. The diagnostic MUST identify the module and conflicting globs.
+
+### PRJ-076
+Check MUST apply the eval/disposable overlap rule to the current graph and each preceding-through-current queued projection, including inherited defaults, explicit empty lists and set edits.
+
 ## Decisions
 
 [0126-spec-history-query] History reads the project's current archive files, as the archive-backed show

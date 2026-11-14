@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path"
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/lurkshark/fireweed/packages/contracts"
@@ -23,6 +24,9 @@ func Check(root string) []model.Diagnostic {
 	if err != nil {
 		check.report(err)
 		return check.diagnostics
+	}
+	for _, module := range snapshot.Modules {
+		check.zoneOverlap(path.Join(module.Dir, "SPEC.md"), module)
 	}
 	p, err := newProjection(snapshot)
 	if err != nil {
@@ -54,12 +58,19 @@ func Check(root string) []model.Diagnostic {
 	}
 	for _, change := range changes {
 		check.validateChange(p, change)
+		index := p.modules[change.Module]
+		previous := p.snapshot.Modules[index].Zones
 		if err := p.apply(change); err != nil {
 			// Base validation already reported each missing preceding item.
 			if code, _, _ := contracts.ErrorCode(err); code != "C08" {
 				check.report(err)
 			}
 			return check.diagnostics
+		}
+		// Only the changed module can introduce an overlap in this projection.
+		module := p.snapshot.Modules[index]
+		if !slices.Equal(previous.Evals, module.Zones.Evals) || !slices.Equal(previous.Disposable, module.Zones.Disposable) {
+			check.zoneOverlap(change.Path, module)
 		}
 	}
 	check.repeatedSentences(p.items)

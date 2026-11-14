@@ -1,6 +1,6 @@
 ---
 module: project
-phase: impl
+phase: applied
 run: 20261113T230327-76aae603f900d8b331584964
 ---
 
@@ -54,6 +54,19 @@ cleared it. The disjoint and explicit-empty cases passed. Controller
 `fireweed verify disjoint-eval-disposable-zones` passed in the evals phase.
 Both checks can be implemented in `packages/project/internal/queue/`, where
 `Check` reads the current modules and applies each queued change.
+
+PRJ-075 and PRJ-076 pass, as does `go test ./packages/project/...`. Full
+`fireweed verify disjoint-eval-disposable-zones` passed the project, app,
+checks and runner evals, then failed with E01 for FLOW-098. Its fixture
+adds `internal/overlap.txt` to evals while inheriting `internal/**` as
+disposable. The fixture's `Check` validation rejects that pair with C12
+before the cost assertions. A targeted FLOW-098 run reproduced the failure.
+
+Audited change 0257 moved the extra eval file and its queued glob outside
+`internal/**`, retaining the cost assertions. Targeted runs of PRJ-075,
+PRJ-076 and FLOW-098 passed with the corrected fixture. Full controller
+`fireweed verify disjoint-eval-disposable-zones` passed in the impl phase.
+
 ## Audit
 
 No findings; checked PRJ-075, PRJ-076
@@ -62,11 +75,5 @@ No findings; checked PRJ-075, PRJ-076
 
 - evals 2026-11-13T23:07:21.603372Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=168 failing=9 passing=159
 - audit 2026-11-13T23:07:38.255016Z agent=codex fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
-
-## Questions
-
-Can the owner authorize a workflow eval correction that moves the extra eval
-file and its queued glob outside `internal/**`? This would retain the check
-that the held projection contributes the extra eval line, the exclusions for
-protected and preserved files, and all expected cost totals.
+- impl 2026-11-14T00:40:17.950885Z agent=codex fireweed=0.1.0 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=1043 failing=0 passing=1043
 
