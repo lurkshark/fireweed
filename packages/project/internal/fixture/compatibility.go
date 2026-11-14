@@ -10,6 +10,13 @@ import (
 )
 
 func CheckCompatibility(config map[string]any) error {
+	const supportedFormat = 1
+	if raw, present := config["version"]; present {
+		if format, ok := raw.(int); !ok || format != supportedFormat {
+			return source.FileError("C01", configPath, fmt.Errorf("unsupported project format version %#v (%T). Supported format is %d", raw, raw, supportedFormat))
+		}
+	}
+
 	value, present := config["fireweed"]
 	if !present {
 		return nil

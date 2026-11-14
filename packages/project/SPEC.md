@@ -293,6 +293,9 @@ CheckCompatibility MUST return a C01 CodedError when a present fireweed pin is m
 ### PRJ-084
 Load MUST apply CheckCompatibility to the live configuration before returning a Snapshot, and Check MUST expose a compatibility failure as non-warning C01 for fireweed.yaml.
 
+### PRJ-085
+CheckCompatibility MUST accept format version 1 and an omitted version as the initial format, and MUST reject any other present version value with a C01 CodedError identifying the unsupported value and supported format 1. Format acceptance MUST be independent of binary-range acceptance.
+
 ## Decisions
 
 [0126-spec-history-query] History reads the project's current archive files, as the archive-backed show
