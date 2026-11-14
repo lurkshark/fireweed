@@ -269,6 +269,9 @@ Check MUST reject with non-warning C12 when any module's resolved evals and disp
 ### PRJ-076
 Check MUST apply the eval/disposable overlap rule to the current graph and each preceding-through-current queued projection, including inherited defaults, explicit empty lists and set edits.
 
+### PRJ-077
+Check MUST reject a module SPEC.md with zero or more than one level-two Specs section using a non-warning C03 diagnostic naming that file. Heading recognition MUST follow CON-002's fenced-code and ATX-heading rules. A single empty Specs section MUST remain valid.
+
 ## Decisions
 
 [0126-spec-history-query] History reads the project's current archive files, as the archive-backed show

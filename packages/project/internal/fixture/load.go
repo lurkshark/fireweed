@@ -23,10 +23,18 @@ type projectSource struct {
 }
 
 func Load(root string) (model.Snapshot, error) {
+	return loadWorking(root, false)
+}
+
+func LoadForCheck(root string) (model.Snapshot, error) {
+	return loadWorking(root, true)
+}
+
+func loadWorking(root string, checkSpecsSection bool) (model.Snapshot, error) {
 	return load(root, projectSource{
 		read: func(file string) ([]byte, error) { return os.ReadFile(source.Path(root, file)) },
 		dirs: func(patterns []string) ([]string, error) { return workingDirs(root, patterns) },
-	})
+	}, checkSpecsSection)
 }
 
 func LoadAt(root, revision string) (model.Snapshot, error) {
@@ -63,10 +71,10 @@ func LoadAt(root, revision string) (model.Snapshot, error) {
 			}
 			return dirs, nil
 		},
-	})
+	}, false)
 }
 
-func load(root string, files projectSource) (model.Snapshot, error) {
+func load(root string, files projectSource, checkSpecsSection bool) (model.Snapshot, error) {
 	const configPath = "fireweed.yaml"
 	data, err := files.read(configPath)
 	if err != nil {
@@ -92,6 +100,9 @@ func load(root string, files projectSource) (model.Snapshot, error) {
 		if err != nil {
 			return model.Snapshot{}, source.DocumentError(file, err)
 		}
+		if checkSpecsSection && !hasSingleSpecsSection(doc.Body) {
+			return model.Snapshot{}, source.FileError("C03", file, errors.New("expected exactly one level-two Specs section"))
+		}
 		if _, err := source.Items(doc, "Specs"); err != nil {
 			return model.Snapshot{}, source.DocumentError(file, err)
 		}
@@ -102,6 +113,19 @@ func load(root string, files projectSource) (model.Snapshot, error) {
 		snapshot.Modules = append(snapshot.Modules, module)
 	}
 	return snapshot, nil
+}
+
+func hasSingleSpecsSection(markdown string) bool {
+	const name = "Specs"
+	if _, found := contracts.Section(markdown, name); !found {
+		return false
+	}
+	// Mark the first section's body to find where the next heading starts.
+	// Use a marker absent from the input so both lookups use the same grammar.
+	marker := strings.Repeat("\x00", strings.Count(markdown, "\x00")+1)
+	_, remaining, _ := strings.Cut(contracts.ReplaceSection(markdown, name, marker), marker)
+	_, duplicate := contracts.Section(remaining, name)
+	return !duplicate
 }
 
 func decodeConfig(data []byte) (map[string]any, []string, contracts.Zones, error) {

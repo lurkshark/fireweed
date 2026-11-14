@@ -20,7 +20,7 @@ type staticCheck struct {
 
 func Check(root string) []model.Diagnostic {
 	check := staticCheck{}
-	snapshot, err := fixture.Load(root)
+	snapshot, err := fixture.LoadForCheck(root)
 	if err != nil {
 		check.report(err)
 		return check.diagnostics
