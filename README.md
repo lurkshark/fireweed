@@ -63,6 +63,12 @@ Follow the printed recipe to finish setup, describe the project in `SYSTEM.md`,
 and commit the setup files. Run `fireweed doctor` to check the project’s hooks
 and configured agent commands.
 
+## Upgrade to v0.2.0
+
+When you switch a project to Fireweed v0.2.0, update any 0.1-series pin in
+`fireweed.yaml` to `fireweed: '>=0.2, <0.3'`. New projects use that range
+automatically. The project file format remains version 1.
+
 ## Apply a change
 
 ```sh

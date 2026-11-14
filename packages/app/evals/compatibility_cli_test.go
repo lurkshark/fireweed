@@ -16,7 +16,7 @@ import (
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
 
-const fixtureBinaryPin = ">=0.1, <0.2"
+var fixtureBinaryPin = "=" + assets.Version()
 
 func incompatiblePin() string { return ">" + assets.Version() }
 
@@ -181,7 +181,8 @@ func recordIncompatibleClaim(t *testing.T, root string) {
 	if strings.Count(recorded, original) != 1 {
 		t.Fatal("fixture claim must contain exactly one binary pin")
 	}
-	recorded = strings.Replace(recorded, original, escape(incompatiblePin()), 1)
+	// The replacement starts with a YAML block scalar indicator, so quote it.
+	recorded = strings.Replace(recorded, original, escape("'"+incompatiblePin()+"'"), 1)
 	updated, err := gitstore.WriteBlob(root, []byte(recorded))
 	if err != nil {
 		t.Fatal(err)

@@ -2,9 +2,11 @@ package content
 
 import "fmt"
 
-func Version() string { return "0.1.0" }
+const version = "0.2.0"
 
-const help = `fireweed 0.1.0
+func Version() string { return version }
+
+const help = `fireweed ` + version + `
 
 Setup         init, doctor
 Authoring     new-module, new-change, stamp

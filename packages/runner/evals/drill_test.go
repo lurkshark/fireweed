@@ -14,6 +14,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/lurkshark/fireweed/packages/assets"
 	"github.com/lurkshark/fireweed/packages/runner"
 )
 
@@ -189,7 +190,7 @@ exit 1
 	nextWrite(t, root, "SYSTEM.md", "# Fixture guidance\nSYSTEM_RETAINED\n")
 	nextWrite(t, root, "AGENTS.md", "AGENT_INSTRUCTION_RETAINED\n")
 	nextWrite(t, root, "go.mod", "module example.invalid/drill-fixture\n\ngo 1.22\n")
-	nextWrite(t, root, "fireweed.yaml", fmt.Sprintf(`fireweed: ">=0.1, <0.2"
+	nextWrite(t, root, "fireweed.yaml", fmt.Sprintf(`fireweed: %q
 version: 1
 base: main
 modules: ["packages/*"]
@@ -211,7 +212,7 @@ limit_patterns: [RATE LIMIT]
 limit_wait: 2ms
 limit_budget: 4ms
 verify_dependents: false
-`, observations, observations, agent, observations, wrapper, observations))
+`, "="+assets.Version(), observations, observations, agent, observations, wrapper, observations))
 	for _, module := range []struct{ name, prefix, deps string }{
 		{"foundation", "FOU", "[]"}, {"core", "COR", "[foundation]"}, {"alpha", "ALP", "[core]"},
 		{"aardvark", "AAR", "[alpha]"}, {"zeta", "ZET", "[aardvark]"},

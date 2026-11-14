@@ -57,7 +57,7 @@ fi
 `)
 	appPut(t, root, ".gitignore", ".fireweed/drills/\n")
 	appPut(t, root, "SYSTEM.md", "# Fixture\n")
-	appPut(t, root, "fireweed.yaml", fmt.Sprintf(`fireweed: ">=0.1, <0.2"
+	appPut(t, root, "fireweed.yaml", fmt.Sprintf(`fireweed: %q
 version: 1
 base: main
 modules: ["packages/*"]
@@ -75,7 +75,7 @@ timeout: 2s
 limit_patterns: [RATE LIMIT]
 limit_wait: 5ms
 limit_budget: 0s
-`, filepath.Join(observations, "setup.sh"), observations, filepath.Join(observations, "eval.sh"), observations, filepath.Join(observations, "agent.sh"), observations))
+`, fixtureBinaryPin, filepath.Join(observations, "setup.sh"), observations, filepath.Join(observations, "eval.sh"), observations, filepath.Join(observations, "agent.sh"), observations))
 	for _, m := range []struct{ name, prefix, deps string }{{"alpha", "ALP", "[]"}, {"beta", "BET", "[alpha]"}} {
 		appPut(t, root, "packages/"+m.name+"/SPEC.md", fmt.Sprintf("---\nname: %s\nid_prefix: %s\ndepends_on: %s\n---\n# %s\n\n## Specs\n\n### %s-001\n%s MUST preserve a value.\n", m.name, m.prefix, m.deps, m.name, m.prefix, m.name))
 		appPut(t, root, "packages/"+m.name+"/api.go", "package "+m.name+"\n")

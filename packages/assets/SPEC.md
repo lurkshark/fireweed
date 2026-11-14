@@ -13,7 +13,7 @@ name: assets
 ## Specs
 
 ### AST-001
-Version MUST return 0.1.0.
+Version MUST return 0.2.0.
 
 ### AST-002
 Playbook MUST return nonempty instructions for author-change, evals, audit, impl and regenerate, and reject unknown names.

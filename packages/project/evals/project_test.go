@@ -9,11 +9,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/lurkshark/fireweed/packages/assets"
 	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project"
 )
 
-const fixtureConfig = `fireweed: ">=0.1, <0.2"
+var fixtureConfig = `fireweed: "=` + assets.Version() + `"
 version: 1
 base: main
 modules: ["packages/*"]

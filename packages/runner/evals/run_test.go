@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/lurkshark/fireweed/packages/assets"
 	"github.com/lurkshark/fireweed/packages/checks"
 	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project"
@@ -96,7 +97,7 @@ printf '%s-audit' "$module"
 	nextWrite(t, root, ".gitignore", ".fireweed/runs/\n.fireweed/go-test.log\n")
 	nextWrite(t, root, "go.mod", "module example.invalid/run-fixture\n\ngo 1.22\n")
 	nextWrite(t, root, "SYSTEM.md", "# Fixture\n")
-	nextWrite(t, root, "fireweed.yaml", fmt.Sprintf(`fireweed: ">=0.1, <0.2"
+	nextWrite(t, root, "fireweed.yaml", fmt.Sprintf(`fireweed: %q
 version: 1
 base: main
 modules: ["packages/*"]
@@ -112,7 +113,7 @@ agent:
 audit:
   command: [bash, %q, %q, "{prompt}"]
 timeout: 50ms
-`, filepath.Join(agents, "worker.sh"), agents, mode, filepath.Join(agents, "auditor.sh"), agents))
+`, "="+assets.Version(), filepath.Join(agents, "worker.sh"), agents, mode, filepath.Join(agents, "auditor.sh"), agents))
 	nextWrite(t, root, ".fireweed/eval.sh", `#!/bin/sh
 case "$1" in alpha) prefix=ALP;; beta) prefix=BET;; gamma) prefix=GAM;; *) exit 35;; esac
 go test "./packages/$1/evals" > .fireweed/go-test.log 2>&1

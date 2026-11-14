@@ -70,7 +70,7 @@ func fixture(t *testing.T, configExtra, changeFront, added, modified, removed st
 	}
 	write(t, root, "SYSTEM.md", "# Fixture system\nLocal lifecycle fixture.\n")
 	write(t, root, ".gitignore", ".fireweed/runs/\n")
-	write(t, root, "fireweed.yaml", `fireweed: ">=0.1, <0.2"
+	write(t, root, "fireweed.yaml", `fireweed: "=`+assets.Version()+`"
 version: 1
 base: main
 modules: ["packages/*"]
@@ -1314,7 +1314,7 @@ func Test_FLOW_005_FLOW_051_FLOW_052_FLOW_053_FLOW_143_FLOW_144_ContextAndProven
 		t.Fatal(err)
 	}
 	provenance, ok := contracts.Section(string(b), "Provenance")
-	if !ok || !strings.Contains(provenance, "evals") || !strings.Contains(provenance, "impl") || !strings.Contains(provenance, "manual") || !strings.Contains(provenance, "0.1.0") || !strings.Contains(provenance, "202") {
+	if !ok || !strings.Contains(provenance, "evals") || !strings.Contains(provenance, "impl") || !strings.Contains(provenance, "manual") || !strings.Contains(provenance, assets.Version()) || !strings.Contains(provenance, "202") {
 		t.Errorf("provenance incomplete: %q", provenance)
 	}
 	runRoot := filepath.Join(root, ".fireweed", "runs", state.Run)

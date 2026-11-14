@@ -15,7 +15,7 @@ import (
 	"github.com/lurkshark/fireweed/packages/contracts"
 )
 
-const appFixtureConfig = `fireweed: ">=0.1, <0.2"
+var appFixtureConfig = `fireweed: "` + fixtureBinaryPin + `"
 version: 1
 base: main
 modules: ["packages/*"]

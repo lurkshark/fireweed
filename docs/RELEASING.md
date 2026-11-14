@@ -67,16 +67,16 @@ protected release-infrastructure edits.
 
 1. Finish any lifecycle changes and merge the release commit to `main`. Check
    CI and review the release diff.
-2. Check `bin/fireweed version`. Currently `AST-001` specifies `0.1.0`, so the
-   first release tag is `v0.1.0`. For a later version, change the assets spec,
-   evals and implementation through Fireweed first. Do not inject a different
-   version with linker flags: `go install`, archives, and project version pins
-   must agree.
-3. From the reviewed commit, create and push the tag:
+2. Check that `bin/fireweed version` prints the intended version. Update
+   `AST-001`, its eval and its implementation through Fireweed before tagging.
+   Keep the source version authoritative so `go install`, archives and
+   project version pins agree.
+3. From the reviewed commit, create and push the matching tag:
 
    ```sh
-   git tag -a v0.1.0 -m 'Release v0.1.0'
-   git push origin v0.1.0
+   version=$(bin/fireweed version)
+   git tag -a "v$version" -m "Release v$version"
+   git push origin "v$version"
    ```
 
 4. Watch the **Release** workflow. It tests Linux and macOS, rejects a malformed

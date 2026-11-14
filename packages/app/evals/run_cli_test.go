@@ -71,7 +71,7 @@ printf '\n## Audit\nNo findings\nChecked IDs: %s-002\n' "$prefix" >> "$held"
 	appPut(t, root, ".gitignore", ".fireweed/runs/\n.fireweed/go-test.log\n")
 	appPut(t, root, "go.mod", "module example.invalid/run-cli\n\ngo 1.22\n")
 	appPut(t, root, "SYSTEM.md", "# Fixture\n")
-	appPut(t, root, "fireweed.yaml", fmt.Sprintf(`fireweed: ">=0.1, <0.2"
+	appPut(t, root, "fireweed.yaml", fmt.Sprintf(`fireweed: %q
 version: 1
 base: main
 modules: ["packages/*"]
@@ -86,7 +86,7 @@ agent:
   command: [bash, %q, %q, "{prompt}"]
 audit:
   command: [bash, %q, %q, "{prompt}"]
-`, worker, logs, auditor, logs))
+`, fixtureBinaryPin, worker, logs, auditor, logs))
 	appPut(t, root, ".fireweed/eval.sh", `#!/bin/sh
 case "$1" in alpha) prefix=ALP;; beta) prefix=BET;; *) exit 35;; esac
 expected=$(cat .fireweed/expected-bin)
