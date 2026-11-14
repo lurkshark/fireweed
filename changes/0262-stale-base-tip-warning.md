@@ -1,5 +1,5 @@
 ---
-blocked: FLOW-142 passes before implementation and needs an author amendment for fail-first verification.
+already_satisfied: [FLOW-142]
 module: workflow
 phase: evals
 run: 20261114T022109-4d6a3a65325aa78d037f4c8b
@@ -50,10 +50,8 @@ Drafted at the owner's request after the R01–R29 traceability review.
 No lifecycle execution, agent invocation, drill or release is authorized by
 this drafting request. Workers must obtain context before their step and use
 fireweed verify; only the controller may advance or commit lifecycle work.
-## Questions
 
-- Can the author record `already_satisfied: [FLOW-142]` in the approved
-  change before resuming the saved evals? Both acquisition paths already
-  omit the warning when HEAD contains the base tip. FLOW-141 has genuine
-  fail-first evidence, and FLOW-142's passing cases guard against an
-  unconditional warning once FLOW-141 is implemented.
+The owner approved recording FLOW-142 as already satisfied. Its passing
+cases cover both acquisition paths when HEAD contains the base tip and
+guard against an unconditional warning. FLOW-141 retains its fail-first
+requirement. Both specs and their eval assertions remain in scope.
