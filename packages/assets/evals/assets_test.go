@@ -1,6 +1,10 @@
 package evals_test
 
 import (
+	"encoding/json"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
@@ -9,8 +13,65 @@ import (
 )
 
 func Test_AST_001_Version(t *testing.T) {
-	if got := assets.Version(); got != "0.2.0" {
-		t.Errorf("Version() = %q; want 0.2.0", got)
+	const versionFile = "../internal/content/VERSION"
+	raw, err := os.ReadFile(versionFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := strings.TrimSpace(string(raw))
+	if !regexp.MustCompile(`^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$`).MatchString(want) {
+		t.Fatalf("VERSION = %q; want a stable MAJOR.MINOR.PATCH version", want)
+	}
+	if got := assets.Version(); got != want {
+		t.Errorf("Version() = %q; want %q from VERSION", got, want)
+	}
+
+	alternate := "0.2.1"
+	if alternate == want {
+		alternate = "0.2.2"
+	}
+	original, err := filepath.Abs(versionFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tmp := t.TempDir()
+	replacement := filepath.Join(tmp, "VERSION")
+	if err := os.WriteFile(replacement, []byte(alternate+"\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	// Substitute only the build input while keeping the working tree intact.
+	overlay, err := json.Marshal(map[string]map[string]string{"Replace": {original: replacement}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	overlayPath := filepath.Join(tmp, "overlay.json")
+	if err := os.WriteFile(overlayPath, overlay, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	mainPath := filepath.Join(tmp, "main.go")
+	if err := os.WriteFile(mainPath, []byte(`package main
+
+import (
+	"fmt"
+
+	"github.com/lurkshark/fireweed/packages/assets"
+)
+
+func main() { fmt.Print(assets.Version()) }
+`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	cmd := exec.Command("go", "run", "-overlay", overlayPath, mainPath)
+	output, err := cmd.Output()
+	if exit, ok := err.(*exec.ExitError); ok {
+		t.Fatalf("build with alternate VERSION: %v\n%s", exit, exit.Stderr)
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := string(output); got != alternate {
+		t.Errorf("Version() with alternate VERSION = %q; want %q", got, alternate)
 	}
 }
 
