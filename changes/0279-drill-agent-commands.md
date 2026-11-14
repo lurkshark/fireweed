@@ -16,8 +16,7 @@ separate Git change.
 
 Add the optional string field `AgentAlias` to `runner.DrillRequest`. In
 `fireweed.yaml`, `agent.commands` maps aliases to command templates.
-`agent.default` names the default worker command. `agent.command` also
-supports an inline default.
+`agent.default` names the default worker command.
 
 ## Added
 
@@ -25,7 +24,7 @@ supports an inline default.
 Drill MUST resolve its selected command before creating scratch workspaces or running hooks or agents and propagate the resolution error.
 
 ### new:drill-agent-report-identity
-For a named command selected explicitly or by default, Drill MUST derive Agent and Model from that command using the existing executable and model-flag conventions and write those values to the drill report.
+Drill MUST derive Agent and Model from the selected command using the existing executable and model-flag conventions and write those values to the drill report.
 
 ## Modified
 
@@ -46,3 +45,5 @@ the drill default, explicit selection across retries, and the executable
 and model in the result and report. Give each command distinct metadata so
 the fixture can detect a report that identifies the wrong command. Use the
 snapshot already supplied to each invocation as the configuration source.
+Move the runner eval fixtures to named commands and retain their existing
+behavior assertions.

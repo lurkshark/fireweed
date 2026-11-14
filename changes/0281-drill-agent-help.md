@@ -13,10 +13,10 @@ commands its probes exercise.
 ## Added
 
 ### new:drill-agent-help
-CommandHelp("drill") MUST document --agent <alias>, identify agent.commands as the alias mapping and agent.default or agent.command as the default, and show an example selecting a named command.
+CommandHelp("drill") MUST document --agent <alias>, identify agent.commands as the alias mapping and agent.default as the default selector, and show an example selecting a named command.
 
 ### new:doctor-agent-help
-CommandHelp("doctor") MUST describe the worker default and explain that audit.agent selects a named command and audit.command supplies an inline audit command.
+CommandHelp("doctor") MUST identify agent.default and audit.agent as the configured probe selectors and explain that audit inherits the worker default when its selector is omitted.
 
 ## Modified
 

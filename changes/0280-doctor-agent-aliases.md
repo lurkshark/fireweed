@@ -23,8 +23,13 @@ Doctor MUST report an agent selection error as a failed C15 probe identifying th
 Doctor MUST resolve the worker and audit commands from the project configuration and run each resolved command once in scratch through agent.wrap with a fixed-reply prompt, requiring exit 0 and the requested reply for success.
 
 ### CHK-064
-Doctor MUST use the worker default for the audit probe when neither audit.agent nor audit.command is configured and emit a C15 warning identifying the shared-command blind spot.
+When the audit probe inherits the worker default, Doctor MUST probe that command for audit and emit a C15 warning identifying the shared-command blind spot.
 
 ## Removed
 
 ## Decisions
+
+## Notes
+
+Move the doctor eval fixtures to named commands and retain their existing
+probe, wrapper, prompt, timeout, and log assertions.
