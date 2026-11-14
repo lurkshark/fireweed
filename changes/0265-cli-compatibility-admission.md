@@ -1,7 +1,8 @@
 ---
-already_satisfied: [APP-165]
+already_satisfied:
+    - APP-165
 module: app
-phase: evals
+phase: audit
 run: 20261114T045429-ac71eb4f31d11ddab1f3c00e
 ---
 
@@ -67,3 +68,19 @@ The owner approved recording APP-165 as already satisfied. Its passing
 regression evals cover the existing command exceptions. APP-163 and APP-164
 retain their fail-first requirements, and all specs and assertions remain in
 scope.
+
+Controller verification passed in evals. APP-163 fails because new-change
+rejects the pin but advises changing the module or slug. APP-164 fails
+because modules and coverage admit an incompatible approved snapshot and
+next and run invoke its fixture agent. Compatible held-snapshot regressions
+pass. The APP-165 regressions pass, including pr-body with an excluding
+endpoint pin and malformed live configuration.
+
+The admission points are implementation-writable files in
+`packages/app/internal/entry/`. Live operation diagnostics can be corrected
+in `project.go`. Approved commands dispatch in `entry.go` and `lifecycle.go`,
+with snapshot discovery in `project.go` and coverage inputs in `checks.go`.
+## Provenance
+
+- evals 2026-11-14T05:44:04.550039Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=395 failing=9 passing=386
+

@@ -265,7 +265,7 @@ func Test_APP_009_APP_027_APP_028_APP_040_StartPreservesApprovalWarning(t *testi
 	}
 }
 
-func Test_APP_004_HeldModulesUseApprovedProjection(t *testing.T) {
+func Test_APP_004_APP_164_HeldModulesUseApprovedProjection(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := lifecycleCLIProject(t, bin, false)
 	appPut(t, root, ".fireweed/emit-new", "yes\n")
@@ -421,7 +421,7 @@ func Test_APP_012_APP_034_APP_035_APP_036_CoverageCurrentProjectionAndErrors(t *
 	lifecycleCommandFailure(t, status, 2, out, errOut, true)
 }
 
-func Test_APP_012_APP_160_CoverageUsesApprovedHooksWithSelectedSpecs(t *testing.T) {
+func Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelectedSpecs(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := lifecycleCLIProject(t, bin, false)
 	appPut(t, root, ".fireweed/eval.sh", `#!/bin/sh

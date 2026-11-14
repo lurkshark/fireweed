@@ -31,11 +31,17 @@ func prBodyAppRun(t *testing.T, dir string, args ...string) (int, string, string
 
 func prBodyAppFixture(t *testing.T) (root, nested, revisionRange, endpoint string, report workflow.PRBodyReport) {
 	t.Helper()
+	return prBodyAppFixtureWithPin(t, fixtureBinaryPin)
+}
+
+func prBodyAppFixtureWithPin(t *testing.T, endpointPin string) (root, nested, revisionRange, endpoint string, report workflow.PRBodyReport) {
+	t.Helper()
 	root = appProjectFixture(t)
 	appPut(t, root, "packages/alpha/SPEC.md", "---\nname: alpha\nid_prefix: ALP\ndepends_on: []\n---\n# Alpha\n\n## Specs\n\n### ALP-001 [review]\nAlpha MUST retain the selected behavior.\n")
 	cliGit(t, root, "init", "-q", "-b", "main")
 	cliCommit(t, root, "PR body base")
 	base := cliGit(t, root, "rev-parse", "HEAD")
+	appPut(t, root, "fireweed.yaml", strings.Replace(appFixtureConfig, fixtureBinaryPin, endpointPin, 1))
 	statusArchive(t, root, "0001-review", "alpha", "2026-10-30T12:00:00Z", "", "")
 	appPut(t, root, "packages/alpha/internal/opaque.dat", "\x00\x01\x02\x03")
 	appPut(t, root, "packages/alpha/internal/ordinary.txt", "ordinary addition\n")
@@ -128,6 +134,31 @@ func prBodyAppSuccess(t *testing.T, dir, revisionRange string, report workflow.P
 func Test_APP_127_APP_128_APP_129_PRBodyExplicitHistoricalEndpoint(t *testing.T) {
 	_, nested, revisionRange, _, report := prBodyAppFixture(t)
 	prBodyAppSuccess(t, nested, revisionRange, report)
+}
+
+func Test_APP_165_PRBodyWithIncompatibleRecordedPin(t *testing.T) {
+	root, nested, revisionRange, endpoint, report := prBodyAppFixtureWithPin(t, incompatiblePin())
+	recorded, err := project.LoadAt(root, endpoint)
+	if err != nil || project.CheckCompatibility(recorded.Config) == nil {
+		t.Fatalf("fixture endpoint must load historically with an incompatible pin: %v", err)
+	}
+	bin := buildAppBinary(t)
+	status, plain, stderr := runAppBinary(t, bin, nested, "pr-body", revisionRange)
+	if status != 0 || !strings.Contains(plain, report.Body) {
+		t.Errorf("plain historical PR body: exit=%d stdout=%q stderr=%q", status, plain, stderr)
+	}
+	status, out, stderr := runAppBinary(t, bin, nested, "pr-body", revisionRange, "--json")
+	if status != 0 || stderr != "" {
+		t.Fatalf("JSON historical PR body: exit=%d stdout=%q stderr=%q", status, out, stderr)
+	}
+	if got := cliString(t, out); got != report.Body {
+		t.Errorf("historical PR body = %q, want %q", got, report.Body)
+	}
+	appPut(t, root, "fireweed.yaml", incompatibleConfig(appFixtureConfig))
+	status, out, stderr = runAppBinary(t, bin, nested, "pr-body", revisionRange, "--json")
+	if status != 0 || stderr != "" || cliString(t, out) != report.Body {
+		t.Errorf("PR body with incompatible live pin: exit=%d stdout=%q stderr=%q", status, out, stderr)
+	}
 }
 
 func Test_APP_128_APP_129_PRBodyValidEmptyRange(t *testing.T) {
