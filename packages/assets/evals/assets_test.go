@@ -9,8 +9,8 @@ import (
 )
 
 func Test_AST_001_Version(t *testing.T) {
-	if got := assets.Version(); got != "0.1.0" {
-		t.Errorf("Version() = %q; want 0.1.0", got)
+	if got := assets.Version(); got != "0.2.0" {
+		t.Errorf("Version() = %q; want 0.2.0", got)
 	}
 }
 
