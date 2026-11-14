@@ -10,7 +10,7 @@ builds:
     goos: [darwin, linux]
     goarch: [amd64, arm64]
     flags: [-trimpath]
-    # assets.Version is governed by AST-001, including for go install builds.
+    # Go embeds the source VERSION file in every build, including go install.
     # The release workflow checks it against the tag before publishing.
     ldflags: [-s -w]
 
