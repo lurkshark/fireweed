@@ -60,7 +60,10 @@ func Check(root string) []model.Diagnostic {
 		check.validateChange(p, change)
 		index := p.modules[change.Module]
 		previous := p.snapshot.Modules[index].Zones
-		if err := p.apply(change); err != nil {
+		err := p.apply(change)
+		module := p.snapshot.Modules[index]
+		check.validateChangeTargets(change, module, p.items[index], err == nil)
+		if err != nil {
 			// Base validation already reported each missing preceding item.
 			if code, _, _ := contracts.ErrorCode(err); code != "C08" {
 				check.report(err)
@@ -68,7 +71,6 @@ func Check(root string) []model.Diagnostic {
 			return check.diagnostics
 		}
 		// Only the changed module can introduce an overlap in this projection.
-		module := p.snapshot.Modules[index]
 		if !slices.Equal(previous.Evals, module.Zones.Evals) || !slices.Equal(previous.Disposable, module.Zones.Disposable) {
 			check.zoneOverlap(change.Path, module)
 		}
@@ -124,12 +126,6 @@ func (check *staticCheck) validateChange(p *projection, change model.Change) {
 	if strings.TrimSpace(motivation) == "" {
 		check.error("C07", change.Path, "missing Motivation")
 	}
-	fields := change.Document.Frontmatter
-	_, evalFix := fields["eval_fix"]
-	_, fixes := fields["fixes"]
-	if evalFix && (fixes || len(change.Added)+len(change.Modified)+len(change.Removed) > 0) {
-		check.error("C07", change.Path, "eval_fix cannot be combined with fixes or spec edits")
-	}
 	check.validateRemovedContent(change)
 	index := p.modules[change.Module]
 	module := p.snapshot.Modules[index]
@@ -174,6 +170,53 @@ func (check *staticCheck) validateChange(p *projection, change model.Change) {
 		}
 	}
 	check.validateBases(change, assignedItems(p.items[index]))
+}
+
+func (check *staticCheck) validateChangeTargets(change model.Change, module model.Module, projected []contracts.Item, projectionOK bool) {
+	fields := change.Document.Frontmatter
+	_, hasFixes := fields["fixes"]
+	for _, field := range []string{"fixes", "eval_fix", "already_satisfied"} {
+		raw, present := fields[field]
+		if !present {
+			continue
+		}
+		var problems []string
+		if field == "eval_fix" && (hasFixes || len(change.Added)+len(change.Modified)+len(change.Removed) > 0) {
+			problems = append(problems, "eval_fix cannot be combined with fixes or spec edits")
+		}
+		values, ok := raw.([]any)
+		if !ok {
+			problems = append(problems, field+" must be a list of nonempty strings")
+		}
+		for i, value := range values {
+			id, ok := value.(string)
+			switch {
+			case !ok || strings.TrimSpace(id) == "":
+				problems = append(problems, fmt.Sprintf("entry %d in %s must be a nonempty string", i+1, field))
+			case field == "already_satisfied":
+				if !containsItem(change.Added, id) && !containsItem(change.Modified, id) {
+					problems = append(problems, fmt.Sprintf("already_satisfied target %q must name an Added or Modified item in this change", id))
+				}
+			case projectionOK && !hasProjectedTarget(change, module, projected, id):
+				problems = append(problems, fmt.Sprintf("%s target %q is absent from the projected Specs of module %q", field, id, module.Name))
+			}
+		}
+		if len(problems) > 0 {
+			check.error("C07", change.Path, strings.Join(problems, ". "))
+		}
+	}
+}
+
+func hasProjectedTarget(change model.Change, module model.Module, projected []contracts.Item, id string) bool {
+	if strings.HasPrefix(id, "new:") {
+		// Projected handles from earlier changes are local to those changes.
+		return containsItem(change.Added, id)
+	}
+	return ownsID(module, id) && containsItem(projected, id)
+}
+
+func containsItem(items []contracts.Item, id string) bool {
+	return slices.ContainsFunc(items, func(item contracts.Item) bool { return item.ID == id })
 }
 
 func (check *staticCheck) validateRemovedContent(change model.Change) {
