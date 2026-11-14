@@ -291,6 +291,9 @@ Each attempt's Agent observations entry MUST contain that attempt's agent stdout
 ### RUN-070
 When audit returns to evals after that allowance is exhausted, Next MUST save and block the held evals step through workflow.Block before invoking another worker. Its failure MUST identify the exhausted evals allowance and retained attempt ref, leaving the existing run, assigned IDs and audit findings recoverable.
 
+### RUN-071
+Next's audit prompt MUST include the complete invoking-project .fireweed/playbooks/audit.md text when present and the embedded audit playbook when absent.
+
 ## Decisions
 
 [0075-bounded-agent-invocation] An unset configured timeout defaults to 90 minutes. limit_patterns are
