@@ -28,6 +28,11 @@ func validateGraph(modules []project.Module) error {
 	return nil
 }
 
+func approvedConfigFailure(err error, slug string) response {
+	return failed(2, fmt.Errorf("approved configuration for %q: %w", slug, err), "C01",
+		"Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.")
+}
+
 // Check for an owned snapshot at the Git worktree root even if fireweed.yaml
 // has been removed. An enclosing Git worktree cannot override a nested project.
 func discoverApproved(dir string) (string, *workflow.ApprovedSnapshot, error) {
@@ -84,6 +89,9 @@ func (c command) projectCommand(root string) response {
 	case "new-change":
 		file, err := project.NewChange(root, c.arg(0), c.arg(1))
 		if err != nil {
+			if cause(err, "") == "C01" {
+				return configFailure(err)
+			}
 			return failed(2, err, "P01", "Use a valid module and an unused slug, and check the changes directory.")
 		}
 		return message(file)
@@ -92,7 +100,7 @@ func (c command) projectCommand(root string) response {
 			return configFailure(err)
 		}
 		if err := project.Stamp(root, c.arg(0)); err != nil {
-			return operationFailure(err, "Use fireweed list to check the selector and correct the change's edits.")
+			return configuredOperationFailure(err, "Use fireweed list to check the selector and correct the change's edits.")
 		}
 		return message("Stamped " + c.arg(0) + ".")
 	case "list":

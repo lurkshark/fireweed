@@ -346,6 +346,11 @@ func (c command) execute() response {
 		if err != nil {
 			return configFailure(err)
 		}
+		if approved != nil {
+			if err := project.CheckCompatibility(approved.Snapshot.Config); err != nil {
+				return approvedConfigFailure(err, approved.Slug)
+			}
+		}
 		if c.name == "modules" {
 			return modules(root, approved)
 		}

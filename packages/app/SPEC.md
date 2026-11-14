@@ -629,6 +629,15 @@ Successful init MUST create changes/ and changes/archive/ as directories, includ
 ### APP-162
 If changes or changes/archive is occupied by a regular file, init MUST reject with P01 and exit 2 before writing setup files. The diagnostic MUST identify the conflicting path.
 
+### APP-163
+For commands using live project configuration, the CLI MUST require project.CheckCompatibility to accept that configuration before command effects or hook/agent execution. A compatibility rejection MUST return exit 2 with C01 and corrective guidance.
+
+### APP-164
+While a change is owned, modules, coverage, next and run MUST check compatibility against the held approved configuration used by their operations. Compatibility admission MUST NOT add live-config parsing to their approved-snapshot paths or replace live configuration required by other commands with a held snapshot. An approved-configuration rejection MUST return exit 2 with C01 and corrective guidance before command effects or hook/agent execution.
+
+### APP-165
+Help forms, version, explain and playbook MUST retain their specified standalone behavior. init and migrate MUST retain their setup and format-validation preconditions. pr-body MUST preserve APP-127's endpoint authority without compatibility admission against live configuration or the recorded endpoint, including when live configuration is malformed.
+
 ## Decisions
 
 

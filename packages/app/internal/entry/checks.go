@@ -198,6 +198,9 @@ func (c command) coverage(root string, approved *workflow.ApprovedSnapshot) resp
 	name, selector := c.arg(0), c.options["--with-change"]
 	snapshot, items, err := coverageInput(root, name, selector, approved)
 	if err != nil {
+		if cause(err, "") == "C01" {
+			return configFailure(err)
+		}
 		return failed(2, err, "C01", "Correct the project inputs or use fireweed modules and fireweed list to check the selection.")
 	}
 	timeout, err := hookTimeout(snapshot)

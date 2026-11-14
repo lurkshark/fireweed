@@ -33,6 +33,9 @@ func (c command) newModule(root string) response {
 	if err := yaml.Unmarshal(config, &fields); err != nil {
 		return configFailure(fmt.Errorf("fireweed.yaml: %w", err))
 	}
+	if err := project.CheckCompatibility(fields); err != nil {
+		return configFailure(err)
+	}
 	dir := moduleDestination(fields, name)
 	if dir == "" {
 		return configFailure(fmt.Errorf("fireweed.yaml must configure a module glob ending in a single * under a literal parent"))
