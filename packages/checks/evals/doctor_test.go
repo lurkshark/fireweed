@@ -68,7 +68,7 @@ func (f doctorFixture) request(noAgent bool) checks.DoctorRequest {
 func doctorConfig(t *testing.T, recipe assets.Recipe) string {
 	t.Helper()
 	config := map[string]any{
-		"fireweed": ">=0.1, <0.2", "version": 1, "base": "main", "modules": []string{"packages/*"},
+		"fireweed": "=" + assets.Version(), "version": 1, "base": "main", "modules": []string{"packages/*"},
 		"limit_patterns":  []string{"rate limit"},
 		"module_defaults": map[string]any{"interface": recipe.ModuleDefaults.Interface, "evals": recipe.ModuleDefaults.Evals, "disposable": recipe.ModuleDefaults.Disposable},
 		"hooks":           recipe.Hooks,
