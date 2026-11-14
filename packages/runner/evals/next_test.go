@@ -218,7 +218,7 @@ printf 'auditor'
 	nextWrite(t, root, ".gitignore", ".fireweed/runs/\n.fireweed/go-test.log\n")
 	nextWrite(t, root, "go.mod", "module example.invalid/next-fixture\n\ngo 1.22\n")
 	nextWrite(t, root, "SYSTEM.md", "# Fixture\nSYSTEM_CONTEXT_MARKER\n")
-	nextWrite(t, root, "fireweed.yaml", fmt.Sprintf(`fireweed: ">=0.1, <0.2"
+	nextWrite(t, root, "fireweed.yaml", fmt.Sprintf(`fireweed: %q
 version: 1
 base: main
 modules: ["packages/*"]
@@ -234,7 +234,7 @@ agent:
 audit:
   command: [bash, %q, %q, "{prompt}"]
 timeout: 50ms
-`, logDir, worker, logDir, workerMode, auditor, logDir))
+`, "="+assets.Version(), logDir, worker, logDir, workerMode, auditor, logDir))
 	nextWrite(t, root, ".fireweed/eval.sh", `#!/bin/sh
 if [ -f packages/alpha/evals/staged_test.go ] && [ ! -f "$3/evals-observed" ]; then
   git rev-parse HEAD > "$3/evals-reset-head"
