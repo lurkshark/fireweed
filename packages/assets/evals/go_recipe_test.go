@@ -537,7 +537,7 @@ type junitCase struct {
 	Name      string    `xml:"name,attr"`
 	Classname string    `xml:"classname,attr"`
 	Time      string    `xml:"time,attr"`
-	Failure   *struct{} `xml:"failure"`
+	Failure   *string   `xml:"failure"`
 	Skipped   *struct{} `xml:"skipped"`
 }
 
