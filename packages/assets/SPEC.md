@@ -13,7 +13,8 @@ name: assets
 ## Specs
 
 ### AST-001
-Version MUST return 0.2.0.
+Version MUST return the stable MAJOR.MINOR.PATCH release version recorded in
+`packages/assets/internal/content/VERSION` at build time.
 
 ### AST-002
 Playbook MUST return nonempty instructions for author-change, evals, audit, impl and regenerate, and reject unknown names.

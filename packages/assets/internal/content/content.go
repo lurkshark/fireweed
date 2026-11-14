@@ -1,12 +1,19 @@
 package content
 
-import "fmt"
+import (
+	_ "embed"
+	"fmt"
+	"strings"
+)
 
-const version = "0.2.0"
+//go:embed VERSION
+var embeddedVersion string
+
+var version = strings.TrimSpace(embeddedVersion)
 
 func Version() string { return version }
 
-const help = `fireweed ` + version + `
+var help = `fireweed ` + version + `
 
 Setup         init, doctor
 Authoring     new-module, new-change, stamp
