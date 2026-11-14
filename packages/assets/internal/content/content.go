@@ -23,7 +23,13 @@ func Help() string { return help }
 
 var playbooks = map[string]string{
 	"author-change": `# Author change
-Read the design, SYSTEM.md and the module spec before writing a change. Give its Motivation a user-visible need or a clause of the design or SYSTEM.md; a probe showing a theoretical failure is insufficient. State each observable behavior at the module interface and keep the change focused. If a requirement costs more than it is worth, narrow or remove the spec and use already_satisfied for behavior the current implementation already meets. Do not commit during a worker step.`,
+Read the design, SYSTEM.md and the module spec before writing a change. Give its Motivation a user-visible need or a clause of the design or SYSTEM.md; a probe showing a theoretical failure is insufficient. State each observable behavior at the module interface and keep the change focused. If a requirement costs more than it is worth, narrow or remove the spec and use already_satisfied for behavior the current implementation already meets.
+
+Use a unique change-local new:<slug> handle for each Added spec. Use lowercase letters, digits and hyphens in the slug. If one change needs a handle from another change, combine the changes into one. For example, declare new:lockout under Added in the same change that refers to it in Interface.
+
+Run fireweed stamp <change> after drafting edits under Modified or Removed. If a base is stale, inspect the conflict with fireweed show --stale <change>. Reconcile the edit with the current projected spec before running fireweed stamp again.
+
+Do not commit during a worker step.`,
 	"evals": `# Write evals
 Read the change, projected spec and public interface. Add tests for every assigned added, modified or fixed spec ID in the evals zone. Exercise observable behavior through the public interface. Run the tests against the current implementation and record genuine fail-first evidence: at least one test for each ID must fail, unless the change marks it already_satisfied. Keep implementation out of this step and do not commit.
 

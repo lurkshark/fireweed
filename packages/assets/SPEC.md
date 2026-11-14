@@ -237,6 +237,9 @@ regenerate with their purposes and show how to read one. CommandHelp("explain")
 MUST describe diagnostic-code lookup with a concrete code example and point to
 playbook help for workflow guidance.
 
+### AST-064
+The author-change playbook MUST instruct authors to use unique change-local new:<slug> handles for Added specs and combine changes when one would need another's handle. It MUST direct authors to run fireweed stamp <change> for Modified or Removed specs and resolve stale conflicts rather than overwrite stale bases.
+
 ## Decisions
 
 [0014-go-setup-bundle] Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,
