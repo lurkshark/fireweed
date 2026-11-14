@@ -2,7 +2,7 @@
 bases:
     AST-001: 032ffc8f
 module: assets
-phase: audit
+phase: impl
 run: 20261114T174256-d44f5cbeb1a34dc325317a7f
 ---
 
@@ -37,7 +37,12 @@ Repository version pins and release documentation are separate author edits.
 instead of `0.2.0`. `fireweed verify release-v0-2-0` passed in evals.
 The implementation step can update `packages/assets/internal/content/content.go`,
 which supplies both `Version()` and the top-level help heading.
+## Audit
+
+No findings; checked AST-001
+
 ## Provenance
 
 - evals 2026-11-14T17:45:33.795698Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=149 failing=1 passing=148
+- audit 2026-11-14T17:45:57.676465Z agent=codex fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 
