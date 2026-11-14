@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/lurkshark/fireweed/packages/assets"
 	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/runner"
 	"github.com/lurkshark/fireweed/packages/workflow"
@@ -56,8 +57,35 @@ func auditWorkspaceGone(t *testing.T, f nextFixture) {
 	}
 }
 
-func Test_RUN_013_RUN_045_RUN_046_AuditUsesOnlyProjectedInputsAndIndependentGit(t *testing.T) {
-	f := newNextFixture(t, true, true, "normal")
+func Test_RUN_013_RUN_045_RUN_046_RUN_071_AuditUsesOnlyProjectedInputsAndIndependentGit(t *testing.T) {
+	const override = "# Project audit instructions Ω\n\nReview the evals in order.  Preserve spacing.\nRecord the final finding."
+	embedded, err := assets.Playbook("audit")
+	if err != nil {
+		t.Fatalf("load embedded audit playbook: %v", err)
+	}
+	for _, tc := range []struct {
+		name, override, want string
+	}{
+		{"project override", override, override},
+		{"embedded fallback", "", embedded},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := newNextFixture(t, true, true, "normal")
+			if tc.override != "" {
+				nextWrite(t, f.root, ".fireweed/playbooks/audit.md", tc.override)
+				nextCommit(t, f.root, "add project audit playbook override")
+			}
+			runRestrictedAuditFixture(t, f)
+			prompt := nextRead(t, f.logDir, "audit.prompt")
+			if !strings.Contains(prompt, tc.want) {
+				t.Errorf("audit prompt omitted the complete %s playbook", tc.name)
+			}
+		})
+	}
+}
+
+func runRestrictedAuditFixture(t *testing.T, f nextFixture) {
+	t.Helper()
 	heldOID := nextGit(t, f.root, "rev-parse", "HEAD")
 	nextGit(t, f.root, "update-ref", "refs/fireweed/attempts/sentinel", heldOID)
 	auditBeforeEdit(t, f, `find . -path './.git' -prune -o -type f -print > "$1/audit.files"
@@ -69,8 +97,11 @@ cp packages/alpha/SPEC.md "$1/audit.spec"
 cp packages/alpha/evals/next_test.go "$1/audit.eval"
 `)
 	r, err := f.run(false)
-	if err != nil || r.State.Phase != "applied" {
+	if err != nil || r.State.Phase != "applied" || len(r.Steps) != 3 {
 		t.Fatalf("isolated audit lifecycle = %#v, %v", r, err)
+	}
+	if step := r.Steps[1]; step.Phase != "audit" || step.Role != "audit" || step.Agent.Stdout != "auditor" || step.Agent.ExitCode != 0 {
+		t.Errorf("audit invocation = %#v", step)
 	}
 	cwd := nextRead(t, f.logDir, "audit.cwd")
 	if cwd == f.root || !filepath.IsAbs(cwd) || nextRead(t, f.logDir, "audit.is-git") != "true\n" {
