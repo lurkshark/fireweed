@@ -1,7 +1,8 @@
 ---
-already_satisfied: [FLOW-142]
+already_satisfied:
+    - FLOW-142
 module: workflow
-phase: evals
+phase: audit
 run: 20261114T022109-4d6a3a65325aa78d037f4c8b
 ---
 
@@ -51,7 +52,13 @@ No lifecycle execution, agent invocation, drill or release is authorized by
 this drafting request. Workers must obtain context before their step and use
 fireweed verify; only the controller may advance or commit lifecycle work.
 
-The owner approved recording FLOW-142 as already satisfied. Its passing
-cases cover both acquisition paths when HEAD contains the base tip and
-guard against an unconditional warning. FLOW-141 retains its fail-first
-requirement. Both specs and their eval assertions remain in scope.
+The owner approved marking FLOW-142 as already satisfied in d760e3f.
+Controller verification of the resumed evals passed. All four FLOW-141
+scenarios failed first because the P05 warning was missing. All four
+FLOW-142 scenarios passed, as did the FLOW-058 stale spec-hash rejection.
+The implementation belongs in the shared acquisition path in
+`packages/workflow/internal/lifecycle/claim.go`.
+## Provenance
+
+- evals 2026-11-14T03:09:49.169683Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=211 failing=5 passing=206
+
