@@ -1,6 +1,6 @@
 ---
 module: runner
-phase: audit
+phase: impl
 run: 20261114T085216-0b63d7b9c092d3f941ffc1de
 ---
 
@@ -64,7 +64,12 @@ The implementation belongs in the disposable
 after Done and Block. Run already appends the full Next result to Applied.
 Changes 0262 and 0268 are applied. The binary next/run acceptance check
 remains open until the runner fix is applied.
+## Audit
+
+No findings; checked RUN-072
+
 ## Provenance
 
 - evals 2026-11-14T09:04:32.327331Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=186 failing=6 passing=180
+- audit 2026-11-14T09:04:57.715069Z agent=codex fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 
