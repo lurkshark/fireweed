@@ -1,5 +1,7 @@
 ---
 module: runner
+phase: audit
+run: 20261114T085216-0b63d7b9c092d3f941ffc1de
 ---
 
 ## Motivation
@@ -17,7 +19,7 @@ No public signature or type changes.
 
 ## Added
 
-### new:start-warning-retention
+### RUN-072
 Next MUST retain warnings returned by workflow.Start in State.Diagnostics on subsequent returns, including successful application, usage stops, invocation failures and verification exhaustion. Retained diagnostics MUST preserve code, message, path and warning status without being duplicated by phase advancement.
 
 ## Modified
@@ -50,3 +52,19 @@ explanation before treating the automatic warning path as acceptance-complete.
 Draft only. No lifecycle execution, agent invocation or drill is authorized.
 Workers obtain context before their step and use fireweed verify; the
 controller alone advances and commits lifecycle work.
+
+Controller verification passed in the evals phase with 180 passing cases
+and six expected failures (the RUN-072 test and its five subtests). All
+five scenarios lost the stale-base P05 warning after phase advancement.
+The applied Next result still reported both worker-recovery warnings.
+Run also dropped the unmerged P04 warning from its applied result.
+
+The implementation belongs in the disposable
+`packages/runner/internal/next/next.go`, which replaces the returned state
+after Done and Block. Run already appends the full Next result to Applied.
+Changes 0262 and 0268 are applied. The binary next/run acceptance check
+remains open until the runner fix is applied.
+## Provenance
+
+- evals 2026-11-14T09:04:32.327331Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=186 failing=6 passing=180
+
