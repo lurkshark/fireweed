@@ -1,6 +1,6 @@
 ---
 module: project
-phase: audit
+phase: impl
 run: 20261114T010921-44364fbcb197697a04f1101e
 ---
 
@@ -49,7 +49,12 @@ as did the C03, C05 and C08 diagnostic cases. The PRJ-072 warning assertions
 still pass with a heading-only removal in their valid fixture.
 The implementation can add the Removed section check in the disposable
 `packages/project/internal/queue/validate.go` file.
+## Audit
+
+No findings; checked PRJ-078
+
 ## Provenance
 
 - evals 2026-11-14T01:13:13.439281Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=192 failing=5 passing=187
+- audit 2026-11-14T01:13:31.733902Z agent=codex fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 
