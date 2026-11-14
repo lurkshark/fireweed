@@ -1,5 +1,9 @@
 ---
+already_satisfied:
+    - FLOW-142
 module: workflow
+phase: applied
+run: 20261114T022109-4d6a3a65325aa78d037f4c8b
 ---
 
 ## Motivation
@@ -15,10 +19,10 @@ No public signature or type changes.
 
 ## Added
 
-### new:base-tip-warning
+### FLOW-141
 On a successful Start or StartFromAttempt, when the base ref selected by gitstore.BaseRef is not an ancestor of the starting HEAD, the returned State.Diagnostics MUST contain a P05 warning naming that ref and explaining that the queue may be stale. This warning MUST NOT by itself reject or advance the change.
 
-### new:contained-base-tip
+### FLOW-142
 Start and StartFromAttempt MUST omit the base-tip P05 warning when the selected base tip is equal to or an ancestor of the starting HEAD.
 
 ## Modified
@@ -47,3 +51,20 @@ Drafted at the owner's request after the R01–R29 traceability review.
 No lifecycle execution, agent invocation, drill or release is authorized by
 this drafting request. Workers must obtain context before their step and use
 fireweed verify; only the controller may advance or commit lifecycle work.
+
+The owner approved marking FLOW-142 as already satisfied in d760e3f.
+Controller verification of the resumed evals passed. All four FLOW-141
+scenarios failed first because the P05 warning was missing. All four
+FLOW-142 scenarios passed, as did the FLOW-058 stale spec-hash rejection.
+The implementation belongs in the shared acquisition path in
+`packages/workflow/internal/lifecycle/claim.go`.
+## Audit
+
+No findings; checked FLOW-141, FLOW-142
+
+## Provenance
+
+- evals 2026-11-14T03:09:49.169683Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=211 failing=5 passing=206
+- audit 2026-11-14T03:10:20.898561Z agent=codex fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-14T03:28:36.914373Z agent=codex fireweed=0.1.0 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=756 failing=0 passing=756
+

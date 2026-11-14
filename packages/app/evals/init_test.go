@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 	"testing"
@@ -89,6 +90,18 @@ func assertNoInitConfig(t *testing.T, root string) {
 	t.Helper()
 	if _, err := os.Stat(filepath.Join(root, "fireweed.yaml")); !os.IsNotExist(err) {
 		t.Errorf("rejected init created fireweed.yaml or returned unexpected stat error: %v", err)
+	}
+}
+
+func assertInitQueueDirs(t *testing.T, root string) {
+	t.Helper()
+	for _, path := range []string{"changes", "changes/archive"} {
+		info, err := os.Stat(filepath.Join(root, filepath.FromSlash(path)))
+		if err != nil {
+			t.Errorf("stat %s: %v", path, err)
+		} else if !info.IsDir() {
+			t.Errorf("%s must be a directory, got %s", path, info.Mode())
+		}
 	}
 }
 
@@ -261,13 +274,14 @@ func Test_APP_041_APP_042_APP_043_APP_044_APP_045_APP_046_APP_050_APP_053_APP_05
 	}
 }
 
-func Test_APP_043_APP_044_APP_047_APP_051_NoneInit(t *testing.T) {
+func Test_APP_043_APP_044_APP_047_APP_051_APP_161_NoneInit(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := t.TempDir()
 	status, stdout, stderr := runAppBinary(t, bin, root, "init", "--recipe", "none", "--agent", "claude", "--audit-agent", "codex", "--no-app")
 	if status != 0 || stderr != "" {
 		t.Errorf("none init status=%d stderr=%q", status, stderr)
 	}
+	assertInitQueueDirs(t, root)
 	for _, word := range []string{"eval", "boundaries", "setup"} {
 		if !strings.Contains(strings.ToLower(stdout), word) {
 			t.Errorf("APP-047 instructions omit %q: %q", word, stdout)
@@ -300,12 +314,25 @@ func Test_APP_043_APP_044_APP_047_APP_051_NoneInit(t *testing.T) {
 	}
 }
 
-func Test_APP_050_APP_052_NoneDefaultApp(t *testing.T) {
+func Test_APP_050_APP_052_APP_161_NoneDefaultApp(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := t.TempDir()
+	existing := []struct{ path, body string }{
+		{"changes/0002-pending.md", "pending change\n"},
+		{"changes/archive/0001-finished.md", "archived change\n"},
+	}
+	for _, file := range existing {
+		appPut(t, root, file.path, file.body)
+	}
 	status, _, stderr := runAppBinary(t, bin, root, "init", "--recipe", "none", "--agent", "codex")
 	if status != 0 || stderr != "" {
 		t.Errorf("none init status=%d stderr=%q", status, stderr)
+	}
+	assertInitQueueDirs(t, root)
+	for _, file := range existing {
+		if got := readInitFile(t, root, file.path); got != file.body {
+			t.Errorf("%s changed to %q; want %q", file.path, got, file.body)
+		}
 	}
 	spec := readInitFile(t, root, "packages/app/SPEC.md")
 	for _, part := range []string{"name: app", "id_prefix: APP", "depends_on: []", "## Specs", "## Decisions"} {
@@ -366,7 +393,7 @@ func Test_APP_054_InitFileOnlyAuditCommand(t *testing.T) {
 	}
 }
 
-func Test_APP_042_APP_048_APP_049_APP_050_APP_053_APP_054_APP_060_LocalInit(t *testing.T) {
+func Test_APP_042_APP_048_APP_049_APP_050_APP_053_APP_054_APP_060_APP_161_LocalInit(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := t.TempDir()
 	recipeDir := filepath.Join(root, "recipe")
@@ -380,6 +407,7 @@ func Test_APP_042_APP_048_APP_049_APP_050_APP_053_APP_054_APP_060_LocalInit(t *t
 	auditor := "touch AUDITOR_RAN && printf '%s' {prompt}"
 	status, stdout, stderr := runAppBinary(t, bin, root, "init", "--recipe", "./recipe", "--agent", agent, "--audit-agent", auditor)
 	assertInitOutput(t, status, stdout, stderr, instructions)
+	assertInitQueueDirs(t, root)
 	config := readInitConfig(t, root)
 	if !reflect.DeepEqual(config.ModuleDefaults.Protected, []string{"schema.lock"}) || !reflect.DeepEqual(config.ModuleDefaults.Interface, []string{"api.txt"}) || !reflect.DeepEqual(config.ModuleDefaults.Evals, []string{"evals/**"}) || !reflect.DeepEqual(config.ModuleDefaults.Disposable, []string{"internal/**"}) || !reflect.DeepEqual(config.ModuleDefaults.Preserve, []string{"data/**"}) || !reflect.DeepEqual(config.ModuleDefaults.AppendOnly, []string{"log/**"}) || config.Hooks["eval"] != "touch HOOK_RAN" || config.Hooks["boundaries"] != "touch BOUNDARIES_RAN" || config.Hooks["setup"] != "touch SETUP_RAN" || !reflect.DeepEqual(config.Protected, []string{".fireweed/**", "SYSTEM.md"}) || !reflect.DeepEqual(config.WorkerWritable, []string{"local.lock"}) {
 		t.Errorf("APP-042/048 local metadata differs: %+v", config)
@@ -496,27 +524,76 @@ func Test_APP_057_APP_058_InitConflicts(t *testing.T) {
 	}
 }
 
-func Test_APP_061_InitJSONSuccess(t *testing.T) {
+func Test_APP_061_APP_161_BuiltinInitJSONSuccess(t *testing.T) {
 	bin := buildAppBinary(t)
-	root := t.TempDir()
-	status, stdout, stderr := runAppBinary(t, bin, root, "init", "--recipe", "go", "--agent", "codex", "--json")
-	if status != 0 || stderr != "" {
-		t.Errorf("JSON init status=%d stderr=%q", status, stderr)
+	for _, name := range []string{"go", "typescript-pnpm", "python-uv"} {
+		t.Run(name, func(t *testing.T) {
+			recipe, err := assets.BuiltinRecipe(name)
+			if err != nil {
+				t.Fatal(err)
+			}
+			root := t.TempDir()
+			status, stdout, stderr := runAppBinary(t, bin, root, "init", "--recipe", name, "--agent", "codex", "--json")
+			if status != 0 || stderr != "" {
+				t.Fatalf("JSON init status=%d stdout=%q stderr=%q", status, stdout, stderr)
+			}
+			if instructions := commandStringData(t, stdout); instructions != recipe.Instructions {
+				t.Errorf("JSON instructions differ from recipe: %q", instructions)
+			}
+			assertInitQueueDirs(t, root)
+		})
 	}
-	envelope := decodeEnvelope(t, stdout)
-	var instructions string
-	if err := json.Unmarshal(envelope["data"], &instructions); err != nil {
-		t.Errorf("data is not instruction string: %v", err)
-	}
-	recipe, err := assets.BuiltinRecipe("go")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if instructions != recipe.Instructions {
-		t.Errorf("JSON instructions differ from recipe: %q", instructions)
-	}
-	var diagnostics []json.RawMessage
-	if err := json.Unmarshal(envelope["diagnostics"], &diagnostics); err != nil || diagnostics == nil || len(diagnostics) != 0 {
-		t.Errorf("diagnostics=%s; want []", envelope["diagnostics"])
+}
+
+func Test_APP_162_InitQueueDirectoryConflicts(t *testing.T) {
+	bin := buildAppBinary(t)
+	for _, tc := range []struct {
+		name, path string
+		jsonMode   bool
+	}{
+		{"queue", "changes", false},
+		{"archive", "changes/archive", true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := t.TempDir()
+			const body = "existing file\n"
+			appPut(t, root, tc.path, body)
+			args := []string{"init", "--recipe", "go", "--agent", "codex"}
+			if tc.jsonMode {
+				args = append(args, "--json")
+			}
+			status, stdout, stderr := runAppBinary(t, bin, root, args...)
+			if status != 2 {
+				t.Errorf("init status=%d; want exit 2", status)
+			}
+			named := regexp.MustCompile(`(?:^|[^[:alnum:]_.-])` + regexp.QuoteMeta(tc.path) + `/?(?:$|[^[:alnum:]_./-])`)
+			if tc.jsonMode {
+				envelope := decodeEnvelope(t, stdout)
+				if stderr != "" || string(envelope["data"]) != "null" {
+					t.Errorf("JSON init must return null data and empty stderr, got stderr=%q", stderr)
+				}
+				var diagnostics []struct{ Code, Message, Path string }
+				if err := json.Unmarshal(envelope["diagnostics"], &diagnostics); err != nil || len(diagnostics) == 0 {
+					t.Errorf("JSON init diagnostics=%s; want a P01 diagnostic: %v", envelope["diagnostics"], err)
+				} else if d := diagnostics[0]; d.Code != "P01" || d.Message == "" || !named.MatchString(d.Path+" "+d.Message) {
+					t.Errorf("JSON init diagnostic=%+v; want P01 naming %s", d, tc.path)
+				}
+			} else if !strings.HasPrefix(strings.TrimSpace(stderr), "P01:") || !named.MatchString(stderr) {
+				t.Errorf("plain init stderr=%q; want P01 naming %s", stderr, tc.path)
+			}
+			if got := readInitFile(t, root, tc.path); got != body {
+				t.Errorf("conflicting file %s changed: %q", tc.path, got)
+			}
+			conflict := filepath.Join(root, filepath.FromSlash(tc.path))
+			err := filepath.WalkDir(root, func(path string, entry os.DirEntry, err error) error {
+				if err == nil && !entry.IsDir() && path != conflict {
+					t.Errorf("rejected init wrote %s", strings.TrimPrefix(path, root+string(filepath.Separator)))
+				}
+				return err
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+		})
 	}
 }

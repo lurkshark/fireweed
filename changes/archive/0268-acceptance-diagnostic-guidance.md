@@ -1,5 +1,7 @@
 ---
 module: assets
+phase: applied
+run: 20261114T070025-0f97eb7102d8156ba4b205cb
 ---
 
 ## Motivation
@@ -16,13 +18,13 @@ No public signature or type changes.
 
 ## Added
 
-### new:change-shape-explanation
+### AST-066
 Explain("C07") MUST describe invalid fixes/eval_fix/already_satisfied lists or targets and non-heading content in Removed as invalid change structure. It MUST advise correcting the listed identities or moving removal commentary into Motivation or Notes.
 
-### new:stale-tip-explanation
+### AST-067
 Explain("P05") MUST distinguish a warning that HEAD lacks the locally resolved base tip from a stale spec-hash rejection, and advise reviewing and updating the branch before continuing a potentially stale queue.
 
-### new:duplicate-run-recovery
+### AST-068
 Explain("P02") MUST describe duplicate runs on different machines as a conflict in the archived change's run identity. It MUST advise aborting the merge, using fireweed commits <change> to identify the incoming duplicate's commits, reverting those commits on the incoming branch, then merging again. It MUST warn that choosing one archive side can retain both implementations.
 
 ## Modified
@@ -53,3 +55,22 @@ Drafted at the owner's request after the R01–R29 traceability review.
 No lifecycle execution, agent invocation, drill or release is authorized by
 this drafting request. Workers must obtain context before their step and use
 fireweed verify; only the controller may advance or commit lifecycle work.
+
+The focused public Explain tests failed on the current explanations for all
+three assigned IDs. C07 lacked the list, target, and Removed guidance. P05
+lacked the branch-tip warning and its distinction from a stale spec hash.
+P02 lacked the duplicate-run merge recovery procedure. Controller verification
+passed in the evals phase with those failures as fail-first evidence.
+
+The implementation can update all three explanations in the disposable
+`packages/assets/internal/content/content.go` file.
+## Audit
+
+No findings; checked AST-066, AST-067, AST-068
+
+## Provenance
+
+- evals 2026-11-14T07:06:05.40299Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=149 failing=3 passing=146
+- audit 2026-11-14T07:06:37.001594Z agent=codex fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-14T07:32:46.98791Z agent=codex fireweed=0.1.0 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=1333 failing=0 passing=1333
+

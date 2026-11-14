@@ -2,6 +2,8 @@
 bases:
     RUN-021: 113a4a26
 module: runner
+phase: applied
+run: 20261114T073249-d99cc6c13cfdd9da3ad488c6
 ---
 
 ## Motivation
@@ -18,7 +20,7 @@ No public signature or type changes.
 
 ## Added
 
-### new:audit-return-exhaustion
+### RUN-070
 When audit returns to evals after that allowance is exhausted, Next MUST save and block the held evals step through workflow.Block before invoking another worker. Its failure MUST identify the exhausted evals allowance and retained attempt ref, leaving the existing run, assigned IDs and audit findings recoverable.
 
 ## Modified
@@ -43,7 +45,26 @@ initial-context prefix remains scoped to one phase attempt sequence: re-entry
 after audit still gets fresh context including findings. No timer changes,
 new controller state or altered audit restrictions are authorized.
 
+Evals verification passed with fail-first evidence for RUN-021 and RUN-070.
+The current runner invokes another evals worker after the allowance is spent,
+then reaches the audit-round limit without the evals attempt ref. This occurs
+after two audit returns with the default allowance and on the first return
+when an earlier verification retry spent the second attempt. The correction,
+usage-limit retry and configured audit-round limit cases passed.
+The attempt loop and blocking path are in the disposable
+`packages/runner/internal/next/next.go`.
+
 Drafted at the owner's request after the R01–R29 traceability review.
 No lifecycle execution, agent invocation, drill or release is authorized by
 this drafting request. Workers must obtain context before their step and use
 fireweed verify; only the controller may advance or commit lifecycle work.
+## Audit
+
+No findings; checked RUN-021, RUN-070
+
+## Provenance
+
+- evals 2026-11-14T07:49:14.005387Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=178 failing=4 passing=174
+- audit 2026-11-14T07:49:46.454809Z agent=codex fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-14T08:07:50.384756Z agent=codex fireweed=0.1.0 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=573 failing=0 passing=573
+

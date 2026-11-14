@@ -18,6 +18,8 @@ func Load(root string) (Snapshot, error) { return fixture.Load(root) }
 
 func LoadAt(root, revision string) (Snapshot, error) { return fixture.LoadAt(root, revision) }
 
+func CheckCompatibility(config map[string]any) error { return fixture.CheckCompatibility(config) }
+
 func ValidateGraph(modules []Module) error { return fixture.ValidateGraph(modules) }
 
 func NewChange(root, module, slug string) (string, error) {

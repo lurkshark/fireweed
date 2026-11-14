@@ -126,8 +126,7 @@ Alpha MUST save revisions.
 		"### new:wide\nThe addition MUST report\tall available dates for each request.\n",
 		"### ALP-004\nAlpha SHOULD parse, SHOULD validate, MUST reject.\n", "")
 	queued(t, root, "0002-revise.md", "", "Narrow the behavior.\n", "",
-		"### ALP-004\nAlpha MUST reject invalid input.\n",
-		"### ALP-005\nThe removed item MUST read, MUST write, and SHOULD retry indefinitely.\n")
+		"### ALP-004\nAlpha MUST reject invalid input.\n", "### ALP-005\n")
 	for _, change := range []string{"oversized", "revise"} {
 		if err := project.Stamp(root, change); err != nil {
 			t.Fatalf("Stamp(%s): %v", change, err)

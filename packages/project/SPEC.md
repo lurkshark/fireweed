@@ -263,6 +263,39 @@ Check MUST return a C18 warning naming the items when the same sentence, compare
 ### PRJ-074
 Check MUST return a C19 warning naming the module when a module's Decisions section has more than max_decision_words words.
 
+### PRJ-075
+Check MUST reject with non-warning C12 when any module's resolved evals and disposable globs match a common possible module-relative file path, whether or not that file exists. The diagnostic MUST identify the module and conflicting globs.
+
+### PRJ-076
+Check MUST apply the eval/disposable overlap rule to the current graph and each preceding-through-current queued projection, including inherited defaults, explicit empty lists and set edits.
+
+### PRJ-077
+Check MUST reject a module SPEC.md with zero or more than one level-two Specs section using a non-warning C03 diagnostic naming that file. Heading recognition MUST follow CON-002's fenced-code and ATX-heading rules. A single empty Specs section MUST remain valid.
+
+### PRJ-078
+Check MUST reject non-whitespace content anywhere in a pending change's Removed section other than valid assigned-ID headings, using non-warning C07 and identifying the change and offending item when present. An empty Removed section or valid headings separated only by whitespace MUST remain valid when their targets and bases are valid.
+
+### PRJ-079
+When fixes, eval_fix or already_satisfied is present, Check MUST require a list of nonempty string identities and reject other values with non-warning C07 naming the change and field.
+
+### PRJ-080
+Check MUST reject a fixes or eval_fix identity absent from the target module's projected Specs after that change, with non-warning C07 naming the change, field and identity. IDs belonging to another module MUST be rejected by the same rule.
+
+### PRJ-081
+Check MUST reject an already_satisfied identity that does not name an Added or Modified item of that change, using non-warning C07 naming the change and identity. Before Start, a local Added handle MUST be accepted as that item's identity; after assignment, its assigned ID MUST be accepted.
+
+### PRJ-082
+CheckCompatibility MUST accept an omitted fireweed pin or a nonempty comma-separated conjunction of comparisons using =, <, <=, > or >= and two- or three-component nonnegative decimal versions. It MUST compare against assets.Version numerically, treating an omitted patch component as zero.
+
+### PRJ-083
+CheckCompatibility MUST return a C01 CodedError when a present fireweed pin is malformed, is not a string, or excludes assets.Version. The error MUST identify the pin and running binary version and distinguish invalid syntax from incompatibility.
+
+### PRJ-084
+Load MUST apply CheckCompatibility to the live configuration before returning a Snapshot, and Check MUST expose a compatibility failure as non-warning C01 for fireweed.yaml.
+
+### PRJ-085
+CheckCompatibility MUST accept format version 1 and an omitted version as the initial format, and MUST reject any other present version value with a C01 CodedError identifying the unsupported value and supported format 1. Format acceptance MUST be independent of binary-range acceptance.
+
 ## Decisions
 
 [0126-spec-history-query] History reads the project's current archive files, as the archive-backed show

@@ -95,9 +95,7 @@ change, Run MUST return the error with its cause and already-applied results
 retained, leaving later changes unstarted.
 
 ### RUN-021
-Next MUST permit at most the configured attempts count of agent invocations
-for a phase after verification failures, defaulting to two when unset. Each
-phase MUST have its own attempt allowance.
+Next MUST limit each phase's verification-attempt sequence to the configured attempts count, defaulting to two when unset. Evals sequences separated by audit findings within one Next invocation MUST share one allowance, excluding usage-limit retries. Audit and impl sequences MUST retain separate allowances.
 
 ### RUN-022
 When phase verification fails and an attempt remains, Next MUST retain the earlier work and retry that phase. The retry prompt MUST include the last verification output. Within one Next invocation and one phase attempt sequence, worker verification-retry prompts MUST retain that sequence's initial full workflow context as their prefix.
@@ -289,6 +287,15 @@ Drill retry prompts MUST NOT include dependent modules' eval output. When the ta
 
 ### RUN-069
 Each attempt's Agent observations entry MUST contain that attempt's agent stdout and the repository-relative path of its invocation log, and MUST NOT contain the attempt's stderr.
+
+### RUN-070
+When audit returns to evals after that allowance is exhausted, Next MUST save and block the held evals step through workflow.Block before invoking another worker. Its failure MUST identify the exhausted evals allowance and retained attempt ref, leaving the existing run, assigned IDs and audit findings recoverable.
+
+### RUN-071
+Next's audit prompt MUST include the complete invoking-project .fireweed/playbooks/audit.md text when present and the embedded audit playbook when absent.
+
+### RUN-072
+Next MUST retain warnings returned by workflow.Start in State.Diagnostics on subsequent returns, including successful application, usage stops, invocation failures and verification exhaustion. Retained diagnostics MUST preserve code, message, path and warning status without being duplicated by phase advancement.
 
 ## Decisions
 

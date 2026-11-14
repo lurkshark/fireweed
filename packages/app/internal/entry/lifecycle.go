@@ -148,6 +148,15 @@ func (c command) runCommand(root string) response {
 	}
 	bin, allow := invokingBin(), c.has("--allow-unmerged")
 	action := "Correct the reported problem and use fireweed " + c.name + " to resume."
+	approved, held, err := workflow.Approved(root)
+	if err != nil {
+		return configuredOperationFailure(err, action)
+	}
+	if held {
+		if err := project.CheckCompatibility(approved.Snapshot.Config); err != nil {
+			return approvedConfigFailure(err, approved.Slug)
+		}
+	}
 	if c.name == "next" {
 		step, err := runner.Next(background(), runner.NextRequest{Root: root, Bin: bin, AllowUnmerged: allow})
 		var reason string

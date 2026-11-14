@@ -1,5 +1,7 @@
 ---
 module: project
+phase: applied
+run: 20261114T032839-893b49cba44c12bc3d7ede60
 ---
 
 ## Motivation
@@ -18,13 +20,13 @@ malformed or missing live files. No Snapshot or Module fields change.
 
 ## Added
 
-### new:binary-range-comparison
+### PRJ-082
 CheckCompatibility MUST accept an omitted fireweed pin or a nonempty comma-separated conjunction of comparisons using =, <, <=, > or >= and two- or three-component nonnegative decimal versions. It MUST compare against assets.Version numerically, treating an omitted patch component as zero.
 
-### new:binary-range-rejection
+### PRJ-083
 CheckCompatibility MUST return a C01 CodedError when a present fireweed pin is malformed, is not a string, or excludes assets.Version. The error MUST identify the pin and running binary version and distinguish invalid syntax from incompatibility.
 
-### new:live-binary-compatibility
+### PRJ-084
 Load MUST apply CheckCompatibility to the live configuration before returning a Snapshot, and Check MUST expose a compatibility failure as non-warning C01 for fireweed.yaml.
 
 ## Modified
@@ -54,3 +56,22 @@ Drafted at the owner's request after the R01–R29 traceability review.
 No lifecycle execution, agent invocation, drill or release is authorized by
 this drafting request. Workers must obtain context before their step and use
 fireweed verify; only the controller may advance or commit lifecycle work.
+
+The targeted Go evals reproduced fail-first for PRJ-082 and PRJ-083 through
+the disposable stub and for PRJ-084 through the current live loader and
+static check. `fireweed verify binary-version-compatibility` passed in evals
+with fail-first evidence for all three IDs. The unpinned and compatible live
+cases and the PRJ-047 recorded-pin case passed. Replace the stub in the disposable
+`packages/project/internal/fixture/compatibility.go` and wire live validation
+in `packages/project/internal/fixture/load.go`. The existing Check path
+reports coded load errors through `packages/project/internal/queue/validate.go`.
+## Audit
+
+No findings; checked PRJ-082, PRJ-083, PRJ-084
+
+## Provenance
+
+- evals 2026-11-14T03:32:41.002593Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=262 failing=30 passing=232
+- audit 2026-11-14T03:32:57.235599Z agent=codex fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-14T04:23:20.1199Z agent=codex fireweed=0.1.0 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=1148 failing=0 passing=1148
+

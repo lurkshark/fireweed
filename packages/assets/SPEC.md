@@ -237,6 +237,21 @@ regenerate with their purposes and show how to read one. CommandHelp("explain")
 MUST describe diagnostic-code lookup with a concrete code example and point to
 playbook help for workflow guidance.
 
+### AST-064
+The author-change playbook MUST instruct authors to use unique change-local new:<slug> handles for Added specs and combine changes when one would need another's handle. It MUST direct authors to run fireweed stamp <change> for Modified or Removed specs and resolve stale conflicts rather than overwrite stale bases.
+
+### AST-065
+The TypeScript/pnpm and Python/uv recipe instructions MUST each show a retained interface delegating to a temporary stub in a new disposable implementation file. Each example MUST explain that implementation replaces the stub without editing the retained interface.
+
+### AST-066
+Explain("C07") MUST describe invalid fixes/eval_fix/already_satisfied lists or targets and non-heading content in Removed as invalid change structure. It MUST advise correcting the listed identities or moving removal commentary into Motivation or Notes.
+
+### AST-067
+Explain("P05") MUST distinguish a warning that HEAD lacks the locally resolved base tip from a stale spec-hash rejection, and advise reviewing and updating the branch before continuing a potentially stale queue.
+
+### AST-068
+Explain("P02") MUST describe duplicate runs on different machines as a conflict in the archived change's run identity. It MUST advise aborting the merge, using fireweed commits <change> to identify the incoming duplicate's commits, reverting those commits on the incoming branch, then merging again. It MUST warn that choosing one archive side can retain both implementations.
+
 ## Decisions
 
 [0014-go-setup-bundle] Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,

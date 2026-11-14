@@ -5,3 +5,24 @@ Prerequisites: Python 3.11 or newer and uv. Create a root pyproject.toml with `[
 Derive the dependency graph from `FIREWEED_BIN modules --json`: use each module `dir`, `depends_on`, and resolved `zones`. Do not maintain a second dependency graph. Use the supplied import linter boundary hook to check Python imports against those live Fireweed modules and retained interfaces. Put implementation in `packages/<module>/internal/` and expose retained functions from `packages/<module>/__init__.py`. The eval hook adds the workspace's `packages` directory to Python's import path.
 
 Run the setup hook after creating the root workspace files. Name unittest methods with spec IDs, for example `test_ALC001Pass` for ALC-001.
+
+For a fail-first greeting eval, add `greet` to the retained interface and delegate to a temporary stub in a new disposable file. Both paths are relative to the module directory.
+
+`__init__.py` (add to the retained interface)
+
+```py
+from .internal.greet import greet as _greet
+
+
+def greet(name: str) -> str:
+    return _greet(name)
+```
+
+`internal/greet.py` (new disposable file)
+
+```py
+def greet(_name: str) -> str:
+    return ''
+```
+
+Import `greet` from the module's package in the eval. An assertion that `greet('Ada')` returns `Hello, Ada!` fails because the stub returns an empty string. During implementation, replace the stub with the required behavior and keep the retained interface unchanged.

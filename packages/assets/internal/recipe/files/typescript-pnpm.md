@@ -5,3 +5,25 @@ Prerequisites: Node.js 24 or newer and pnpm 10.15.1. Create a root package.json 
 Derive the dependency graph from `FIREWEED_BIN modules --json`: use every module `dir`, `depends_on`, and resolved `zones` for boundary checks. Do not maintain a second dependency graph in package metadata. Keep implementation in `src/internal/`, and expose only retained entry points through package exports. The hook checks source imports against Fireweed's graph.
 
 Run the setup hook after creating the root workspace files. Keep test names linked to spec IDs, for example `ALC001Pass` for ALC-001.
+
+For a fail-first greeting eval, add `greet` to the retained interface and delegate to a temporary stub in a new disposable file. Both paths are relative to the module directory.
+
+`src/index.ts` (add to the retained interface)
+
+```ts
+import { greet as greetInternal } from './internal/greet.ts';
+
+export function greet(name: string): string {
+  return greetInternal(name);
+}
+```
+
+`src/internal/greet.ts` (new disposable file)
+
+```ts
+export function greet(_name: string): string {
+  return '';
+}
+```
+
+Import `greet` from the module's package name in the eval. An assertion that `greet('Ada')` returns `Hello, Ada!` fails because the stub returns an empty string. During implementation, replace the stub with the required behavior and keep the retained interface unchanged.

@@ -528,6 +528,18 @@ Approved MUST return the calling worktree's held approved snapshot and canonical
 Approved MUST return found false without an error when the calling worktree owns no claim, including when another worktree owns a claim. It MUST return an error whose contracts.ErrorCode is P02 for unreadable or malformed claim data rather than report an approved snapshot.
 
 
+### FLOW-141
+On a successful Start or StartFromAttempt, when the base ref selected by gitstore.BaseRef is not an ancestor of the starting HEAD, the returned State.Diagnostics MUST contain a P05 warning naming that ref and explaining that the queue may be stale. This warning MUST NOT by itself reject or advance the change.
+
+### FLOW-142
+Start and StartFromAttempt MUST omit the base-tip P05 warning when the selected base tip is equal to or an ancestor of the starting HEAD.
+
+### FLOW-143
+Context MUST use the complete text of .fireweed/playbooks/<name>.md when that override exists, selecting the held phase name or regenerate under FLOW-083. When the override is absent it MUST use the corresponding assets.Playbook text.
+
+### FLOW-144
+The playbook hash appended by Done MUST be the full hexadecimal SHA-256 of the exact override or embedded text selected for that completed phase under the Context playbook-selection rule.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
