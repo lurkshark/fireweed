@@ -2,7 +2,7 @@
 bases:
     AST-001: bda96ef8
 module: assets
-phase: audit
+phase: impl
 run: 20261114T224408-20a0d920b11800befbe81f5a
 ---
 
@@ -39,4 +39,9 @@ and leave the protected VERSION file and retained facade in place.
 ## Provenance
 
 - evals 2026-11-14T22:46:03.700257Z agent=manual fireweed=0.2.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=149 failing=1 passing=148
+- audit 2026-11-14T22:46:43.308527Z agent=codex fireweed=0.2.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+
+## Audit
+
+No findings; checked AST-001
 
