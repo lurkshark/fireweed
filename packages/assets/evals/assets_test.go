@@ -1,7 +1,6 @@
 package evals_test
 
 import (
-	"encoding/json"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -13,8 +12,9 @@ import (
 )
 
 func Test_AST_001_Version(t *testing.T) {
-	const versionFile = "../internal/content/VERSION"
-	raw, err := os.ReadFile(versionFile)
+	const versionFile = "packages/assets/internal/content/VERSION"
+	source := filepath.Join("..", "..", "..")
+	raw, err := os.ReadFile(filepath.Join(source, versionFile))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -30,23 +30,23 @@ func Test_AST_001_Version(t *testing.T) {
 	if alternate == want {
 		alternate = "0.2.2"
 	}
-	original, err := filepath.Abs(versionFile)
-	if err != nil {
-		t.Fatal(err)
-	}
 	tmp := t.TempDir()
-	replacement := filepath.Join(tmp, "VERSION")
-	if err := os.WriteFile(replacement, []byte(alternate+"\n"), 0o600); err != nil {
-		t.Fatal(err)
+	// Rebuild from a separate source tree so the production VERSION stays intact.
+	for _, name := range []string{"go.mod", "go.sum"} {
+		data, err := os.ReadFile(filepath.Join(source, name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(tmp, name), data, 0o600); err != nil {
+			t.Fatal(err)
+		}
 	}
-
-	// Substitute only the build input while keeping the working tree intact.
-	overlay, err := json.Marshal(map[string]map[string]string{"Replace": {original: replacement}})
-	if err != nil {
-		t.Fatal(err)
+	for _, name := range []string{"packages/assets", "packages/contracts"} {
+		if err := os.CopyFS(filepath.Join(tmp, name), os.DirFS(filepath.Join(source, name))); err != nil {
+			t.Fatal(err)
+		}
 	}
-	overlayPath := filepath.Join(tmp, "overlay.json")
-	if err := os.WriteFile(overlayPath, overlay, 0o600); err != nil {
+	if err := os.WriteFile(filepath.Join(tmp, versionFile), []byte(alternate+"\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	mainPath := filepath.Join(tmp, "main.go")
@@ -62,7 +62,9 @@ func main() { fmt.Print(assets.Version()) }
 `), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	cmd := exec.Command("go", "run", "-overlay", overlayPath, mainPath)
+	cmd := exec.Command("go", "run", mainPath)
+	cmd.Dir = tmp
+	cmd.Env = append(os.Environ(), "GOWORK=off")
 	output, err := cmd.Output()
 	if exit, ok := err.(*exec.ExitError); ok {
 		t.Fatalf("build with alternate VERSION: %v\n%s", exit, exit.Stderr)
