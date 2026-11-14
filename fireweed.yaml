@@ -22,6 +22,7 @@ protected:
     - main.go
     - Makefile
     - scripts/**
+    - packages/assets/internal/content/VERSION
     - .goreleaser.yaml
     - README.md
     - LICENSE
