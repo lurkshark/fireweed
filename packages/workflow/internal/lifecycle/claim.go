@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"maps"
 	"os"
+	"os/exec"
 	"path"
 	"reflect"
 	"regexp"
@@ -406,6 +407,13 @@ func start(root, selector string, attempt int) (model.State, error) {
 	}
 	if !atRevision(root, local, change.Path) && !atRevision(root, shared, change.Path) {
 		state.Diagnostics = append(state.Diagnostics, warning("P04", change.Path, "change is absent from the local and shared base"))
+	}
+	if _, err := git(root, "merge-base", "--is-ancestor", shared, repo.Head); err != nil {
+		var exit *exec.ExitError
+		if !errors.As(err, &exit) || exit.ExitCode() != 1 {
+			return state, fmt.Errorf("check ancestry of base ref %s: %w", shared, err)
+		}
+		state.Diagnostics = append(state.Diagnostics, warning("P05", change.Path, "HEAD is missing the tip of %s. The queue may be stale.", shared))
 	}
 	if regenerate {
 		latest, err := latestImplementation(root, change.Module)
