@@ -1,6 +1,6 @@
 ---
 module: assets
-phase: audit
+phase: impl
 run: 20261114T062613-7dd1a31e8f07d0d658f87cbf
 ---
 
@@ -53,7 +53,12 @@ The implementation-writable files are
 the new disposable `src/internal/greet.ts` and `internal/greet.py` snippets,
 respectively. The fixture adds the retained snippets to the baseline files, so
 show them as additions to those files.
+## Audit
+
+No findings; checked AST-065
+
 ## Provenance
 
 - evals 2026-11-14T06:34:14.738117Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=146 failing=5 passing=141
+- audit 2026-11-14T06:34:38.937637Z agent=codex fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 
