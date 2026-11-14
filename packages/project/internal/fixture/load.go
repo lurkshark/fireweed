@@ -17,9 +17,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const configPath = "fireweed.yaml"
+
 type projectSource struct {
-	read func(string) ([]byte, error)
-	dirs func([]string) ([]string, error)
+	read        func(string) ([]byte, error)
+	dirs        func([]string) ([]string, error)
+	checkConfig func(map[string]any) error
 }
 
 func Load(root string) (model.Snapshot, error) {
@@ -32,8 +35,9 @@ func LoadForCheck(root string) (model.Snapshot, error) {
 
 func loadWorking(root string, checkSpecsSection bool) (model.Snapshot, error) {
 	return load(root, projectSource{
-		read: func(file string) ([]byte, error) { return os.ReadFile(source.Path(root, file)) },
-		dirs: func(patterns []string) ([]string, error) { return workingDirs(root, patterns) },
+		read:        func(file string) ([]byte, error) { return os.ReadFile(source.Path(root, file)) },
+		dirs:        func(patterns []string) ([]string, error) { return workingDirs(root, patterns) },
+		checkConfig: CheckCompatibility,
 	}, checkSpecsSection)
 }
 
@@ -75,7 +79,6 @@ func LoadAt(root, revision string) (model.Snapshot, error) {
 }
 
 func load(root string, files projectSource, checkSpecsSection bool) (model.Snapshot, error) {
-	const configPath = "fireweed.yaml"
 	data, err := files.read(configPath)
 	if err != nil {
 		return model.Snapshot{}, source.FileError("C01", configPath, err)
@@ -83,6 +86,11 @@ func load(root string, files projectSource, checkSpecsSection bool) (model.Snaps
 	config, patterns, defaults, err := decodeConfig(data)
 	if err != nil {
 		return model.Snapshot{}, source.FileError("C01", configPath, err)
+	}
+	if files.checkConfig != nil {
+		if err := files.checkConfig(config); err != nil {
+			return model.Snapshot{}, err
+		}
 	}
 	dirs, err := files.dirs(patterns)
 	if err != nil {

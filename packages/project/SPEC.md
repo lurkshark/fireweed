@@ -284,6 +284,15 @@ Check MUST reject a fixes or eval_fix identity absent from the target module's p
 ### PRJ-081
 Check MUST reject an already_satisfied identity that does not name an Added or Modified item of that change, using non-warning C07 naming the change and identity. Before Start, a local Added handle MUST be accepted as that item's identity; after assignment, its assigned ID MUST be accepted.
 
+### PRJ-082
+CheckCompatibility MUST accept an omitted fireweed pin or a nonempty comma-separated conjunction of comparisons using =, <, <=, > or >= and two- or three-component nonnegative decimal versions. It MUST compare against assets.Version numerically, treating an omitted patch component as zero.
+
+### PRJ-083
+CheckCompatibility MUST return a C01 CodedError when a present fireweed pin is malformed, is not a string, or excludes assets.Version. The error MUST identify the pin and running binary version and distinguish invalid syntax from incompatibility.
+
+### PRJ-084
+Load MUST apply CheckCompatibility to the live configuration before returning a Snapshot, and Check MUST expose a compatibility failure as non-warning C01 for fireweed.yaml.
+
 ## Decisions
 
 [0126-spec-history-query] History reads the project's current archive files, as the archive-backed show
