@@ -1,100 +1,78 @@
 # Rebuild progress
 
-## Current state (2026-11-13)
+## Current state (2026-11-14)
 
-Main is `3b3b64d`, including merged regenerations and follow-ups 0244–0255.
-The owner requested an R01–R29 traceability review and drafts only. The completed
-[mapping in ACCEPTANCE](ACCEPTANCE.md#traceability-review--2026-11-13) identifies
-existing spec/eval/archive support, confirmed gaps and remaining acceptance
-evidence. The revised queue has 16 drafts: 0256 and 0258–0272. The owner
-requested removal of the unsupported nested-root restriction (0257), narrowing
-of compatibility and override contracts, full Removed-section validation, and
-a runner follow-up retaining Start warnings (0272). The remaining drafts cover
-initialization, zones, document grammar, targets, guidance and audit attempts.
-None has started; no claims, phase commits, agents or drills were created for
-this queue.
+`origin/main` is [`f42333c`](https://github.com/lurkshark/fireweed/commit/f42333ca824b24a9d0730fa7b3bd4afa2d0ac377),
+the published v0.2.0 commit. The rebuild queue is empty and the coordinating
+clone has no active claims. The binary and repository pin use the 0.2 series.
+[D011](DECISIONS.md#d011--first-project-format) still applies to project
+format 1.
 
-The review worktree uses a copy of the clean controller built from `40b33c7`,
-matching the recorded pin below. D011 records the owner's clarification that
-format 1 has no predecessor; future format compatibility/migration remains due.
-The historical gate-4 baseline still needs reconciliation with the new main
-root, not an unreviewed baseline substitution.
+[PR #7](https://github.com/lurkshark/fireweed/pull/7) applied the acceptance
+changes 0256 and 0258–0272 and the audited 0257 FLOW-098 fixture correction.
+[PR #8](https://github.com/lurkshark/fireweed/pull/8) applied the five audited
+release fixture changes 0273–0277 and
+[0278](../../changes/archive/0278-release-v0-2-0.md). The version change retains
+one expected fail-first case, a separate passing audit and 1,349 passing
+implementation checks. Earlier maintenance regenerations 0244–0247 and
+follow-ups 0248–0255 remain in the [archive](../../changes/archive/).
 
-Draft validation: pinned-controller check passes with five nonblocking C18
-warnings (four pre-existing and one involving compatibility text). The 16
-drafts contain 29 proposed spec items within the shape limits; all R01–R29
-mapping rows, local document links and whitespace checks pass. No draft has
-run/phase fields or Provenance. Context and verify stop with P02 because no
-change is held; no phase verification, agents or acceptance exercise ran.
-Do not start a draft just to obtain claim-bound context.
+[ACCEPTANCE](ACCEPTANCE.md#full-completion-gates) records the current gate
+status. Gates **1, 3, 4, 5 and 7 remain open**. Gates **2 and 8 are met for
+v0.2.0**. Gate **6 retains its eight accepted historical proofs**.
 
-## Completed regeneration follow-ups
+## v0.2.0 release
 
-Fireweed applied and archived changes 0248–0255 on
-`dev/queued-regeneration-followups` at product revision `b220afc`. The queue
-is empty and all claims are clear. All required phase checks passed, including
-separate audits for 0248–0254. Change 0255 removed the drill cleanup permission
-precheck and passed 539 runner and app cases, including the repaired RUN-062
-fixture. No standalone drill ran.
+- Release candidate `5fa703f` and squash commit `f42333c` have identical
+  trees. Linux and macOS build, race suite, vet and product check passed in
+  [PR CI](https://github.com/lurkshark/fireweed/actions/runs/43634477716)
+  and [main CI](https://github.com/lurkshark/fireweed/actions/runs/43635141809).
+  The local macOS arm64 candidate passed `make check build` with Git 2.56.1
+  and `GOCACHE=/tmp/fireweed-rebuild-cache`.
+- The local GoReleaser dry run verified checksums for the four binary
+  archives and the source archive, and Ruby accepted the generated
+  formula. The installer used local download fixtures on macOS arm64.
+  It installed the valid archive, reported version 0.2.0 and rejected a
+  corrupted archive before installing it.
+- The [Release workflow](https://github.com/lurkshark/fireweed/actions/runs/43635178790)
+  succeeded on attempt 2. The first macOS job failed
+  `Test_CHK_081_DoctorPersistsCancelledProbeOutput` on timing. The failed-job
+  rerun passed on the same tag. The
+  [published release](https://github.com/lurkshark/fireweed/releases/tag/v0.2.0)
+  includes four binary archives, a source archive, SHA-256 checksums,
+  the formula and four native Homebrew bottles. The bottle jobs tested
+  installation and version, and the
+  [tap formula](https://github.com/lurkshark/homebrew-tap/blob/main/Formula/fireweed.rb)
+  points at v0.2.0. Runtime evidence for the Go suite is Linux and macOS;
+  four-target bottle evidence covers installation and version.
 
-Controller `check` passed with C18 repeated-sentence warnings. Phase
-verification reported app B02 warnings for APP-103 and APP-104 and a B03
-warning for the app eval-to-disposable line ratio (8,690/2,105).
+## Controller and history
 
-## Core module regeneration
+The recorded controller for the acceptance and release phase runs is
+`40b33c70f3de176eda058a96b06d2be1437da972`, built with `-trimpath` from a
+clean main checkout on 2026-11-13. Its binary reports 0.1.0. The 0.2.0 product
+and main’s 0.2-series pin are now in effect. Before the next lifecycle or
+gate-4 run, build and record a compatible controller from clean committed
+main when no run or claim is active, as directed by [SYSTEM](../../SYSTEM.md).
 
-The four owner-approved regenerations are complete on
-`dev/regenerate-core-modules` at product revision `466a0ba`, based on clean
-main `a74c362` containing prerequisite PR #2 and progressive-help PR #1.
-Fireweed removed each module's disposable implementation, then verified,
-committed and archived its replacement in dependency order.
+| Pinned-controller evidence | Result |
+| --- | --- |
+| `check` on `ee7f2cc` | Passed with five C18 warnings. |
+| `check-commits 9f0ca49..ee7f2cc` | 13 commits passed. |
+| `check-commits ec8908d..d67f68f` | 58 commits passed on the PR #7 phase branch. |
+| `check-commits ee7f2cc..5fa703f` | 20 commits passed on the PR #8 phase branch. |
 
-| Module | Archived change | Applied commit | Passing cases, including dependents |
-| --- | --- | --- | --- |
-| project | [0244](../../changes/archive/0244-regenerate-project.md) | `02f7414` | 1,025 |
-| workflow | [0245](../../changes/archive/0245-regenerate-workflow.md) | `6bb22fa` | 739 |
-| runner | [0246](../../changes/archive/0246-regenerate-runner.md) | `9809d17` | 539 |
-| app | [0247](../../changes/archive/0247-regenerate-app.md) | `466a0ba` | 369 |
+Main’s new root `9f0ca49` has the same tree as the retained pre-cutover tip
+`d99645e`. The required setup baseline `be35552` is an ancestor of
+`d99645e`. The older passing range `be35552..e1e1869` covered 1,304
+commits and included a passing standalone Doctor and controller CI with
+Doctor enabled. Review and verify both sides of the cutover for gate 4.
+A proposed split is `be35552..d99645e` and `9f0ca49..HEAD`, retaining
+the phase-branch evidence for squashed PRs.
 
-Each archived change retains its implementation Provenance. These maintenance
-regenerations followed the normal implementation-only lifecycle with audit
-configuration and all enforcement limits unchanged. Specs, retained interfaces,
-evals, unrelated modules and pre-existing archives are unchanged, including
-APP-156–APP-158 help and APP-159/APP-160 prerequisite contracts. No drill ran.
-The controller stayed pinned to `a74c362` throughout those regenerations.
-
-`make check build` passed all race-enabled Go tests, vet and the product build.
-Controller static and history checks passed over `a74c362..466a0ba`, and full
-controller CI over that range passed, including every module's evals, boundaries
-and doctor canaries with agent probes disabled. The initial CI attempt reported
-`Test_CHK_003_CHK_031_CHK_032_CHK_033_CHK_034_CHK_035_ModuleOverrideArgvAndOutput`;
-the isolated rerun and full CI retry passed without code, test or limit changes.
-
-Nonblocking warnings remain: three C18 repeated-clause warnings, B02 for
-APP-103 (17 cases) and APP-104 (19), and B03 for app's eval/disposable line
-ratio of 8,647/2,105, slightly above the limit of 4. Earlier drill proofs and
-owner-deferred gaps remain below; no new drill evidence is claimed.
-
-## Controller
-
-`.fireweed/bin/fireweed` was rebuilt with `-trimpath` on 2026-11-13 from a
-clean checkout of main's current revision before processing changes 0248–0255.
-No run or claim was active. Go build metadata confirms the revision and a clean
-tree.
-
-Controller source: `40b33c70f3de176eda058a96b06d2be1437da972`
-
-On a fresh macOS arm64 clone of an earlier controller source
-(`e1e1869131833778f1f8f1a23cf62b0d3b3869b3`), with
-`GOCACHE=/tmp/fireweed-rebuild-cache`, the product build, `go test ./...`,
-`go test -race ./...`, `go vet ./...`, `fireweed check` and standalone
-`fireweed doctor` passed, including canaries, recovery and both agent probes.
-`fireweed check-commits` passed 1,304 commits over
-`be35552b706aa3000ff8f11306d129ff1d701b85..e1e1869131833778f1f8f1a23cf62b0d3b3869b3`.
-`fireweed ci` with Doctor over the same range passed on a full retry; the first
-run failed the timing-sensitive
-`Test_RUN_036_RUN_037_OneBudgetAcrossChangesRetainsApplied`, which
-[0207](../../changes/archive/0207-time-budget-eval-margin.md) addresses.
+The release phase checks reported B02 for APP-103 (17 cases) and APP-104
+(19 cases) and B03 for app’s eval/disposable line ratio (9,046/2,133).
+Retain the nonblocking warnings for disposition in the final controller run.
 
 ## Drill proofs
 
@@ -124,95 +102,19 @@ above supersede them. Drills can be repeated, so the committed reports are
 the evidence kept; no copy of the reconstructions is stored in the
 repository.
 
-**Retries used dependent feedback.** Every retry above received the
-dependents' failing eval output and changed code to match it, so those five
-passes show the spec plus dependents' evals were enough, not the spec alone.
-[DECISIONS D009](DECISIONS.md#d009--drill-retries-and-the-dependent-signal)
-records the clarification, and
-[0202](../../changes/archive/0202-drill-independent-signal.md) changes the drill so
-that dependent failures are reported, not fed back.
-
-## Deferred gaps
-
-The owner deferred these gaps or addressed them through the linked changes.
-
-- **contracts:** fenced headings and level-one section boundaries (CON-002,
-  CON-009; [0226](../../changes/archive/0226-fenced-section-boundaries.md)); YAML NaN and offset-timestamp key equality (CON-008); evals that
-  pin error wording beyond the specified codes (CON-017 to CON-019;
-  [0227](../../changes/archive/0227-item-error-wording-evals.md)).
-- **gitstore:** unborn HEAD and overlapping tracked edits (GIT-001, GIT-003);
-  environment and PATH lookup (GIT-005); literal path syntax and index state
-  after a failed commit (GIT-007); abbreviated blob IDs, ref naming and
-  symbolic refs (GIT-008 to GIT-010).
-- **assets:** the `# Write evals` heading other modules' evals expect
-  (AST-002; [0206](../../changes/archive/0206-context-playbook-eval.md),
-  [0208](../../changes/archive/0208-static-cause-evals.md)); mixed-zone Go packages,
-  expected-failure JUnit status and static import resolution (AST-018,
-  AST-054, AST-056, AST-057).
-- **project:** C13 for duplicate slugs (PRJ-024;
-  [0203](../../changes/archive/0203-duplicate-slug-code.md)); app evals that pin
-  project wording (PRJ-021, PRJ-031, PRJ-041, PRJ-044;
-  [0208](../../changes/archive/0208-static-cause-evals.md)); C01 and U02 carried both
-  as metadata and as message prefixes (PRJ-004, PRJ-040, PRJ-056, PRJ-058,
-  PRJ-066; [0209](../../changes/archive/0209-project-coded-errors.md)); duplicate C08 diagnostics ([0228](../../changes/archive/0228-absent-edit-diagnostic-evals.md)), partial projections, numbering past
-  9999, intermediate graph validation, stale-view history, and the design's
-  warning for specs outside configured globs
-  ([0224](../../changes/archive/0224-spec-outside-globs-explanation.md),
-  [0225](../../changes/archive/0225-spec-outside-globs-warning.md)).
-- **checks:** which testcase-name tokens count as IDs (CHK-028, CHK-080;
-  [0204](../../changes/archive/0204-junit-label-tokens.md)); shell quoting around hook
-  placeholders (CHK-032, CHK-082;
-  [0242](../../changes/archive/0242-hook-placeholder-quoting.md)); boundary rule attribution (CHK-057); canary
-  identity (CHK-059); probe output ordering (CHK-065); Doctor fixtures that
-  cannot build the root binary in the reconstruction workspace (CHK-061).
-- **workflow:** report-retention scope (FLOW-052;
-  [0241](../../changes/archive/0241-eval-report-retention-scope.md) narrows it to
-  module reports and eval-hook output); P08 flags module runs rather than rework chains (FLOW-111;
-  [0217](../../changes/archive/0217-rework-chain-warning.md), see
-  [D010](DECISIONS.md#d010--p08-warns-on-rework-chains)).
-- **runner:** P01 for approval refusals (RUN-041;
-  [0205](../../changes/archive/0205-approval-refusal-code.md)); shell quoting for
-  already-quoted placeholders (RUN-003;
-  [0243](../../changes/archive/0243-agent-placeholder-quoting.md)); repeated verification on successful
-  phases (RUN-014; [0230](../../changes/archive/0230-single-phase-verification.md)).
-- **app:** approved-snapshot access when the live queue cannot be parsed
-  (APP-004, APP-012;
-  [0239](../../changes/archive/0239-approved-snapshot-query.md),
-  [0240](../../changes/archive/0240-approved-cli-metadata.md)); recovering lower-module codes by matching messages
-  (APP-037, APP-078, APP-085; 0209–0212 give lower-module errors their
-  codes and [0214](../../changes/archive/0214-app-reads-error-codes.md) reads them); Doctor probe names in JSON (APP-067;
-  [0229](../../changes/archive/0229-doctor-probe-names.md),
-  [0231](../../changes/archive/0231-doctor-json-probe-names.md)); the
-  module name and prefix grammar (APP-103, APP-159;
-  [0238](../../changes/archive/0238-module-identity-grammar.md)).
+Five passing retries used dependent eval feedback under the earlier drill
+behavior. [D009](DECISIONS.md#d009--drill-retries-and-the-dependent-signal)
+records that limitation, and
+[0202](../../changes/archive/0202-drill-independent-signal.md) keeps dependent
+failures out of subsequent worker prompts. Review the effect of later changes
+on each relevant proof before seeking approval for a repeat.
 
 ## Next step
 
-Owner review of the revised 16 drafts (0256, 0258–0272), then separate
-direction for execution if desired. The current request explicitly forbids
-running them. Sequence 0263 → 0264 → 0265 and 0262 → 0272; coordinate 0268
-with its diagnostic-producing changes before closing their acceptance gaps.
-ACCEPTANCE retains the binary next/run warning check and other open evidence.
-Do not run drills or the final completion gates as part of drafting.
-
-## Suggested follow-ups
-
-Not yet approved; each needs owner agreement before a change is written.
-
-- **Acceptance closure.** The R01–R29 mapping is complete. Review the drafted
-  fixes and the explicitly open runtime/history/delivery evidence in ACCEPTANCE;
-  the mapping alone does not close those gates and is not worker input.
-- **GIT-007 failed-commit state.** The gitstore drill found that a failed
-  commit can leave intent-to-add entries for selected new paths. Probe the
-  current code: if a failed lifecycle commit leaves the index changed, the
-  next step fails with P01 for a dirty worktree until someone resets it.
-  Write a fix only if the probe reproduces it.
-- **Flaky timed app eval.** One CI run had a second timing failure besides
-  RUN-036/RUN-037 that was never identified. Run the app evals repeatedly
-  (`go test -count=20 ./packages/app/...`) to find it. If the work simply
-  takes longer than the timer allows, ease the bound, as 0207 does, so that
-  timers only catch extreme outliers.
-- **App C18 warnings.** The product's `check` warns C18 for two app
-  sentences repeated across eight and three items ("It MUST leave stderr
-  empty." and the null-data failure rule). Decide whether they become
-  SYSTEM.md conventions or stay as specs.
+Review the R05 configured-agent Provenance gap and the gate-4 history split.
+Proceed with a focused authorized change for the provenance gap, then gather
+the final candidate’s plain Go, controller, binary integration and isolated
+self-hosting evidence in the order in
+[GOAL](GOAL.md). Preserve the existing release and drill evidence and refresh
+the portions affected by later changes. Earlier deferred drill observations
+are recorded in the [pre-release progress history](https://github.com/lurkshark/fireweed/blob/ec8908d/docs/rebuild/PROGRESS.md#deferred-gaps).
