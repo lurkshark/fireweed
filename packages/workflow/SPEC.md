@@ -534,6 +534,12 @@ On a successful Start or StartFromAttempt, when the base ref selected by gitstor
 ### FLOW-142
 Start and StartFromAttempt MUST omit the base-tip P05 warning when the selected base tip is equal to or an ancestor of the starting HEAD.
 
+### FLOW-143
+Context MUST use the complete text of .fireweed/playbooks/<name>.md when that override exists, selecting the held phase name or regenerate under FLOW-083. When the override is absent it MUST use the corresponding assets.Playbook text.
+
+### FLOW-144
+The playbook hash appended by Done MUST be the full hexadecimal SHA-256 of the exact override or embedded text selected for that completed phase under the Context playbook-selection rule.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.
