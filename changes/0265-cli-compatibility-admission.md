@@ -1,5 +1,5 @@
 ---
-blocked: APP-165 already passes before implementation and needs an author decision for fail-first.
+already_satisfied: [APP-165]
 module: app
 phase: evals
 run: 20261114T045429-ac71eb4f31d11ddab1f3c00e
@@ -62,8 +62,8 @@ Drafted at the owner's request after the R01–R29 traceability review.
 No lifecycle execution, agent invocation, drill or release is authorized by
 this drafting request. Workers must obtain context before their step and use
 fireweed verify; only the controller may advance or commit lifecycle work.
-## Questions
 
-Can the author mark APP-165 `already_satisfied` while retaining its passing
-regression evals? The current implementation already meets this preservation
-requirement, and `already_satisfied` is author-owned metadata.
+The owner approved recording APP-165 as already satisfied. Its passing
+regression evals cover the existing command exceptions. APP-163 and APP-164
+retain their fail-first requirements, and all specs and assertions remain in
+scope.
