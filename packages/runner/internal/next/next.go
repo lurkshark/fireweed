@@ -46,14 +46,30 @@ func WithBudget(ctx context.Context, request model.NextRequest, budget *policy.B
 		return result, err
 	}
 	config := state.Snapshot.Config
+	maxAttempts := policy.Attempts(config)
+	evalsAttempts := 0
 	var warnings []project.Diagnostic
 	for result.State.Phase != "applied" {
+		if ctx.Err() != nil {
+			return result, context.Cause(ctx)
+		}
 		state := result.State
 		role := "worker"
+		attempt := 1
 		switch state.Phase {
 		case "audit":
 			role = "audit"
-		case "evals", "impl":
+		case "evals":
+			if evalsAttempts == maxAttempts {
+				cause := fmt.Errorf("evals attempt allowance exhausted after %d attempts", maxAttempts)
+				ref, err := blockStep(&result, warnings, cause.Error())
+				if err != nil {
+					return result, policy.WithSecondary(cause, err)
+				}
+				return result, Blocked{Cause: fmt.Errorf("%w (saved attempt %s)", cause, ref)}
+			}
+			attempt += evalsAttempts
+		case "impl":
 		default:
 			return result, contracts.CodedError{Code: "P01", Subject: state.Change.Path, Cause: fmt.Errorf("unsupported phase %s", state.Phase)}
 		}
@@ -65,7 +81,7 @@ func WithBudget(ctx context.Context, request model.NextRequest, budget *policy.B
 				return result, err
 			}
 		}
-		for attempt := 1; ; {
+		for {
 			if ctx.Err() != nil {
 				return result, context.Cause(ctx)
 			}
@@ -125,6 +141,9 @@ func WithBudget(ctx context.Context, request model.NextRequest, budget *policy.B
 				result.State.Diagnostics = append(result.State.Diagnostics, done.Diagnostics...)
 			}
 			if err == nil {
+				if state.Phase == "evals" {
+					evalsAttempts = attempt
+				}
 				break
 			}
 			if ctx.Err() != nil {
@@ -136,23 +155,32 @@ func WithBudget(ctx context.Context, request model.NextRequest, budget *policy.B
 				}
 				return result, err
 			}
-			if attempt == policy.Attempts(config) {
-				block, blockErr := workflow.Block(workflow.BlockRequest{
-					Root: state.Snapshot.Root, Change: state.Change.Path,
-					Reason: fmt.Sprintf("%s verification failed after %d attempts: %v", state.Phase, attempt, err),
-				})
+			if attempt == maxAttempts {
+				reason := fmt.Sprintf("%s verification failed after %d attempts: %v", state.Phase, attempt, err)
+				ref, blockErr := blockStep(&result, warnings, reason)
 				if blockErr != nil {
 					return result, policy.WithSecondary(err, blockErr)
 				}
-				result.State = block.State
-				result.State.Diagnostics = append(result.State.Diagnostics, warnings...)
-				return result, Blocked{Cause: fmt.Errorf("%s verification exhausted (saved attempt %s): %w", state.Phase, block.AttemptRef, err)}
+				return result, Blocked{Cause: fmt.Errorf("%s verification exhausted (saved attempt %s): %w", state.Phase, ref, err)}
 			}
 			feedback = verificationFeedback(done, err)
 			attempt++
 		}
 	}
 	return result, nil
+}
+
+func blockStep(result *model.NextResult, warnings []project.Diagnostic, reason string) (string, error) {
+	state := result.State
+	block, err := workflow.Block(workflow.BlockRequest{
+		Root: state.Snapshot.Root, Change: state.Change.Path, Reason: reason,
+	})
+	if err != nil {
+		return "", err
+	}
+	result.State = block.State
+	result.State.Diagnostics = append(result.State.Diagnostics, warnings...)
+	return block.AttemptRef, nil
 }
 
 func acquire(ctx context.Context, request model.NextRequest) (workflow.State, policy.Usage, bool, error) {
