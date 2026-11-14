@@ -1,5 +1,8 @@
 ---
+blocked: FLOW-142 passes before implementation and needs an author amendment for fail-first verification.
 module: workflow
+phase: evals
+run: 20261114T022109-4d6a3a65325aa78d037f4c8b
 ---
 
 ## Motivation
@@ -15,10 +18,10 @@ No public signature or type changes.
 
 ## Added
 
-### new:base-tip-warning
+### FLOW-141
 On a successful Start or StartFromAttempt, when the base ref selected by gitstore.BaseRef is not an ancestor of the starting HEAD, the returned State.Diagnostics MUST contain a P05 warning naming that ref and explaining that the queue may be stale. This warning MUST NOT by itself reject or advance the change.
 
-### new:contained-base-tip
+### FLOW-142
 Start and StartFromAttempt MUST omit the base-tip P05 warning when the selected base tip is equal to or an ancestor of the starting HEAD.
 
 ## Modified
@@ -47,3 +50,10 @@ Drafted at the owner's request after the R01–R29 traceability review.
 No lifecycle execution, agent invocation, drill or release is authorized by
 this drafting request. Workers must obtain context before their step and use
 fireweed verify; only the controller may advance or commit lifecycle work.
+## Questions
+
+- Can the author record `already_satisfied: [FLOW-142]` in the approved
+  change before resuming the saved evals? Both acquisition paths already
+  omit the warning when HEAD contains the base tip. FLOW-141 has genuine
+  fail-first evidence, and FLOW-142's passing cases guard against an
+  unconditional warning once FLOW-141 is implemented.
