@@ -130,6 +130,7 @@ func (check *staticCheck) validateChange(p *projection, change model.Change) {
 	if evalFix && (fixes || len(change.Added)+len(change.Modified)+len(change.Removed) > 0) {
 		check.error("C07", change.Path, "eval_fix cannot be combined with fixes or spec edits")
 	}
+	check.validateRemovedContent(change)
 	index := p.modules[change.Module]
 	module := p.snapshot.Modules[index]
 	seen := make(map[string]bool)
@@ -173,6 +174,25 @@ func (check *staticCheck) validateChange(p *projection, change model.Change) {
 		}
 	}
 	check.validateBases(change, assignedItems(p.items[index]))
+}
+
+func (check *staticCheck) validateRemovedContent(change model.Change) {
+	section, _ := contracts.Section(change.Document.Body, "Removed")
+	// The item parser validates headings but drops text before the first one.
+	for _, line := range strings.Split(section, "\n") {
+		if strings.TrimSpace(line) == "" {
+			continue
+		}
+		if !strings.HasPrefix(line, "### ") {
+			check.error("C07", change.Path, "Removed has text before any item heading. Move it to Motivation or Notes.")
+		}
+		break
+	}
+	for _, item := range change.Removed {
+		if strings.TrimSpace(item.Body) != "" {
+			check.error("C07", change.Path, fmt.Sprintf("Removed item %s has body text. Move it to Motivation or Notes.", item.ID))
+		}
+	}
 }
 
 func (check *staticCheck) validateBases(change model.Change, previous map[string]contracts.Item) {

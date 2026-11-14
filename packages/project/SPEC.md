@@ -272,6 +272,9 @@ Check MUST apply the eval/disposable overlap rule to the current graph and each 
 ### PRJ-077
 Check MUST reject a module SPEC.md with zero or more than one level-two Specs section using a non-warning C03 diagnostic naming that file. Heading recognition MUST follow CON-002's fenced-code and ATX-heading rules. A single empty Specs section MUST remain valid.
 
+### PRJ-078
+Check MUST reject non-whitespace content anywhere in a pending change's Removed section other than valid assigned-ID headings, using non-warning C07 and identifying the change and offending item when present. An empty Removed section or valid headings separated only by whitespace MUST remain valid when their targets and bases are valid.
+
 ## Decisions
 
 [0126-spec-history-query] History reads the project's current archive files, as the archive-backed show
