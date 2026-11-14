@@ -49,6 +49,11 @@ func WithBudget(ctx context.Context, request model.NextRequest, budget *policy.B
 	maxAttempts := policy.Attempts(config)
 	evalsAttempts := 0
 	var warnings []project.Diagnostic
+	for _, diagnostic := range state.Diagnostics {
+		if diagnostic.Warning {
+			warnings = append(warnings, diagnostic)
+		}
+	}
 	for result.State.Phase != "applied" {
 		if ctx.Err() != nil {
 			return result, context.Cause(ctx)

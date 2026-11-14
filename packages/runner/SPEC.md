@@ -294,6 +294,9 @@ When audit returns to evals after that allowance is exhausted, Next MUST save an
 ### RUN-071
 Next's audit prompt MUST include the complete invoking-project .fireweed/playbooks/audit.md text when present and the embedded audit playbook when absent.
 
+### RUN-072
+Next MUST retain warnings returned by workflow.Start in State.Diagnostics on subsequent returns, including successful application, usage stops, invocation failures and verification exhaustion. Retained diagnostics MUST preserve code, message, path and warning status without being duplicated by phase advancement.
+
 ## Decisions
 
 [0075-bounded-agent-invocation] An unset configured timeout defaults to 90 minutes. limit_patterns are
