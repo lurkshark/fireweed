@@ -621,21 +621,6 @@ func nextAssertExhaustedBlock(t *testing.T, f nextFixture, r runner.NextResult, 
 	if !strings.Contains(held, "phase: "+phase) || !strings.Contains(held, "run: "+r.State.Run) || !strings.Contains(held, "### ALP-002") {
 		t.Error("fixture held phase lacked expected phase, run or assigned ID")
 	}
-	if parents := strings.Fields(nextGit(t, f.root, "rev-list", "--parents", "-n", "1", "HEAD")); len(parents) != 2 || parents[1] != phaseHead {
-		t.Errorf("block commit parents = %d, want held %s HEAD", len(parents)-1, phase)
-	}
-	if paths := nextGit(t, f.root, "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"); paths != nextChange {
-		t.Errorf("block commit paths = %q, want state only", paths)
-	}
-	if status := nextGit(t, f.root, "status", "--porcelain", "-uall"); status != "" {
-		t.Errorf("blocked checkout dirty: %q", status)
-	}
-	if claim := nextGit(t, f.root, "for-each-ref", "--format=%(refname)", "refs/fireweed/claims"); claim != "" {
-		t.Errorf("blocked claim retained: %q", claim)
-	}
-	if _, currentErr := workflow.Current(f.root, "next"); currentErr == nil {
-		t.Error("blocked change still held")
-	}
 	blocked := nextRead(t, f.root, nextChange)
 	if !strings.Contains(blocked, "phase: "+phase) || !strings.Contains(blocked, "run: "+r.State.Run) || !strings.Contains(blocked, "### ALP-002") || !strings.Contains(blocked, "blocked:") {
 		t.Error("block document lost phase, run, assigned ID or reason")
@@ -644,14 +629,39 @@ func nextAssertExhaustedBlock(t *testing.T, f nextFixture, r runner.NextResult, 
 	if r.State.Phase != phase || r.State.Run == "" || len(r.State.Change.Added) != 1 || r.State.Change.Added[0].ID != "ALP-002" || r.State.ClaimOID != "" || r.State.Head != nextGit(t, f.root, "rev-parse", "HEAD") || r.State.Snapshot.Root != f.root || strings.TrimSpace(reason) == "" {
 		t.Errorf("returned block state: phase=%q runPresent=%t assignedID=%t claimReleased=%t headMatches=%t snapshotMatches=%t blocked=%q", r.State.Phase, r.State.Run != "", len(r.State.Change.Added) == 1 && r.State.Change.Added[0].ID == "ALP-002", r.State.ClaimOID == "", r.State.Head == nextGit(t, f.root, "rev-parse", "HEAD"), r.State.Snapshot.Root == f.root, reason)
 	}
-	ref := "refs/fireweed/attempts/next/1"
+	return assertSavedBlock(t, f.root, "next", nextChange, phaseHead, err)
+}
+
+func assertSavedBlock(t *testing.T, root, slug, path, phaseHead string, err error) string {
+	t.Helper()
+	if parents := strings.Fields(nextGit(t, root, "rev-list", "--parents", "-n", "1", "HEAD")); len(parents) != 2 || parents[1] != phaseHead {
+		t.Errorf("block commit parents = %v, want held phase HEAD %s", parents[1:], phaseHead)
+	}
+	if paths := nextGit(t, root, "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"); paths != path {
+		t.Errorf("block commit paths = %q, want only %s", paths, path)
+	}
+	if status := nextGit(t, root, "--no-optional-locks", "status", "--porcelain", "-uall"); status != "" {
+		t.Errorf("blocked checkout dirty: %q", status)
+	}
+	if claim := nextGit(t, root, "for-each-ref", "--format=%(refname)", "refs/fireweed/claims"); claim != "" {
+		t.Errorf("blocked claim retained: %q", claim)
+	}
+	if _, currentErr := workflow.Current(root, slug); currentErr == nil {
+		t.Error("blocked change still held")
+	}
+	return assertSavedAttempt(t, root, slug, err)
+}
+
+func assertSavedAttempt(t *testing.T, root, slug string, err error) string {
+	t.Helper()
+	ref := "refs/fireweed/attempts/" + slug + "/1"
 	if err == nil || !strings.Contains(err.Error(), ref) {
 		t.Errorf("exhaustion error does not identify %s: %v", ref, err)
 	}
-	if oid := nextGit(t, f.root, "for-each-ref", "--format=%(objectname)", ref); oid == "" {
+	if oid := nextGit(t, root, "for-each-ref", "--format=%(objectname)", ref); oid == "" {
 		t.Errorf("saved attempt ref absent: %s", ref)
 		return ""
-	} else if kind := nextGit(t, f.root, "cat-file", "-t", oid); kind != "commit" {
+	} else if kind := nextGit(t, root, "cat-file", "-t", oid); kind != "commit" {
 		t.Errorf("attempt ref kind = %q, want commit", kind)
 	}
 	return ref
