@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -13,6 +12,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -1220,7 +1220,15 @@ func readRetainedReport(t *testing.T, path string) checks.Report {
 	return report
 }
 
-func Test_FLOW_005_FLOW_051_FLOW_052_FLOW_053_ContextAndProvenanceAndRetainedReports(t *testing.T) {
+func assertPlaybookHash(t *testing.T, line, playbook string) {
+	t.Helper()
+	want := fmt.Sprintf("playbook=%x", sha256.Sum256([]byte(playbook)))
+	if !slices.Contains(strings.Fields(line), want) {
+		t.Errorf("provenance line %q lacks %s", line, want)
+	}
+}
+
+func Test_FLOW_005_FLOW_051_FLOW_052_FLOW_053_FLOW_143_FLOW_144_ContextAndProvenanceAndRetainedReports(t *testing.T) {
 	provenanceLines := func(root, path string) []string {
 		body, ok := contracts.Section(readFile(t, root, path), "Provenance")
 		if !ok {
@@ -1331,10 +1339,7 @@ func Test_FLOW_005_FLOW_051_FLOW_052_FLOW_053_ContextAndProvenanceAndRetainedRep
 		if err != nil {
 			t.Fatal(err)
 		}
-		hash := sha256.Sum256([]byte(playbook))
-		if line == "" || !strings.Contains(line, "playbook="+hex.EncodeToString(hash[:])) {
-			t.Errorf("%s provenance line misses matching playbook hash: %q", phase, line)
-		}
+		assertPlaybookHash(t, line, playbook)
 		result := evalsResult
 		if phase == "impl" {
 			result = implResult
@@ -1376,14 +1381,27 @@ func Test_FLOW_005_FLOW_051_FLOW_052_FLOW_053_ContextAndProvenanceAndRetainedRep
 	}
 	configured := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
 	configuredPrevious := seedProvenance(configured)
-	commit(t, configured, "approved prior configured-agent provenance")
+	// Include metadata and trailing whitespace in the fixture's exact text.
+	const override = "---\nembedded_base: stale\n---\n\n# Project eval instructions\n\nUse the project's eval fixtures. \t"
+	write(t, configured, ".fireweed/playbooks/evals.md", override)
+	commit(t, configured, "approved eval playbook override and prior provenance")
 	start(t, configured)
+	for _, full := range []bool{false, true} {
+		prompt, err := workflow.Context(configured, "manual", full)
+		if err != nil {
+			t.Fatalf("Context with override (full=%t): %v", full, err)
+		}
+		if !strings.Contains(prompt, override) || strings.Contains(prompt, playbook) {
+			t.Errorf("Context (full=%t) did not select the complete project eval playbook", full)
+		}
+	}
 	req := request(configured)
 	req.Agent = "fixture-agent --model local"
 	if _, err := workflow.Done(context.Background(), req); err != nil {
 		t.Fatalf("configured-agent evals Done: %v", err)
 	}
-	assertAppend(configured, pendingCommitChange, configuredPrevious)
+	lines := assertAppend(configured, pendingCommitChange, configuredPrevious)
+	assertPlaybookHash(t, lines[len(lines)-1], override)
 	change, err := os.ReadFile(filepath.Join(configured, "changes/0001-manual.md"))
 	if err != nil || !strings.Contains(string(change), "fixture-agent --model local") {
 		t.Errorf("configured agent omitted from provenance: %v", err)

@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/lurkshark/fireweed/packages/assets"
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
@@ -73,14 +74,18 @@ Earlier implementation change.
 `, module, name, date, assets.Version(), hash))
 }
 
-func Test_FLOW_080_FLOW_081_FLOW_083_RegenerateDeletesProjectedDisposableAndRebuildsThroughArchive(t *testing.T) {
+func Test_FLOW_080_FLOW_081_FLOW_083_FLOW_143_FLOW_144_RegenerateDeletesProjectedDisposableAndRebuildsThroughArchive(t *testing.T) {
 	root := regenerateFixture(t, "protected: [packages/alpha/internal/global.go]\n")
 	change := readFile(t, root, "changes/0001-manual.md")
 	write(t, root, "changes/0001-manual.md", strings.Replace(change, "regenerate: true\n", "regenerate: true\nset:\n  preserve: [internal/keep.go]\n", 1))
 	spec := readFile(t, root, "packages/alpha/SPEC.md")
 	spec = strings.Replace(spec, "depends_on: []\n", "depends_on: []\ninterface: [api.go, internal/contract.go]\nappend_only: [internal/log.go]\n", 1)
 	write(t, root, "packages/alpha/SPEC.md", spec)
+	const regenerateOverride = "# Project regeneration instructions\n\nRebuild alpha using the retained contract and evals.\n"
+	const implOverride = "# Project implementation instructions\n\nRevise the existing implementation.\n"
 	files := map[string]string{
+		".fireweed/playbooks/impl.md":         implOverride,
+		".fireweed/playbooks/regenerate.md":   regenerateOverride,
 		"packages/alpha/api.go":               "package alpha\n",
 		"packages/alpha/evals/alpha_test.go":  "package alpha_test\n// retained eval\n",
 		"packages/alpha/internal/contract.go": "package alpha\n// retained interface\n",
@@ -129,7 +134,8 @@ func Test_FLOW_080_FLOW_081_FLOW_083_RegenerateDeletesProjectedDisposableAndRebu
 		t.Fatal(err)
 	}
 	context, err := workflow.Context(root, "manual", false)
-	if err != nil || !strings.Contains(context, regenerate) || strings.Contains(context, impl) {
+	if err != nil || !strings.Contains(context, regenerateOverride) || strings.Contains(context, implOverride) ||
+		strings.Contains(context, regenerate) || strings.Contains(context, impl) {
 		t.Errorf("regenerate Context did not select playbook: %v, %q", err, context)
 	}
 	if s.Phase != "impl" {
@@ -151,6 +157,8 @@ func Test_FLOW_080_FLOW_081_FLOW_083_RegenerateDeletesProjectedDisposableAndRebu
 	if !strings.Contains(archive, "phase: applied") || !strings.Contains(archive, "- impl ") {
 		t.Errorf("regenerate archive lacks implementation provenance: %q", archive)
 	}
+	provenance, _ := contracts.Section(archive, "Provenance")
+	assertPlaybookHash(t, strings.TrimSpace(provenance), regenerateOverride)
 	for name, want := range files {
 		if got := readFile(t, root, name); got != want {
 			t.Errorf("archived reconstruction changed retained %s: %q", name, got)
