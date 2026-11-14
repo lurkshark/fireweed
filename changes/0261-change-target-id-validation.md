@@ -1,6 +1,6 @@
 ---
 module: project
-phase: audit
+phase: impl
 run: 20261114T014126-fdca6ad831ebf4238c154164
 ---
 
@@ -58,7 +58,12 @@ controller verification passed in the evals phase.
 `packages/project/internal/queue/validate.go` is implementation-writable for
 all three specs. Check already walks the queue in order and has access to the
 change edits and the module's projected items after each application.
+## Audit
+
+No findings; checked PRJ-079, PRJ-080, PRJ-081
+
 ## Provenance
 
 - evals 2026-11-14T01:45:11.394986Z agent=codex fireweed=0.1.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=229 failing=26 passing=203
+- audit 2026-11-14T01:45:25.841459Z agent=codex fireweed=0.1.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 
