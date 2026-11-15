@@ -53,10 +53,6 @@ func GC(ctx context.Context, request model.GCRequest) (model.GCResult, error) {
 	for _, change := range archived {
 		archivedSlugs[change.Slug] = true
 	}
-	registered, err := registeredWorktrees(root)
-	if err != nil {
-		return result, err
-	}
 	all, err := refs(root, "refs/fireweed/")
 	if err != nil {
 		return result, err
@@ -77,7 +73,7 @@ func GC(ctx context.Context, request model.GCRequest) (model.GCResult, error) {
 			}
 			if json.Unmarshal(data, &owner) == nil && owner.Worktree != "" {
 				working, err := filepath.EvalSymlinks(owner.Worktree)
-				expired = os.IsNotExist(err) || err == nil && !registered[working]
+				expired = os.IsNotExist(err) || err == nil && !registeredWorktree(working, repo.CommonDir)
 			}
 		case strings.HasPrefix(r.name, attemptsPrefix):
 			slug, value, _ := strings.Cut(strings.TrimPrefix(r.name, attemptsPrefix), "/")
@@ -98,19 +94,33 @@ func GC(ctx context.Context, request model.GCRequest) (model.GCResult, error) {
 	return result, nil
 }
 
-func registeredWorktrees(root string) (map[string]bool, error) {
-	out, err := git(root, "worktree", "list", "--porcelain", "-z")
+func registeredWorktree(worktree, commonDir string) bool {
+	gitfile := filepath.Join(worktree, ".git")
+	out, err := git(worktree, "rev-parse", "--resolve-git-dir", gitfile)
 	if err != nil {
-		return nil, err
+		return false
 	}
-	result := make(map[string]bool)
-	for _, record := range gitFields(out) {
-		name, ok := strings.CutPrefix(record, "worktree ")
-		if ok {
-			if real, err := filepath.EvalSymlinks(name); err == nil {
-				result[real] = true
-			}
-		}
+	admin, err := filepath.EvalSymlinks(strings.TrimSuffix(out, "\n"))
+	if err != nil {
+		return false
 	}
-	return result, nil
+	if admin == commonDir {
+		return gitfile == commonDir
+	}
+	if filepath.Dir(admin) != filepath.Join(commonDir, "worktrees") {
+		return false
+	}
+
+	// Match the linked registration's back pointer to the actual worktree.
+	// Legacy porcelain can contain literal newlines in worktree paths.
+	backlink, err := os.ReadFile(filepath.Join(admin, "gitdir"))
+	if err != nil {
+		return false
+	}
+	registered := strings.TrimSuffix(string(backlink), "\n")
+	if !filepath.IsAbs(registered) {
+		registered = filepath.Join(admin, registered)
+	}
+	parent, err := filepath.EvalSymlinks(filepath.Dir(registered))
+	return err == nil && parent == worktree && filepath.Base(registered) == ".git"
 }

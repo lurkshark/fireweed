@@ -3,7 +3,10 @@ package lifecycle
 import (
 	"errors"
 	"fmt"
+	"maps"
+	"os"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -319,23 +322,8 @@ func Abandon(root, selector string) (string, error) {
 	}
 	var result string
 	err = tempIndex(root, repo.Head, func(env map[string]string) error {
-		for _, commit := range commits {
-			var patch string
-			var err error
-			paths := []string{"--", ".", ":(exclude,top)" + pendingPath(change), ":(exclude,top)" + archivePath(change)}
-			if commit.parent == "" {
-				patch, err = git(root, append([]string{"show", "--format=", "--binary", "--no-renames", commit.oid}, paths...)...)
-			} else {
-				patch, err = git(root, append([]string{"diff", "--binary", "--no-renames", commit.parent, commit.oid}, paths...)...)
-			}
-			if err != nil {
-				return err
-			}
-			if patch != "" {
-				if _, err := gitInput(root, []byte(patch), env, "apply", "--cached", "--3way", "--reverse", "--"); err != nil {
-					return fmt.Errorf("reverse phase commit %s: %w", commit.oid, err)
-				}
-			}
+		if err := reversePhaseCommits(root, change, commits, env); err != nil {
+			return err
 		}
 		if _, err := gitInput(root, nil, env, "update-index", "--force-remove", "--", change.Path); err != nil {
 			return err
@@ -354,6 +342,48 @@ func Abandon(root, selector string) (string, error) {
 		return "", errors.Join(err, rollback)
 	}
 	return result, nil
+}
+
+func reversePhaseCommits(root string, change project.Change, commits []changeCommit, index map[string]string) error {
+	if len(commits) == 0 {
+		return nil
+	}
+	gitDir, err := git(root, "rev-parse", "--absolute-git-dir")
+	if err != nil {
+		return err
+	}
+	// Apple Git 2.30 needs a working tree for three-way apply. Keep it
+	// beside the temporary index so a failed apply cannot touch the checkout.
+	scratch := filepath.Join(filepath.Dir(index["GIT_INDEX_FILE"]), "worktree")
+	if err := os.Mkdir(scratch, 0700); err != nil {
+		return err
+	}
+	env := maps.Clone(index)
+	env["GIT_DIR"] = strings.TrimSuffix(gitDir, "\n")
+	env["GIT_WORK_TREE"] = scratch
+	if _, err := gitInput(scratch, nil, env, "checkout-index", "--all", "--index"); err != nil {
+		return err
+	}
+
+	paths := []string{"--", ".", ":(exclude,top)" + pendingPath(change), ":(exclude,top)" + archivePath(change)}
+	for _, commit := range commits {
+		var patch string
+		var err error
+		if commit.parent == "" {
+			patch, err = git(root, append([]string{"show", "--format=", "--binary", "--no-renames", commit.oid}, paths...)...)
+		} else {
+			patch, err = git(root, append([]string{"diff", "--binary", "--no-renames", commit.parent, commit.oid}, paths...)...)
+		}
+		if err != nil {
+			return err
+		}
+		if patch != "" {
+			if _, err := gitInput(scratch, []byte(patch), env, "apply", "--index", "--3way", "--reverse", "--"); err != nil {
+				return fmt.Errorf("reverse phase commit %s: %w", commit.oid, err)
+			}
+		}
+	}
+	return nil
 }
 
 func drillDate(root, module string) (time.Time, string) {
