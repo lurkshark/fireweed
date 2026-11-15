@@ -109,9 +109,12 @@ hooks:
   eval: [sh, .fireweed/eval.sh, "{module}", "{report}"]
   boundaries: [sh, .fireweed/boundaries.sh]
 agent:
-  command: [bash, %q, %q, %q, "{prompt}"]
+  default: fixture-worker
+  commands:
+    fixture-worker: [bash, %q, %q, %q, "{prompt}"]
+    fixture-auditor: [bash, %q, %q, "{prompt}"]
 audit:
-  command: [bash, %q, %q, "{prompt}"]
+  agent: fixture-auditor
 timeout: 50ms
 `, "="+assets.Version(), filepath.Join(agents, "worker.sh"), agents, mode, filepath.Join(agents, "auditor.sh"), agents))
 	nextWrite(t, root, ".fireweed/eval.sh", `#!/bin/sh

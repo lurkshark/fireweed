@@ -76,7 +76,7 @@ func Test_RUN_063_InvokeAgentPersistsStreamsOnFailureTimeoutCancellationAndAppen
 				}()
 				defer cancel()
 			}
-			snap.Config["agent"] = map[string]any{"command": []any{"/bin/sh", "-c", command}}
+			configureFixtureAgents(snap, []any{"/bin/sh", "-c", command}, nil)
 			request.Snapshot = snap
 			result, err := runner.InvokeAgent(ctx, request)
 			if (err != nil) != tc.wantError || result.Stdout != tc.stdout || result.Stderr != tc.stderr {
@@ -183,7 +183,7 @@ func Test_RUN_065_DrillLogRunIsStableAcrossUsageAndReconstructionRetries(t *test
 
 func Test_RUN_066_InvokeAgentLogContextDefaultsAndExplicitFields(t *testing.T) {
 	snap := agentFixture(t)
-	snap.Config["agent"] = map[string]any{"command": []any{"/bin/sh", "-c", `printf 'default output'; printf 'default error' >&2`}}
+	configureFixtureAgents(snap, []any{"/bin/sh", "-c", `printf 'default output'; printf 'default error' >&2`}, nil)
 	var previous string
 	for i := 0; i < 2; i++ {
 		result, err := runner.InvokeAgent(context.Background(), request(snap, "worker", ""))
