@@ -3,7 +3,7 @@ bases:
     APP-053: 9d4f8010
     APP-054: 6a5a89bc
 module: app
-phase: audit
+phase: impl
 run: 20261115T030854-df5790b964e017e06e81986a
 ---
 
@@ -60,7 +60,12 @@ configuration lacks `agent.commands`, `agent.default`, and the explicit
 Implementation can update option parsing in `packages/app/internal/entry/entry.go`,
 drill dispatch and diagnostics in `packages/app/internal/entry/lifecycle.go`, and
 generated configuration in `packages/app/internal/entry/setup.go`.
+## Audit
+
+No findings; checked APP-053, APP-054, APP-166, APP-167
+
 ## Provenance
 
 - evals 2026-11-15T03:19:28.971846Z agent=codex fireweed=0.2.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=403 failing=9 passing=394
+- audit 2026-11-15T03:19:45.577594Z agent=codex fireweed=0.2.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 
