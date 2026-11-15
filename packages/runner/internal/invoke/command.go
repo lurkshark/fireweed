@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+
+	"github.com/lurkshark/fireweed/packages/project"
 )
 
 func Mapping(value any) map[string]any {
@@ -32,27 +34,37 @@ func Strings(value any) ([]string, error) {
 	}
 }
 
-func Command(config map[string]any, role string) any {
-	if role == "audit" {
-		if command := Mapping(config["audit"])["command"]; command != nil {
-			return command
-		}
-	}
-	return Mapping(config["agent"])["command"]
+func Name(config map[string]any, role string) string {
+	command, _, _ := project.ResolveAgentCommand(config, role, "")
+	return CommandName(command)
 }
 
-func Name(config map[string]any, role string) string {
-	command := Command(config, role)
-	var args []string
-	if shell, ok := command.(string); ok {
-		args = strings.Fields(shell)
-	} else {
-		args, _ = Strings(command)
-	}
-	if len(args) > 0 {
+func CommandName(command any) string {
+	if args := commandWords(command); len(args) > 0 {
 		return filepath.Base(args[0])
 	}
 	return "unknown"
+}
+
+func Model(command any) string {
+	args := commandWords(command)
+	for i, arg := range args {
+		switch {
+		case (arg == "-m" || arg == "--model") && i+1 < len(args):
+			return args[i+1]
+		case strings.HasPrefix(arg, "--model="):
+			return strings.TrimPrefix(arg, "--model=")
+		}
+	}
+	return "unknown"
+}
+
+func commandWords(command any) []string {
+	if shell, ok := command.(string); ok {
+		return strings.Fields(shell)
+	}
+	args, _ := Strings(command)
+	return args
 }
 
 func Quote(value string) string {

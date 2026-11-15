@@ -9,30 +9,9 @@ import (
 	"github.com/lurkshark/fireweed/packages/checks"
 	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project"
-	"github.com/lurkshark/fireweed/packages/runner/internal/invoke"
 	"github.com/lurkshark/fireweed/packages/runner/internal/workspace"
 	"github.com/lurkshark/fireweed/packages/runner/model"
 )
-
-func configuredModel(config map[string]any) string {
-	if name, _ := invoke.Mapping(config["agent"])["model"].(string); name != "" {
-		return name
-	}
-	command := invoke.Command(config, "worker")
-	args, _ := invoke.Strings(command)
-	if shell, ok := command.(string); ok {
-		args = strings.Fields(shell)
-	}
-	for i, arg := range args {
-		switch {
-		case (arg == "-m" || arg == "--model") && i+1 < len(args):
-			return args[i+1]
-		case strings.HasPrefix(arg, "--model="):
-			return strings.TrimPrefix(arg, "--model=")
-		}
-	}
-	return "unknown"
-}
 
 func writeReport(root string, now time.Time, result *model.DrillResult, dependents []project.Module, notes string, failures []string) error {
 	var body strings.Builder
