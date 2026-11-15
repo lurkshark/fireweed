@@ -73,8 +73,15 @@ func doctorCLIFixtureAt(t *testing.T, bin, root string) (string, string, string)
 	doctorCLIConfig(t, root, func(config map[string]any) {
 		config["modules"] = []string{"packages/alpha"}
 		config["hooks"].(map[string]any)["setup"] = "sh .fireweed/setup.sh"
-		config["agent"].(map[string]any)["command"] = []string{"bash", ".fireweed/agent.sh", "{prompt}"}
-		config["audit"].(map[string]any)["command"] = []string{"bash", ".fireweed/audit.sh", "{prompt}"}
+		worker := []string{"bash", ".fireweed/agent.sh", "{prompt}"}
+		auditor := []string{"bash", ".fireweed/audit.sh", "{prompt}"}
+		agent := config["agent"].(map[string]any)
+		agent["command"] = worker
+		agent["commands"] = map[string]any{"worker": worker, "auditor": auditor}
+		agent["default"] = "worker"
+		audit := config["audit"].(map[string]any)
+		audit["command"] = auditor
+		audit["agent"] = "auditor"
 	})
 	doctorCLIGit(t, root, "init", "-b", "main")
 	doctorCLIGit(t, root, "config", "user.name", "Doctor CLI Fixture")
