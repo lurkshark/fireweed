@@ -26,6 +26,10 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 	if err != nil {
 		return result, err
 	}
+	command, _, err := project.ResolveAgentCommand(snapshot.Config, "worker", request.AgentAlias)
+	if err != nil {
+		return result, err
+	}
 	usage, err := policy.UsagePolicy(snapshot.Config)
 	if err != nil {
 		return result, err
@@ -40,8 +44,8 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 	}
 	now := time.Now().UTC()
 	result.Base, result.Date = repo.Head, now.Format("20060102T150405.000000000")
-	result.Agent = invoke.Name(snapshot.Config, "worker")
-	result.Model = configuredModel(snapshot.Config)
+	result.Agent = invoke.CommandName(command)
+	result.Model = invoke.Model(command)
 	result.Dependents = make(map[string]checks.Report)
 	dependents := dependentModules(snapshot, target.Name)
 
@@ -117,7 +121,7 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 			return result, context.Cause(ctx)
 		}
 		agentRequest.Attempt, agentRequest.Prompt = attempt, prompt+feedback
-		agent, agentErr := invoke.Agent(ctx, agentRequest)
+		agent, agentErr := invoke.AgentWithCommand(ctx, agentRequest, command)
 		result.Steps = append(result.Steps, agent)
 		if file, readErr := workspace.Read(input, "DRILL_NOTES.md"); readErr == nil && file.Mode.IsRegular() {
 			notes = file.Data

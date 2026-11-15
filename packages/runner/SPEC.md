@@ -18,7 +18,7 @@ name: runner
 ## Specs
 
 ### RUN-001
-InvokeAgent MUST select agent.command for the worker role and audit.command for the audit role, falling back to agent.command when audit.command is unset.
+InvokeAgent MUST select the command for the requested role from Snapshot.Config using project.ResolveAgentCommand and propagate any resolution error.
 
 ### RUN-002
 InvokeAgent MUST run the selected command from Snapshot.Root.
@@ -246,7 +246,7 @@ The reconstruction prompt MUST include the target spec and Decisions, identify i
 Drill MUST reject an attempt that modified or deleted any input file present after setup, before importing code. It MUST import only the target's rebuilt disposable files into the verification worktree, ignoring other files the worker or its eval runs created, without changing retained files or the invoking implementation.
 
 ### RUN-056
-Drill MUST use the configured worker command, wrapper and timeout through InvokeAgent, retaining ordered AgentResults in Steps. Non-usage failures and verification retries MUST share the configured attempts bound, retain rebuilt work and include the preceding reconstruction or own-eval failure in retry prompts.
+Drill MUST use the configured worker default or the command selected by AgentAlias. Every invocation MUST use the configured wrapper and timeout through InvokeAgent and retain its AgentResult in Steps in order. Non-usage failures and verification retries MUST share the configured attempts bound, retain rebuilt work and include the preceding reconstruction or own-eval failure in retry prompts.
 
 ### RUN-057
 Drill MUST treat usage-limit responses as the same attempt, applying configured limit_wait and limit_budget without spending a failed attempt. An exhausted usage budget MUST return an IsUsageStop error with Result stopped; cancellation or timeout MUST return an error and stop reconstruction.
@@ -296,6 +296,12 @@ Next's audit prompt MUST include the complete invoking-project .fireweed/playboo
 
 ### RUN-072
 Next MUST retain warnings returned by workflow.Start in State.Diagnostics on subsequent returns, including successful application, usage stops, invocation failures and verification exhaustion. Retained diagnostics MUST preserve code, message, path and warning status without being duplicated by phase advancement.
+
+### RUN-073
+Drill MUST resolve its selected command before creating scratch workspaces or running hooks or agents and propagate the resolution error.
+
+### RUN-074
+Drill MUST derive Agent and Model from the selected command using the existing executable and model-flag conventions and write those values to the drill report.
 
 ## Decisions
 

@@ -48,9 +48,9 @@ func doctorPromptFileRemoved(t *testing.T, path string) {
 func Test_CHK_082_CHK_083_DoctorExpandsSelectedCommandsAndWrapperOnce(t *testing.T) {
 	f := localDoctorFixture(t)
 	f.editConfig(func(config map[string]any) {
-		config["agent"].(map[string]any)["command"] = []any{"bash", ".fireweed/agent.sh", "pre{prompt}post", "file={prompt_file}", "common={git_common_dir}", "literal {unknown}"}
+		doctorCommands(config)[doctorWorkerAlias] = []any{"bash", ".fireweed/agent.sh", "pre{prompt}post", "file={prompt_file}", "common={git_common_dir}", "literal {unknown}"}
 		// The shell command leaves placeholders unquoted. The worker and wrapper use YAML sequences.
-		config["audit"].(map[string]any)["command"] = "bash .fireweed/audit.sh {prompt} {prompt_file} {git_common_dir}"
+		doctorCommands(config)[doctorAuditAlias] = "bash .fireweed/audit.sh {prompt} {prompt_file} {git_common_dir}"
 		config["agent"].(map[string]any)["wrap"] = []any{"bash", ".fireweed/prompt-wrap.sh", "{prompt_file}", "{prompt}", "{git_common_dir}"}
 	})
 	f.put(".fireweed/prompt-wrap.sh", fmt.Sprintf(`#!/bin/bash
@@ -129,9 +129,9 @@ func Test_CHK_083_DoctorRemovesPromptFileOnProbeFailures(t *testing.T) {
 			f := localDoctorFixture(t)
 			ready := filepath.Join(t.TempDir(), "ready")
 			f.editConfig(func(config map[string]any) {
-				config["agent"].(map[string]any)["command"] = []any{"bash", ".fireweed/agent.sh", "{prompt_file}"}
+				doctorCommands(config)[doctorWorkerAlias] = []any{"bash", ".fireweed/agent.sh", "{prompt_file}"}
 				if mode == "launch" {
-					config["agent"].(map[string]any)["command"] = []any{filepath.Join(f.root, "missing-agent"), "{prompt_file}"}
+					doctorCommands(config)[doctorWorkerAlias] = []any{filepath.Join(f.root, "missing-agent"), "{prompt_file}"}
 					config["agent"].(map[string]any)["wrap"] = []any{"bash", ".fireweed/prompt-wrap.sh", "{prompt_file}"}
 				}
 			})
@@ -244,8 +244,8 @@ printf 'FIREWEED_DOCTOR_OK\n'
 func Test_CHK_082_CHK_083_DoctorWrapperOnlyFileWithAuditFallback(t *testing.T) {
 	f := localDoctorFixture(t)
 	f.editConfig(func(config map[string]any) {
-		delete(config["audit"].(map[string]any), "command")
-		config["agent"].(map[string]any)["command"] = []any{"bash", ".fireweed/agent.sh", "{prompt}"}
+		delete(config["audit"].(map[string]any), "agent")
+		doctorCommands(config)[doctorWorkerAlias] = []any{"bash", ".fireweed/agent.sh", "{prompt}"}
 		config["agent"].(map[string]any)["wrap"] = []any{"bash", ".fireweed/prompt-wrap.sh", "{prompt_file}"}
 	})
 	f.put(".fireweed/prompt-wrap.sh", fmt.Sprintf(`#!/bin/bash

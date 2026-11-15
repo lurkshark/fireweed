@@ -57,6 +57,8 @@ AUDIT
 	appPut(t, root, ".gitignore", ".fireweed/runs/\n.fireweed/go-test.log\n")
 	appPut(t, root, "go.mod", "module example.invalid/next-cli\n\ngo 1.22\n")
 	appPut(t, root, "SYSTEM.md", "# Fixture\n")
+	workerCommand := fmt.Sprintf(`[bash, %q, %q, "{prompt}", %q]`, worker, logs, bin)
+	auditCommand := fmt.Sprintf(`[bash, %q, %q, "{prompt}", %q]`, auditor, logs, bin)
 	appPut(t, root, "fireweed.yaml", fmt.Sprintf(`fireweed: %q
 version: 1
 base: main
@@ -69,10 +71,13 @@ hooks:
   eval: [sh, .fireweed/eval.sh, "{module}", "{report}"]
   boundaries: [sh, .fireweed/boundaries.sh]
 agent:
-  command: [bash, %q, %q, "{prompt}", %q]
+  commands:
+    worker: %s
+    auditor: %s
+  default: worker
 audit:
-  command: [bash, %q, %q, "{prompt}", %q]
-`, fixtureBinaryPin, worker, logs, bin, auditor, logs, bin))
+  agent: auditor
+`, fixtureBinaryPin, workerCommand, auditCommand))
 	appPut(t, root, ".fireweed/expected-bin", bin+"\n")
 	appPut(t, root, ".fireweed/eval.sh", `#!/bin/sh
 expected=$(cat .fireweed/expected-bin)

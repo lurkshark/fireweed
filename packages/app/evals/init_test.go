@@ -33,12 +33,10 @@ type initConfig struct {
 	Protected      []string       `yaml:"protected"`
 	WorkerWritable []string       `yaml:"worker_writable"`
 	Agent          struct {
-		Command any `yaml:"command"`
+		Default  string         `yaml:"default"`
+		Commands map[string]any `yaml:"commands"`
 	} `yaml:"agent"`
-	Audit struct {
-		Enabled bool `yaml:"enabled"`
-		Command any  `yaml:"command"`
-	} `yaml:"audit"`
+	Audit map[string]any `yaml:"audit"`
 }
 
 func readInitFile(t *testing.T, root, name string) string {
@@ -60,20 +58,35 @@ func readInitConfig(t *testing.T, root string) initConfig {
 	return config
 }
 
-func initCommand(value any) []string {
-	items, ok := value.([]any)
-	if !ok {
-		return nil
+var (
+	initCodexCommand  = []any{"codex", "exec", "{prompt}"}
+	initClaudeCommand = []any{"claude", "-p", "{prompt}", "--permission-mode", "acceptEdits"}
+)
+
+func assertInitWorkerCommand(t *testing.T, config initConfig, want any) {
+	t.Helper()
+	alias := config.Agent.Default
+	if got := config.Agent.Commands[alias]; alias == "" || !reflect.DeepEqual(got, want) {
+		t.Errorf("APP-053 agent.default %q resolves in agent.commands to %#v; want %#v", alias, got, want)
 	}
-	result := make([]string, 0, len(items))
-	for _, item := range items {
-		value, ok := item.(string)
-		if !ok {
-			return nil
+}
+
+func assertInitAuditCommand(t *testing.T, config initConfig, want any) {
+	t.Helper()
+	if config.Audit["enabled"] != true {
+		t.Errorf("APP-054 audit.enabled = %#v; want true", config.Audit["enabled"])
+	}
+	selector, present := config.Audit["agent"]
+	if want == nil {
+		if present {
+			t.Errorf("APP-054 audit.agent = %#v; omit the selector to inherit agent.default", selector)
 		}
-		result = append(result, value)
+		return
 	}
-	return result
+	alias, _ := selector.(string)
+	if got := config.Agent.Commands[alias]; alias == "" || !reflect.DeepEqual(got, want) {
+		t.Errorf("APP-054 audit.agent %#v resolves in agent.commands to %#v; want %#v", selector, got, want)
+	}
 }
 
 func assertInitOutput(t *testing.T, status int, stdout, stderr, instructions string) {
@@ -231,20 +244,8 @@ func Test_APP_041_APP_042_APP_043_APP_044_APP_045_APP_046_APP_050_APP_053_APP_05
 	if _, err := os.Stat(filepath.Join(root, "packages/app/api.go.tmpl")); !os.IsNotExist(err) {
 		t.Errorf("APP-050 left template filename: %v", err)
 	}
-	if got := initCommand(config.Agent.Command); !reflect.DeepEqual(got, []string{"codex", "exec", "{prompt}"}) {
-		t.Errorf("APP-053 codex command = %q", got)
-	}
-	if !config.Audit.Enabled || config.Audit.Command != nil {
-		t.Errorf("APP-054 audit = %+v; want enabled with agent fallback", config.Audit)
-	}
-	var rawConfig map[string]any
-	if err := yaml.Unmarshal([]byte(readInitFile(t, root, "fireweed.yaml")), &rawConfig); err == nil {
-		if audit, ok := rawConfig["audit"].(map[string]any); ok {
-			if _, present := audit["command"]; present {
-				t.Error("APP-054 audit.command must be unset for agent fallback")
-			}
-		}
-	}
+	assertInitWorkerCommand(t, config, initCodexCommand)
+	assertInitAuditCommand(t, config, nil)
 	if ignore := readInitFile(t, root, ".gitignore"); !strings.Contains(ignore, "custom-entry") || !strings.Contains(ignore, ".fireweed/runs/") {
 		t.Errorf("APP-059 .gitignore = %q", ignore)
 	}
@@ -274,7 +275,7 @@ func Test_APP_041_APP_042_APP_043_APP_044_APP_045_APP_046_APP_050_APP_053_APP_05
 	}
 }
 
-func Test_APP_043_APP_044_APP_047_APP_051_APP_161_NoneInit(t *testing.T) {
+func Test_APP_043_APP_044_APP_047_APP_051_APP_053_APP_054_APP_161_NoneInit(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := t.TempDir()
 	status, stdout, stderr := runAppBinary(t, bin, root, "init", "--recipe", "none", "--agent", "claude", "--audit-agent", "codex", "--no-app")
@@ -300,12 +301,8 @@ func Test_APP_043_APP_044_APP_047_APP_051_APP_161_NoneInit(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(root, "packages/app")); !os.IsNotExist(err) {
 		t.Errorf("APP-051 --no-app created module: %v", err)
 	}
-	if got := initCommand(config.Agent.Command); !reflect.DeepEqual(got, []string{"claude", "-p", "{prompt}", "--permission-mode", "acceptEdits"}) {
-		t.Errorf("APP-053 claude command = %q", got)
-	}
-	if got := initCommand(config.Audit.Command); !config.Audit.Enabled || !reflect.DeepEqual(got, []string{"codex", "exec", "{prompt}"}) {
-		t.Errorf("APP-054 audit preset = %+v", config.Audit)
-	}
+	assertInitWorkerCommand(t, config, initClaudeCommand)
+	assertInitAuditCommand(t, config, initCodexCommand)
 	if system := readInitFile(t, root, "SYSTEM.md"); strings.TrimSpace(system) == "" {
 		t.Error("APP-043 missing editable SYSTEM.md scaffold")
 	}
@@ -345,7 +342,7 @@ func Test_APP_050_APP_052_APP_161_NoneDefaultApp(t *testing.T) {
 	}
 }
 
-func Test_APP_053_InitFileOnlyWorkerCommand(t *testing.T) {
+func Test_APP_053_APP_054_InitFileOnlyWorkerCommand(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := t.TempDir()
 	agent := "touch FILE_WORKER_RAN && printf '%s' {prompt_file}"
@@ -358,38 +355,40 @@ func Test_APP_053_InitFileOnlyWorkerCommand(t *testing.T) {
 		return
 	}
 	config := readInitConfig(t, root)
-	if config.Agent.Command != agent {
-		t.Errorf("APP-053 file-only worker command = %#v; want exact shell template %q", config.Agent.Command, agent)
-	}
-	if !config.Audit.Enabled || config.Audit.Command != nil {
-		t.Errorf("APP-054 audit fallback changed: %+v", config.Audit)
-	}
+	assertInitWorkerCommand(t, config, agent)
+	assertInitAuditCommand(t, config, nil)
 	if _, err := os.Stat(filepath.Join(root, "FILE_WORKER_RAN")); !os.IsNotExist(err) {
 		t.Errorf("init executed worker command: %v", err)
 	}
 }
 
-func Test_APP_054_InitFileOnlyAuditCommand(t *testing.T) {
+func Test_APP_053_APP_054_InitAuditCommandForms(t *testing.T) {
 	bin := buildAppBinary(t)
-	root := t.TempDir()
-	auditor := "touch FILE_AUDITOR_RAN && printf '%s' {prompt_file}"
-	status, stdout, stderr := runAppBinary(t, bin, root, "init", "--recipe", "none", "--agent", "codex", "--audit-agent", auditor, "--no-app")
-	if status != 0 || stderr != "" || !strings.Contains(stdout, "eval") {
-		t.Errorf("APP-054 file-only audit init: status=%d stdout=%q stderr=%q", status, stdout, stderr)
-	}
-	if status != 0 {
-		assertNoInitConfig(t, root)
-		return
-	}
-	config := readInitConfig(t, root)
-	if got := initCommand(config.Agent.Command); !reflect.DeepEqual(got, []string{"codex", "exec", "{prompt}"}) {
-		t.Errorf("APP-053 worker preset changed: %q", got)
-	}
-	if !config.Audit.Enabled || config.Audit.Command != auditor {
-		t.Errorf("APP-054 file-only audit command = %+v; want exact shell template %q", config.Audit, auditor)
-	}
-	if _, err := os.Stat(filepath.Join(root, "FILE_AUDITOR_RAN")); !os.IsNotExist(err) {
-		t.Errorf("init executed audit command: %v", err)
+	const fileAuditor = "touch FILE_AUDITOR_RAN && printf '%s' {prompt_file}"
+	for _, tc := range []struct {
+		name, option string
+		want         any
+	}{
+		{"file-template", fileAuditor, fileAuditor},
+		{"claude-preset", "claude", initClaudeCommand},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := t.TempDir()
+			status, stdout, stderr := runAppBinary(t, bin, root, "init", "--recipe", "none", "--agent", "codex", "--audit-agent", tc.option, "--no-app")
+			if status != 0 || stderr != "" || !strings.Contains(stdout, "eval") {
+				t.Errorf("APP-054 init: status=%d stdout=%q stderr=%q", status, stdout, stderr)
+			}
+			if status != 0 {
+				assertNoInitConfig(t, root)
+				return
+			}
+			config := readInitConfig(t, root)
+			assertInitWorkerCommand(t, config, initCodexCommand)
+			assertInitAuditCommand(t, config, tc.want)
+			if _, err := os.Stat(filepath.Join(root, "FILE_AUDITOR_RAN")); !os.IsNotExist(err) {
+				t.Errorf("init executed audit command: %v", err)
+			}
+		})
 	}
 }
 
@@ -424,12 +423,8 @@ func Test_APP_042_APP_048_APP_049_APP_050_APP_053_APP_054_APP_060_APP_161_LocalI
 	if spec := readInitFile(t, root, "packages/app/SPEC.md"); !strings.Contains(spec, "name: app") || !strings.Contains(spec, "id_prefix: APP") {
 		t.Errorf("APP-050 rendered SPEC = %q", spec)
 	}
-	if config.Agent.Command != agent {
-		t.Errorf("APP-053 custom command = %#v", config.Agent.Command)
-	}
-	if !config.Audit.Enabled || config.Audit.Command != auditor {
-		t.Errorf("APP-054 custom audit command = %+v", config.Audit)
-	}
+	assertInitWorkerCommand(t, config, agent)
+	assertInitAuditCommand(t, config, auditor)
 	for _, marker := range []string{"HOOK_RAN", "BOUNDARIES_RAN", "SETUP_RAN", "AGENT_RAN", "AUDITOR_RAN"} {
 		if _, err := os.Stat(filepath.Join(root, marker)); !os.IsNotExist(err) {
 			t.Errorf("APP-060 init executed %s: %v", marker, err)

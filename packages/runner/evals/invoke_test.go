@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/gitstore"
 	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/runner"
@@ -49,12 +50,38 @@ func request(s project.Snapshot, role, prompt string) runner.AgentRequest {
 	return runner.AgentRequest{Snapshot: s, Role: role, Prompt: prompt, Bin: "/fixture/fireweed"}
 }
 
+func configureFixtureAgents(snap project.Snapshot, worker, auditor any, wrap ...string) {
+	commands := map[string]any{"fixture-worker": worker}
+	agent := map[string]any{"default": "fixture-worker", "commands": commands}
+	if len(wrap) > 0 {
+		agent["wrap"] = wrap
+	}
+	snap.Config["agent"] = agent
+	if auditor == nil {
+		delete(snap.Config, "audit")
+		return
+	}
+	commands["fixture-auditor"] = auditor
+	snap.Config["audit"] = map[string]any{"agent": "fixture-auditor"}
+}
+
+func assertResolutionError(t *testing.T, got, want error) {
+	t.Helper()
+	wantCode, wantSubject, wantCoded := contracts.ErrorCode(want)
+	if want == nil || !wantCoded {
+		t.Fatalf("fixture did not produce a coded resolution error: %v", want)
+	}
+	code, subject, coded := contracts.ErrorCode(got)
+	if got == nil || !coded || code != wantCode || subject != wantSubject || !strings.Contains(got.Error(), want.Error()) {
+		t.Errorf("resolution error = %v (%q, %q), want %v (%q, %q)", got, code, subject, want, wantCode, wantSubject)
+	}
+}
+
 func Test_RUN_001_RUN_002_RUN_005_RUN_006_CommandSelectionDirectoryEnvAndOutput(t *testing.T) {
 	snap := agentFixture(t)
 	worker := agentScript(t, snap.Root, "worker.sh", `printf 'worker|%s|%s' "$PWD" "$FIREWEED_BIN"; printf 'worker-stderr' >&2`)
 	audit := agentScript(t, snap.Root, "audit.sh", `printf 'audit|%s|%s' "$PWD" "$FIREWEED_BIN"; printf 'audit-stderr' >&2`)
-	snap.Config["agent"] = map[string]any{"command": []any{worker}}
-	snap.Config["audit"] = map[string]any{"command": []any{audit}}
+	configureFixtureAgents(snap, []any{worker}, []any{audit})
 	for _, tc := range []struct{ name, role, want string }{
 		{"worker", "worker", "worker"},
 		{"audit", "audit", "audit"},
@@ -64,9 +91,33 @@ func Test_RUN_001_RUN_002_RUN_005_RUN_006_CommandSelectionDirectoryEnvAndOutput(
 			if tc.name == "audit_fallback" {
 				delete(snap.Config, "audit")
 			}
-			result, err := runner.InvokeAgent(context.Background(), request(snap, tc.role, "prompt"))
+			req := request(snap, tc.role, "prompt")
+			req.Timeout = 2 * time.Second
+			result, err := runner.InvokeAgent(context.Background(), req)
 			if err != nil || result.ExitCode != 0 || result.Stdout != tc.want+"|"+snap.Root+"|/fixture/fireweed" || result.Stderr != tc.want+"-stderr" || result.UsageLimit {
 				t.Errorf("InvokeAgent(%s) = %#v, %v", tc.role, result, err)
+			}
+		})
+	}
+}
+
+func Test_RUN_001_InvokeAgentPropagatesResolutionError(t *testing.T) {
+	for _, tc := range []struct{ role, section, setting string }{
+		{"worker", "agent", "default"},
+		{"audit", "audit", "agent"},
+	} {
+		t.Run(tc.role, func(t *testing.T) {
+			snap := agentFixture(t)
+			commands := []any{"/bin/sh", "-c", "printf unexpected-agent"}
+			configureFixtureAgents(snap, commands, commands)
+			snap.Config[tc.section].(map[string]any)[tc.setting] = "unlisted-fixture-agent"
+			_, _, want := project.ResolveAgentCommand(snap.Config, tc.role, "")
+			req := request(snap, tc.role, "")
+			req.Timeout = 2 * time.Second
+			result, err := runner.InvokeAgent(context.Background(), req)
+			assertResolutionError(t, err, want)
+			if result.Stdout != "" || result.Stderr != "" {
+				t.Errorf("resolution failure captured agent output: %#v", result)
 			}
 		})
 	}
@@ -91,7 +142,7 @@ func Test_RUN_003_ShellAndArgvExpandOnceAndPreserveValues(t *testing.T) {
 		{"argv", []any{printArgs, "{prompt}", "{git_common_dir}"}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			snap.Config["agent"] = map[string]any{"command": tc.command}
+			configureFixtureAgents(snap, tc.command, nil)
 			result, err := runner.InvokeAgent(context.Background(), request(snap, "worker", prompt))
 			want := prompt + "\n" + common.CommonDir + "\n"
 			if err != nil || result.Stdout != want || result.ExitCode != 0 {
@@ -111,8 +162,7 @@ func Test_RUN_003_RUN_004_WrapperPrefixForBothRoles(t *testing.T) {
 	wrap := agentScript(t, snap.Root, "wrap.sh", `printf '%s\n%s\n' "$1" "$2" > "$3"; shift 3; exec "$@"`)
 	worker := agentScript(t, snap.Root, "worker.sh", `printf worker`)
 	audit := agentScript(t, snap.Root, "audit.sh", `printf audit`)
-	snap.Config["agent"] = map[string]any{"command": []any{worker}, "wrap": []any{wrap, "{prompt}", "{git_common_dir}", log}}
-	snap.Config["audit"] = map[string]any{"command": []any{audit}}
+	configureFixtureAgents(snap, []any{worker}, []any{audit}, wrap, "{prompt}", "{git_common_dir}", log)
 	prompt := `wrap 'quoted' {git_common_dir}`
 	for _, role := range []string{"worker", "audit"} {
 		t.Run(role, func(t *testing.T) {
@@ -130,7 +180,7 @@ func Test_RUN_003_RUN_004_WrapperPrefixForBothRoles(t *testing.T) {
 
 func Test_RUN_006_RUN_009_NonzeroExitRetainsStreamsAndCode(t *testing.T) {
 	snap := agentFixture(t)
-	snap.Config["agent"] = map[string]any{"command": []any{"/bin/sh", "-c", `printf output; printf warning >&2; exit 7`}}
+	configureFixtureAgents(snap, []any{"/bin/sh", "-c", `printf output; printf warning >&2; exit 7`}, nil)
 	result, err := runner.InvokeAgent(context.Background(), request(snap, "worker", ""))
 	if err == nil || result.ExitCode != 7 || result.Stdout != "output" || result.Stderr != "warning" || result.UsageLimit {
 		t.Errorf("nonzero exit = %#v, %v", result, err)
@@ -139,7 +189,7 @@ func Test_RUN_006_RUN_009_NonzeroExitRetainsStreamsAndCode(t *testing.T) {
 
 func Test_RUN_007_RUN_009_TimeoutSelectionAndCapturedOutput(t *testing.T) {
 	snap := agentFixture(t)
-	snap.Config["agent"] = map[string]any{"command": []any{"/bin/sh", "-c", `printf begun; printf warning >&2; sleep 2`}}
+	configureFixtureAgents(snap, []any{"/bin/sh", "-c", `printf begun; printf warning >&2; sleep 2`}, nil)
 	for _, tc := range []struct {
 		name    string
 		config  string
@@ -160,7 +210,7 @@ func Test_RUN_007_RUN_009_TimeoutSelectionAndCapturedOutput(t *testing.T) {
 		})
 	}
 	snap.Config["timeout"] = "50ms"
-	snap.Config["agent"] = map[string]any{"command": []any{"/bin/sh", "-c", `sleep 0.3; printf complete`}}
+	configureFixtureAgents(snap, []any{"/bin/sh", "-c", `sleep 0.3; printf complete`}, nil)
 	req := request(snap, "worker", "")
 	req.Timeout = 2 * time.Second
 	result, err := runner.InvokeAgent(context.Background(), req)
@@ -176,7 +226,7 @@ func Test_RUN_007_RUN_009_TimeoutAndCancellationKillOrdinaryDescendant(t *testin
 		t.Run(mode, func(t *testing.T) {
 			ready := filepath.Join(snap.Root, mode+"-ready")
 			marker := filepath.Join(snap.Root, mode+"-child-finished")
-			snap.Config["agent"] = map[string]any{"command": []any{script, ready, marker}}
+			configureFixtureAgents(snap, []any{script, ready, marker}, nil)
 			snap.Config["timeout"] = "3s"
 			if mode == "cancel" {
 				snap.Config["timeout"] = "5s"
@@ -239,7 +289,7 @@ func Test_RUN_008_UsageLimitOnlyForNonzeroMatchInLastTwentyLines(t *testing.T) {
 		{"literal_substring", `printf 'rating limit\n'; exit 9`, false},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			snap.Config["agent"] = map[string]any{"command": []any{"/bin/sh", "-c", tc.command}}
+			configureFixtureAgents(snap, []any{"/bin/sh", "-c", tc.command}, nil)
 			result, err := runner.InvokeAgent(context.Background(), request(snap, "worker", ""))
 			if result.UsageLimit != tc.want || (err != nil) != (result.ExitCode != 0) {
 				t.Errorf("%s = %#v, %v; want UsageLimit=%v", tc.name, result, err, tc.want)
@@ -251,7 +301,7 @@ func Test_RUN_008_UsageLimitOnlyForNonzeroMatchInLastTwentyLines(t *testing.T) {
 func Test_RUN_009_LaunchFailureReturnsError(t *testing.T) {
 	snap := agentFixture(t)
 	missing := filepath.Join(snap.Root, "missing-agent")
-	snap.Config["agent"] = map[string]any{"command": []any{missing}}
+	configureFixtureAgents(snap, []any{missing}, nil)
 	result, err := runner.InvokeAgent(context.Background(), request(snap, "worker", ""))
 	if err == nil || !strings.Contains(err.Error(), "missing-agent") || result.Stdout != "" || result.Stderr != "" {
 		t.Errorf("launch failure = %#v, %v", result, err)

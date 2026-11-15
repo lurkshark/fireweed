@@ -5,6 +5,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/runner"
 	"github.com/lurkshark/fireweed/packages/workflow"
@@ -144,7 +145,7 @@ func summarize(state workflow.State) changeSummary {
 
 func (c command) runCommand(root string) response {
 	if c.name == "drill" {
-		return drill(root, c.arg(0))
+		return drill(root, c.arg(0), c.options["--agent"])
 	}
 	bin, allow := invokingBin(), c.has("--allow-unmerged")
 	action := "Correct the reported problem and use fireweed " + c.name + " to resume."
@@ -218,7 +219,7 @@ func (c command) runCommand(root string) response {
 	return response{status: status, plain: plain.String(), data: data, diagnostics: diagnostics}
 }
 
-func drill(root, name string) response {
+func drill(root, name, agentAlias string) response {
 	snapshot, err := loadGraph(root)
 	if err != nil {
 		return configFailure(err)
@@ -226,7 +227,10 @@ func drill(root, name string) response {
 	if _, found := moduleByName(snapshot, name); !found {
 		return failure(2, "U02", "", fmt.Sprintf("Unknown module %q. Use fireweed modules to list modules.", name))
 	}
-	result, err := runner.Drill(background(), runner.DrillRequest{Root: root, Module: name, Bin: invokingBin()})
+	result, err := runner.Drill(background(), runner.DrillRequest{Root: root, Module: name, Bin: invokingBin(), AgentAlias: agentAlias})
+	if code, subject, _ := contracts.ErrorCode(err); code == "U02" && agentAlias != "" && subject == agentAlias {
+		return failed(2, err, "U02", "Choose an alias from agent.commands in fireweed.yaml.")
+	}
 	data := struct {
 		Module string `json:"module"`
 		Result string `json:"result"`

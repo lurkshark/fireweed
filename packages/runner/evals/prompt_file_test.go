@@ -68,12 +68,10 @@ printf 'agent-ok'`)
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			promptFileTempDir(t)
-			snap.Config["agent"] = map[string]any{"command": []any{"/bin/sh", "-c", "printf unselected"}}
-			delete(snap.Config, "audit")
 			if tc.role == "worker" {
-				snap.Config["agent"] = map[string]any{"command": tc.command}
+				configureFixtureAgents(snap, tc.command, nil)
 			} else {
-				snap.Config["audit"] = map[string]any{"command": tc.command}
+				configureFixtureAgents(snap, []any{"/bin/sh", "-c", "printf unselected"}, tc.command)
 			}
 			result, err := runner.InvokeAgent(context.Background(), request(snap, tc.role, prompt))
 			if err != nil || result.Stdout != "agent-ok" || result.ExitCode != 0 {
@@ -113,11 +111,8 @@ printf '%s' "$5" > "$1/second-path"
 cat "$3" > "$1/content" || exit 12
 shift 5
 exec "$@"`)
-	snap.Config["agent"] = map[string]any{
-		"command": []any{worker, observations, "{prompt_file}"},
-		"wrap":    []any{wrapper, observations, "{prompt}", "{prompt_file}", "{git_common_dir}", "{prompt_file}"},
-	}
-	snap.Config["audit"] = map[string]any{"command": []any{auditor, observations, "{prompt_file}"}}
+	configureFixtureAgents(snap, []any{worker, observations, "{prompt_file}"}, []any{auditor, observations, "{prompt_file}"},
+		wrapper, observations, "{prompt}", "{prompt_file}", "{git_common_dir}", "{prompt_file}")
 	prompt := "wrapper 'literal' {prompt_file} {git_common_dir}\nΩ"
 	for _, tc := range []struct{ name, role, want string }{
 		{"worker", "worker", "worker"},
@@ -161,10 +156,8 @@ cat "$1" > "$2/content" || exit 12
 printf '%s' "$3" > "$2/second-path"
 shift 3
 exec "$@"`)
-	snap.Config["agent"] = map[string]any{
-		"command": []any{"/bin/sh", "-c", "printf wrapper-only"},
-		"wrap":    []any{wrapper, "{prompt_file}", observations, "{prompt_file}"},
-	}
+	configureFixtureAgents(snap, []any{"/bin/sh", "-c", "printf wrapper-only"}, nil,
+		wrapper, "{prompt_file}", observations, "{prompt_file}")
 	prompt := "wrapper-only 'literal' {prompt_file}\nΩ"
 	result, err := runner.InvokeAgent(context.Background(), request(snap, "worker", prompt))
 	if err != nil || result.Stdout != "wrapper-only" || result.ExitCode != 0 {
@@ -190,7 +183,7 @@ func Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure(t 
 			tempRoot := promptFileTempDir(t)
 			prompt := "exact prompt\nwith trailing newline Ω\n"
 			if tc.name == "launch failure" {
-				snap.Config["agent"] = map[string]any{"command": []any{filepath.Join(snap.Root, "missing-agent"), "{prompt_file}"}}
+				configureFixtureAgents(snap, []any{filepath.Join(snap.Root, "missing-agent"), "{prompt_file}"}, nil)
 			} else {
 				script := agentScript(t, snap.Root, "prompt-file-lifetime.sh", `printf '%s' "$1" > "$2/path"
 test -r "$1" || exit 12
@@ -203,7 +196,7 @@ case "$3" in
   timeout|cancellation) printf partial; printf warning >&2; sleep 5;;
 esac
 printf success`)
-				snap.Config["agent"] = map[string]any{"command": []any{"/bin/bash", script, "{prompt_file}", observations, tc.name}}
+				configureFixtureAgents(snap, []any{"/bin/bash", script, "{prompt_file}", observations, tc.name}, nil)
 			}
 			req := request(snap, "worker", prompt)
 			req.Timeout = 2 * time.Second
@@ -263,21 +256,18 @@ printf success`)
 
 func Test_RUN_067_UnselectedTemplateDoesNotRequirePromptFileIO(t *testing.T) {
 	snap := agentFixture(t)
-	snap.Config["agent"] = map[string]any{"command": []any{"/bin/sh", "-c", "printf worker"}}
-	snap.Config["audit"] = map[string]any{"command": []any{"/bin/sh", "-c", "printf '{prompt_file}'"}}
+	configureFixtureAgents(snap, []any{"/bin/sh", "-c", "printf worker"}, []any{"/bin/sh", "-c", "printf '{prompt_file}'"})
 	t.Setenv("TMPDIR", filepath.Join(t.TempDir(), "missing-temp-directory"))
 	result, err := runner.InvokeAgent(context.Background(), request(snap, "worker", "unused prompt"))
 	if err != nil || result.Stdout != "worker" || result.ExitCode != 0 {
 		t.Errorf("worker selected without prompt file = %#v, %v", result, err)
 	}
-	snap.Config["agent"] = map[string]any{"command": []any{"/bin/sh", "-c", "printf '{prompt_file}'"}}
-	snap.Config["audit"] = map[string]any{"command": []any{"/bin/sh", "-c", "printf audit"}}
+	configureFixtureAgents(snap, []any{"/bin/sh", "-c", "printf '{prompt_file}'"}, []any{"/bin/sh", "-c", "printf audit"})
 	result, err = runner.InvokeAgent(context.Background(), request(snap, "audit", "unused prompt"))
 	if err != nil || result.Stdout != "audit" || result.ExitCode != 0 {
 		t.Errorf("audit selected without prompt file = %#v, %v", result, err)
 	}
-	snap.Config["agent"] = map[string]any{"command": []any{"/bin/sh", "-c", "printf worker"}}
-	delete(snap.Config, "audit")
+	configureFixtureAgents(snap, []any{"/bin/sh", "-c", "printf worker"}, nil)
 	result, err = runner.InvokeAgent(context.Background(), request(snap, "audit", "unused prompt"))
 	if err != nil || result.Stdout != "worker" || result.ExitCode != 0 {
 		t.Errorf("audit fallback without prompt file = %#v, %v", result, err)

@@ -199,6 +199,33 @@ func Test_AST_061_CommandSelectors(t *testing.T) {
 	}
 }
 
+func Test_AST_069_DrillAgentHelp(t *testing.T) {
+	page := strings.ReplaceAll(mustCommandHelp(t, "drill"), "`", "")
+	prose := strings.Join(strings.Fields(page), " ")
+	requirePattern(t, prose, `--agent\s+<alias>`, "--agent <alias> option")
+	requirePattern(t, prose,
+		`(?i)\bagent\.commands\b[^.!?]*\b(?:alias(?:es)?|named commands?)\b|\b(?:alias(?:es)?|named commands?)\b[^.!?]*\bagent\.commands\b`,
+		"agent.commands as the alias mapping")
+	requirePattern(t, prose,
+		`(?i)\bagent\.default\b[^.!?]*\b(?:default|omit\w*|without --agent)\b|\b(?:defaults?|omit\w*|without --agent)\b[^.!?]*\bagent\.default\b`,
+		"agent.default as the default drill selector")
+	requirePattern(t, page,
+		`\bfireweed[ \t]+drill[ \t]+contracts[ \t]+--agent[ \t]+opencode-deepseek-v4-1-flash-high(?:$|[^[:alnum:]_-])`,
+		"drill example selecting a named command")
+}
+
+func Test_AST_070_DoctorAgentHelp(t *testing.T) {
+	page := strings.Join(strings.Fields(strings.ReplaceAll(mustCommandHelp(t, "doctor"), "`", "")), " ")
+	requirePattern(t, page, `(?i)\bworker\b[^.!?]*\bagent\.default\b|\bagent\.default\b[^.!?]*\bworker\b`,
+		"agent.default as the worker probe selector")
+	requirePattern(t, page, `(?i)\baudit(?:or)?\b[^.!?]*\baudit\.agent\b|\baudit\.agent\b[^.!?]*\baudit(?:or)?\b`,
+		"audit.agent as the auditor probe selector")
+	const omitted = `(?:\baudit\.agent\b[^.!?]*(?:\.\s+[^.!?]*)?\b(?:omit\w*|unset|missing|absent|unspecified|not set)\b|\b(?:omit\w*|without|no)\s+audit\.agent\b)`
+	const fallback = `\b(?:uses?|inherits?|falls? back to|defaults? to)\s+(?:the\s+)?(?:worker(?:'s)?\s+(?:default|command|selector)\b|agent\.default\b)`
+	requirePattern(t, page, `(?i)`+omitted+`[^.!?]*`+fallback+`|`+fallback+`[^.!?]*`+omitted,
+		"audit falls back to the worker default when audit.agent is omitted")
+}
+
 func Test_AST_061_UnknownCommandHelp(t *testing.T) {
 	const unknown = "no-such-fireweed-command"
 	if _, err := assets.CommandHelp(unknown); err == nil || !strings.Contains(err.Error(), unknown) {

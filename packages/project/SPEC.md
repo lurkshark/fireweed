@@ -296,6 +296,15 @@ Load MUST apply CheckCompatibility to the live configuration before returning a 
 ### PRJ-085
 CheckCompatibility MUST accept format version 1 and an omitted version as the initial format, and MUST reject any other present version value with a C01 CodedError identifying the unsupported value and supported format 1. Format acceptance MUST be independent of binary-range acceptance.
 
+### PRJ-086
+For a worker with a nonempty alias argument, ResolveAgentCommand MUST select the matching entry from the agent.commands mapping. It MUST return U02 naming an unlisted alias and C01 identifying a malformed mapping or invalid selected command.
+
+### PRJ-087
+With no explicit worker alias, ResolveAgentCommand MUST select the command named by agent.default in agent.commands. A missing or invalid default reference MUST return C01 identifying the setting at fault.
+
+### PRJ-088
+For audit, ResolveAgentCommand MUST select the command named by audit.agent in agent.commands when that reference is configured. An invalid audit reference MUST return C01 identifying the setting at fault. An omitted audit reference MUST use the worker default and report that inheritance.
+
 ## Decisions
 
 [0126-spec-history-query] History reads the project's current archive files, as the archive-backed show

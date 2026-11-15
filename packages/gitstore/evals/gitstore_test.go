@@ -3,6 +3,7 @@ package evals_test
 import (
 	"bytes"
 	"context"
+	"errors"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -445,5 +446,76 @@ func Test_GIT_005_RunCaptureExitTimeoutAndGroupCancel(t *testing.T) {
 				t.Errorf("child survived group termination: marker stat = %v", statErr)
 			}
 		})
+	}
+}
+
+func Test_GIT_005_RunCancelWhileShellLaunchesChild(t *testing.T) {
+	const script = `#!/bin/bash
+printf 'captured stdout\n'
+printf 'captured stderr\n' >&2
+printf ready > ready
+sleep 5
+`
+	fixture := filepath.Join(t.TempDir(), "cancel.sh")
+	if err := os.WriteFile(fixture, []byte(script), 0755); err != nil {
+		t.Fatal(err)
+	}
+	// Cancellation races the child launch, so repeat the same fixture.
+	for attempt := 1; attempt <= 60 && !t.Failed(); attempt++ {
+		checkCancelWhileShellLaunchesChild(t, fixture, attempt)
+	}
+}
+
+func checkCancelWhileShellLaunchesChild(t *testing.T, fixture string, attempt int) {
+	t.Helper()
+	dir := t.TempDir()
+	ready := filepath.Join(dir, "ready")
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	type outcome struct {
+		result gitstore.Result
+		err    error
+	}
+	done := make(chan outcome, 1)
+	go func() {
+		result, err := gitstore.Run(ctx, gitstore.Request{
+			Args: []string{fixture}, Dir: dir, Timeout: 8 * time.Second,
+		})
+		done <- outcome{result: result, err: err}
+	}()
+
+	deadline := time.NewTimer(3 * time.Second)
+	defer deadline.Stop()
+	for {
+		if _, err := os.Stat(ready); err == nil {
+			break
+		} else if !os.IsNotExist(err) {
+			t.Fatal(err)
+		}
+		select {
+		case got := <-done:
+			t.Fatalf("attempt %d: Run exited before shell readiness: %#v, %v", attempt, got.result, got.err)
+		case <-deadline.C:
+			t.Fatalf("attempt %d: shell did not signal readiness", attempt)
+		case <-time.After(time.Millisecond):
+		}
+	}
+
+	canceledAt := time.Now()
+	cancel()
+	select {
+	case got := <-done:
+		if elapsed := time.Since(canceledAt); elapsed >= 3*time.Second {
+			t.Errorf("attempt %d: Run returned %s after cancellation, want under 3s for a 5s child", attempt, elapsed)
+		}
+		if !errors.Is(got.err, context.Canceled) {
+			t.Errorf("attempt %d: Run error = %v, want context.Canceled", attempt, got.err)
+		}
+		if got.result.Stdout != "captured stdout\n" || got.result.Stderr != "captured stderr\n" {
+			t.Errorf("attempt %d: Run captured stdout %q and stderr %q after cancellation", attempt, got.result.Stdout, got.result.Stderr)
+		}
+	case <-time.After(7 * time.Second):
+		t.Fatalf("attempt %d: Run did not return within 7s after cancellation", attempt)
 	}
 }

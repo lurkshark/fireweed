@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"strings"
 	"syscall"
@@ -57,16 +58,29 @@ func Run(ctx context.Context, request model.Request) (model.Result, error) {
 	select {
 	case err = <-done:
 	case <-ctx.Done():
-		_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
-		err = <-done
-		result = model.Result{Stdout: stdout.String(), Stderr: stderr.String(), ExitCode: cmd.ProcessState.ExitCode()}
-		return result, ctx.Err()
+		killProcessGroup(cmd.Process.Pid)
+		<-done
+		err = ctx.Err()
 	}
 	result = model.Result{Stdout: stdout.String(), Stderr: stderr.String(), ExitCode: cmd.ProcessState.ExitCode()}
-	if err != nil {
-		return result, err
+	return result, err
+}
+
+func killProcessGroup(pgid int) {
+	if err := syscall.Kill(-pgid, syscall.SIGKILL); err != nil || runtime.GOOS != "darwin" {
+		return
 	}
-	return result, nil
+
+	// Darwin snapshots group membership before delivering the signal. Repeat
+	// briefly to catch children forked while the first kill was in flight,
+	// including children that have already closed their inherited streams.
+	deadline := time.Now().Add(100 * time.Millisecond)
+	for {
+		time.Sleep(5 * time.Millisecond)
+		if time.Now().After(deadline) || syscall.Kill(-pgid, syscall.SIGKILL) != nil {
+			return
+		}
+	}
 }
 
 func git(root string, input []byte, env map[string]string, args ...string) ([]byte, error) {

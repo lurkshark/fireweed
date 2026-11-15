@@ -15,8 +15,13 @@ import (
 	"time"
 
 	"github.com/lurkshark/fireweed/packages/assets"
+	"github.com/lurkshark/fireweed/packages/contracts"
+	"github.com/lurkshark/fireweed/packages/gitstore"
+	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/runner"
 )
+
+const drillAlternateAlias = "other-harness"
 
 // Hooks are tracked in the fixture repository. The fake worker and its
 // observations live outside the fixture repository.
@@ -144,6 +149,10 @@ cat > DRILL_NOTES.md <<'NOTES'
 NOTES
 printf 'worker observation'
 `)
+	alternate := agentScript(t, observations, "fixture-harness", `
+printf 'alternate observation\n'
+exec bash "$1/agent.sh" "$1" "$2"
+`)
 	nextWrite(t, root, ".fireweed/eval.sh", `#!/bin/sh
 report=$3
 observations=$4
@@ -203,16 +212,18 @@ hooks:
   setup: [sh, .fireweed/setup.sh, %q]
   eval: [sh, .fireweed/eval.sh, "{module}", "{module_dir}", "{report}", %q]
 agent:
-  command: [bash, %q, %q, "{prompt}"]
+  default: fixture-worker
+  commands:
+    fixture-worker: [bash, %q, %q, "{prompt}", -m, worker-model]
+    %s: [%q, %q, "{prompt}", "--model=alternate-model"]
   wrap: [bash, %q, %q]
-  model: fixture-model
 attempts: 2
 timeout: 2s
 limit_patterns: [RATE LIMIT]
 limit_wait: 2ms
 limit_budget: 4ms
 verify_dependents: false
-`, "="+assets.Version(), observations, observations, agent, observations, wrapper, observations))
+`, "="+assets.Version(), observations, observations, agent, observations, drillAlternateAlias, alternate, observations, wrapper, observations))
 	for _, module := range []struct{ name, prefix, deps string }{
 		{"foundation", "FOU", "[]"}, {"core", "COR", "[foundation]"}, {"alpha", "ALP", "[core]"},
 		{"aardvark", "AAR", "[alpha]"}, {"zeta", "ZET", "[aardvark]"},
@@ -236,7 +247,11 @@ verify_dependents: false
 }
 
 func (f drillFixture) run(ctx context.Context, timeout time.Duration) (runner.DrillResult, error) {
-	return runner.Drill(ctx, runner.DrillRequest{Root: f.root, Module: "alpha", Bin: "/fixture/new-controller", Timeout: timeout})
+	return runner.Drill(ctx, f.request(timeout))
+}
+
+func (f drillFixture) request(timeout time.Duration) runner.DrillRequest {
+	return runner.DrillRequest{Root: f.root, Module: "alpha", Bin: "/fixture/new-controller", Timeout: timeout}
 }
 
 func (f drillFixture) mode(t *testing.T, mode string) {
@@ -299,7 +314,7 @@ func Test_RUN_050_DrillPreflightRejectsWithoutEffects(t *testing.T) {
 	for _, mode := range []string{"unknown", "dirty", "claim"} {
 		t.Run(mode, func(t *testing.T) {
 			f := newDrillFixture(t)
-			request := runner.DrillRequest{Root: f.root, Module: "alpha", Bin: "/fixture/new-controller"}
+			request := f.request(0)
 			switch mode {
 			case "unknown":
 				request.Module = "missing"
@@ -322,6 +337,42 @@ func Test_RUN_050_DrillPreflightRejectsWithoutEffects(t *testing.T) {
 			}
 			drillNoSetupOrAgent(t, f)
 			drillCleaned(t, f)
+		})
+	}
+}
+
+func Test_RUN_073_DrillResolutionFailurePrecedesWorkspaceAndSetup(t *testing.T) {
+	for _, tc := range []struct{ name, alias string }{
+		{"unknown explicit alias", "unknown-fixture-agent"},
+		{"unlisted default", ""},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := newDrillFixture(t)
+			if tc.alias == "" {
+				config := nextRead(t, f.root, "fireweed.yaml")
+				nextWrite(t, f.root, "fireweed.yaml", strings.Replace(config, "default: fixture-worker", "default: unknown-fixture-agent", 1))
+				nextCommit(t, f.root, "unlisted worker default")
+			}
+			snap, err := project.Load(f.root)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, _, want := project.ResolveAgentCommand(snap.Config, "worker", tc.alias)
+			repo, err := gitstore.Inspect(f.root)
+			if err != nil {
+				t.Fatal(err)
+			}
+			req := f.request(0)
+			req.AgentAlias = tc.alias
+			result, err := runner.Drill(context.Background(), req)
+			assertResolutionError(t, err, want)
+			drillNoSetupOrAgent(t, f)
+			if _, err := os.Stat(filepath.Join(repo.CommonDir, "fireweed", "worktrees")); !os.IsNotExist(err) {
+				t.Errorf("scratch worktree parent was created: %v", err)
+			}
+			if len(result.Steps) != 0 || result.ReportPath != "" || result.Ref != "" {
+				t.Errorf("resolution failure produced drill artifacts: %#v", result)
+			}
 		})
 	}
 }
@@ -562,6 +613,58 @@ func Test_RUN_056_DrillRetriesAgentAndVerificationWithinOneBound(t *testing.T) {
 	r, err := f.run(context.Background(), 0)
 	if err == nil || !runner.IsUsageStop(err) || r.Result != "stopped" || len(r.Steps) != 1 {
 		t.Errorf("usage bounded attempts = %#v, %v", r, err)
+	}
+	drillCleaned(t, f)
+}
+
+func Test_RUN_056_DrillUsesSelectedCommandAcrossRetries(t *testing.T) {
+	for _, tc := range []struct {
+		mode, feedback string
+		steps          []runner.AgentResult
+	}{
+		{"agent_retry", "WORKER_FAILURE", []runner.AgentResult{
+			{Stderr: "WORKER_FAILURE\n", ExitCode: 7},
+			{Stdout: "worker observation"},
+		}},
+		{"verify_retry", "own verification failure", []runner.AgentResult{
+			{Stdout: "worker stdout attempt 1\n", Stderr: "worker stderr attempt 1\n"},
+			{Stdout: "worker stdout attempt 2\nworker observation", Stderr: "worker stderr attempt 2\n"},
+		}},
+	} {
+		t.Run(tc.mode, func(t *testing.T) {
+			f := newDrillFixture(t)
+			f.mode(t, tc.mode)
+			req := f.request(0)
+			req.AgentAlias = drillAlternateAlias
+			result, err := runner.Drill(context.Background(), req)
+			if err != nil || result.Result != "pass" || len(result.Steps) != len(tc.steps) {
+				t.Fatalf("selected-command drill = result %q, steps %#v, error %v", result.Result, result.Steps, err)
+			}
+			for i, want := range tc.steps {
+				step := result.Steps[i]
+				if step.Stdout != "alternate observation\n"+want.Stdout || step.Stderr != want.Stderr || step.ExitCode != want.ExitCode || step.UsageLimit {
+					t.Errorf("selected command attempt %d = %#v", i+1, step)
+				}
+			}
+			if got := drillObserved(t, f, "wrapper.bin"); got != strings.Repeat(req.Bin+"\n", 2) {
+				t.Errorf("wrapper invocations = %q, want two with FIREWEED_BIN=%q", got, req.Bin)
+			}
+			if prompt := drillObserved(t, f, "prompt-2"); !strings.Contains(prompt, tc.feedback) {
+				t.Errorf("selected-command retry prompt lacks %q", tc.feedback)
+			}
+			if got := nextGit(t, f.root, "show", result.Ref+":packages/alpha/internal/value.go"); got != "new" {
+				t.Errorf("retained rebuild = %q, want new", got)
+			}
+			drillCleaned(t, f)
+		})
+	}
+}
+
+func Test_RUN_056_DrillUsesConfiguredDefault(t *testing.T) {
+	f := newDrillFixture(t)
+	result, err := f.run(context.Background(), 0)
+	if err != nil || result.Result != "pass" || len(result.Steps) != 1 || result.Steps[0].Stdout != "worker observation" {
+		t.Errorf("default-command drill = result %q, steps %#v, error %v", result.Result, result.Steps, err)
 	}
 	drillCleaned(t, f)
 }
@@ -853,6 +956,33 @@ func Test_RUN_060_RUN_061_DrillReportAndRetainedRef(t *testing.T) {
 	drillCleaned(t, f)
 }
 
+func Test_RUN_074_DrillResultAndReportIdentifySelectedCommand(t *testing.T) {
+	for _, tc := range []struct{ name, alias, agent, model string }{
+		{"default", "", "bash", "worker-model"},
+		{"explicit", drillAlternateAlias, "fixture-harness", "alternate-model"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := newDrillFixture(t)
+			req := f.request(0)
+			req.AgentAlias = tc.alias
+			result, runErr := runner.Drill(context.Background(), req)
+			if result.Agent != tc.agent || result.Model != tc.model {
+				t.Errorf("result agent/model = %q/%q, want %q/%q", result.Agent, result.Model, tc.agent, tc.model)
+			}
+			if result.ReportPath == "" {
+				t.Fatalf("missing drill report: %v", runErr)
+			}
+			report, err := contracts.ParseDocument(nextRead(t, f.root, result.ReportPath))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if report.Frontmatter["agent"] != tc.agent || report.Frontmatter["model"] != tc.model {
+				t.Errorf("report agent/model = %v/%v, want %s/%s", report.Frontmatter["agent"], report.Frontmatter["model"], tc.agent, tc.model)
+			}
+		})
+	}
+}
+
 func Test_RUN_060_RUN_061_FailedDrillReportsFailuresAndRetainsCode(t *testing.T) {
 	f := newDrillFixture(t)
 	f.mode(t, "wrong")
@@ -927,16 +1057,17 @@ func Test_RUN_062_CleanupFailureCannotPass(t *testing.T) {
 			return
 		}
 		scratch, _, _ := strings.Cut(string(setup), "\n")
+		scratch = filepath.Clean(scratch)
 		if filepath.Dir(scratch) != parent {
 			t.Errorf("fixture scratch path %q is outside %q", scratch, parent)
 			return
 		}
-		worktrees, err := exec.Command("git", "-C", f.root, "worktree", "list", "--porcelain", "-z").Output()
+		worktrees, err := exec.Command("git", "-C", f.root, "worktree", "list", "--porcelain").Output()
 		if err != nil {
 			t.Errorf("list fixture worktrees: %v", err)
 			return
 		}
-		if slices.Contains(strings.Split(string(worktrees), "\x00"), "worktree "+scratch) {
+		if slices.Contains(strings.Split(string(worktrees), "\n"), "worktree "+scratch) {
 			nextGit(t, f.root, "worktree", "remove", "--force", scratch)
 			return
 		}

@@ -853,19 +853,20 @@ func (d *doctorState) probeAgents(projectRoot, common string) {
 		d.issue("C15", "doctor agent log directory: "+err.Error(), "", false)
 		return
 	}
-	agent := mapValue(d.snapshot.Config, "agent")
-	audit := mapValue(d.snapshot.Config, "audit")
-	worker := agent["command"]
-	auditCommand := audit["command"]
-	if auditCommand == nil {
-		auditCommand = worker
-		d.issue("C15", "audit uses shared agent command; shared-command blind spot", "", true)
-	}
-	for _, v := range []struct {
-		name    string
-		command any
-	}{{"worker", worker}, {"audit", auditCommand}} {
-		d.probeAgent(v.name, v.command, agent["wrap"], common, logDir)
+	config := d.snapshot.Config
+	wrap := mapValue(config, "agent")["wrap"]
+	for _, role := range []string{"worker", "audit"} {
+		command, usesWorkerDefault, err := project.ResolveAgentCommand(config, role, "")
+		if err != nil {
+			detail := fmt.Sprintf("%s agent selection: %v", role, err)
+			d.check(role, "", false, detail)
+			d.issue("C15", detail, "", false)
+			continue
+		}
+		if usesWorkerDefault {
+			d.issue("C15", "audit inherits agent.default; shared-command blind spot", "", true)
+		}
+		d.probeAgent(role, command, wrap, common, logDir)
 	}
 }
 func (d *doctorState) probeAgent(name string, command, wrap any, common, logDir string) {

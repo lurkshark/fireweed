@@ -63,10 +63,11 @@ type RunResult struct {
 }
 
 type DrillRequest struct {
-	Root    string
-	Module  string
-	Bin     string
-	Timeout time.Duration
+	Root       string
+	Module     string
+	Bin        string
+	Timeout    time.Duration
+	AgentAlias string
 }
 
 type DrillResult struct {

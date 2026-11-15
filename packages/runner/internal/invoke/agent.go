@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/lurkshark/fireweed/packages/gitstore"
+	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/runner/internal/policy"
 	"github.com/lurkshark/fireweed/packages/runner/model"
 )
@@ -23,7 +24,15 @@ func NewRun() (string, error) {
 	return fmt.Sprintf("%s-%x", time.Now().UTC().Format("20060102T150405"), nonce), nil
 }
 
-func Agent(ctx context.Context, request model.AgentRequest) (result model.AgentResult, err error) {
+func Agent(ctx context.Context, request model.AgentRequest) (model.AgentResult, error) {
+	command, _, err := project.ResolveAgentCommand(request.Snapshot.Config, request.Role, "")
+	if err != nil {
+		return model.AgentResult{}, err
+	}
+	return AgentWithCommand(ctx, request, command)
+}
+
+func AgentWithCommand(ctx context.Context, request model.AgentRequest, command any) (result model.AgentResult, err error) {
 	result.LogPath, err = logPath(request)
 	if err != nil {
 		return result, err
@@ -35,7 +44,6 @@ func Agent(ctx context.Context, request model.AgentRequest) (result model.AgentR
 	}()
 
 	config := request.Snapshot.Config
-	command := Command(config, request.Role)
 	wrap, err := Strings(Mapping(config["agent"])["wrap"])
 	if err != nil {
 		return result, fmt.Errorf("agent.wrap: %w", err)
@@ -106,7 +114,7 @@ func Agent(ctx context.Context, request model.AgentRequest) (result model.AgentR
 		result.UsageLimit = matchesLimit(result, patterns)
 	}
 	if err != nil {
-		return result, fmt.Errorf("%s agent %s: %w", request.Role, Name(config, request.Role), err)
+		return result, fmt.Errorf("%s agent %s: %w", request.Role, CommandName(command), err)
 	}
 	return result, nil
 }

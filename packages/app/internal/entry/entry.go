@@ -183,7 +183,7 @@ var commands = map[string]syntax{
 	"release":       {min: 1, max: 1},
 	"commits":       {min: 1, max: 1},
 	"abandon":       {min: 1, max: 1},
-	"drill":         {min: 1, max: 1},
+	"drill":         {min: 1, max: 1, values: "--agent"},
 	"gc":            {},
 	"migrate":       {},
 }
@@ -290,6 +290,8 @@ func usage(args []string) string {
 		return "Use fireweed run --for <duration>."
 	case args[0] == "start":
 		return "Use fireweed start <change> [--from-attempt <N>]."
+	case args[0] == "drill":
+		return "Use fireweed drill <module> [--agent <alias>] [--json]."
 	case args[0] == "init":
 		return initUsage
 	}
