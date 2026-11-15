@@ -1,6 +1,9 @@
 ---
-fixes: [GIT-005]
+fixes:
+    - GIT-005
 module: gitstore
+phase: audit
+run: 20261115T063707-dbdf60a45054adbee79418d6
 ---
 
 ## Motivation
@@ -36,3 +39,13 @@ on supported hosts.
 
 The fix must terminate the launched group and preserve captured output.
 Keep the existing argv, process group, timeout, and context error contracts.
+
+On macOS arm64, `fireweed verify process-group-cancel-race` passed the evals
+phase with a fail-first result for GIT-005. On attempt 12, `Run` returned
+5.008 seconds after cancellation, exceeding the 3-second bound. The error and
+output assertions passed, as did the existing completion-marker eval.
+The implementation-writable file is `packages/gitstore/internal/local/local.go`.
+## Provenance
+
+- evals 2026-11-15T06:41:28.878514Z agent=codex fireweed=0.2.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=14 failing=1 passing=13
+
