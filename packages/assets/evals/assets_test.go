@@ -1,6 +1,9 @@
 package evals_test
 
 import (
+	"os"
+	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
@@ -9,8 +12,68 @@ import (
 )
 
 func Test_AST_001_Version(t *testing.T) {
-	if got := assets.Version(); got != "0.2.0" {
-		t.Errorf("Version() = %q; want 0.2.0", got)
+	const versionFile = "packages/assets/internal/content/VERSION"
+	source := filepath.Join("..", "..", "..")
+	raw, err := os.ReadFile(filepath.Join(source, versionFile))
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := strings.TrimSpace(string(raw))
+	if !regexp.MustCompile(`^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$`).MatchString(want) {
+		t.Fatalf("VERSION = %q; want a stable MAJOR.MINOR.PATCH version", want)
+	}
+	if got := assets.Version(); got != want {
+		t.Errorf("Version() = %q; want %q from VERSION", got, want)
+	}
+
+	alternate := "0.2.1"
+	if alternate == want {
+		alternate = "0.2.2"
+	}
+	tmp := t.TempDir()
+	// Rebuild from a separate source tree so the production VERSION stays intact.
+	for _, name := range []string{"go.mod", "go.sum"} {
+		data, err := os.ReadFile(filepath.Join(source, name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(tmp, name), data, 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, name := range []string{"packages/assets", "packages/contracts"} {
+		if err := os.CopyFS(filepath.Join(tmp, name), os.DirFS(filepath.Join(source, name))); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := os.WriteFile(filepath.Join(tmp, versionFile), []byte(alternate+"\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	mainPath := filepath.Join(tmp, "main.go")
+	if err := os.WriteFile(mainPath, []byte(`package main
+
+import (
+	"fmt"
+
+	"github.com/lurkshark/fireweed/packages/assets"
+)
+
+func main() { fmt.Print(assets.Version()) }
+`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	cmd := exec.Command("go", "run", mainPath)
+	cmd.Dir = tmp
+	cmd.Env = append(os.Environ(), "GOWORK=off")
+	output, err := cmd.Output()
+	if exit, ok := err.(*exec.ExitError); ok {
+		t.Fatalf("build with alternate VERSION: %v\n%s", exit, exit.Stderr)
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := string(output); got != alternate {
+		t.Errorf("Version() with alternate VERSION = %q; want %q", got, alternate)
 	}
 }
 

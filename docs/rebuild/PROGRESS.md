@@ -51,9 +51,9 @@ v0.2.0**. Gate **6 retains its eight accepted historical proofs**.
 The recorded controller for the acceptance and release phase runs is
 `40b33c70f3de176eda058a96b06d2be1437da972`, built with `-trimpath` from a
 clean main checkout on 2026-11-13. Its binary reports 0.1.0. The 0.2.0 product
-and main’s 0.2-series pin are now in effect. Before the next lifecycle or
-gate-4 run, build and record a compatible controller from clean committed
-main when no run or claim is active, as directed by [SYSTEM](../../SYSTEM.md).
+and main’s 0.2-series pin are now in effect. For the release metadata change,
+the 0.2.0 controller was built with `-trimpath` from clean committed main at
+`089ea0c6830c2754d6c14ce8d43383f849cdd7f5` with no active run or claim.
 
 | Pinned-controller evidence | Result |
 | --- | --- |

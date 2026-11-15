@@ -10,8 +10,8 @@ or local snapshot build.
 Release infrastructure lives in the protected author paths listed in
 `fireweed.yaml`. It is maintained between lifecycle changes, separately from
 worker steps. This implements the design's Distribution and init / Packaging
-requirements. Product behavior and version changes still use the normal
-spec/change workflow.
+requirements. Product behavior uses the normal spec/change workflow. The
+release number lives in protected build metadata.
 
 ## One-time GitHub setup
 
@@ -47,8 +47,8 @@ ruby -c dist/fireweed.rb
 `make release-snapshot` validates the GoReleaser config, cross-compiles all four
 binaries, builds archives and checksums in ignored `dist/`, and generates the
 formula after verifying each archive against its checksum. It never publishes
-or updates the tap. Snapshot versions name the packages only; the binary still
-reports the version required by its assets spec. The source archive contains
+or updates the tap. Snapshot versions name the packages. The binary reports
+the release number embedded from the checkout. The source archive contains
 the committed tree, so commit author infrastructure before a real release.
 
 `make test` and `make check` give fixture subprocesses an explicit Git identity
@@ -60,17 +60,17 @@ and separately exercises snapshot packaging. It builds the product at
 `bin/fireweed`; it does not replace the local rebuild controller.
 
 `fireweed verify` is for a held lifecycle change. With no held change it reports
-P02; use it during version-change worker steps and use the checks above for
-protected release-infrastructure edits.
+P02. Use it during lifecycle steps and use the checks above for edits to
+protected release files.
 
 ## Publish a version
 
-1. Finish any lifecycle changes and merge the release commit to `main`. Check
-   CI and review the release diff.
-2. Check that `bin/fireweed version` prints the intended version. Update
-   `AST-001`, its eval and its implementation through Fireweed before tagging.
-   Keep the source version authoritative so `go install`, archives and
-   project version pins agree.
+1. Finish any lifecycle changes. Set the new `MAJOR.MINOR.PATCH` value in
+   `packages/assets/internal/content/VERSION` in a protected author commit.
+   If the new version falls outside the range in `fireweed.yaml`, update the
+   repository's compatibility pin in that commit.
+2. Build from that commit and confirm `bin/fireweed version` prints the
+   intended version. Merge to `main` and check CI before tagging.
 3. From the reviewed commit, create and push the matching tag:
 
    ```sh
