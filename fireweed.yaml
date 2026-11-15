@@ -56,6 +56,15 @@ agent:
             - -s
             - workspace-write
             - '{prompt}'
+        opencode-deepseek-v4-1-flash-high:
+            - ./scripts/opencode
+            - --standalone
+            - run
+            - --archived
+            - --model
+            - 'opencode/deepseek-v4.1-flash#high'
+            - '--'
+            - '{prompt}'
 audit:
     enabled: true
     max_rounds: 2

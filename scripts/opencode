@@ -1,0 +1,14 @@
+#!/bin/sh
+set -eu
+
+# Isolate OpenCode's config and compatibility skills while retaining provider login.
+config_dir=$(mktemp -d "${TMPDIR:-/tmp}/fireweed-opencode.XXXXXXXX")
+trap 'rm -rf -- "$config_dir"' 0
+unset OPENCODE_CONFIG OPENCODE_CONFIG_DIR OPENCODE_CLI_CONFIG_CONTENT
+export XDG_CONFIG_HOME="$config_dir"
+export OPENCODE_TEST_HOME="$config_dir"
+export OPENCODE_DISABLE_CLAUDE_CODE=1
+export OPENCODE_DISABLE_PROJECT_CONFIG=1
+export OPENCODE_CONFIG_CONTENT='{"permissions":[{"action":"skill","resource":"*","effect":"deny"},{"action":"external_directory","resource":"*","effect":"deny"}]}'
+
+command opencode "$@"
