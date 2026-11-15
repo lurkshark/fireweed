@@ -22,6 +22,11 @@ import (
 
 const doctorGuidance = "<!-- fireweed:start -->\nThis project uses fireweed. Specs and change files are the source of truth.\nRun `fireweed playbook author-change` before authoring changes and\n`fireweed context <change>` before each step.\n<!-- fireweed:end -->\n"
 
+const (
+	doctorWorkerAlias = "standard"
+	doctorAuditAlias  = "reviewer"
+)
+
 type doctorFixture struct {
 	t    *testing.T
 	root string
@@ -72,14 +77,25 @@ func doctorConfig(t *testing.T, recipe assets.Recipe) string {
 		"limit_patterns":  []string{"rate limit"},
 		"module_defaults": map[string]any{"interface": recipe.ModuleDefaults.Interface, "evals": recipe.ModuleDefaults.Evals, "disposable": recipe.ModuleDefaults.Disposable},
 		"hooks":           recipe.Hooks,
-		"agent":           map[string]any{"command": []string{"bash", ".fireweed/agent.sh", "{prompt}", "{git_common_dir}"}, "wrap": []string{"bash", ".fireweed/wrap.sh"}},
-		"audit":           map[string]any{"enabled": true, "command": []string{"bash", ".fireweed/audit.sh", "{prompt}"}},
+		"agent": map[string]any{
+			"default": doctorWorkerAlias,
+			"commands": map[string]any{
+				doctorWorkerAlias: []string{"bash", ".fireweed/agent.sh", "{prompt}", "{git_common_dir}"},
+				doctorAuditAlias:  []string{"bash", ".fireweed/audit.sh", "{prompt}"},
+			},
+			"wrap": []string{"bash", ".fireweed/wrap.sh"},
+		},
+		"audit": map[string]any{"enabled": true, "agent": doctorAuditAlias},
 	}
 	data, err := yaml.Marshal(config)
 	if err != nil {
 		t.Fatal(err)
 	}
 	return string(data)
+}
+
+func doctorCommands(config map[string]any) map[string]any {
+	return config["agent"].(map[string]any)["commands"].(map[string]any)
 }
 
 func (f doctorFixture) editConfig(change func(map[string]any)) {
@@ -822,8 +838,9 @@ printf '<testsuite><testcase name="%s-001"/></testsuite>' "$prefix" > "$3"
 	}
 }
 
-func Test_CHK_063_CHK_064_CHK_065_CHK_066_CHK_067_AgentProbes(t *testing.T) {
+func Test_CHK_063_DoctorRunsNamedWorkerAndAuditInScratchThroughWrapper(t *testing.T) {
 	f := localDoctorFixture(t)
+	f.put(".fireweed/wrap.sh", fmt.Sprintf("#!/bin/bash\nprintf 'wrap:%%s:%%s\n' \"$PWD\" \"$2\" >> %q\nexec \"$@\"\n", f.log))
 	f.commit()
 	for _, d := range project.Check(f.root) {
 		if !d.Warning {
@@ -832,43 +849,80 @@ func Test_CHK_063_CHK_064_CHK_065_CHK_066_CHK_067_AgentProbes(t *testing.T) {
 	}
 	r := checks.Doctor(context.Background(), f.request(false))
 	log := doctorLog(f)
-	if doctorErrors(r) || strings.Count(log, "worker:") != 1 || strings.Count(log, "audit:") != 1 || strings.Count(log, "wrap:") != 2 || !strings.Contains(log, "FIREWEED_DOCTOR_OK") {
+	if doctorErrors(r) || !hasDoctorCheck(r, "worker", true) || !hasDoctorCheck(r, "audit", true) ||
+		strings.Count(log, "worker:") != 1 || strings.Count(log, "audit:") != 1 || strings.Count(log, "wrap:") != 2 {
 		t.Errorf("worker/audit/wrap probes: %s; log=%s", doctorText(r), log)
 	}
-	workerPrompt, auditPrompt := false, false
-	for _, line := range strings.Split(log, "\n") {
-		if fields := strings.SplitN(line, ":", 3); len(fields) == 3 && strings.Contains(fields[2], "FIREWEED_DOCTOR_OK") {
-			switch fields[0] {
-			case "worker":
-				workerPrompt = true
-			case "audit":
-				auditPrompt = true
-			}
+	setup, _, _ := strings.Cut(log, "\n")
+	scratch, ok := strings.CutPrefix(setup, "setup:")
+	if !ok {
+		t.Fatalf("setup did not record scratch: %s", log)
+	}
+	for _, want := range []string{
+		"wrap:" + scratch + ":.fireweed/agent.sh\n",
+		"wrap:" + scratch + ":.fireweed/audit.sh\n",
+		"worker:" + scratch + ":" + doctorProbePrompt + ":",
+		"audit:" + scratch + ":" + doctorProbePrompt + "\n",
+	} {
+		if !strings.Contains(log, want) {
+			t.Errorf("missing wrapped command or prompt %q: %s", want, log)
 		}
 	}
-	if !workerPrompt {
-		t.Errorf("worker did not receive its fixed-reply prompt: %s", log)
-	}
-	if !auditPrompt {
-		t.Errorf("audit did not receive its fixed-reply prompt: %s", log)
-	}
-	for _, part := range []string{"/fireweed/worktrees/", "worker:", "audit:"} {
-		if !strings.Contains(log, part) {
-			t.Errorf("scratch/role marker %s absent: %s", part, log)
-		}
-	}
+	assertScratchRemoved(t, f)
+}
 
-	g := localDoctorFixture(t)
-	g.editConfig(func(config map[string]any) {
-		delete(config["audit"].(map[string]any), "command")
-		config["agent"].(map[string]any)["command"] = "bash .fireweed/agent.sh {prompt} {git_common_dir}"
+func Test_CHK_064_DoctorProbesInheritedWorkerDefaultAndWarns(t *testing.T) {
+	f := localDoctorFixture(t)
+	f.editConfig(func(config map[string]any) {
+		delete(config["audit"].(map[string]any), "agent")
+		doctorCommands(config)[doctorWorkerAlias] = "bash .fireweed/agent.sh {prompt} {git_common_dir}"
 	})
-	g.commit()
-	rr := checks.Doctor(context.Background(), g.request(false))
-	if !hasDoctorDiagnostic(rr, "C15", true, "shared") || strings.Count(doctorLog(g), "worker:") != 2 {
-		t.Errorf("audit fallback: %s; log=%s", doctorText(rr), doctorLog(g))
+	f.commit()
+	report := checks.Doctor(context.Background(), f.request(false))
+	log := doctorLog(f)
+	if doctorErrors(report) || !hasDoctorCheck(report, "worker", true) || !hasDoctorCheck(report, "audit", true) ||
+		!hasDoctorDiagnostic(report, "C15", true, "audit", "shared") {
+		t.Errorf("audit did not pass with a shared-command warning: %s", doctorText(report))
 	}
+	if strings.Count(log, "worker:") != 2 || strings.Contains(log, "audit:") || strings.Count(log, "wrap:") != 2 {
+		t.Errorf("worker default was not used once for each role through the wrapper: %s", log)
+	}
+}
 
+func Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRole(t *testing.T) {
+	for _, tc := range []struct {
+		role, section, key, otherRole string
+	}{
+		{"worker", "agent", "default", "audit"},
+		{"audit", "audit", "agent", "worker"},
+	} {
+		t.Run(tc.role, func(t *testing.T) {
+			f := localDoctorFixture(t)
+			f.editConfig(func(config map[string]any) {
+				config[tc.section].(map[string]any)[tc.key] = "unlisted-command"
+			})
+			f.commit()
+			for _, d := range project.Check(f.root) {
+				if !d.Warning {
+					t.Fatalf("fixture stopped before agent selection: %+v", d)
+				}
+			}
+			report := checks.Doctor(context.Background(), f.request(false))
+			setting := tc.section + "." + tc.key
+			if !hasDoctorCheck(report, tc.role, false) || hasDoctorCheck(report, tc.role, true) ||
+				!hasDoctorDiagnostic(report, "C15", false, setting) {
+				t.Errorf("missing failed %s probe identifying %s: %s", tc.role, setting, doctorText(report))
+			}
+			log := doctorLog(f)
+			if strings.Contains(log, tc.role+":") || strings.Count(log, tc.otherRole+":") != 1 ||
+				strings.Count(log, "wrap:") != 1 || !hasDoctorCheck(report, tc.otherRole, true) {
+				t.Errorf("only resolved %s should run through the wrapper: %s; log=%s", tc.otherRole, doctorText(report), log)
+			}
+		})
+	}
+}
+
+func Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes(t *testing.T) {
 	h := localDoctorFixture(t)
 	h.put(".fireweed/agent.sh", fmt.Sprintf("#!/bin/bash\nfor i in $(seq 1 25); do printf 'line-%%02d\\n' \"$i\"; done\necho RATE LIMIT reached\nexit 9\n"))
 	h.commit()
@@ -897,7 +951,8 @@ func Test_CHK_063_CHK_064_CHK_065_CHK_066_CHK_067_AgentProbes(t *testing.T) {
 			q.put(".fireweed/agent.sh", tc.script)
 			q.commit()
 			r := checks.Doctor(context.Background(), q.request(false))
-			if !hasDoctorDiagnostic(r, "C15", false, "agent.sh") {
+			if !hasDoctorDiagnostic(r, "C15", false, "agent.sh") ||
+				!hasDoctorCheck(r, "worker", false) || hasDoctorCheck(r, "worker", true) {
 				t.Errorf("agent failure accepted: %s", doctorText(r))
 			}
 			if tc.name == "ordinary failure" && (!hasDoctorDiagnostic(r, "C15", false, "ordinary-25") || strings.Contains(doctorText(r), "ordinary-01")) {
@@ -909,7 +964,8 @@ func Test_CHK_063_CHK_064_CHK_065_CHK_066_CHK_067_AgentProbes(t *testing.T) {
 	wrongAudit.put(".fireweed/audit.sh", "#!/bin/bash\necho WRONG_REPLY\n")
 	wrongAudit.commit()
 	auditFailure := checks.Doctor(context.Background(), wrongAudit.request(false))
-	if !hasDoctorDiagnostic(auditFailure, "C15", false, "audit.sh") || hasDoctorCheck(auditFailure, "audit", true) {
+	if !hasDoctorDiagnostic(auditFailure, "C15", false, "audit.sh") ||
+		!hasDoctorCheck(auditFailure, "audit", false) || hasDoctorCheck(auditFailure, "audit", true) {
 		t.Errorf("wrong audit reply accepted: %s", doctorText(auditFailure))
 	}
 
