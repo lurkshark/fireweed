@@ -2,9 +2,10 @@
 
 ## Current state (2026-11-14)
 
-`origin/main` is [`f42333c`](https://github.com/lurkshark/fireweed/commit/f42333ca824b24a9d0730fa7b3bd4afa2d0ac377),
-the published v0.2.0 commit. The rebuild queue is empty and the coordinating
-clone has no active claims. The binary and repository pin use the 0.2 series.
+The published v0.2.0 commit is [`f42333c`](https://github.com/lurkshark/fireweed/commit/f42333ca824b24a9d0730fa7b3bd4afa2d0ac377).
+The binary and repository pin use the 0.2 series. At the start of the
+current queue run, main at `79ca187` had eight queued changes and no active
+claims.
 [D011](DECISIONS.md#d011--first-project-format) still applies to project
 format 1.
 
@@ -54,6 +55,10 @@ clean main checkout on 2026-11-13. Its binary reports 0.1.0. The 0.2.0 product
 and main’s 0.2-series pin are now in effect. For the release metadata change,
 the 0.2.0 controller was built with `-trimpath` from clean committed main at
 `089ea0c6830c2754d6c14ce8d43383f849cdd7f5` with no active run or claim.
+
+The controller for the current queue was built with `-trimpath` from clean
+committed main at `79ca1873b3c78010e28e82a43419b89d7182545f` with no active run
+or claim. It reports 0.2.0.
 
 | Pinned-controller evidence | Result |
 | --- | --- |
