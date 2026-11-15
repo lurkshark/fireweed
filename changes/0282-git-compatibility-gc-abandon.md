@@ -3,7 +3,7 @@ fixes:
     - FLOW-089
     - FLOW-128
 module: workflow
-phase: audit
+phase: impl
 run: 20261115T041910-31d4d7a888bda651e1d4b566
 ---
 
@@ -50,7 +50,12 @@ Use Apple Git 2.30.1 on PATH for fail-first and passing Fireweed verification.
 Rerun the focused workflow and CLI evals with a current Git. Use the same
 behavior assertions across versions without version-string assertions, Git
 shims or skipped cases.
+## Audit
+
+No findings; checked FLOW-089, FLOW-128
+
 ## Provenance
 
 - evals 2026-11-15T04:25:31.039477Z agent=codex fireweed=0.2.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=211 failing=8 passing=203
+- audit 2026-11-15T04:25:54.38572Z agent=codex fireweed=0.2.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 
