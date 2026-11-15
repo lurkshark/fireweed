@@ -1,5 +1,7 @@
 ---
 module: assets
+phase: audit
+run: 20261115T032919-a0110b235a8184999dd461dd
 ---
 
 ## Motivation
@@ -12,10 +14,10 @@ commands its probes exercise.
 
 ## Added
 
-### new:drill-agent-help
+### AST-069
 CommandHelp("drill") MUST document --agent <alias>, identify agent.commands as the alias mapping and agent.default as the default selector, and show an example selecting a named command.
 
-### new:doctor-agent-help
+### AST-070
 CommandHelp("doctor") MUST identify agent.default and audit.agent as the configured probe selectors and explain that audit inherits the worker default when its selector is omitted.
 
 ## Modified
@@ -31,3 +33,12 @@ effort. Show `agent.default: codex-gpt-6-1-sol-high` and
 `audit.agent: codex-gpt-6-astra-medium`. For a one-off drill, show
 `fireweed drill contracts --agent opencode-deepseek-v4-1-flash-high`.
 The alias is a lookup name. The command template supplies the model and effort.
+
+The focused assets evals failed on the missing drill selector and example
+for AST-069 and the missing probe selectors and audit fallback for AST-070.
+`fireweed verify drill-agent-help` passed in evals. Both help entries can be
+updated in the disposable `packages/assets/internal/content/command_help.go`.
+## Provenance
+
+- evals 2026-11-15T03:33:54.23129Z agent=codex fireweed=0.2.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=151 failing=2 passing=149
+
