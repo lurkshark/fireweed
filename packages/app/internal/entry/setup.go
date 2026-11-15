@@ -236,14 +236,17 @@ func initConfig(recipe assets.Recipe, agent, auditor any) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	commands := map[string]any{"worker": agent}
 	audit := map[string]any{"enabled": true}
 	if auditor != nil {
-		audit["command"] = auditor
+		commands["auditor"] = auditor
+		audit["agent"] = "auditor"
 	}
 	config := map[string]any{
 		"fireweed": fmt.Sprintf(">=%s.%d, <%s.%d", parts[0], minor, parts[0], minor+1),
 		"version":  1, "base": "main", "remote": "origin", "modules": []string{"packages/*"},
-		"agent": map[string]any{"command": agent}, "audit": audit,
+		"agent": map[string]any{"commands": commands, "default": "worker"},
+		"audit": audit,
 	}
 	defaults := map[string][]string{}
 	for key, list := range zoneFields(&recipe.ModuleDefaults) {

@@ -180,10 +180,10 @@ init --no-app MUST skip creation of the app module.
 When the selected recipe supplies no module templates, init MUST create a minimal app SPEC.md with empty Specs and Decisions sections.
 
 ### APP-053
-init MUST configure codex or claude argv command presets, or preserve a custom agent command template containing {prompt} or {prompt_file} as a shell string, in agent.command.
+init MUST store the worker command in agent.commands and set agent.default to its alias. It MUST keep codex and claude presets as argv lists and preserve a custom template containing {prompt} or {prompt_file} as a shell string.
 
 ### APP-054
-init MUST enable audit by default and write a separately selected --audit-agent command when supplied, accepting the same presets and custom template forms as --agent, otherwise leaving audit.command unset for agent fallback.
+init MUST enable audit by default. When --audit-agent is supplied, it MUST accept the same presets and custom forms as --agent and set audit.agent to the alias of that command in agent.commands. Otherwise it MUST omit the audit selector so audit inherits the worker default.
 
 ### APP-055
 init MUST reject missing --recipe or --agent values, malformed options or extra positional arguments with corrective U01 and exit 2 before creating files; missing-input messages MUST list valid recipe and agent choices.
@@ -637,6 +637,12 @@ While a change is owned, modules, coverage, next and run MUST check compatibilit
 
 ### APP-165
 Help forms, version, explain and playbook MUST retain their specified standalone behavior. init and migrate MUST retain their setup and format-validation preconditions. pr-body MUST preserve APP-127's endpoint authority without compatibility admission against live configuration or the recorded endpoint, including when live configuration is malformed.
+
+### APP-166
+drill --agent <alias> MUST pass the supplied alias to runner.Drill as AgentAlias. A missing, empty or repeated --agent value MUST return exit 2 and corrective U01 before running hooks or agents.
+
+### APP-167
+An unknown drill agent alias MUST return exit 2 with U02 naming the alias and pointing to the agent.commands mapping in the project configuration. In JSON mode, drill MUST emit this diagnostic in a schema 1 envelope with null data and empty stderr.
 
 ## Decisions
 
