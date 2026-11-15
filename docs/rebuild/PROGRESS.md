@@ -3,9 +3,17 @@
 ## Current state (2026-11-14)
 
 The published v0.2.0 commit is [`f42333c`](https://github.com/lurkshark/fireweed/commit/f42333ca824b24a9d0730fa7b3bd4afa2d0ac377).
-The binary and repository pin use the 0.2 series. At the start of the
-current queue run, main at `79ca187` had eight queued changes and no active
-claims.
+The binary and repository pin use the 0.2 series. Fireweed applied and
+archived all eight changes queued on main at `79ca187` on
+`dev/work-through-queued-changes`, through phase commit `764aed3`. Each passed
+a separate audit. The branch has an empty queue and no active claims.
+
+The RUN-062 fixture evals passed with Apple Git 2.30.1 and Git 2.56.1.
+The [GC and abandon change](../../changes/archive/0282-git-compatibility-gc-abandon.md)
+reproduced both failures and passed 813 implementation checks on Apple Git
+2.30.1. Its focused workflow and CLI evals and the full `go test ./...` suite
+passed with Git 2.56.1.
+
 [D011](DECISIONS.md#d011--first-project-format) still applies to project
 format 1.
 
@@ -56,9 +64,10 @@ and main’s 0.2-series pin are now in effect. For the release metadata change,
 the 0.2.0 controller was built with `-trimpath` from clean committed main at
 `089ea0c6830c2754d6c14ce8d43383f849cdd7f5` with no active run or claim.
 
-The controller for the current queue was built with `-trimpath` from clean
-committed main at `79ca1873b3c78010e28e82a43419b89d7182545f` with no active run
-or claim. It reports 0.2.0.
+The controller for the queue on `dev/work-through-queued-changes` was built
+with `-trimpath` from clean committed main at
+`79ca1873b3c78010e28e82a43419b89d7182545f` with no active run or claim. It
+reports 0.2.0.
 
 | Pinned-controller evidence | Result |
 | --- | --- |
@@ -66,6 +75,8 @@ or claim. It reports 0.2.0.
 | `check-commits 9f0ca49..ee7f2cc` | 13 commits passed. |
 | `check-commits ec8908d..d67f68f` | 58 commits passed on the PR #7 phase branch. |
 | `check-commits ee7f2cc..5fa703f` | 20 commits passed on the PR #8 phase branch. |
+| `check` on `764aed3` | Passed with five C18 warnings. |
+| `check-commits 79ca187..764aed3` | 25 commits passed on the queue branch. |
 
 Main’s new root `9f0ca49` has the same tree as the retained pre-cutover tip
 `d99645e`. The required setup baseline `be35552` is an ancestor of
@@ -115,6 +126,11 @@ failures out of subsequent worker prompts. Review the effect of later changes
 on each relevant proof before seeking approval for a repeat.
 
 ## Next step
+
+Once the queue branch reaches main, rebuild the controller from that clean
+main revision and commit the named-command configuration with the existing
+worker and auditor commands, as specified in the
+[drill agent change](../../changes/archive/0280-drill-agent-option.md#notes).
 
 Review the R05 configured-agent Provenance gap and the gate-4 history split.
 Proceed with a focused authorized change for the provenance gap, then gather
