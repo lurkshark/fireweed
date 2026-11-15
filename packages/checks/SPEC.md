@@ -204,10 +204,10 @@ Doctor MUST set probe hooks' FIREWEED_BIN to the request Bin and make the scratc
 Doctor MUST retain each real module's reasoned X03 boundaries-opt-out warning and applicable X04 warning when no boundary enforcement is required.
 
 ### CHK-063
-Doctor MUST run the worker and audit commands once each in scratch through the configured agent.wrap with a fixed-reply prompt, requiring exit 0 and the requested reply for success.
+Doctor MUST resolve the worker and audit commands from the project configuration and run each resolved command once in scratch through agent.wrap with a fixed-reply prompt, requiring exit 0 and the requested reply for success.
 
 ### CHK-064
-Doctor MUST use agent.command for the audit probe when audit.command is unset and emit a C15 warning identifying the shared-command blind spot.
+When the audit probe inherits the worker default, Doctor MUST probe that command for audit and emit a C15 warning identifying the shared-command blind spot.
 
 ### CHK-065
 Doctor MUST bound each agent probe by the request Timeout or three minutes when unset, and report C15 failures with the command and its final 20 output lines.
@@ -275,6 +275,9 @@ Doctor MUST create one temporary file containing the exact probe prompt only whe
 
 ### CHK-084
 Each canary DoctorCheck Name MUST begin with its probe name (baseline, undeclared, internal_eval, failing_eval, missing_id or recovery), followed by a space and the hook scope when one applies.
+
+### CHK-085
+Doctor MUST report an agent selection error as a failed C15 probe identifying the setting at fault and skip invocation for that unresolved role.
 
 ## Decisions
 
