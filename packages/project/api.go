@@ -20,6 +20,11 @@ func LoadAt(root, revision string) (Snapshot, error) { return fixture.LoadAt(roo
 
 func CheckCompatibility(config map[string]any) error { return fixture.CheckCompatibility(config) }
 
+// ResolveAgentCommand selects an agent command and reports audit inheritance.
+func ResolveAgentCommand(config map[string]any, role, alias string) (command any, usesWorkerDefault bool, err error) {
+	return fixture.ResolveAgentCommand(config, role, alias)
+}
+
 func ValidateGraph(modules []Module) error { return fixture.ValidateGraph(modules) }
 
 func NewChange(root, module, slug string) (string, error) {
