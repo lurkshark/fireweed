@@ -30,33 +30,36 @@ protected:
 worker_writable:
     - go.sum
 agent:
-    command:
-        - codex
-        - exec
-        - --ephemeral
-        - --ignore-user-config
-        - -m
-        - gpt-6.1-sol
-        - -c
-        - model_reasoning_effort="high"
-        - -s
-        - workspace-write
-        - '{prompt}'
+    default: codex-gpt-6-1-sol-high
+    commands:
+        codex-gpt-6-1-sol-high:
+            - codex
+            - exec
+            - --ephemeral
+            - --ignore-user-config
+            - -m
+            - gpt-6.1-sol
+            - -c
+            - model_reasoning_effort="high"
+            - -s
+            - workspace-write
+            - '{prompt}'
+        codex-gpt-6-astra-medium:
+            - codex
+            - exec
+            - --ephemeral
+            - --ignore-user-config
+            - -m
+            - gpt-6-astra
+            - -c
+            - model_reasoning_effort="medium"
+            - -s
+            - workspace-write
+            - '{prompt}'
 audit:
     enabled: true
     max_rounds: 2
-    command:
-        - codex
-        - exec
-        - --ephemeral
-        - --ignore-user-config
-        - -m
-        - gpt-6-astra
-        - -c
-        - model_reasoning_effort="medium"
-        - -s
-        - workspace-write
-        - '{prompt}'
+    agent: codex-gpt-6-astra-medium
 authoring:
     max_unapproved: 10
 attempts: 2
