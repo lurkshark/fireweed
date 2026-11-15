@@ -90,7 +90,15 @@ func Test_FLOW_089_FLOW_091_FLOW_094_AbandonCleanOwnedSteppedChange(t *testing.T
 	root := fixture(t, "", "", "", "", "")
 	abandonGitIdentity(t, root)
 	initialSpec := readFile(t, root, "packages/alpha/SPEC.md")
+	const contextEval = "packages/alpha/evals/context_test.go"
+	const original = "original phase line\nunchanged separator\noriginal later line\n"
+	const phaseEdit = "edited phase line\nunchanged separator\noriginal later line\n"
+	const laterEdit = "edited phase line\nunchanged separator\nedited later line\n"
+	const wantEval = "original phase line\nunchanged separator\nedited later line\n"
+	write(t, root, contextEval, original)
+	commit(t, root, "fixture existing eval")
 	started := start(t, root)
+	write(t, root, contextEval, phaseEdit)
 	write(t, root, "packages/alpha/evals/step_test.go", "committed eval effect\n")
 	evals, err := done(root)
 	if err != nil || evals.State.Phase != "audit" {
@@ -101,6 +109,9 @@ func Test_FLOW_089_FLOW_091_FLOW_094_AbandonCleanOwnedSteppedChange(t *testing.T
 	if err != nil || audited.State.Phase != "impl" {
 		t.Fatalf("fixture audit Done = %#v, %v", audited, err)
 	}
+	// The later edit changes a context line of the reverse patch.
+	write(t, root, contextEval, laterEdit)
+	commit(t, root, "later independent edit in the same eval file")
 	phaseCommits, err := workflow.Commits(root, "manual")
 	if err != nil || len(phaseCommits) != 2 {
 		t.Fatalf("fixture phase commits = %v, %v; want evals and audit", phaseCommits, err)
@@ -118,8 +129,11 @@ func Test_FLOW_089_FLOW_091_FLOW_094_AbandonCleanOwnedSteppedChange(t *testing.T
 		t.Fatalf("Abandon owned stepped change: %v", err)
 	}
 	assertAbandonCommit(t, root, before, oid)
-	if got := git(t, root, "diff-tree", "--no-commit-id", "--name-status", "-r", oid); got != "D\t"+pendingCommitChange+"\nD\tpackages/alpha/evals/step_test.go" {
-		t.Errorf("stepped Abandon effects = %q; want pending change and committed eval removed", got)
+	if got := git(t, root, "diff-tree", "--no-commit-id", "--name-status", "-r", oid); got != "D\t"+pendingCommitChange+"\nM\t"+contextEval+"\nD\tpackages/alpha/evals/step_test.go" {
+		t.Errorf("stepped Abandon effects = %q; want pending change and added eval removed, and existing eval modified", got)
+	}
+	if got := readFile(t, root, contextEval); got != wantEval {
+		t.Errorf("Abandon eval contents = %q, want %q", got, wantEval)
 	}
 	if got := readFile(t, root, "packages/alpha/SPEC.md"); got != initialSpec {
 		t.Errorf("stepped Abandon changed applied spec: %q", got)

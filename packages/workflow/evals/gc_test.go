@@ -73,16 +73,20 @@ func gcPruned(t *testing.T, got, want []string) {
 
 func Test_FLOW_128_GCPrunesMissingAndUnregisteredClaimsOnly(t *testing.T) {
 	root := fixture(t, "", "", "", "", "")
-	linked := filepath.Join(t.TempDir(), "linked")
+	worktreeParent, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	unregistered := filepath.Join(worktreeParent, "linked")
+	if err := os.Mkdir(unregistered, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	linked := unregistered + "\nworktree"
 	git(t, root, "worktree", "add", "-b", "linked", linked, "HEAD")
 	gcClaim(t, root, "main-live", root)
 	gcClaim(t, root, "linked-live", linked)
 	missing := filepath.Join(t.TempDir(), "removed")
 	gcClaim(t, root, "missing", missing)
-	unregistered := filepath.Join(t.TempDir(), "unregistered")
-	if err := os.Mkdir(unregistered, 0o755); err != nil {
-		t.Fatal(err)
-	}
 	gcClaim(t, root, "unregistered", unregistered)
 	foreign, err := filepath.EvalSymlinks(t.TempDir())
 	if err != nil {
