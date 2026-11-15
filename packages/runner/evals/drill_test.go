@@ -1057,16 +1057,17 @@ func Test_RUN_062_CleanupFailureCannotPass(t *testing.T) {
 			return
 		}
 		scratch, _, _ := strings.Cut(string(setup), "\n")
+		scratch = filepath.Clean(scratch)
 		if filepath.Dir(scratch) != parent {
 			t.Errorf("fixture scratch path %q is outside %q", scratch, parent)
 			return
 		}
-		worktrees, err := exec.Command("git", "-C", f.root, "worktree", "list", "--porcelain", "-z").Output()
+		worktrees, err := exec.Command("git", "-C", f.root, "worktree", "list", "--porcelain").Output()
 		if err != nil {
 			t.Errorf("list fixture worktrees: %v", err)
 			return
 		}
-		if slices.Contains(strings.Split(string(worktrees), "\x00"), "worktree "+scratch) {
+		if slices.Contains(strings.Split(string(worktrees), "\n"), "worktree "+scratch) {
 			nextGit(t, f.root, "worktree", "remove", "--force", scratch)
 			return
 		}

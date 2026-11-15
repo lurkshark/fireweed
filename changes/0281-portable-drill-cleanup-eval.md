@@ -2,6 +2,8 @@
 eval_fix:
     - RUN-062
 module: runner
+phase: audit
+run: 20261115T035529-2adc8c0ad73de5b5fd2321f7
 ---
 
 ## Motivation
@@ -37,3 +39,7 @@ verification with a current Git while the separate workflow product failures
 are pending. Also run the focused RUN-062 evals with Apple Git 2.30.1 and
 confirm the same assertions pass with both executables. Select Git through PATH
 and keep assertions independent of Git version strings.
+## Provenance
+
+- evals 2026-11-15T04:06:02.74736Z agent=codex fireweed=0.2.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=199 failing=0 passing=199
+
