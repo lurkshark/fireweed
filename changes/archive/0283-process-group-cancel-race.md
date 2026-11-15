@@ -2,7 +2,7 @@
 fixes:
     - GIT-005
 module: gitstore
-phase: impl
+phase: applied
 run: 20261115T063707-dbdf60a45054adbee79418d6
 ---
 
@@ -53,4 +53,5 @@ No findings; checked GIT-005
 
 - evals 2026-11-15T06:41:28.878514Z agent=codex fireweed=0.2.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=14 failing=1 passing=13
 - audit 2026-11-15T06:41:43.228404Z agent=codex fireweed=0.2.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-15T07:12:44.160243Z agent=codex fireweed=0.2.0 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=1267 failing=0 passing=1267
 
