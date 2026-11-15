@@ -3,7 +3,7 @@ bases:
     CHK-063: d58f1f3a
     CHK-064: 5165fb12
 module: checks
-phase: audit
+phase: impl
 run: 20261115T023040-7d6eb1d324f8a001fd2a1e78
 ---
 
@@ -40,7 +40,12 @@ Fail-first verification passed for CHK-063, CHK-064, and CHK-085. The
 current Doctor does not invoke the named commands or identify
 `agent.default` and `audit.agent` in its C15 failures. All three behaviors
 can be implemented in `packages/checks/internal/engine/doctor.go`.
+## Audit
+
+No findings; checked CHK-063, CHK-064, CHK-085
+
 ## Provenance
 
 - evals 2026-11-15T02:39:54.496149Z agent=codex fireweed=0.2.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=135 failing=23 passing=112
+- audit 2026-11-15T02:40:21.790724Z agent=codex fireweed=0.2.0 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 
