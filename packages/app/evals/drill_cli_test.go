@@ -31,7 +31,7 @@ printf '%s\n%s\n' "$PWD" "$FIREWEED_BIN" > "$1/setup"
 if [ -f "$1/setup-fail" ]; then echo FIXTURE_SETUP_FAILURE >&2; exit 17; fi
 `)
 	appPut(t, observations, "agent.sh", `#!/bin/sh
-printf '%s\n%s\n' "$PWD" "$FIREWEED_BIN" > "$1/agent"
+printf '%s\n%s\n' "$PWD" "$FIREWEED_BIN" > "$1/${3:-agent}"
 case "$(cat "$1/mode" 2>/dev/null)" in
   usage) echo 'RATE LIMIT' >&2; exit 9;;
   usage-after-failure) if [ -f "$1/attempted" ]; then echo 'RATE LIMIT' >&2; exit 9; fi; : > "$1/attempted"; value=wrong;;
@@ -58,6 +58,7 @@ fi
 	appPut(t, root, ".gitignore", ".fireweed/drills/\n")
 	appPut(t, root, "SYSTEM.md", "# Fixture\n")
 	workerCommand := fmt.Sprintf(`[bash, %q, %q, "{prompt}"]`, filepath.Join(observations, "agent.sh"), observations)
+	alternateCommand := fmt.Sprintf(`[bash, %q, %q, "{prompt}", alternate-agent]`, filepath.Join(observations, "agent.sh"), observations)
 	appPut(t, root, "fireweed.yaml", fmt.Sprintf(`fireweed: %q
 version: 1
 base: main
@@ -70,16 +71,16 @@ hooks:
   setup: [sh, %q, %q]
   eval: [sh, %q, "{module}", "{report}", %q]
 agent:
-  command: %s
   commands:
     worker: %s
+    alternate: %s
   default: worker
 attempts: 1
 timeout: 2s
 limit_patterns: [RATE LIMIT]
 limit_wait: 5ms
 limit_budget: 0s
-`, fixtureBinaryPin, filepath.Join(observations, "setup.sh"), observations, filepath.Join(observations, "eval.sh"), observations, workerCommand, workerCommand))
+`, fixtureBinaryPin, filepath.Join(observations, "setup.sh"), observations, filepath.Join(observations, "eval.sh"), observations, workerCommand, alternateCommand))
 	for _, m := range []struct{ name, prefix, deps string }{{"alpha", "ALP", "[]"}, {"beta", "BET", "[alpha]"}} {
 		appPut(t, root, "packages/"+m.name+"/SPEC.md", fmt.Sprintf("---\nname: %s\nid_prefix: %s\ndepends_on: %s\n---\n# %s\n\n## Specs\n\n### %s-001\n%s MUST preserve a value.\n", m.name, m.prefix, m.deps, m.name, m.prefix, m.name))
 		appPut(t, root, "packages/"+m.name+"/api.go", "package "+m.name+"\n")
@@ -107,7 +108,7 @@ func drillCLIObserve(t *testing.T, f drillCLISetup, name string) string {
 
 func drillCLINoInvocation(t *testing.T, f drillCLISetup) {
 	t.Helper()
-	for _, name := range []string{"setup", "agent", "evals"} {
+	for _, name := range []string{"setup", "agent", "alternate-agent", "evals"} {
 		if got := drillCLIObserve(t, f, name); got != "" {
 			t.Errorf("rejected drill invoked %s: %q", name, got)
 		}
@@ -116,7 +117,7 @@ func drillCLINoInvocation(t *testing.T, f drillCLISetup) {
 
 func drillCLICleaned(t *testing.T, f drillCLISetup) {
 	t.Helper()
-	for _, name := range []string{"setup", "agent"} {
+	for _, name := range []string{"setup", "agent", "alternate-agent"} {
 		first := strings.SplitN(drillCLIObserve(t, f, name), "\n", 2)[0]
 		if first != "" {
 			if _, err := os.Stat(first); !os.IsNotExist(err) {
@@ -228,7 +229,61 @@ func Test_APP_139_DrillArgumentAndModuleRejectionsDoNotInvokeHooks(t *testing.T)
 	}
 }
 
-func drillCLIFailure(t *testing.T, status, want int, out, stderr string, jsonMode bool, code, named string) {
+func Test_APP_166_DrillInvokesSelectedAgent(t *testing.T) {
+	bin := buildAppBinary(t)
+	f := drillCLIProject(t, bin)
+	status, out, stderr := runNextCLI(t, bin, f.nested, "drill", "alpha", "--agent", "alternate")
+	if status != 0 || stderr != "" {
+		t.Fatalf("drill with selected alias: exit=%d stdout=%q stderr=%q", status, out, stderr)
+	}
+	if got := strings.Split(strings.TrimSpace(drillCLIObserve(t, f, "alternate-agent")), "\n"); len(got) != 2 || got[0] == "" || got[1] != bin {
+		t.Errorf("alternate command did not record its invocation and FIREWEED_BIN %q: %q", bin, got)
+	}
+	if got := drillCLIObserve(t, f, "agent"); got != "" {
+		t.Errorf("explicit selection also invoked the default agent: %q", got)
+	}
+	drillCLICleaned(t, f)
+}
+
+func Test_APP_166_DrillRejectsInvalidAgentOptionBeforeInvocation(t *testing.T) {
+	bin := buildAppBinary(t)
+	f := drillCLIProject(t, bin)
+	for _, tc := range []struct {
+		name   string
+		option []string
+	}{
+		{"missing", []string{"--agent"}},
+		{"empty", []string{"--agent", ""}},
+		{"repeated", []string{"--agent", "worker", "--agent", "alternate"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			args := append([]string{"drill", "alpha"}, tc.option...)
+			status, out, stderr := runNextCLI(t, bin, f.nested, args...)
+			drillCLIFailure(t, status, 2, out, stderr, false, "U01", "--agent")
+			drillCLINoInvocation(t, f)
+		})
+	}
+}
+
+func Test_APP_167_DrillRejectsUnknownAgentAlias(t *testing.T) {
+	bin := buildAppBinary(t)
+	f := drillCLIProject(t, bin)
+	const alias = "unlisted-drill-agent"
+	for _, jsonMode := range []bool{false, true} {
+		args := []string{"drill", "alpha", "--agent", alias}
+		if jsonMode {
+			args = append(args, "--json")
+		}
+		status, out, stderr := runNextCLI(t, bin, f.nested, args...)
+		message := drillCLIFailure(t, status, 2, out, stderr, jsonMode, "U02", alias)
+		if !strings.Contains(message, "agent.commands") {
+			t.Errorf("diagnostic %q does not point to the agent.commands mapping", message)
+		}
+		drillCLINoInvocation(t, f)
+	}
+}
+
+func drillCLIFailure(t *testing.T, status, want int, out, stderr string, jsonMode bool, code, named string) string {
 	t.Helper()
 	if status != want {
 		t.Errorf("drill exit=%d; want %d; stdout=%q stderr=%q", status, want, out, stderr)
@@ -245,6 +300,7 @@ func drillCLIFailure(t *testing.T, status, want int, out, stderr string, jsonMod
 	if !corrective(message) || named != "" && !strings.Contains(message, named) {
 		t.Errorf("diagnostic %q lacks correction or %q", message, named)
 	}
+	return message
 }
 
 func Test_APP_140_DrillProjectAndConfigurationFailures(t *testing.T) {

@@ -297,7 +297,9 @@ func Test_APP_001_ReadCommandsDoNotInvokeGitHooksOrAgents(t *testing.T) {
   eval: [hook, "{module}", "{report}"]
   boundaries: [hook]
 agent:
-  command: [codex, "{prompt}"]
+  commands:
+    worker: [codex, "{prompt}"]
+  default: worker
 `)
 	appPut(t, root, "AGENTS.md", "<!-- fireweed:start -->\nstale guidance\n<!-- fireweed:end -->\n")
 	cliGit(t, root, "init", "-q", "-b", "main")

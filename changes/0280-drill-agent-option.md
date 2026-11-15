@@ -3,6 +3,8 @@ bases:
     APP-053: 9d4f8010
     APP-054: 6a5a89bc
 module: app
+phase: audit
+run: 20261115T030854-df5790b964e017e06e81986a
 ---
 
 ## Motivation
@@ -17,10 +19,10 @@ and have init generate the named-command configuration used by both roles.
 
 ## Added
 
-### new:drill-agent-option
+### APP-166
 drill --agent <alias> MUST pass the supplied alias to runner.Drill as AgentAlias. A missing, empty or repeated --agent value MUST return exit 2 and corrective U01 before running hooks or agents.
 
-### new:drill-agent-lookup-error
+### APP-167
 An unknown drill agent alias MUST return exit 2 with U02 naming the alias and pointing to the agent.commands mapping in the project configuration. In JSON mode, drill MUST emit this diagnostic in a schema 1 envelope with null data and empty stderr.
 
 ## Modified
@@ -47,3 +49,18 @@ cutover between runs. Rebuild the controller from clean committed main with the
 alias support, then commit the alias-form configuration with the same Codex
 worker and auditor commands and audit settings. Record the controller revision
 using the procedure in SYSTEM.md.
+
+The controller's `fireweed verify drill-agent-option` passed the evals phase.
+The app report recorded 394 passing cases and 9 expected failures, including
+the parent and subcases for audit command forms. APP-166 and APP-167 fail
+because drill rejects `--agent`. APP-053 and APP-054 fail because the generated
+configuration lacks `agent.commands`, `agent.default`, and the explicit
+`audit.agent` selector.
+
+Implementation can update option parsing in `packages/app/internal/entry/entry.go`,
+drill dispatch and diagnostics in `packages/app/internal/entry/lifecycle.go`, and
+generated configuration in `packages/app/internal/entry/setup.go`.
+## Provenance
+
+- evals 2026-11-15T03:19:28.971846Z agent=codex fireweed=0.2.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=403 failing=9 passing=394
+

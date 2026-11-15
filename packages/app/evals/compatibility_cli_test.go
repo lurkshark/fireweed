@@ -67,14 +67,13 @@ func compatibilityProject(t *testing.T, bin string) (root, calls string) {
 	config := string(staleCLIText(t, root, "fireweed.yaml"))
 	workerCommand := fmt.Sprintf(`[sh, .fireweed/agent.sh, %q, "{prompt_file}"]`, calls)
 	config += fmt.Sprintf(`agent:
-  command: %s
   commands:
     worker: %s
   default: worker
 limit_patterns: [RATE LIMIT]
 limit_wait: 5ms
 limit_budget: 0s
-`, workerCommand, workerCommand)
+`, workerCommand)
 	appPut(t, root, "fireweed.yaml", config)
 	appPut(t, root, ".fireweed/agent.sh", "#!/bin/sh\nprintf 'agent\\n' >> \"$1\"\nprintf 'RATE LIMIT\\n' >&2\nexit 9\n")
 	appPut(t, root, ".fireweed/eval.sh", fmt.Sprintf(`#!/bin/sh

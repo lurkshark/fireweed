@@ -71,15 +71,13 @@ hooks:
   eval: [sh, .fireweed/eval.sh, "{module}", "{report}"]
   boundaries: [sh, .fireweed/boundaries.sh]
 agent:
-  command: %s
   commands:
     worker: %s
     auditor: %s
   default: worker
 audit:
-  command: %s
   agent: auditor
-`, fixtureBinaryPin, workerCommand, workerCommand, auditCommand, auditCommand))
+`, fixtureBinaryPin, workerCommand, auditCommand))
 	appPut(t, root, ".fireweed/expected-bin", bin+"\n")
 	appPut(t, root, ".fireweed/eval.sh", `#!/bin/sh
 expected=$(cat .fireweed/expected-bin)

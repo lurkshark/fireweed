@@ -75,12 +75,12 @@ func doctorCLIFixtureAt(t *testing.T, bin, root string) (string, string, string)
 		config["hooks"].(map[string]any)["setup"] = "sh .fireweed/setup.sh"
 		worker := []string{"bash", ".fireweed/agent.sh", "{prompt}"}
 		auditor := []string{"bash", ".fireweed/audit.sh", "{prompt}"}
-		agent := config["agent"].(map[string]any)
-		agent["command"] = worker
-		agent["commands"] = map[string]any{"worker": worker, "auditor": auditor}
-		agent["default"] = "worker"
+		config["agent"] = map[string]any{
+			"commands": map[string]any{"worker": worker, "auditor": auditor},
+			"default":  "worker",
+		}
 		audit := config["audit"].(map[string]any)
-		audit["command"] = auditor
+		delete(audit, "command")
 		audit["agent"] = "auditor"
 	})
 	doctorCLIGit(t, root, "init", "-b", "main")

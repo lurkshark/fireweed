@@ -85,15 +85,13 @@ hooks:
   eval: [sh, .fireweed/eval.sh, "{module}", "{report}"]
   boundaries: [sh, .fireweed/boundaries.sh]
 agent:
-  command: %s
   commands:
     worker: %s
     auditor: %s
   default: worker
 audit:
-  command: %s
   agent: auditor
-`, fixtureBinaryPin, workerCommand, workerCommand, auditCommand, auditCommand))
+`, fixtureBinaryPin, workerCommand, auditCommand))
 	appPut(t, root, ".fireweed/eval.sh", `#!/bin/sh
 case "$1" in alpha) prefix=ALP;; beta) prefix=BET;; *) exit 35;; esac
 expected=$(cat .fireweed/expected-bin)
