@@ -99,6 +99,15 @@ Usage
 Option
   --no-agent  Skip worker and auditor probes. Hook canary and recovery checks still run.
 
+The worker probe uses the alias selected by agent.default in fireweed.yaml.
+The auditor probe uses the alias selected by audit.agent. When audit.agent is
+omitted, the auditor uses the worker default. Both aliases refer to commands
+in agent.commands.
+
+Example selector values (dotted paths)
+  agent.default: codex-gpt-6-1-sol-high
+  audit.agent: codex-gpt-6-astra-medium
+
 Example
   fireweed doctor --no-agent
 
@@ -499,14 +508,20 @@ dependents. Writes .fireweed/drills/<module>.md and retains accepted rebuilt
 code in a drill ref.
 
 Usage
-  fireweed drill <module> [--json]
+  fireweed drill <module> [--agent <alias>] [--json]
 
-Argument
-  <module>  Required name of an existing module to rebuild using the configured
-            worker agent. The invoking implementation and HEAD stay in place.
+Argument and option
+  <module>         Required name of an existing module to rebuild.
+                   The invoking implementation and HEAD stay in place.
+  --agent <alias>  Select a worker command for this drill. If omitted, drill
+                   uses the alias selected by agent.default.
 
-Example
+Define aliases in the agent.commands mapping in fireweed.yaml. Each alias
+looks up a command template that supplies the model and effort.
+
+Examples
   fireweed drill ledger
+  fireweed drill contracts --agent opencode-deepseek-v4-1-flash-high
 
 See fireweed help playbook for reconstruction guidance and fireweed help gc
 for drill ref retention.

@@ -253,6 +253,12 @@ Explain("P05") MUST distinguish a warning that HEAD lacks the locally resolved b
 ### AST-068
 Explain("P02") MUST describe duplicate runs on different machines as a conflict in the archived change's run identity. It MUST advise aborting the merge, using fireweed commits <change> to identify the incoming duplicate's commits, reverting those commits on the incoming branch, then merging again. It MUST warn that choosing one archive side can retain both implementations.
 
+### AST-069
+CommandHelp("drill") MUST document --agent <alias>, identify agent.commands as the alias mapping and agent.default as the default selector, and show an example selecting a named command.
+
+### AST-070
+CommandHelp("doctor") MUST identify agent.default and audit.agent as the configured probe selectors and explain that audit inherits the worker default when its selector is omitted.
+
 ## Decisions
 
 [0014-go-setup-bundle] Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,
