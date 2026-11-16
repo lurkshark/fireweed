@@ -4,7 +4,7 @@ already_satisfied:
 bases:
     CHK-052: ce8f7780
 module: checks
-phase: audit
+phase: impl
 run: 20261116T222202-3681a0b47fed5d05c652e86e
 ---
 
@@ -42,4 +42,9 @@ from gitstore.Result when building its setup failure report.
 ## Provenance
 
 - evals 2026-11-16T22:31:06.421602Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=135 failing=0 passing=135
+- audit 2026-11-16T22:31:22.723276Z agent=codex fireweed=0.2.1 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+
+## Audit
+
+No findings; checked CHK-052
 
