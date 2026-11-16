@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -1066,17 +1065,10 @@ func mustRead(t *testing.T, path string) []byte {
 }
 func doctorBinary(t *testing.T) string {
 	t.Helper()
-	_, file, _, ok := runtime.Caller(0)
-	if !ok {
-		t.Fatal("caller")
-	}
-	root := filepath.Clean(filepath.Join(filepath.Dir(file), "..", "..", ".."))
-	bin := filepath.Join(t.TempDir(), "fireweed-new")
-	cmd := exec.Command("go", "build", "-o", bin, ".")
-	cmd.Dir = root
-	cmd.Env = append(os.Environ(), "GOCACHE=/tmp/fireweed-rebuild-cache")
+	bin := filepath.Join(t.TempDir(), "doctor-modules")
+	cmd := exec.Command("go", "build", "-o", bin, "./testdata/doctor-modules")
 	if out, err := cmd.CombinedOutput(); err != nil {
-		t.Fatalf("build product: %v: %s", err, out)
+		t.Fatalf("build Doctor modules fixture: %v: %s", err, out)
 	}
 	return bin
 }
