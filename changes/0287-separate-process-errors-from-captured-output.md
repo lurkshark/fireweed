@@ -4,6 +4,8 @@ already_satisfied:
 bases:
     GIT-005: 9f878fe1
 module: gitstore
+phase: audit
+run: 20261116T204048-854d5d57694950d03e17654d
 ---
 
 ## Motivation
@@ -37,3 +39,7 @@ them. This clarification chooses the separate-result reading of GIT-005's
 previous phrase "returning an error with that output". If the owner intends an
 output-bearing Run error, the alternative is for checks to construct bounded
 probe diagnostics independently of that error's text.
+## Provenance
+
+- evals 2026-11-16T20:42:09.496632Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=14 failing=0 passing=14
+
