@@ -86,6 +86,36 @@ func Test_PRJ_001_PRJ_017_LoadConfiguredModulesAndDefaults(t *testing.T) {
 	}
 }
 
+func Test_PRJ_001_LoadRootModuleForDotGlob(t *testing.T) {
+	root := t.TempDir()
+	put(t, root, "fireweed.yaml", "modules: [\".\"]\n")
+	put(t, root, "SPEC.md", `---
+name: root-module
+id_prefix: ROT
+depends_on: []
+---
+# Root module
+
+## Specs
+
+### ROT-001
+The root module MUST work.
+`)
+
+	snapshot, err := project.Load(root)
+	if err != nil {
+		t.Fatalf("Load: %v", err)
+	}
+	if len(snapshot.Modules) != 1 {
+		t.Fatalf("Load returned %d modules; want one root module", len(snapshot.Modules))
+	}
+	module := snapshot.Modules[0]
+	if module.Name != "root-module" || module.IDPrefix != "ROT" || module.Dir != "." {
+		t.Errorf("module name, prefix and directory = (%q, %q, %q); want (%q, %q, %q)",
+			module.Name, module.IDPrefix, module.Dir, "root-module", "ROT", ".")
+	}
+}
+
 func Test_PRJ_018_LoadInvalidDocuments(t *testing.T) {
 	for _, tc := range []struct {
 		name string
