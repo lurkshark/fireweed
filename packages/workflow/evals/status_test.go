@@ -307,6 +307,22 @@ func Test_FLOW_110_StatusSharedBaseUsesSameArchivedDocumentIdentity(t *testing.T
 	}
 }
 
+func Test_FLOW_110_StatusReportsUnavailableConfiguredBaseWithEmptyArchive(t *testing.T) {
+	root := fixture(t, "remote: upstream\n", "", "", "", "")
+	const base = "missing-status-base"
+	config := readFile(t, root, "fireweed.yaml")
+	write(t, root, "fireweed.yaml", strings.Replace(config, "base: main\n", "base: "+base+"\n", 1))
+	commit(t, root, "configure unavailable status base")
+
+	report, err := workflow.Status(root)
+	if err == nil {
+		t.Fatalf("Status succeeded with unapproved count %d; want an error naming unavailable base %q", report.Unapproved, base)
+	}
+	if !strings.Contains(err.Error(), base) {
+		t.Errorf("Status error = %v; want it to name unavailable base %q", err, base)
+	}
+}
+
 func Test_FLOW_112_StatusPhaseCommitsMatchRealLifecycle(t *testing.T) {
 	root := fixture(t, "audit:\n  enabled: false\n", "", "", "", "")
 	start(t, root)

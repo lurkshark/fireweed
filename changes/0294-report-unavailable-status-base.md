@@ -4,6 +4,8 @@ already_satisfied:
 bases:
     FLOW-110: aefba67c
 module: workflow
+phase: audit
+run: 20261116T231512-351afb748a2afa7645895f8a
 ---
 
 ## Motivation
@@ -38,3 +40,7 @@ Add a public Status case with a configured base missing in both locations.
 Assert failure naming the base, even with an empty archive. Keep the existing
 remote/local and archive-identity coverage. Current Status already propagates
 the resolver error. APP-126 owns the CLI P01 mapping.
+## Provenance
+
+- evals 2026-11-16T23:19:00.571363Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=215 failing=0 passing=215
+
