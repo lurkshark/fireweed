@@ -13,7 +13,7 @@ eval_fix:
     - CHK-061
     - CHK-067
 module: checks
-phase: audit
+phase: impl
 run: 20261116T160641-fa53751da6f82777fa70ba07
 ---
 
@@ -48,7 +48,12 @@ fixture. Preserve the existing canary inputs, assertions, and spec IDs,
 including scratch discovery, boundary failures, missing-ID detection,
 NoAgent, recovery, and cleanup. The fixture should build with
 `packages/app` absent. Confine the correction to the checks eval zone.
+## Audit
+
+No findings; checked CHK-050, CHK-051, CHK-052, CHK-053, CHK-055, CHK-056, CHK-057, CHK-058, CHK-059, CHK-060, CHK-061, CHK-067
+
 ## Provenance
 
 - evals 2026-11-16T16:16:41.860076Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=135 failing=0 passing=135
+- audit 2026-11-16T16:17:08.732644Z agent=codex fireweed=0.2.1 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 
