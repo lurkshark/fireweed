@@ -2,6 +2,8 @@
 bases:
     RUN-053: fc0ba001
 module: runner
+phase: audit
+run: 20261116T032105-5578b407f7bf48b643ab538b
 ---
 
 ## Motivation
@@ -29,13 +31,13 @@ drill:
 
 ## Added
 
-### new:drill-exclusion-config
+### RUN-075
 Drill MUST reject a malformed `drill.exclude` setting with C01 pointing to the setting before running setup or invoking the worker. Each entry MUST be a nonempty repository-relative pattern without `.` or `..` path components.
 
-### new:required-reconstruction-inputs
+### RUN-076
 If `drill.exclude` matches the target's spec or a retained target interface or eval file, Drill MUST return C01 identifying the conflicting path before running setup or invoking the worker.
 
-### new:reconstruction-exclusions-after-setup
+### RUN-077
 If the reconstruction workspace contains a path matching `drill.exclude` after setup, Drill MUST reject the input before invoking the worker and identify the matching path.
 
 ## Modified
@@ -57,3 +59,20 @@ verification tree. Cover malformed settings, a match against a required
 target input, and a setup hook that recreates an excluded path. The invoking
 checkout and retained reconstruction ref should still contain the tracked
 documentation.
+
+Against the current runner, the RUN-053 eval found matching files in both
+the reconstruction tree and its seed commit. The omitted and empty lists
+passed. The RUN-075 and RUN-076 evals observed setup and worker invocations
+for invalid inputs. The RUN-077 eval observed a worker invocation after
+setup recreated an excluded path.
+
+`fireweed verify exclude-reconstruction-paths` passed in the evals phase.
+Its report recorded fail-first cases for all four affected IDs.
+
+Implementation can use `packages/runner/internal/drill/drill.go` for preflight
+and post-setup checks and `packages/runner/internal/drill/input.go` for tracked
+input filtering before the seed commit. Both files are disposable.
+## Provenance
+
+- evals 2026-11-16T03:33:05.031379Z agent=codex fireweed=0.2.0 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=217 failing=16 passing=201
+
