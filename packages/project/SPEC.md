@@ -15,7 +15,10 @@ name: project
 ## Specs
 
 ### PRJ-001
-Load MUST read fireweed.yaml and module SPEC.md files only in configured modules globs, returning module names, prefixes, dependencies, documents and zones.
+Load MUST read fireweed.yaml and module SPEC.md files only in configured
+modules globs, returning module names, prefixes, dependencies, documents and
+zones. An explicit `.` entry MUST select the project root as a module
+directory and return it as `.` when the root SPEC.md is valid.
 
 ### PRJ-002
 ValidateGraph MUST return nil for a valid graph and an explanatory error identifying the rejection cause for an invalid graph.
