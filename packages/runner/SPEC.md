@@ -237,7 +237,7 @@ Drill MUST create a detached scratch worktree at the invoking HEAD under the com
 Drill MUST delete only target-module files classified disposable by the approved zone precedence before reconstruction. It MUST retain every other target-module file and every other module's files in the verification worktree.
 
 ### RUN-053
-Drill MUST invoke reconstruction in a separate input workspace holding the invoking HEAD's tracked files except the target's disposable files, every direct and transitive dependent module's files, the changes directory and drill reports. Its Git metadata MUST hold one fresh commit and none of the invoking repository's history, refs or saved attempts. Drill MUST run the configured setup hook there before agent invocation.
+Drill MUST invoke reconstruction in a separate workspace containing the invoking HEAD's tracked files except the target's disposable files, direct and transitive dependent modules' files, the changes directory, drill reports and paths matching `drill.exclude`. Its Git metadata MUST hold one fresh commit of the filtered inputs and none of the invoking repository's history, refs or saved attempts. Drill MUST run the configured setup hook there before agent invocation.
 
 ### RUN-054
 The reconstruction prompt MUST include the target spec and Decisions, identify its retained interfaces and evals, and require rebuilding only disposable paths without reading outside the input workspace. It MUST give a command that runs the target's eval hook in that workspace. It MUST request separate Contradicted Decisions and Gaps sections in DRILL_NOTES.md, each gap naming the nearest spec ID or "no spec" and a target module.
@@ -302,6 +302,15 @@ Drill MUST resolve its selected command before creating scratch workspaces or ru
 
 ### RUN-074
 Drill MUST derive Agent and Model from the selected command using the existing executable and model-flag conventions and write those values to the drill report.
+
+### RUN-075
+Drill MUST reject a malformed `drill.exclude` setting with C01 pointing to the setting before running setup or invoking the worker. Each entry MUST be a nonempty repository-relative pattern without `.` or `..` path components.
+
+### RUN-076
+If `drill.exclude` matches the target's spec or a retained target interface or eval file, Drill MUST return C01 identifying the conflicting path before running setup or invoking the worker.
+
+### RUN-077
+If the reconstruction workspace contains a path matching `drill.exclude` after setup, Drill MUST reject the input before invoking the worker and identify the matching path.
 
 ## Decisions
 
