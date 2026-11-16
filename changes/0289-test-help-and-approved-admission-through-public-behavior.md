@@ -3,7 +3,7 @@ eval_fix:
     - APP-156
     - APP-164
 module: app
-phase: audit
+phase: impl
 run: 20261116T212029-548f8e2cdd16f7e4db650262
 ---
 
@@ -45,7 +45,12 @@ admission. Keep the modules, coverage, next and run rejections, correct cause
 and guidance, plain/JSON envelopes, side-effect and hook/agent checks, and
 compatible approved-snapshot cases. Keep the production VERSION and the
 claim blob intact.
+## Audit
+
+No findings; checked APP-156, APP-164
+
 ## Provenance
 
 - evals 2026-11-16T21:29:42.068548Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=403 failing=0 passing=403
+- audit 2026-11-16T21:30:02.727607Z agent=codex fireweed=0.2.1 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 
