@@ -14,6 +14,9 @@ hooks:
     eval: go run .fireweed/hooks.go eval {module_dir} {report}
     boundaries: go run .fireweed/hooks.go boundaries
     setup: sh .fireweed/setup.sh
+drill:
+    exclude:
+        - docs/**
 protected:
     - .github/**
     - docs/**
