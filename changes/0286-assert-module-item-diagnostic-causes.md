@@ -1,6 +1,9 @@
 ---
+eval_fix:
+    - CHK-048
 module: checks
-eval_fix: [CHK-048]
+phase: audit
+run: 20261116T200508-28b7a066e6581509a04f5869
 ---
 
 ## Motivation
@@ -28,3 +31,7 @@ and the offending heading or ID in the message. Check the cause and subject
 text independently of punctuation and quotation marks. Leave other diagnostic
 assertions intact. The existing eval fails on the retained contracts build
 and passes on current main.
+## Provenance
+
+- evals 2026-11-16T20:15:50.647434Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=135 failing=0 passing=135
+

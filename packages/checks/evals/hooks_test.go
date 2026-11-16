@@ -194,13 +194,31 @@ func Test_CHK_047_EvaluateUnknownModuleCause(t *testing.T) {
 
 func Test_CHK_048_EvaluateModuleItemCauses(t *testing.T) {
 	for _, tc := range []struct {
-		name, body, code, cause string
+		name, body, code, cause, subject string
 	}{
-		{name: "malformed item", body: "# alpha\n\n## Specs\n\n### malformed\nBad.\n", code: "C03", cause: `malformed item heading: "### malformed"`},
-		{name: "duplicate item", body: "# alpha\n\n## Specs\n\n### CHK-003\nOne.\n\n### CHK-003\nTwo.\n", code: "C05", cause: "duplicate item ID: CHK-003"},
+		{
+			name:    "malformed item",
+			body:    "# alpha\n\n## Specs\n\n### malformed\nBad.\n",
+			code:    "C03",
+			cause:   "malformed item heading",
+			subject: "### malformed",
+		},
+		{
+			name:    "duplicate item",
+			body:    "# alpha\n\n## Specs\n\n### CHK-003\nOne.\n\n### CHK-003\nTwo.\n",
+			code:    "C05",
+			cause:   "duplicate item ID",
+			subject: "CHK-003",
+		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			evaluateSetupCause(t, `exit 0`, "alpha", tc.body, tc.code, tc.cause)
+			snap := hookSnapshot(t, `exit 0`, nil)
+			snap.Modules[0].Document.Body = tc.body
+			_, err := checks.Evaluate(context.Background(), checks.HookRequest{Snapshot: snap, Module: "alpha", Timeout: time.Second})
+			requireDiagnosticError(t, err, tc.code, tc.cause)
+			if !strings.Contains(err.Error(), tc.subject) {
+				t.Errorf("error = %q; want offending heading or ID %q", err, tc.subject)
+			}
 		})
 	}
 }
