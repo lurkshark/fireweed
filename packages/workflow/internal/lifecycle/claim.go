@@ -55,8 +55,8 @@ func readClaim(root string, r ref) (claim, error) {
 	return c, nil
 }
 
-// YAML preserves the types of configuration and document values. JSON
-// preserves the typed module fields, including absent and empty zone lists.
+// YAML stores configuration and document values. JSON preserves the typed
+// module fields, including absent and empty zone lists.
 type snapshotRecord struct {
 	Config  string
 	Modules []moduleRecord
@@ -68,13 +68,13 @@ type moduleRecord struct {
 }
 
 func recordSnapshot(snapshot project.Snapshot) (snapshotRecord, error) {
-	config, err := yaml.Marshal(snapshot.Config)
+	config, err := yaml.Marshal(snapshotYAMLValue(snapshot.Config))
 	if err != nil {
 		return snapshotRecord{}, err
 	}
 	record := snapshotRecord{Config: string(config), Modules: make([]moduleRecord, 0, len(snapshot.Modules))}
 	for _, module := range snapshot.Modules {
-		fields, err := yaml.Marshal(module.Document.Frontmatter)
+		fields, err := yaml.Marshal(snapshotYAMLValue(module.Document.Frontmatter))
 		if err != nil {
 			return record, err
 		}
@@ -82,6 +82,49 @@ func recordSnapshot(snapshot project.Snapshot) (snapshotRecord, error) {
 		record.Modules = append(record.Modules, moduleRecord{Module: module, Frontmatter: string(fields)})
 	}
 	return record, nil
+}
+
+// Wrap floats in the YAML value tree without changing the approved snapshot.
+func snapshotYAMLValue(value any) any {
+	switch value := value.(type) {
+	case map[string]any:
+		fields := maps.Clone(value)
+		for key, entry := range value {
+			fields[key] = snapshotYAMLValue(entry)
+		}
+		return fields
+	case map[any]any:
+		fields := make(map[any]any, len(value))
+		for key, entry := range value {
+			fields[snapshotYAMLValue(key)] = snapshotYAMLValue(entry)
+		}
+		return fields
+	case []any:
+		items := slices.Clone(value)
+		for i, entry := range value {
+			items[i] = snapshotYAMLValue(entry)
+		}
+		return items
+	case float64:
+		return snapshotFloat(value)
+	default:
+		return value
+	}
+}
+
+type snapshotFloat float64
+
+func (value snapshotFloat) MarshalYAML() (any, error) {
+	var node yaml.Node
+	if err := node.Encode(float64(value)); err != nil {
+		return nil, err
+	}
+	// yaml.v3 can emit a whole float as an integer literal.
+	if node.Tag == "!!int" {
+		node.Tag = "!!float"
+		node.Value += ".0"
+	}
+	return &node, nil
 }
 
 func (c claim) snapshot(root string) (project.Snapshot, error) {
