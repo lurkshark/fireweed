@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"maps"
 	"os"
+	"path"
 	"slices"
 	"strings"
 
@@ -14,6 +15,63 @@ import (
 	"github.com/lurkshark/fireweed/packages/runner/internal/invoke"
 	"github.com/lurkshark/fireweed/packages/runner/internal/workspace"
 )
+
+func drillExclusions(config map[string]any) ([]string, error) {
+	const setting = "drill.exclude"
+	raw, present := config["drill"]
+	if !present {
+		return nil, nil
+	}
+	drill, ok := raw.(map[string]any)
+	if !ok {
+		return nil, contracts.CodedError{Code: "C01", Subject: setting, Cause: fmt.Errorf("drill must be a mapping")}
+	}
+	raw, present = drill["exclude"]
+	if !present {
+		return nil, nil
+	}
+	if raw == nil {
+		return nil, contracts.CodedError{Code: "C01", Subject: setting, Cause: fmt.Errorf("%s must be a list of patterns", setting)}
+	}
+	patterns, err := invoke.Strings(raw)
+	if err != nil {
+		return nil, contracts.CodedError{Code: "C01", Subject: setting, Cause: fmt.Errorf("%s: %w", setting, err)}
+	}
+	for i, pattern := range patterns {
+		dotComponent := slices.ContainsFunc(strings.Split(pattern, "/"), func(component string) bool {
+			return component == "." || component == ".."
+		})
+		if pattern == "" || path.IsAbs(pattern) || strings.ContainsRune(pattern, '\x00') || dotComponent {
+			return nil, contracts.CodedError{Code: "C01", Subject: setting,
+				Cause: fmt.Errorf("%s entry %d must be a nonempty repository-relative pattern without . or .. components, got %q", setting, i+1, pattern)}
+		}
+	}
+	return patterns, nil
+}
+
+func excluded(patterns []string, name string) bool {
+	return slices.ContainsFunc(patterns, func(pattern string) bool { return contracts.MatchGlob(pattern, name) })
+}
+
+func checkRequiredInputs(snapshot project.Snapshot, target project.Module, tracked, exclude []string) error {
+	conflict := func(name string) error {
+		return contracts.CodedError{Code: "C01", Subject: name, Cause: fmt.Errorf("drill.exclude matches required target input %q", name)}
+	}
+	spec := path.Join(target.Dir, "SPEC.md")
+	if excluded(exclude, spec) {
+		return conflict(spec)
+	}
+	for _, name := range tracked {
+		if !excluded(exclude, name) || workspace.Owner(snapshot, name).Name != target.Name {
+			continue
+		}
+		switch workspace.Zone(snapshot, target, name) {
+		case "interface", "evals":
+			return conflict(name)
+		}
+	}
+	return nil
+}
 
 func trackedFiles(ctx context.Context, root, base string) ([]string, error) {
 	files, err := workspace.Git(ctx, root, "ls-tree", "-r", "--name-only", "-z", base)
@@ -27,7 +85,7 @@ func disposableFile(snapshot project.Snapshot, target project.Module, name strin
 	return workspace.Owner(snapshot, name).Name == target.Name && workspace.Zone(snapshot, target, name) == "disposable"
 }
 
-func prepareInput(ctx context.Context, snapshot project.Snapshot, target project.Module, dependents []project.Module, tracked []string, scratch, input string) ([]string, error) {
+func prepareInput(ctx context.Context, snapshot project.Snapshot, target project.Module, dependents []project.Module, tracked, exclude []string, scratch, input string) ([]string, error) {
 	if err := workspace.Init(ctx, input); err != nil {
 		return nil, err
 	}
@@ -37,7 +95,7 @@ func prepareInput(ctx context.Context, snapshot project.Snapshot, target project
 			disposable = append(disposable, name)
 			continue
 		}
-		if name == "changes" || strings.HasPrefix(name, "changes/") || strings.HasPrefix(name, ".fireweed/drills/") {
+		if name == "changes" || strings.HasPrefix(name, "changes/") || strings.HasPrefix(name, ".fireweed/drills/") || excluded(exclude, name) {
 			continue
 		}
 		owner := workspace.Owner(snapshot, name).Name
@@ -64,9 +122,12 @@ func deleteDisposable(snapshot project.Snapshot, target project.Module, root str
 	})
 }
 
-func inputFiles(root string) (map[string]workspace.File, error) {
+func inputFiles(root string, exclude []string) (map[string]workspace.File, error) {
 	files := make(map[string]workspace.File)
 	err := workspace.Walk(root, func(name string, entry fs.DirEntry) error {
+		if name != "." && excluded(exclude, name) {
+			return fmt.Errorf("reconstruction workspace contains %q after setup, matching drill.exclude", name)
+		}
 		if entry.IsDir() {
 			return nil
 		}

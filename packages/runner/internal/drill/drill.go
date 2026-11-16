@@ -26,6 +26,10 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 	if err != nil {
 		return result, err
 	}
+	exclude, err := drillExclusions(snapshot.Config)
+	if err != nil {
+		return result, err
+	}
 	command, _, err := project.ResolveAgentCommand(snapshot.Config, "worker", request.AgentAlias)
 	if err != nil {
 		return result, err
@@ -36,6 +40,13 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 	}
 	timeout, err := policy.Timeout(snapshot.Config, request.Timeout)
 	if err != nil {
+		return result, err
+	}
+	files, err := trackedFiles(ctx, repo.Root, repo.Head)
+	if err != nil {
+		return result, err
+	}
+	if err := checkRequiredInputs(snapshot, target, files, exclude); err != nil {
 		return result, err
 	}
 	run, err := invoke.NewRun()
@@ -77,15 +88,11 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 	if err != nil {
 		return result, err
 	}
-	files, err := trackedFiles(ctx, scratch, repo.Head)
-	if err != nil {
-		return result, err
-	}
 	input, err = os.MkdirTemp("", "fireweed-drill-input-*")
 	if err != nil {
 		return result, err
 	}
-	disposable, err := prepareInput(ctx, snapshot, target, dependents, files, scratch, input)
+	disposable, err := prepareInput(ctx, snapshot, target, dependents, files, exclude, scratch, input)
 	if err != nil {
 		return result, err
 	}
@@ -98,7 +105,7 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 	if err := setup(ctx, snapshot.Config, input, request.Bin, timeout); err != nil {
 		return result, err
 	}
-	initial, err := inputFiles(input)
+	initial, err := inputFiles(input, exclude)
 	if err != nil {
 		return result, err
 	}
@@ -133,7 +140,7 @@ func Run(ctx context.Context, request model.DrillRequest) (result model.DrillRes
 			observations = append(observations, agentErr.Error())
 			return result, agentErr
 		}
-		submission, err := inputFiles(input)
+		submission, err := inputFiles(input, nil)
 		if err == nil {
 			err = unchangedInputs(initial, submission)
 		}
