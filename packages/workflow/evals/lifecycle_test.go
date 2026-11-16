@@ -1492,11 +1492,14 @@ func Test_FLOW_056_StartContentionAndCurrentForeignClaimHaveP02(t *testing.T) {
 	git(t, root, "worktree", "add", "-b", "linked", other, "HEAD")
 	_, err := workflow.Current(root, "manual")
 	assertErrorCode(t, "unclaimed Current", err, "P02")
-	start(t, root)
+	owner := start(t, root)
 	_, err = workflow.Start(other, "manual")
 	assertErrorCode(t, "contended Start", err, "P02")
-	if err == nil || !strings.HasPrefix(err.Error(), "claim already held:") || !strings.Contains(err.Error(), "update-ref") {
+	if err == nil || !strings.HasPrefix(err.Error(), "claim already held:") {
 		t.Errorf("contended Start = %v", err)
+	}
+	if current, err := workflow.Current(root, "manual"); err != nil || owner.ClaimOID == "" || current.ClaimOID != owner.ClaimOID {
+		t.Errorf("owner's claim after contended Start = %q, error %v; want original claim %q", current.ClaimOID, err, owner.ClaimOID)
 	}
 	_, err = workflow.Current(other, "manual")
 	assertErrorCode(t, "foreign Current", err, "P02")
