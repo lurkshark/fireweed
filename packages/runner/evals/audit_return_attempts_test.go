@@ -2,6 +2,7 @@ package evals_test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"slices"
 	"strings"
@@ -225,10 +226,24 @@ func Test_RUN_021_AuditRoundLimitCanStopBeforeEvalsAllowance(t *testing.T) {
 	if code, _, ok := contracts.ErrorCode(err); !ok || code != "P06" {
 		t.Errorf("audit round limit returned %v, want P06", err)
 	}
+	if r.State.Phase != "audit" || r.State.ClaimOID != "" {
+		t.Errorf("audit did not block and release its claim: phase=%q claim=%q", r.State.Phase, r.State.ClaimOID)
+	}
 	questions, _ := contracts.Section(r.State.Change.Document.Body, "Questions")
-	if r.State.Phase != "audit" || r.State.ClaimOID != "" || r.State.Change.Document.Frontmatter["audit_rounds"] != 1 ||
-		!strings.Contains(questions, auditReturnClause) {
-		t.Errorf("audit did not block at the persisted round limit: phase=%q claim=%q questions=%q", r.State.Phase, r.State.ClaimOID, questions)
+	const finding = `- ALP-002: "` + auditReturnClause + `" — missing an assertion for subsequent calls in audit 2`
+	if strings.TrimSpace(questions) != finding {
+		t.Errorf("returned Questions = %q, want finding %q", questions, finding)
+	}
+	returned := r.State.Change.Document.Frontmatter["audit_rounds"]
+	if number, err := json.Marshal(returned); err != nil || string(number) != "1" {
+		t.Errorf("returned audit_rounds = %#v (%T), want numeric 1; encoding error: %v", returned, returned, err)
+	}
+	pending, err := contracts.ParseDocument(nextRead(t, f.root, nextChange))
+	if err != nil {
+		t.Fatalf("parse pending change: %v", err)
+	}
+	if persisted := pending.Frontmatter["audit_rounds"]; persisted != 1 {
+		t.Errorf("persisted audit_rounds = %#v (%T), want integer 1", persisted, persisted)
 	}
 }
 

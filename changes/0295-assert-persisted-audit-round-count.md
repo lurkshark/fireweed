@@ -1,6 +1,9 @@
 ---
+eval_fix:
+    - RUN-021
 module: runner
-eval_fix: [RUN-021]
+phase: audit
+run: 20261116T233456-612334cc1bc08e912f1df147
 ---
 
 ## Motivation
@@ -29,3 +32,7 @@ and exact finding. Assert the returned round count as a number with value one
 independent of concrete Go representation and also parse the pending document
 to confirm the persisted integer count. Keep RUN-021 coverage. Leave the
 public workflow claim format and the audit and eval attempt limits intact.
+## Provenance
+
+- evals 2026-11-16T23:44:45.892742Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=217 failing=0 passing=217
+
