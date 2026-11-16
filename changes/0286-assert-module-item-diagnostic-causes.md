@@ -2,7 +2,7 @@
 eval_fix:
     - CHK-048
 module: checks
-phase: audit
+phase: impl
 run: 20261116T200508-28b7a066e6581509a04f5869
 ---
 
@@ -34,4 +34,9 @@ and passes on current main.
 ## Provenance
 
 - evals 2026-11-16T20:15:50.647434Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=135 failing=0 passing=135
+- audit 2026-11-16T20:16:12.9103Z agent=codex fireweed=0.2.1 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+
+## Audit
+
+No findings; checked CHK-048
 
