@@ -4,6 +4,8 @@ already_satisfied:
 bases:
     CHK-052: ce8f7780
 module: checks
+phase: audit
+run: 20261116T222202-3681a0b47fed5d05c652e86e
 ---
 
 ## Motivation
@@ -37,3 +39,7 @@ the configured invocation. Assert the C14 diagnostic names setup, contains the
 marker and no later hook or agent runs. Keep the scratch behavior and coverage
 from the existing CHK-052 eval. Checks already reads the captured stream
 from gitstore.Result when building its setup failure report.
+## Provenance
+
+- evals 2026-11-16T22:31:06.421602Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=135 failing=0 passing=135
+

@@ -440,15 +440,23 @@ esac
 
 func Test_CHK_051_CHK_052_SetupFailureStopsAndCleans(t *testing.T) {
 	f := localDoctorFixture(t)
-	f.put(".fireweed/setup.sh", fmt.Sprintf("#!/bin/sh\nprintf 'setup:%%s\\n' \"$PWD\" >> %q\necho failed setup >&2\nexit 17\n", f.log))
+	const stderrMarker = "doctor fixture prerequisite missing: fixture-tool"
+	f.put(".fireweed/setup.sh", fmt.Sprintf(`#!/bin/sh
+printf 'setup:%%s\n' "$PWD" >> %q
+printf '%%s\n' '%s' >&2
+exit 17
+`, f.log, stderrMarker))
 	f.commit()
 	before := worktrees(f)
 	report := checks.Doctor(context.Background(), f.request(false))
-	if !hasDoctorDiagnostic(report, "C14", false, "setup") {
-		t.Errorf("setup failure absent: %s", doctorText(report))
+	if !hasDoctorDiagnostic(report, "C14", false, "setup", stderrMarker) {
+		t.Errorf("missing C14 naming setup and including stderr %q: %s", stderrMarker, doctorText(report))
 	}
-	if strings.Contains(doctorLog(f), "eval:") || strings.Contains(doctorLog(f), "boundaries:") || strings.Contains(doctorLog(f), "worker:") {
-		t.Errorf("setup failure ran later probes: %s", doctorLog(f))
+	log := doctorLog(f)
+	for _, probe := range []string{"eval:", "boundaries:", "wrap:", "worker:", "audit:"} {
+		if strings.Contains(log, probe) {
+			t.Errorf("setup failure ran later probe %q: %s", probe, log)
+		}
 	}
 	if got := worktrees(f); got != before {
 		t.Errorf("scratch worktree leaked: %q", got)
