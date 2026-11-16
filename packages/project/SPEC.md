@@ -90,8 +90,8 @@ NewChange MUST use the next number after the largest pending or archived change 
 NewChange MUST reject a slug already present in the pending queue or archive with diagnostic C13, without overwriting existing files.
 
 ### PRJ-025
-NewChange MUST reject an unknown target module with an error beginning
-`unknown module ` and naming the rejected module.
+NewChange MUST reject an unknown target module with contracts.ErrorCode U02
+and an error beginning `unknown module ` and naming the rejected module.
 
 ### PRJ-026
 NewChange MUST reject an empty slug or a slug containing characters other than lowercase letters, digits and hyphens with an error whose contracts.ErrorCode is U01.
@@ -103,7 +103,10 @@ Queue MUST return pending NNNN-slug.md changes in numeric-then-slug order, allow
 Queue MUST return each pending change's module, frontmatter and parsed Added, Modified and Removed items.
 
 ### PRJ-029
-Queue MUST reject a malformed pending change document.
+Queue and Project MUST reject a pending change document when its frontmatter
+or items fail to parse. The error MUST preserve the parser's code and use
+the document's repository-relative path as the contracts.ErrorCode subject
+and in the message.
 
 ### PRJ-030
 Queue MUST reject a pending change naming an unknown module.
@@ -167,7 +170,11 @@ LoadAt MUST apply the selected revision's module_defaults to omitted zone fields
 LoadAt MUST set Snapshot.Root to the canonical repository root and Module.Dir to each module's repository-relative directory.
 
 ### PRJ-050
-LoadAt MUST return an error when the revision cannot be resolved, its recorded fireweed.yaml is missing or malformed, or a matched recorded module directory lacks a readable SPEC.md.
+LoadAt MUST return an error when the revision cannot be resolved, its recorded
+fireweed.yaml is missing or malformed, or a matched recorded module directory
+lacks a readable SPEC.md. When a recorded SPEC.md fails to parse, the error
+MUST preserve the parser's code and use the document's repository-relative
+path as the contracts.ErrorCode subject and in the message.
 
 ### PRJ-051
 For a nonempty ID, SpecHistory MUST return the target module's archived changes whose Added or Modified items name that ID, including tag-only modifications.
@@ -209,8 +216,11 @@ Stamp MUST return an error whose contracts ErrorCode is U02, with the requested 
 Load MUST return an error preserving the contracts ErrorCode C03 or C05 when a module SPEC.md fails to parse.
 
 ### PRJ-060
-StaleSpecs MUST return the target change's Modified and Removed items whose recorded bases differ from the corresponding preceding projected spec hashes, in edit order, with ID, RecordedHash and Current text.
-Items without a bases entry MUST be omitted.
+StaleSpecs MUST return the target change's Modified and Removed items whose
+recorded bases differ from the corresponding preceding projected spec hashes,
+in edit order, with ID, RecordedHash and Current text. Items without a bases
+entry MUST be omitted. A nonmapping bases value MUST produce C08 naming the
+queued path.
 
 ### PRJ-061
 StaleSpecs MUST recover Before by projecting the spec immediately before the target change at the Git commit that last changed that change file's bases mapping.
