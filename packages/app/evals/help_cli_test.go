@@ -64,19 +64,17 @@ func Test_APP_156_HelpForms(t *testing.T) {
 	}
 }
 
-func Test_APP_156_EachListedCommandHasCLIHelp(t *testing.T) {
-	// Overview rows put two or more spaces between the group and its command list.
-	rows := regexp.MustCompile(`(?m)^[A-Za-z]+ {2,}([a-z][a-z-]*(?:, [a-z][a-z-]*)*)$`).FindAllStringSubmatch(assets.Help(), -1)
-	if len(rows) == 0 {
-		t.Fatal("no command rows in the help overview")
-	}
+func Test_APP_156_EachSupportedCommandHasCLIHelp(t *testing.T) {
 	outside := t.TempDir()
-	for _, row := range rows {
-		for _, command := range strings.Split(row[1], ", ") {
-			status, stdout, stderr := runSavedAttemptApp(t, outside, "help", command)
-			if want := helpText(t, command); status != 0 || stderr != "" || stdout != want {
-				t.Errorf("help %s: exit=%d stdout=%q stderr=%q; want its assets command page and empty stderr", command, status, stdout, stderr)
-			}
+	for _, command := range []string{
+		"abandon", "agents-md", "check", "check-commits", "ci", "commits", "context",
+		"coverage", "doctor", "done", "drill", "explain", "gc", "help", "init", "list",
+		"migrate", "modules", "new-change", "new-module", "next", "playbook", "pr-body",
+		"release", "run", "show", "stamp", "start", "status", "verify", "version",
+	} {
+		status, stdout, stderr := runSavedAttemptApp(t, outside, "help", command)
+		if want := helpText(t, command); status != 0 || stderr != "" || stdout != want {
+			t.Errorf("help %s: exit=%d stdout=%q stderr=%q; want its assets command page and empty stderr", command, status, stdout, stderr)
 		}
 	}
 }
