@@ -1,6 +1,6 @@
 # Rebuild progress
 
-## Current state (2026-11-14)
+## Current state (2026-11-15)
 
 The published v0.2.0 commit is [`f42333c`](https://github.com/lurkshark/fireweed/commit/f42333ca824b24a9d0730fa7b3bd4afa2d0ac377).
 The binary and repository pin use the 0.2 series. Fireweed applied and
@@ -10,6 +10,11 @@ a separate audit. [PR #13](https://github.com/lurkshark/fireweed/pull/13)
 merged the queue and the
 [process-group cancellation fix](../../changes/archive/0283-process-group-cancel-race.md)
 on main at `21aae46`. The queue is empty and no claims are active.
+
+[0284](../../changes/archive/0284-exclude-reconstruction-paths.md) added
+`drill.exclude` for reconstruction inputs. Fireweed applied it at `3b11aa4`
+after a separate audit and 620 passing implementation checks. Local main
+configures `docs/**` in `drill.exclude` at `3c78321`.
 
 The RUN-062 fixture evals passed with Apple Git 2.30.1 and Git 2.56.1.
 The [GC and abandon change](../../changes/archive/0282-git-compatibility-gc-abandon.md)
@@ -60,10 +65,10 @@ v0.2.0**. Gate **6 retains its eight accepted historical proofs**.
 
 ## Controller and history
 
-The current controller reports 0.2.0 and was built with `-trimpath` from
-clean committed main at `21aae46792fe7261acf306a1696b2d39269bae3f` with no
-active run or claim. The repository now selects its existing Codex commands
-through `agent.default` and `audit.agent` in `fireweed.yaml`.
+The current controller reports 0.2.1 and was built with `-trimpath` from
+clean committed main at `3c7832135c949a75ced5ef82d04812ceb2480076` with no
+active run or claim. The preceding 0.2.0 controller, built from
+`21aae46792fe7261acf306a1696b2d39269bae3f`, ran the phases of 0284.
 
 The recorded controller for the acceptance and release phase runs is
 `40b33c70f3de176eda058a96b06d2be1437da972`, built with `-trimpath` from a
