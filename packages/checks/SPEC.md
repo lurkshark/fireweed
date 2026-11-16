@@ -171,7 +171,9 @@ Doctor MUST run probes using current project files in a detached scratch worktre
 Doctor MUST remove its scratch worktree and Git registration after successful or failed probes.
 
 ### CHK-052
-Doctor MUST run the configured setup hook in scratch before probes; a setup failure MUST produce C14 naming the setup hook and prevent later probes.
+Doctor MUST run the configured setup hook in scratch before probes. A setup
+failure MUST produce C14 naming the setup hook and including any captured
+stderr. It MUST prevent later probes.
 
 ### CHK-053
 Doctor MUST render two uniquely named throwaway modules from project-owned module templates and the version-1 canary baseline, substituting name, prefix, package, go_module, module_dir and other_dir.
