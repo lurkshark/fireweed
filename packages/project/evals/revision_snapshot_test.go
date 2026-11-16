@@ -156,6 +156,7 @@ func Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs(t *testing.T) {
 	put(t, root, "fireweed.yaml", "modules: [\"modules/*\"]\n")
 	put(t, root, "modules/ghost/README.md", "directory without SPEC.md\n")
 	missingSpec := revisionCommit(t, root, "missing module document")
+	put(t, root, "modules/ghost/SPEC.md", "---\nname: ghost\nid_prefix: GHO\n---\n# Ghost\n\n## Specs\n")
 	for _, tc := range []struct{ name, revision string }{
 		{"invalid_revision", "not-a-revision"},
 		{"missing_recorded_config", missingConfig},
@@ -166,6 +167,30 @@ func Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs(t *testing.T) {
 			if _, err := project.LoadAt(root, tc.revision); err == nil {
 				t.Errorf("LoadAt accepted %s (%s)", tc.name, tc.revision)
 			}
+		})
+	}
+}
+
+func Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics(t *testing.T) {
+	const path = "packages/alpha/SPEC.md"
+	const validItem = "### ALP-001\nAlpha MUST work.\n"
+	for _, tc := range []struct{ name, spec, code string }{
+		{"malformed_frontmatter", "---\nname: [broken\n---\n# Alpha\n", "C03"},
+		{"malformed_item_heading", alphaSpecHeader + "### ALP-001 [broken\nAlpha MUST work.\n", "C03"},
+		{"duplicate_item_identity", alphaSpecHeader + validItem + "\n### ALP-001\nAlpha MUST retry.\n", "C05"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := fixture(t)
+			revisionGit(t, root, "init", "-q")
+			put(t, root, path, tc.spec)
+			recorded := revisionCommit(t, root, "record invalid module spec")
+			put(t, root, path, alphaSpecHeader+validItem)
+			if _, err := project.Load(root); err != nil {
+				t.Fatalf("Load rejected the valid working copy: %v", err)
+			}
+
+			_, err := project.LoadAt(root, recorded)
+			requirePathError(t, err, tc.code, path)
 		})
 	}
 }

@@ -214,25 +214,38 @@ func Test_PRJ_024_NewChangeRejectsDuplicatesWithoutOverwrite(t *testing.T) {
 	}
 }
 
-func Test_PRJ_025_PRJ_026_NewChangeInvalidArguments(t *testing.T) {
-	for _, tc := range []struct{ id, name, module, slug string }{
-		{"PRJ-025", "unknown_module", "missing", "valid"},
-		{"PRJ-026", "uppercase_slug", "alpha", "Bad"},
-		{"PRJ-026", "underscore_slug", "alpha", "bad_name"},
-		{"PRJ-026", "slash_slug", "alpha", "../bad"},
-		{"PRJ-026", "empty_slug", "alpha", ""},
+func Test_PRJ_025_NewChangeRejectsUnknownModuleWithoutWritingFiles(t *testing.T) {
+	root := fixture(t)
+	revisionGit(t, root, "init", "-q")
+	queued(t, root, "0001-waiting.md", "", "Pending change.\n", "", "", "")
+	put(t, root, "changes/archive/0002-finished.md", "Archived change.\n")
+	revisionCommit(t, root, "record existing project and changes")
+
+	const module = "missing-module"
+	_, err := project.NewChange(root, module, "new-feature")
+	if code, _, ok := contracts.ErrorCode(err); !ok || code != "U02" {
+		t.Errorf("NewChange error = %v; want U02 for %q", err, module)
+	}
+	if err == nil || !strings.HasPrefix(err.Error(), "unknown module ") || !strings.Contains(err.Error(), module) {
+		t.Errorf("NewChange error = %v; want prefix %q and rejected module %q", err, "unknown module ", module)
+	}
+	if status := revisionGit(t, root, "--no-optional-locks", "status", "--porcelain", "--untracked-files=all"); status != "" {
+		t.Errorf("NewChange modified the fixture: %s", status)
+	}
+}
+
+func Test_PRJ_026_NewChangeRejectsInvalidSlugs(t *testing.T) {
+	for _, tc := range []struct{ name, slug string }{
+		{"uppercase_slug", "Bad"},
+		{"underscore_slug", "bad_name"},
+		{"slash_slug", "../bad"},
+		{"empty_slug", ""},
 	} {
-		t.Run(tc.id+"_"+tc.name, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			root := fixture(t)
-			_, err := project.NewChange(root, tc.module, tc.slug)
-			if err == nil {
-				t.Errorf("accepted module %q and slug %q", tc.module, tc.slug)
-			} else if tc.id == "PRJ-025" && (!strings.HasPrefix(err.Error(), "unknown module ") || !strings.Contains(err.Error(), tc.module)) {
-				t.Errorf("unknown module error = %q; want prefix and rejected module %q", err, tc.module)
-			} else if tc.id == "PRJ-026" {
-				if code, _, ok := contracts.ErrorCode(err); !ok || code != "U01" {
-					t.Errorf("NewChange error code for slug %q = (%q, %v); want (U01, true): %v", tc.slug, code, ok, err)
-				}
+			_, err := project.NewChange(root, "alpha", tc.slug)
+			if code, _, ok := contracts.ErrorCode(err); !ok || code != "U01" {
+				t.Errorf("NewChange error code for slug %q = (%q, %v); want (U01, true): %v", tc.slug, code, ok, err)
 			}
 		})
 	}

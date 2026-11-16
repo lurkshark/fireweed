@@ -86,18 +86,33 @@ func Test_PRJ_027_PRJ_028_QueueOrderContentAndArchive(t *testing.T) {
 	}
 }
 
-func Test_PRJ_029_PRJ_030_QueueRejectsInvalidDocuments(t *testing.T) {
-	for _, tc := range []struct{ id, name, body string }{
-		{"PRJ-029", "malformed", "---\nmodule: [broken\n---\n"},
-		{"PRJ-030", "unknown_module", "---\nmodule: missing\n---\n## Motivation\nNeeded.\n"},
+func Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics(t *testing.T) {
+	const slug = "bad-change"
+	const path = "changes/0001-" + slug + ".md"
+	const intro = "---\nmodule: alpha\n---\n\n## Motivation\nNeeded.\n"
+	for _, tc := range []struct{ name, body, code string }{
+		{"malformed_frontmatter", "---\nmodule: [broken\n---\n", "C03"},
+		{"malformed_item_heading", intro + "\n## Modified\n### ALP-001 [broken\nAlpha MUST work.\n", "C03"},
+		{"duplicate_added_identity", intro + "\n## Added\n### new:item\nItem MUST work.\n\n### new:item\nItem MUST retry.\n", "C05"},
+		{"duplicate_modified_identity", intro + "\n## Modified\n### ALP-001\nAlpha MUST work.\n\n### ALP-001\nAlpha MUST retry.\n", "C05"},
+		{"duplicate_removed_identity", intro + "\n## Removed\n### ALP-001\n\n### ALP-001\n", "C05"},
 	} {
-		t.Run(tc.id+"_"+tc.name, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			root := fixture(t)
-			put(t, root, "changes/0001-bad.md", tc.body)
-			if _, err := project.Queue(root); err == nil {
-				t.Error("Queue accepted invalid change")
-			}
+			put(t, root, path, tc.body)
+			_, err := project.Queue(root)
+			requirePathError(t, err, tc.code, path)
+			_, err = project.Project(root, slug)
+			requirePathError(t, err, tc.code, path)
 		})
+	}
+}
+
+func Test_PRJ_030_QueueRejectsUnknownModule(t *testing.T) {
+	root := fixture(t)
+	put(t, root, "changes/0001-bad.md", "---\nmodule: missing\n---\n## Motivation\nNeeded.\n")
+	if _, err := project.Queue(root); err == nil {
+		t.Error("Queue accepted a change naming an unknown module")
 	}
 }
 

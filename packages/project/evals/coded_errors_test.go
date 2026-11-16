@@ -1,11 +1,22 @@
 package evals_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/lurkshark/fireweed/packages/contracts"
 	"github.com/lurkshark/fireweed/packages/project"
 )
+
+func requirePathError(t *testing.T, err error, wantCode, path string) {
+	t.Helper()
+	if code, subject, ok := contracts.ErrorCode(err); !ok || code != wantCode || subject != path {
+		t.Errorf("error code = (%q, %q, %v); want (%q, %q, true): %v", code, subject, ok, wantCode, path, err)
+	}
+	if err == nil || !strings.Contains(err.Error(), path) {
+		t.Errorf("error = %v; want diagnostic containing %q", err, path)
+	}
+}
 
 func Test_PRJ_057_StampInvalidBasesHasCode(t *testing.T) {
 	root := fixture(t)
