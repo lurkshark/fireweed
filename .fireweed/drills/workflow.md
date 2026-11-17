@@ -1,7 +1,7 @@
 ---
 agent: opencode
-base_commit: fd12a7e9dc720f6429bda0b5823a430813a73383
-date: "2026-11-16T08:41:26.617966Z"
+base_commit: cfe7c7746c0bebdc6e924771b1a96e5c7bcace64
+date: "2026-11-17T06:28:39.2037Z"
 model: opencode/deepseek-v4.1-flash#high
 result: fail
 ---
@@ -19,6 +19,9 @@ result: fail
 - workflow / Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal/changes/0001-manual.md / FLOW-096 / pass
 - workflow / Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal/0001-manual.md / FLOW-096 / pass
 - workflow / Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal/manual / FLOW-096 / pass
+- workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers / FLOW-019 / pass
+- workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers/1.0 / FLOW-019 / pass
+- workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers/1 / FLOW-019 / pass
 - workflow / Test_FLOW_019_FLOW_139_ApprovedSurvivesLiveEdits / FLOW-019, FLOW-139 / pass
 - workflow / Test_FLOW_140_ApprovedReportsNoOwnedClaim / FLOW-140 / pass
 - workflow / Test_FLOW_140_ApprovedRejectsUnreadableOrMalformedClaim / FLOW-140 / pass
@@ -207,6 +210,7 @@ result: fail
 - workflow / Test_FLOW_111_StatusReworkChainWarning/latest_matching_predecessor_wins / FLOW-111 / pass
 - workflow / Test_FLOW_111_StatusReworkChainWarning/same_module_without_shared_IDs / FLOW-111 / pass
 - workflow / Test_FLOW_110_StatusSharedBaseUsesSameArchivedDocumentIdentity / FLOW-110 / pass
+- workflow / Test_FLOW_110_StatusReportsUnavailableConfiguredBaseWithEmptyArchive / FLOW-110 / pass
 - workflow / Test_FLOW_112_StatusPhaseCommitsMatchRealLifecycle / FLOW-112 / pass
 - workflow / Test_FLOW_113_StatusLatestRecordedCostsAndSavedWarnings / FLOW-113 / pass
 - workflow / Test_FLOW_136_DoneMarksFullVerificationFailureAndPreservesResult / FLOW-136 / pass
@@ -317,39 +321,15 @@ result: fail
 - app / Test_APP_163_LiveCompatibilityBeforeCommandEffects/unsupported-format / APP-163 / pass
 - app / Test_APP_163_LiveCompatibilityBeforeCommandEffects/live-pin-for-history / APP-163 / pass
 - app / Test_APP_165_StandaloneAndSetupPreconditions / APP-165 / pass
-- app / Test_APP_164_RejectsIncompatibleApprovedConfiguration / APP-164 / fail
-
-=== RUN   Test_APP_164_RejectsIncompatibleApprovedConfiguration
---- FAIL: Test_APP_164_RejectsIncompatibleApprovedConfiguration (2.31s)
-
-- app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/modules / APP-164 / fail
-
-=== RUN   Test_APP_164_RejectsIncompatibleApprovedConfiguration/modules
-    compatibility_cli_test.go:213: fixture must expose the incompatible approved configuration: held=true error=<nil>
---- FAIL: Test_APP_164_RejectsIncompatibleApprovedConfiguration/modules (0.48s)
-
-- app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/coverage / APP-164 / fail
-
-=== RUN   Test_APP_164_RejectsIncompatibleApprovedConfiguration/coverage
-    compatibility_cli_test.go:213: fixture must expose the incompatible approved configuration: held=true error=<nil>
---- FAIL: Test_APP_164_RejectsIncompatibleApprovedConfiguration/coverage (0.45s)
-
-- app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/next / APP-164 / fail
-
-=== RUN   Test_APP_164_RejectsIncompatibleApprovedConfiguration/next
-    compatibility_cli_test.go:213: fixture must expose the incompatible approved configuration: held=true error=<nil>
---- FAIL: Test_APP_164_RejectsIncompatibleApprovedConfiguration/next (0.56s)
-
-- app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/run / APP-164 / fail
-
-=== RUN   Test_APP_164_RejectsIncompatibleApprovedConfiguration/run
-    compatibility_cli_test.go:213: fixture must expose the incompatible approved configuration: held=true error=<nil>
---- FAIL: Test_APP_164_RejectsIncompatibleApprovedConfiguration/run (0.50s)
-
+- app / Test_APP_164_RejectsIncompatibleApprovedConfiguration / APP-164 / pass
+- app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/modules / APP-164 / pass
+- app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/coverage / APP-164 / pass
+- app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/next / APP-164 / pass
+- app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/run / APP-164 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration / APP-164 / fail
 
 === RUN   Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration
---- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration (1.26s)
+--- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration (1.56s)
 
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/check_--json / APP-164 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/show_alpha / APP-164 / pass
@@ -357,14 +337,14 @@ result: fail
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next / APP-164 / fail
 
 === RUN   Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next
-    compatibility_cli_test.go:243: held next: exit=2 stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"approved configuration for \\\"manual\\\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" stderr=""; want a usage stop
---- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next (0.08s)
+    compatibility_cli_test.go:244: held next: exit=2 stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"fireweed.yaml: yaml: line 1: did not find expected ',' or ']'. Correct the project configuration or module declarations and retry.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" stderr=""; want a usage stop
+--- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next (0.18s)
 
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run / APP-164 / fail
 
 === RUN   Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run
-    compatibility_cli_test.go:243: held run: exit=2 stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"approved configuration for \\\"manual\\\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" stderr=""; want a usage stop
---- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run (0.07s)
+    compatibility_cli_test.go:244: held run: exit=2 stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"fireweed.yaml: fireweed pin \\\"\\u003e0.2.1\\\" excludes running binary version 0.2.1. Correct the project configuration or module declarations and retry.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" stderr=""; want a usage stop
+--- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run (0.18s)
 
 - app / Test_APP_037_StaticCauses / APP-037 / pass
 - app / Test_APP_037_StaticCauses/configuration / APP-037 / pass
@@ -416,24 +396,9 @@ result: fail
 - app / Test_APP_141_DrillSetupFailureHasNoArtifacts / APP-141 / pass
 - app / Test_APP_142_DrillCleanUsageStopPlainAndJSON / APP-142 / pass
 - app / Test_APP_136_DrillUsesConfiguredTimeout / APP-136 / pass
-- app / Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty / APP-150, APP-151 / fail
-
-=== RUN   Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty
---- FAIL: Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty (2.00s)
-
-- app / Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty/plain / APP-150, APP-151 / fail
-
-=== RUN   Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty/plain
-    gc_cli_test.go:128: gc retained refs=[refs/fireweed/drills/alpha/20990101T000000.000000000 refs/fireweed/other/keep]
---- FAIL: Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty/plain (0.95s)
-
-- app / Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty/JSON / APP-150, APP-151 / fail
-
-=== RUN   Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty/JSON
-    gc_cli_test.go:115: JSON pruned=[refs/fireweed/attempts/finished/2 refs/fireweed/claims/linked-live refs/fireweed/claims/main-live refs/fireweed/claims/z-stale refs/fireweed/drills/alpha/20200101T000000.000000000]; want sorted full names [refs/fireweed/attempts/finished/2 refs/fireweed/claims/z-stale refs/fireweed/drills/alpha/20200101T000000.000000000]
-    gc_cli_test.go:128: gc retained refs=[refs/fireweed/drills/alpha/20990101T000000.000000000 refs/fireweed/other/keep]
---- FAIL: Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty/JSON (0.70s)
-
+- app / Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty / APP-150, APP-151 / pass
+- app / Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty/plain / APP-150, APP-151 / pass
+- app / Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty/JSON / APP-150, APP-151 / pass
 - app / Test_APP_150_APP_152_GCRejectsUsageBeforePruning / APP-150, APP-152 / pass
 - app / Test_APP_152_GCConfigurationAndGitFailures / APP-152 / pass
 - app / Test_APP_152_GCConfigurationAndGitFailures/malformed-config / APP-152 / pass
@@ -449,7 +414,7 @@ result: fail
 - app / Test_APP_156_HelpForms/init_-h / APP-156 / pass
 - app / Test_APP_156_HelpForms/new-module_--help / APP-156 / pass
 - app / Test_APP_156_HelpForms/new-module_-h / APP-156 / pass
-- app / Test_APP_156_EachListedCommandHasCLIHelp / APP-156 / pass
+- app / Test_APP_156_EachSupportedCommandHasCLIHelp / APP-156 / pass
 - app / Test_APP_156_ExactHelpWordForm / APP-156 / pass
 - app / Test_APP_157_HelpJSONMatchesPlain / APP-157 / pass
 - app / Test_APP_157_HelpJSONMatchesPlain/help / APP-157 / pass
@@ -506,43 +471,10 @@ result: fail
 - app / Test_APP_162_InitQueueDirectoryConflicts/archive / APP-162 / pass
 - app / Test_APP_009_APP_027_APP_028_StartContextAssignmentAndRejection / APP-009, APP-027, APP-028 / pass
 - app / Test_APP_009_APP_027_APP_028_APP_040_StartPreservesApprovalWarning / APP-009, APP-027, APP-028, APP-040 / pass
-- app / Test_APP_004_APP_164_HeldModulesUseApprovedProjection / APP-004, APP-164 / fail
-
-=== RUN   Test_APP_004_APP_164_HeldModulesUseApprovedProjection
-    lifecycle_cli_test.go:284: held plain graph: exit=2 stdout="" stderr="C01: fireweed.yaml: approved configuration for \"manual\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\n"
-    lifecycle_cli_test.go:288: held JSON graph: exit=2 stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"approved configuration for \\\"manual\\\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" stderr=""
---- FAIL: Test_APP_004_APP_164_HeldModulesUseApprovedProjection (1.11s)
-
+- app / Test_APP_004_APP_164_HeldModulesUseApprovedProjection / APP-004, APP-164 / pass
 - app / Test_APP_011_APP_032_APP_033_ContextCompactFullAndErrors / APP-011, APP-032, APP-033 / pass
-- app / Test_APP_012_APP_034_APP_035_APP_036_CoverageCurrentProjectionAndErrors / APP-012, APP-034, APP-035, APP-036 / fail
-
-=== RUN   Test_APP_012_APP_034_APP_035_APP_036_CoverageCurrentProjectionAndErrors
-    lifecycle_cli_test.go:387: status=2; want 1; stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"approved configuration for \\\"manual\\\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" stderr=""
-    lifecycle_cli_test.go:391: projected coverage: 2 "{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"approved configuration for \\\"manual\\\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" ""
-    lifecycle_cli_test.go:393: result data is null: {"schema":1,"data":null,"diagnostics":[{"code":"C01","message":"approved configuration for \"manual\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.","path":"fireweed.yaml","warning":false}]}
---- FAIL: Test_APP_012_APP_034_APP_035_APP_036_CoverageCurrentProjectionAndErrors (1.33s)
-
-- app / Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelectedSpecs / APP-012, APP-160, APP-164 / fail
-
-=== RUN   Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelectedSpecs
-    lifecycle_cli_test.go:480: coverage [--with-change other]: exit=2 stdout="" stderr="C01: fireweed.yaml: approved configuration for \"manual\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\n"; want "ALP-002: pass\n"
-    lifecycle_cli_test.go:480: coverage [--with-change other] hook invocation=""; want approved hook with executable "/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelect189746412/001/fireweed-new"
-    lifecycle_cli_test.go:482: diagnostic code="C01"; want "U02"
-    lifecycle_cli_test.go:482: coverage [gamma --with-change other] diagnostic "approved configuration for \"manual\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot." lacks "gamma" or corrective guidance
-    lifecycle_cli_test.go:484: diagnostic code="C01"; want "C03"
-    lifecycle_cli_test.go:484: coverage [alpha --with-change other] diagnostic "approved configuration for \"manual\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot." lacks "changes/0002-other.md" or corrective guidance
-    lifecycle_cli_test.go:491: coverage []: exit=2 stdout="" stderr="C01: fireweed.yaml: approved configuration for \"manual\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\n"; want "ALP-001: pass\nALP-003: pass\n"
-    lifecycle_cli_test.go:491: coverage [] hook invocation=""; want approved hook with executable "/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelect189746412/001/fireweed-new"
-    lifecycle_cli_test.go:493: coverage [--with-change manual]: exit=2 stdout="" stderr="C01: fireweed.yaml: approved configuration for \"manual\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\n"; want "ALP-001: pass\nALP-002: pass\n"
-    lifecycle_cli_test.go:493: coverage [--with-change manual] hook invocation=""; want approved hook with executable "/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelect189746412/001/fireweed-new"
-    lifecycle_cli_test.go:494: diagnostic code="C01"; want "C03"
-    lifecycle_cli_test.go:494: coverage [alpha] diagnostic "approved configuration for \"manual\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot." lacks "SPEC.md" or corrective guidance
-    lifecycle_cli_test.go:502: coverage [--with-change 0001-manual.md]: exit=2 stdout="" stderr="C01: fireweed.yaml: approved configuration for \"manual\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\n"; want "ALP-001: pass\nALP-002: pass\n"
-    lifecycle_cli_test.go:502: coverage [--with-change 0001-manual.md] hook invocation=""; want approved hook with executable "/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelect189746412/001/fireweed-new"
-    lifecycle_cli_test.go:502: coverage [--with-change changes/0001-manual.md]: exit=2 stdout="" stderr="C01: fireweed.yaml: approved configuration for \"manual\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\n"; want "ALP-001: pass\nALP-002: pass\n"
-    lifecycle_cli_test.go:502: coverage [--with-change changes/0001-manual.md] hook invocation=""; want approved hook with executable "/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelect189746412/001/fireweed-new"
---- FAIL: Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelectedSpecs (1.50s)
-
+- app / Test_APP_012_APP_034_APP_035_APP_036_CoverageCurrentProjectionAndErrors / APP-012, APP-034, APP-035, APP-036 / pass
+- app / Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelectedSpecs / APP-012, APP-160, APP-164 / pass
 - app / Test_APP_010_APP_029_APP_030_APP_031_VerifyDoneAuditAndFullChecks / APP-010, APP-029, APP-030, APP-031 / pass
 - app / Test_APP_010_APP_029_APP_030_APP_031_VerifyRejectsFalseFailFirstAndFrozenEdits / APP-010, APP-029, APP-030, APP-031 / pass
 - app / Test_APP_010_APP_029_APP_031_DoneReportsBlockedAudit / APP-010, APP-029, APP-031 / pass
@@ -646,14 +578,7 @@ result: fail
 - app / Test_APP_082_RunAllowUnmerged / APP-082 / pass
 - app / Test_APP_081_APP_084_RunUsageAndConfiguration / APP-081, APP-084 / pass
 - app / Test_APP_084_APP_085_APP_086_RunWrappedFailure / APP-084, APP-085, APP-086 / pass
-- app / Test_APP_089_APP_090_APP_084_RunForJSONRetainsAppliedAndResumes / APP-084, APP-089, APP-090 / fail
-
-=== RUN   Test_APP_089_APP_090_APP_084_RunForJSONRetainsAppliedAndResumes
-    run_for_cli_test.go:129: Beta resume exit=2 stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"approved configuration for \\\"beta\\\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" stderr=""
-    run_for_cli_test.go:136: Beta resume={Change: Run: Phase: Empty:false}: <nil>
-    run_for_cli_test.go:138: open /private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_089_APP_090_APP_084_RunForJSONRetainsAppliedAndResumes2192368497/003/resumed-beta.md: no such file or directory
---- FAIL: Test_APP_089_APP_090_APP_084_RunForJSONRetainsAppliedAndResumes (9.09s)
-
+- app / Test_APP_089_APP_090_APP_084_RunForJSONRetainsAppliedAndResumes / APP-084, APP-089, APP-090 / pass
 - app / Test_APP_090_APP_084_RunForPlainStop / APP-084, APP-090 / pass
 - app / Test_APP_084_RunForPriorBlockStillFails / APP-084 / pass
 - app / Test_APP_089_RunForInvalidOptionsBeforeMutation / APP-089 / pass
@@ -707,29 +632,10 @@ result: fail
 - app / Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures/invalid-graph / APP-145, APP-146 / pass
 - app / Test_APP_118_APP_119_APP_120_APP_121_APP_122_APP_123_APP_124_APP_125_StatusRichReport / APP-118, APP-119, APP-120, APP-121, APP-122, APP-123, APP-124, APP-125 / pass
 - app / Test_APP_118_APP_119_APP_122_StatusNearestRootEmptyContainers / APP-118, APP-119, APP-122 / pass
-- app / Test_APP_126_StatusUsageConfigurationAndOperationalFailures / APP-126 / fail
-
-=== RUN   Test_APP_126_StatusUsageConfigurationAndOperationalFailures
-    status_cli_test.go:504: public Status accepted unavailable base ref
---- FAIL: Test_APP_126_StatusUsageConfigurationAndOperationalFailures (0.33s)
-
-- app / Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume / APP-076, APP-077, APP-079 / fail
-
-=== RUN   Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume
-    usage_cli_test.go:168: owned resume exit=2 stderr="" stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"approved configuration for \\\"next\\\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n"
-    usage_cli_test.go:176: resumed next data={Change: Run: Phase: Empty:false}: <nil>
-    usage_cli_test.go:178: open /private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume2794670203/002/changes/archive/0001-next.md: no such file or directory
---- FAIL: Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume (1.42s)
-
+- app / Test_APP_126_StatusUsageConfigurationAndOperationalFailures / APP-126 / pass
+- app / Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume / APP-076, APP-077, APP-079 / pass
 - app / Test_APP_076_APP_077_NextPlainUsageStop / APP-076, APP-077 / pass
-- app / Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume / APP-083, APP-084, APP-086 / fail
-
-=== RUN   Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume
-    usage_cli_test.go:295: beta resume exit=2 stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"approved configuration for \\\"beta\\\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" stderr=""
-    usage_cli_test.go:303: beta resume={Change: Run: Phase: Empty:false}: <nil>
-    usage_cli_test.go:305: open /private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume1502202368/002/changes/archive/0002-beta.md: no such file or directory
---- FAIL: Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume (4.64s)
-
+- app / Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume / APP-083, APP-084, APP-086 / pass
 - app / Test_APP_083_APP_084_RunPlainSharedUsageStop / APP-083, APP-084 / pass
 - app / Test_APP_084_APP_086_EarlierBlockPrecedesUsageStop / APP-084, APP-086 / pass
 - app / Test_APP_077_APP_079_APP_084_APP_086_InvalidUsagePolicyBeforeMutation / APP-077, APP-079, APP-084, APP-086 / pass
@@ -756,18 +662,18 @@ result: fail
 - runner / Test_RUN_021_RUN_070_AuditReturnExhaustionSavesAndBlocksEvals / RUN-021, RUN-070 / pass
 - runner / Test_RUN_021_RUN_070_AuditReturnExhaustionSavesAndBlocksEvals/later_return / RUN-021, RUN-070 / pass
 - runner / Test_RUN_021_RUN_070_AuditReturnExhaustionSavesAndBlocksEvals/earlier_verification_retry / RUN-021, RUN-070 / pass
-- runner / Test_RUN_021_AuditRoundLimitCanStopBeforeEvalsAllowance / RUN-021 / fail
-
-=== RUN   Test_RUN_021_AuditRoundLimitCanStopBeforeEvalsAllowance
-    audit_return_attempts_test.go:231: audit did not block at the persisted round limit: phase="audit" claim="" questions="\n- ALP-002: \"Alpha MUST return the new value on subsequent calls.\" — missing an assertion for subsequent calls in audit 2\n"
---- FAIL: Test_RUN_021_AuditRoundLimitCanStopBeforeEvalsAllowance (3.87s)
-
+- runner / Test_RUN_021_AuditRoundLimitCanStopBeforeEvalsAllowance / RUN-021 / pass
 - runner / Test_RUN_070_RunContinuesIndependentWorkAfterAuditReturnBlock / RUN-070 / pass
 - runner / Test_RUN_013_RUN_045_RUN_046_RUN_071_AuditUsesOnlyProjectedInputsAndIndependentGit / RUN-013, RUN-045, RUN-046, RUN-071 / pass
 - runner / Test_RUN_013_RUN_045_RUN_046_RUN_071_AuditUsesOnlyProjectedInputsAndIndependentGit/project_override / RUN-013, RUN-045, RUN-046, RUN-071 / pass
 - runner / Test_RUN_013_RUN_045_RUN_046_RUN_071_AuditUsesOnlyProjectedInputsAndIndependentGit/embedded_fallback / RUN-013, RUN-045, RUN-046, RUN-071 / pass
 - runner / Test_RUN_013_AuditRetryUsesApprovedAgentConfiguration / RUN-013 / pass
-- runner / Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificationRetry / RUN-048 / pass
+- runner / Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificationRetry / RUN-048 / fail
+
+=== RUN   Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificationRetry
+    audit_workspace_test.go:210: audit verification retry = model.NextResult{State:model.State{Change:model.Change{Number:0, Slug:"next", Path:"changes/0001-next.md", Module:"alpha", Document:model.Document{Frontmatter:map[string]interface {}{"bases":map[string]interface {}{}, "module":"alpha", "phase":"audit", "run":"fd6b5813075fd98c866a476f1383a19d"}, Body:"\n## Motivation\nOne new value is needed.\n\n## Interface\nExisting Value function.\n\n## Added\n\n### ALP-002\nAlpha MUST return the new value.\n\n## Modified\n\n## Removed\n\n## Decisions\n## Provenance\n\n- evals 2026-11-17T07:05:04.542357Z agent=bash fireweed=0.2.1 playbook=d2fd7216b035a9614c390d254dd9195ac2c65ae1ed18f07ac93c77b9732d4156 tests=2 failing=1 passing=1\n\n## Audit\nNo findings\nChecked IDs: ALP-002\n"}, Added:[]model.Item{model.Item{ID:"ALP-002", Tag:"", Body:"Alpha MUST return the new value.\n\n"}}, Modified:[]model.Item(nil), Removed:[]model.Item(nil)}, Snapshot:model.Snapshot{Root:"/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificati615048582/001", Config:map[string]interface {}{"agent":map[string]interface {}{"commands":map[string]interface {}{"fixture-auditor":[]interface {}{"bash", "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificati615048582/002/auditor.sh", "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificati615048582/002", "{prompt}"}, "fixture-worker":[]interface {}{"bash", "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificati615048582/002/worker.sh", "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificati615048582/002", "normal", "{prompt}"}}, "default":"fixture-worker"}, "audit":map[string]interface {}{"agent":"fixture-auditor"}, "base":"main", "fireweed":"=0.2.1", "hooks":map[string]interface {}{"boundaries":[]interface {}{"sh", ".fireweed/boundaries.sh"}, "eval":[]interface {}{"sh", ".fireweed/eval.sh", "{module}", "{report}", "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificati615048582/002"}}, "module_defaults":map[string]interface {}{"disposable":[]interface {}{"internal/**"}, "evals":[]interface {}{"evals/**"}, "interface":[]interface {}{"api.go"}}, "modules":[]interface {}{"packages/*"}, "spec_limits":map[string]interface {}{"max_clauses":3, "max_decision_words":300, "max_words":80}, "timeout":"50ms", "version":1}, Modules:[]model.Module{model.Module{Name:"alpha", IDPrefix:"ALP", Dir:"packages/alpha", DependsOn:[]string{}, Zones:model.Zones{Protected:[]string(nil), Evals:[]string{"evals/**"}, Interface:[]string{"api.go"}, AppendOnly:[]string(nil), Preserve:[]string(nil), Disposable:[]string{"internal/**"}}, Document:model.Document{Frontmatter:map[string]interface {}{"depends_on":[]interface {}{}, "id_prefix":"ALP", "name":"alpha"}, Body:"# Alpha\n\n## Specs\n\n### ALP-001\nAlpha MUST return its value.\n\n### ALP-002\nAlpha MUST return the new value.\n\n## Decisions\n"}}}}, Run:"fd6b5813075fd98c866a476f1383a19d", Phase:"audit", Head:"0ed21be1b66e7de65eb09fee84dce26ccb428c02", PhaseBase:"0ed21be1b66e7de65eb09fee84dce26ccb428c02", ClaimOID:"633a1ba38bf266a75d486705226488cc104f3bf5", Diagnostics:[]model.Diagnostic(nil)}, Empty:false, Steps:[]model.StepResult{model.StepResult{Phase:"evals", Role:"worker", Agent:model.AgentResult{Stdout:"worker-evals", Stderr:"", ExitCode:0, UsageLimit:false, LogPath:"/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificati615048582/001/.fireweed/runs/fd6b5813075fd98c866a476f1383a19d/evals-1.log"}}, model.StepResult{Phase:"audit", Role:"audit", Agent:model.AgentResult{Stdout:"auditor", Stderr:"", ExitCode:0, UsageLimit:false, LogPath:"/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificati615048582/001/.fireweed/runs/fd6b5813075fd98c866a476f1383a19d/audit-1.log"}}}}, audit may edit only current change: packages/alpha/internal/audit-zone-violation.go
+--- FAIL: Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificationRetry (2.24s)
+
 - runner / Test_RUN_046_AuditCommitDoesNotEnterHeldGit / RUN-046 / pass
 - runner / Test_RUN_047_RUN_048_FirstAuditBeforeProvenanceIsImported / RUN-047, RUN-048 / pass
 - runner / Test_RUN_045_RUN_049_SeparateAuditsUseFreshWorkspaces / RUN-045, RUN-049 / pass
@@ -927,12 +833,12 @@ result: fail
 - runner / Test_RUN_014_NextRunsFullVerificationOncePerAttempt / RUN-014 / pass
 - runner / Test_RUN_014_NextRunsFullVerificationOncePerAttempt/pass / RUN-014 / pass
 - runner / Test_RUN_014_NextRunsFullVerificationOncePerAttempt/dependent_retry / RUN-014 / pass
-- runner / Test_RUN_072_RetainsStartWarning / RUN-072 / pass
-- runner / Test_RUN_072_RetainsStartWarning/applied_with_worker_recovery / RUN-072 / pass
-- runner / Test_RUN_072_RetainsStartWarning/verification_exhaustion / RUN-072 / pass
-- runner / Test_RUN_072_RetainsStartWarning/invocation_failure / RUN-072 / pass
-- runner / Test_RUN_072_RetainsStartWarning/usage_stop / RUN-072 / pass
-- runner / Test_RUN_072_RetainsStartWarning/Run_applied_result / RUN-072 / pass
+- runner / Test_RUN_072_RetainsStartWarning / RUN-072 / fail
+
+=== RUN   Test_RUN_072_RetainsStartWarning
+    start_warnings_test.go:66: reference Start did not return the base-tip P05 warning: []model.Diagnostic{model.Diagnostic{Code:"P04", Message:"change changes/0001-next.md is absent from base refs/heads/main and shared base refs/remotes/origin/main; the queue may be unapproved", Path:"changes/0001-next.md", Warning:true}, model.Diagnostic{Code:"P05", Message:"base tip refs/remotes/origin/main is not an ancestor of HEAD; the queue may be stale", Path:"", Warning:true}}
+--- FAIL: Test_RUN_072_RetainsStartWarning (0.44s)
+
 - runner / Test_RUN_036_RUN_037_OneBudgetAcrossChangesRetainsApplied / RUN-036, RUN-037 / pass
 - runner / Test_RUN_036_ZeroForKeepsOrdinaryRunUnbounded / RUN-036 / pass
 - runner / Test_RUN_037_RUN_039_AgentDeadlineRetainsHeldWork / RUN-037, RUN-039 / pass
@@ -959,127 +865,113 @@ result: fail
 - runner / Test_RUN_031_CancelledUsageWaitRetainsHeldWork / RUN-031 / pass
 
 ## Contradicted Decisions
-None. The reconstructed lifecycle follows Decisions 0012, 0119, 0120 and 0123 for provenance formatting, retained cost snapshots, queue/waiting order and PR-body endpoint reporting.
+None found. Decisions [0012-manual-lifecycle], [0119-verification-costs],
+[0120-status-report] and [0123-pr-body-report] are consistent with the
+retained FLOW specs and eval assertions, including provenance formatting,
+cost snapshot retention and replacement, Status waiting precedence and
+PRBody endpoint selection.
 
 ## Gaps
-- The on-disk claim record shape is unspecified beyond recording the owning worktree and change. The implementation also stores the approved projected snapshot, change document, run, phase and phase base in the claim blob. Nearest spec: FLOW-001. Target module for a fixing change: `workflow`.
-- The exact normalized `## Audit` text for a passing audit is unspecified. The implementation writes `No findings; checked <IDs>` so later readers can distinguish the accepted submission from in-progress findings. Nearest spec: FLOW-041. Target module for a fixing change: `workflow`.
-- GC behavior for malformed claim JSON is unspecified. The implementation leaves such claims in place rather than guessing ownership. Nearest spec: FLOW-128. Target module for a fixing change: `workflow`.
-- Dirty-worktree checks for Start and Abandon do not say whether generated `.fireweed/runs/` artifacts count as uncommitted work. The implementation ignores those generated paths while still rejecting ordinary tracked and untracked edits. Nearest spec: FLOW-010 (and FLOW-090). Target module for a fixing change: `workflow`.
-- The treatment of ignored-but-untracked worker files when saving and restoring a Block attempt is unspecified. The implementation saves them in the attempt commit and removes them from the checkout, while always excluding `.fireweed/runs/`. Nearest spec: FLOW-064. Target module for a fixing change: `workflow`.
+- Nearest FLOW-001 (also FLOW-139); target module `workflow`: neither the spec
+  nor the retained decisions define the claim record's on-disk encoding. The
+  implementation must persist the approved snapshot and approved change
+  document so Approved/Current can survive malformed or missing live inputs.
+- Nearest FLOW-017 and FLOW-133; target module `workflow`: behavior is
+  unspecified when one worktree owns more than one claim while Current or
+  Approved is called with an empty selector. The current implementation
+  selects the first sorted claim.
+- Nearest FLOW-061 (also FLOW-011); target module `workflow`: lifecycle
+  selector rules say unknown explicit selectors are U02, but they do not say
+  whether Start/StartFromAttempt must accept an archived document selector.
+  They currently reject archived selectors as unknown.
+- Nearest FLOW-063 and FLOW-137; target module `workflow`: Block's handling of
+  an empty or whitespace-only reason, and Done's handling of Questions without
+  a blocked reason, are not specified beyond the worker-declared-block path.
+- Nearest FLOW-128; target module `workflow`: GC claim pruning does not define
+  whether a malformed or unreadable claim object is pruned or retained. The
+  implementation treats it as stale and prunes it.
+- Nearest FLOW-035 and FLOW-036; target module `workflow`: re-audit prior
+  findings are assumed to remain in the change's Audit section, and the
+  required checked-ID rule is only specified for a No findings submission.
+  Findings-only submissions have no explicit checked-ID requirement.
+- Nearest FLOW-052 and FLOW-097; target module `workflow`: FLOW-052 mandates
+  retained module reports after successful Done, while FLOW-097 mandates cost
+  snapshots on every Verify including verification reached through Done. The
+  required report retention on failed Done is not stated, although the cost
+  snapshot behavior implies retention for diagnostics.
+- Nearest FLOW-098 and FLOW-100; target module `workflow`: the ordering of
+  `Result.Costs`, `CostSnapshot.Modules` and `StatusReport.Costs` is not
+  specified. The implementation sorts module costs by module name and cost
+  snapshots by recording time.
+- Nearest FLOW-001 and FLOW-073; target module `workflow`: behavior is
+  unspecified when Start or StartFromAttempt is called while the same
+  worktree already owns the selected claim. The implementation rejects it as
+  an existing claim error.
+- Nearest FLOW-110 and FLOW-141; target module `workflow`: Status must error
+  when the configured base ref is unavailable, but Start's behavior when the
+  same ref is unavailable (as opposed to merely not containing the change) is
+  not specified. Start proceeds without the P04/P07 base comparison.
+- Nearest FLOW-089; target module `workflow`: Abandon specifies undoing phase
+  commits but not how to reconcile reverse patches that conflict with later
+  independent commits. The implementation applies reverse patches with a
+  three-way fallback and leaves conflicting patches unapplied.
+- Nearest FLOW-114 and FLOW-123; target module `workflow`: PRBody's Markdown
+  layout is only constrained for the Cost/Metric table and required facts.
+  Section names and ordering outside that table are implementation-defined.
 
 ## Agent observations
 
 ### Invocation 1
-Log: .fireweed/runs/20261116T084126-ab454fda91391ad2cb83d84e/drill-1.log
+Log: .fireweed/runs/20261117T062839-f112003abbadf23f29f0e816/drill-1.log
 
-Rebuilt the workflow module’s disposable implementation under `packages/workflow/internal/lifecycle/**`.
+I'll start by exploring the workspace to understand the current state.
+I have the full picture now. Let me build the internal implementation.
+All workflow evals pass. Let me verify the change set and write the drill notes.
+Rebuilt `packages/workflow/internal/**` and validated it with the prescribed eval hook.
 
-Implemented:
-- Start, StartFromAttempt, Eligible, Current, Approved, Release
-- Verify, Done, Context, Block
-- Commits, Abandon, GC
-- Costs, Status, PRBody
-- Claims, run artifacts, provenance, audit rounds, cost snapshots, budget warnings, and endpoint reporting
+## Implemented
+- Claim lifecycle, ownership, approved snapshot persistence, Start/StartFromAttempt
+- Eligibility, Status, cost snapshots, warning diagnostics, PRBody and GC
+- Verify/Done for evals, audit and impl phases, including zones, boundaries, dependents, audit findings, provenance and archival
+- Block/Release/Current/Approved/Context/Commits/Abandon
 
-Validation:
-- Ran the requested target eval hook for `packages/workflow`.
-- Result: `PASS` (`packages/workflow/evals`, 186.6s).
+## Validation
+Ran the required eval hook:
 
-Also added `DRILL_NOTES.md` with:
-- `## Contradicted Decisions`
-- `## Gaps` naming nearest spec IDs and target module `workflow` for each gap.
+```sh
+FIREWEED_BIN='/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed' \
+  sh -c 'go run .fireweed/hooks.go eval packages/workflow .fireweed/drill-eval.xml'
+```
+
+Result: `PASS` for `packages/workflow/evals`.
+
+Also added `DRILL_NOTES.md` with separate `## Contradicted Decisions` and `## Gaps` sections. No contradicted Decisions were found; each gap names its nearest spec ID and the `workflow` target module.
 
 
 ## Failures
-app: failed case "Test_APP_004_APP_164_HeldModulesUseApprovedProjection" for APP-004
-Test_APP_164_RejectsIncompatibleApprovedConfiguration: === RUN   Test_APP_164_RejectsIncompatibleApprovedConfiguration
---- FAIL: Test_APP_164_RejectsIncompatibleApprovedConfiguration (2.31s)
-Test_APP_164_RejectsIncompatibleApprovedConfiguration/modules: === RUN   Test_APP_164_RejectsIncompatibleApprovedConfiguration/modules
-    compatibility_cli_test.go:213: fixture must expose the incompatible approved configuration: held=true error=<nil>
---- FAIL: Test_APP_164_RejectsIncompatibleApprovedConfiguration/modules (0.48s)
-Test_APP_164_RejectsIncompatibleApprovedConfiguration/coverage: === RUN   Test_APP_164_RejectsIncompatibleApprovedConfiguration/coverage
-    compatibility_cli_test.go:213: fixture must expose the incompatible approved configuration: held=true error=<nil>
---- FAIL: Test_APP_164_RejectsIncompatibleApprovedConfiguration/coverage (0.45s)
-Test_APP_164_RejectsIncompatibleApprovedConfiguration/next: === RUN   Test_APP_164_RejectsIncompatibleApprovedConfiguration/next
-    compatibility_cli_test.go:213: fixture must expose the incompatible approved configuration: held=true error=<nil>
---- FAIL: Test_APP_164_RejectsIncompatibleApprovedConfiguration/next (0.56s)
-Test_APP_164_RejectsIncompatibleApprovedConfiguration/run: === RUN   Test_APP_164_RejectsIncompatibleApprovedConfiguration/run
-    compatibility_cli_test.go:213: fixture must expose the incompatible approved configuration: held=true error=<nil>
---- FAIL: Test_APP_164_RejectsIncompatibleApprovedConfiguration/run (0.50s)
+app: failed case "Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration" for APP-164
 Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration: === RUN   Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration
---- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration (1.26s)
+--- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration (1.56s)
 Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next: === RUN   Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next
-    compatibility_cli_test.go:243: held next: exit=2 stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"approved configuration for \\\"manual\\\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" stderr=""; want a usage stop
---- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next (0.08s)
+    compatibility_cli_test.go:244: held next: exit=2 stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"fireweed.yaml: yaml: line 1: did not find expected ',' or ']'. Correct the project configuration or module declarations and retry.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" stderr=""; want a usage stop
+--- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next (0.18s)
 Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run: === RUN   Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run
-    compatibility_cli_test.go:243: held run: exit=2 stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"approved configuration for \\\"manual\\\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" stderr=""; want a usage stop
---- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run (0.07s)
-Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty: === RUN   Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty
---- FAIL: Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty (2.00s)
-Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty/plain: === RUN   Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty/plain
-    gc_cli_test.go:128: gc retained refs=[refs/fireweed/drills/alpha/20990101T000000.000000000 refs/fireweed/other/keep]
---- FAIL: Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty/plain (0.95s)
-Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty/JSON: === RUN   Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty/JSON
-    gc_cli_test.go:115: JSON pruned=[refs/fireweed/attempts/finished/2 refs/fireweed/claims/linked-live refs/fireweed/claims/main-live refs/fireweed/claims/z-stale refs/fireweed/drills/alpha/20200101T000000.000000000]; want sorted full names [refs/fireweed/attempts/finished/2 refs/fireweed/claims/z-stale refs/fireweed/drills/alpha/20200101T000000.000000000]
-    gc_cli_test.go:128: gc retained refs=[refs/fireweed/drills/alpha/20990101T000000.000000000 refs/fireweed/other/keep]
---- FAIL: Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty/JSON (0.70s)
-Test_APP_004_APP_164_HeldModulesUseApprovedProjection: === RUN   Test_APP_004_APP_164_HeldModulesUseApprovedProjection
-    lifecycle_cli_test.go:284: held plain graph: exit=2 stdout="" stderr="C01: fireweed.yaml: approved configuration for \"manual\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\n"
-    lifecycle_cli_test.go:288: held JSON graph: exit=2 stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"approved configuration for \\\"manual\\\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" stderr=""
---- FAIL: Test_APP_004_APP_164_HeldModulesUseApprovedProjection (1.11s)
-Test_APP_012_APP_034_APP_035_APP_036_CoverageCurrentProjectionAndErrors: === RUN   Test_APP_012_APP_034_APP_035_APP_036_CoverageCurrentProjectionAndErrors
-    lifecycle_cli_test.go:387: status=2; want 1; stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"approved configuration for \\\"manual\\\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" stderr=""
-    lifecycle_cli_test.go:391: projected coverage: 2 "{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"approved configuration for \\\"manual\\\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" ""
-    lifecycle_cli_test.go:393: result data is null: {"schema":1,"data":null,"diagnostics":[{"code":"C01","message":"approved configuration for \"manual\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.","path":"fireweed.yaml","warning":false}]}
---- FAIL: Test_APP_012_APP_034_APP_035_APP_036_CoverageCurrentProjectionAndErrors (1.33s)
-Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelectedSpecs: === RUN   Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelectedSpecs
-    lifecycle_cli_test.go:480: coverage [--with-change other]: exit=2 stdout="" stderr="C01: fireweed.yaml: approved configuration for \"manual\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\n"; want "ALP-002: pass\n"
-    lifecycle_cli_test.go:480: coverage [--with-change other] hook invocation=""; want approved hook with executable "/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelect189746412/001/fireweed-new"
-    lifecycle_cli_test.go:482: diagnostic code="C01"; want "U02"
-    lifecycle_cli_test.go:482: coverage [gamma --with-change other] diagnostic "approved configuration for \"manual\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot." lacks "gamma" or corrective guidance
-    lifecycle_cli_test.go:484: diagnostic code="C01"; want "C03"
-    lifecycle_cli_test.go:484: coverage [alpha --with-change other] diagnostic "approved configuration for \"manual\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot." lacks "changes/0002-other.md" or corrective guidance
-    lifecycle_cli_test.go:491: coverage []: exit=2 stdout="" stderr="C01: fireweed.yaml: approved configuration for \"manual\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\n"; want "ALP-001: pass\nALP-003: pass\n"
-    lifecycle_cli_test.go:491: coverage [] hook invocation=""; want approved hook with executable "/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelect189746412/001/fireweed-new"
-    lifecycle_cli_test.go:493: coverage [--with-change manual]: exit=2 stdout="" stderr="C01: fireweed.yaml: approved configuration for \"manual\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\n"; want "ALP-001: pass\nALP-002: pass\n"
-    lifecycle_cli_test.go:493: coverage [--with-change manual] hook invocation=""; want approved hook with executable "/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelect189746412/001/fireweed-new"
-    lifecycle_cli_test.go:494: diagnostic code="C01"; want "C03"
-    lifecycle_cli_test.go:494: coverage [alpha] diagnostic "approved configuration for \"manual\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot." lacks "SPEC.md" or corrective guidance
-    lifecycle_cli_test.go:502: coverage [--with-change 0001-manual.md]: exit=2 stdout="" stderr="C01: fireweed.yaml: approved configuration for \"manual\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\n"; want "ALP-001: pass\nALP-002: pass\n"
-    lifecycle_cli_test.go:502: coverage [--with-change 0001-manual.md] hook invocation=""; want approved hook with executable "/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelect189746412/001/fireweed-new"
-    lifecycle_cli_test.go:502: coverage [--with-change changes/0001-manual.md]: exit=2 stdout="" stderr="C01: fireweed.yaml: approved configuration for \"manual\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\n"; want "ALP-001: pass\nALP-002: pass\n"
-    lifecycle_cli_test.go:502: coverage [--with-change changes/0001-manual.md] hook invocation=""; want approved hook with executable "/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelect189746412/001/fireweed-new"
---- FAIL: Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelectedSpecs (1.50s)
-Test_APP_089_APP_090_APP_084_RunForJSONRetainsAppliedAndResumes: === RUN   Test_APP_089_APP_090_APP_084_RunForJSONRetainsAppliedAndResumes
-    run_for_cli_test.go:129: Beta resume exit=2 stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"approved configuration for \\\"beta\\\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" stderr=""
-    run_for_cli_test.go:136: Beta resume={Change: Run: Phase: Empty:false}: <nil>
-    run_for_cli_test.go:138: open /private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_089_APP_090_APP_084_RunForJSONRetainsAppliedAndResumes2192368497/003/resumed-beta.md: no such file or directory
---- FAIL: Test_APP_089_APP_090_APP_084_RunForJSONRetainsAppliedAndResumes (9.09s)
-Test_APP_126_StatusUsageConfigurationAndOperationalFailures: === RUN   Test_APP_126_StatusUsageConfigurationAndOperationalFailures
-    status_cli_test.go:504: public Status accepted unavailable base ref
---- FAIL: Test_APP_126_StatusUsageConfigurationAndOperationalFailures (0.33s)
-Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume: === RUN   Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume
-    usage_cli_test.go:168: owned resume exit=2 stderr="" stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"approved configuration for \\\"next\\\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n"
-    usage_cli_test.go:176: resumed next data={Change: Run: Phase: Empty:false}: <nil>
-    usage_cli_test.go:178: open /private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume2794670203/002/changes/archive/0001-next.md: no such file or directory
---- FAIL: Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume (1.42s)
-Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume: === RUN   Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume
-    usage_cli_test.go:295: beta resume exit=2 stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"approved configuration for \\\"beta\\\": fireweed.yaml: unsupported project format version 1 (float64). Supported format is 1. Use a compatible Fireweed binary, or correct fireweed.yaml and obtain a new approved snapshot.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" stderr=""
-    usage_cli_test.go:303: beta resume={Change: Run: Phase: Empty:false}: <nil>
-    usage_cli_test.go:305: open /private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume1502202368/002/changes/archive/0002-beta.md: no such file or directory
---- FAIL: Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume (4.64s)
+    compatibility_cli_test.go:244: held run: exit=2 stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"fireweed.yaml: fireweed pin \\\"\\u003e0.2.1\\\" excludes running binary version 0.2.1. Correct the project configuration or module declarations and retry.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" stderr=""; want a usage stop
+--- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run (0.18s)
 ?   	github.com/lurkshark/fireweed/packages/app	[no test files]
 ?   	github.com/lurkshark/fireweed/packages/app/internal/entry	[no test files]
 FAIL
-FAIL	github.com/lurkshark/fireweed/packages/app/evals	263.042s
+FAIL	github.com/lurkshark/fireweed/packages/app/evals	305.069s
 
 exit status 1
 
-runner: failed case "Test_RUN_021_AuditRoundLimitCanStopBeforeEvalsAllowance" for RUN-021
-Test_RUN_021_AuditRoundLimitCanStopBeforeEvalsAllowance: === RUN   Test_RUN_021_AuditRoundLimitCanStopBeforeEvalsAllowance
-    audit_return_attempts_test.go:231: audit did not block at the persisted round limit: phase="audit" claim="" questions="\n- ALP-002: \"Alpha MUST return the new value on subsequent calls.\" — missing an assertion for subsequent calls in audit 2\n"
---- FAIL: Test_RUN_021_AuditRoundLimitCanStopBeforeEvalsAllowance (3.87s)
+runner: failed case "Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificationRetry" for RUN-048
+Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificationRetry: === RUN   Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificationRetry
+    audit_workspace_test.go:210: audit verification retry = model.NextResult{State:model.State{Change:model.Change{Number:0, Slug:"next", Path:"changes/0001-next.md", Module:"alpha", Document:model.Document{Frontmatter:map[string]interface {}{"bases":map[string]interface {}{}, "module":"alpha", "phase":"audit", "run":"fd6b5813075fd98c866a476f1383a19d"}, Body:"\n## Motivation\nOne new value is needed.\n\n## Interface\nExisting Value function.\n\n## Added\n\n### ALP-002\nAlpha MUST return the new value.\n\n## Modified\n\n## Removed\n\n## Decisions\n## Provenance\n\n- evals 2026-11-17T07:05:04.542357Z agent=bash fireweed=0.2.1 playbook=d2fd7216b035a9614c390d254dd9195ac2c65ae1ed18f07ac93c77b9732d4156 tests=2 failing=1 passing=1\n\n## Audit\nNo findings\nChecked IDs: ALP-002\n"}, Added:[]model.Item{model.Item{ID:"ALP-002", Tag:"", Body:"Alpha MUST return the new value.\n\n"}}, Modified:[]model.Item(nil), Removed:[]model.Item(nil)}, Snapshot:model.Snapshot{Root:"/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificati615048582/001", Config:map[string]interface {}{"agent":map[string]interface {}{"commands":map[string]interface {}{"fixture-auditor":[]interface {}{"bash", "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificati615048582/002/auditor.sh", "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificati615048582/002", "{prompt}"}, "fixture-worker":[]interface {}{"bash", "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificati615048582/002/worker.sh", "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificati615048582/002", "normal", "{prompt}"}}, "default":"fixture-worker"}, "audit":map[string]interface {}{"agent":"fixture-auditor"}, "base":"main", "fireweed":"=0.2.1", "hooks":map[string]interface {}{"boundaries":[]interface {}{"sh", ".fireweed/boundaries.sh"}, "eval":[]interface {}{"sh", ".fireweed/eval.sh", "{module}", "{report}", "/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificati615048582/002"}}, "module_defaults":map[string]interface {}{"disposable":[]interface {}{"internal/**"}, "evals":[]interface {}{"evals/**"}, "interface":[]interface {}{"api.go"}}, "modules":[]interface {}{"packages/*"}, "spec_limits":map[string]interface {}{"max_clauses":3, "max_decision_words":300, "max_words":80}, "timeout":"50ms", "version":1}, Modules:[]model.Module{model.Module{Name:"alpha", IDPrefix:"ALP", Dir:"packages/alpha", DependsOn:[]string{}, Zones:model.Zones{Protected:[]string(nil), Evals:[]string{"evals/**"}, Interface:[]string{"api.go"}, AppendOnly:[]string(nil), Preserve:[]string(nil), Disposable:[]string{"internal/**"}}, Document:model.Document{Frontmatter:map[string]interface {}{"depends_on":[]interface {}{}, "id_prefix":"ALP", "name":"alpha"}, Body:"# Alpha\n\n## Specs\n\n### ALP-001\nAlpha MUST return its value.\n\n### ALP-002\nAlpha MUST return the new value.\n\n## Decisions\n"}}}}, Run:"fd6b5813075fd98c866a476f1383a19d", Phase:"audit", Head:"0ed21be1b66e7de65eb09fee84dce26ccb428c02", PhaseBase:"0ed21be1b66e7de65eb09fee84dce26ccb428c02", ClaimOID:"633a1ba38bf266a75d486705226488cc104f3bf5", Diagnostics:[]model.Diagnostic(nil)}, Empty:false, Steps:[]model.StepResult{model.StepResult{Phase:"evals", Role:"worker", Agent:model.AgentResult{Stdout:"worker-evals", Stderr:"", ExitCode:0, UsageLimit:false, LogPath:"/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificati615048582/001/.fireweed/runs/fd6b5813075fd98c866a476f1383a19d/evals-1.log"}}, model.StepResult{Phase:"audit", Role:"audit", Agent:model.AgentResult{Stdout:"auditor", Stderr:"", ExitCode:0, UsageLimit:false, LogPath:"/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificati615048582/001/.fireweed/runs/fd6b5813075fd98c866a476f1383a19d/audit-1.log"}}}}, audit may edit only current change: packages/alpha/internal/audit-zone-violation.go
+--- FAIL: Test_RUN_048_PermittedAuditEditReachesHeldChangeBeforeVerificationRetry (2.24s)
+Test_RUN_072_RetainsStartWarning: === RUN   Test_RUN_072_RetainsStartWarning
+    start_warnings_test.go:66: reference Start did not return the base-tip P05 warning: []model.Diagnostic{model.Diagnostic{Code:"P04", Message:"change changes/0001-next.md is absent from base refs/heads/main and shared base refs/remotes/origin/main; the queue may be unapproved", Path:"changes/0001-next.md", Warning:true}, model.Diagnostic{Code:"P05", Message:"base tip refs/remotes/origin/main is not an ancestor of HEAD; the queue may be stale", Path:"", Warning:true}}
+--- FAIL: Test_RUN_072_RetainsStartWarning (0.44s)
 ?   	github.com/lurkshark/fireweed/packages/runner	[no test files]
 ?   	github.com/lurkshark/fireweed/packages/runner/internal/drill	[no test files]
 ?   	github.com/lurkshark/fireweed/packages/runner/internal/invoke	[no test files]
@@ -1089,7 +981,7 @@ Test_RUN_021_AuditRoundLimitCanStopBeforeEvalsAllowance: === RUN   Test_RUN_021_
 ?   	github.com/lurkshark/fireweed/packages/runner/internal/workspace	[no test files]
 ?   	github.com/lurkshark/fireweed/packages/runner/model	[no test files]
 FAIL
-FAIL	github.com/lurkshark/fireweed/packages/runner/evals	349.903s
+FAIL	github.com/lurkshark/fireweed/packages/runner/evals	367.453s
 
 exit status 1
 

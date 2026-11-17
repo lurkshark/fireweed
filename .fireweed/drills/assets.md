@@ -1,9 +1,9 @@
 ---
 agent: opencode
-base_commit: 0d6419738b9a17b9e8d3bef862c04be60bd50fe7
-date: "2026-11-16T06:44:06.451602Z"
+base_commit: 028baa67b65ca36e72791e80617782b83540c83e
+date: "2026-11-17T04:43:45.062053Z"
 model: opencode/deepseek-v4.1-flash#high
-result: fail
+result: pass
 ---
 
 ## Own evals
@@ -122,6 +122,7 @@ result: fail
 - assets / Test_AST_066_C07ChangeStructure / AST-066 / pass
 - assets / Test_AST_067_P05BaseTipWarning / AST-067 / pass
 - assets / Test_AST_068_P02DuplicateRunRecovery / AST-068 / pass
+- assets / Test_AST_071_PublicBehaviorGuidance / AST-071 / pass
 - assets / Test_AST_029_EvalFixEvalsGuidance / AST-029 / pass
 - assets / Test_AST_030_EvalFixAuditGuidance / AST-030 / pass
 - assets / Test_AST_031_EvalFixImplGuidance / AST-031 / pass
@@ -336,12 +337,7 @@ result: fail
 - app / Test_APP_156_HelpForms/init_-h / APP-156 / pass
 - app / Test_APP_156_HelpForms/new-module_--help / APP-156 / pass
 - app / Test_APP_156_HelpForms/new-module_-h / APP-156 / pass
-- app / Test_APP_156_EachListedCommandHasCLIHelp / APP-156 / fail
-
-=== RUN   Test_APP_156_EachListedCommandHasCLIHelp
-    help_cli_test.go:71: no command rows in the help overview
---- FAIL: Test_APP_156_EachListedCommandHasCLIHelp (0.00s)
-
+- app / Test_APP_156_EachSupportedCommandHasCLIHelp / APP-156 / pass
 - app / Test_APP_156_ExactHelpWordForm / APP-156 / pass
 - app / Test_APP_157_HelpJSONMatchesPlain / APP-157 / pass
 - app / Test_APP_157_HelpJSONMatchesPlain/help / APP-157 / pass
@@ -576,6 +572,9 @@ result: fail
 - checks / Test_CHK_043_RequiredGlobalHookRejectsUnattributedNonzeroExit / CHK-043 / pass
 - checks / Test_CHK_043_SilentNonzeroOverrideIsIndependentOfGlobalViolation / CHK-043 / pass
 - checks / Test_CHK_043_LaunchCancellationAndTimeoutStayErrors / CHK-043 / pass
+- checks / Test_CHK_065_CHK_066_DoctorAgentTailAcrossStreams / CHK-065, CHK-066 / pass
+- checks / Test_CHK_065_CHK_066_DoctorAgentTailAcrossStreams/match_twentieth / CHK-065, CHK-066 / pass
+- checks / Test_CHK_065_CHK_066_DoctorAgentTailAcrossStreams/match_twenty-first / CHK-065, CHK-066 / pass
 - checks / Test_CHK_081_DoctorProbeLogsShareFreshRunAndPreserveStreams / CHK-081 / pass
 - checks / Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput / CHK-081 / pass
 - checks / Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput/failure / CHK-081 / pass
@@ -833,6 +832,7 @@ result: fail
 - project / Test_PRJ_046_CheckEvalFixCannotMixWithFixesOrSpecEdits/fixes_only / PRJ-046 / pass
 - project / Test_PRJ_046_CheckEvalFixCannotMixWithFixesOrSpecEdits/added_only / PRJ-046 / pass
 - project / Test_PRJ_001_PRJ_017_LoadConfiguredModulesAndDefaults / PRJ-001, PRJ-017 / pass
+- project / Test_PRJ_001_LoadRootModuleForDotGlob / PRJ-001 / pass
 - project / Test_PRJ_018_LoadInvalidDocuments / PRJ-018 / pass
 - project / Test_PRJ_018_LoadInvalidDocuments/missing_config / PRJ-018 / pass
 - project / Test_PRJ_018_LoadInvalidDocuments/malformed_config / PRJ-018 / pass
@@ -851,17 +851,21 @@ result: fail
 - project / Test_PRJ_024_NewChangeRejectsDuplicatesWithoutOverwrite / PRJ-024 / pass
 - project / Test_PRJ_024_NewChangeRejectsDuplicatesWithoutOverwrite/pending / PRJ-024 / pass
 - project / Test_PRJ_024_NewChangeRejectsDuplicatesWithoutOverwrite/archived / PRJ-024 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments / PRJ-025, PRJ-026 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments/PRJ-025_unknown_module / PRJ-025, PRJ-026 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments/PRJ-026_uppercase_slug / PRJ-025, PRJ-026 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments/PRJ-026_underscore_slug / PRJ-025, PRJ-026 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments/PRJ-026_slash_slug / PRJ-025, PRJ-026 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments/PRJ-026_empty_slug / PRJ-025, PRJ-026 / pass
+- project / Test_PRJ_025_NewChangeRejectsUnknownModuleWithoutWritingFiles / PRJ-025 / pass
+- project / Test_PRJ_026_NewChangeRejectsInvalidSlugs / PRJ-026 / pass
+- project / Test_PRJ_026_NewChangeRejectsInvalidSlugs/uppercase_slug / PRJ-026 / pass
+- project / Test_PRJ_026_NewChangeRejectsInvalidSlugs/underscore_slug / PRJ-026 / pass
+- project / Test_PRJ_026_NewChangeRejectsInvalidSlugs/slash_slug / PRJ-026 / pass
+- project / Test_PRJ_026_NewChangeRejectsInvalidSlugs/empty_slug / PRJ-026 / pass
 - project / Test_PRJ_067_NewChangeBlockedQueuedPathPreservesCause / PRJ-067 / pass
 - project / Test_PRJ_027_PRJ_028_QueueOrderContentAndArchive / PRJ-027, PRJ-028 / pass
-- project / Test_PRJ_029_PRJ_030_QueueRejectsInvalidDocuments / PRJ-029, PRJ-030 / pass
-- project / Test_PRJ_029_PRJ_030_QueueRejectsInvalidDocuments/PRJ-029_malformed / PRJ-029, PRJ-030 / pass
-- project / Test_PRJ_029_PRJ_030_QueueRejectsInvalidDocuments/PRJ-030_unknown_module / PRJ-029, PRJ-030 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics / PRJ-029 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics/malformed_frontmatter / PRJ-029 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics/malformed_item_heading / PRJ-029 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics/duplicate_added_identity / PRJ-029 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics/duplicate_modified_identity / PRJ-029 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics/duplicate_removed_identity / PRJ-029 / pass
+- project / Test_PRJ_030_QueueRejectsUnknownModule / PRJ-030 / pass
 - project / Test_PRJ_004_PRJ_031_PRJ_032_TargetAliasesAndAmbiguousSlug / PRJ-004, PRJ-031, PRJ-032 / pass
 - project / Test_PRJ_005_PRJ_032_PRJ_036_ProjectEditsAndLocalHandles / PRJ-005, PRJ-032, PRJ-036 / pass
 - project / Test_PRJ_033_PRJ_034_PRJ_035_SetFieldsAndRejections / PRJ-033, PRJ-034, PRJ-035 / pass
@@ -907,6 +911,10 @@ result: fail
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/missing_recorded_config / PRJ-050 / pass
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/malformed_recorded_config / PRJ-050 / pass
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/missing_recorded_SPEC / PRJ-050 / pass
+- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics / PRJ-050 / pass
+- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/malformed_frontmatter / PRJ-050 / pass
+- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/malformed_item_heading / PRJ-050 / pass
+- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/duplicate_item_identity / PRJ-050 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs / PRJ-004 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs/Project / PRJ-004 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs/Stamp / PRJ-004 / pass
@@ -959,6 +967,10 @@ result: fail
 - project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/nonmatching_headings_only / PRJ-077 / pass
 - project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/pending_change_without_specs / PRJ-077 / pass
 - project / Test_PRJ_060_StaleSpecsSelectsRecordedModifiedAndRemovedInEditOrder / PRJ-060 / pass
+- project / Test_PRJ_060_StaleSpecsRejectsNonmappingBasesAtQueuedPath / PRJ-060 / pass
+- project / Test_PRJ_060_StaleSpecsRejectsNonmappingBasesAtQueuedPath/sequence / PRJ-060 / pass
+- project / Test_PRJ_060_StaleSpecsRejectsNonmappingBasesAtQueuedPath/scalar / PRJ-060 / pass
+- project / Test_PRJ_060_StaleSpecsRejectsNonmappingBasesAtQueuedPath/null / PRJ-060 / pass
 - project / Test_PRJ_061_PRJ_062_HistoryUsesLastBasesChangeAndValidatesEachHash / PRJ-061, PRJ-062 / pass
 - project / Test_PRJ_062_UnavailableHistoryStillReportsEveryStaleItem / PRJ-062 / pass
 - project / Test_PRJ_063_StaleSpecsEmptyAndReadOnly / PRJ-063 / pass
@@ -1237,6 +1249,9 @@ result: fail
 - workflow / Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal/changes/0001-manual.md / FLOW-096 / pass
 - workflow / Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal/0001-manual.md / FLOW-096 / pass
 - workflow / Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal/manual / FLOW-096 / pass
+- workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers / FLOW-019 / pass
+- workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers/1.0 / FLOW-019 / pass
+- workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers/1 / FLOW-019 / pass
 - workflow / Test_FLOW_019_FLOW_139_ApprovedSurvivesLiveEdits / FLOW-019, FLOW-139 / pass
 - workflow / Test_FLOW_140_ApprovedReportsNoOwnedClaim / FLOW-140 / pass
 - workflow / Test_FLOW_140_ApprovedRejectsUnreadableOrMalformedClaim / FLOW-140 / pass
@@ -1425,6 +1440,7 @@ result: fail
 - workflow / Test_FLOW_111_StatusReworkChainWarning/latest_matching_predecessor_wins / FLOW-111 / pass
 - workflow / Test_FLOW_111_StatusReworkChainWarning/same_module_without_shared_IDs / FLOW-111 / pass
 - workflow / Test_FLOW_110_StatusSharedBaseUsesSameArchivedDocumentIdentity / FLOW-110 / pass
+- workflow / Test_FLOW_110_StatusReportsUnavailableConfiguredBaseWithEmptyArchive / FLOW-110 / pass
 - workflow / Test_FLOW_112_StatusPhaseCommitsMatchRealLifecycle / FLOW-112 / pass
 - workflow / Test_FLOW_113_StatusLatestRecordedCostsAndSavedWarnings / FLOW-113 / pass
 - workflow / Test_FLOW_136_DoneMarksFullVerificationFailureAndPreservesResult / FLOW-136 / pass
@@ -1438,94 +1454,47 @@ result: fail
 - workflow / Test_FLOW_138_ContextExplainsHowToDeclareWorkerBlock/impl / FLOW-138 / pass
 
 ## Contradicted Decisions
-- [0014-go-setup-bundle] says the Go recipe's setup runs `go mod download`
-  after the project has a Go module. The retained project-owned
-  `.fireweed/setup.sh` and `.fireweed/recipe.md` in this workspace say setup
-  performs no package downloads. The rebuilt `packages/assets` Go bundle
-  follows the Decision (its bundled setup hook copies the controller and then
-  runs `go mod download`); the project-owned files are outside the target
-  module and were left untouched, so the live project and the embedded recipe
-  still disagree about setup behavior.
+None. Both recorded Decisions are honored: the Go bundle uses the named recipe
+paths and runs `go mod download` after a Go module exists; the TypeScript eval
+hook runs Node's built-in TypeScript test runner through pnpm; the Python eval
+hook runs unittest through uv.
 
 ## Gaps
-- The spec requires JUnit testcase evidence (names, classnames, pass/fail/skip
-  and elapsed seconds) but does not define the XML root, nesting, classname
-  convention or elapsed precision. The implementation chose a `<testsuite>` root
-  with direct `<testcase>` children and zero elapsed seconds for skipped cases.
-  Nearest spec: AST-005 (also AST-054). Fixing change target: assets.
-- The spec requires module-prefixed boundary violations but does not define the
-  message shape, how the offending target module is named, or how an imported
-  package directory is mapped to a zone. The implementation prints
-  `module: file imports <path> from module <target> outside ...` and resolves
-  interface membership by checking the imported package's Go files against the
-  graph's interface globs. Nearest spec: AST-017 (also AST-018 and AST-057).
-  Fixing change target: assets.
-- The TypeScript recipe must use pnpm workspaces with package exports, but the
-  spec does not say how bare package imports resolve in a fresh workspace where
-  no install has run. The eval hook creates `node_modules/<package>` links from
-  `FIREWEED_BIN modules --json` before running Node's test runner. Nearest spec:
-  AST-050 (also AST-053). Fixing change target: assets.
-- The spec requires started-but-unfinished tests and collection/compile failures
-  to stay visible, but does not specify a detection mechanism. TypeScript uses an
-  exit-guard preload plus Node's JUnit reporter; Python parses `unittest`
-  verbose output for a started test with no result and synthesizes a collection
-  failure when discovery dies. Nearest spec: AST-055. Fixing change target:
-  assets.
-- AST-008 requires commands "grouped by purpose" but does not name the groups or
-  say whether the group heading may list command names. The retained evals fix
-  five specific labels and require a group command on or near the label line, so
-  `Help()` repeats command names in the five headings. Nearest spec: AST-008.
-  Fixing change target: assets.
-- AST-049 requires nonempty interface/evals/disposable defaults for the
-  additional recipes but does not prescribe the patterns. The implementation
-  chose `src/index.ts`, `evals/**` and `src/**` for TypeScript and
-  `__init__.py`, `evals/**` and `**` for Python, which the retained zone and
-  stub-handoff evals accept. Nearest spec: AST-049 (also AST-051). Fixing change
-  target: assets.
-- The `{{name}}`, `{{prefix}}`, `{{package}}`, `{{module_dir}}`,
-  `{{other_dir}}` and `{{go_module}}` placeholder grammar and rendering rules
-  appear only in the retained evals, not in the spec prose. Nearest spec:
-  AST-020 (also AST-051). Fixing change target: assets.
-- The workspace `main.go` imports `github.com/lurkshark/fireweed/packages/app`,
-  but that module is absent from the input tree, so the full binary cannot be
-  built even though the assets eval hook passes. Nearest spec: no spec. Fixing
-  change target: app.
+- AST-054 (assets): the Python eval command uses `uv run --no-project`, so the
+  unittest run does not participate in the project's uv workspace even though
+  the additional-language-recipes Decision and AST-050 describe uv workspaces.
+  Tests pass because module directories are put on `PYTHONPATH` explicitly, but
+  a uv workspace-aware invocation should replace `--no-project`.
+- AST-057 (assets): the TypeScript boundaries hook falls back to allowing the
+  module package root whenever an interface zone exists and `package.json` has
+  no string `.` export. A module whose interface zone excludes the root export
+  could therefore accept an eval import that reaches past its retained
+  interface. The fallback should be replaced by a resolved exports check.
+- AST-049 (assets): the additional-recipe setup hooks (`pnpm install --offline`
+  and `uv sync --offline`) are only checked for nonempty text by the evals.
+  Their offline success with a fresh workspace and missing lockfile is
+  unverified, so setup behavior could fail before doctor or a step runs.
+- AST-056 (assets): the Python boundaries hook is invoked with `python3` while
+  the eval hook runs through `uv`, so the two hooks can use different Python
+  interpreters and import semantics. A change should run both hooks through the
+  same selected interpreter.
 
 ## Agent observations
 
 ### Invocation 1
-Log: .fireweed/runs/20261116T064406-1053081f993b2075001f7818/drill-1.log
+Log: .fireweed/runs/20261117T044345-bbb1918a47082db28d60e860/drill-1.log
 
-I'll start by exploring the workspace to understand the current state.
-Now I have a complete picture. Let me build the `content` package first.
-Reconstruction complete.
+I'll start by exploring the workspace structure to understand what's retained and what needs rebuilding.
+Now I have a clear picture. Let me rebuild the `internal/content` package first.
+All eval tests pass. Let me clean up my experiments and run the exact target eval hook from the drill instructions.
+Reconstructed `packages/assets` disposable assets under `packages/assets/internal/**`.
 
-**Rebuilt only `packages/assets/internal/**`:**
-- `internal/content/` — `Version`, `Help`, `CommandHelp` (all 31 commands), five playbooks, and all diagnostic-code explanations.
-- `internal/recipe/` — `BuiltinRecipe` plus embedded bundles for Go, TypeScript/pnpm, and Python/uv:
-  - project-relative recipe guides, hooks, setup scripts, module templates, and version-1 canary maps
-  - Go boundaries/eval hooks driven by `FIREWEED_BIN modules --json`
-  - TypeScript eval hook using Node's test runner through pnpm with JUnit output
-  - Python eval/boundaries hooks using unittest through uv
+Implemented:
+- `internal/content`: embedded `VERSION` access, command overview, per-command help, playbooks, and all diagnostic explanations.
+- `internal/recipe`: embedded go, typescript-pnpm, and python-uv recipe bundles with instructions, hooks, module templates, setup commands, and version-1 canaries.
 
-**Verification**
-- `go test ./packages/assets/evals -count=1` → `ok`
-- Drill hook from the prompt → exit `0`; report contains **151 testcases, 0 failures**.
-
-**Notes**
-- `DRILL_NOTES.md` has separate `## Contradicted Decisions` and `## Gaps` sections. Each gap names its nearest spec ID (or `no spec`) and the target module for a fixing change.
-- Retained interfaces (`api.go`, `model/model.go`), evals, and spec files were not modified.
-
-
-## Failures
-app: failed case "Test_APP_156_EachListedCommandHasCLIHelp" for APP-156
-Test_APP_156_EachListedCommandHasCLIHelp: === RUN   Test_APP_156_EachListedCommandHasCLIHelp
-    help_cli_test.go:71: no command rows in the help overview
---- FAIL: Test_APP_156_EachListedCommandHasCLIHelp (0.00s)
-?   	github.com/lurkshark/fireweed/packages/app	[no test files]
-?   	github.com/lurkshark/fireweed/packages/app/internal/entry	[no test files]
-FAIL
-FAIL	github.com/lurkshark/fireweed/packages/app/evals	288.629s
-
-exit status 1
+Verification:
+- Full `packages/assets/evals` suite passes.
+- Ran the exact drill eval hook successfully; `.fireweed/drill-eval.xml` reports a pass.
+- Added `DRILL_NOTES.md` with separate `## Contradicted Decisions` and `## Gaps` sections, each gap tied to its nearest spec ID and `assets` as the fixing-change target.
 

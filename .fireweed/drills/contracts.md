@@ -1,9 +1,9 @@
 ---
 agent: opencode
-base_commit: cfdd4cdc28807eda0b61cd004184ed9302292dda
-date: "2026-11-16T05:55:13.664878Z"
+base_commit: 74e55cd7ecf90f40ac8470226b128cb487b2210a
+date: "2026-11-17T03:56:30.893288Z"
 model: opencode/deepseek-v4.1-flash#high
-result: fail
+result: pass
 ---
 
 ## Own evals
@@ -253,7 +253,7 @@ result: fail
 - app / Test_APP_156_HelpForms/init_-h / APP-156 / pass
 - app / Test_APP_156_HelpForms/new-module_--help / APP-156 / pass
 - app / Test_APP_156_HelpForms/new-module_-h / APP-156 / pass
-- app / Test_APP_156_EachListedCommandHasCLIHelp / APP-156 / pass
+- app / Test_APP_156_EachSupportedCommandHasCLIHelp / APP-156 / pass
 - app / Test_APP_156_ExactHelpWordForm / APP-156 / pass
 - app / Test_APP_157_HelpJSONMatchesPlain / APP-157 / pass
 - app / Test_APP_157_HelpJSONMatchesPlain/help / APP-157 / pass
@@ -595,6 +595,7 @@ result: fail
 - assets / Test_AST_066_C07ChangeStructure / AST-066 / pass
 - assets / Test_AST_067_P05BaseTipWarning / AST-067 / pass
 - assets / Test_AST_068_P02DuplicateRunRecovery / AST-068 / pass
+- assets / Test_AST_071_PublicBehaviorGuidance / AST-071 / pass
 - assets / Test_AST_029_EvalFixEvalsGuidance / AST-029 / pass
 - assets / Test_AST_030_EvalFixAuditGuidance / AST-030 / pass
 - assets / Test_AST_031_EvalFixImplGuidance / AST-031 / pass
@@ -629,8 +630,8 @@ result: fail
 - assets / Test_AST_041_P08Explanation / AST-041 / pass
 - assets / Test_AST_043_EvalsStubHandoff / AST-043 / pass
 - assets / Test_AST_044_GoRecipeStubHandoff / AST-044 / pass
-- assets / Test_AST_044_GoRecipeStubHandoff/bundled_go.md / AST-044 / pass
 - assets / Test_AST_044_GoRecipeStubHandoff/Instructions / AST-044 / pass
+- assets / Test_AST_044_GoRecipeStubHandoff/bundled_go.md / AST-044 / pass
 - checks / Test_CHK_005_GlobalAndModuleBoundaryHooks / CHK-005 / pass
 - checks / Test_CHK_041_ExactBaselineOnly / CHK-041 / pass
 - checks / Test_CHK_039_CHK_040_OptOutSuppressesOnlyItsModuleAndWarns / CHK-039, CHK-040 / pass
@@ -639,6 +640,9 @@ result: fail
 - checks / Test_CHK_043_RequiredGlobalHookRejectsUnattributedNonzeroExit / CHK-043 / pass
 - checks / Test_CHK_043_SilentNonzeroOverrideIsIndependentOfGlobalViolation / CHK-043 / pass
 - checks / Test_CHK_043_LaunchCancellationAndTimeoutStayErrors / CHK-043 / pass
+- checks / Test_CHK_065_CHK_066_DoctorAgentTailAcrossStreams / CHK-065, CHK-066 / pass
+- checks / Test_CHK_065_CHK_066_DoctorAgentTailAcrossStreams/match_twentieth / CHK-065, CHK-066 / pass
+- checks / Test_CHK_065_CHK_066_DoctorAgentTailAcrossStreams/match_twenty-first / CHK-065, CHK-066 / pass
 - checks / Test_CHK_081_DoctorProbeLogsShareFreshRunAndPreserveStreams / CHK-081 / pass
 - checks / Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput / CHK-081 / pass
 - checks / Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput/failure / CHK-081 / pass
@@ -739,23 +743,9 @@ result: fail
 - checks / Test_CHK_046_EvaluateHookSetupCauses/invalid_hook_command / CHK-046 / pass
 - checks / Test_CHK_046_EvaluateHookSetupCauses/unavailable_report_directory / CHK-046 / pass
 - checks / Test_CHK_047_EvaluateUnknownModuleCause / CHK-047 / pass
-- checks / Test_CHK_048_EvaluateModuleItemCauses / CHK-048 / fail
-
-=== RUN   Test_CHK_048_EvaluateModuleItemCauses
---- FAIL: Test_CHK_048_EvaluateModuleItemCauses (0.00s)
-
-- checks / Test_CHK_048_EvaluateModuleItemCauses/malformed_item / CHK-048 / fail
-
-=== RUN   Test_CHK_048_EvaluateModuleItemCauses/malformed_item
-    hooks_test.go:203: error = "malformed item heading \"### malformed\""; want cause "malformed item heading: \"### malformed\""
---- FAIL: Test_CHK_048_EvaluateModuleItemCauses/malformed_item (0.00s)
-
-- checks / Test_CHK_048_EvaluateModuleItemCauses/duplicate_item / CHK-048 / fail
-
-=== RUN   Test_CHK_048_EvaluateModuleItemCauses/duplicate_item
-    hooks_test.go:203: error = "duplicate item ID \"CHK-003\""; want cause "duplicate item ID: CHK-003"
---- FAIL: Test_CHK_048_EvaluateModuleItemCauses/duplicate_item (0.00s)
-
+- checks / Test_CHK_048_EvaluateModuleItemCauses / CHK-048 / pass
+- checks / Test_CHK_048_EvaluateModuleItemCauses/malformed_item / CHK-048 / pass
+- checks / Test_CHK_048_EvaluateModuleItemCauses/duplicate_item / CHK-048 / pass
 - checks / Test_CHK_028_EvaluatePreservesJUnitDiagnostic / CHK-028 / pass
 - checks / Test_CHK_003_CHK_032_ArgvPlaceholdersAreOnePass / CHK-003, CHK-032 / pass
 - checks / Test_CHK_001_CHK_029_CHK_030_NestedJUnitIDsResultsAndTime / CHK-001, CHK-029, CHK-030 / pass
@@ -924,6 +914,7 @@ result: fail
 - project / Test_PRJ_046_CheckEvalFixCannotMixWithFixesOrSpecEdits/fixes_only / PRJ-046 / pass
 - project / Test_PRJ_046_CheckEvalFixCannotMixWithFixesOrSpecEdits/added_only / PRJ-046 / pass
 - project / Test_PRJ_001_PRJ_017_LoadConfiguredModulesAndDefaults / PRJ-001, PRJ-017 / pass
+- project / Test_PRJ_001_LoadRootModuleForDotGlob / PRJ-001 / pass
 - project / Test_PRJ_018_LoadInvalidDocuments / PRJ-018 / pass
 - project / Test_PRJ_018_LoadInvalidDocuments/missing_config / PRJ-018 / pass
 - project / Test_PRJ_018_LoadInvalidDocuments/malformed_config / PRJ-018 / pass
@@ -942,17 +933,21 @@ result: fail
 - project / Test_PRJ_024_NewChangeRejectsDuplicatesWithoutOverwrite / PRJ-024 / pass
 - project / Test_PRJ_024_NewChangeRejectsDuplicatesWithoutOverwrite/pending / PRJ-024 / pass
 - project / Test_PRJ_024_NewChangeRejectsDuplicatesWithoutOverwrite/archived / PRJ-024 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments / PRJ-025, PRJ-026 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments/PRJ-025_unknown_module / PRJ-025, PRJ-026 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments/PRJ-026_uppercase_slug / PRJ-025, PRJ-026 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments/PRJ-026_underscore_slug / PRJ-025, PRJ-026 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments/PRJ-026_slash_slug / PRJ-025, PRJ-026 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments/PRJ-026_empty_slug / PRJ-025, PRJ-026 / pass
+- project / Test_PRJ_025_NewChangeRejectsUnknownModuleWithoutWritingFiles / PRJ-025 / pass
+- project / Test_PRJ_026_NewChangeRejectsInvalidSlugs / PRJ-026 / pass
+- project / Test_PRJ_026_NewChangeRejectsInvalidSlugs/uppercase_slug / PRJ-026 / pass
+- project / Test_PRJ_026_NewChangeRejectsInvalidSlugs/underscore_slug / PRJ-026 / pass
+- project / Test_PRJ_026_NewChangeRejectsInvalidSlugs/slash_slug / PRJ-026 / pass
+- project / Test_PRJ_026_NewChangeRejectsInvalidSlugs/empty_slug / PRJ-026 / pass
 - project / Test_PRJ_067_NewChangeBlockedQueuedPathPreservesCause / PRJ-067 / pass
 - project / Test_PRJ_027_PRJ_028_QueueOrderContentAndArchive / PRJ-027, PRJ-028 / pass
-- project / Test_PRJ_029_PRJ_030_QueueRejectsInvalidDocuments / PRJ-029, PRJ-030 / pass
-- project / Test_PRJ_029_PRJ_030_QueueRejectsInvalidDocuments/PRJ-029_malformed / PRJ-029, PRJ-030 / pass
-- project / Test_PRJ_029_PRJ_030_QueueRejectsInvalidDocuments/PRJ-030_unknown_module / PRJ-029, PRJ-030 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics / PRJ-029 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics/malformed_frontmatter / PRJ-029 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics/malformed_item_heading / PRJ-029 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics/duplicate_added_identity / PRJ-029 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics/duplicate_modified_identity / PRJ-029 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics/duplicate_removed_identity / PRJ-029 / pass
+- project / Test_PRJ_030_QueueRejectsUnknownModule / PRJ-030 / pass
 - project / Test_PRJ_004_PRJ_031_PRJ_032_TargetAliasesAndAmbiguousSlug / PRJ-004, PRJ-031, PRJ-032 / pass
 - project / Test_PRJ_005_PRJ_032_PRJ_036_ProjectEditsAndLocalHandles / PRJ-005, PRJ-032, PRJ-036 / pass
 - project / Test_PRJ_033_PRJ_034_PRJ_035_SetFieldsAndRejections / PRJ-033, PRJ-034, PRJ-035 / pass
@@ -998,6 +993,10 @@ result: fail
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/missing_recorded_config / PRJ-050 / pass
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/malformed_recorded_config / PRJ-050 / pass
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/missing_recorded_SPEC / PRJ-050 / pass
+- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics / PRJ-050 / pass
+- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/malformed_frontmatter / PRJ-050 / pass
+- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/malformed_item_heading / PRJ-050 / pass
+- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/duplicate_item_identity / PRJ-050 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs / PRJ-004 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs/Project / PRJ-004 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs/Stamp / PRJ-004 / pass
@@ -1050,6 +1049,10 @@ result: fail
 - project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/nonmatching_headings_only / PRJ-077 / pass
 - project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/pending_change_without_specs / PRJ-077 / pass
 - project / Test_PRJ_060_StaleSpecsSelectsRecordedModifiedAndRemovedInEditOrder / PRJ-060 / pass
+- project / Test_PRJ_060_StaleSpecsRejectsNonmappingBasesAtQueuedPath / PRJ-060 / pass
+- project / Test_PRJ_060_StaleSpecsRejectsNonmappingBasesAtQueuedPath/sequence / PRJ-060 / pass
+- project / Test_PRJ_060_StaleSpecsRejectsNonmappingBasesAtQueuedPath/scalar / PRJ-060 / pass
+- project / Test_PRJ_060_StaleSpecsRejectsNonmappingBasesAtQueuedPath/null / PRJ-060 / pass
 - project / Test_PRJ_061_PRJ_062_HistoryUsesLastBasesChangeAndValidatesEachHash / PRJ-061, PRJ-062 / pass
 - project / Test_PRJ_062_UnavailableHistoryStillReportsEveryStaleItem / PRJ-062 / pass
 - project / Test_PRJ_063_StaleSpecsEmptyAndReadOnly / PRJ-063 / pass
@@ -1328,6 +1331,9 @@ result: fail
 - workflow / Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal/changes/0001-manual.md / FLOW-096 / pass
 - workflow / Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal/0001-manual.md / FLOW-096 / pass
 - workflow / Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal/manual / FLOW-096 / pass
+- workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers / FLOW-019 / pass
+- workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers/1.0 / FLOW-019 / pass
+- workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers/1 / FLOW-019 / pass
 - workflow / Test_FLOW_019_FLOW_139_ApprovedSurvivesLiveEdits / FLOW-019, FLOW-139 / pass
 - workflow / Test_FLOW_140_ApprovedReportsNoOwnedClaim / FLOW-140 / pass
 - workflow / Test_FLOW_140_ApprovedRejectsUnreadableOrMalformedClaim / FLOW-140 / pass
@@ -1516,6 +1522,7 @@ result: fail
 - workflow / Test_FLOW_111_StatusReworkChainWarning/latest_matching_predecessor_wins / FLOW-111 / pass
 - workflow / Test_FLOW_111_StatusReworkChainWarning/same_module_without_shared_IDs / FLOW-111 / pass
 - workflow / Test_FLOW_110_StatusSharedBaseUsesSameArchivedDocumentIdentity / FLOW-110 / pass
+- workflow / Test_FLOW_110_StatusReportsUnavailableConfiguredBaseWithEmptyArchive / FLOW-110 / pass
 - workflow / Test_FLOW_112_StatusPhaseCommitsMatchRealLifecycle / FLOW-112 / pass
 - workflow / Test_FLOW_113_StatusLatestRecordedCostsAndSavedWarnings / FLOW-113 / pass
 - workflow / Test_FLOW_136_DoneMarksFullVerificationFailureAndPreservesResult / FLOW-136 / pass
@@ -1529,56 +1536,48 @@ result: fail
 - workflow / Test_FLOW_138_ContextExplainsHowToDeclareWorkerBlock/impl / FLOW-138 / pass
 
 ## Contradicted Decisions
-None. Decision `0128-coded-parse-errors` is consistent with CON-016, CON-017, CON-018 and CON-019: parse failures carry `CodedError` codes, and setting `Cause` preserves the required subject text while `Error` returns that cause.
+None. Decision [0128-coded-parse-errors] is consistent with the retained
+`model.CodedError` interface and with the eval expectations: `Cause` is
+optional, `Error` returns the cause text when present and the code otherwise,
+and `Unwrap` returns `Cause`.
 
 ## Gaps
-- CON-001/CON-007: An empty delimited frontmatter block (`---` followed immediately by `---`) is not explicitly classified as a valid empty mapping or as non-mapping. The reconstruction rejects it as non-mapping; an empty mapping must be written as `{}`. Fixing change target: `contracts`.
-- CON-002: Section heading matching does not specify case sensitivity, whether Markdown closing hashes (`## Name ##`) belong to the name, or the allowed heading indentation. The reconstruction uses an exact case-sensitive name after standard ATX parsing (up to three leading spaces, closing hashes removed). Fixing change target: `contracts`.
-- CON-005: `MatchGlob` requires `*` and `**` but does not define support for other path-pattern metacharacters such as `?`, character classes, or escapes. The reconstruction applies `path.Match` within each component. Fixing change target: `contracts`.
-- CON-009: Appending a missing section when the existing document does not end in a newline is unspecified. The reconstruction inserts a newline before the new heading so the original bytes remain a prefix and the heading stays on its own line. Fixing change target: `contracts`.
-- CON-010/CON-011: Item tag syntax beyond "optional bracketed tag" is unspecified, including empty `[]`, whitespace before `[`, and `###ID` lines that are not Markdown ATX headings. The reconstruction accepts an empty tag, requires whitespace before the bracket, and ignores `###ID` as body text. Fixing change target: `contracts`.
-- CON-014: `ResolveZone` does not define path normalization or whether the root spec check is literal. The reconstruction cleans the path first and then treats exactly `SPEC.md` as the spec zone. Fixing change target: `contracts`.
-- CON-016: "First" is undefined when an error unwraps to multiple errors. The reconstruction walks the chain in preorder and returns the first `CodedError` found. Fixing change target: `contracts`.
-- CON-008: `RenderDocument` must reject a nil frontmatter map but no diagnostic code is assigned to that failure. The reconstruction returns `C03`. Fixing change target: `contracts`.
+- CON-002 leaves "matching named" underspecified: heading text trimming,
+  case sensitivity, and whether closing ATX hash sequences count as part of
+  the name are not stated. Target module: `contracts`.
+- CON-010 and CON-011 do not say whether level-three ATX headings inside
+  fenced code blocks are item headings or item body text; only CON-002
+  explicitly exempts fenced headings. Target module: `contracts`.
+- CON-010 does not define where an item body ends relative to level-one or
+  level-two headings, or whether parsing stops at such headings. Target
+  module: `contracts`.
+- CON-011 and CON-013 do not define the bracketed-tag grammar beyond
+  "optional bracketed tag" (empty tags, whitespace before the bracket, and
+  characters allowed inside the brackets). Target module: `contracts`.
+- CON-001, CON-007, and CON-019 do not define delimiter tolerance (trailing
+  whitespace or a BOM before the opening `---`) or whether empty frontmatter
+  is an empty mapping or a non-mapping rejection. Target module: `contracts`.
+- CON-008 requires rejecting nil frontmatter maps but does not specify
+  whether the rejection must be a `CodedError` or which code it should use.
+  Target module: `contracts`.
 
 ## Agent observations
 
 ### Invocation 1
-Log: .fireweed/runs/20261116T055513-3dc2116603e3be6dd31355ae/drill-1.log
+Log: .fireweed/runs/20261117T035630-bc060882c7312bce469a2bd8/drill-1.log
 
-Rebuilt the target module’s disposable code under `packages/contracts/internal/primitives`, covering:
+Implemented the `contracts` module internals under `packages/contracts/internal/primitives/`:
 
-- Frontmatter parsing/rendering
-- Section lookup and replacement with fence-aware boundaries
-- Item parsing, rendering, validation, duplicates, and hashing
-- Spec ID matching, glob matching, and zone resolution
-- Coded error-chain lookup
+- `document.go` — YAML frontmatter parsing/rendering with `C03` diagnostics
+- `markdown.go` — section lookup/replacement with fenced-code and ATX boundary handling
+- `items.go` — item parsing/rendering, ID/handle validation, duplicate detection, canonical hashing
+- `match.go` — ID matching, glob matching, zone resolution
+- `errors.go` — coded-error construction and chain inspection
 
-Added `DRILL_NOTES.md` with the required `## Contradicted Decisions` and `## Gaps` sections.
+Also wrote `DRILL_NOTES.md` with the required `## Contradicted Decisions` and `## Gaps` sections.
 
-Target eval hook passes:
-
-```text
-PASS
-ok github.com/lurkshark/fireweed/packages/contracts/evals
-```
-
-
-## Failures
-checks: failed case "Test_CHK_048_EvaluateModuleItemCauses" for CHK-048
-Test_CHK_048_EvaluateModuleItemCauses: === RUN   Test_CHK_048_EvaluateModuleItemCauses
---- FAIL: Test_CHK_048_EvaluateModuleItemCauses (0.00s)
-Test_CHK_048_EvaluateModuleItemCauses/malformed_item: === RUN   Test_CHK_048_EvaluateModuleItemCauses/malformed_item
-    hooks_test.go:203: error = "malformed item heading \"### malformed\""; want cause "malformed item heading: \"### malformed\""
---- FAIL: Test_CHK_048_EvaluateModuleItemCauses/malformed_item (0.00s)
-Test_CHK_048_EvaluateModuleItemCauses/duplicate_item: === RUN   Test_CHK_048_EvaluateModuleItemCauses/duplicate_item
-    hooks_test.go:203: error = "duplicate item ID \"CHK-003\""; want cause "duplicate item ID: CHK-003"
---- FAIL: Test_CHK_048_EvaluateModuleItemCauses/duplicate_item (0.00s)
-?   	github.com/lurkshark/fireweed/packages/checks	[no test files]
-?   	github.com/lurkshark/fireweed/packages/checks/internal/engine	[no test files]
-?   	github.com/lurkshark/fireweed/packages/checks/model	[no test files]
-FAIL
-FAIL	github.com/lurkshark/fireweed/packages/checks/evals	255.808s
-
-exit status 1
+Validation:
+- `go test ./packages/contracts/...` passes
+- `go vet ./packages/contracts/...` passes
+- The requested eval hook completed successfully and wrote `.fireweed/drill-eval.xml`
 

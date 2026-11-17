@@ -1,9 +1,9 @@
 ---
 agent: opencode
-base_commit: 1a34cc8a9b6ff7869c254760c37fd57985dc136c
-date: "2026-11-16T15:08:53.882249Z"
+base_commit: f6f5997536ad8aeaa8e3b90a4a914f66d91a133f
+date: "2026-11-17T07:10:31.162645Z"
 model: opencode/deepseek-v4.1-flash#high
-result: pass
+result: fail
 ---
 
 ## Own evals
@@ -328,12 +328,26 @@ result: pass
 - app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/coverage / APP-164 / pass
 - app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/next / APP-164 / pass
 - app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/run / APP-164 / pass
-- app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration / APP-164 / pass
+- app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration / APP-164 / fail
+
+=== RUN   Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration
+--- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration (1.77s)
+
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/check_--json / APP-164 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/show_alpha / APP-164 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/new-change_alpha_new-work / APP-164 / pass
-- app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next / APP-164 / pass
-- app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run / APP-164 / pass
+- app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next / APP-164 / fail
+
+=== RUN   Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next
+    compatibility_cli_test.go:246: stop reason "usage wait stopped: completed 0s, next wait 5ms, budget 0s" lacks a labeled completed wait of 0s
+--- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next (0.33s)
+
+- app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run / APP-164 / fail
+
+=== RUN   Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run
+    compatibility_cli_test.go:246: stop reason "usage wait stopped: completed 0s, next wait 5ms, budget 0s" lacks a labeled completed wait of 0s
+--- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run (0.35s)
+
 - app / Test_APP_037_StaticCauses / APP-037 / pass
 - app / Test_APP_037_StaticCauses/configuration / APP-037 / pass
 - app / Test_APP_037_StaticCauses/graph / APP-037 / pass
@@ -378,11 +392,30 @@ result: pass
 - app / Test_APP_166_DrillRejectsInvalidAgentOptionBeforeInvocation/repeated / APP-166 / pass
 - app / Test_APP_167_DrillRejectsUnknownAgentAlias / APP-167 / pass
 - app / Test_APP_140_DrillProjectAndConfigurationFailures / APP-140 / pass
-- app / Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts / APP-141 / pass
-- app / Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/own-plain / APP-141 / pass
-- app / Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/dependent-json / APP-141 / pass
+- app / Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts / APP-141 / fail
+
+=== RUN   Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts
+--- FAIL: Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts (1.69s)
+
+- app / Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/own-plain / APP-141 / fail
+
+=== RUN   Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/own-plain
+    drill_cli_test.go:344: plain failure stdout="" stderr="P01: own evals: failed case \"ALP-001_case\" for ALP-001. Correct the reported issue before retrying. Report: .fireweed/drills/alpha.md. Rebuilt ref: refs/fireweed/drills/alpha/2026-11-17.\n"; want empty stdout and E01
+--- FAIL: Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/own-plain (0.83s)
+
+- app / Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/dependent-json / APP-141 / fail
+
+=== RUN   Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/dependent-json
+    drill_cli_test.go:344: diagnostic code="P01"; want "E01"
+--- FAIL: Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/dependent-json (0.55s)
+
 - app / Test_APP_141_DrillSetupFailureHasNoArtifacts / APP-141 / pass
-- app / Test_APP_142_DrillCleanUsageStopPlainAndJSON / APP-142 / pass
+- app / Test_APP_142_DrillCleanUsageStopPlainAndJSON / APP-142 / fail
+
+=== RUN   Test_APP_142_DrillCleanUsageStopPlainAndJSON
+    drill_cli_test.go:410: clean stop data=map[base_commit:58061d73485e99eb9895e3981029d9a3fcb44f92 module:alpha reason:usage wait stopped: completed 0s, next wait 5ms, budget 0s ref: report:.fireweed/drills/alpha.md result:stopped]
+--- FAIL: Test_APP_142_DrillCleanUsageStopPlainAndJSON (1.56s)
+
 - app / Test_APP_136_DrillUsesConfiguredTimeout / APP-136 / pass
 - app / Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty / APP-150, APP-151 / pass
 - app / Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty/plain / APP-150, APP-151 / pass
@@ -402,7 +435,7 @@ result: pass
 - app / Test_APP_156_HelpForms/init_-h / APP-156 / pass
 - app / Test_APP_156_HelpForms/new-module_--help / APP-156 / pass
 - app / Test_APP_156_HelpForms/new-module_-h / APP-156 / pass
-- app / Test_APP_156_EachListedCommandHasCLIHelp / APP-156 / pass
+- app / Test_APP_156_EachSupportedCommandHasCLIHelp / APP-156 / pass
 - app / Test_APP_156_ExactHelpWordForm / APP-156 / pass
 - app / Test_APP_157_HelpJSONMatchesPlain / APP-157 / pass
 - app / Test_APP_157_HelpJSONMatchesPlain/help / APP-157 / pass
@@ -621,89 +654,109 @@ result: pass
 - app / Test_APP_118_APP_119_APP_120_APP_121_APP_122_APP_123_APP_124_APP_125_StatusRichReport / APP-118, APP-119, APP-120, APP-121, APP-122, APP-123, APP-124, APP-125 / pass
 - app / Test_APP_118_APP_119_APP_122_StatusNearestRootEmptyContainers / APP-118, APP-119, APP-122 / pass
 - app / Test_APP_126_StatusUsageConfigurationAndOperationalFailures / APP-126 / pass
-- app / Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume / APP-076, APP-077, APP-079 / pass
-- app / Test_APP_076_APP_077_NextPlainUsageStop / APP-076, APP-077 / pass
-- app / Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume / APP-083, APP-084, APP-086 / pass
-- app / Test_APP_083_APP_084_RunPlainSharedUsageStop / APP-083, APP-084 / pass
+- app / Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume / APP-076, APP-077, APP-079 / fail
+
+=== RUN   Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume
+    usage_cli_test.go:141: stop reason "usage wait stopped: completed 0s, next wait 5ms, budget 0s" lacks a labeled completed wait of 0s
+--- FAIL: Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume (4.15s)
+
+- app / Test_APP_076_APP_077_NextPlainUsageStop / APP-076, APP-077 / fail
+
+=== RUN   Test_APP_076_APP_077_NextPlainUsageStop
+    usage_cli_test.go:240: stop reason "Stopped on held-quota-work: usage wait stopped: completed 0s, next wait 5ms, budget 0s. Use fireweed next to resume.\n" lacks a labeled completed wait of 0s
+--- FAIL: Test_APP_076_APP_077_NextPlainUsageStop (1.31s)
+
+- app / Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume / APP-083, APP-084, APP-086 / fail
+
+=== RUN   Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume
+    usage_cli_test.go:254: stop reason "usage wait stopped: completed 5ms, next wait 5ms, budget 5ms" lacks a labeled completed wait of 5ms
+--- FAIL: Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume (7.21s)
+
+- app / Test_APP_083_APP_084_RunPlainSharedUsageStop / APP-083, APP-084 / fail
+
+=== RUN   Test_APP_083_APP_084_RunPlainSharedUsageStop
+    usage_cli_test.go:337: stop reason "Applied 1 changes.\nalpha\nStopped: usage wait stopped: completed 5ms, next wait 5ms, budget 5ms. Use fireweed run to resume.\n" lacks a labeled completed wait of 5ms
+--- FAIL: Test_APP_083_APP_084_RunPlainSharedUsageStop (4.25s)
+
 - app / Test_APP_084_APP_086_EarlierBlockPrecedesUsageStop / APP-084, APP-086 / pass
 - app / Test_APP_077_APP_079_APP_084_APP_086_InvalidUsagePolicyBeforeMutation / APP-077, APP-079, APP-084, APP-086 / pass
 - app / Test_APP_077_APP_079_APP_084_APP_086_InvalidUsagePolicyBeforeMutation/next / APP-077, APP-079, APP-084, APP-086 / pass
 - app / Test_APP_077_APP_079_APP_084_APP_086_InvalidUsagePolicyBeforeMutation/run / APP-077, APP-079, APP-084, APP-086 / pass
 
 ## Contradicted Decisions
-None. Both retained Decisions were implemented as written:
-
-- `0075-bounded-agent-invocation`: unset configured timeout defaults to 90 minutes;
-  `limit_patterns` are case-insensitive literal substrings matched against the
-  final 20 lines of stdout followed by stderr, with terminal newline separators
-  trimmed.
-- `agent-invocation-logs`: each invocation appends length-labeled stdout and
-  stderr records, preserving both streams byte-for-byte even without final
-  newlines. A log write failure is joined with any agent failure while the
-  captured `AgentResult` remains available.
+None. The runner reconstruction follows the retained Decisions, including the
+90-minute default invocation timeout and the length-labeled append-only agent
+logs.
 
 ## Gaps
-- RUN-021, module runner: the spec defines the attempts default and the sharing
-  rules but not the result of a explicitly non-positive `attempts` value. The
-  implementation treats non-positive values as the default of two.
-- RUN-022, module runner: the spec requires the last verification output in a
-  retry prompt but does not prescribe its layout. The implementation emits a
-  report summary, hook stdout/stderr, the verification error, and a bounded
-  failed-case detail section.
-- RUN-029, module runner: usage-policy validation is specified for Next. Drill
-  also needs `limit_wait` and `limit_budget`; the implementation reuses the same
-  duration validation and defaults for Drill (see also RUN-057).
-- RUN-044, module runner: the allocation of the 16,384-code-point section budget
-  among cases is unspecified. The implementation reserves room for an omission
-  marker, limits each failure excerpt to its first 4,096 code points, and omits
-  later cases once the next block would not fit. It marks both truncation and
-  omission.
-- RUN-050, module runner: "live shared change claim" is not defined more
-  narrowly. The implementation treats any ref under `refs/fireweed/claims` as a
-  live claim.
-- RUN-053, module runner: "drill reports" is not enumerated. The implementation
-  excludes the tracked `.fireweed/drills` directory from reconstruction inputs.
-- RUN-060, module runner: the report date format is unspecified. The
-  implementation uses UTC `YYYY-MM-DD` and reuses that value in the retained ref
-  name, replacing an earlier same-day ref rather than failing.
-- RUN-069, module runner: the observations entry layout is unspecified. The
-  implementation uses `### Attempt <n>`, includes that attempt's stdout and its
-  repository-relative log path, and omits stderr as required.
-- RUN-074, module runner: the pre-existing model-flag conventions are not
-  documented in the retained inputs. The implementation takes the executable
-  from argv[0] and recognizes `-m <value>`, `--model <value>`, and
-  `--model=<value>`.
-- no spec, module runner: Drill's setup hook receives `{module}`, `{module_dir}`
-  and `{report}` values plus `FIREWEED_BIN`, but no retained spec defines the
-  complete placeholder vocabulary for setup in scratch and input workspaces.
+- RUN-063, module runner: the exact framing of length-labeled log records is not
+  specified beyond preserving both streams and appending. The implementation
+  records `stdout <bytes>` followed by `stderr <bytes>` per invocation.
+- RUN-003, module runner: shell quote-state handling for escaped quotes in mixed
+  command templates is outside the stated contract. The implementation tracks
+  single and double quotes and backslash escapes when deciding whether to quote
+  substituted values.
+- no spec, module runner: the disposable internal package decomposition
+  (`invoke`, `next`, `run`, `drill`, `stop`) is not specified; only `api.go` and
+  `model/**` are retained public boundaries.
 
 ## Agent observations
 
 ### Invocation 1
-Log: .fireweed/runs/20261116T150853-0074911351f5a4fa7ad67078/drill-1.log
+Log: .fireweed/runs/20261117T071031-edb15b349c113463d682c8ae/drill-1.log
 
-I'll start by exploring the workspace structure and reading the retained interfaces and evals.
-Now I have a full picture. Let me build the internal packages.
-Implemented the disposable `packages/runner/internal/**` paths.
+Reconstructed `packages/runner/internal/**` and added `DRILL_NOTES.md`.
 
-## Rebuilt packages
+Implemented:
+- `internal/invoke` — command selection, wrappers, placeholders, prompt files, timeouts, usage-limit detection, process-group handling, and append-only invocation logs.
+- `internal/next` — lifecycle driving, approvals, retries, commit recovery, blocking, audit isolation/copy-back, usage waits/budgets, diagnostics, run resumption, and stop classification.
+- `internal/run` — bounded/unbounded queue execution, shared usage/time budgets, blocked-change continuation, and result flags.
+- `internal/drill` — preflight, scratch/input workspaces, filtered Git inputs, reconstruction retries, eval verification, dependent evaluation, reports, refs, and cleanup.
+- `internal/stop` — shared clean usage/time/blocked error classifications.
 
-- `internal/invoke` — agent command resolution, shell/argv placeholder expansion, wrapper prefixes, prompt files, process-group timeouts, output capture, usage-limit detection, and append-only agent logs.
-- `internal/next` — queue selection/approval checks, owned-step resume, worker/audit phase orchestration, restricted audit workspaces, verification retries with failed-case details, commit recovery, usage waits/stops, and lifecycle blocking.
-- `internal/run` — bounded multi-change scheduling, shared usage/time budgets, block-aware continuation, and clean stop classifiers.
-- `internal/drill` — preflight validation, scratch/input workspaces, filtered reconstruction inputs, setup hooks, editable-input enforcement, disposable-only imports, own/dependent eval verification, retained refs, report writing, and cleanup.
-- `internal/stop` — shared usage-stop, time-stop, preflight, and cumulative-wait types.
+Validation:
+- Full `packages/runner/evals` suite passes.
+- The supplied eval hook command passes:
+  - `ok github.com/lurkshark/fireweed/packages/runner/evals`
 
-Also added `DRILL_NOTES.md` with the requested `## Contradicted Decisions` and `## Gaps` sections.
 
-## Verification
+## Failures
+app: failed case "Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume" for APP-076
+Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration: === RUN   Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration
+--- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration (1.77s)
+Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next: === RUN   Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next
+    compatibility_cli_test.go:246: stop reason "usage wait stopped: completed 0s, next wait 5ms, budget 0s" lacks a labeled completed wait of 0s
+--- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next (0.33s)
+Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run: === RUN   Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run
+    compatibility_cli_test.go:246: stop reason "usage wait stopped: completed 0s, next wait 5ms, budget 0s" lacks a labeled completed wait of 0s
+--- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run (0.35s)
+Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts: === RUN   Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts
+--- FAIL: Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts (1.69s)
+Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/own-plain: === RUN   Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/own-plain
+    drill_cli_test.go:344: plain failure stdout="" stderr="P01: own evals: failed case \"ALP-001_case\" for ALP-001. Correct the reported issue before retrying. Report: .fireweed/drills/alpha.md. Rebuilt ref: refs/fireweed/drills/alpha/2026-11-17.\n"; want empty stdout and E01
+--- FAIL: Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/own-plain (0.83s)
+Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/dependent-json: === RUN   Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/dependent-json
+    drill_cli_test.go:344: diagnostic code="P01"; want "E01"
+--- FAIL: Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/dependent-json (0.55s)
+Test_APP_142_DrillCleanUsageStopPlainAndJSON: === RUN   Test_APP_142_DrillCleanUsageStopPlainAndJSON
+    drill_cli_test.go:410: clean stop data=map[base_commit:58061d73485e99eb9895e3981029d9a3fcb44f92 module:alpha reason:usage wait stopped: completed 0s, next wait 5ms, budget 0s ref: report:.fireweed/drills/alpha.md result:stopped]
+--- FAIL: Test_APP_142_DrillCleanUsageStopPlainAndJSON (1.56s)
+Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume: === RUN   Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume
+    usage_cli_test.go:141: stop reason "usage wait stopped: completed 0s, next wait 5ms, budget 0s" lacks a labeled completed wait of 0s
+--- FAIL: Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume (4.15s)
+Test_APP_076_APP_077_NextPlainUsageStop: === RUN   Test_APP_076_APP_077_NextPlainUsageStop
+    usage_cli_test.go:240: stop reason "Stopped on held-quota-work: usage wait stopped: completed 0s, next wait 5ms, budget 0s. Use fireweed next to resume.\n" lacks a labeled completed wait of 0s
+--- FAIL: Test_APP_076_APP_077_NextPlainUsageStop (1.31s)
+Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume: === RUN   Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume
+    usage_cli_test.go:254: stop reason "usage wait stopped: completed 5ms, next wait 5ms, budget 5ms" lacks a labeled completed wait of 5ms
+--- FAIL: Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume (7.21s)
+Test_APP_083_APP_084_RunPlainSharedUsageStop: === RUN   Test_APP_083_APP_084_RunPlainSharedUsageStop
+    usage_cli_test.go:337: stop reason "Applied 1 changes.\nalpha\nStopped: usage wait stopped: completed 5ms, next wait 5ms, budget 5ms. Use fireweed run to resume.\n" lacks a labeled completed wait of 5ms
+--- FAIL: Test_APP_083_APP_084_RunPlainSharedUsageStop (4.25s)
+?   	github.com/lurkshark/fireweed/packages/app	[no test files]
+?   	github.com/lurkshark/fireweed/packages/app/internal/entry	[no test files]
+FAIL
+FAIL	github.com/lurkshark/fireweed/packages/app/evals	269.459s
 
-The target eval hook passed:
-
-```text
-PASS
-ok github.com/lurkshark/fireweed/packages/runner/evals
-```
-
-`go build ./packages/runner/...` and `go vet ./packages/runner/...` also pass.
+exit status 1
 
