@@ -1,7 +1,7 @@
 ---
 agent: opencode
-base_commit: d900691d1ee84e71a9cffd7eff720ba969245e92
-date: "2026-11-16T10:17:14.363796Z"
+base_commit: b25dc332978dd5fcf7c32b78f5e394fa441b1320
+date: "2026-11-17T08:08:42.118943Z"
 model: opencode/deepseek-v4.1-flash#high
 result: pass
 ---
@@ -183,7 +183,7 @@ result: pass
 - app / Test_APP_156_HelpForms/init_-h / APP-156 / pass
 - app / Test_APP_156_HelpForms/new-module_--help / APP-156 / pass
 - app / Test_APP_156_HelpForms/new-module_-h / APP-156 / pass
-- app / Test_APP_156_EachListedCommandHasCLIHelp / APP-156 / pass
+- app / Test_APP_156_EachSupportedCommandHasCLIHelp / APP-156 / pass
 - app / Test_APP_156_ExactHelpWordForm / APP-156 / pass
 - app / Test_APP_157_HelpJSONMatchesPlain / APP-157 / pass
 - app / Test_APP_157_HelpJSONMatchesPlain/help / APP-157 / pass
@@ -414,72 +414,43 @@ result: pass
 ## Dependent evals
 
 ## Contradicted Decisions
-No contradicted Decisions were identified. The retained Decisions
-`0074-doctor-setup-commands`, `0112-new-module-command`,
-`0127-show-history-command`, and `init-prompt-file-commands` were consistent
-with the specs and retained evals.
+None. The reconstruction follows the retained Decisions: doctor leaves the
+request timeout unset, new-module uses the first literal-parent module glob,
+show history uses lowercase JSON keys and labels every plain section, and local
+recipe init uses `recipe.yaml`, `recipe.md` and the `files/` payload.
 
 ## Gaps
-- Nearest spec: APP-047. Target: app. The exact text of the minimal `none`
-  recipe instructions and its eval, boundaries and setup hook contract is not
-  specified beyond containing those words.
-- Nearest spec: APP-050. Target: app. Initialization must render the module
-  templates, but the spec does not say whether zone directories such as
-  `packages/app/evals` and `packages/app/internal` must be created when no
-  template writes them.
-- Nearest spec: APP-052. Target: app. The exact minimal `SPEC.md` scaffold for
-  a recipe without module templates is unspecified beyond the required
-  metadata and empty Specs and Decisions sections.
-- Nearest spec: APP-058. Target: app. Conflict handling for an existing
-  destination directory that has no conflicting generated file is ambiguous;
-  the implementation permits it while rejecting every generated-file conflict.
-- Nearest spec: APP-067. Target: app. `checks.Doctor` returns canary check
-  names that combine the probe with a scope such as `global eval`. The spec
-  requires the probe name in `name` and the scope in `detail`, but does not
-  define how arbitrary combined names are split.
-- Nearest spec: APP-112. Target: app. `project.Load` can return a static
-  authoring code such as C05 for a duplicate spec ID. The spec distinguishes
-  configuration errors (exit 2) from deterministic checks (exit 1) but does not
-  explicitly classify every load-stage static code.
-- Nearest spec: APP-125. Target: app. The spec requires retaining diagnostic
-  paths when present but does not say whether an always-present empty `path`
-  field is acceptable for diagnostics whose path is absent.
-- Nearest spec: APP-143. Target: app. The recovered stale-base view must show a
-  line diff, but the diff algorithm, headers and context-line policy are not
-  specified. The implementation emits removed then added lines.
-- Nearest spec: APP-153. Target: app. The format-1 migration precondition says
-  a format-1 project must be validated, but the accepted YAML type for
-  `version` (integer versus numeric text) is not specified.
-- Nearest spec: APP-163. Target: app. The set of commands that "use live
-  project configuration" is not enumerated. The implementation pre-loads live
-  compatibility for status, verify, context, release, commits and abandon in
-  addition to the explicitly tested commands.
-- Nearest spec: APP-044. Target: app. `init` can encounter an unpaired managed
-  block in AGENTS.md, but only `agents-md --write` explicitly defines the
-  rejection. The implementation rejects init with P01 to avoid corrupting the
-  file.
+- APP-101 — `new-module` validates that a rendered `SPEC.md` parses, but it does
+  not overwrite a project-owned template that declares a different `name` or
+  `id_prefix`. A fixing change belongs in the **app** module.
+- APP-012/APP-160 — while a change is held, `coverage --with-change` for a
+  different queued change reads that change's projection through the live
+  configuration. The spec does not say whether a missing or malformed live
+  configuration should still allow an otherwise readable selected spec text.
+  A fixing change belongs in the **app** module.
+- APP-004 — if an owned claim exists but its stored approved snapshot cannot be
+  read, `modules` currently falls back to the live graph instead of reporting a
+  claim error. The spec does not define that malformed-claim case. A fixing
+  change belongs in the **app** module.
+- no spec — `init` writes local recipe instructions over any `files/` payload
+  that already targets `.fireweed/recipes/local.md`. The precedence between the
+  two project-owned sources is unspecified. A fixing change belongs in the
+  **app** module.
+- no spec — when `fireweed.yaml` is absent, project discovery falls back to the
+  enclosing Git worktree so held claims remain findable. The exact fallback
+  boundary for non-held commands in a Git repository without configuration is
+  unspecified. A fixing change belongs in the **app** module.
 
 ## Agent observations
 
 ### Invocation 1
-Log: .fireweed/runs/20261116T101714-da95cf6964095bd464fa5ad1/drill-1.log
+Log: .fireweed/runs/20261117T080842-7657dfd1727318f5a0a97303/drill-1.log
 
-I'll start by exploring the workspace to understand the structure and what's available.
-Now I have a clear picture. Let me create the internal CLI implementation.
-Reconstructed the `app` module's disposable implementation under `packages/app/internal/`.
-
-Implemented CLI dispatch and behavior for all retained commands, including:
-
-- Information/help forms and schema-1 JSON envelopes
-- Modules, changes, stamping, checks, coverage, and projections
-- Start, context, verify/done, next/run, release, commits, and abandon
-- Doctor, agents-md, init, new-module, gc, migrate
-- Check-commits, CI, pr-body, drill
-- Held approved-snapshot handling, compatibility admission, diagnostics, and exit-code mapping
+Reconstructed the `app` module under `packages/app/internal/entry/` with command dispatch, JSON envelopes, project discovery, lifecycle/runner integration, init/new-module scaffolding, coverage, doctor, status, history/stale views, and maintenance commands.
 
 Validation:
-
-- `go build ./packages/app/...` and `go vet ./packages/app/...` pass
-- Target eval hook passes: `PASS` for `packages/app/evals`
-- Added `DRILL_NOTES.md` with `## Contradicted Decisions` and `## Gaps` sections, with each gap naming its nearest spec and target module.
+- `go build ./...` passes.
+- Full app eval suite passes: `go test ./packages/app/evals -count=1 -timeout 30m`.
+- Target eval hook passes and wrote `.fireweed/drill-eval.xml`.
+- Added `DRILL_NOTES.md` with `## Contradicted Decisions` and `## Gaps`.
 
