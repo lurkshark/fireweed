@@ -89,7 +89,7 @@ func cliStopEnvelope(t *testing.T, output, completed, next, budget string) (map[
 func cliStopReason(t *testing.T, reason, completed, next, budget string) {
 	t.Helper()
 	for _, field := range []struct{ role, label, want string }{
-		{"completed wait", `(?:completed\s+wait|waited(?:\s+for)?)`, completed},
+		{"completed wait", `(?:completed(?:\s+wait)?|waited(?:\s+for)?)`, completed},
 		{"next wait", `next(?:\s+wait)?`, next},
 		{"budget", `budget`, budget},
 	} {
