@@ -1,9 +1,9 @@
 package evals_test
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"reflect"
 	"regexp"
@@ -11,7 +11,6 @@ import (
 	"testing"
 
 	"github.com/lurkshark/fireweed/packages/assets"
-	"github.com/lurkshark/fireweed/packages/gitstore"
 	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
@@ -162,45 +161,35 @@ func Test_APP_165_StandaloneAndSetupPreconditions(t *testing.T) {
 	migrateUnchanged(t, root, before)
 }
 
-// Build a recorded claim with the pin of a different binary. Start creates
-// the fixture claim with a supported pin because live loading enforces it.
-func recordIncompatibleClaim(t *testing.T, root string) {
+func buildAlternateAppBinary(t *testing.T, version string) string {
 	t.Helper()
-	const ref = "refs/fireweed/claims/manual"
-	oid := cliGit(t, root, "rev-parse", ref)
-	blob, err := gitstore.ReadBlob(root, oid)
-	if err != nil {
+	source := filepath.Join("..", "..", "..")
+	tmp := t.TempDir()
+	for _, name := range []string{"go.mod", "go.sum", "main.go"} {
+		appPut(t, tmp, name, string(staleCLIText(t, source, name)))
+	}
+	if err := os.CopyFS(filepath.Join(tmp, "packages"), os.DirFS(filepath.Join(source, "packages"))); err != nil {
 		t.Fatal(err)
 	}
-	recorded := string(blob)
-	escape := func(pin string) string {
-		encoded, err := json.Marshal(pin)
-		if err != nil {
-			t.Fatal(err)
-		}
-		return strings.Trim(string(encoded), `"`)
+	appPut(t, tmp, "packages/assets/internal/content/VERSION", version+"\n")
+	bin := filepath.Join(tmp, "fireweed-alternate")
+	build := exec.Command("go", "build", "-o", bin, ".")
+	build.Dir = tmp
+	build.Env = append(os.Environ(), "GOWORK=off", "GOCACHE=/tmp/fireweed-rebuild-cache")
+	if output, err := build.CombinedOutput(); err != nil {
+		t.Fatalf("build CLI with alternate VERSION: %v\n%s", err, output)
 	}
-	original := escape(fixtureBinaryPin)
-	if strings.Count(recorded, original) != 1 {
-		t.Fatal("fixture claim must contain exactly one binary pin")
-	}
-	// The replacement starts with a YAML block scalar indicator, so quote it.
-	recorded = strings.Replace(recorded, original, escape("'"+incompatiblePin()+"'"), 1)
-	updated, err := gitstore.WriteBlob(root, []byte(recorded))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := gitstore.CASRef(root, ref, oid, updated); err != nil {
-		t.Fatal(err)
-	}
-	approved, held, err := workflow.Approved(root)
-	if err != nil || !held || approved.Snapshot.Config["fireweed"] != incompatiblePin() || project.CheckCompatibility(approved.Snapshot.Config) == nil {
-		t.Fatalf("fixture must expose the incompatible approved configuration: held=%v error=%v", held, err)
-	}
+	return bin
 }
 
 func Test_APP_164_RejectsIncompatibleApprovedConfiguration(t *testing.T) {
 	bin := buildAppBinary(t)
+	version := "0.2.1"
+	if version == assets.Version() {
+		version = "0.2.2"
+	}
+	alternateBin := buildAlternateAppBinary(t, version)
+	alternatePin := "=" + version
 	for _, args := range [][]string{
 		{"modules"},
 		{"coverage", "alpha", "--with-change", "manual", "--json"},
@@ -209,12 +198,24 @@ func Test_APP_164_RejectsIncompatibleApprovedConfiguration(t *testing.T) {
 	} {
 		t.Run(args[0], func(t *testing.T) {
 			root, calls := compatibilityProject(t, bin)
-			cliHold(t, root)
-			recordIncompatibleClaim(t, root)
 			dir := appNestedDir(t, root)
+			config := string(staleCLIText(t, root, "fireweed.yaml"))
+			appPut(t, root, "fireweed.yaml", strings.Replace(config, fixtureBinaryPin, alternatePin, 1))
+			cliCommit(t, root, "approve alternate binary pin")
+			if status, out, stderr := runLifecycleBinary(t, alternateBin, dir, "start", "manual"); status != 0 {
+				t.Fatalf("alternate start: exit=%d stdout=%q stderr=%q", status, out, stderr)
+			}
+			appPut(t, root, "fireweed.yaml", config)
+			approved, held, err := workflow.Approved(root)
+			if err != nil || !held || approved.Slug != "manual" {
+				t.Fatalf("alternate start did not hold manual: slug=%q held=%v err=%v", approved.Slug, held, err)
+			}
+			if got := approved.Snapshot.Config["fireweed"]; got != alternatePin || project.CheckCompatibility(approved.Snapshot.Config) == nil {
+				t.Fatalf("approved pin=%q; want %q excluding the CLI under test", got, alternatePin)
+			}
 			before := migrateCapture(t, root)
 			t.Cleanup(func() { assertCompatibilityState(t, root, before, calls) })
-			assertCompatibilityRejection(t, bin, dir, incompatiblePin(), args...)
+			assertCompatibilityRejection(t, bin, dir, alternatePin, args...)
 		})
 	}
 }

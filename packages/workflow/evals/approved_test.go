@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
 	"slices"
 	"strings"
 	"testing"
@@ -13,6 +14,54 @@ import (
 	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
+
+func Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers(t *testing.T) {
+	for _, tc := range []struct {
+		yaml string
+		want any
+	}{
+		{"1.0", float64(1)},
+		{"1", 1},
+	} {
+		t.Run(tc.yaml, func(t *testing.T) {
+			root := fixture(t, "audit:\n  max_rounds: "+tc.yaml+"\n", "", "", "", "")
+			started := start(t, root)
+			audit, _ := started.Snapshot.Config["audit"].(map[string]any)
+			rounds, version := audit["max_rounds"], started.Snapshot.Config["version"]
+			if !reflect.DeepEqual(rounds, tc.want) || !reflect.DeepEqual(version, 1) {
+				t.Fatalf("Start returned audit.max_rounds = %v (%T), version = %v (%T); want %v (%T) and 1 (int)",
+					rounds, rounds, version, version, tc.want, tc.want)
+			}
+
+			current, err := workflow.Current(root, "manual")
+			if err != nil {
+				t.Fatalf("Current: %v", err)
+			}
+			approved, found, err := workflow.Approved(root)
+			if err != nil || !found {
+				t.Fatalf("Approved = found %t, error %v; want an owned snapshot", found, err)
+			}
+			for _, read := range []struct {
+				name   string
+				config map[string]any
+			}{
+				{"Current", current.Snapshot.Config},
+				{"Approved", approved.Snapshot.Config},
+			} {
+				audit, _ := read.config["audit"].(map[string]any)
+				if got := audit["max_rounds"]; !reflect.DeepEqual(got, rounds) {
+					t.Errorf("%s audit.max_rounds = %v (%T); Start returned %v (%T)", read.name, got, got, rounds, rounds)
+				}
+				if got := read.config["version"]; !reflect.DeepEqual(got, version) {
+					t.Errorf("%s version = %v (%T); Start returned %v (%T)", read.name, got, got, version, version)
+				}
+				if err := project.CheckCompatibility(read.config); err != nil {
+					t.Errorf("CheckCompatibility after %s: %v", read.name, err)
+				}
+			}
+		})
+	}
+}
 
 func Test_FLOW_019_FLOW_139_ApprovedSurvivesLiveEdits(t *testing.T) {
 	root := fixture(t, "", "", "", "", "")

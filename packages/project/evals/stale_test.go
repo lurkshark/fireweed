@@ -85,6 +85,23 @@ func Test_PRJ_060_StaleSpecsSelectsRecordedModifiedAndRemovedInEditOrder(t *test
 	}
 }
 
+func Test_PRJ_060_StaleSpecsRejectsNonmappingBasesAtQueuedPath(t *testing.T) {
+	const slug = "invalid-bases"
+	const filename = "0002-" + slug + ".md"
+	for _, tc := range []struct{ name, value string }{
+		{"sequence", "[deadbeef]"},
+		{"scalar", "deadbeef"},
+		{"null", "null"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := staleFixture(t)
+			queued(t, root, filename, "bases: "+tc.value+"\n", "Needed.\n", "", "### ALP-001\nOne MUST change.\n", "")
+			_, err := project.StaleSpecs(root, slug)
+			requirePathError(t, err, "C08", "changes/"+filename)
+		})
+	}
+}
+
 func Test_PRJ_061_PRJ_062_HistoryUsesLastBasesChangeAndValidatesEachHash(t *testing.T) {
 	root := staleFixture(t)
 	revisionGit(t, root, "init", "-q")

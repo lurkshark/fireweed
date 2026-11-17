@@ -422,8 +422,11 @@ Status MUST report each module's count of applied archived changes whose impleme
 With no drill report, it MUST count all that module's applied archived changes, including zero when there are none.
 
 ### FLOW-110
-Status MUST count applied changes archived on HEAD whose change file is absent from the locally known configured remote/base ref, falling back to the local base when the remote ref is absent.
-The base and remote MUST use the existing configured/default base-ref resolution.
+Status MUST count applied changes archived on HEAD whose change file is absent
+from the locally known configured remote/base ref, falling back to the local
+base when the remote ref is absent. The base and remote MUST use the existing
+configured/default base-ref resolution. If neither ref exists, Status MUST
+return an error identifying the unavailable base.
 
 ### FLOW-111
 Status MUST warn with P08 when the most recently applied change ends a chain of three or more applied changes in which each modifies, removes, fixes or eval-fixes a spec ID that its predecessor added or modified. A change's predecessor is the latest of the ten applied changes before it that added or modified such an ID. The warning MUST name the chain's change files and shared IDs.
@@ -484,7 +487,10 @@ PRBody MUST return an error for which IsEndpointConfigError reports true when th
 IsEndpointConfigError MUST report false when PRBody fails because the range cannot be resolved.
 
 ### FLOW-128
-GC MUST prune refs/fireweed/claims entries whose recorded worktree is missing or is no longer registered with the same Git common directory, while retaining claims for live registered worktrees.
+GC MUST prune refs/fireweed/claims entries whose recorded worktree is missing
+or is no longer registered with the same Git common directory, while
+retaining claims for live registered worktrees. If the recorded path is a
+symlink alias that resolves to such a worktree, GC MUST retain its claim.
 
 ### FLOW-129
 GC MUST prune refs/fireweed/attempts/<slug>/* only for changes present in changes/archive, retaining attempt refs for unapplied changes.

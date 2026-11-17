@@ -4,6 +4,8 @@ already_satisfied:
 bases:
     FLOW-128: eca2e233
 module: workflow
+phase: applied
+run: 20261117T013233-31284770071b3070b34201e5
 ---
 
 ## Motivation
@@ -39,3 +41,13 @@ Assert the claim survives and stays out of the pruned list. Retain existing
 coverage for missing, unregistered and foreign worktrees and canonical
 live claims. A focused rerun of the app GC case passed on the retained
 reconstruction when the temporary directory had a canonical path.
+## Audit
+
+No findings; checked FLOW-128
+
+## Provenance
+
+- evals 2026-11-17T01:36:23.19437Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=215 failing=0 passing=215
+- audit 2026-11-17T01:36:43.667481Z agent=codex fireweed=0.2.1 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-17T01:52:13.431009Z agent=codex fireweed=0.2.1 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=835 failing=0 passing=835
+

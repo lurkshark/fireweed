@@ -2,6 +2,7 @@ package evals_test
 
 import (
 	"regexp"
+	"slices"
 	"strings"
 	"testing"
 
@@ -51,18 +52,31 @@ func Test_AST_008_Help(t *testing.T) {
 	overview := assets.Help()
 	requirePattern(t, overview, `(?i)\bfireweed\b`, "Fireweed name")
 	commandExamples := `\bfireweed\s+(?:help\s+(?:` + helpCommandNames() + `)(?:$|[^[:alnum:]_-])|(?:` + helpCommandNames() + `)\s+--help\b)`
-	listing := regexp.MustCompile(commandExamples+`|\bhelp\s+<command>`).ReplaceAllString(overview, "")
+	entries := helpOverviewEntries(overview)
 	for _, command := range commandHelpCases {
-		requirePattern(t, listing, commandWord(command.name), "overview entry for "+command.name)
+		if len(entries[command.name]) == 0 {
+			t.Errorf("Help() lacks a command entry for %s", command.name)
+		}
 	}
-	for _, group := range []struct{ label, commands string }{
-		{`setup|getting started`, `init|doctor`},
-		{`author\w*|creat\w*`, `new-module|new-change|stamp`},
-		{`read\w*|inspect\w*`, `list|status|show|modules|context`},
-		{`check\w*|validat\w*`, `check|coverage|check-commits|ci`},
-		{`lifecycle|work\s?flow|execution`, `start|verify|done|next|run`},
+	const reading = `read\w*|inspect\w*|view\w*|query\w*|explor\w*|project state`
+	const information = `info\w*|help|reference|guidance|documentation|docs|version|about`
+	for _, group := range []struct{ purpose, labels, commands string }{
+		{"setup", `set[ -]?up|getting started|initializ\w*|bootstrap\w*|configur\w*|project health`, "init doctor"},
+		{"authoring", `author\w*|creat\w*|draft\w*|scaffold\w*|prepar\w*`, "new-module new-change stamp"},
+		{"reading", reading, "list status show modules context"},
+		{"checks", `check\w*|validat\w*|verif\w*|test\w*|quality|CI|continuous integration`, "check coverage check-commits ci pr-body"},
+		{"lifecycle", `life[ -]?cycle|work[ -]?flow|execut\w*|process\w*|automat\w*|run(?:ning)? (?:changes|agents|the queue)|manag\w* (?:changes|claims|the queue)`, "start verify done next run release commits abandon"},
+		{"regeneration", `regenerat\w*|rebuild\w*|reconstruct\w*|drills?`, "drill"},
+		{"maintenance", `maint\w*|housekeeping|cleanup|clean[ -]?up|upkeep|administr\w*`, "gc migrate agents-md"},
+		{"information", information, "help version"},
+		{"information or reading", information + `|` + reading + `|diagnostic\w*|guides?`, "explain playbook"},
 	} {
-		requirePattern(t, overview, `(?im)^[ \t#*]*\b(?:`+group.label+`)[^\n]*(?:\n[ \t]*){0,2}\b(?:`+group.commands+`)\b`, "commands grouped under "+group.label)
+		label := regexp.MustCompile(`(?i)\b(?:` + group.labels + `)\b`)
+		for _, command := range strings.Fields(group.commands) {
+			if found := entries[command]; len(found) > 0 && !slices.ContainsFunc(found, label.MatchString) {
+				t.Errorf("Help() must group %s under %s; found under %q", command, group.purpose, found)
+			}
+		}
 	}
 	requirePattern(t, overview, `\bhelp\s+<command>`, "help <command> navigation")
 	requirePattern(t, overview, `<command>\s+--help\b`, "<command> --help navigation")
@@ -77,6 +91,62 @@ func Test_AST_008_Help(t *testing.T) {
 			t.Errorf("Help() includes command-specific option %s, which belongs on its command page", option)
 		}
 	}
+}
+
+func helpOverviewEntries(overview string) map[string][]string {
+	names := regexp.MustCompile(`^(?:` + helpCommandNames() + `)$`)
+	columns := regexp.MustCompile(`[ \t]*:[ \t]+|[ \t]{2,}|\t|[ \t]+[-–—][ \t]+`)
+	entry := regexp.MustCompile(`^(?:[-*+] +|[0-9]+[.)] +)?[\x60*]*(` + helpCommandNames() + `)[\x60*]*(?:$|:|[ \t]+[-–—][ \t]+|[ \t]{2,}|\t)`)
+	heading := regexp.MustCompile(`^#{1,6}[ \t]+(.+)$`)
+	exampleHeading := regexp.MustCompile(`(?i)^(?:(?:usage )?examples?\b|usage[ :]*$)`)
+	entries := make(map[string][]string)
+	var label, fence string
+	for _, raw := range strings.Split(overview, "\n") {
+		line := strings.TrimSpace(raw)
+		if strings.HasPrefix(line, "```") || strings.HasPrefix(line, "~~~") {
+			marker := line[:3]
+			switch fence {
+			case "":
+				fence = marker
+			case marker:
+				fence = ""
+			}
+			continue
+		}
+		if line == "" || fence != "" {
+			continue
+		}
+		if match := heading.FindStringSubmatch(line); match != nil {
+			label = match[1]
+			continue
+		}
+		if row := columns.Split(line, 2); len(row) == 2 {
+			commands := strings.Fields(strings.ReplaceAll(row[1], ",", " "))
+			if len(commands) > 0 && !slices.ContainsFunc(commands, func(command string) bool {
+				return !names.MatchString(strings.Trim(command, "`*"))
+			}) {
+				label = strings.Trim(row[0], "* \t")
+				if !exampleHeading.MatchString(label) {
+					for _, command := range commands {
+						name := strings.Trim(command, "`*")
+						entries[name] = append(entries[name], label)
+					}
+				}
+				continue
+			}
+		}
+		if match := entry.FindStringSubmatch(line); match != nil {
+			if label != "" && !exampleHeading.MatchString(label) {
+				entries[match[1]] = append(entries[match[1]], label)
+			}
+			continue
+		}
+		// An indented description can wrap below its command entry.
+		if raw == strings.TrimLeft(raw, " \t") || strings.HasSuffix(line, ":") {
+			label = strings.Trim(line, "*: \t")
+		}
+	}
+	return entries
 }
 
 func Test_AST_061_CommandPages(t *testing.T) {

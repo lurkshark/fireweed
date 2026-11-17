@@ -40,7 +40,11 @@ Run fireweed stamp <change> after drafting edits under Modified or Removed. If a
 
 Do not commit during a worker step.`,
 	"evals": `# Write evals
-Read the change, projected spec and public interface. Add tests for every assigned added, modified or fixed spec ID in the evals zone. Exercise observable behavior through the public interface. Run the tests against the current implementation and record genuine fail-first evidence: at least one test for each ID must fail, unless the change marks it already_satisfied. Keep implementation out of this step and do not commit.
+Read the change, projected spec and public interface. Add tests for every assigned added, modified or fixed spec ID in the evals zone.
+
+Exercise the module's public behavior that consumers depend on through its public interface. Build ordinary dependency state through public operations. Assert structured diagnostic codes and subjects when the public contract defines them. When the type affects callers, inspect typed values before encoding. Assert exact wording or layout where the public spec requires it.
+
+Run the tests against the current implementation and record genuine fail-first evidence: at least one test for each ID must fail, unless the change marks it already_satisfied. Keep implementation out of this step and do not commit.
 
 Keep temporary stub behavior in disposable files that remain implementation-writable. Implementation must be able to replace each stub without editing frozen interface files. Before completing evals, identify the implementation-writable files for each missing behavior; create a disposable stub file if needed.
 

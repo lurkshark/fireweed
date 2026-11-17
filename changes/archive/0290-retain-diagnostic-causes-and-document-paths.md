@@ -10,6 +10,8 @@ bases:
     PRJ-050: 9291801b
     PRJ-060: e2b83fcd
 module: project
+phase: applied
+run: 20261116T213742-336c0c4cba00f9d0358d04ae
 ---
 
 ## Motivation
@@ -67,3 +69,13 @@ in the diagnostic message. Use a valid working copy for the recorded SPEC
 cases. CON-017 through CON-019 define parser codes. Preserve the existing
 PRJ-050 and PRJ-060 coverage. CLI evidence includes APP-019, APP-038, APP-107,
 APP-108, APP-146 and APP-160.
+## Audit
+
+No findings; checked PRJ-025, PRJ-029, PRJ-050, PRJ-060
+
+## Provenance
+
+- evals 2026-11-16T21:41:03.168083Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=317 failing=0 passing=317
+- audit 2026-11-16T21:41:21.491964Z agent=codex fireweed=0.2.1 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-16T22:01:07.730592Z agent=codex fireweed=0.2.1 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=1283 failing=0 passing=1283
+

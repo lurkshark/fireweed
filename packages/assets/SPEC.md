@@ -259,6 +259,13 @@ CommandHelp("drill") MUST document --agent <alias>, identify agent.commands as t
 ### AST-070
 CommandHelp("doctor") MUST identify agent.default and audit.agent as the configured probe selectors and explain that audit inherits the worker default when its selector is omitted.
 
+### AST-071
+The evals playbook MUST direct workers to exercise their module's public
+behavior that consumers depend on and to build ordinary dependency state
+through public operations. It MUST direct workers to assert structured
+diagnostic codes and subjects when contracted, and to inspect typed values before encoding
+when type affects callers.
+
 ## Decisions
 
 [0014-go-setup-bundle] Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,

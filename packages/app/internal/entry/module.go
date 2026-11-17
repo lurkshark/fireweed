@@ -165,6 +165,9 @@ func validateModuleTemplate(spec string, snapshot project.Snapshot, dir, name, p
 	if err != nil {
 		return module, fmt.Errorf("invalid rendered SPEC.md: %v", err)
 	}
+	if len(candidate.Modules) != 1 {
+		return module, fmt.Errorf("invalid rendered SPEC.md: expected exactly one module, found %d", len(candidate.Modules))
+	}
 	module = candidate.Modules[0]
 	module.Dir = dir
 	if module.Name != name || module.IDPrefix != prefix {

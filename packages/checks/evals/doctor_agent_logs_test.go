@@ -88,6 +88,47 @@ func doctorCallerClean(t *testing.T, f doctorFixture, status, registrations stri
 	assertScratchRemoved(t, f)
 }
 
+func Test_CHK_065_CHK_066_DoctorAgentTailAcrossStreams(t *testing.T) {
+	const stdout = "RATE LIMIT reached\n"
+	stderr := strings.Repeat("worker stderr line\n", 18) + "worker stderr end\n"
+	for _, tc := range []struct {
+		name, stderr, kind, tail string
+	}{
+		{"match twentieth", stderr, "usage limit", stdout + stderr},
+		// The extra newline emits a blank twentieth stderr line.
+		{"match twenty-first", stderr + "\n", "command failure", stderr + "\n"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := localDoctorFixture(t)
+			f.put(".fireweed/agent.sh", fmt.Sprintf(`#!/bin/bash
+printf '%%s' '%s'
+printf '%%s' '%s' >&2
+exit 9
+`, stdout, tc.stderr))
+			f.commit()
+			report := checks.Doctor(context.Background(), f.request(false))
+			doctorProbeLog(t, f, report, "worker", stdout, tc.stderr)
+			if !hasDoctorCheck(report, "worker", false) {
+				t.Errorf("worker probe should fail: %s", doctorText(report))
+			}
+			for _, diagnostic := range report.Diagnostics {
+				if diagnostic.Code != "C15" || diagnostic.Warning || !strings.Contains(diagnostic.Message, ".fireweed/agent.sh") {
+					continue
+				}
+				header, tail, _ := strings.Cut(diagnostic.Message, "\n")
+				if !strings.Contains(header, tc.kind) || !strings.Contains(header, "exit 9") {
+					t.Errorf("C15 header = %q; want %q and exit 9", header, tc.kind)
+				}
+				if tail != tc.tail && tail != strings.TrimSuffix(tc.tail, "\n") {
+					t.Errorf("C15 tail = %q; want final 20 emitted lines %q", tail, tc.tail)
+				}
+				return
+			}
+			t.Errorf("missing worker C15 diagnostic naming the command: %s", doctorText(report))
+		})
+	}
+}
+
 func Test_CHK_081_DoctorProbeLogsShareFreshRunAndPreserveStreams(t *testing.T) {
 	f := localDoctorFixture(t)
 	f.put(".fireweed/agent.sh", "#!/bin/bash\nprintf 'worker stdout Ω without newline'; printf 'worker stderr β without newline' >&2; printf 'FIREWEED_DOCTOR_OK\\n'\n")

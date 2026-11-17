@@ -386,12 +386,28 @@ func Test_GIT_005_RunCaptureExitTimeoutAndGroupCancel(t *testing.T) {
 	if err != nil || result.Stdout != dir+"|supplied|input" || result.Stderr != "warn" || result.ExitCode != 0 {
 		t.Errorf("successful Run = %#v, %v", result, err)
 	}
+	const (
+		stdoutMarker = "gitstore-stdout-marker"
+		stderrMarker = "gitstore-stderr-marker"
+		emitOutput   = `printf '%s' "$FIREWEED_EVAL_STDOUT"; printf '%s' "$FIREWEED_EVAL_STDERR" >&2; `
+	)
+	env := map[string]string{"FIREWEED_EVAL_STDOUT": stdoutMarker, "FIREWEED_EVAL_STDERR": stderrMarker}
+	checkFailedOutput := func(t *testing.T, result gitstore.Result, err error) {
+		t.Helper()
+		if result.Stdout != stdoutMarker || result.Stderr != stderrMarker {
+			t.Errorf("failed Run captured stdout %q and stderr %q, want %q and %q", result.Stdout, result.Stderr, stdoutMarker, stderrMarker)
+		}
+		if err != nil && (strings.Contains(err.Error(), stdoutMarker) || strings.Contains(err.Error(), stderrMarker)) {
+			t.Errorf("Run error includes captured output: %v", err)
+		}
+	}
 	result, err = gitstore.Run(context.Background(), gitstore.Request{
-		Args: []string{"/bin/sh", "-c", `printf 'out'; printf 'err' >&2; exit 7`}, Dir: dir, Timeout: 3 * time.Second,
+		Args: []string{"/bin/sh", "-c", emitOutput + `exit 7`}, Dir: dir, Env: env, Timeout: 3 * time.Second,
 	})
-	if err == nil || result.Stdout != "out" || result.Stderr != "err" || result.ExitCode != 7 {
+	if err == nil || result.ExitCode != 7 {
 		t.Errorf("failed Run = %#v, %v", result, err)
 	}
+	checkFailedOutput(t, result, err)
 	for _, mode := range []struct {
 		name    string
 		timeout time.Duration
@@ -405,14 +421,18 @@ func Test_GIT_005_RunCaptureExitTimeoutAndGroupCancel(t *testing.T) {
 			marker := filepath.Join(dir, mode.name+"-child-marker")
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
-			done := make(chan error, 1)
+			type outcome struct {
+				result gitstore.Result
+				err    error
+			}
+			done := make(chan outcome, 1)
 			start := time.Now()
 			go func() {
-				_, runErr := gitstore.Run(ctx, gitstore.Request{
-					Args: []string{"/bin/sh", "-c", `(sleep 1; printf child > "$2") & printf ready > "$1"; wait`, "sh", ready, marker},
-					Dir:  dir, Timeout: mode.timeout,
+				result, runErr := gitstore.Run(ctx, gitstore.Request{
+					Args: []string{"/bin/sh", "-c", emitOutput + `(sleep 1; printf child > "$2") & printf ready > "$1"; wait`, "sh", ready, marker},
+					Dir:  dir, Env: env, Timeout: mode.timeout,
 				})
-				done <- runErr
+				done <- outcome{result: result, err: runErr}
 			}()
 			deadline := time.After(2 * time.Second)
 			for {
@@ -420,8 +440,8 @@ func Test_GIT_005_RunCaptureExitTimeoutAndGroupCancel(t *testing.T) {
 					break
 				}
 				select {
-				case runErr := <-done:
-					t.Fatalf("Run exited before child was ready: %v", runErr)
+				case got := <-done:
+					t.Fatalf("Run exited before child was ready: %v", got.err)
 				case <-deadline:
 					t.Fatal("child did not become ready")
 				case <-time.After(10 * time.Millisecond):
@@ -431,10 +451,11 @@ func Test_GIT_005_RunCaptureExitTimeoutAndGroupCancel(t *testing.T) {
 				cancel()
 			}
 			select {
-			case runErr := <-done:
-				if runErr == nil {
+			case got := <-done:
+				if got.err == nil {
 					t.Error("terminated Run succeeded")
 				}
+				checkFailedOutput(t, got.result, got.err)
 			case <-time.After(2 * time.Second):
 				t.Error("terminated Run did not return promptly")
 			}

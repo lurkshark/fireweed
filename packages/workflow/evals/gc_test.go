@@ -83,8 +83,13 @@ func Test_FLOW_128_GCPrunesMissingAndUnregisteredClaimsOnly(t *testing.T) {
 	}
 	linked := unregistered + "\nworktree"
 	git(t, root, "worktree", "add", "-b", "linked", linked, "HEAD")
+	alias := filepath.Join(worktreeParent, "linked-alias")
+	if err := os.Symlink(linked, alias); err != nil {
+		t.Fatalf("create linked worktree alias: %v", err)
+	}
 	gcClaim(t, root, "main-live", root)
 	gcClaim(t, root, "linked-live", linked)
+	gcClaim(t, root, "linked-alias-live", alias)
 	missing := filepath.Join(t.TempDir(), "removed")
 	gcClaim(t, root, "missing", missing)
 	gcClaim(t, root, "unregistered", unregistered)
@@ -104,7 +109,7 @@ func Test_FLOW_128_GCPrunesMissingAndUnregisteredClaimsOnly(t *testing.T) {
 	for _, name := range []string{"missing", "unregistered", "foreign"} {
 		gcPresent(t, root, "refs/fireweed/claims/"+name, false)
 	}
-	for _, name := range []string{"main-live", "linked-live"} {
+	for _, name := range []string{"main-live", "linked-live", "linked-alias-live"} {
 		gcPresent(t, root, "refs/fireweed/claims/"+name, true)
 	}
 	gcPresent(t, root, "refs/fireweed/other/keep", true)

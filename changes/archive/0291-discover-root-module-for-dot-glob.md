@@ -4,6 +4,8 @@ already_satisfied:
 bases:
     PRJ-001: e686ba9c
 module: project
+phase: applied
+run: 20261116T220110-f6e6a9cec4c80a19fa611903
 ---
 
 ## Motivation
@@ -37,3 +39,13 @@ Assert the root module and relative dir ".". Keep existing discovery and
 malformed-module cases. The APP-100/101/104 custom template, APP-103/104
 malformed-template subcase and APP-101/104/159 empty-go_module case all reach
 the same temporary-root load. Current Load handles this input.
+## Provenance
+
+- evals 2026-11-16T22:02:00.536644Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=318 failing=0 passing=318
+- audit 2026-11-16T22:02:17.153776Z agent=codex fireweed=0.2.1 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-16T22:22:00.255837Z agent=codex fireweed=0.2.1 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=1284 failing=0 passing=1284
+
+## Audit
+
+No findings; checked PRJ-001
+
