@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"path/filepath"
 	"reflect"
-	"sort"
 	"strings"
 	"testing"
 
 	"github.com/lurkshark/fireweed/packages/gitstore"
+	"github.com/lurkshark/fireweed/packages/workflow"
 )
 
 func gcCLIRef(t *testing.T, root, name, oid string) {
@@ -18,9 +18,10 @@ func gcCLIRef(t *testing.T, root, name, oid string) {
 	}
 }
 
-func gcCLIClaim(t *testing.T, root, name, worktree string) {
+func gcCLIStaleClaim(t *testing.T, root, name string) {
 	t.Helper()
-	data, err := json.Marshal(map[string]string{"worktree": worktree, "change": name})
+	missing := filepath.Join(t.TempDir(), "gone")
+	data, err := json.Marshal(map[string]string{"worktree": missing, "change": name})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -81,7 +82,6 @@ func Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty(t *testing.T) {
 		}
 		t.Run(name, func(t *testing.T) {
 			root, outer, nested := gcCLIProject(t)
-			head := cliGit(t, root, "rev-parse", "HEAD")
 			outerHead := cliGit(t, outer, "rev-parse", "HEAD")
 			oldDrill := "refs/fireweed/drills/alpha/20200101T000000.000000000"
 			futureDrill := "refs/fireweed/drills/alpha/20990101T000000.000000000"
@@ -89,60 +89,76 @@ func Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty(t *testing.T) {
 			staleClaim := "refs/fireweed/claims/z-stale"
 			gcCLIRef(t, outer, oldDrill, outerHead)
 			appPut(t, root, "changes/archive/0002-finished.md", "---\nmodule: alpha\nphase: applied\n---\n")
+			cliCommit(t, root, "record archived change")
 			linked := filepath.Join(t.TempDir(), "linked")
 			cliGit(t, root, "worktree", "add", "-b", "linked", linked, "HEAD")
-			gcCLIClaim(t, root, "main-live", root)
-			gcCLIClaim(t, root, "linked-live", linked)
-			gcCLIClaim(t, root, "z-stale", filepath.Join(t.TempDir(), "gone"))
+			authoringChange(t, root, "0003-main-live.md", "Main needs an additional value.\n", "### new:main\nAlpha MUST expose the main value.\n", "")
+			authoringChange(t, linked, "0004-linked-live.md", "Linked needs an additional value.\n", "### new:linked\nAlpha MUST expose the linked value.\n", "")
+			cliCommit(t, root, "queue main worktree change")
+			cliCommit(t, linked, "queue linked worktree change")
+			live := []struct {
+				root, slug string
+				oid        string
+			}{{root: root, slug: "main-live"}, {root: linked, slug: "linked-live"}}
+			for i, claim := range live {
+				started, err := workflow.Start(claim.root, claim.slug)
+				if err != nil || started.ClaimOID == "" {
+					t.Fatalf("start %s: claim=%q err=%v", claim.slug, started.ClaimOID, err)
+				}
+				live[i].oid = started.ClaimOID
+			}
+			gcCLIStaleClaim(t, root, "z-stale")
+			head := cliGit(t, root, "rev-parse", "HEAD")
 			for _, ref := range []string{attempt, oldDrill, futureDrill, "refs/fireweed/other/keep"} {
 				gcCLIRef(t, root, ref, head)
 			}
-			beforeHead := cliGit(t, root, "rev-parse", "HEAD")
-			beforeIndex := cliGit(t, root, "write-tree")
-			beforeStatus := cliGit(t, root, "status", "--porcelain=v1", "--untracked-files=all")
-			want := []string{attempt, staleClaim, oldDrill}
-			sort.Strings(want)
+			before := migrateCapture(t, root)
+			retained := []string{"refs/fireweed/claims/linked-live", "refs/fireweed/claims/main-live", futureDrill, "refs/fireweed/other/keep"}
 			args := []string{"gc"}
 			if jsonMode {
 				args = append(args, "--json")
 			}
-			status, out, stderr := runAppBinary(t, bin, nested, args...)
-			if status != 0 || stderr != "" {
-				t.Fatalf("gc: exit=%d stdout=%q stderr=%q", status, out, stderr)
-			}
-			if jsonMode {
-				if got := gcCLIJSONPruned(t, out); !reflect.DeepEqual(got, want) {
-					t.Errorf("JSON pruned=%v; want sorted full names %v", got, want)
+			for i, want := range [][]string{{attempt, staleClaim, oldDrill}, {}} {
+				status, out, stderr := runAppBinary(t, bin, nested, args...)
+				if status != 0 || stderr != "" {
+					t.Fatalf("gc call %d: exit=%d stdout=%q stderr=%q", i+1, status, out, stderr)
 				}
-			} else {
-				position := -1
-				for _, ref := range want {
-					at := strings.Index(out, ref)
-					if at <= position || strings.Count(out, ref) != 1 {
-						t.Errorf("plain output %q does not list %q once in order", out, ref)
+				switch {
+				case jsonMode:
+					if got := gcCLIJSONPruned(t, out); !reflect.DeepEqual(got, want) {
+						t.Errorf("JSON pruned=%v; want sorted full names %v", got, want)
 					}
-					position = at
+				case len(want) == 0:
+					if lower := strings.ToLower(out); !strings.Contains(lower, "no refs") || !strings.Contains(lower, "pruned") {
+						t.Errorf("empty plain gc must explicitly report no refs pruned: %q", out)
+					}
+				default:
+					var got []string
+					for _, field := range strings.Fields(out) {
+						if strings.HasPrefix(field, "refs/") {
+							got = append(got, field)
+						}
+					}
+					if !reflect.DeepEqual(got, want) {
+						t.Errorf("plain pruned=%v; want sorted full names %v", got, want)
+					}
 				}
-			}
-			if got := gcCLIRefs(t, root); !reflect.DeepEqual(got, []string{"refs/fireweed/claims/linked-live", "refs/fireweed/claims/main-live", futureDrill, "refs/fireweed/other/keep"}) {
-				t.Errorf("gc retained refs=%v", got)
-			}
-			if got := gcCLIRefs(t, outer); !reflect.DeepEqual(got, []string{oldDrill}) {
-				t.Errorf("gc changed enclosing project refs=%v", got)
-			}
-			if cliGit(t, root, "rev-parse", "HEAD") != beforeHead || cliGit(t, root, "write-tree") != beforeIndex || cliGit(t, root, "status", "--porcelain=v1", "--untracked-files=all") != beforeStatus {
-				t.Error("gc changed HEAD, index or working files")
-			}
-			status, out, stderr = runAppBinary(t, bin, nested, args...)
-			if status != 0 || stderr != "" {
-				t.Fatalf("second gc: exit=%d stdout=%q stderr=%q", status, out, stderr)
-			}
-			if jsonMode {
-				if got := gcCLIJSONPruned(t, out); len(got) != 0 {
-					t.Errorf("second gc pruned=%v; want []", got)
+				if got := gcCLIRefs(t, root); !reflect.DeepEqual(got, retained) {
+					t.Errorf("gc retained refs=%v; want %v", got, retained)
 				}
-			} else if !strings.Contains(strings.ToLower(out), "no refs") || !strings.Contains(strings.ToLower(out), "pruned") {
-				t.Errorf("empty plain gc must explicitly report no refs pruned: %q", out)
+				if got := gcCLIRefs(t, outer); !reflect.DeepEqual(got, []string{oldDrill}) {
+					t.Errorf("gc changed enclosing project refs=%v", got)
+				}
+				after := migrateCapture(t, root)
+				if after.head != before.head || !reflect.DeepEqual(after.index, before.index) || !reflect.DeepEqual(after.files, before.files) {
+					t.Error("gc changed HEAD, index or working files")
+				}
+				for _, claim := range live {
+					current, err := workflow.Current(claim.root, claim.slug)
+					if err != nil || current.ClaimOID != claim.oid {
+						t.Errorf("gc changed %s claim: got %q, want %q, err=%v", claim.slug, current.ClaimOID, claim.oid, err)
+					}
+				}
 			}
 		})
 	}

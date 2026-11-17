@@ -1,6 +1,10 @@
 ---
+eval_fix:
+    - APP-150
+    - APP-151
 module: app
-eval_fix: [APP-150, APP-151]
+phase: audit
+run: 20261117T015215-03856053a22f2e45c354da6b
 ---
 
 ## Motivation
@@ -31,3 +35,7 @@ recent drill refs, unrelated refs, nearest-project assertions and repeated
 GC checks. Assert the exact sorted pruned refs and verify that both native
 live claims survive. Keep the plain and JSON checks and existing spec ID
 coverage. FLOW-128 covers the explicit symlink-alias case.
+## Provenance
+
+- evals 2026-11-17T02:03:04.562739Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=403 failing=0 passing=403
+
