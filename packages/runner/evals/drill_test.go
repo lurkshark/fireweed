@@ -816,12 +816,16 @@ func drillEvalEntry(section, module, testcase, id, result string) bool {
 	return false
 }
 
-func Test_RUN_068_DependentOnlyFailuresEndDrill(t *testing.T) {
+func Test_RUN_068_RUN_078_DependentOnlyFailuresEndDrill(t *testing.T) {
 	f := newDrillFixture(t)
 	nextWrite(t, f.observations, "fail-dependents", "yes")
 	r, err := f.run(context.Background(), 0)
 	if err == nil || r.Result != "fail" || len(r.Own.Cases) != 1 || r.Own.Cases[0].Result != "pass" {
 		t.Fatalf("dependent-only drill = result %q, own cases %#v, error %v", r.Result, r.Own.Cases, err)
+	}
+	// Aardvark is evaluated before zeta, so its failure is primary.
+	if code, subject, ok := contracts.ErrorCode(err); !ok || code != "E01" || subject != "AAR-001" {
+		t.Errorf("dependent-only drill diagnostic = (%q, %q, %t), want (E01, AAR-001, true): %v", code, subject, ok, err)
 	}
 	if count := drillObserved(t, f, "count"); len(r.Steps) != 1 || count != "1" {
 		t.Errorf("dependent-only failure invoked reconstruction %s times and returned %d steps, want one", count, len(r.Steps))
@@ -983,12 +987,18 @@ func Test_RUN_074_DrillResultAndReportIdentifySelectedCommand(t *testing.T) {
 	}
 }
 
-func Test_RUN_060_RUN_061_FailedDrillReportsFailuresAndRetainsCode(t *testing.T) {
+func Test_RUN_060_RUN_061_RUN_078_FailedDrillReportsFailuresAndRetainsCode(t *testing.T) {
 	f := newDrillFixture(t)
 	f.mode(t, "wrong")
 	r, err := f.run(context.Background(), 0)
 	if err == nil || r.Result != "fail" || r.Ref == "" || r.ReportPath != ".fireweed/drills/alpha.md" {
 		t.Fatalf("failed drill = %#v, %v", r, err)
+	}
+	if code, subject, ok := contracts.ErrorCode(err); !ok || code != "E01" || subject != "ALP-001" {
+		t.Errorf("target-only drill diagnostic = (%q, %q, %t), want (E01, ALP-001, true): %v", code, subject, ok, err)
+	}
+	if len(r.Steps) != 2 {
+		t.Errorf("target-only failure returned %d reconstruction steps, want two", len(r.Steps))
 	}
 	if nextGit(t, f.root, "show", r.Ref+":packages/alpha/internal/value.go") != "wrong" {
 		t.Error("failed rebuilt code was not retained")

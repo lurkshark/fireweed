@@ -1,7 +1,9 @@
 ---
-module: runner
 already_satisfied:
-    - new:drill-eval-error-code
+    - RUN-078
+module: runner
+phase: audit
+run: 20261117T111540-1388407b00abb23fae7b12e6
 ---
 
 ## Motivation
@@ -18,7 +20,7 @@ The existing `runner.Drill` return error exposes the code and spec ID through
 
 ## Added
 
-### new:drill-eval-error-code
+### RUN-078
 When the primary error from Drill is a failed enforced testcase in the target or a dependent module, `contracts.ErrorCode` on the returned error MUST report E01 and the failed spec ID supplied by `checks.RequirePass`.
 
 ## Modified
@@ -38,3 +40,7 @@ paths.
 
 The current runner preserves the primary code and subject through eval
 error wrapping and aggregation, so the added spec is already satisfied.
+## Provenance
+
+- evals 2026-11-17T11:25:42.985011Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=217 failing=0 passing=217
+
