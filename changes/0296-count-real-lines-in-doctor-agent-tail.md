@@ -3,7 +3,7 @@ fixes:
     - CHK-065
     - CHK-066
 module: checks
-phase: audit
+phase: impl
 run: 20261116T235732-2fe35230e92cf36479efcd08
 ---
 
@@ -44,7 +44,12 @@ Both probe logs retained the complete stdout and stderr. `fireweed verify`
 passed the evals phase with this fail-first evidence.
 
 The implementation can be updated in `packages/checks/internal/engine/doctor.go`.
+## Audit
+
+No findings; checked CHK-065, CHK-066
+
 ## Provenance
 
 - evals 2026-11-17T00:07:30.337208Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=138 failing=3 passing=135
+- audit 2026-11-17T00:07:49.867697Z agent=codex fireweed=0.2.1 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 
