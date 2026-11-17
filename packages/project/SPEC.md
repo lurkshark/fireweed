@@ -57,7 +57,7 @@ Check MUST reject module spec IDs and change edit IDs whose prefix belongs to an
 Check MUST reject a change that uses the same edit identity more than once across Added, Modified and Removed with diagnostic C05.
 
 ### PRJ-014
-Check MUST reject a pending change that references a handle absent from that change's Added entries with diagnostic C09.
+Check MUST report a non-warning C09 diagnostic naming any handle referenced in a pending change document that is absent from that change's Added entries. This rule includes references in Motivation and Interface.
 
 ### PRJ-015
 Check MUST reject Modified or Removed entries whose bases hash is missing or
