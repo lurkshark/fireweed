@@ -85,6 +85,14 @@ case "$mode" in
   timeout) printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; sleep 10;;
   usage_always) printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; echo 'RATE LIMIT' >&2; exit 9;;
   usage_once) if [ "$count" -eq 1 ]; then printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; echo 'RATE LIMIT' >&2; exit 9; fi; [ "$(cat packages/alpha/internal/value.go 2>/dev/null)" = PARTIAL_WORK ] || { echo 'prior retry work missing' >&2; exit 8; }; printf 'new' > packages/alpha/internal/value.go;;
+  usage_after_failed_eval)
+    if [ "$count" -eq 1 ]; then
+      printf 'wrong' > packages/alpha/internal/value.go || exit 12
+      exit 0
+    fi
+    printf 'PARTIAL_WORK' > packages/alpha/internal/value.go || exit 12
+    echo 'RATE LIMIT' >&2
+    exit 9;;
   agent_retry|mixed_exhaust) if [ "$count" -eq 1 ]; then printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; echo 'WORKER_FAILURE' >&2; exit 7; fi; if [ "$mode" = agent_retry ]; then [ "$(cat packages/alpha/internal/value.go 2>/dev/null)" = PARTIAL_WORK ] || { echo 'prior retry work missing' >&2; exit 8; }; printf 'new' > packages/alpha/internal/value.go; fi;;
   agent_fail_always) printf 'PARTIAL_WORK' > packages/alpha/internal/value.go; printf 'failed worker observation'; echo 'WORKER_FAILURE' >&2; exit 7;;
   verify_retry)
@@ -709,6 +717,10 @@ func Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted(t *testing
 	if err == nil || !runner.IsUsageStop(err) || r.Result != "stopped" || len(r.Steps) != 3 || !r.Steps[2].UsageLimit {
 		t.Errorf("usage budget = %#v, %v", r, err)
 	}
+	refs, listErr := exec.Command("git", "-C", stopped.root, "for-each-ref", "--format=%(refname)", "refs/fireweed/drills/").Output()
+	if listErr != nil || r.Ref != "" || len(refs) != 0 {
+		t.Errorf("usage stop before acceptance returned Ref %q and listed drill refs %q (Git error: %v), want neither", r.Ref, refs, listErr)
+	}
 	drillCleaned(t, stopped)
 
 	cancelled := newDrillFixture(t)
@@ -728,6 +740,32 @@ func Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted(t *testing
 		t.Errorf("timed drill = %#v, %v", r, err)
 	}
 	drillCleaned(t, timed)
+}
+
+func Test_RUN_061_UsageStopRetainsAcceptedRebuild(t *testing.T) {
+	f := newDrillFixture(t)
+	f.mode(t, "usage_after_failed_eval")
+	config := strings.Replace(nextRead(t, f.root, "fireweed.yaml"), "limit_budget: 4ms", "limit_budget: 0s", 1)
+	nextWrite(t, f.root, "fireweed.yaml", config)
+	nextCommit(t, f.root, "zero usage budget for drill retry")
+	base := nextGit(t, f.root, "rev-parse", "HEAD")
+
+	r, err := f.run(context.Background(), 0)
+	if !runner.IsUsageStop(err) || r.Result != "stopped" || len(r.Steps) != 2 || r.Steps[0].ExitCode != 0 || !r.Steps[1].UsageLimit {
+		t.Fatalf("drill retry = result %q, steps %#v, error %v, want usage stop on the second invocation", r.Result, r.Steps, err)
+	}
+	if cases := r.Own.Cases; len(cases) != 1 || cases[0].Result != "fail" || !strings.Contains(cases[0].Failure, "own verification failure") {
+		t.Errorf("own eval cases = %#v, want the first rebuild's failure", cases)
+	}
+	if r.Date == "" || r.Ref != "refs/fireweed/drills/alpha/"+r.Date {
+		t.Errorf("retained drill ref = %q for date %q", r.Ref, r.Date)
+	} else if value, readErr := gitstore.ReadAt(f.root, r.Ref, "packages/alpha/internal/value.go"); readErr != nil || string(value) != "wrong" {
+		t.Errorf("retained value at %s = %q, error %v, want the first rebuild's value %q", r.Ref, value, readErr, "wrong")
+	}
+	if repo, inspectErr := gitstore.Inspect(f.root); inspectErr != nil || repo.Head != base {
+		t.Errorf("invoking HEAD = %s, want %s: %v", repo.Head, base, inspectErr)
+	}
+	drillCleaned(t, f)
 }
 
 func Test_RUN_058_RUN_059_DrillReturnsAllReportsEvenWhenEvalsFail(t *testing.T) {
