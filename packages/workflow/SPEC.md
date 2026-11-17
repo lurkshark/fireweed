@@ -75,8 +75,7 @@ Current MUST resolve only a claim owned by the calling worktree.
 Start MUST use the current HEAD as the initial phase base of its claim.
 
 ### FLOW-019
-When its queued change can be resolved, Current MUST return the project snapshot approved at Start while the calling worktree holds the claim. Approved MUST expose that same snapshot independently of live project and queue parsing.
-
+For a resolvable queued change held by the calling worktree, Current MUST return the project snapshot approved at Start. When supplied the held change's repository-relative path, Current MUST do so even when the live project configuration is malformed or incompatible with the running Fireweed version. Approved MUST expose the same snapshot independently of live project and queue parsing.
 
 ### FLOW-020
 Verify MUST reject an unapproved alteration of the active change's author fields before running a hook.
