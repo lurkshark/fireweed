@@ -1,5 +1,7 @@
 ---
 module: app
+phase: applied
+run: 20261117T021126-ed8902d2985478d2a0db1118
 ---
 
 ## Motivation
@@ -30,3 +32,7 @@ Current project.Load returns one module or an error for the temporary
 dot-glob fixture. The cardinality failure was reproduced against the
 retained project reconstruction. This maintenance draft adds a local guard
 to the existing behavior.
+## Provenance
+
+- impl 2026-11-17T02:19:20.687635Z agent=codex fireweed=0.2.1 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=403 failing=0 passing=403
+
