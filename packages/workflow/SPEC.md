@@ -487,7 +487,10 @@ PRBody MUST return an error for which IsEndpointConfigError reports true when th
 IsEndpointConfigError MUST report false when PRBody fails because the range cannot be resolved.
 
 ### FLOW-128
-GC MUST prune refs/fireweed/claims entries whose recorded worktree is missing or is no longer registered with the same Git common directory, while retaining claims for live registered worktrees.
+GC MUST prune refs/fireweed/claims entries whose recorded worktree is missing
+or is no longer registered with the same Git common directory, while
+retaining claims for live registered worktrees. If the recorded path is a
+symlink alias that resolves to such a worktree, GC MUST retain its claim.
 
 ### FLOW-129
 GC MUST prune refs/fireweed/attempts/<slug>/* only for changes present in changes/archive, retaining attempt refs for unapplied changes.
