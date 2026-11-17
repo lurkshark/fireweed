@@ -1,9 +1,11 @@
 ---
-module: project
-bases:
-    PRJ-086: 4cba5d9b
 already_satisfied:
     - PRJ-086
+bases:
+    PRJ-086: 4cba5d9b
+module: project
+phase: audit
+run: 20261117T095147-00f0776ec3ee6d95dc5d3b16
 ---
 
 ## Motivation
@@ -35,3 +37,7 @@ In the public unknown-worker-alias eval, assert that contracts.ErrorCode
 returns U02 and a subject exactly equal to the supplied alias. Also assert
 that the error message names the alias. Keep the existing C01 cases.
 Current ResolveAgentCommand already supplies both the subject and message.
+## Provenance
+
+- evals 2026-11-17T09:52:44.879972Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=322 failing=0 passing=322
+

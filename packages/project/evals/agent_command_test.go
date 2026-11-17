@@ -52,7 +52,14 @@ func Test_PRJ_086_ResolveExplicitWorkerAlias(t *testing.T) {
 		requireAgentCommand(t, namedAgentConfig(), "worker", "reviewer", []any{"review-tool", "--message", "{prompt}"}, false)
 	})
 	t.Run("unknown_alias", func(t *testing.T) {
-		requireAgentCommandError(t, namedAgentConfig(), "worker", "unlisted-worker", "U02", "unlisted-worker")
+		const alias = "unlisted-worker"
+		_, _, err := project.ResolveAgentCommand(namedAgentConfig(), "worker", alias)
+		if code, subject, ok := contracts.ErrorCode(err); !ok || code != "U02" || subject != alias {
+			t.Errorf("ResolveAgentCommand error code = (%q, %q, %t); want (U02, %q, true): %v", code, subject, ok, alias, err)
+		}
+		if err == nil || !strings.Contains(err.Error(), alias) {
+			t.Errorf("ResolveAgentCommand error = %v; want a message naming %q", err, alias)
+		}
 	})
 	t.Run("malformed_mapping", func(t *testing.T) {
 		config := namedAgentConfig()
