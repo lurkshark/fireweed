@@ -455,6 +455,9 @@ func Test_GIT_005_RunCaptureExitTimeoutAndGroupCancel(t *testing.T) {
 				if got.err == nil {
 					t.Error("terminated Run succeeded")
 				}
+				if !mode.cancel && !errors.Is(got.err, context.DeadlineExceeded) {
+					t.Errorf("timed-out Run error = %v, want context.DeadlineExceeded", got.err)
+				}
 				checkFailedOutput(t, got.result, got.err)
 			case <-time.After(2 * time.Second):
 				t.Error("terminated Run did not return promptly")
