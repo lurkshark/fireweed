@@ -4,6 +4,8 @@ already_satisfied:
 bases:
     FLOW-136: e2faee8a
 module: workflow
+phase: audit
+run: 20261117T103247-9d80efbe136e2353b6ed4bc4
 ---
 
 ## Motivation
@@ -39,3 +41,7 @@ Assert the audit phase, claim and HEAD remain in place.
 The existing implementation marks the audit verification error and preserves
 its diagnostics. A focused probe passed on main's implementation and found
 the missing marker and diagnostics on the retained reconstruction `16c778e`.
+## Provenance
+
+- evals 2026-11-17T10:37:31.47855Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=218 failing=0 passing=218
+

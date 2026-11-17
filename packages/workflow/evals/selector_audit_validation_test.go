@@ -2,11 +2,16 @@ package evals_test
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
+	"slices"
 	"strings"
 	"testing"
 
+	"github.com/lurkshark/fireweed/packages/contracts"
+	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
 
@@ -69,7 +74,7 @@ func Test_FLOW_059_AuditVerifyChecksSubmissionWithoutAdvancing(t *testing.T) {
 	}
 }
 
-func Test_FLOW_002_AuditRejectsForbiddenEditBeforeHooks(t *testing.T) {
+func Test_FLOW_002_FLOW_136_AuditRejectsForbiddenEditAndDoneMarksFailure(t *testing.T) {
 	root := fixture(t, "", "", "", "", "")
 	marker := hookMarker(t, root)
 	auditState := toAudit(t, root)
@@ -85,32 +90,50 @@ func Test_FLOW_002_AuditRejectsForbiddenEditBeforeHooks(t *testing.T) {
 	write(t, root, forbidden, "package alpha_test\n")
 	base := head(t, root)
 
-	for _, operation := range []struct {
-		name string
-		call func() (workflow.Result, error)
-	}{
-		{"quick Verify", func() (workflow.Result, error) { return verify(root, true) }},
-		{"full Verify", func() (workflow.Result, error) { return verify(root, false) }},
-		{"Done", func() (workflow.Result, error) { return done(root) }},
-	} {
-		result, err := operation.call()
-		assertErrorCode(t, operation.name, err, "Z01")
-		if err == nil || !strings.Contains(err.Error(), forbidden) {
-			t.Errorf("%s = phase %q, error %v; want Z01 naming %s", operation.name, result.State.Phase, err, forbidden)
+	assertRejection := func(operation string, err error) {
+		t.Helper()
+		code, subject, ok := contracts.ErrorCode(err)
+		if !ok || code != "Z01" || subject != forbidden || !strings.Contains(err.Error(), forbidden) {
+			t.Errorf("%s error = %v (code %q, subject %q); want Z01 naming %s", operation, err, code, subject, forbidden)
 		}
 		if got := head(t, root); got != base {
-			t.Errorf("%s advanced HEAD: %s -> %s", operation.name, base, got)
+			t.Errorf("%s advanced HEAD: %s -> %s", operation, base, got)
 		}
 		if got := readFile(t, root, pendingCommitChange); got != submission {
-			t.Errorf("%s changed the valid audit submission", operation.name)
+			t.Errorf("%s changed the valid audit submission", operation)
 		}
 		current, currentErr := workflow.Current(root, "manual")
 		if currentErr != nil || current.Phase != "audit" || current.PhaseBase != base || current.ClaimOID != auditState.ClaimOID {
-			t.Errorf("%s changed held audit phase or claim: %#v, %v", operation.name, current, currentErr)
+			t.Errorf("%s changed held audit phase or claim: %#v, %v", operation, current, currentErr)
 		}
 		if _, markerErr := os.Stat(marker); !os.IsNotExist(markerErr) {
-			t.Errorf("%s ran the eval hook before zone rejection: %v", operation.name, markerErr)
+			t.Errorf("%s ran the eval hook before zone rejection: %v", operation, markerErr)
 		}
+	}
+
+	_, quickErr := verify(root, true)
+	assertRejection("quick Verify", quickErr)
+	verified, verifyErr := verify(root, false)
+	assertRejection("full Verify", verifyErr)
+	if !slices.ContainsFunc(verified.Diagnostics, func(d project.Diagnostic) bool {
+		return d.Code == "Z01" && d.Path == forbidden && !d.Warning
+	}) {
+		t.Errorf("full Verify diagnostics = %v, want Z01 for %s", verified.Diagnostics, forbidden)
+	}
+
+	result, doneErr := done(root)
+	assertRejection("Done", doneErr)
+	if doneErr == nil || verifyErr == nil {
+		t.FailNow()
+	}
+	if doneErr.Error() != verifyErr.Error() {
+		t.Errorf("Done error text = %q, want %q", doneErr.Error(), verifyErr.Error())
+	}
+	if !reflect.DeepEqual(result, verified) {
+		t.Errorf("Done verification result = %#v, want %#v", result, verified)
+	}
+	if wrapped := fmt.Errorf("finish audit: %w", doneErr); !workflow.IsVerificationFailure(wrapped) {
+		t.Errorf("wrapped Done audit verification error was not recognized: %v", wrapped)
 	}
 }
 
