@@ -1,9 +1,9 @@
 ---
 agent: opencode
-base_commit: da7b0b176f7a7cc3da305f8e56c8de56e8a9e531
-date: "2026-11-16T16:44:18.548066Z"
+base_commit: 422411b1e44cf5a1649938726ff7fee02c7cc3e8
+date: "2026-11-17T05:44:08.402721Z"
 model: opencode/deepseek-v4.1-flash#high
-result: fail
+result: pass
 ---
 
 ## Own evals
@@ -15,6 +15,9 @@ result: fail
 - checks / Test_CHK_043_RequiredGlobalHookRejectsUnattributedNonzeroExit / CHK-043 / pass
 - checks / Test_CHK_043_SilentNonzeroOverrideIsIndependentOfGlobalViolation / CHK-043 / pass
 - checks / Test_CHK_043_LaunchCancellationAndTimeoutStayErrors / CHK-043 / pass
+- checks / Test_CHK_065_CHK_066_DoctorAgentTailAcrossStreams / CHK-065, CHK-066 / pass
+- checks / Test_CHK_065_CHK_066_DoctorAgentTailAcrossStreams/match_twentieth / CHK-065, CHK-066 / pass
+- checks / Test_CHK_065_CHK_066_DoctorAgentTailAcrossStreams/match_twenty-first / CHK-065, CHK-066 / pass
 - checks / Test_CHK_081_DoctorProbeLogsShareFreshRunAndPreserveStreams / CHK-081 / pass
 - checks / Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput / CHK-081 / pass
 - checks / Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput/failure / CHK-081 / pass
@@ -279,13 +282,7 @@ result: fail
 - app / Test_APP_040_ForwardedCheckCode / APP-040 / pass
 - app / Test_APP_062_APP_063_APP_064_APP_065_APP_066_APP_067_DoctorCLI / APP-062, APP-063, APP-064, APP-065, APP-066, APP-067 / pass
 - app / Test_APP_062_DoctorUsesCloserProject / APP-062 / pass
-- app / Test_APP_065_APP_066_APP_067_DoctorFailures / APP-065, APP-066, APP-067 / fail
-
-=== RUN   Test_APP_065_APP_066_APP_067_DoctorFailures
-    doctor_setup_test.go:263: APP-065/066 failed probe status=1 output="C14: setup: setup hook failed: exit status 17\n"
-    doctor_setup_test.go:278: APP-067 failed diagnostic=map[code:"C14" message:"setup hook failed: exit status 17" path:"setup" warning:false]
---- FAIL: Test_APP_065_APP_066_APP_067_DoctorFailures (0.93s)
-
+- app / Test_APP_065_APP_066_APP_067_DoctorFailures / APP-065, APP-066, APP-067 / pass
 - app / Test_APP_065_APP_066_APP_067_DoctorFailures/extra / APP-065, APP-066, APP-067 / pass
 - app / Test_APP_065_APP_066_APP_067_DoctorFailures/unknown-flag / APP-065, APP-066, APP-067 / pass
 - app / Test_APP_065_APP_066_APP_067_DoctorFailures/wrong-command-flag / APP-065, APP-066, APP-067 / pass
@@ -326,7 +323,7 @@ result: fail
 - app / Test_APP_156_HelpForms/init_-h / APP-156 / pass
 - app / Test_APP_156_HelpForms/new-module_--help / APP-156 / pass
 - app / Test_APP_156_HelpForms/new-module_-h / APP-156 / pass
-- app / Test_APP_156_EachListedCommandHasCLIHelp / APP-156 / pass
+- app / Test_APP_156_EachSupportedCommandHasCLIHelp / APP-156 / pass
 - app / Test_APP_156_ExactHelpWordForm / APP-156 / pass
 - app / Test_APP_157_HelpJSONMatchesPlain / APP-157 / pass
 - app / Test_APP_157_HelpJSONMatchesPlain/help / APP-157 / pass
@@ -782,6 +779,9 @@ result: fail
 - workflow / Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal/changes/0001-manual.md / FLOW-096 / pass
 - workflow / Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal/0001-manual.md / FLOW-096 / pass
 - workflow / Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal/manual / FLOW-096 / pass
+- workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers / FLOW-019 / pass
+- workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers/1.0 / FLOW-019 / pass
+- workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers/1 / FLOW-019 / pass
 - workflow / Test_FLOW_019_FLOW_139_ApprovedSurvivesLiveEdits / FLOW-019, FLOW-139 / pass
 - workflow / Test_FLOW_140_ApprovedReportsNoOwnedClaim / FLOW-140 / pass
 - workflow / Test_FLOW_140_ApprovedRejectsUnreadableOrMalformedClaim / FLOW-140 / pass
@@ -970,6 +970,7 @@ result: fail
 - workflow / Test_FLOW_111_StatusReworkChainWarning/latest_matching_predecessor_wins / FLOW-111 / pass
 - workflow / Test_FLOW_111_StatusReworkChainWarning/same_module_without_shared_IDs / FLOW-111 / pass
 - workflow / Test_FLOW_110_StatusSharedBaseUsesSameArchivedDocumentIdentity / FLOW-110 / pass
+- workflow / Test_FLOW_110_StatusReportsUnavailableConfiguredBaseWithEmptyArchive / FLOW-110 / pass
 - workflow / Test_FLOW_112_StatusPhaseCommitsMatchRealLifecycle / FLOW-112 / pass
 - workflow / Test_FLOW_113_StatusLatestRecordedCostsAndSavedWarnings / FLOW-113 / pass
 - workflow / Test_FLOW_136_DoneMarksFullVerificationFailureAndPreservesResult / FLOW-136 / pass
@@ -983,51 +984,69 @@ result: fail
 - workflow / Test_FLOW_138_ContextExplainsHowToDeclareWorkerBlock/impl / FLOW-138 / pass
 
 ## Contradicted Decisions
-None. The retained Specs and evals are consistent with both recorded Decisions:
-
-- `[0071-doctor-probes]`: Doctor requests the literal reply `FIREWEED_DOCTOR_OK`, matches `limit_patterns` as case-insensitive literal substrings, and compares playbook overrides with the hexadecimal SHA-256 of the embedded playbook text.
-- `[0114-history-validation]`: a merge retaining a phase already held by a parent is not a new assignment; combined merge diffs still enforce append-only paths; squashed entries name the repository-relative after-path; ordinary phase transitions compare against the sole parent.
+None found. The reconstruction follows `0071-doctor-probes` for the doctor reply,
+limit-pattern matching, playbook hashes and `0114-history-validation` for merge
+phase retention, combined merge diffs, squashed after-paths and single-parent
+non-merge transitions.
 
 ## Gaps
-- **CHK-081**: The Spec requires complete stdout and stderr in one log file but does not define their byte ordering or separators. The reconstruction writes stdout followed by stderr with no added framing. Target module for fixing change: `checks`.
-- **CHK-083**: The Spec requires a temporary prompt file and cleanup, but does not specify its directory, permissions, naming, or whether worker and audit probes must use distinct files. The reconstruction uses one OS-temp file per probe. Target module for fixing change: `checks`.
-- **CHK-053 / CHK-084**: The Specs require uniquely named throwaway modules and prefixed canary probes, but do not define how names or ID prefixes are generated or which canary module receives planted files. The reconstruction uses two `doctor`-prefixed alphanumeric names with matching uppercase prefixes and plants canaries in the first module. Target module for fixing change: `checks`.
-- **CHK-060 / CHK-084**: The Specs require probing every global and per-module hook override, but do not say whether every override must be tested for every canary type or whether one module override represents all canaries. The reconstruction runs each eval scope for `failing_eval` and `missing_id`, and each boundary scope for `undeclared` and `internal_eval`. Target module for fixing change: `checks`.
-- **CHK-041 / CHK-042**: "Normally exited hooks" does not explicitly resolve a nonzero hook whose only output lines are baseline-suppressed or opted-out. The reconstruction treats such a hook as successfully suppressed and does not emit X02. Target module for fixing change: `checks`.
-- **CHK-077**: The Spec says to use recorded before/after zone maps and the worker change's projected `set` values, but does not state whether the `set` overlay applies to both sides of an impl-to-applied comparison. The reconstruction applies it to both. Target module for fixing change: `checks`.
+- **CHK-043 — checks**: The eval `CHK_041_CHK_042_NormalNonzeroExitCanUseBaselineAndOptOut`
+  requires a normally exited nonzero boundary hook to be accepted when every
+  attributed line is baseline- or opt-out-suppressed. The spec's phrase "without
+  emitting any module-attributed violation" does not say whether suppressed lines
+  count. The implementation accepts the all-suppressed case.
+- **CHK-055 — checks**: Baseline eval gating is under-specified. The tests require
+  canary probes to continue after a baseline JUnit mapping/parse error
+  (`ZeroHookAndRecovery`) but stop before planting after a missing-report failure
+  or a baseline coverage failure. The implementation gates on missing report,
+  launch/run failure, missing hook, and coverage/pass failure, but not on a
+  mapping/parse-only baseline error.
+- **CHK-059 — checks**: The spec only requires rejecting the supplied `missing_id`
+  canary for its unmapped testcase ID. The tests additionally require the rejected
+  testcase to match an identifier declared in the planted canary, so an unrelated
+  testcase sharing the canary's name prefix does not count. The implementation
+  derives expected identifiers from the planted files and matches them on token
+  boundaries.
+- **CHK-053 — checks**: The spec does not define the zone frontmatter of the two
+  throwaway canary modules. Canaries inheriting project `module_defaults`
+  spuriously become boundary-enforcement-required when no global boundary hook
+  exists. The implementation clears `disposable` on canary modules so override-only
+  and optional-hook projects can still exercise the hooks without false X02s.
+- **CHK-074 — checks**: For merge commits the implementation prefers combined
+  `--name-status` output and falls back to combined name-only output. The fallback
+  cannot distinguish a combined modification from a deletion or rename; the tests
+  cover only merge-resolution modification. A future change should make combined
+  delete/rename status parsing explicit.
+- **CHK-077 — checks**: History uses only the first parent's recorded snapshot for
+  the "before" zone map and applies the worker change's projected `set` values to
+  the "after" map. The spec says to use recorded before/after zone maps for merge
+  cases but does not define which parent supplies the before map when parents
+  disagree.
+- **CHK-068 — assets**: The current `AGENTS.md` managed guidance block has no
+  exported asset/API source. Doctor hardcodes the block in `checks`, so changes to
+  project guidance require editing `checks` instead of the asset content that is
+  intended to own it.
 
 ## Agent observations
 
 ### Invocation 1
-Log: .fireweed/runs/20261116T164418-a17143f4c381d31c03ac31a8/drill-1.log
+Log: .fireweed/runs/20261117T054408-96fe3d49dbafbfffe6596d69/drill-1.log
 
-Implemented the disposable `checks` module under `packages/checks/internal/engine/`:
+Rebuilt the `checks` module’s disposable implementation under `packages/checks/internal/engine/`:
 
-- `junit.go` — JUnit parsing, ID mapping, coverage, fail-first, and pass checks
-- `hooks.go` — eval hook execution, placeholder expansion, boundaries, suppression and diagnostics
-- `zones.go` — phase-aware zone enforcement
-- `history.go` — commit-range history and H01–H04 validation
-- `doctor.go` — scratch worktree probes, canaries, recovery, agent probes, logs, guidance and playbook checks
+- JUnit parsing, ID mapping, coverage, fail-first and pass checks
+- Eval hook execution, placeholders, process metadata and report validation
+- Phase zone enforcement, including renames
+- Boundary hooks, baselines, opt-outs and diagnostics
+- History checks H01–H04, squashed changes and merge handling
+- Doctor scratch worktrees, setup, templates, canaries, recovery, agent probes, logs, C14/C15/C16 diagnostics
 
-Added `DRILL_NOTES.md` with the required `## Contradicted Decisions` and `## Gaps` sections.
+Verification completed:
 
-Validation:
+- Full `packages/checks/evals` suite passed, including the three-minute timeout eval.
+- The requested target eval hook passed:
+  - `PASS`
+  - `ok github.com/lurkshark/fireweed/packages/checks/evals 234.099s`
 
-- `go vet ./packages/checks/...` passes.
-- Target eval hook passes all `packages/checks/evals` tests and writes `.fireweed/drill-eval.xml`.
-- Repo-wide `go test ./...` still cannot build the root package because `packages/app` is absent from this input workspace; all present package evals pass.
-
-
-## Failures
-app: failed case "Test_APP_065_APP_066_APP_067_DoctorFailures" for APP-065
-Test_APP_065_APP_066_APP_067_DoctorFailures: === RUN   Test_APP_065_APP_066_APP_067_DoctorFailures
-    doctor_setup_test.go:263: APP-065/066 failed probe status=1 output="C14: setup: setup hook failed: exit status 17\n"
-    doctor_setup_test.go:278: APP-067 failed diagnostic=map[code:"C14" message:"setup hook failed: exit status 17" path:"setup" warning:false]
---- FAIL: Test_APP_065_APP_066_APP_067_DoctorFailures (0.93s)
-?   	github.com/lurkshark/fireweed/packages/app	[no test files]
-?   	github.com/lurkshark/fireweed/packages/app/internal/entry	[no test files]
-FAIL
-FAIL	github.com/lurkshark/fireweed/packages/app/evals	216.406s
-
-exit status 1
+Added `DRILL_NOTES.md` with separate `## Contradicted Decisions` and `## Gaps` sections. No contradicted decisions were found; gaps identify their nearest spec IDs and fixing target modules.
 
