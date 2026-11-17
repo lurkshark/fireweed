@@ -1,7 +1,7 @@
 ---
 agent: opencode
-base_commit: 6063a39c81550f7fa757ca54523e208cc28fed89
-date: "2026-11-16T07:16:50.203571Z"
+base_commit: b15846df67b7d6b3a0ea02456979e06fabf4ff44
+date: "2026-11-17T05:18:23.636398Z"
 model: opencode/deepseek-v4.1-flash#high
 result: fail
 ---
@@ -137,6 +137,7 @@ result: fail
 - project / Test_PRJ_046_CheckEvalFixCannotMixWithFixesOrSpecEdits/fixes_only / PRJ-046 / pass
 - project / Test_PRJ_046_CheckEvalFixCannotMixWithFixesOrSpecEdits/added_only / PRJ-046 / pass
 - project / Test_PRJ_001_PRJ_017_LoadConfiguredModulesAndDefaults / PRJ-001, PRJ-017 / pass
+- project / Test_PRJ_001_LoadRootModuleForDotGlob / PRJ-001 / pass
 - project / Test_PRJ_018_LoadInvalidDocuments / PRJ-018 / pass
 - project / Test_PRJ_018_LoadInvalidDocuments/missing_config / PRJ-018 / pass
 - project / Test_PRJ_018_LoadInvalidDocuments/malformed_config / PRJ-018 / pass
@@ -155,17 +156,21 @@ result: fail
 - project / Test_PRJ_024_NewChangeRejectsDuplicatesWithoutOverwrite / PRJ-024 / pass
 - project / Test_PRJ_024_NewChangeRejectsDuplicatesWithoutOverwrite/pending / PRJ-024 / pass
 - project / Test_PRJ_024_NewChangeRejectsDuplicatesWithoutOverwrite/archived / PRJ-024 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments / PRJ-025, PRJ-026 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments/PRJ-025_unknown_module / PRJ-025, PRJ-026 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments/PRJ-026_uppercase_slug / PRJ-025, PRJ-026 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments/PRJ-026_underscore_slug / PRJ-025, PRJ-026 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments/PRJ-026_slash_slug / PRJ-025, PRJ-026 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments/PRJ-026_empty_slug / PRJ-025, PRJ-026 / pass
+- project / Test_PRJ_025_NewChangeRejectsUnknownModuleWithoutWritingFiles / PRJ-025 / pass
+- project / Test_PRJ_026_NewChangeRejectsInvalidSlugs / PRJ-026 / pass
+- project / Test_PRJ_026_NewChangeRejectsInvalidSlugs/uppercase_slug / PRJ-026 / pass
+- project / Test_PRJ_026_NewChangeRejectsInvalidSlugs/underscore_slug / PRJ-026 / pass
+- project / Test_PRJ_026_NewChangeRejectsInvalidSlugs/slash_slug / PRJ-026 / pass
+- project / Test_PRJ_026_NewChangeRejectsInvalidSlugs/empty_slug / PRJ-026 / pass
 - project / Test_PRJ_067_NewChangeBlockedQueuedPathPreservesCause / PRJ-067 / pass
 - project / Test_PRJ_027_PRJ_028_QueueOrderContentAndArchive / PRJ-027, PRJ-028 / pass
-- project / Test_PRJ_029_PRJ_030_QueueRejectsInvalidDocuments / PRJ-029, PRJ-030 / pass
-- project / Test_PRJ_029_PRJ_030_QueueRejectsInvalidDocuments/PRJ-029_malformed / PRJ-029, PRJ-030 / pass
-- project / Test_PRJ_029_PRJ_030_QueueRejectsInvalidDocuments/PRJ-030_unknown_module / PRJ-029, PRJ-030 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics / PRJ-029 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics/malformed_frontmatter / PRJ-029 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics/malformed_item_heading / PRJ-029 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics/duplicate_added_identity / PRJ-029 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics/duplicate_modified_identity / PRJ-029 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics/duplicate_removed_identity / PRJ-029 / pass
+- project / Test_PRJ_030_QueueRejectsUnknownModule / PRJ-030 / pass
 - project / Test_PRJ_004_PRJ_031_PRJ_032_TargetAliasesAndAmbiguousSlug / PRJ-004, PRJ-031, PRJ-032 / pass
 - project / Test_PRJ_005_PRJ_032_PRJ_036_ProjectEditsAndLocalHandles / PRJ-005, PRJ-032, PRJ-036 / pass
 - project / Test_PRJ_033_PRJ_034_PRJ_035_SetFieldsAndRejections / PRJ-033, PRJ-034, PRJ-035 / pass
@@ -211,6 +216,10 @@ result: fail
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/missing_recorded_config / PRJ-050 / pass
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/malformed_recorded_config / PRJ-050 / pass
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/missing_recorded_SPEC / PRJ-050 / pass
+- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics / PRJ-050 / pass
+- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/malformed_frontmatter / PRJ-050 / pass
+- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/malformed_item_heading / PRJ-050 / pass
+- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/duplicate_item_identity / PRJ-050 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs / PRJ-004 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs/Project / PRJ-004 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs/Stamp / PRJ-004 / pass
@@ -263,6 +272,10 @@ result: fail
 - project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/nonmatching_headings_only / PRJ-077 / pass
 - project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/pending_change_without_specs / PRJ-077 / pass
 - project / Test_PRJ_060_StaleSpecsSelectsRecordedModifiedAndRemovedInEditOrder / PRJ-060 / pass
+- project / Test_PRJ_060_StaleSpecsRejectsNonmappingBasesAtQueuedPath / PRJ-060 / pass
+- project / Test_PRJ_060_StaleSpecsRejectsNonmappingBasesAtQueuedPath/sequence / PRJ-060 / pass
+- project / Test_PRJ_060_StaleSpecsRejectsNonmappingBasesAtQueuedPath/scalar / PRJ-060 / pass
+- project / Test_PRJ_060_StaleSpecsRejectsNonmappingBasesAtQueuedPath/null / PRJ-060 / pass
 - project / Test_PRJ_061_PRJ_062_HistoryUsesLastBasesChangeAndValidatesEachHash / PRJ-061, PRJ-062 / pass
 - project / Test_PRJ_062_UnavailableHistoryStillReportsEveryStaleItem / PRJ-062 / pass
 - project / Test_PRJ_063_StaleSpecsEmptyAndReadOnly / PRJ-063 / pass
@@ -386,12 +399,7 @@ result: fail
 - app / Test_APP_105_APP_108_CheckCommitsRangesAndRecordedAuthorWork / APP-105, APP-108 / pass
 - app / Test_APP_105_APP_108_CheckCommitsSquashAndEmptyJSON / APP-105, APP-108 / pass
 - app / Test_APP_106_APP_108_CheckCommitsReportsEveryHistoryRule / APP-106, APP-108 / pass
-- app / Test_APP_107_APP_108_CheckCommitsFailures / APP-107, APP-108 / fail
-
-=== RUN   Test_APP_107_APP_108_CheckCommitsFailures
-    check_commits_cli_test.go:274: coded operational fixture: want C03 for malformed recorded SPEC path, got invalid YAML frontmatter: yaml: line 1: did not find expected ',' or ']'
---- FAIL: Test_APP_107_APP_108_CheckCommitsFailures (0.53s)
-
+- app / Test_APP_107_APP_108_CheckCommitsFailures / APP-107, APP-108 / pass
 - app / Test_APP_107_APP_108_CheckCommitsFailures/extra / APP-107, APP-108 / pass
 - app / Test_APP_107_APP_108_CheckCommitsFailures/option / APP-107, APP-108 / pass
 - app / Test_APP_107_APP_108_CheckCommitsFailures/bad-range / APP-107, APP-108 / pass
@@ -427,7 +435,11 @@ result: fail
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/new-change_alpha_new-work / APP-164 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next / APP-164 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run / APP-164 / pass
-- app / Test_APP_037_StaticCauses / APP-037 / pass
+- app / Test_APP_037_StaticCauses / APP-037 / fail
+
+=== RUN   Test_APP_037_StaticCauses
+--- FAIL: Test_APP_037_StaticCauses (0.77s)
+
 - app / Test_APP_037_StaticCauses/configuration / APP-037 / pass
 - app / Test_APP_037_StaticCauses/graph / APP-037 / pass
 - app / Test_APP_037_StaticCauses/syntax / APP-037 / pass
@@ -436,24 +448,24 @@ result: fail
 - app / Test_APP_037_StaticCauses/tag / APP-037 / pass
 - app / Test_APP_037_StaticCauses/structure / APP-037 / pass
 - app / Test_APP_037_StaticCauses/base / APP-037 / pass
-- app / Test_APP_037_StaticCauses/handle / APP-037 / pass
+- app / Test_APP_037_StaticCauses/handle / APP-037 / fail
+
+=== RUN   Test_APP_037_StaticCauses/handle
+    diagnostic_causes_test.go:134: status=0; want 1; stdout="Check passed.\n" stderr=""
+    diagnostic_causes_test.go:134: plain diagnostic="Check passed.\n"; want code and message
+    diagnostic_causes_test.go:134: missing C09 diagnostic with subject "new:missing" and pending slugs [] in plain output "Check passed.\n"
+    diagnostic_causes_test.go:134: status=0; want 1; stdout="{\"schema\":1,\"data\":\"Check passed.\\n\",\"diagnostics\":[]}\n" stderr=""
+    diagnostic_causes_test.go:134: data="Check passed.\n"; want null
+    diagnostic_causes_test.go:134: diagnostics=[]; want nonempty array: <nil>
+--- FAIL: Test_APP_037_StaticCauses/handle (0.03s)
+
 - app / Test_APP_037_StaticCauses/metadata / APP-037 / pass
 - app / Test_APP_037_StaticCauses/queue-identity / APP-037 / pass
 - app / Test_APP_037_APP_038_ShowStaticCauses / APP-037, APP-038 / pass
 - app / Test_APP_037_APP_038_ShowStaticCauses/duplicate-graph-name / APP-037, APP-038 / pass
 - app / Test_APP_037_APP_038_ShowStaticCauses/duplicate-fixed-spec-id / APP-037, APP-038 / pass
-- app / Test_APP_038_LookupCauses / APP-038 / fail
-
-=== RUN   Test_APP_038_LookupCauses
---- FAIL: Test_APP_038_LookupCauses (0.65s)
-
-- app / Test_APP_038_LookupCauses/author-module / APP-038 / fail
-
-=== RUN   Test_APP_038_LookupCauses/author-module
-    diagnostic_causes_test.go:184: missing U02 diagnostic with subject "unknown module" and pending slugs [] in plain output "P01: unknown module \"unknown\". Use a valid module and an unused slug, and check the changes directory.\n"
-    diagnostic_causes_test.go:184: missing U02 diagnostic with subject "unknown module" and pending slugs [] in {"schema":1,"data":null,"diagnostics":[{"code":"P01","message":"unknown module \"unknown\". Use a valid module and an unused slug, and check the changes directory.","warning":false}]}
---- FAIL: Test_APP_038_LookupCauses/author-module (0.26s)
-
+- app / Test_APP_038_LookupCauses / APP-038 / pass
+- app / Test_APP_038_LookupCauses/author-module / APP-038 / pass
 - app / Test_APP_038_LookupCauses/show-module / APP-038 / pass
 - app / Test_APP_038_LookupCauses/show-item / APP-038 / pass
 - app / Test_APP_038_LookupCauses/show-ambiguous-item / APP-038 / pass
@@ -479,7 +491,13 @@ result: fail
 - app / Test_APP_166_DrillRejectsInvalidAgentOptionBeforeInvocation/missing / APP-166 / pass
 - app / Test_APP_166_DrillRejectsInvalidAgentOptionBeforeInvocation/empty / APP-166 / pass
 - app / Test_APP_166_DrillRejectsInvalidAgentOptionBeforeInvocation/repeated / APP-166 / pass
-- app / Test_APP_167_DrillRejectsUnknownAgentAlias / APP-167 / pass
+- app / Test_APP_167_DrillRejectsUnknownAgentAlias / APP-167 / fail
+
+=== RUN   Test_APP_167_DrillRejectsUnknownAgentAlias
+    drill_cli_test.go:278: drill exit=1; want 2; stdout="" stderr="U02: command alias \"unlisted-drill-agent\" is not listed in agent.commands. Correct the reported issue before retrying.\n"
+    drill_cli_test.go:278: drill exit=1; want 2; stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"U02\",\"message\":\"command alias \\\"unlisted-drill-agent\\\" is not listed in agent.commands. Correct the reported issue before retrying.\",\"warning\":false}]}\n" stderr=""
+--- FAIL: Test_APP_167_DrillRejectsUnknownAgentAlias (0.85s)
+
 - app / Test_APP_140_DrillProjectAndConfigurationFailures / APP-140 / pass
 - app / Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts / APP-141 / pass
 - app / Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/own-plain / APP-141 / pass
@@ -505,7 +523,7 @@ result: fail
 - app / Test_APP_156_HelpForms/init_-h / APP-156 / pass
 - app / Test_APP_156_HelpForms/new-module_--help / APP-156 / pass
 - app / Test_APP_156_HelpForms/new-module_-h / APP-156 / pass
-- app / Test_APP_156_EachListedCommandHasCLIHelp / APP-156 / pass
+- app / Test_APP_156_EachSupportedCommandHasCLIHelp / APP-156 / pass
 - app / Test_APP_156_ExactHelpWordForm / APP-156 / pass
 - app / Test_APP_157_HelpJSONMatchesPlain / APP-157 / pass
 - app / Test_APP_157_HelpJSONMatchesPlain/help / APP-157 / pass
@@ -565,12 +583,7 @@ result: fail
 - app / Test_APP_004_APP_164_HeldModulesUseApprovedProjection / APP-004, APP-164 / pass
 - app / Test_APP_011_APP_032_APP_033_ContextCompactFullAndErrors / APP-011, APP-032, APP-033 / pass
 - app / Test_APP_012_APP_034_APP_035_APP_036_CoverageCurrentProjectionAndErrors / APP-012, APP-034, APP-035, APP-036 / pass
-- app / Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelectedSpecs / APP-012, APP-160, APP-164 / fail
-
-=== RUN   Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelectedSpecs
-    lifecycle_cli_test.go:484: coverage [alpha --with-change other] diagnostic "invalid YAML frontmatter: yaml: line 1: did not find expected ',' or ']'. Correct the project inputs or use fireweed modules and fireweed list to check the selection." lacks "changes/0002-other.md" or corrective guidance
---- FAIL: Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelectedSpecs (1.61s)
-
+- app / Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelectedSpecs / APP-012, APP-160, APP-164 / pass
 - app / Test_APP_010_APP_029_APP_030_APP_031_VerifyDoneAuditAndFullChecks / APP-010, APP-029, APP-030, APP-031 / pass
 - app / Test_APP_010_APP_029_APP_030_APP_031_VerifyRejectsFalseFailFirstAndFrozenEdits / APP-010, APP-029, APP-030, APP-031 / pass
 - app / Test_APP_010_APP_029_APP_031_DoneReportsBlockedAudit / APP-010, APP-029, APP-031 / pass
@@ -586,34 +599,12 @@ result: fail
 - app / Test_APP_154_APP_155_MigrateStaticDiagnosticsAndFailures/unsupported-version / APP-154, APP-155 / pass
 - app / Test_APP_154_APP_155_MigrateStaticDiagnosticsAndFailures/missing-version / APP-154, APP-155 / pass
 - app / Test_APP_155_MigrateRejectsArgumentsBeforeMutation / APP-155 / pass
-- app / Test_APP_100_APP_101_APP_104_NewModuleFromNearestProjectTemplates / APP-100, APP-101, APP-104 / fail
-
-=== RUN   Test_APP_100_APP_101_APP_104_NewModuleFromNearestProjectTemplates
-    new_module_cli_test.go:77: plain creation: status=2 stdout="" stderr="panic: runtime error: index out of range [0] with length 0\n\ngoroutine 1 [running]:\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.validateModuleTemplate({_, _}, {{_, _}, _, {_, _, _}}, {_, _}, ...)\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/module.go:168 +0x85c\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.newModule({{0x16efb2e2d, 0xa}, {0x5e2bfef1c7e0, 0x1, 0x1}, 0x5e2bfef1ba10, 0x0, 0x0, 0x0}, {0x5e2bfee14004, ...})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/module.go:71 +0x988\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.projectCommand({{0x16efb2e2d, 0xa}, {0x5e2bfef1c7e0, 0x1, 0x1}, 0x5e2bfef1ba10, 0x0, 0x0, 0x0}, {0x5e2bfee14004, ...})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/project.go:88 +0xdc8\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.execute({{0x16efb2e2d, 0xa}, {0x5e2bfef1c7e0, 0x1, 0x1}, 0x5e2bfef1ba10, 0x0, 0x0, 0x0})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/entry.go:367 +0x7ec\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.Run({0x5e2bfef40010?, 0x0?, 0x0?}, {0x1012e6378, 0x5e2bfef02028}, {0x1012e6378, 0x5e2bfef02030})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/entry.go:321 +0x2cc\ngithub.com/lurkshark/fireweed/packages/app.Run(...)\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/api.go:9\nmain.main()\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/main.go:8 +0x6c\n"
-    new_module_cli_test.go:80: read components/quartz-core/SPEC.md: open /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_100_APP_101_APP_104_NewModuleFromNearestProjectTemplate2879802312/002/nested-project/components/quartz-core/SPEC.md: no such file or directory
-    new_module_cli_test.go:81: rendered SPEC identity/project template: ""
-    new_module_cli_test.go:83: read components/quartz-core/api.go: open /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_100_APP_101_APP_104_NewModuleFromNearestProjectTemplate2879802312/002/nested-project/components/quartz-core/api.go: no such file or directory
-    new_module_cli_test.go:84: rendered API=""
-    new_module_cli_test.go:86: read components/quartz-core/README.txt: open /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_100_APP_101_APP_104_NewModuleFromNearestProjectTemplate2879802312/002/nested-project/components/quartz-core/README.txt: no such file or directory
-    new_module_cli_test.go:87: rendered substitutions=""
-    new_module_cli_test.go:105: created module absent from project graph: [{Name:base IDPrefix:BAS Dir:components/base DependsOn:[] Zones:{Protected:[] Evals:[evals/**] Interface:[api.go] AppendOnly:[] Preserve:[data/**] Disposable:[internal/**]} Document:{Frontmatter:map[depends_on:[] id_prefix:BAS name:base] Body:# base
-        
-        ## Specs
-        }}]
-    new_module_cli_test.go:112: CLI cannot discover created module: status=0 stdout="{\"schema\":1,\"data\":[{\"name\":\"base\",\"id_prefix\":\"BAS\",\"dir\":\"components/base\",\"depends_on\":[],\"zones\":{\"protected\":[],\"evals\":[\"evals/**\"],\"interface\":[\"api.go\"],\"append_only\":[],\"preserve\":[\"data/**\"],\"disposable\":[\"internal/**\"]}}],\"diagnostics\":[]}\n" stderr=""
-    new_module_cli_test.go:117: JSON creation: status=2 stdout="" stderr="panic: runtime error: index out of range [0] with length 0\n\ngoroutine 1 [running]:\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.validateModuleTemplate({_, _}, {{_, _}, _, {_, _, _}}, {_, _}, ...)\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/module.go:168 +0x85c\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.newModule({{0x16b24ae25, 0xa}, {0x2e1e1b99c7e0, 0x1, 0x1}, 0x2e1e1b99ba40, 0x0, 0x0, 0x0}, {0x2e1e1b88e004, ...})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/module.go:71 +0x988\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.projectCommand({{0x16b24ae25, 0xa}, {0x2e1e1b99c7e0, 0x1, 0x1}, 0x2e1e1b99ba40, 0x0, 0x0, 0x0}, {0x2e1e1b88e004, ...})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/project.go:88 +0xdc8\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.execute({{0x16b24ae25, 0xa}, {0x2e1e1b99c7e0, 0x1, 0x1}, 0x2e1e1b99ba40, 0x0, 0x0, 0x0})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/entry.go:367 +0x7ec\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.Run({0x2e1e1b990190?, 0x0?, 0x0?}, {0x10504e378, 0x2e1e1b982028}, {0x10504e378, 0x2e1e1b982030})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/entry.go:321 +0x2cc\ngithub.com/lurkshark/fireweed/packages/app.Run(...)\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/api.go:9\nmain.main()\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/main.go:8 +0x6c\n"
-    new_module_cli_test.go:119: stdout=""; want JSON object: EOF
---- FAIL: Test_APP_100_APP_101_APP_104_NewModuleFromNearestProjectTemplates (0.60s)
-
+- app / Test_APP_100_APP_101_APP_104_NewModuleFromNearestProjectTemplates / APP-100, APP-101, APP-104 / pass
 - app / Test_APP_102_APP_103_APP_104_NewModuleConflictsPreserveContents / APP-102, APP-103, APP-104 / pass
 - app / Test_APP_102_APP_103_APP_104_NewModuleConflictsPreserveContents/existing-name / APP-102, APP-103, APP-104 / pass
 - app / Test_APP_102_APP_103_APP_104_NewModuleConflictsPreserveContents/existing-prefix / APP-102, APP-103, APP-104 / pass
 - app / Test_APP_102_APP_103_APP_104_NewModuleConflictsPreserveContents/occupied-directory / APP-102, APP-103, APP-104 / pass
-- app / Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors / APP-103, APP-104 / fail
-
-=== RUN   Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors
---- FAIL: Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors (0.71s)
-
+- app / Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors / APP-103, APP-104 / pass
 - app / Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/missing-name / APP-103, APP-104 / pass
 - app / Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/missing-prefix / APP-103, APP-104 / pass
 - app / Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/APP_159_invalid-name / APP-103, APP-104, APP-159 / pass
@@ -622,14 +613,7 @@ result: fail
 - app / Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/extra-argument / APP-103, APP-104 / pass
 - app / Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/unknown-option / APP-103, APP-104 / pass
 - app / Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/missing-template / APP-103, APP-104 / pass
-- app / Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/malformed-template / APP-103, APP-104 / fail
-
-=== RUN   Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/malformed-template
-    new_module_cli_test.go:212: [new-module new --prefix NEW]: diagnostic="panic: runtime error: index out of range [0] with length 0\n\ngoroutine 1 [running]:\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.validateModuleTemplate({_, _}, {{_, _}, _, {_, _, _}}, {_, _}, ...)\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/module.go:168 +0x85c\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.newModule({{0x16b77ae59, 0xa}, {0x2d742aeae690, 0x1, 0x1}, 0x2d742ae99200, 0x0, 0x0, 0x0}, {0x2d742adce004, ...})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/module.go:71 +0x988\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.projectCommand({{0x16b77ae59, 0xa}, {0x2d742aeae690, 0x1, 0x1}, 0x2d742ae99200, 0x0, 0x0, 0x0}, {0x2d742adce004, ...})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/project.go:88 +0xdc8\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.execute({{0x16b77ae59, 0xa}, {0x2d742aeae690, 0x1, 0x1}, 0x2d742ae99200, 0x0, 0x0, 0x0})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/entry.go:367 +0x7ec\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.Run({0x2d742ae96010?, 0x0?, 0x0?}, {0x104b1e378, 0x2d742ada4030}, {0x104b1e378, 0x2d742ada4038})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/entry.go:321 +0x2cc\ngithub.com/lurkshark/fireweed/packages/app.Run(...)\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/api.go:9\nmain.main()\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/main.go:8 +0x6c\n", want corrective C03
-    new_module_cli_test.go:212: [new-module new --prefix NEW --json]: JSON stderr="panic: runtime error: index out of range [0] with length 0\n\ngoroutine 1 [running]:\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.validateModuleTemplate({_, _}, {{_, _}, _, {_, _, _}}, {_, _}, ...)\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/module.go:168 +0x85c\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.newModule({{0x16d176e51, 0xa}, {0x3016ad90e7e0, 0x1, 0x1}, 0x3016ad90da40, 0x0, 0x0, 0x0}, {0x3016ad7ba004, ...})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/module.go:71 +0x988\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.projectCommand({{0x16d176e51, 0xa}, {0x3016ad90e7e0, 0x1, 0x1}, 0x3016ad90da40, 0x0, 0x0, 0x0}, {0x3016ad7ba004, ...})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/project.go:88 +0xdc8\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.execute({{0x16d176e51, 0xa}, {0x3016ad90e7e0, 0x1, 0x1}, 0x3016ad90da40, 0x0, 0x0, 0x0})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/entry.go:367 +0x7ec\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.Run({0x3016ad900190?, 0x0?, 0x0?}, {0x103122378, 0x3016ad906020}, {0x103122378, 0x3016ad906028})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/entry.go:321 +0x2cc\ngithub.com/lurkshark/fireweed/packages/app.Run(...)\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/api.go:9\nmain.main()\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/main.go:8 +0x6c\n", want empty
-    new_module_cli_test.go:212: stdout=""; want JSON object: EOF
---- FAIL: Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/malformed-template (0.02s)
-
+- app / Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/malformed-template / APP-103, APP-104 / pass
 - app / Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/invalid-configuration / APP-103, APP-104 / pass
 - app / Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/invalid-existing-graph / APP-103, APP-104 / pass
 - app / Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/no-configured-destination / APP-103, APP-104 / pass
@@ -642,16 +626,7 @@ result: fail
 - app / Test_APP_159_NewModuleRejectsInvalidIdentities/prefix-hyphen / APP-159 / pass
 - app / Test_APP_159_NewModuleRejectsInvalidIdentities/digit-led-prefix / APP-159 / pass
 - app / Test_APP_159_NewModuleRejectsInvalidIdentities/non-ASCII-prefix / APP-159 / pass
-- app / Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule / APP-101, APP-104, APP-159 / fail
-
-=== RUN   Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule
-    new_module_cli_test.go:246: creation without go.mod: status=2 stdout="" stderr="panic: runtime error: index out of range [0] with length 0\n\ngoroutine 1 [running]:\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.validateModuleTemplate({_, _}, {{_, _}, _, {_, _, _}}, {_, _}, ...)\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/module.go:168 +0x85c\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.newModule({{0x16f382e57, 0xa}, {0x7cec2c99c7e0, 0x1, 0x1}, 0x7cec2c99ba40, 0x0, 0x0, 0x0}, {0x7cec2c88c084, ...})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/module.go:71 +0x988\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.projectCommand({{0x16f382e57, 0xa}, {0x7cec2c99c7e0, 0x1, 0x1}, 0x7cec2c99ba40, 0x0, 0x0, 0x0}, {0x7cec2c88c084, ...})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/project.go:88 +0xdc8\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.execute({{0x16f382e57, 0xa}, {0x7cec2c99c7e0, 0x1, 0x1}, 0x7cec2c99ba40, 0x0, 0x0, 0x0})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/entry.go:367 +0x7ec\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.Run({0x7cec2c990190?, 0x0?, 0x0?}, {0x100f16378, 0x7cec2c982028}, {0x100f16378, 0x7cec2c982030})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/entry.go:321 +0x2cc\ngithub.com/lurkshark/fireweed/packages/app.Run(...)\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/api.go:9\nmain.main()\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/main.go:8 +0x6c\n"
-    new_module_cli_test.go:248: read packages/empty2-3-mod/README: open /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule102650482/002/packages/empty2-3-mod/README: no such file or directory
-    new_module_cli_test.go:249: empty go_module substitution=""
-    new_module_cli_test.go:251: read packages/empty2-3-mod/SPEC.md: open /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule102650482/002/packages/empty2-3-mod/SPEC.md: no such file or directory
-    new_module_cli_test.go:252: rendered module identity: ""
---- FAIL: Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule (0.59s)
-
+- app / Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule / APP-101, APP-104, APP-159 / pass
 - app / Test_APP_074_APP_076_APP_077_NextDiscoversRootAndAppliesChange / APP-074, APP-076, APP-077 / pass
 - app / Test_APP_075_NextAllowUnmergedAndUsage / APP-075 / pass
 - app / Test_APP_076_NextPlainEmptyQueue / APP-076 / pass
@@ -684,27 +659,13 @@ result: fail
 - app / Test_APP_018_ModulesConfigurationErrors/invalid-metadata/plain / APP-018 / pass
 - app / Test_APP_018_ModulesConfigurationErrors/invalid-metadata/JSON / APP-018 / pass
 - app / Test_APP_005_APP_020_NewChangePlainAndJSON / APP-005, APP-020 / pass
-- app / Test_APP_019_NewChangeErrorsPreserveFiles / APP-019 / fail
-
-=== RUN   Test_APP_019_NewChangeErrorsPreserveFiles
---- FAIL: Test_APP_019_NewChangeErrorsPreserveFiles (0.68s)
-
+- app / Test_APP_019_NewChangeErrorsPreserveFiles / APP-019 / pass
 - app / Test_APP_019_NewChangeErrorsPreserveFiles/missing-argument/plain / APP-019 / pass
 - app / Test_APP_019_NewChangeErrorsPreserveFiles/missing-argument/JSON / APP-019 / pass
 - app / Test_APP_019_NewChangeErrorsPreserveFiles/extra-argument/plain / APP-019 / pass
 - app / Test_APP_019_NewChangeErrorsPreserveFiles/extra-argument/JSON / APP-019 / pass
-- app / Test_APP_019_NewChangeErrorsPreserveFiles/invalid-module/plain / APP-019 / fail
-
-=== RUN   Test_APP_019_NewChangeErrorsPreserveFiles/invalid-module/plain
-    project_commands_test.go:397: diagnostic="P01: unknown module \"unknown\". Use a valid module and an unused slug, and check the changes directory.\n"; want corrective U02
---- FAIL: Test_APP_019_NewChangeErrorsPreserveFiles/invalid-module/plain (0.01s)
-
-- app / Test_APP_019_NewChangeErrorsPreserveFiles/invalid-module/JSON / APP-019 / fail
-
-=== RUN   Test_APP_019_NewChangeErrorsPreserveFiles/invalid-module/JSON
-    project_commands_test.go:393: diagnostic code="P01"; want "U02"
---- FAIL: Test_APP_019_NewChangeErrorsPreserveFiles/invalid-module/JSON (0.01s)
-
+- app / Test_APP_019_NewChangeErrorsPreserveFiles/invalid-module/plain / APP-019 / pass
+- app / Test_APP_019_NewChangeErrorsPreserveFiles/invalid-module/JSON / APP-019 / pass
 - app / Test_APP_019_NewChangeErrorsPreserveFiles/invalid-slug/plain / APP-019 / pass
 - app / Test_APP_019_NewChangeErrorsPreserveFiles/invalid-slug/JSON / APP-019 / pass
 - app / Test_APP_019_NewChangeErrorsPreserveFiles/duplicate-pending/plain / APP-019 / pass
@@ -771,25 +732,10 @@ result: fail
 - app / Test_APP_143_APP_144_StaleRecoveryDiffAndReadOnly / APP-143, APP-144 / pass
 - app / Test_APP_144_StaleUnavailableHistoryAndEmptyView / APP-144 / pass
 - app / Test_APP_143_StaleViewChoosesNearestProject / APP-143 / pass
-- app / Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures / APP-145, APP-146 / fail
-
-=== RUN   Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures
---- FAIL: Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures (0.67s)
-
+- app / Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures / APP-145, APP-146 / pass
 - app / Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures/unknown / APP-145, APP-146 / pass
 - app / Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures/ambiguous / APP-145, APP-146 / pass
-- app / Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures/bad-bases / APP-145, APP-146 / fail
-
-=== RUN   Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures/bad-bases
-    show_stale_cli_test.go:199: status=0; want 1; stdout="No stale specs.\n" stderr=""
-    show_stale_cli_test.go:199: plain failure stdout="No stale specs.\n" stderr=""; want empty stdout and C08 diagnostic
-    show_stale_cli_test.go:199: diagnostic "" must name "changes/0001-target.md"
-    show_stale_cli_test.go:199: diagnostic "" needs corrective guidance
-    show_stale_cli_test.go:199: status=0; want 1; stdout="{\"schema\":1,\"data\":\"No stale specs.\\n\",\"diagnostics\":[]}\n" stderr=""
-    show_stale_cli_test.go:199: data="No stale specs.\n"; want null
-    show_stale_cli_test.go:199: diagnostics=[]; want nonempty array: <nil>
---- FAIL: Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures/bad-bases (0.01s)
-
+- app / Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures/bad-bases / APP-145, APP-146 / pass
 - app / Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures/missing-config / APP-145, APP-146 / pass
 - app / Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures/malformed-config / APP-145, APP-146 / pass
 - app / Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures/invalid-graph / APP-145, APP-146 / pass
@@ -812,6 +758,9 @@ result: fail
 - checks / Test_CHK_043_RequiredGlobalHookRejectsUnattributedNonzeroExit / CHK-043 / pass
 - checks / Test_CHK_043_SilentNonzeroOverrideIsIndependentOfGlobalViolation / CHK-043 / pass
 - checks / Test_CHK_043_LaunchCancellationAndTimeoutStayErrors / CHK-043 / pass
+- checks / Test_CHK_065_CHK_066_DoctorAgentTailAcrossStreams / CHK-065, CHK-066 / pass
+- checks / Test_CHK_065_CHK_066_DoctorAgentTailAcrossStreams/match_twentieth / CHK-065, CHK-066 / pass
+- checks / Test_CHK_065_CHK_066_DoctorAgentTailAcrossStreams/match_twenty-first / CHK-065, CHK-066 / pass
 - checks / Test_CHK_081_DoctorProbeLogsShareFreshRunAndPreserveStreams / CHK-081 / pass
 - checks / Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput / CHK-081 / pass
 - checks / Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput/failure / CHK-081 / pass
@@ -1168,6 +1117,9 @@ result: fail
 - workflow / Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal/changes/0001-manual.md / FLOW-096 / pass
 - workflow / Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal/0001-manual.md / FLOW-096 / pass
 - workflow / Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal/manual / FLOW-096 / pass
+- workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers / FLOW-019 / pass
+- workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers/1.0 / FLOW-019 / pass
+- workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers/1 / FLOW-019 / pass
 - workflow / Test_FLOW_019_FLOW_139_ApprovedSurvivesLiveEdits / FLOW-019, FLOW-139 / pass
 - workflow / Test_FLOW_140_ApprovedReportsNoOwnedClaim / FLOW-140 / pass
 - workflow / Test_FLOW_140_ApprovedRejectsUnreadableOrMalformedClaim / FLOW-140 / pass
@@ -1356,6 +1308,7 @@ result: fail
 - workflow / Test_FLOW_111_StatusReworkChainWarning/latest_matching_predecessor_wins / FLOW-111 / pass
 - workflow / Test_FLOW_111_StatusReworkChainWarning/same_module_without_shared_IDs / FLOW-111 / pass
 - workflow / Test_FLOW_110_StatusSharedBaseUsesSameArchivedDocumentIdentity / FLOW-110 / pass
+- workflow / Test_FLOW_110_StatusReportsUnavailableConfiguredBaseWithEmptyArchive / FLOW-110 / pass
 - workflow / Test_FLOW_112_StatusPhaseCommitsMatchRealLifecycle / FLOW-112 / pass
 - workflow / Test_FLOW_113_StatusLatestRecordedCostsAndSavedWarnings / FLOW-113 / pass
 - workflow / Test_FLOW_136_DoneMarksFullVerificationFailureAndPreservesResult / FLOW-136 / pass
@@ -1369,154 +1322,75 @@ result: fail
 - workflow / Test_FLOW_138_ContextExplainsHowToDeclareWorkerBlock/impl / FLOW-138 / pass
 
 ## Contradicted Decisions
-No retained Decision contradicts the specs. Decision `0126-spec-history-query` says
-history is read from the current archive files (not commit ancestry or file names)
-and that entry metadata are section bodies without their headings; `SpecHistory`
-follows that directly, ordering by the implementation timestamp in Provenance and
-using archive paths only as the fallback tie-break.
+No contradicted Decisions. `[0126-spec-history-query]` (read the current archive as the history source, do not infer chronology from commits or filenames, and return the filtered ID in each entry) is consistent with PRJ-051 through PRJ-056.
 
 ## Gaps
-- PRJ-004 / PRJ-058 / PRJ-066: the exact wording of U02/C13 selector errors and the
-  format of the "valid pending slugs" guidance are not specified. Implemented as
-  slug-only guidance, with an explicit empty-queue phrase. Target module: `project`.
-- PRJ-033 / PRJ-034: the accepted value types for `boundaries_opt_out` and `hooks`
-  in `set` are not stated. Implemented as a string and a mapping respectively.
-  Target module: `project`.
-- PRJ-035 / PRJ-041: whether intermediate projected graphs must be validated, or only
-  the final projection, is not stated. `Check` validates every prefix projection;
-  `Project` validates its final projection. Target module: `project`.
-- PRJ-006 / PRJ-038: `Stamp` merge semantics for pre-existing unrelated `bases`
-  entries are not stated (they are explicit only for `StampMissing` in PRJ-064).
-  `Stamp` preserves unrelated entries and replaces edited IDs. Target module: `project`.
-- PRJ-075: intersection semantics for component globs containing partial `*`
-  wildcards (for example `smoke-*.go` versus `smoke-test.*`) are not defined.
-  Implemented an exact per-component wildcard-language intersection.
-  Target module: `project`.
-- PRJ-078: whether several offending `Removed` items each need a diagnostic is not
-  stated. Implemented the first offending item/segment per change.
-  Target module: `project`.
-- PRJ-081: the spec does not define how `Check` distinguishes before Start from after
-  assignment, nor which frontmatter field records that phase. Accepted both a local
-  Added handle and an assigned Added ID as identities. Target module: `project`.
-- PRJ-070: "tracked" is not defined for an index entry whose worktree file was
-  deleted. Implemented as the Git index (`git ls-files`), which includes it.
-  Target module: `project`.
-- PRJ-071: behavior for unknown keys inside `spec_limits` is not stated.
-  Unknown keys are ignored while the three specified limits are normalized.
-  Target module: `project`.
-- PRJ-027: handling of files under `changes` that do not match `NNNN-slug.md` is not
-  stated. Non-matching files are ignored. Target module: `project`.
-- PRJ-086 / PRJ-087: validity rules for command values beyond a nonempty first
-  executable argument are not fully stated. Empty shell strings, empty argv,
-  non-string argv members, and empty executables are rejected. Target module: `project`.
-- PRJ-083: exact wording for invalid syntax versus binary-range incompatibility is not
-  fixed beyond the required distinction. Implemented messages containing
-  `invalid`/`incompatible`, the pin text, and the running version. Target module: `project`.
+- PRJ-051 / PRJ-056 — Archives are discovered only as `changes/archive/NNNN-slug.md`; the specs do not state how archived files with other names are selected or rejected. Target module: `project`.
+- PRJ-047 / PRJ-050 — `LoadAt` discovers module directories from the ancestor directories of recorded files, so an empty recorded directory matches only when Git has another file beneath it. The specs do not define module discovery for empty recorded directories. Target module: `project`.
+- PRJ-061 — "The Git commit that last changed that change file's bases mapping" is detected by comparing the decoded `bases` mapping with the first parent's mapping. The specs do not define merge commits, root commits or uncommitted bases edits. Target module: `project`.
+- PRJ-005 — No spec defines how `Project` handles a Modified ID absent from the preceding projection; the implementation appends the item rather than rejecting it. Nearest spec: PRJ-005 (or "no spec"). Target module: `project`.
+- PRJ-033 / PRJ-034 — The `set` allow-list omits `protected` while PRJ-033 names the other zone fields; the implementation treats `protected` as an unknown field. The specs do not say whether a project may change `protected` through a queued set. Target module: `project`.
+- PRJ-070 — "Tracked" SPEC.md files are taken from `git ls-files`, which includes index-only (deleted from the worktree) entries and silently degrades to no warning outside a Git repository. The specs do not define the index-only or detached-worktree cases. Target module: `project`.
+- PRJ-072 — Normative-keyword scanning treats `MUST NOT` as one clause and requires uppercase word-boundary matches, so `MUSTARD`, `SHOULDERS` and lowercase `must` are not clauses. The specs name the keywords but do not define tokenization. Target module: `project`.
+- PRJ-073 — Repeated sentences are split at `.`, `!` and `?`, then normalized by lowercasing and dropping all non-alphanumeric characters. The specs do not define sentence boundaries or punctuation classes. Target module: `project`.
+- PRJ-075 — Possible eval/disposable path overlap is computed structurally over `*` and `**` components; the specs do not state whether non-file paths, leading slashes or empty components participate. Target module: `project`.
+- PRJ-039 / PRJ-064 — `Stamp` on an Added-only change and `StampMissing` when every edited ID already has a base return without rewriting the file. The specs require success and preservation but do not say whether an identical rewrite is required. Target module: `project`.
+- PRJ-023 / PRJ-067 — `NewChange` numbers changes only from files named `NNNN-slug.md` and creates `changes/` if needed; the specs do not define nonconforming filenames or how directory creation failures are reported. Target module: `project`.
 
 ## Agent observations
 
 ### Invocation 1
-Log: .fireweed/runs/20261116T071650-bb61275abdbc0dc72f5ce57f/drill-1.log
+Log: .fireweed/runs/20261117T051823-5ce7bb337472e82ca7f7abf1/drill-1.log
 
-I'll start by exploring the workspace to understand the structure and available materials.
-Now I have a complete picture of the specs, interfaces, and evals. Let me check the module's expected structure and start implementing the disposable internals.
-The full eval suite passes. Let me tighten a few spec-completeness points before finalizing: move the Specs-section count rule to `Check` (per PRJ-077 rather than `Load`), make glob overlap exact, and broaden handle-reference scanning.
-Reconstructed the `project` module’s disposable implementation.
+I'll start by exploring the workspace to understand the structure and what's missing.
+Now I understand the requirements. Let me build the internal implementation.
+Implemented the `project` module internals under the disposable `packages/project/internal/**` paths.
 
-### Added
-- `packages/project/internal/fixture/`
-  - project/config loading, module discovery, zone inheritance
-  - graph validation
-  - change skeleton creation
-  - compatibility/format checks
-  - agent command resolution
-  - `LoadAt` revision snapshots
-  - spec limits and heading counting
-- `packages/project/internal/queue/`
-  - queue parsing/ordering
-  - projection, stamping, stale-spec recovery
-  - static `Check` diagnostics
-- `packages/project/internal/history/`
-  - archive-backed `SpecHistory`
+### Reconstructed packages
+- `internal/fixture` — configuration loading, module discovery, revision snapshots, compatibility, agent resolution, graph validation, change creation, projection state
+- `internal/queue` — queue parsing, projection, stamping, stale-base analysis, static checks, glob overlap
+- `internal/history` — archive-backed spec history ordering and metadata
 
 ### Verification
-Ran the requested eval hook successfully:
+The documented eval hook passes and produced a failure-free report:
+
+```sh
+go run .fireweed/hooks.go eval 'packages/project' '.fireweed/drill-eval.xml'
+```
 
 ```text
 PASS
 ok github.com/lurkshark/fireweed/packages/project/evals
 ```
 
-Also wrote `DRILL_NOTES.md` with the required `## Contradicted Decisions` and `## Gaps` sections, naming the nearest spec IDs and `project` as the fixing module.
+No retained files were changed outside `packages/project/internal/**`.
+
+### Notes
+Added `DRILL_NOTES.md` with the required:
+- `## Contradicted Decisions` — none found
+- `## Gaps` — each gap names its nearest spec ID (or “no spec”) and the target module `project`
 
 
 ## Failures
-app: failed case "Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelectedSpecs" for APP-012
-Test_APP_107_APP_108_CheckCommitsFailures: === RUN   Test_APP_107_APP_108_CheckCommitsFailures
-    check_commits_cli_test.go:274: coded operational fixture: want C03 for malformed recorded SPEC path, got invalid YAML frontmatter: yaml: line 1: did not find expected ',' or ']'
---- FAIL: Test_APP_107_APP_108_CheckCommitsFailures (0.53s)
-Test_APP_038_LookupCauses: === RUN   Test_APP_038_LookupCauses
---- FAIL: Test_APP_038_LookupCauses (0.65s)
-Test_APP_038_LookupCauses/author-module: === RUN   Test_APP_038_LookupCauses/author-module
-    diagnostic_causes_test.go:184: missing U02 diagnostic with subject "unknown module" and pending slugs [] in plain output "P01: unknown module \"unknown\". Use a valid module and an unused slug, and check the changes directory.\n"
-    diagnostic_causes_test.go:184: missing U02 diagnostic with subject "unknown module" and pending slugs [] in {"schema":1,"data":null,"diagnostics":[{"code":"P01","message":"unknown module \"unknown\". Use a valid module and an unused slug, and check the changes directory.","warning":false}]}
---- FAIL: Test_APP_038_LookupCauses/author-module (0.26s)
-Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelectedSpecs: === RUN   Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelectedSpecs
-    lifecycle_cli_test.go:484: coverage [alpha --with-change other] diagnostic "invalid YAML frontmatter: yaml: line 1: did not find expected ',' or ']'. Correct the project inputs or use fireweed modules and fireweed list to check the selection." lacks "changes/0002-other.md" or corrective guidance
---- FAIL: Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelectedSpecs (1.61s)
-Test_APP_100_APP_101_APP_104_NewModuleFromNearestProjectTemplates: === RUN   Test_APP_100_APP_101_APP_104_NewModuleFromNearestProjectTemplates
-    new_module_cli_test.go:77: plain creation: status=2 stdout="" stderr="panic: runtime error: index out of range [0] with length 0\n\ngoroutine 1 [running]:\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.validateModuleTemplate({_, _}, {{_, _}, _, {_, _, _}}, {_, _}, ...)\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/module.go:168 +0x85c\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.newModule({{0x16efb2e2d, 0xa}, {0x5e2bfef1c7e0, 0x1, 0x1}, 0x5e2bfef1ba10, 0x0, 0x0, 0x0}, {0x5e2bfee14004, ...})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/module.go:71 +0x988\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.projectCommand({{0x16efb2e2d, 0xa}, {0x5e2bfef1c7e0, 0x1, 0x1}, 0x5e2bfef1ba10, 0x0, 0x0, 0x0}, {0x5e2bfee14004, ...})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/project.go:88 +0xdc8\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.execute({{0x16efb2e2d, 0xa}, {0x5e2bfef1c7e0, 0x1, 0x1}, 0x5e2bfef1ba10, 0x0, 0x0, 0x0})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/entry.go:367 +0x7ec\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.Run({0x5e2bfef40010?, 0x0?, 0x0?}, {0x1012e6378, 0x5e2bfef02028}, {0x1012e6378, 0x5e2bfef02030})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/entry.go:321 +0x2cc\ngithub.com/lurkshark/fireweed/packages/app.Run(...)\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/api.go:9\nmain.main()\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/main.go:8 +0x6c\n"
-    new_module_cli_test.go:80: read components/quartz-core/SPEC.md: open /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_100_APP_101_APP_104_NewModuleFromNearestProjectTemplate2879802312/002/nested-project/components/quartz-core/SPEC.md: no such file or directory
-    new_module_cli_test.go:81: rendered SPEC identity/project template: ""
-    new_module_cli_test.go:83: read components/quartz-core/api.go: open /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_100_APP_101_APP_104_NewModuleFromNearestProjectTemplate2879802312/002/nested-project/components/quartz-core/api.go: no such file or directory
-    new_module_cli_test.go:84: rendered API=""
-    new_module_cli_test.go:86: read components/quartz-core/README.txt: open /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_100_APP_101_APP_104_NewModuleFromNearestProjectTemplate2879802312/002/nested-project/components/quartz-core/README.txt: no such file or directory
-    new_module_cli_test.go:87: rendered substitutions=""
-    new_module_cli_test.go:105: created module absent from project graph: [{Name:base IDPrefix:BAS Dir:components/base DependsOn:[] Zones:{Protected:[] Evals:[evals/**] Interface:[api.go] AppendOnly:[] Preserve:[data/**] Disposable:[internal/**]} Document:{Frontmatter:map[depends_on:[] id_prefix:BAS name:base] Body:# base
-        
-        ## Specs
-        }}]
-    new_module_cli_test.go:112: CLI cannot discover created module: status=0 stdout="{\"schema\":1,\"data\":[{\"name\":\"base\",\"id_prefix\":\"BAS\",\"dir\":\"components/base\",\"depends_on\":[],\"zones\":{\"protected\":[],\"evals\":[\"evals/**\"],\"interface\":[\"api.go\"],\"append_only\":[],\"preserve\":[\"data/**\"],\"disposable\":[\"internal/**\"]}}],\"diagnostics\":[]}\n" stderr=""
-    new_module_cli_test.go:117: JSON creation: status=2 stdout="" stderr="panic: runtime error: index out of range [0] with length 0\n\ngoroutine 1 [running]:\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.validateModuleTemplate({_, _}, {{_, _}, _, {_, _, _}}, {_, _}, ...)\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/module.go:168 +0x85c\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.newModule({{0x16b24ae25, 0xa}, {0x2e1e1b99c7e0, 0x1, 0x1}, 0x2e1e1b99ba40, 0x0, 0x0, 0x0}, {0x2e1e1b88e004, ...})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/module.go:71 +0x988\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.projectCommand({{0x16b24ae25, 0xa}, {0x2e1e1b99c7e0, 0x1, 0x1}, 0x2e1e1b99ba40, 0x0, 0x0, 0x0}, {0x2e1e1b88e004, ...})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/project.go:88 +0xdc8\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.execute({{0x16b24ae25, 0xa}, {0x2e1e1b99c7e0, 0x1, 0x1}, 0x2e1e1b99ba40, 0x0, 0x0, 0x0})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/entry.go:367 +0x7ec\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.Run({0x2e1e1b990190?, 0x0?, 0x0?}, {0x10504e378, 0x2e1e1b982028}, {0x10504e378, 0x2e1e1b982030})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/entry.go:321 +0x2cc\ngithub.com/lurkshark/fireweed/packages/app.Run(...)\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/api.go:9\nmain.main()\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/main.go:8 +0x6c\n"
-    new_module_cli_test.go:119: stdout=""; want JSON object: EOF
---- FAIL: Test_APP_100_APP_101_APP_104_NewModuleFromNearestProjectTemplates (0.60s)
-Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors: === RUN   Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors
---- FAIL: Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors (0.71s)
-Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/malformed-template: === RUN   Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/malformed-template
-    new_module_cli_test.go:212: [new-module new --prefix NEW]: diagnostic="panic: runtime error: index out of range [0] with length 0\n\ngoroutine 1 [running]:\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.validateModuleTemplate({_, _}, {{_, _}, _, {_, _, _}}, {_, _}, ...)\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/module.go:168 +0x85c\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.newModule({{0x16b77ae59, 0xa}, {0x2d742aeae690, 0x1, 0x1}, 0x2d742ae99200, 0x0, 0x0, 0x0}, {0x2d742adce004, ...})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/module.go:71 +0x988\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.projectCommand({{0x16b77ae59, 0xa}, {0x2d742aeae690, 0x1, 0x1}, 0x2d742ae99200, 0x0, 0x0, 0x0}, {0x2d742adce004, ...})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/project.go:88 +0xdc8\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.execute({{0x16b77ae59, 0xa}, {0x2d742aeae690, 0x1, 0x1}, 0x2d742ae99200, 0x0, 0x0, 0x0})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/entry.go:367 +0x7ec\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.Run({0x2d742ae96010?, 0x0?, 0x0?}, {0x104b1e378, 0x2d742ada4030}, {0x104b1e378, 0x2d742ada4038})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/entry.go:321 +0x2cc\ngithub.com/lurkshark/fireweed/packages/app.Run(...)\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/api.go:9\nmain.main()\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/main.go:8 +0x6c\n", want corrective C03
-    new_module_cli_test.go:212: [new-module new --prefix NEW --json]: JSON stderr="panic: runtime error: index out of range [0] with length 0\n\ngoroutine 1 [running]:\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.validateModuleTemplate({_, _}, {{_, _}, _, {_, _, _}}, {_, _}, ...)\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/module.go:168 +0x85c\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.newModule({{0x16d176e51, 0xa}, {0x3016ad90e7e0, 0x1, 0x1}, 0x3016ad90da40, 0x0, 0x0, 0x0}, {0x3016ad7ba004, ...})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/module.go:71 +0x988\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.projectCommand({{0x16d176e51, 0xa}, {0x3016ad90e7e0, 0x1, 0x1}, 0x3016ad90da40, 0x0, 0x0, 0x0}, {0x3016ad7ba004, ...})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/project.go:88 +0xdc8\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.execute({{0x16d176e51, 0xa}, {0x3016ad90e7e0, 0x1, 0x1}, 0x3016ad90da40, 0x0, 0x0, 0x0})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/entry.go:367 +0x7ec\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.Run({0x3016ad900190?, 0x0?, 0x0?}, {0x103122378, 0x3016ad906020}, {0x103122378, 0x3016ad906028})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/entry.go:321 +0x2cc\ngithub.com/lurkshark/fireweed/packages/app.Run(...)\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/api.go:9\nmain.main()\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/main.go:8 +0x6c\n", want empty
-    new_module_cli_test.go:212: stdout=""; want JSON object: EOF
---- FAIL: Test_APP_103_APP_104_NewModuleUsageTemplatesAndProjectErrors/malformed-template (0.02s)
-Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule: === RUN   Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule
-    new_module_cli_test.go:246: creation without go.mod: status=2 stdout="" stderr="panic: runtime error: index out of range [0] with length 0\n\ngoroutine 1 [running]:\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.validateModuleTemplate({_, _}, {{_, _}, _, {_, _, _}}, {_, _}, ...)\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/module.go:168 +0x85c\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.newModule({{0x16f382e57, 0xa}, {0x7cec2c99c7e0, 0x1, 0x1}, 0x7cec2c99ba40, 0x0, 0x0, 0x0}, {0x7cec2c88c084, ...})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/module.go:71 +0x988\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.projectCommand({{0x16f382e57, 0xa}, {0x7cec2c99c7e0, 0x1, 0x1}, 0x7cec2c99ba40, 0x0, 0x0, 0x0}, {0x7cec2c88c084, ...})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/project.go:88 +0xdc8\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.command.execute({{0x16f382e57, 0xa}, {0x7cec2c99c7e0, 0x1, 0x1}, 0x7cec2c99ba40, 0x0, 0x0, 0x0})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/entry.go:367 +0x7ec\ngithub.com/lurkshark/fireweed/packages/app/internal/entry.Run({0x7cec2c990190?, 0x0?, 0x0?}, {0x100f16378, 0x7cec2c982028}, {0x100f16378, 0x7cec2c982030})\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/internal/entry/entry.go:321 +0x2cc\ngithub.com/lurkshark/fireweed/packages/app.Run(...)\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/packages/app/api.go:9\nmain.main()\n\t/Users/joel/Workspace/fireweed/.git/fireweed/worktrees/drill-20261116T071650-bb61275abdbc0dc72f5ce57f/main.go:8 +0x6c\n"
-    new_module_cli_test.go:248: read packages/empty2-3-mod/README: open /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule102650482/002/packages/empty2-3-mod/README: no such file or directory
-    new_module_cli_test.go:249: empty go_module substitution=""
-    new_module_cli_test.go:251: read packages/empty2-3-mod/SPEC.md: open /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule102650482/002/packages/empty2-3-mod/SPEC.md: no such file or directory
-    new_module_cli_test.go:252: rendered module identity: ""
---- FAIL: Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule (0.59s)
-Test_APP_019_NewChangeErrorsPreserveFiles: === RUN   Test_APP_019_NewChangeErrorsPreserveFiles
---- FAIL: Test_APP_019_NewChangeErrorsPreserveFiles (0.68s)
-Test_APP_019_NewChangeErrorsPreserveFiles/invalid-module/plain: === RUN   Test_APP_019_NewChangeErrorsPreserveFiles/invalid-module/plain
-    project_commands_test.go:397: diagnostic="P01: unknown module \"unknown\". Use a valid module and an unused slug, and check the changes directory.\n"; want corrective U02
---- FAIL: Test_APP_019_NewChangeErrorsPreserveFiles/invalid-module/plain (0.01s)
-Test_APP_019_NewChangeErrorsPreserveFiles/invalid-module/JSON: === RUN   Test_APP_019_NewChangeErrorsPreserveFiles/invalid-module/JSON
-    project_commands_test.go:393: diagnostic code="P01"; want "U02"
---- FAIL: Test_APP_019_NewChangeErrorsPreserveFiles/invalid-module/JSON (0.01s)
-Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures: === RUN   Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures
---- FAIL: Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures (0.67s)
-Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures/bad-bases: === RUN   Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures/bad-bases
-    show_stale_cli_test.go:199: status=0; want 1; stdout="No stale specs.\n" stderr=""
-    show_stale_cli_test.go:199: plain failure stdout="No stale specs.\n" stderr=""; want empty stdout and C08 diagnostic
-    show_stale_cli_test.go:199: diagnostic "" must name "changes/0001-target.md"
-    show_stale_cli_test.go:199: diagnostic "" needs corrective guidance
-    show_stale_cli_test.go:199: status=0; want 1; stdout="{\"schema\":1,\"data\":\"No stale specs.\\n\",\"diagnostics\":[]}\n" stderr=""
-    show_stale_cli_test.go:199: data="No stale specs.\n"; want null
-    show_stale_cli_test.go:199: diagnostics=[]; want nonempty array: <nil>
---- FAIL: Test_APP_145_APP_146_StaleUsageLookupAndQueryFailures/bad-bases (0.01s)
+app: failed case "Test_APP_037_StaticCauses" for APP-037
+Test_APP_037_StaticCauses: === RUN   Test_APP_037_StaticCauses
+--- FAIL: Test_APP_037_StaticCauses (0.77s)
+Test_APP_037_StaticCauses/handle: === RUN   Test_APP_037_StaticCauses/handle
+    diagnostic_causes_test.go:134: status=0; want 1; stdout="Check passed.\n" stderr=""
+    diagnostic_causes_test.go:134: plain diagnostic="Check passed.\n"; want code and message
+    diagnostic_causes_test.go:134: missing C09 diagnostic with subject "new:missing" and pending slugs [] in plain output "Check passed.\n"
+    diagnostic_causes_test.go:134: status=0; want 1; stdout="{\"schema\":1,\"data\":\"Check passed.\\n\",\"diagnostics\":[]}\n" stderr=""
+    diagnostic_causes_test.go:134: data="Check passed.\n"; want null
+    diagnostic_causes_test.go:134: diagnostics=[]; want nonempty array: <nil>
+--- FAIL: Test_APP_037_StaticCauses/handle (0.03s)
+Test_APP_167_DrillRejectsUnknownAgentAlias: === RUN   Test_APP_167_DrillRejectsUnknownAgentAlias
+    drill_cli_test.go:278: drill exit=1; want 2; stdout="" stderr="U02: command alias \"unlisted-drill-agent\" is not listed in agent.commands. Correct the reported issue before retrying.\n"
+    drill_cli_test.go:278: drill exit=1; want 2; stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"U02\",\"message\":\"command alias \\\"unlisted-drill-agent\\\" is not listed in agent.commands. Correct the reported issue before retrying.\",\"warning\":false}]}\n" stderr=""
+--- FAIL: Test_APP_167_DrillRejectsUnknownAgentAlias (0.85s)
 ?   	github.com/lurkshark/fireweed/packages/app	[no test files]
 ?   	github.com/lurkshark/fireweed/packages/app/internal/entry	[no test files]
 FAIL
-FAIL	github.com/lurkshark/fireweed/packages/app/evals	266.477s
+FAIL	github.com/lurkshark/fireweed/packages/app/evals	256.695s
 
 exit status 1
 
