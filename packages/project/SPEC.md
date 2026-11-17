@@ -310,7 +310,7 @@ Load MUST apply CheckCompatibility to the live configuration before returning a 
 CheckCompatibility MUST accept format version 1 and an omitted version as the initial format, and MUST reject any other present version value with a C01 CodedError identifying the unsupported value and supported format 1. Format acceptance MUST be independent of binary-range acceptance.
 
 ### PRJ-086
-For a worker with a nonempty alias argument, ResolveAgentCommand MUST select the matching entry from the agent.commands mapping. It MUST return U02 naming an unlisted alias and C01 identifying a malformed mapping or invalid selected command.
+For a worker with a nonempty alias, ResolveAgentCommand MUST select the matching valid entry from the agent.commands mapping. For an unlisted alias it MUST return a U02 CodedError with Subject equal to the supplied alias and a message naming the alias. It MUST return C01 identifying a malformed mapping or invalid selected command.
 
 ### PRJ-087
 With no explicit worker alias, ResolveAgentCommand MUST select the command named by agent.default in agent.commands. A missing or invalid default reference MUST return C01 identifying the setting at fault.
