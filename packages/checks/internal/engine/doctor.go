@@ -918,7 +918,6 @@ func (d *doctorState) probeAgent(name string, command, wrap any, common, logDir 
 	p, e := gitstore.Run(d.ctx, gitstore.Request{Args: args, Dir: d.root, Timeout: timeout})
 	logErr := errors.Join(writeDoctorProbeLog(logFile, p.Stdout, p.Stderr), logFile.Close())
 	detailLog := "; log: " + logPath
-	tail := finalLines(p.Stdout+"\n"+p.Stderr, 20)
 	ok := e == nil && p.ExitCode == 0 && strings.Contains(p.Stdout+p.Stderr, doctorReply)
 	if logErr != nil {
 		d.issue("C15", name+" agent log "+logPath+": "+logErr.Error(), "", false)
@@ -932,6 +931,7 @@ func (d *doctorState) probeAgent(name string, command, wrap any, common, logDir 
 		return
 	}
 	d.check(name, "", false, fmt.Sprintf("exit %d: %v%s", p.ExitCode, e, detailLog))
+	tail := finalLines(20, p.Stdout, p.Stderr)
 	kind := "command failure"
 	for _, pattern := range doctorStringList(d.snapshot.Config["limit_patterns"]) {
 		if pattern != "" && strings.Contains(strings.ToLower(tail), strings.ToLower(pattern)) {
@@ -957,12 +957,15 @@ func writeDoctorProbeLog(file *os.File, stdout, stderr string) error {
 	_, err := io.WriteString(file, "\n")
 	return err
 }
-func finalLines(s string, n int) string {
-	lines := strings.Split(strings.TrimRight(s, "\n"), "\n")
-	if len(lines) > n {
-		lines = lines[len(lines)-n:]
+func finalLines(n int, streams ...string) string {
+	var lines []string
+	for _, stream := range streams {
+		if stream != "" {
+			// Drop one line terminator while retaining any emitted blank lines.
+			lines = append(lines, strings.Split(strings.TrimSuffix(stream, "\n"), "\n")...)
+		}
 	}
-	return strings.Join(lines, "\n")
+	return strings.Join(lines[max(0, len(lines)-n):], "\n")
 }
 func doctorStringList(v any) []string {
 	var out []string
