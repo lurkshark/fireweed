@@ -4,6 +4,8 @@ already_satisfied:
 bases:
     FLOW-019: 845a3cd8
 module: workflow
+phase: audit
+run: 20261117T101251-65d12dd990fc766c58f4e0b4
 ---
 
 ## Motivation
@@ -39,3 +41,7 @@ Start-approved snapshot. Keep the existing Approved tests.
 The existing implementation resolves that path and loads the snapshot from
 the claim. A focused probe passed on main's implementation and reproduced
 both C01 errors on the retained reconstruction `16c778e`.
+## Provenance
+
+- evals 2026-11-17T10:16:54.281895Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=218 failing=0 passing=218
+
