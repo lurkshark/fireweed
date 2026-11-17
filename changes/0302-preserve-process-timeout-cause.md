@@ -4,7 +4,7 @@ already_satisfied:
 bases:
     GIT-005: 7cca5bc0
 module: gitstore
-phase: audit
+phase: impl
 run: 20261117T085953-bce7e6eae1f23398f110b2c8
 ---
 
@@ -39,4 +39,9 @@ through a context deadline and returns the context error on expiry.
 ## Provenance
 
 - evals 2026-11-17T09:00:50.796597Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=14 failing=0 passing=14
+- audit 2026-11-17T09:01:08.29685Z agent=codex fireweed=0.2.1 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+
+## Audit
+
+No findings; checked GIT-005
 
