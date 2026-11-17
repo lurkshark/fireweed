@@ -33,8 +33,32 @@ protected:
 worker_writable:
     - go.sum
 agent:
-    default: codex-gpt-6-1-sol-high
+    default: codex-gpt-6-2-sol-high
     commands:
+        codex-gpt-6-2-sol-high:
+            - codex
+            - exec
+            - --ephemeral
+            - --ignore-user-config
+            - -m
+            - gpt-6.2-sol
+            - -c
+            - model_reasoning_effort="high"
+            - -s
+            - workspace-write
+            - '{prompt}'
+        codex-gpt-6-2-astra-medium:
+            - codex
+            - exec
+            - --ephemeral
+            - --ignore-user-config
+            - -m
+            - gpt-6.2-astra
+            - -c
+            - model_reasoning_effort="medium"
+            - -s
+            - workspace-write
+            - '{prompt}'
         codex-gpt-6-1-sol-high:
             - codex
             - exec
@@ -68,10 +92,19 @@ agent:
             - 'opencode/deepseek-v4.1-flash#high'
             - '--'
             - '{prompt}'
+        opencode-inkling-2-small-high:
+            - ./scripts/opencode
+            - --standalone
+            - run
+            - --archived
+            - --model
+            - 'opencode/inkling-2-small-free#high'
+            - '--'
+            - '{prompt}'
 audit:
     enabled: true
     max_rounds: 2
-    agent: codex-gpt-6-astra-medium
+    agent: codex-gpt-6-2-astra-medium
 authoring:
     max_unapproved: 10
 attempts: 2
