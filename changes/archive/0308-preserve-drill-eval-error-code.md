@@ -2,7 +2,7 @@
 already_satisfied:
     - RUN-078
 module: runner
-phase: impl
+phase: applied
 run: 20261117T111540-1388407b00abb23fae7b12e6
 ---
 
@@ -48,4 +48,5 @@ No findings; checked RUN-078
 
 - evals 2026-11-17T11:25:42.985011Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=217 failing=0 passing=217
 - audit 2026-11-17T11:26:08.492718Z agent=codex fireweed=0.2.1 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-17T11:38:15.832402Z agent=codex fireweed=0.2.1 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=620 failing=0 passing=620
 

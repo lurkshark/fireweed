@@ -312,6 +312,9 @@ If `drill.exclude` matches the target's spec or a retained target interface or e
 ### RUN-077
 If the reconstruction workspace contains a path matching `drill.exclude` after setup, Drill MUST reject the input before invoking the worker and identify the matching path.
 
+### RUN-078
+When the primary error from Drill is a failed enforced testcase in the target or a dependent module, `contracts.ErrorCode` on the returned error MUST report E01 and the failed spec ID supplied by `checks.RequirePass`.
+
 ## Decisions
 
 [0075-bounded-agent-invocation] An unset configured timeout defaults to 90 minutes. limit_patterns are
