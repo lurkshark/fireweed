@@ -1,7 +1,7 @@
 ---
 agent: opencode
-base_commit: ad7da05d598b4e7b4fae5c1f5cd34818c5173adf
-date: "2026-11-16T06:16:28.627659Z"
+base_commit: dc2907c923f37ae0450e1ad4ac19c74dd0c2697e
+date: "2026-11-17T04:17:04.916574Z"
 model: opencode/deepseek-v4.1-flash#high
 result: fail
 ---
@@ -199,7 +199,7 @@ result: fail
 - app / Test_APP_156_HelpForms/init_-h / APP-156 / pass
 - app / Test_APP_156_HelpForms/new-module_--help / APP-156 / pass
 - app / Test_APP_156_HelpForms/new-module_-h / APP-156 / pass
-- app / Test_APP_156_EachListedCommandHasCLIHelp / APP-156 / pass
+- app / Test_APP_156_EachSupportedCommandHasCLIHelp / APP-156 / pass
 - app / Test_APP_156_ExactHelpWordForm / APP-156 / pass
 - app / Test_APP_157_HelpJSONMatchesPlain / APP-157 / pass
 - app / Test_APP_157_HelpJSONMatchesPlain/help / APP-157 / pass
@@ -433,40 +433,30 @@ result: fail
 - checks / Test_CHK_041_CHK_042_NormalNonzeroExitCanUseBaselineAndOptOut / CHK-041, CHK-042 / pass
 - checks / Test_CHK_043_RequiredGlobalHookRejectsUnattributedNonzeroExit / CHK-043 / pass
 - checks / Test_CHK_043_SilentNonzeroOverrideIsIndependentOfGlobalViolation / CHK-043 / pass
-- checks / Test_CHK_043_LaunchCancellationAndTimeoutStayErrors / CHK-043 / pass
+- checks / Test_CHK_043_LaunchCancellationAndTimeoutStayErrors / CHK-043 / fail
+
+=== RUN   Test_CHK_043_LaunchCancellationAndTimeoutStayErrors
+    boundaries_test.go:256: timeout error = "boundary hook: run hook: gitstore: command timed out after 80ms"; want deadline cause without X02 prefix
+--- FAIL: Test_CHK_043_LaunchCancellationAndTimeoutStayErrors (0.08s)
+
+- checks / Test_CHK_065_CHK_066_DoctorAgentTailAcrossStreams / CHK-065, CHK-066 / pass
+- checks / Test_CHK_065_CHK_066_DoctorAgentTailAcrossStreams/match_twentieth / CHK-065, CHK-066 / pass
+- checks / Test_CHK_065_CHK_066_DoctorAgentTailAcrossStreams/match_twenty-first / CHK-065, CHK-066 / pass
 - checks / Test_CHK_081_DoctorProbeLogsShareFreshRunAndPreserveStreams / CHK-081 / pass
 - checks / Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput / CHK-081 / fail
 
 === RUN   Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput
---- FAIL: Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput (1.87s)
+--- FAIL: Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput (1.91s)
 
-- checks / Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput/failure / CHK-081 / fail
+- checks / Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput/failure / CHK-081 / pass
+- checks / Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput/timeout / CHK-081 / fail
 
-=== RUN   Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput/failure
-    doctor_agent_logs_test.go:158: failed probe log or final-20-line diagnostic changed: checks=[{Name:baseline global eval Module:doctor1f50eef992 Passed:true Detail:eval and coverage pass} {Name:failing_eval global eval Module:doctor1f50eef992 Passed:true Detail:eval detected failing_eval} {Name:recovery global eval Module:doctor1f50eef992 Passed:true Detail:failing_eval: eval and coverage pass} {Name:missing_id global eval Module:doctor1f50eef992 Passed:true Detail:eval detected missing_id} {Name:recovery global eval Module:doctor1f50eef992 Passed:true Detail:missing_id: eval and coverage pass} {Name:baseline global boundaries Module:doctor1f50eef992 Passed:true Detail:boundaries pass} {Name:undeclared global boundaries Module:doctor1f50eef992 Passed:true Detail:boundaries detected undeclared} {Name:recovery global boundaries Module:doctor1f50eef992 Passed:true Detail:undeclared: boundaries pass} {Name:internal_eval global boundaries Module:doctor9e57d16afa Passed:true Detail:boundaries detected internal_eval} {Name:recovery global boundaries Module:doctor9e57d16afa Passed:true Detail:internal_eval: boundaries pass} {Name:worker Module: Passed:false Detail:exit 7: run bash: exit status 7 (stdout: "early worker stdout Ω\nlater-01\nlater-02\nlater-03\nlater-04\nlater-05\nlater-06\nlater-07\nlater-08\nlater-09\nlater-10\nlater-11\nlater-12\nlater-13\nlater-14\nlater-15\nlater-16\nlater-17\nlater-18\nlater-19\nlater-20\nlater-21\nlater-22\nlater-23\nlater-24\nlater-25\n", stderr: "failed worker stderr β"); log: /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutputfailure2434870600/001/.fireweed/runs/47d387de6a68244647e08c757fbbe03b/doctor-worker-1.log} {Name:audit Module: Passed:true Detail:fixed reply received; log: /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutputfailure2434870600/001/.fireweed/runs/47d387de6a68244647e08c757fbbe03b/doctor-audit-1.log}] diagnostics=[{Code:C15 Message:worker command failure: [bash .fireweed/agent.sh {prompt} {git_common_dir}]; exit 7; run bash: exit status 7 (stdout: "early worker stdout Ω\nlater-01\nlater-02\nlater-03\nlater-04\nlater-05\nlater-06\nlater-07\nlater-08\nlater-09\nlater-10\nlater-11\nlater-12\nlater-13\nlater-14\nlater-15\nlater-16\nlater-17\nlater-18\nlater-19\nlater-20\nlater-21\nlater-22\nlater-23\nlater-24\nlater-25\n", stderr: "failed worker stderr β")
-        later-08
-        later-09
-        later-10
-        later-11
-        later-12
-        later-13
-        later-14
-        later-15
-        later-16
-        later-17
-        later-18
-        later-19
-        later-20
-        later-21
-        later-22
-        later-23
-        later-24
-        later-25
-        
-        failed worker stderr β Path: Warning:false}]
---- FAIL: Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput/failure (0.84s)
+=== RUN   Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput/timeout
+    doctor_agent_logs_test.go:194: timeout probe outcome/diagnostic lost: checks=[{Name:baseline global eval Module:doctoref5bb631af Passed:true Detail:eval and coverage pass} {Name:failing_eval global eval Module:doctoref5bb631af Passed:true Detail:eval detected failing_eval} {Name:recovery global eval Module:doctoref5bb631af Passed:true Detail:failing_eval: eval and coverage pass} {Name:missing_id global eval Module:doctoref5bb631af Passed:true Detail:eval detected missing_id} {Name:recovery global eval Module:doctoref5bb631af Passed:true Detail:missing_id: eval and coverage pass} {Name:baseline global boundaries Module:doctoref5bb631af Passed:true Detail:boundaries pass} {Name:undeclared global boundaries Module:doctoref5bb631af Passed:true Detail:boundaries detected undeclared} {Name:recovery global boundaries Module:doctoref5bb631af Passed:true Detail:undeclared: boundaries pass} {Name:internal_eval global boundaries Module:doctor61fa0ce785 Passed:true Detail:boundaries detected internal_eval} {Name:recovery global boundaries Module:doctor61fa0ce785 Passed:true Detail:internal_eval: boundaries pass} {Name:worker Module: Passed:true Detail:fixed reply received; log: /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutputtimeout1633127406/001/.fireweed/runs/562edd6acb397af47b82ca73e15fa1b0/doctor-worker-1.log} {Name:audit Module: Passed:false Detail:exit -1: gitstore: command timed out after 150ms; log: /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutputtimeout1633127406/001/.fireweed/runs/562edd6acb397af47b82ca73e15fa1b0/doctor-audit-1.log}] diagnostics=[{Code:C15 Message:audit command failure: [bash .fireweed/audit.sh {prompt}]; exit -1; gitstore: command timed out after 150ms
+        partial audit stdout Ω
+        partial audit stderr β Path: Warning:false}]
+--- FAIL: Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput/timeout (1.04s)
 
-- checks / Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput/timeout / CHK-081 / pass
 - checks / Test_CHK_081_DoctorPersistsCancelledProbeOutput / CHK-081 / pass
 - checks / Test_CHK_059_DoctorMatchesSuppliedGoMissingIDCanary / CHK-059 / pass
 - checks / Test_CHK_059_DoctorMatchesSuppliedGoMissingIDCanary/declared_test / CHK-059 / pass
@@ -518,67 +508,22 @@ result: fail
 - checks / Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRole / CHK-085 / pass
 - checks / Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRole/worker / CHK-085 / pass
 - checks / Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRole/audit / CHK-085 / pass
-- checks / Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes / CHK-063, CHK-065, CHK-066, CHK-067 / fail
-
-=== RUN   Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes
-    doctor_test.go:934: agent output was not trimmed to final 20 lines: checks=[{Name:baseline global eval Module:doctorbd9a54e622 Passed:true Detail:eval and coverage pass} {Name:failing_eval global eval Module:doctorbd9a54e622 Passed:true Detail:eval detected failing_eval} {Name:recovery global eval Module:doctorbd9a54e622 Passed:true Detail:failing_eval: eval and coverage pass} {Name:missing_id global eval Module:doctorbd9a54e622 Passed:true Detail:eval detected missing_id} {Name:recovery global eval Module:doctorbd9a54e622 Passed:true Detail:missing_id: eval and coverage pass} {Name:baseline global boundaries Module:doctorbd9a54e622 Passed:true Detail:boundaries pass} {Name:undeclared global boundaries Module:doctorbd9a54e622 Passed:true Detail:boundaries detected undeclared} {Name:recovery global boundaries Module:doctorbd9a54e622 Passed:true Detail:undeclared: boundaries pass} {Name:internal_eval global boundaries Module:doctor8b4364fa22 Passed:true Detail:boundaries detected internal_eval} {Name:recovery global boundaries Module:doctor8b4364fa22 Passed:true Detail:internal_eval: boundaries pass} {Name:worker Module: Passed:false Detail:exit 9: run bash: exit status 9 (stdout: "line-01\nline-02\nline-03\nline-04\nline-05\nline-06\nline-07\nline-08\nline-09\nline-10\nline-11\nline-12\nline-13\nline-14\nline-15\nline-16\nline-17\nline-18\nline-19\nline-20\nline-21\nline-22\nline-23\nline-24\nline-25\nRATE LIMIT reached\n", stderr: ""); log: /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes1451924378/001/.fireweed/runs/fccdac7f87445e009669bb8a5e294a69/doctor-worker-1.log} {Name:audit Module: Passed:true Detail:fixed reply received; log: /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes1451924378/001/.fireweed/runs/fccdac7f87445e009669bb8a5e294a69/doctor-audit-1.log}] diagnostics=[{Code:C15 Message:worker usage limit: [bash .fireweed/agent.sh {prompt} {git_common_dir}]; exit 9; run bash: exit status 9 (stdout: "line-01\nline-02\nline-03\nline-04\nline-05\nline-06\nline-07\nline-08\nline-09\nline-10\nline-11\nline-12\nline-13\nline-14\nline-15\nline-16\nline-17\nline-18\nline-19\nline-20\nline-21\nline-22\nline-23\nline-24\nline-25\nRATE LIMIT reached\n", stderr: "")
-        line-07
-        line-08
-        line-09
-        line-10
-        line-11
-        line-12
-        line-13
-        line-14
-        line-15
-        line-16
-        line-17
-        line-18
-        line-19
-        line-20
-        line-21
-        line-22
-        line-23
-        line-24
-        line-25
-        RATE LIMIT reached Path: Warning:false}]
---- FAIL: Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes (7.73s)
-
+- checks / Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes / CHK-063, CHK-065, CHK-066, CHK-067 / pass
 - checks / Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes/wrong_reply / CHK-063, CHK-065, CHK-066, CHK-067 / pass
 - checks / Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes/nonzero_with_reply / CHK-063, CHK-065, CHK-066, CHK-067 / pass
-- checks / Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes/ordinary_failure / CHK-063, CHK-065, CHK-066, CHK-067 / fail
-
-=== RUN   Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes/ordinary_failure
-    doctor_test.go:959: ordinary failure tail incorrect: checks=[{Name:baseline global eval Module:doctor0908a33fdc Passed:true Detail:eval and coverage pass} {Name:failing_eval global eval Module:doctor0908a33fdc Passed:true Detail:eval detected failing_eval} {Name:recovery global eval Module:doctor0908a33fdc Passed:true Detail:failing_eval: eval and coverage pass} {Name:missing_id global eval Module:doctor0908a33fdc Passed:true Detail:eval detected missing_id} {Name:recovery global eval Module:doctor0908a33fdc Passed:true Detail:missing_id: eval and coverage pass} {Name:baseline global boundaries Module:doctor0908a33fdc Passed:true Detail:boundaries pass} {Name:undeclared global boundaries Module:doctor0908a33fdc Passed:true Detail:boundaries detected undeclared} {Name:recovery global boundaries Module:doctor0908a33fdc Passed:true Detail:undeclared: boundaries pass} {Name:internal_eval global boundaries Module:doctor372d35924f Passed:true Detail:boundaries detected internal_eval} {Name:recovery global boundaries Module:doctor372d35924f Passed:true Detail:internal_eval: boundaries pass} {Name:worker Module: Passed:false Detail:exit 8: run bash: exit status 8 (stdout: "ordinary-01\nordinary-02\nordinary-03\nordinary-04\nordinary-05\nordinary-06\nordinary-07\nordinary-08\nordinary-09\nordinary-10\nordinary-11\nordinary-12\nordinary-13\nordinary-14\nordinary-15\nordinary-16\nordinary-17\nordinary-18\nordinary-19\nordinary-20\nordinary-21\nordinary-22\nordinary-23\nordinary-24\nordinary-25\n", stderr: ""); log: /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomesor2000729238/001/.fireweed/runs/0fd97f5bdd7300c3974bb3ffb7886951/doctor-worker-1.log} {Name:audit Module: Passed:true Detail:fixed reply received; log: /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomesor2000729238/001/.fireweed/runs/0fd97f5bdd7300c3974bb3ffb7886951/doctor-audit-1.log}] diagnostics=[{Code:C15 Message:worker command failure: [bash .fireweed/agent.sh {prompt} {git_common_dir}]; exit 8; run bash: exit status 8 (stdout: "ordinary-01\nordinary-02\nordinary-03\nordinary-04\nordinary-05\nordinary-06\nordinary-07\nordinary-08\nordinary-09\nordinary-10\nordinary-11\nordinary-12\nordinary-13\nordinary-14\nordinary-15\nordinary-16\nordinary-17\nordinary-18\nordinary-19\nordinary-20\nordinary-21\nordinary-22\nordinary-23\nordinary-24\nordinary-25\n", stderr: "")
-        ordinary-06
-        ordinary-07
-        ordinary-08
-        ordinary-09
-        ordinary-10
-        ordinary-11
-        ordinary-12
-        ordinary-13
-        ordinary-14
-        ordinary-15
-        ordinary-16
-        ordinary-17
-        ordinary-18
-        ordinary-19
-        ordinary-20
-        ordinary-21
-        ordinary-22
-        ordinary-23
-        ordinary-24
-        ordinary-25 Path: Warning:false}]
---- FAIL: Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes/ordinary_failure (0.86s)
-
+- checks / Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes/ordinary_failure / CHK-063, CHK-065, CHK-066, CHK-067 / pass
 - checks / Test_CHK_065_UnsetTimeoutBoundsAuditProbe / CHK-065 / pass
 - checks / Test_CHK_068_CHK_069_ManagedGuidanceAndPlaybookBase / CHK-068, CHK-069 / pass
 - checks / Test_CHK_034_EvaluateRetainsHookOutputOnRejectedReports / CHK-034 / pass
 - checks / Test_CHK_034_EvaluateRetainsHookOutputOnRejectedReports/unmapped_PackageFailure / CHK-034 / pass
 - checks / Test_CHK_034_EvaluateRetainsHookOutputOnRejectedReports/malformed_XML / CHK-034 / pass
 - checks / Test_CHK_034_EvaluateRetainsHookOutputOnRejectedReports/missing_report / CHK-034 / pass
-- checks / Test_CHK_034_EvaluateRetainsOutputOnHookTimeout / CHK-034 / pass
+- checks / Test_CHK_034_EvaluateRetainsOutputOnHookTimeout / CHK-034 / fail
+
+=== RUN   Test_CHK_034_EvaluateRetainsOutputOnHookTimeout
+    evaluate_process_metadata_test.go:72: hook timeout cause lost: run hook: gitstore: command timed out after 100ms
+--- FAIL: Test_CHK_034_EvaluateRetainsOutputOnHookTimeout (0.10s)
+
 - checks / Test_CHK_070_HistoryExplicitRangeOrderAndFullOIDs / CHK-070 / pass
 - checks / Test_CHK_070_HistoryBranchingRangeTopologicalOrder / CHK-070 / pass
 - checks / Test_CHK_070_HistoryDefaultRangeUsesLocalConfiguredBase / CHK-070 / pass
@@ -770,6 +715,7 @@ result: fail
 - project / Test_PRJ_046_CheckEvalFixCannotMixWithFixesOrSpecEdits/fixes_only / PRJ-046 / pass
 - project / Test_PRJ_046_CheckEvalFixCannotMixWithFixesOrSpecEdits/added_only / PRJ-046 / pass
 - project / Test_PRJ_001_PRJ_017_LoadConfiguredModulesAndDefaults / PRJ-001, PRJ-017 / pass
+- project / Test_PRJ_001_LoadRootModuleForDotGlob / PRJ-001 / pass
 - project / Test_PRJ_018_LoadInvalidDocuments / PRJ-018 / pass
 - project / Test_PRJ_018_LoadInvalidDocuments/missing_config / PRJ-018 / pass
 - project / Test_PRJ_018_LoadInvalidDocuments/malformed_config / PRJ-018 / pass
@@ -788,17 +734,21 @@ result: fail
 - project / Test_PRJ_024_NewChangeRejectsDuplicatesWithoutOverwrite / PRJ-024 / pass
 - project / Test_PRJ_024_NewChangeRejectsDuplicatesWithoutOverwrite/pending / PRJ-024 / pass
 - project / Test_PRJ_024_NewChangeRejectsDuplicatesWithoutOverwrite/archived / PRJ-024 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments / PRJ-025, PRJ-026 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments/PRJ-025_unknown_module / PRJ-025, PRJ-026 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments/PRJ-026_uppercase_slug / PRJ-025, PRJ-026 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments/PRJ-026_underscore_slug / PRJ-025, PRJ-026 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments/PRJ-026_slash_slug / PRJ-025, PRJ-026 / pass
-- project / Test_PRJ_025_PRJ_026_NewChangeInvalidArguments/PRJ-026_empty_slug / PRJ-025, PRJ-026 / pass
+- project / Test_PRJ_025_NewChangeRejectsUnknownModuleWithoutWritingFiles / PRJ-025 / pass
+- project / Test_PRJ_026_NewChangeRejectsInvalidSlugs / PRJ-026 / pass
+- project / Test_PRJ_026_NewChangeRejectsInvalidSlugs/uppercase_slug / PRJ-026 / pass
+- project / Test_PRJ_026_NewChangeRejectsInvalidSlugs/underscore_slug / PRJ-026 / pass
+- project / Test_PRJ_026_NewChangeRejectsInvalidSlugs/slash_slug / PRJ-026 / pass
+- project / Test_PRJ_026_NewChangeRejectsInvalidSlugs/empty_slug / PRJ-026 / pass
 - project / Test_PRJ_067_NewChangeBlockedQueuedPathPreservesCause / PRJ-067 / pass
 - project / Test_PRJ_027_PRJ_028_QueueOrderContentAndArchive / PRJ-027, PRJ-028 / pass
-- project / Test_PRJ_029_PRJ_030_QueueRejectsInvalidDocuments / PRJ-029, PRJ-030 / pass
-- project / Test_PRJ_029_PRJ_030_QueueRejectsInvalidDocuments/PRJ-029_malformed / PRJ-029, PRJ-030 / pass
-- project / Test_PRJ_029_PRJ_030_QueueRejectsInvalidDocuments/PRJ-030_unknown_module / PRJ-029, PRJ-030 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics / PRJ-029 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics/malformed_frontmatter / PRJ-029 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics/malformed_item_heading / PRJ-029 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics/duplicate_added_identity / PRJ-029 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics/duplicate_modified_identity / PRJ-029 / pass
+- project / Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics/duplicate_removed_identity / PRJ-029 / pass
+- project / Test_PRJ_030_QueueRejectsUnknownModule / PRJ-030 / pass
 - project / Test_PRJ_004_PRJ_031_PRJ_032_TargetAliasesAndAmbiguousSlug / PRJ-004, PRJ-031, PRJ-032 / pass
 - project / Test_PRJ_005_PRJ_032_PRJ_036_ProjectEditsAndLocalHandles / PRJ-005, PRJ-032, PRJ-036 / pass
 - project / Test_PRJ_033_PRJ_034_PRJ_035_SetFieldsAndRejections / PRJ-033, PRJ-034, PRJ-035 / pass
@@ -844,6 +794,10 @@ result: fail
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/missing_recorded_config / PRJ-050 / pass
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/malformed_recorded_config / PRJ-050 / pass
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/missing_recorded_SPEC / PRJ-050 / pass
+- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics / PRJ-050 / pass
+- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/malformed_frontmatter / PRJ-050 / pass
+- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/malformed_item_heading / PRJ-050 / pass
+- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/duplicate_item_identity / PRJ-050 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs / PRJ-004 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs/Project / PRJ-004 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs/Stamp / PRJ-004 / pass
@@ -896,6 +850,10 @@ result: fail
 - project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/nonmatching_headings_only / PRJ-077 / pass
 - project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/pending_change_without_specs / PRJ-077 / pass
 - project / Test_PRJ_060_StaleSpecsSelectsRecordedModifiedAndRemovedInEditOrder / PRJ-060 / pass
+- project / Test_PRJ_060_StaleSpecsRejectsNonmappingBasesAtQueuedPath / PRJ-060 / pass
+- project / Test_PRJ_060_StaleSpecsRejectsNonmappingBasesAtQueuedPath/sequence / PRJ-060 / pass
+- project / Test_PRJ_060_StaleSpecsRejectsNonmappingBasesAtQueuedPath/scalar / PRJ-060 / pass
+- project / Test_PRJ_060_StaleSpecsRejectsNonmappingBasesAtQueuedPath/null / PRJ-060 / pass
 - project / Test_PRJ_061_PRJ_062_HistoryUsesLastBasesChangeAndValidatesEachHash / PRJ-061, PRJ-062 / pass
 - project / Test_PRJ_062_UnavailableHistoryStillReportsEveryStaleItem / PRJ-062 / pass
 - project / Test_PRJ_063_StaleSpecsEmptyAndReadOnly / PRJ-063 / pass
@@ -1036,8 +994,21 @@ result: fail
 - runner / Test_RUN_056_DrillUsesSelectedCommandAcrossRetries/agent_retry / RUN-056 / pass
 - runner / Test_RUN_056_DrillUsesSelectedCommandAcrossRetries/verify_retry / RUN-056 / pass
 - runner / Test_RUN_056_DrillUsesConfiguredDefault / RUN-056 / pass
-- runner / Test_RUN_056_ConfiguredTimeoutBoundsDrillWorker / RUN-056 / pass
-- runner / Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted / RUN-057 / pass
+- runner / Test_RUN_056_ConfiguredTimeoutBoundsDrillWorker / RUN-056 / fail
+
+=== RUN   Test_RUN_056_ConfiguredTimeoutBoundsDrillWorker
+    drill_test.go:681: configured drill timeout = model.DrillResult{Module:"alpha", Base:"3ed0deef8cf68f82f81d3f7d2cf5a50322fd05b2", Date:"20261117T043705.135361000", Agent:"bash", Model:"worker-model", Result:"fail", ReportPath:".fireweed/drills/alpha.md", Ref:"", Own:model.Report{Cases:[]model.Case(nil), Seconds:0, HookExit:0, Stdout:"", Stderr:""}, Dependents:map[string]model.Report{}, Steps:[]model.AgentResult{model.AgentResult{Stdout:"", Stderr:"", ExitCode:-1, UsageLimit:false, LogPath:"/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_056_ConfiguredTimeoutBoundsDrillWorker426593709/001/.fireweed/runs/20261117T043705-0c4db8619d73232de1bcaabf/drill-1.log"}, model.AgentResult{Stdout:"", Stderr:"", ExitCode:-1, UsageLimit:false, LogPath:"/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_056_ConfiguredTimeoutBoundsDrillWorker426593709/001/.fireweed/runs/20261117T043705-0c4db8619d73232de1bcaabf/drill-2.log"}}}, reconstruction failed: worker agent bash: gitstore: command timed out after 200ms
+        
+         after 664.376459ms
+--- FAIL: Test_RUN_056_ConfiguredTimeoutBoundsDrillWorker (0.85s)
+
+- runner / Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted / RUN-057 / fail
+
+=== RUN   Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted
+    drill_test.go:728: timed drill = model.DrillResult{Module:"alpha", Base:"8eb217119eb99b374b033a43527d932c626c6128", Date:"20261117T043708.212369000", Agent:"bash", Model:"worker-model", Result:"fail", ReportPath:".fireweed/drills/alpha.md", Ref:"", Own:model.Report{Cases:[]model.Case(nil), Seconds:0, HookExit:0, Stdout:"", Stderr:""}, Dependents:map[string]model.Report{}, Steps:[]model.AgentResult{model.AgentResult{Stdout:"", Stderr:"", ExitCode:-1, UsageLimit:false, LogPath:"/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted976032203/007/.fireweed/runs/20261117T043708-d2ae8d77ba6b204afd9ac1e3/drill-1.log"}, model.AgentResult{Stdout:"", Stderr:"", ExitCode:-1, UsageLimit:false, LogPath:"/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted976032203/007/.fireweed/runs/20261117T043708-d2ae8d77ba6b204afd9ac1e3/drill-2.log"}}}, reconstruction failed: worker agent bash: gitstore: command timed out after 250ms
+        
+--- FAIL: Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted (3.23s)
+
 - runner / Test_RUN_058_RUN_059_DrillReturnsAllReportsEvenWhenEvalsFail / RUN-058, RUN-059 / pass
 - runner / Test_RUN_058_OwnCoverageRequiredAfterPassingCases / RUN-058 / pass
 - runner / Test_RUN_059_DependentCoverageRequiredAfterPassingCases / RUN-059 / pass
@@ -1111,10 +1082,19 @@ result: fail
 - runner / Test_RUN_003_RUN_067_WrapperUsesOnePromptFileForBothRolesAndFallback/audit / RUN-003, RUN-067 / pass
 - runner / Test_RUN_003_RUN_067_WrapperUsesOnePromptFileForBothRolesAndFallback/audit_fallback / RUN-003, RUN-067 / pass
 - runner / Test_RUN_067_WrapperOnlyPlaceholderCreatesPromptFile / RUN-067 / pass
-- runner / Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure / RUN-067 / pass
+- runner / Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure / RUN-067 / fail
+
+=== RUN   Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure
+--- FAIL: Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure (0.50s)
+
 - runner / Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/success / RUN-067 / pass
 - runner / Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/nonzero / RUN-067 / pass
-- runner / Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/timeout / RUN-067 / pass
+- runner / Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/timeout / RUN-067 / fail
+
+=== RUN   Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/timeout
+    prompt_file_test.go:235: timeout result = model.AgentResult{Stdout:"partial", Stderr:"warning", ExitCode:-1, UsageLimit:false, LogPath:"/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunc3327485099/001/fixture's repo/.fireweed/runs/20261117T043805-c410e683e1317f1866a0acc3/worker-1.log"}, worker agent bash: gitstore: command timed out after 150ms
+--- FAIL: Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/timeout (0.22s)
+
 - runner / Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/cancellation / RUN-067 / pass
 - runner / Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/launch_failure / RUN-067 / pass
 - runner / Test_RUN_067_UnselectedTemplateDoesNotRequirePromptFileIO / RUN-067 / pass
@@ -1174,6 +1154,9 @@ result: fail
 - workflow / Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal/changes/0001-manual.md / FLOW-096 / pass
 - workflow / Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal/0001-manual.md / FLOW-096 / pass
 - workflow / Test_FLOW_096_AbandonSelectorsAndMissingAmbiguousRefusal/manual / FLOW-096 / pass
+- workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers / FLOW-019 / pass
+- workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers/1.0 / FLOW-019 / pass
+- workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers/1 / FLOW-019 / pass
 - workflow / Test_FLOW_019_FLOW_139_ApprovedSurvivesLiveEdits / FLOW-019, FLOW-139 / pass
 - workflow / Test_FLOW_140_ApprovedReportsNoOwnedClaim / FLOW-140 / pass
 - workflow / Test_FLOW_140_ApprovedRejectsUnreadableOrMalformedClaim / FLOW-140 / pass
@@ -1297,12 +1280,7 @@ result: fail
 - workflow / Test_FLOW_052_DoneRetainsCostModuleReportBesideCostSnapshot/costs / FLOW-052 / pass
 - workflow / Test_FLOW_052_DoneRetainsCostModuleReportBesideCostSnapshot/CoStS / FLOW-052 / pass
 - workflow / Test_FLOW_054_StartOperationalPreconditionsHaveP01 / FLOW-054 / pass
-- workflow / Test_FLOW_056_StartContentionAndCurrentForeignClaimHaveP02 / FLOW-056 / fail
-
-=== RUN   Test_FLOW_056_StartContentionAndCurrentForeignClaimHaveP02
-    lifecycle_test.go:1499: contended Start = claim already held: cas ref refs/fireweed/claims/manual: exists at 61784e9f2f6af0c3f45091dfd7e35d904b8af9fd, expected absent
---- FAIL: Test_FLOW_056_StartContentionAndCurrentForeignClaimHaveP02 (0.61s)
-
+- workflow / Test_FLOW_056_StartContentionAndCurrentForeignClaimHaveP02 / FLOW-056 / pass
 - workflow / Test_FLOW_057_VerifyAndDoneRejectApprovedStateEditsBeforeHooks / FLOW-057 / pass
 - workflow / Test_FLOW_057_VerifyAndDoneRejectApprovedStateEditsBeforeHooks/author / FLOW-057 / pass
 - workflow / Test_FLOW_057_VerifyAndDoneRejectApprovedStateEditsBeforeHooks/runtime / FLOW-057 / pass
@@ -1367,6 +1345,7 @@ result: fail
 - workflow / Test_FLOW_111_StatusReworkChainWarning/latest_matching_predecessor_wins / FLOW-111 / pass
 - workflow / Test_FLOW_111_StatusReworkChainWarning/same_module_without_shared_IDs / FLOW-111 / pass
 - workflow / Test_FLOW_110_StatusSharedBaseUsesSameArchivedDocumentIdentity / FLOW-110 / pass
+- workflow / Test_FLOW_110_StatusReportsUnavailableConfiguredBaseWithEmptyArchive / FLOW-110 / pass
 - workflow / Test_FLOW_112_StatusPhaseCommitsMatchRealLifecycle / FLOW-112 / pass
 - workflow / Test_FLOW_113_StatusLatestRecordedCostsAndSavedWarnings / FLOW-113 / pass
 - workflow / Test_FLOW_136_DoneMarksFullVerificationFailureAndPreservesResult / FLOW-136 / pass
@@ -1380,142 +1359,101 @@ result: fail
 - workflow / Test_FLOW_138_ContextExplainsHowToDeclareWorkerBlock/impl / FLOW-138 / pass
 
 ## Contradicted Decisions
-None. Decision [0010-manual-lifecycle-git] agrees with the specs and evals: tracked changes report the leading letter of Git's name-status code (`R` rather than `R100`), and untracked paths report `?`.
+None observed. Decision 0010 (tracked changes use the leading letter of Git's
+name-status code; untracked paths use `?`) is consistent with GIT-003 and the
+retained evals.
 
 ## Gaps
-- **GIT-003 — duplicate-path status precedence.** The spec requires one `Change` per reported `Path`, but a path can appear in both the staged and unstaged diffs with different statuses (for example, a staged addition later deleted in the worktree, or a staged modification later deleted). The implementation keeps the staged status unless the unstaged entry is the only one carrying a rename, in which case it adopts the rename and `OldPath`. Spec clarification belongs to **packages/gitstore** (`SPEC.md`); any resulting behavior change belongs to **packages/gitstore** (`internal/**`).
-- **GIT-003 — untracked vs ignored paths.** The spec says "untracked paths" without defining whether ignored files count. The implementation uses `git ls-files --others --exclude-standard`, so ignored paths are omitted. Clarify the intended set in **packages/gitstore** (`SPEC.md`), with a behavior change, if needed, in **packages/gitstore** (`internal/**`).
-- **GIT-005 — environment replacement vs inheritance and executable lookup.** The spec says Run uses the supplied environment, but does not say whether `Request.Env` augments or replaces the process environment, nor which `PATH` resolves a slash-free `Args[0]`. The implementation merges overrides onto the inherited environment and leaves executable resolution to `os/exec` against the process `PATH`. Clarify in **packages/gitstore** (`SPEC.md`); a behavior change would target **packages/gitstore** (`internal/**`).
-- **GIT-007 — empty or missing selected paths.** The spec does not define `Commit` behavior for an empty path list or for a selected path that is absent from the worktree and parent tree. The implementation rejects an empty list and lets `git update-index --add --remove` treat an absent tracked path as a deletion. Clarify in **packages/gitstore** (`SPEC.md`); a behavior change would target **packages/gitstore** (`internal/**`).
-- **GIT-010 — zero object IDs in CASRef.** The evals establish that an empty or all-zero `old` value means "expected absent" for deletion, but the spec does not define whether an all-zero `new` value means deletion or an invalid object. The implementation treats an all-zero `new` as deletion, mirroring Git's ref-update convention. Clarify in **packages/gitstore** (`SPEC.md`); a behavior change would target **packages/gitstore** (`internal/**`).
-- **GIT-001 — unborn HEAD and bare repositories.** The spec requires HEAD and branch for a worktree but does not define an unborn worktree or a bare repository. The implementation returns an empty `Head` and the symbolic branch for an unborn worktree, and an error for a bare repository because it has no worktree root. Clarify in **packages/gitstore** (`SPEC.md`); a behavior change would target **packages/gitstore** (`internal/**`).
-- **GIT-002 — dangling remote HEAD.** The spec says an omitted base uses the local remote HEAD's branch "when known, otherwise main." The implementation treats a resolvable `refs/remotes/<remote>/HEAD` as known even if its target branch exists neither remotely nor locally, and then returns a missing-base error rather than falling back to main. Clarify whether a dangling remote HEAD counts as known in **packages/gitstore** (`SPEC.md`); a behavior change would target **packages/gitstore** (`internal/**`).
-- **GIT-009 — accepted ref name forms.** The spec says Ref returns a named local ref's object ID but does not define whether short names (`main`) or only fully qualified names (`refs/heads/main`) are accepted. The implementation accepts anything `git rev-parse --verify` resolves. Clarify in **packages/gitstore** (`SPEC.md`); a behavior change would target **packages/gitstore** (`internal/**`).
+- **GIT-005** — "supplied environment" does not say whether the request
+  environment replaces or augments the inherited process environment. The
+  eval requires inherited `PATH`, so the reconstruction augments it. Target a
+  fixing change in `gitstore`.
+- **GIT-005** — A single process-group signal can miss a child forked while
+  cancellation races the launch. The spec only says to terminate the launched
+  process group. The reconstruction re-signals the group until the launched
+  process is reaped. Target a fixing change in `gitstore`.
+- **GIT-003** — When the same `Path` appears as a rename in one tracked diff and
+  as an add/delete in another, the spec only says "once per reported Path". It
+  does not say which status wins or that the rename's old-path counterpart must
+  be suppressed. Target a fixing change in `gitstore`.
+- **GIT-001** — Behavior for a repository with an unborn HEAD is undefined; the
+  spec requires HEAD and branch but has no commit to read. The reconstruction
+  reports an empty HEAD. Target a fixing change in `gitstore`.
+- **GIT-007** — The spec covers new files but not explicitly selected deleted
+  paths or an empty selection. The reconstruction records deletions through the
+  temporary index and treats an empty selection as committing the current HEAD
+  tree. Target a fixing change in `gitstore`.
 
 ## Agent observations
 
 ### Invocation 1
-Log: .fireweed/runs/20261116T061628-a2ce104b8d1448a44e41ac4b/drill-1.log
+Log: .fireweed/runs/20261117T041704-ef4e7cf54f1975bf7fdb3995/drill-1.log
 
 I'll start by exploring the workspace to understand the structure and retained interfaces.
-Now I understand the requirements and Git behavior. Let me implement the disposable `internal/local` package.
-The eval exposed a real fork/kill race: a child spawned just after the group kill can survive and hold the pipes. I'll make termination retry the group kill until `Wait` returns.
-Now I'll write the required drill notes.
-Implemented the reconstructed `gitstore` module under its disposable path:
+Now I'll implement the module. Let me create the internal package.
+Reconstructed `gitstore` under its disposable `internal/**` path.
 
-- `packages/gitstore/internal/local/local.go` — `Inspect` and `BaseRef`
-- `packages/gitstore/internal/local/changes.go` — staged/unstaged tracked diffs, renames, untracked paths, deduplication
-- `packages/gitstore/internal/local/commit.go` — selected-path commits through a temporary index
-- `packages/gitstore/internal/local/objects.go` — blob write/read and `ReadAt`
-- `packages/gitstore/internal/local/refs.go` — ref lookup and compare-and-swap creation/update/deletion
-- `packages/gitstore/internal/local/run.go` — exact argv execution, environment/stdin handling, output capture, timeout/cancellation with process-group termination
-- `packages/gitstore/internal/local/command.go` — shared Git command and environment helpers
+**Implemented** in `packages/gitstore/internal/local/local.go`:
+- `Inspect` — canonical root/common-Git dir, HEAD, branch; linked worktrees and detached HEAD.
+- `BaseRef` — remote ref preference, local fallback, remote-HEAD defaults, missing-base error.
+- `Changes` — committed/staged/unstaged tracked diffs plus untracked paths, rename old/new names, one record per Path.
+- `WriteBlob` / `ReadBlob` / `Ref` / `CASRef` — blob storage, ref lookup, atomic create/update/delete with absence-aware zero-old handling.
+- `Commit` — temporary index isolating selected paths so unrelated index/worktree changes remain untouched.
+- `Run` — complete argv, inherited+supplied env, stdin, captured streams, exit code, and process-group termination with repeated signalling to close the child-fork race.
 
-I also wrote `DRILL_NOTES.md` with:
+**Verification**: target eval hook passes all 14 cases; full eval also passed three consecutive runs, and the `GIT_005` process tests pass under `-race`.
 
-- `## Contradicted Decisions`: none
-- `## Gaps`: eight clarifications, each labeled with its nearest spec ID and the target fixing module (`packages/gitstore`)
-
-Verification passed:
-
-```text
-PASS
-ok github.com/lurkshark/fireweed/packages/gitstore/evals
-```
-
-The retained eval suite also passed repeatedly (`-count=5`) and under `-race`. The boundaries hook reported no violations.
+Added `DRILL_NOTES.md` with `## Contradicted Decisions` (none) and `## Gaps` naming GIT-005, GIT-003, GIT-001, and GIT-007, each targeting `gitstore`.
 
 
 ## Failures
-checks: failed case "Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes" for CHK-063
+checks: failed case "Test_CHK_034_EvaluateRetainsOutputOnHookTimeout" for CHK-034
+Test_CHK_043_LaunchCancellationAndTimeoutStayErrors: === RUN   Test_CHK_043_LaunchCancellationAndTimeoutStayErrors
+    boundaries_test.go:256: timeout error = "boundary hook: run hook: gitstore: command timed out after 80ms"; want deadline cause without X02 prefix
+--- FAIL: Test_CHK_043_LaunchCancellationAndTimeoutStayErrors (0.08s)
 Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput: === RUN   Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput
---- FAIL: Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput (1.87s)
-Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput/failure: === RUN   Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput/failure
-    doctor_agent_logs_test.go:158: failed probe log or final-20-line diagnostic changed: checks=[{Name:baseline global eval Module:doctor1f50eef992 Passed:true Detail:eval and coverage pass} {Name:failing_eval global eval Module:doctor1f50eef992 Passed:true Detail:eval detected failing_eval} {Name:recovery global eval Module:doctor1f50eef992 Passed:true Detail:failing_eval: eval and coverage pass} {Name:missing_id global eval Module:doctor1f50eef992 Passed:true Detail:eval detected missing_id} {Name:recovery global eval Module:doctor1f50eef992 Passed:true Detail:missing_id: eval and coverage pass} {Name:baseline global boundaries Module:doctor1f50eef992 Passed:true Detail:boundaries pass} {Name:undeclared global boundaries Module:doctor1f50eef992 Passed:true Detail:boundaries detected undeclared} {Name:recovery global boundaries Module:doctor1f50eef992 Passed:true Detail:undeclared: boundaries pass} {Name:internal_eval global boundaries Module:doctor9e57d16afa Passed:true Detail:boundaries detected internal_eval} {Name:recovery global boundaries Module:doctor9e57d16afa Passed:true Detail:internal_eval: boundaries pass} {Name:worker Module: Passed:false Detail:exit 7: run bash: exit status 7 (stdout: "early worker stdout Ω\nlater-01\nlater-02\nlater-03\nlater-04\nlater-05\nlater-06\nlater-07\nlater-08\nlater-09\nlater-10\nlater-11\nlater-12\nlater-13\nlater-14\nlater-15\nlater-16\nlater-17\nlater-18\nlater-19\nlater-20\nlater-21\nlater-22\nlater-23\nlater-24\nlater-25\n", stderr: "failed worker stderr β"); log: /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutputfailure2434870600/001/.fireweed/runs/47d387de6a68244647e08c757fbbe03b/doctor-worker-1.log} {Name:audit Module: Passed:true Detail:fixed reply received; log: /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutputfailure2434870600/001/.fireweed/runs/47d387de6a68244647e08c757fbbe03b/doctor-audit-1.log}] diagnostics=[{Code:C15 Message:worker command failure: [bash .fireweed/agent.sh {prompt} {git_common_dir}]; exit 7; run bash: exit status 7 (stdout: "early worker stdout Ω\nlater-01\nlater-02\nlater-03\nlater-04\nlater-05\nlater-06\nlater-07\nlater-08\nlater-09\nlater-10\nlater-11\nlater-12\nlater-13\nlater-14\nlater-15\nlater-16\nlater-17\nlater-18\nlater-19\nlater-20\nlater-21\nlater-22\nlater-23\nlater-24\nlater-25\n", stderr: "failed worker stderr β")
-        later-08
-        later-09
-        later-10
-        later-11
-        later-12
-        later-13
-        later-14
-        later-15
-        later-16
-        later-17
-        later-18
-        later-19
-        later-20
-        later-21
-        later-22
-        later-23
-        later-24
-        later-25
-        
-        failed worker stderr β Path: Warning:false}]
---- FAIL: Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput/failure (0.84s)
-Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes: === RUN   Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes
-    doctor_test.go:934: agent output was not trimmed to final 20 lines: checks=[{Name:baseline global eval Module:doctorbd9a54e622 Passed:true Detail:eval and coverage pass} {Name:failing_eval global eval Module:doctorbd9a54e622 Passed:true Detail:eval detected failing_eval} {Name:recovery global eval Module:doctorbd9a54e622 Passed:true Detail:failing_eval: eval and coverage pass} {Name:missing_id global eval Module:doctorbd9a54e622 Passed:true Detail:eval detected missing_id} {Name:recovery global eval Module:doctorbd9a54e622 Passed:true Detail:missing_id: eval and coverage pass} {Name:baseline global boundaries Module:doctorbd9a54e622 Passed:true Detail:boundaries pass} {Name:undeclared global boundaries Module:doctorbd9a54e622 Passed:true Detail:boundaries detected undeclared} {Name:recovery global boundaries Module:doctorbd9a54e622 Passed:true Detail:undeclared: boundaries pass} {Name:internal_eval global boundaries Module:doctor8b4364fa22 Passed:true Detail:boundaries detected internal_eval} {Name:recovery global boundaries Module:doctor8b4364fa22 Passed:true Detail:internal_eval: boundaries pass} {Name:worker Module: Passed:false Detail:exit 9: run bash: exit status 9 (stdout: "line-01\nline-02\nline-03\nline-04\nline-05\nline-06\nline-07\nline-08\nline-09\nline-10\nline-11\nline-12\nline-13\nline-14\nline-15\nline-16\nline-17\nline-18\nline-19\nline-20\nline-21\nline-22\nline-23\nline-24\nline-25\nRATE LIMIT reached\n", stderr: ""); log: /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes1451924378/001/.fireweed/runs/fccdac7f87445e009669bb8a5e294a69/doctor-worker-1.log} {Name:audit Module: Passed:true Detail:fixed reply received; log: /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes1451924378/001/.fireweed/runs/fccdac7f87445e009669bb8a5e294a69/doctor-audit-1.log}] diagnostics=[{Code:C15 Message:worker usage limit: [bash .fireweed/agent.sh {prompt} {git_common_dir}]; exit 9; run bash: exit status 9 (stdout: "line-01\nline-02\nline-03\nline-04\nline-05\nline-06\nline-07\nline-08\nline-09\nline-10\nline-11\nline-12\nline-13\nline-14\nline-15\nline-16\nline-17\nline-18\nline-19\nline-20\nline-21\nline-22\nline-23\nline-24\nline-25\nRATE LIMIT reached\n", stderr: "")
-        line-07
-        line-08
-        line-09
-        line-10
-        line-11
-        line-12
-        line-13
-        line-14
-        line-15
-        line-16
-        line-17
-        line-18
-        line-19
-        line-20
-        line-21
-        line-22
-        line-23
-        line-24
-        line-25
-        RATE LIMIT reached Path: Warning:false}]
---- FAIL: Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes (7.73s)
-Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes/ordinary_failure: === RUN   Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes/ordinary_failure
-    doctor_test.go:959: ordinary failure tail incorrect: checks=[{Name:baseline global eval Module:doctor0908a33fdc Passed:true Detail:eval and coverage pass} {Name:failing_eval global eval Module:doctor0908a33fdc Passed:true Detail:eval detected failing_eval} {Name:recovery global eval Module:doctor0908a33fdc Passed:true Detail:failing_eval: eval and coverage pass} {Name:missing_id global eval Module:doctor0908a33fdc Passed:true Detail:eval detected missing_id} {Name:recovery global eval Module:doctor0908a33fdc Passed:true Detail:missing_id: eval and coverage pass} {Name:baseline global boundaries Module:doctor0908a33fdc Passed:true Detail:boundaries pass} {Name:undeclared global boundaries Module:doctor0908a33fdc Passed:true Detail:boundaries detected undeclared} {Name:recovery global boundaries Module:doctor0908a33fdc Passed:true Detail:undeclared: boundaries pass} {Name:internal_eval global boundaries Module:doctor372d35924f Passed:true Detail:boundaries detected internal_eval} {Name:recovery global boundaries Module:doctor372d35924f Passed:true Detail:internal_eval: boundaries pass} {Name:worker Module: Passed:false Detail:exit 8: run bash: exit status 8 (stdout: "ordinary-01\nordinary-02\nordinary-03\nordinary-04\nordinary-05\nordinary-06\nordinary-07\nordinary-08\nordinary-09\nordinary-10\nordinary-11\nordinary-12\nordinary-13\nordinary-14\nordinary-15\nordinary-16\nordinary-17\nordinary-18\nordinary-19\nordinary-20\nordinary-21\nordinary-22\nordinary-23\nordinary-24\nordinary-25\n", stderr: ""); log: /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomesor2000729238/001/.fireweed/runs/0fd97f5bdd7300c3974bb3ffb7886951/doctor-worker-1.log} {Name:audit Module: Passed:true Detail:fixed reply received; log: /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomesor2000729238/001/.fireweed/runs/0fd97f5bdd7300c3974bb3ffb7886951/doctor-audit-1.log}] diagnostics=[{Code:C15 Message:worker command failure: [bash .fireweed/agent.sh {prompt} {git_common_dir}]; exit 8; run bash: exit status 8 (stdout: "ordinary-01\nordinary-02\nordinary-03\nordinary-04\nordinary-05\nordinary-06\nordinary-07\nordinary-08\nordinary-09\nordinary-10\nordinary-11\nordinary-12\nordinary-13\nordinary-14\nordinary-15\nordinary-16\nordinary-17\nordinary-18\nordinary-19\nordinary-20\nordinary-21\nordinary-22\nordinary-23\nordinary-24\nordinary-25\n", stderr: "")
-        ordinary-06
-        ordinary-07
-        ordinary-08
-        ordinary-09
-        ordinary-10
-        ordinary-11
-        ordinary-12
-        ordinary-13
-        ordinary-14
-        ordinary-15
-        ordinary-16
-        ordinary-17
-        ordinary-18
-        ordinary-19
-        ordinary-20
-        ordinary-21
-        ordinary-22
-        ordinary-23
-        ordinary-24
-        ordinary-25 Path: Warning:false}]
---- FAIL: Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes/ordinary_failure (0.86s)
+--- FAIL: Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput (1.91s)
+Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput/timeout: === RUN   Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput/timeout
+    doctor_agent_logs_test.go:194: timeout probe outcome/diagnostic lost: checks=[{Name:baseline global eval Module:doctoref5bb631af Passed:true Detail:eval and coverage pass} {Name:failing_eval global eval Module:doctoref5bb631af Passed:true Detail:eval detected failing_eval} {Name:recovery global eval Module:doctoref5bb631af Passed:true Detail:failing_eval: eval and coverage pass} {Name:missing_id global eval Module:doctoref5bb631af Passed:true Detail:eval detected missing_id} {Name:recovery global eval Module:doctoref5bb631af Passed:true Detail:missing_id: eval and coverage pass} {Name:baseline global boundaries Module:doctoref5bb631af Passed:true Detail:boundaries pass} {Name:undeclared global boundaries Module:doctoref5bb631af Passed:true Detail:boundaries detected undeclared} {Name:recovery global boundaries Module:doctoref5bb631af Passed:true Detail:undeclared: boundaries pass} {Name:internal_eval global boundaries Module:doctor61fa0ce785 Passed:true Detail:boundaries detected internal_eval} {Name:recovery global boundaries Module:doctor61fa0ce785 Passed:true Detail:internal_eval: boundaries pass} {Name:worker Module: Passed:true Detail:fixed reply received; log: /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutputtimeout1633127406/001/.fireweed/runs/562edd6acb397af47b82ca73e15fa1b0/doctor-worker-1.log} {Name:audit Module: Passed:false Detail:exit -1: gitstore: command timed out after 150ms; log: /var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutputtimeout1633127406/001/.fireweed/runs/562edd6acb397af47b82ca73e15fa1b0/doctor-audit-1.log}] diagnostics=[{Code:C15 Message:audit command failure: [bash .fireweed/audit.sh {prompt}]; exit -1; gitstore: command timed out after 150ms
+        partial audit stdout Ω
+        partial audit stderr β Path: Warning:false}]
+--- FAIL: Test_CHK_081_DoctorPersistsFailedAndTimedOutProbeOutput/timeout (1.04s)
+Test_CHK_034_EvaluateRetainsOutputOnHookTimeout: === RUN   Test_CHK_034_EvaluateRetainsOutputOnHookTimeout
+    evaluate_process_metadata_test.go:72: hook timeout cause lost: run hook: gitstore: command timed out after 100ms
+--- FAIL: Test_CHK_034_EvaluateRetainsOutputOnHookTimeout (0.10s)
 ?   	github.com/lurkshark/fireweed/packages/checks	[no test files]
 ?   	github.com/lurkshark/fireweed/packages/checks/internal/engine	[no test files]
 ?   	github.com/lurkshark/fireweed/packages/checks/model	[no test files]
 FAIL
-FAIL	github.com/lurkshark/fireweed/packages/checks/evals	256.315s
+FAIL	github.com/lurkshark/fireweed/packages/checks/evals	259.562s
 
 exit status 1
 
-workflow: failed case "Test_FLOW_056_StartContentionAndCurrentForeignClaimHaveP02" for FLOW-056
-Test_FLOW_056_StartContentionAndCurrentForeignClaimHaveP02: === RUN   Test_FLOW_056_StartContentionAndCurrentForeignClaimHaveP02
-    lifecycle_test.go:1499: contended Start = claim already held: cas ref refs/fireweed/claims/manual: exists at 61784e9f2f6af0c3f45091dfd7e35d904b8af9fd, expected absent
---- FAIL: Test_FLOW_056_StartContentionAndCurrentForeignClaimHaveP02 (0.61s)
-?   	github.com/lurkshark/fireweed/packages/workflow	[no test files]
-?   	github.com/lurkshark/fireweed/packages/workflow/internal/lifecycle	[no test files]
-?   	github.com/lurkshark/fireweed/packages/workflow/model	[no test files]
+runner: failed case "Test_RUN_056_ConfiguredTimeoutBoundsDrillWorker" for RUN-056
+Test_RUN_056_ConfiguredTimeoutBoundsDrillWorker: === RUN   Test_RUN_056_ConfiguredTimeoutBoundsDrillWorker
+    drill_test.go:681: configured drill timeout = model.DrillResult{Module:"alpha", Base:"3ed0deef8cf68f82f81d3f7d2cf5a50322fd05b2", Date:"20261117T043705.135361000", Agent:"bash", Model:"worker-model", Result:"fail", ReportPath:".fireweed/drills/alpha.md", Ref:"", Own:model.Report{Cases:[]model.Case(nil), Seconds:0, HookExit:0, Stdout:"", Stderr:""}, Dependents:map[string]model.Report{}, Steps:[]model.AgentResult{model.AgentResult{Stdout:"", Stderr:"", ExitCode:-1, UsageLimit:false, LogPath:"/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_056_ConfiguredTimeoutBoundsDrillWorker426593709/001/.fireweed/runs/20261117T043705-0c4db8619d73232de1bcaabf/drill-1.log"}, model.AgentResult{Stdout:"", Stderr:"", ExitCode:-1, UsageLimit:false, LogPath:"/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_056_ConfiguredTimeoutBoundsDrillWorker426593709/001/.fireweed/runs/20261117T043705-0c4db8619d73232de1bcaabf/drill-2.log"}}}, reconstruction failed: worker agent bash: gitstore: command timed out after 200ms
+        
+         after 664.376459ms
+--- FAIL: Test_RUN_056_ConfiguredTimeoutBoundsDrillWorker (0.85s)
+Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted: === RUN   Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted
+    drill_test.go:728: timed drill = model.DrillResult{Module:"alpha", Base:"8eb217119eb99b374b033a43527d932c626c6128", Date:"20261117T043708.212369000", Agent:"bash", Model:"worker-model", Result:"fail", ReportPath:".fireweed/drills/alpha.md", Ref:"", Own:model.Report{Cases:[]model.Case(nil), Seconds:0, HookExit:0, Stdout:"", Stderr:""}, Dependents:map[string]model.Report{}, Steps:[]model.AgentResult{model.AgentResult{Stdout:"", Stderr:"", ExitCode:-1, UsageLimit:false, LogPath:"/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted976032203/007/.fireweed/runs/20261117T043708-d2ae8d77ba6b204afd9ac1e3/drill-1.log"}, model.AgentResult{Stdout:"", Stderr:"", ExitCode:-1, UsageLimit:false, LogPath:"/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted976032203/007/.fireweed/runs/20261117T043708-d2ae8d77ba6b204afd9ac1e3/drill-2.log"}}}, reconstruction failed: worker agent bash: gitstore: command timed out after 250ms
+        
+--- FAIL: Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted (3.23s)
+Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure: === RUN   Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure
+--- FAIL: Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure (0.50s)
+Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/timeout: === RUN   Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/timeout
+    prompt_file_test.go:235: timeout result = model.AgentResult{Stdout:"partial", Stderr:"warning", ExitCode:-1, UsageLimit:false, LogPath:"/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunc3327485099/001/fixture's repo/.fireweed/runs/20261117T043805-c410e683e1317f1866a0acc3/worker-1.log"}, worker agent bash: gitstore: command timed out after 150ms
+--- FAIL: Test_RUN_067_PromptFileLifetimeOnExitTimeoutCancellationAndLaunchFailure/timeout (0.22s)
+?   	github.com/lurkshark/fireweed/packages/runner	[no test files]
+?   	github.com/lurkshark/fireweed/packages/runner/internal/drill	[no test files]
+?   	github.com/lurkshark/fireweed/packages/runner/internal/invoke	[no test files]
+?   	github.com/lurkshark/fireweed/packages/runner/internal/next	[no test files]
+?   	github.com/lurkshark/fireweed/packages/runner/internal/policy	[no test files]
+?   	github.com/lurkshark/fireweed/packages/runner/internal/run	[no test files]
+?   	github.com/lurkshark/fireweed/packages/runner/internal/workspace	[no test files]
+?   	github.com/lurkshark/fireweed/packages/runner/model	[no test files]
 FAIL
-FAIL	github.com/lurkshark/fireweed/packages/workflow/evals	151.270s
+FAIL	github.com/lurkshark/fireweed/packages/runner/evals	326.064s
 
 exit status 1
 
