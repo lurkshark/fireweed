@@ -262,7 +262,7 @@ Drill MUST evaluate every direct and transitive dependent in lexical module-name
 After reconstruction has been invoked, Drill MUST write the current invocation's report to .fireweed/drills/<module>.md, replacing any previous report there, with date, base_commit, agent, model and result frontmatter and Own evals, Dependent evals, Contradicted Decisions and Gaps sections. Eval entries MUST identify module, testcase, spec IDs and result. Agent observations and verification failures MUST remain visible, with each gap identifying a nearest spec ID or "no spec" and target module.
 
 ### RUN-061
-After accepted reconstruction, Drill MUST retain the rebuilt verification tree at refs/fireweed/drills/<module>/<date>, returning that ref without moving the invoking HEAD. A passing result MUST require accepted reconstruction and passing own and all dependent evals; failure MUST return a nonnil error with Result fail.
+After accepted reconstruction, Drill MUST retain the rebuilt verification tree at `refs/fireweed/drills/<module>/<date>` and return that ref without moving the invoking HEAD, including on a usage stop during a later attempt. A passing result MUST require accepted reconstruction and passing own and all dependent evals. An ordinary failure MUST return a nonnil error with Result fail.
 
 ### RUN-062
 Drill MUST remove its verification worktree and input workspace on success, agent or verification failure, invalid edits, usage stop and cancellation. Cleanup failure MUST be returned as an error rather than reported as a passing drill.
@@ -311,6 +311,9 @@ If `drill.exclude` matches the target's spec or a retained target interface or e
 
 ### RUN-077
 If the reconstruction workspace contains a path matching `drill.exclude` after setup, Drill MUST reject the input before invoking the worker and identify the matching path.
+
+### RUN-078
+When the primary error from Drill is a failed enforced testcase in the target or a dependent module, `contracts.ErrorCode` on the returned error MUST report E01 and the failed spec ID supplied by `checks.RequirePass`.
 
 ## Decisions
 

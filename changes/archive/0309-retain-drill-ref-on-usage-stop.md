@@ -4,6 +4,8 @@ already_satisfied:
 bases:
     RUN-061: 16edb595
 module: runner
+phase: applied
+run: 20261117T113818-af4c7b305448fc47f27a32f8
 ---
 
 ## Motivation
@@ -42,3 +44,13 @@ ref and no retained drill refs in that fixture.
 
 The current runner writes the ref when it accepts a reconstruction, so it
 already returns that ref on a later usage stop.
+## Audit
+
+No findings; checked RUN-061
+
+## Provenance
+
+- evals 2026-11-17T11:48:35.869502Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=218 failing=0 passing=218
+- audit 2026-11-17T11:48:55.547396Z agent=codex fireweed=0.2.1 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-17T12:01:05.86867Z agent=codex fireweed=0.2.1 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=621 failing=0 passing=621
+

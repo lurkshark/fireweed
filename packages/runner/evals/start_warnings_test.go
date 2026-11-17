@@ -26,7 +26,7 @@ func setNewerBaseTip(t *testing.T, f nextFixture) string {
 }
 
 func isBaseTipDiagnostic(d project.Diagnostic) bool {
-	return strings.Contains(d.Message, warningBase)
+	return d.Code == "P05" && strings.Contains(d.Message, warningBase)
 }
 
 func assertStartWarning(t *testing.T, diagnostics []project.Diagnostic, want project.Diagnostic) {
@@ -62,7 +62,7 @@ func Test_RUN_072_RetainsStartWarning(t *testing.T) {
 		t.Fatalf("Start in reference fixture: %v", err)
 	}
 	index := slices.IndexFunc(started.Diagnostics, isBaseTipDiagnostic)
-	if index < 0 || started.Diagnostics[index].Code != "P05" || !started.Diagnostics[index].Warning {
+	if index < 0 || !started.Diagnostics[index].Warning {
 		t.Fatalf("reference Start did not return the base-tip P05 warning: %#v", started.Diagnostics)
 	}
 	want := started.Diagnostics[index]

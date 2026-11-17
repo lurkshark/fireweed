@@ -75,8 +75,7 @@ Current MUST resolve only a claim owned by the calling worktree.
 Start MUST use the current HEAD as the initial phase base of its claim.
 
 ### FLOW-019
-When its queued change can be resolved, Current MUST return the project snapshot approved at Start while the calling worktree holds the claim. Approved MUST expose that same snapshot independently of live project and queue parsing.
-
+For a resolvable queued change held by the calling worktree, Current MUST return the project snapshot approved at Start. When supplied the held change's repository-relative path, Current MUST do so even when the live project configuration is malformed or incompatible with the running Fireweed version. Approved MUST expose the same snapshot independently of live project and queue parsing.
 
 ### FLOW-020
 Verify MUST reject an unapproved alteration of the active change's author fields before running a hook.
@@ -519,7 +518,7 @@ A phase commit created by Done MUST exclude generated run artifacts under
 `.fireweed/runs/`, including when Git does not ignore those files.
 
 ### FLOW-136
-Done MUST mark errors returned by its full verification step so callers can distinguish them from precondition and phase-transition errors. Marking MUST preserve the original error text, cause and `contracts.ErrorCode`, along with the verification result. `IsVerificationFailure` MUST recognize the marker through error wrapping.
+Done MUST mark errors returned by its full verification step, including audit-phase zone violations, so callers can distinguish them from precondition and phase-transition errors. Marking MUST preserve the original error text, cause and `contracts.ErrorCode`, along with the verification result. `IsVerificationFailure` MUST recognize the marker through error wrapping.
 
 ### FLOW-137
 For a held evals or impl step with a nonempty `blocked` reason and nonempty `## Questions`, Done MUST save the attempt and block the change before it can advance. The block commit MUST preserve the reason and Questions alongside the approved lifecycle state. Done MUST release the claim and return P06.

@@ -57,7 +57,7 @@ Check MUST reject module spec IDs and change edit IDs whose prefix belongs to an
 Check MUST reject a change that uses the same edit identity more than once across Added, Modified and Removed with diagnostic C05.
 
 ### PRJ-014
-Check MUST reject a pending change that references a handle absent from that change's Added entries with diagnostic C09.
+Check MUST report a non-warning C09 diagnostic naming any handle referenced in a pending change document that is absent from that change's Added entries. This rule includes references in Motivation and Interface.
 
 ### PRJ-015
 Check MUST reject Modified or Removed entries whose bases hash is missing or
@@ -310,7 +310,7 @@ Load MUST apply CheckCompatibility to the live configuration before returning a 
 CheckCompatibility MUST accept format version 1 and an omitted version as the initial format, and MUST reject any other present version value with a C01 CodedError identifying the unsupported value and supported format 1. Format acceptance MUST be independent of binary-range acceptance.
 
 ### PRJ-086
-For a worker with a nonempty alias argument, ResolveAgentCommand MUST select the matching entry from the agent.commands mapping. It MUST return U02 naming an unlisted alias and C01 identifying a malformed mapping or invalid selected command.
+For a worker with a nonempty alias, ResolveAgentCommand MUST select the matching valid entry from the agent.commands mapping. For an unlisted alias it MUST return a U02 CodedError with Subject equal to the supplied alias and a message naming the alias. It MUST return C01 identifying a malformed mapping or invalid selected command.
 
 ### PRJ-087
 With no explicit worker alias, ResolveAgentCommand MUST select the command named by agent.default in agent.commands. A missing or invalid default reference MUST return C01 identifying the setting at fault.

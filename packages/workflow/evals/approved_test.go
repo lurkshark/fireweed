@@ -10,6 +10,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/lurkshark/fireweed/packages/assets"
 	"github.com/lurkshark/fireweed/packages/gitstore"
 	"github.com/lurkshark/fireweed/packages/project"
 	"github.com/lurkshark/fireweed/packages/workflow"
@@ -58,6 +59,44 @@ func Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers(t *testing.T) {
 				if err := project.CheckCompatibility(read.config); err != nil {
 					t.Errorf("CheckCompatibility after %s: %v", read.name, err)
 				}
+			}
+		})
+	}
+}
+
+func Test_FLOW_019_CurrentResolvesHeldPathWithInvalidLiveConfig(t *testing.T) {
+	const configPath = "fireweed.yaml"
+	version := assets.Version()
+	for _, name := range []string{"malformed YAML", "incompatible version pin"} {
+		t.Run(name, func(t *testing.T) {
+			root := fixture(t, "", "", "", "", "")
+			started := start(t, root)
+			if started.Change.Path != pendingCommitChange || started.ClaimOID == "" {
+				t.Fatalf("Start returned path %q and claim %q, want a held claim for %q",
+					started.Change.Path, started.ClaimOID, pendingCommitChange)
+			}
+
+			config := "modules: [\n"
+			if name == "incompatible version pin" {
+				approved := readFile(t, root, configPath)
+				config = strings.Replace(approved, "fireweed: \"="+version+"\"", "fireweed: \">"+version+"\"", 1)
+				if config == approved {
+					t.Fatal("fixture version pin was not replaced")
+				}
+			}
+			write(t, root, configPath, config)
+
+			current, err := workflow.Current(root, started.Change.Path)
+			if err != nil {
+				t.Fatalf("Current(%q): %v", started.Change.Path, err)
+			}
+			if current.Change.Path != started.Change.Path || current.ClaimOID != started.ClaimOID {
+				t.Errorf("Current returned path %q and claim %q, want %q and %q",
+					current.Change.Path, current.ClaimOID, started.Change.Path, started.ClaimOID)
+			}
+			if !reflect.DeepEqual(current.Snapshot.Config, started.Snapshot.Config) {
+				t.Errorf("Current config = %#v, want Start-approved config %#v",
+					current.Snapshot.Config, started.Snapshot.Config)
 			}
 		})
 	}

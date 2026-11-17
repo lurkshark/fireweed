@@ -4,6 +4,8 @@ already_satisfied:
 bases:
     GIT-005: 7cca5bc0
 module: gitstore
+phase: applied
+run: 20261117T085953-bce7e6eae1f23398f110b2c8
 ---
 
 ## Motivation
@@ -34,3 +36,13 @@ to assert `errors.Is(err, context.DeadlineExceeded)` when `Request.Timeout`
 expires. Preserve the existing process-group and captured-output assertions.
 Main already returns the deadline cause because `Run` applies `Request.Timeout`
 through a context deadline and returns the context error on expiry.
+## Provenance
+
+- evals 2026-11-17T09:00:50.796597Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=14 failing=0 passing=14
+- audit 2026-11-17T09:01:08.29685Z agent=codex fireweed=0.2.1 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-17T09:29:42.557438Z agent=codex fireweed=0.2.1 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=1305 failing=0 passing=1305
+
+## Audit
+
+No findings; checked GIT-005
+
