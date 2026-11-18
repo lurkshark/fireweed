@@ -2,7 +2,7 @@
 eval_fix:
     - CHK-038
 module: checks
-phase: audit
+phase: impl
 run: 20261118T040518-2742408c54da06a6e657502c
 ---
 
@@ -33,4 +33,9 @@ a mapped failure, require a nil error and the same report evidence.
 ## Provenance
 
 - evals 2026-11-18T04:14:40.776105Z agent=codex fireweed=0.2.1 playbook=d2fd7216b035a9614c390d254dd9195ac2c65ae1ed18f07ac93c77b9732d4156 tests=141 failing=0 passing=141
+- audit 2026-11-18T04:15:03.433683Z agent=codex fireweed=0.2.1 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+
+## Audit
+
+No findings; checked CHK-038
 
