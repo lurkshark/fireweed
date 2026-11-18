@@ -305,6 +305,7 @@ func Test_PRJ_007_CheckValidAndDiagnostics(t *testing.T) {
 }
 
 func Test_PRJ_015_PRJ_016_CheckDiagnostics(t *testing.T) {
+	const alphaSpecPath = "packages/alpha/SPEC.md"
 	for _, tc := range []struct {
 		id, name, spec, front, motivation, added, modified, removed string
 		code, cause                                                 string
@@ -314,7 +315,7 @@ func Test_PRJ_015_PRJ_016_CheckDiagnostics(t *testing.T) {
 		{"PRJ-009", "nonnormative_change", "", "", "Needed.\n", "### new:item\nAn observation.\n", "", "", "C04", "non-normative spec body"},
 		{"PRJ-010", "invalid_review_tag", "", "", "Needed.\n", "### new:item [review: reason]\nItem MUST work.\n", "", "", "C06", "invalid review/quarantine tag"},
 		{"PRJ-010", "invalid_quarantine_tag", "", "", "Needed.\n", "### new:item [quarantine]\nItem MUST work.\n", "", "", "C06", "invalid review/quarantine tag"},
-		{"PRJ-011", "duplicate_module_id", "### ALP-001\nAlpha MUST work.\n\n### ALP-001\nDuplicate MUST fail.\n", "", "Needed.\n", "", "", "", "C05", "duplicate item ID"},
+		{"PRJ-011_PRJ-068", "duplicate_module_id", "### ALP-001\nAlpha MUST work.\n\n### ALP-001\nDuplicate MUST fail.\n", "", "Needed.\n", "", "", "", "C05", ""},
 		{"PRJ-012", "foreign_module_id", "### BET-001\nForeign item MUST fail.\n", "", "Needed.\n", "", "", "", "C05", "foreign spec ID"},
 		{"PRJ-012", "foreign_change_id", "", "", "Needed.\n", "", "### BET-001\nForeign edit MUST fail.\n", "", "C05", "foreign module ID"},
 		{"PRJ-013", "duplicate_edit_identity", "", "", "Needed.\n", "", "### ALP-001\nAlpha MUST change.\n", "### ALP-001\n", "C05", "duplicate edit identity ALP-001"},
@@ -335,7 +336,7 @@ func Test_PRJ_015_PRJ_016_CheckDiagnostics(t *testing.T) {
 				put(t, root, "packages/beta/SPEC.md", "---\nname: beta\nid_prefix: BET\ndepends_on: [alpha]\n---\n# Beta\n\n## Specs\n\n### BET-001\nBeta MUST work.\n")
 				front = "bases:\n  BET-001: " + contracts.SpecHash(contracts.Item{ID: "BET-001", Body: "Beta MUST work.\n"}) + "\n"
 			}
-			put(t, root, "packages/alpha/SPEC.md", "---\nname: alpha\nid_prefix: ALP\ndepends_on: []\n---\n# Alpha\n\n## Specs\n\n"+func() string {
+			put(t, root, alphaSpecPath, "---\nname: alpha\nid_prefix: ALP\ndepends_on: []\n---\n# Alpha\n\n## Specs\n\n"+func() string {
 				if tc.spec != "" {
 					return tc.spec
 				}
@@ -355,14 +356,20 @@ func Test_PRJ_015_PRJ_016_CheckDiagnostics(t *testing.T) {
 				if !diagnostic.Warning && strings.TrimSpace(diagnostic.Code) != "" && strings.TrimSpace(diagnostic.Message) != "" {
 					found = true
 				}
-				if tc.code != "" && !diagnostic.Warning && diagnostic.Code == tc.code && strings.Contains(diagnostic.Message, tc.cause) {
+				if tc.name == "duplicate_module_id" {
+					if !diagnostic.Warning && diagnostic.Code == tc.code && diagnostic.Path == alphaSpecPath && strings.TrimSpace(diagnostic.Message) != "" {
+						foundCause = true
+					}
+				} else if tc.code != "" && !diagnostic.Warning && diagnostic.Code == tc.code && strings.Contains(diagnostic.Message, tc.cause) {
 					foundCause = true
 				}
 			}
 			if !found {
 				t.Errorf("Check did not report error diagnostic with nonempty code and message: %#v", diagnostics)
 			}
-			if tc.code != "" && !foundCause {
+			if tc.name == "duplicate_module_id" && !foundCause {
+				t.Errorf("Check diagnostics = %#v; want non-warning %s at %q with a nonempty message", diagnostics, tc.code, alphaSpecPath)
+			} else if tc.code != "" && !foundCause {
 				t.Errorf("Check did not report %s for %s: %#v", tc.code, tc.cause, diagnostics)
 			}
 			if tc.name == "missing_base" || tc.name == "stale_base" {
