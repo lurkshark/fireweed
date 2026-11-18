@@ -4,6 +4,8 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"slices"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -81,25 +83,35 @@ printf '%s' '` + passXML + `' > "$3"
 
 func Test_CHK_038_ExitAndReportAgreement(t *testing.T) {
 	for _, tc := range []struct {
-		name, xml, exit string
-		valid           bool
-		wantExit        int
+		name, xml            string
+		wantExit             int
+		wantResult, wantCode string
 	}{
-		{"zero-with-failure", failXML, "0", false, 0},
-		{"nonzero-with-pass", passXML, "7", false, 7},
-		{"nonzero-with-failure", failXML, "7", true, 7},
+		{"zero-with-failure", failXML, 0, "fail", "C11"},
+		{"nonzero-with-pass", passXML, 7, "pass", "C11"},
+		{"nonzero-with-failure", failXML, 7, "fail", ""},
 	} {
-		snap := hookSnapshot(t, `printf '%s' '`+tc.xml+`' > {report}; exit `+tc.exit, nil)
-		report, err := checks.Evaluate(context.Background(), checks.HookRequest{Snapshot: snap, Module: "alpha", Timeout: 2 * time.Second})
-		if (err == nil) != tc.valid {
-			t.Errorf("%s: report %#v, err %v; valid want %v", tc.name, report, err, tc.valid)
-		}
-		if !tc.valid {
-			requireDiagnosticError(t, err, "C11", "eval hook exit "+tc.exit+" disagrees with JUnit failures")
-		}
-		if tc.valid && (report.HookExit != tc.wantExit || len(report.Cases) != 1 || report.Cases[0].Result != "fail") {
-			t.Errorf("%s: nonzero mapped failure lost: %#v", tc.name, report)
-		}
+		t.Run(tc.name, func(t *testing.T) {
+			snap := hookSnapshot(t, `printf '%s' '`+tc.xml+`' > {report}; exit `+strconv.Itoa(tc.wantExit), nil)
+			report, err := checks.Evaluate(context.Background(), checks.HookRequest{Snapshot: snap, Module: "alpha", Timeout: 2 * time.Second})
+			if tc.wantCode == "" {
+				if err != nil {
+					t.Errorf("Evaluate error = %v; want nil", err)
+				}
+			} else if code, _, ok := contracts.ErrorCode(err); !ok || code != tc.wantCode {
+				t.Errorf("contracts.ErrorCode(%v) = %q, present %t; want %s", err, code, ok, tc.wantCode)
+			}
+			if report.HookExit != tc.wantExit {
+				t.Errorf("hook exit = %d; want %d", report.HookExit, tc.wantExit)
+			}
+			if len(report.Cases) != 1 {
+				t.Fatalf("cases = %#v; want one", report.Cases)
+			}
+			got := report.Cases[0]
+			if got.Name != "CHK-003" || got.Classname != "hook" || !slices.Equal(got.IDs, []string{"CHK-003"}) || got.Result != tc.wantResult {
+				t.Errorf("case = %#v; want name CHK-003, classname hook, IDs [CHK-003], and result %s", got, tc.wantResult)
+			}
+		})
 	}
 }
 
@@ -194,30 +206,25 @@ func Test_CHK_047_EvaluateUnknownModuleCause(t *testing.T) {
 
 func Test_CHK_048_EvaluateModuleItemCauses(t *testing.T) {
 	for _, tc := range []struct {
-		name, body, code, cause, subject string
+		name, body, code string
 	}{
 		{
-			name:    "malformed item",
-			body:    "# alpha\n\n## Specs\n\n### malformed\nBad.\n",
-			code:    "C03",
-			cause:   "malformed item heading",
-			subject: "### malformed",
+			name: "malformed item",
+			body: "# alpha\n\n## Specs\n\n### malformed\nBad.\n",
+			code: "C03",
 		},
 		{
-			name:    "duplicate item",
-			body:    "# alpha\n\n## Specs\n\n### CHK-003\nOne.\n\n### CHK-003\nTwo.\n",
-			code:    "C05",
-			cause:   "duplicate item ID",
-			subject: "CHK-003",
+			name: "duplicate item",
+			body: "# alpha\n\n## Specs\n\n### CHK-003\nOne.\n\n### CHK-003\nTwo.\n",
+			code: "C05",
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			snap := hookSnapshot(t, `exit 0`, nil)
 			snap.Modules[0].Document.Body = tc.body
 			_, err := checks.Evaluate(context.Background(), checks.HookRequest{Snapshot: snap, Module: "alpha", Timeout: time.Second})
-			requireDiagnosticError(t, err, tc.code, tc.cause)
-			if !strings.Contains(err.Error(), tc.subject) {
-				t.Errorf("error = %q; want offending heading or ID %q", err, tc.subject)
+			if code, _, ok := contracts.ErrorCode(err); !ok || code != tc.code {
+				t.Errorf("contracts.ErrorCode(%v) = %q, present %t; want %s", err, code, ok, tc.code)
 			}
 		})
 	}

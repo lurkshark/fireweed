@@ -42,6 +42,13 @@ Ref MUST return the named local ref's object ID and existence.
 ### GIT-010
 CASRef MUST create, update or delete a ref only when its exact current object matches the expected old value, returning an error without overwriting a newer value on mismatch.
 
+### GIT-011
+When a started process exits normally with a nonzero status, Run MUST return
+an error matching `*exec.ExitError` via `errors.As`, with the exit status
+matching `Result.ExitCode`. An error from a failure to launch MUST NOT match
+`*exec.ExitError`. When caller cancellation stops a running process, Run MUST
+return an error matching `context.Canceled` via `errors.Is`.
+
 ## Decisions
 
 [0010-manual-lifecycle-git] Change.Status uses the leading letter of Git's name-status code for tracked changes; untracked paths use `?`.

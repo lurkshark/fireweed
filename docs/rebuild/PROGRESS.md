@@ -65,9 +65,16 @@ v0.2.0**. Gate **6 retains its eight accepted historical proofs**.
 
 ## Controller and history
 
-The current controller reports 0.2.1 and was built with `-trimpath` from
-clean committed main at `3c7832135c949a75ced5ef82d04812ceb2480076` with no
-active run or claim. The preceding 0.2.0 controller, built from
+The controller for changes 0312–0317 reports 0.2.1 and was built with
+`-trimpath` from clean committed main at
+`67067f5aba44e5fbe3e8a677f428efe20e106cb5` with no active run or claim.
+Fireweed applied and archived all six changes through `00e0d32` on
+`dev/queued-failure-contract-followups`. Each passed a separate audit and
+final phase verification. The queue is empty and no claims are active.
+
+The earlier 0.2.1 controller was built with `-trimpath` from clean committed
+main at `3c7832135c949a75ced5ef82d04812ceb2480076` with no active run or
+claim. The preceding 0.2.0 controller, built from
 `21aae46792fe7261acf306a1696b2d39269bae3f`, ran the phases of 0284.
 
 The recorded controller for the acceptance and release phase runs is

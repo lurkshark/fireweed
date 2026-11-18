@@ -337,15 +337,26 @@ func Test_AST_007_AST_020_AST_021_AST_022_AST_023_TemplatesAndCanaries(t *testin
 			t.Errorf("rendered %s baseline must compile and pass: %v: %s; cases=%+v", module, err, output, report.Cases)
 		}
 	}
+	const betaSpecPath = "packages/beta/SPEC.md"
 	for path, content := range map[string]string{
-		"packages/beta/SPEC.md": r.Files[".fireweed/templates/module/SPEC.md"],
-		"packages/beta/api.go":  r.Files[".fireweed/templates/module/api.go.tmpl"],
+		betaSpecPath:           r.Files[".fireweed/templates/module/SPEC.md"],
+		"packages/beta/api.go": r.Files[".fireweed/templates/module/api.go.tmpl"],
 	} {
 		w.write(path, renderCanaryFields(content, "beta"))
 	}
-	if spec, err := os.ReadFile(filepath.Join(w.root, "packages/beta/SPEC.md")); err != nil ||
-		!strings.Contains(string(spec), "name: beta") || !strings.Contains(string(spec), "id_prefix: BET") {
-		t.Errorf("rendered SPEC template missing beta identity: %v: %s", err, spec)
+	spec, err := os.ReadFile(filepath.Join(w.root, betaSpecPath))
+	if err != nil {
+		t.Fatalf("read rendered %s: %v", betaSpecPath, err)
+	}
+	doc, err := contracts.ParseDocument(string(spec))
+	if err != nil {
+		t.Fatalf("parse rendered %s: %v", betaSpecPath, err)
+	}
+	if got := doc.Frontmatter["name"]; got != "beta" {
+		t.Errorf("rendered %s frontmatter name = %#v, want %q", betaSpecPath, got, "beta")
+	}
+	if got := doc.Frontmatter["id_prefix"]; got != "BET" {
+		t.Errorf("rendered %s frontmatter id_prefix = %#v, want %q", betaSpecPath, got, "BET")
 	}
 	if report, output, err := w.eval("beta"); err != nil || !report.hasPass() {
 		t.Errorf("rendered api.go template must compile: %v: %s; cases=%+v", err, output, report.Cases)
