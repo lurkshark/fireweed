@@ -273,6 +273,11 @@ outcomes that require different actions. It MUST direct authors to specify what
 changes or remains available after failure when that affects the next action.
 It MUST advise requiring exact wording only when the interface promises it.
 
+### AST-073
+Each built-in recipe's global boundaries command MUST run without a module selection
+and check all modules returned by FIREWEED_BIN modules --json. It MUST attribute
+each detected violation to its source module.
+
 ## Decisions
 
 [0014-go-setup-bundle] Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,
