@@ -966,12 +966,22 @@ func Test_FLOW_034_FLOW_036_FLOW_041_FLOW_046_AuditAcceptsOnlyExactClauseFinding
 	}
 }
 
-func Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_FLOW_046_AuditFindingsConvergeAndPersistTwoRoundBound(t *testing.T) {
+func Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_FLOW_046_FLOW_146_AuditFindingsConvergeAndPersistTwoRoundBound(t *testing.T) {
 	root := fixture(t, "", "", "### new:extra [review]\nExtra MUST be visible.\n", "", "")
 	toAudit(t, root)
-	finding := "- ALP-001: \"" + newClause + "\" — missing assertion\n"
+	const finding = "- ALP-001: \"" + newClause + "\" — missing assertion  for the revised value"
+	const submission = "  " + finding + " \t\n"
+	assertFinding := func(change, sectionName string) {
+		t.Helper()
+		body, _ := contracts.Section(change, sectionName)
+		if !slices.ContainsFunc(strings.Split(body, "\n"), func(line string) bool {
+			return strings.TrimSpace(line) == finding
+		}) {
+			t.Errorf("committed %s = %q, want finding line %q", sectionName, body, finding)
+		}
+	}
 	for round := 1; round <= 2; round++ {
-		body := finding
+		body := submission
 		if round == 2 {
 			body += "- ALP-003: \"Extra MUST be visible.\" — new finding on re-audit\n"
 		}
@@ -984,25 +994,29 @@ func Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_FLOW_046_AuditFi
 		if err != nil || current.Change.Document.Frontmatter["audit_rounds"] != round {
 			t.Errorf("persistent rounds %d = %#v, %v", round, current, err)
 		}
-		if round == 2 {
-			b, _ := os.ReadFile(filepath.Join(root, "changes/0001-manual.md"))
-			if strings.Contains(string(b), "new finding on re-audit") {
-				t.Error("new re-audit ID retained")
-			}
+		committed := git(t, root, "show", r.State.PhaseBase+":"+pendingCommitChange)
+		assertFinding(committed, "Audit")
+		if round == 2 && strings.Contains(committed, "new finding on re-audit") {
+			t.Error("new re-audit ID retained")
 		}
 		if _, err := done(root); err != nil {
 			t.Fatalf("revised evals Done round %d: %v", round, err)
 		}
 	}
-	audit(t, root, finding)
+	audit(t, root, submission)
 	beforeBlock := head(t, root)
-	_, _ = done(root)
-	b, _ := os.ReadFile(filepath.Join(root, "changes/0001-manual.md"))
-	questions, hasQuestions := contracts.Section(string(b), "Questions")
-	if !strings.Contains(string(b), "blocked:") || !hasQuestions || !strings.Contains(questions, newClause) {
-		t.Errorf("third finding did not block with question: %s", b)
+	blocked, err := done(root)
+	assertErrorCode(t, "Done beyond the audit round limit", err, "P06")
+	if blocked.State.Phase != "audit" {
+		t.Errorf("blocked phase = %q, want audit", blocked.State.Phase)
 	}
-	if head(t, root) == beforeBlock || !strings.Contains(string(b), "audit_rounds: 2") {
+	committed := git(t, root, "show", "HEAD:"+pendingCommitChange)
+	if !strings.Contains(committed, "blocked:") {
+		t.Errorf("third finding did not block: %s", committed)
+	}
+	assertFinding(committed, "Audit")
+	assertFinding(committed, "Questions")
+	if head(t, root) == beforeBlock || !strings.Contains(committed, "audit_rounds: 2") {
 		t.Error("two-round bound was not committed with persistent count")
 	}
 	if _, err := workflow.Current(root, "manual"); err == nil {
@@ -1010,7 +1024,7 @@ func Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_FLOW_046_AuditFi
 	}
 	configured := fixture(t, "audit:\n  max_rounds: 1\n", "", "", "", "")
 	toAudit(t, configured)
-	audit(t, configured, finding)
+	audit(t, configured, submission)
 	first, err := done(configured)
 	if err != nil || first.State.Phase != "evals" || first.State.PhaseBase != head(t, configured) {
 		t.Fatalf("configured first finding = %#v, %v", first, err)
@@ -1022,7 +1036,7 @@ func Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_FLOW_046_AuditFi
 	if _, err := done(configured); err != nil {
 		t.Fatalf("configured revised evals Done: %v", err)
 	}
-	audit(t, configured, finding)
+	audit(t, configured, submission)
 	_, _ = done(configured)
 	change, err := os.ReadFile(filepath.Join(configured, "changes/0001-manual.md"))
 	configuredQuestions, configuredHasQuestions := contracts.Section(string(change), "Questions")

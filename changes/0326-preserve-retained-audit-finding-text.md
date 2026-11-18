@@ -1,7 +1,9 @@
 ---
 already_satisfied:
-    - "new:retained-audit-finding-text"
+    - FLOW-146
 module: workflow
+phase: audit
+run: 20261118T232253-9f0607fb6aa31868e916fe83
 ---
 
 ## Motivation
@@ -20,7 +22,7 @@ validation.
 
 ## Added
 
-### new:retained-audit-finding-text
+### FLOW-146
 When audit Done retains a finding, it MUST preserve the finding line's text apart
 from surrounding whitespace in the recorded Audit section. If the finding blocks the
 change, its line in Questions MUST retain the same text.
@@ -38,3 +40,7 @@ Check the retained line through the committed change after a return to evals and
 through the blocked change's Questions on the blocking path. Continue asserting the
 phase, round count and existing filtering rules. Main already stores the original
 validated line.
+## Provenance
+
+- evals 2026-11-18T23:27:12.13211Z agent=codex fireweed=0.2.1 playbook=d2fd7216b035a9614c390d254dd9195ac2c65ae1ed18f07ac93c77b9732d4156 tests=218 failing=0 passing=218
+
