@@ -1,6 +1,6 @@
 ---
 module: app
-phase: audit
+phase: impl
 run: 20261118T201143-271a012fbbe75dba4a86f4ba
 ---
 
@@ -52,4 +52,9 @@ commands is `packages/app/internal/entry/lifecycle.go`.
 ## Provenance
 
 - evals 2026-11-18T20:21:42.83617Z agent=codex fireweed=0.2.1 playbook=d2fd7216b035a9614c390d254dd9195ac2c65ae1ed18f07ac93c77b9732d4156 tests=409 failing=6 passing=403
+- audit 2026-11-18T20:22:50.401113Z agent=manual fireweed=0.2.1 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+
+## Audit
+
+No findings; checked APP-168, APP-169
 
