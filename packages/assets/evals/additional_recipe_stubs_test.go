@@ -48,7 +48,7 @@ class TestGreeting(unittest.TestCase):
 				w := newExtraWorkspace(t, recipe.name)
 				stubPath := installRecipeStubExample(t, w, guide.text, recipe.language)
 				w.write(filepath.Join("packages/alpha", recipe.evalPath), recipe.eval)
-				if _, out, err := w.hook("boundaries", "alpha"); err != nil {
+				if _, out, err := w.hook("boundaries", ""); err != nil {
 					t.Fatalf("example violates recipe boundaries: %v %s", err, out)
 				}
 				report, out, err := w.hook("eval", "alpha")

@@ -1,7 +1,9 @@
 ---
 already_satisfied:
-    - "new:global-recipe-boundaries"
+    - AST-073
 module: assets
+phase: audit
+run: 20261118T215415-010a84df988d39e682800cf2
 ---
 
 ## Motivation
@@ -20,7 +22,7 @@ recipes returned by BuiltinRecipe.
 
 ## Added
 
-### new:global-recipe-boundaries
+### AST-073
 Each built-in recipe's global boundaries command MUST run without a module selection
 and check all modules returned by FIREWEED_BIN modules --json. It MUST attribute
 each detected violation to its source module.
@@ -39,3 +41,11 @@ graph modules, then place an undeclared import only in the second module and req
 a violation line beginning with that module's name. Look for that line in the hook
 output without assuming a summary's placement. Reuse the existing recipe fixtures
 and offline tool setup. The current three built-in hooks already scan the full graph.
+
+The recipe fixtures now invoke global boundaries hooks with empty module values.
+`fireweed verify specify-global-built-in-boundary-hooks` passed in the evals phase.
+All 157 assets testcases passed, including the three AST-073 recipe cases.
+## Provenance
+
+- evals 2026-11-18T21:58:01.475022Z agent=codex fireweed=0.2.1 playbook=d2fd7216b035a9614c390d254dd9195ac2c65ae1ed18f07ac93c77b9732d4156 tests=157 failing=0 passing=157
+
