@@ -1,9 +1,9 @@
 ---
 agent: opencode
-base_commit: 74e55cd7ecf90f40ac8470226b128cb487b2210a
-date: "2026-11-17T03:56:30.893288Z"
-model: opencode/deepseek-v4.1-flash#high
-result: pass
+base_commit: 8ee60066ed3a30b16d025f0f429368b1aa8ca5db
+date: "2026-11-17T21:49:25.865629Z"
+model: opencode/inkling-2-small-free#high
+result: fail
 ---
 
 ## Own evals
@@ -743,9 +743,18 @@ result: pass
 - checks / Test_CHK_046_EvaluateHookSetupCauses/invalid_hook_command / CHK-046 / pass
 - checks / Test_CHK_046_EvaluateHookSetupCauses/unavailable_report_directory / CHK-046 / pass
 - checks / Test_CHK_047_EvaluateUnknownModuleCause / CHK-047 / pass
-- checks / Test_CHK_048_EvaluateModuleItemCauses / CHK-048 / pass
+- checks / Test_CHK_048_EvaluateModuleItemCauses / CHK-048 / fail
+
+=== RUN   Test_CHK_048_EvaluateModuleItemCauses
+--- FAIL: Test_CHK_048_EvaluateModuleItemCauses (0.00s)
+
 - checks / Test_CHK_048_EvaluateModuleItemCauses/malformed_item / CHK-048 / pass
-- checks / Test_CHK_048_EvaluateModuleItemCauses/duplicate_item / CHK-048 / pass
+- checks / Test_CHK_048_EvaluateModuleItemCauses/duplicate_item / CHK-048 / fail
+
+=== RUN   Test_CHK_048_EvaluateModuleItemCauses/duplicate_item
+    hooks_test.go:218: error = "duplicate item heading \"CHK-003\""; want cause "duplicate item ID"
+--- FAIL: Test_CHK_048_EvaluateModuleItemCauses/duplicate_item (0.00s)
+
 - checks / Test_CHK_028_EvaluatePreservesJUnitDiagnostic / CHK-028 / pass
 - checks / Test_CHK_003_CHK_032_ArgvPlaceholdersAreOnePass / CHK-003, CHK-032 / pass
 - checks / Test_CHK_001_CHK_029_CHK_030_NestedJUnitIDsResultsAndTime / CHK-001, CHK-029, CHK-030 / pass
@@ -905,6 +914,10 @@ result: pass
 - project / Test_PRJ_085_CheckCompatibilityProjectFormat/excluding_pin_with_initial / PRJ-085 / pass
 - project / Test_PRJ_085_LoadAndCheckRejectUnsupportedLiveFormat / PRJ-085 / pass
 - project / Test_PRJ_047_LoadAtReadsUnsupportedRecordedFormat / PRJ-047 / pass
+- project / Test_PRJ_014_CheckHandlesInChangeProse / PRJ-014 / pass
+- project / Test_PRJ_014_CheckHandlesInChangeProse/undeclared_in_motivation / PRJ-014 / pass
+- project / Test_PRJ_014_CheckHandlesInChangeProse/undeclared_in_interface / PRJ-014 / pass
+- project / Test_PRJ_014_CheckHandlesInChangeProse/declared_in_added / PRJ-014 / pass
 - project / Test_PRJ_046_CheckEvalFixCannotMixWithFixesOrSpecEdits / PRJ-046 / pass
 - project / Test_PRJ_046_CheckEvalFixCannotMixWithFixesOrSpecEdits/eval_fix_with_fixes / PRJ-046 / pass
 - project / Test_PRJ_046_CheckEvalFixCannotMixWithFixesOrSpecEdits/eval_fix_with_added / PRJ-046 / pass
@@ -958,21 +971,30 @@ result: pass
 - project / Test_PRJ_006_PRJ_038_StampPrecedingProjectionAndPreservation / PRJ-006, PRJ-038 / pass
 - project / Test_PRJ_037_PRJ_039_StampAddedOnlyAndAbsentID / PRJ-037, PRJ-039 / pass
 - project / Test_PRJ_007_CheckValidAndDiagnostics / PRJ-007 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics / PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-008_missing_motivation / PRJ-008, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-009_nonnormative_module / PRJ-009, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-009_nonnormative_change / PRJ-009, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-010_invalid_review_tag / PRJ-010, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-010_invalid_quarantine_tag / PRJ-010, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id / PRJ-011, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-012_foreign_module_id / PRJ-012, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-012_foreign_change_id / PRJ-012, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-013_duplicate_edit_identity / PRJ-013, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-014_undeclared_handle / PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-015_missing_base / PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-015_stale_base / PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-016_absent_modified / PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-016_absent_removed / PRJ-014, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics / PRJ-015, PRJ-016 / fail
+
+=== RUN   Test_PRJ_015_PRJ_016_CheckDiagnostics
+--- FAIL: Test_PRJ_015_PRJ_016_CheckDiagnostics (0.23s)
+
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-008_missing_motivation / PRJ-008, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-009_nonnormative_module / PRJ-009, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-009_nonnormative_change / PRJ-009, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-010_invalid_review_tag / PRJ-010, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-010_invalid_quarantine_tag / PRJ-010, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id / PRJ-011, PRJ-015, PRJ-016 / fail
+
+=== RUN   Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id
+    queue_test.go:366: Check did not report C05 for duplicate item ID: []model.Diagnostic{model.Diagnostic{Code:"C05", Message:"packages/alpha/SPEC.md: duplicate item heading \"ALP-001\"", Path:"packages/alpha/SPEC.md", Warning:false}}
+--- FAIL: Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id (0.00s)
+
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-012_foreign_module_id / PRJ-012, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-012_foreign_change_id / PRJ-012, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-013_duplicate_edit_identity / PRJ-013, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-014_undeclared_handle / PRJ-014, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-015_missing_base / PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-015_stale_base / PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-016_absent_modified / PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-016_absent_removed / PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_078_CheckRemovedSectionContainsOnlyHeadings / PRJ-078 / pass
 - project / Test_PRJ_078_CheckRemovedSectionContainsOnlyHeadings/item_body / PRJ-078 / pass
 - project / Test_PRJ_078_CheckRemovedSectionContainsOnlyHeadings/leading_prose / PRJ-078 / pass
@@ -1195,17 +1217,18 @@ result: pass
 - runner / Test_RUN_056_DrillUsesConfiguredDefault / RUN-056 / pass
 - runner / Test_RUN_056_ConfiguredTimeoutBoundsDrillWorker / RUN-056 / pass
 - runner / Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted / RUN-057 / pass
+- runner / Test_RUN_061_UsageStopRetainsAcceptedRebuild / RUN-061 / pass
 - runner / Test_RUN_058_RUN_059_DrillReturnsAllReportsEvenWhenEvalsFail / RUN-058, RUN-059 / pass
 - runner / Test_RUN_058_OwnCoverageRequiredAfterPassingCases / RUN-058 / pass
 - runner / Test_RUN_059_DependentCoverageRequiredAfterPassingCases / RUN-059 / pass
-- runner / Test_RUN_068_DependentOnlyFailuresEndDrill / RUN-068 / pass
+- runner / Test_RUN_068_RUN_078_DependentOnlyFailuresEndDrill / RUN-068, RUN-078 / pass
 - runner / Test_RUN_068_OwnEvalRetryOmitsDependentEvalOutput / RUN-068 / pass
 - runner / Test_RUN_069_DrillObservationsIncludeStdoutAndRelativeLogPerAttempt / RUN-069 / pass
 - runner / Test_RUN_060_RUN_061_DrillReportAndRetainedRef / RUN-060, RUN-061 / pass
 - runner / Test_RUN_074_DrillResultAndReportIdentifySelectedCommand / RUN-074 / pass
 - runner / Test_RUN_074_DrillResultAndReportIdentifySelectedCommand/default / RUN-074 / pass
 - runner / Test_RUN_074_DrillResultAndReportIdentifySelectedCommand/explicit / RUN-074 / pass
-- runner / Test_RUN_060_RUN_061_FailedDrillReportsFailuresAndRetainsCode / RUN-060, RUN-061 / pass
+- runner / Test_RUN_060_RUN_061_RUN_078_FailedDrillReportsFailuresAndRetainsCode / RUN-060, RUN-061, RUN-078 / pass
 - runner / Test_RUN_062_CleanupOnSuccessAndFailures / RUN-062 / pass
 - runner / Test_RUN_062_CleanupOnSuccessAndFailures/success / RUN-062 / pass
 - runner / Test_RUN_062_CleanupOnSuccessAndFailures/agent_retry / RUN-062 / pass
@@ -1334,6 +1357,9 @@ result: pass
 - workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers / FLOW-019 / pass
 - workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers/1.0 / FLOW-019 / pass
 - workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers/1 / FLOW-019 / pass
+- workflow / Test_FLOW_019_CurrentResolvesHeldPathWithInvalidLiveConfig / FLOW-019 / pass
+- workflow / Test_FLOW_019_CurrentResolvesHeldPathWithInvalidLiveConfig/malformed_YAML / FLOW-019 / pass
+- workflow / Test_FLOW_019_CurrentResolvesHeldPathWithInvalidLiveConfig/incompatible_version_pin / FLOW-019 / pass
 - workflow / Test_FLOW_019_FLOW_139_ApprovedSurvivesLiveEdits / FLOW-019, FLOW-139 / pass
 - workflow / Test_FLOW_140_ApprovedReportsNoOwnedClaim / FLOW-140 / pass
 - workflow / Test_FLOW_140_ApprovedRejectsUnreadableOrMalformedClaim / FLOW-140 / pass
@@ -1509,7 +1535,7 @@ result: pass
 - workflow / Test_FLOW_073_StartFromAttemptRequiresCleanEligibleUnblockedAndUnclaimedChange/foreign_claim / FLOW-073 / pass
 - workflow / Test_FLOW_076_StartFromAttemptRejectsInvalidOrMissingAttemptBeforeMutation / FLOW-076 / pass
 - workflow / Test_FLOW_059_AuditVerifyChecksSubmissionWithoutAdvancing / FLOW-059 / pass
-- workflow / Test_FLOW_002_AuditRejectsForbiddenEditBeforeHooks / FLOW-002 / pass
+- workflow / Test_FLOW_002_FLOW_136_AuditRejectsForbiddenEditAndDoneMarksFailure / FLOW-002, FLOW-136 / pass
 - workflow / Test_FLOW_061_UnknownLifecycleSelectorsNameValidSlugs / FLOW-061 / pass
 - workflow / Test_FLOW_101_FLOW_102_FLOW_103_StatusQueueAndForwardWaiting / FLOW-101, FLOW-102, FLOW-103 / pass
 - workflow / Test_FLOW_104_FLOW_105_StatusInterfaceAndProjectedWaiting / FLOW-104, FLOW-105 / pass
@@ -1536,48 +1562,140 @@ result: pass
 - workflow / Test_FLOW_138_ContextExplainsHowToDeclareWorkerBlock/impl / FLOW-138 / pass
 
 ## Contradicted Decisions
-None. Decision [0128-coded-parse-errors] is consistent with the retained
-`model.CodedError` interface and with the eval expectations: `Cause` is
-optional, `Error` returns the cause text when present and the code otherwise,
-and `Unwrap` returns `Cause`.
+None. [0128-coded-parse-errors] is consistent with the retained model.go
+(CodedError with optional Cause, Error returns the cause's text, Unwrap
+returns Cause) and with the evals, which only require Error() text to carry
+the duplicated ID / heading and errors.As-compatible chains. One nuance was a
+burden, not a contradiction: evals wrap CodedErrors as `*CodedError` with
+%w while other tests use value `CodedError`, and the spec does not say which
+form chains carry, so ErrorCode must accept both.
 
 ## Gaps
-- CON-002 leaves "matching named" underspecified: heading text trimming,
-  case sensitivity, and whether closing ATX hash sequences count as part of
-  the name are not stated. Target module: `contracts`.
-- CON-010 and CON-011 do not say whether level-three ATX headings inside
-  fenced code blocks are item headings or item body text; only CON-002
-  explicitly exempts fenced headings. Target module: `contracts`.
-- CON-010 does not define where an item body ends relative to level-one or
-  level-two headings, or whether parsing stops at such headings. Target
-  module: `contracts`.
-- CON-011 and CON-013 do not define the bracketed-tag grammar beyond
-  "optional bracketed tag" (empty tags, whitespace before the bracket, and
-  characters allowed inside the brackets). Target module: `contracts`.
-- CON-001, CON-007, and CON-019 do not define delimiter tolerance (trailing
-  whitespace or a BOM before the opening `---`) or whether empty frontmatter
-  is an empty mapping or a non-mapping rejection. Target module: `contracts`.
-- CON-008 requires rejecting nil frontmatter maps but does not specify
-  whether the rejection must be a `CodedError` or which code it should use.
-  Target module: `contracts`.
+1. CON-016 does not state whether an error chain carries CodedError by value,
+   by pointer, or both, yet evals exercise both forms. Nearest spec: CON-016.
+   Target module for a fixing change: contracts (packages/contracts).
+
+2. No spec defines the fence grammar that bounds Section/ReplaceSection:
+   tilde vs backtick fences, info strings after the opening fence, the
+   closing fence needing at least as many marker characters as the opener,
+   up to three leading spaces, and what may follow a closing fence.
+   Nearest spec: CON-002 (also relied on by CON-009). Target module:
+   contracts (packages/contracts).
+
+3. No spec defines ATX heading parsing details: closing hash runs
+   (`## Notes ##`), the mandatory space/tab after the leading hashes, up to
+   three leading spaces, or how level-1 vs level-2 headings beyond the
+   target section bound the body. Nearest spec: CON-002 (also relied on by
+   CON-009 and, for level<=2 boundaries, CON-010). Target module:
+   contracts (packages/contracts).
+
+4. No spec defines the tag grammar inside the optional bracketed tag:
+   allowed characters, whether spaces are permitted, whether the tag is
+   trimmed, and whether an empty tag (`[]`) is legal. Empty tags were
+   rejected as malformed and inner whitespace is trimmed. Nearest spec:
+   CON-010 and CON-011. Target module: contracts (packages/contracts).
+
+5. No spec states how ParseItems treats headings below level three, or
+   level-one/level-two headings appearing inside the input: item bodies end
+   at the next item heading, at a level-1/2 heading, or at end of input.
+   Nearest spec: CON-010. Target module: contracts (packages/contracts).
+
+6. No spec states line-ending handling outside SpecHash (CON-003 mandates
+   CRLF to LF only for hashing): whether ParseDocument, Section,
+   ReplaceSection and ParseItems preserve CRLF bodies verbatim or normalize,
+   and whether a final line lacking a newline is preserved. CRLF bodies are
+   preserved verbatim and the missing terminator is kept. Nearest spec:
+   CON-001, CON-002, CON-010. Target module: contracts (packages/contracts).
+
+7. No spec defines the exact boundaries for MatchesID beyond "preceded by a
+   letter/digit or followed by a digit": which character classes count as
+   letter/digit (ASCII vs Unicode) and whether other punctuation
+   (underscore, dot) always acts as a boundary. Unicode letter/digit
+   classes are used and any other separator acts as a boundary. Nearest
+   spec: CON-004. Target module: contracts (packages/contracts).
+
+8. No spec defines MatchGlob edge semantics: whether `*` matches an empty
+   run, whether a trailing or double `**` matches zero components, whether
+   `?` is supported (it is not; treated literally), and whether empty
+   pattern components are legal. `*` matches empty runs and `**` spans zero
+   or more components. Nearest spec: CON-005. Target module: contracts
+   (packages/contracts).
+
+9. No spec states what RenderDocument/ParseDocument must do with empty
+   frontmatter (`---\n---`), delimiters with trailing whitespace, YAML
+   stream-end markers (`...`), or whether a bare `---` closing fence is the
+   only accepted terminator. A YAML decode yielding nil is treated as a
+   non-mapping and rejected with C03. Nearest spec: CON-001, CON-007,
+   CON-019. Target module: contracts (packages/contracts).
+
+10. No spec states what ReplaceSection writes when the input does not end
+    with a newline: a newline is inserted before the appended
+    "## <name>" heading. Nearest spec: CON-009. Target module: contracts
+    (packages/contracts).
+
+11. No spec states the precedence between C03 (malformed heading) and C05
+    (duplicate heading) when a heading is both: validation of the heading
+    shape happens before the duplicate check, so C03 wins. Nearest spec:
+    CON-012, CON-017, CON-018. Target module: contracts (packages/contracts).
 
 ## Agent observations
 
 ### Invocation 1
-Log: .fireweed/runs/20261117T035630-bc060882c7312bce469a2bd8/drill-1.log
+Log: .fireweed/runs/20261117T214925-488f251ad92d85eb16f8905e/drill-1.log
 
-Implemented the `contracts` module internals under `packages/contracts/internal/primitives/`:
+The workspace is clear. Now I'll implement the disposable `internal/primitives` package.
+That frontmatter logic is too convoluted. Let me rewrite it cleanly.
+Now a clean full rewrite — the draft had duplicated functions and broken fence/rune helpers:
+Let me fix the redundant/buggy bracket handling in ParseItems:
+`errors.As` with a value target doesn't match `*CodedError`. Return value `CodedError` consistently:
+`errors.As` can't match both value and pointer `CodedError` forms while preserving chain order. I'll walk the chain manually:
+Tests pass. Now the eval hook:
+All 68 eval cases pass. Let me check git status and whether DRILL_NOTES.md exists anywhere:
+Now DRILL_NOTES.md:
+Gap 13 is muddled and 11 is basically covered by CON-003. Cleaning up:
+Done. Summary:
 
-- `document.go` — YAML frontmatter parsing/rendering with `C03` diagnostics
-- `markdown.go` — section lookup/replacement with fenced-code and ATX boundary handling
-- `items.go` — item parsing/rendering, ID/handle validation, duplicate detection, canonical hashing
-- `match.go` — ID matching, glob matching, zone resolution
-- `errors.go` — coded-error construction and chain inspection
+**Rebuilt (disposable `internal/**` only):** `packages/contracts/internal/primitives/primitives.go` — implements parsing/rendering of frontmatter documents (CON-001/007/008/019), fence-aware ATX section logic (`Section`, `ReplaceSection`, CON-002/009), item parsing/rendering (CON-006/010/011/012/013/015/017/018), `SpecHash` canonicalization (CON-003), `MatchesID` boundary-aware matching (CON-004), `MatchGlob` (CON-005), `ResolveZone` zone order (CON-014), and `ErrorCode` chain walk that recognizes both value and pointer `CodedError` (CON-016). Retained files (`api.go`, `model/**`, `evals/**`, `SPEC.md`) untouched.
 
-Also wrote `DRILL_NOTES.md` with the required `## Contradicted Decisions` and `## Gaps` sections.
+**Key design notes:**
+- `ErrorCode` walks the chain manually (including `Unwrap() []error`) because `errors.As` with a single target type cannot match both value and `*CodedError` while preserving first-in-chain order — evals wrap `*CodedError` with `%w` and also use values.
+- Coded errors are returned as `model.CodedError` values, matching the retained model and decision [0128-coded-parse-errors].
+- fences (``` / ~~~, closing run ≥ opening) and levels ≤2 ATX headings (outside fences) bound sections and items.
 
-Validation:
-- `go test ./packages/contracts/...` passes
-- `go vet ./packages/contracts/...` passes
-- The requested eval hook completed successfully and wrote `.fireweed/drill-eval.xml`
+**Verification:** `go test ./packages/contracts/...` ok; the eval hook ran with the prescribed command and reported PASS — 68 testcases, 0 failures (`.fireweed/drill-eval.xml`).
+
+**DRILL_NOTES.md** (workspace root): *Contradicted Decisions* — none; *Gaps* — 11 entries, each naming its nearest spec ID and target module (contracts), covering ErrorCode value/pointer ambiguity (CON-016), fence grammar (CON-002), ATX heading parsing details (CON-002/009/010), tag grammar (CON-010/011), non-item headings in ParseItems input (CON-010), CRLF handling outside SpecHash, MatchesID character classes, MatchGlob edge semantics, frontmatter delimiter edge cases, ReplaceSection newline insertion, and C03/C05 precedence.
+
+
+## Failures
+checks: failed case "Test_CHK_048_EvaluateModuleItemCauses" for CHK-048
+Test_CHK_048_EvaluateModuleItemCauses: === RUN   Test_CHK_048_EvaluateModuleItemCauses
+--- FAIL: Test_CHK_048_EvaluateModuleItemCauses (0.00s)
+Test_CHK_048_EvaluateModuleItemCauses/duplicate_item: === RUN   Test_CHK_048_EvaluateModuleItemCauses/duplicate_item
+    hooks_test.go:218: error = "duplicate item heading \"CHK-003\""; want cause "duplicate item ID"
+--- FAIL: Test_CHK_048_EvaluateModuleItemCauses/duplicate_item (0.00s)
+?   	github.com/lurkshark/fireweed/packages/checks	[no test files]
+?   	github.com/lurkshark/fireweed/packages/checks/internal/engine	[no test files]
+?   	github.com/lurkshark/fireweed/packages/checks/model	[no test files]
+FAIL
+FAIL	github.com/lurkshark/fireweed/packages/checks/evals	266.954s
+
+exit status 1
+
+project: failed case "Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id" for PRJ-011
+Test_PRJ_015_PRJ_016_CheckDiagnostics: === RUN   Test_PRJ_015_PRJ_016_CheckDiagnostics
+--- FAIL: Test_PRJ_015_PRJ_016_CheckDiagnostics (0.23s)
+Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id: === RUN   Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id
+    queue_test.go:366: Check did not report C05 for duplicate item ID: []model.Diagnostic{model.Diagnostic{Code:"C05", Message:"packages/alpha/SPEC.md: duplicate item heading \"ALP-001\"", Path:"packages/alpha/SPEC.md", Warning:false}}
+--- FAIL: Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id (0.00s)
+?   	github.com/lurkshark/fireweed/packages/project	[no test files]
+?   	github.com/lurkshark/fireweed/packages/project/internal/fixture	[no test files]
+?   	github.com/lurkshark/fireweed/packages/project/internal/history	[no test files]
+?   	github.com/lurkshark/fireweed/packages/project/internal/queue	[no test files]
+?   	github.com/lurkshark/fireweed/packages/project/internal/source	[no test files]
+?   	github.com/lurkshark/fireweed/packages/project/model	[no test files]
+FAIL
+FAIL	github.com/lurkshark/fireweed/packages/project/evals	4.290s
+
+exit status 1
 
