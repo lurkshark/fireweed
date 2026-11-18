@@ -654,6 +654,12 @@ After normal project discovery, release for a selected claim owned by the caller
 worktree MUST release that claim even when live fireweed.yaml is malformed or its
 binary pin excludes the running binary.
 
+### APP-170
+When verify or done selects a change owned by the caller's worktree, compatibility
+admission MUST use that change's held approved configuration without parsing live
+fireweed.yaml for admission. An incompatible approved configuration MUST return
+exit 2 with C01 and corrective guidance before running hooks or changing phase.
+
 ## Decisions
 
 
