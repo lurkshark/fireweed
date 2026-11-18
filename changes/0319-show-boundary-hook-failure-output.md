@@ -1,5 +1,7 @@
 ---
 module: checks
+phase: audit
+run: 20261118T203128-28b85973d0f182d1531dbccf
 ---
 
 ## Motivation
@@ -17,7 +19,7 @@ unattributed nonzero exit. Use the existing diagnostic schema and exit behavior.
 
 ## Added
 
-### new:boundary-hook-failure-output
+### CHK-086
 When a boundary hook exits nonzero without a module-attributed violation, its X02
 diagnostic MUST identify the global hook or module override and include the end of
 its stderr, if present, up to 4,096 bytes of valid UTF-8. The diagnostic MUST mark
@@ -37,3 +39,15 @@ a module override. Check the identified scope, the excerpt byte ceiling, the tai
 marker, valid UTF-8 and a visible omission indicator. Retain a silent failure case,
 and preserve existing exit status, attribution, baseline, opt-out and launch-error
 assertions.
+
+`fireweed verify show-boundary-hook-failure-output` passed the evals gate. The
+global case failed because X02 omitted the short stderr reason. The override
+case failed because X02 omitted the UTF-8 tail and truncation marker. The other
+140 reported cases passed.
+
+The unattributed-exit diagnostic is built in
+`packages/checks/internal/engine/boundaries.go`, which is writable in impl.
+## Provenance
+
+- evals 2026-11-18T20:41:46.153674Z agent=codex fireweed=0.2.1 playbook=d2fd7216b035a9614c390d254dd9195ac2c65ae1ed18f07ac93c77b9732d4156 tests=142 failing=2 passing=140
+
