@@ -372,7 +372,21 @@ func Test_GIT_005_RunRequiresExecutableForGitSubcommand(t *testing.T) {
 	}
 }
 
-func Test_GIT_005_RunCaptureExitTimeoutAndGroupCancel(t *testing.T) {
+func Test_GIT_011_RunLaunchFailure(t *testing.T) {
+	dir := t.TempDir()
+	result, err := gitstore.Run(context.Background(), gitstore.Request{
+		Args: []string{filepath.Join(dir, "missing-executable")}, Dir: dir, Timeout: 3 * time.Second,
+	})
+	if err == nil {
+		t.Fatalf("Run with missing executable succeeded: %#v", result)
+	}
+	var exitErr *exec.ExitError
+	if errors.As(err, &exitErr) {
+		t.Errorf("Run with missing executable returned an *exec.ExitError: %v", err)
+	}
+}
+
+func Test_GIT_005_GIT_011_RunCaptureExitTimeoutAndGroupCancel(t *testing.T) {
 	dir := t.TempDir()
 	var err error
 	dir, err = filepath.EvalSymlinks(dir)
@@ -404,8 +418,14 @@ func Test_GIT_005_RunCaptureExitTimeoutAndGroupCancel(t *testing.T) {
 	result, err = gitstore.Run(context.Background(), gitstore.Request{
 		Args: []string{"/bin/sh", "-c", emitOutput + `exit 7`}, Dir: dir, Env: env, Timeout: 3 * time.Second,
 	})
-	if err == nil || result.ExitCode != 7 {
+	if result.ExitCode != 7 {
 		t.Errorf("failed Run = %#v, %v", result, err)
+	}
+	var exitErr *exec.ExitError
+	if !errors.As(err, &exitErr) {
+		t.Errorf("failed Run error = %v, want *exec.ExitError", err)
+	} else if code := exitErr.ExitCode(); code != result.ExitCode {
+		t.Errorf("process error exit code = %d, want Result.ExitCode %d", code, result.ExitCode)
 	}
 	checkFailedOutput(t, result, err)
 	for _, mode := range []struct {
@@ -428,8 +448,9 @@ func Test_GIT_005_RunCaptureExitTimeoutAndGroupCancel(t *testing.T) {
 			done := make(chan outcome, 1)
 			start := time.Now()
 			go func() {
+				// Keep the shell running while the test observes readiness and cancels Run.
 				result, runErr := gitstore.Run(ctx, gitstore.Request{
-					Args: []string{"/bin/sh", "-c", emitOutput + `(sleep 1; printf child > "$2") & printf ready > "$1"; wait`, "sh", ready, marker},
+					Args: []string{"/bin/sh", "-c", emitOutput + `(sleep 1; printf child > "$2") & printf ready > "$1"; wait; sleep 5`, "sh", ready, marker},
 					Dir:  dir, Env: env, Timeout: mode.timeout,
 				})
 				done <- outcome{result: result, err: runErr}
@@ -447,16 +468,15 @@ func Test_GIT_005_RunCaptureExitTimeoutAndGroupCancel(t *testing.T) {
 				case <-time.After(10 * time.Millisecond):
 				}
 			}
+			wantErr := context.DeadlineExceeded
 			if mode.cancel {
+				wantErr = context.Canceled
 				cancel()
 			}
 			select {
 			case got := <-done:
-				if got.err == nil {
-					t.Error("terminated Run succeeded")
-				}
-				if !mode.cancel && !errors.Is(got.err, context.DeadlineExceeded) {
-					t.Errorf("timed-out Run error = %v, want context.DeadlineExceeded", got.err)
+				if !errors.Is(got.err, wantErr) {
+					t.Errorf("terminated Run error = %v, want %v", got.err, wantErr)
 				}
 				checkFailedOutput(t, got.result, got.err)
 			case <-time.After(2 * time.Second):
