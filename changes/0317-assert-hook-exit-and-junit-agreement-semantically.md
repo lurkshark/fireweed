@@ -2,6 +2,8 @@
 eval_fix:
     - CHK-038
 module: checks
+phase: audit
+run: 20261118T040518-2742408c54da06a6e657502c
 ---
 
 ## Motivation
@@ -28,3 +30,7 @@ through `contracts.ErrorCode` for a zero exit with a mapped failure and for a
 nonzero exit with only a passing case. Assert the reported hook exit and the
 parsed testcase identity and outcome in each case. For a nonzero exit with
 a mapped failure, require a nil error and the same report evidence.
+## Provenance
+
+- evals 2026-11-18T04:14:40.776105Z agent=codex fireweed=0.2.1 playbook=d2fd7216b035a9614c390d254dd9195ac2c65ae1ed18f07ac93c77b9732d4156 tests=141 failing=0 passing=141
+
