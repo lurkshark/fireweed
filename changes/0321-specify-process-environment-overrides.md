@@ -1,7 +1,9 @@
 ---
 already_satisfied:
-    - "new:process-environment-overrides"
+    - GIT-012
 module: gitstore
+phase: audit
+run: 20261118T213424-4a1356b2421b1b6c62088a18
 ---
 
 ## Motivation
@@ -18,7 +20,7 @@ Specify the existing gitstore.Run semantics for Request.Env in the launched proc
 
 ## Added
 
-### new:process-environment-overrides
+### GIT-012
 Run MUST inherit the caller's environment and apply Request.Env as per-variable
 overrides to the launched process. Omitted keys MUST retain their inherited values.
 
@@ -35,3 +37,7 @@ the eval observes the child environment independently of executable lookup. Asse
 that the overridden value wins and an unrelated inherited sentinel survives. With
 nil and empty override maps, assert that both parent sentinel values survive. The
 current launcher already meets these cases.
+## Provenance
+
+- evals 2026-11-18T21:35:24.379885Z agent=codex fireweed=0.2.1 playbook=d2fd7216b035a9614c390d254dd9195ac2c65ae1ed18f07ac93c77b9732d4156 tests=19 failing=0 passing=19
+
