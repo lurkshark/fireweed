@@ -1,5 +1,7 @@
 ---
 module: assets
+phase: audit
+run: 20261117T235631-5c9552d53a272e15f63ca764
 ---
 
 ## Motivation
@@ -18,7 +20,7 @@ guidance on specifying observable behavior at the module interface.
 
 ## Added
 
-### new:author-failure-contracts
+### AST-072
 The author-change playbook MUST direct authors to specify, in terms testable
 through the producing interface, how callers or users can distinguish failure
 outcomes that require different actions. It MUST direct authors to specify what
@@ -43,3 +45,14 @@ Suggested playbook paragraph
 
 Check the guidance through `Playbook("author-change")`. Assert the meaning of
 the guidance so equivalent phrasing can pass.
+
+`Test_AST_072_AuthorChangeFailureGuidance` failed against the current playbook
+because the failure guidance paragraph is absent. The controller's
+`fireweed verify author-change-failure-contracts` passed the evals phase checks.
+
+Implement the paragraph in `packages/assets/internal/content/content.go`, the
+disposable file that defines the built-in author-change playbook.
+## Provenance
+
+- evals 2026-11-18T00:00:30.09084Z agent=codex fireweed=0.2.1 playbook=6a9c2d506363e3539cc66efd37bc6a06701249541dc4e4f01ed3aa6454bbb864 tests=153 failing=1 passing=152
+
