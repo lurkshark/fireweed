@@ -366,6 +366,54 @@ func Test_APP_011_APP_032_APP_033_ContextCompactFullAndErrors(t *testing.T) {
 	lifecycleCommandFailure(t, status, 2, out, errOut, true)
 }
 
+func Test_APP_168_ContextRecoversWithInvalidLiveConfiguration(t *testing.T) {
+	root := lifecycleCLIProject(t, "fixture-start-does-not-run-hooks", false)
+	dir := appNestedDir(t, root)
+	config := readInitFile(t, root, "fireweed.yaml")
+	cliHold(t, root)
+	const changePath = "changes/0001-manual.md"
+	heldChange := readInitFile(t, root, changePath)
+
+	for _, tc := range []struct {
+		name, liveConfig, selector string
+		full                       bool
+	}{
+		{"malformed-yaml", "modules: [broken\n", "manual", false},
+		{"excluding-pin", incompatibleConfig(config), changePath, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			want, err := workflow.Context(root, tc.selector, tc.full)
+			if err != nil {
+				t.Fatal(err)
+			}
+			appPut(t, root, "fireweed.yaml", tc.liveConfig)
+			t.Cleanup(func() { appPut(t, root, "fireweed.yaml", config) })
+			args := []string{"context", tc.selector}
+			if tc.full {
+				args = append(args, "--full", "--json")
+			}
+			status, out, stderr := runSavedAttemptApp(t, dir, args...)
+			if status != 0 || stderr != "" {
+				t.Fatalf("context: exit=%d stdout=%q stderr=%q", status, out, stderr)
+			}
+			if tc.full {
+				out = commandStringData(t, out)
+			}
+			if out != want {
+				t.Error("context with invalid live configuration differs from the original held context")
+			}
+			change, projected, found := strings.Cut(out, "\n# Projected spec\n")
+			if !found || !strings.Contains(change, heldChange) {
+				t.Error("context omitted the held change")
+			}
+			spec, _, _ := strings.Cut(projected, "\n# Interface\n")
+			if !strings.Contains(spec, "### ALP-002\nAlpha MUST return the additional value.") {
+				t.Error("context omitted the assigned requirement from the projected spec")
+			}
+		})
+	}
+}
+
 func Test_APP_012_APP_034_APP_035_APP_036_CoverageCurrentProjectionAndErrors(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := lifecycleCLIProject(t, bin, false)

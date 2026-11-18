@@ -1,5 +1,7 @@
 ---
 module: app
+phase: audit
+run: 20261118T201143-271a012fbbe75dba4a86f4ba
 ---
 
 ## Motivation
@@ -15,12 +17,12 @@ Keep the existing context and release arguments, output, and ownership rules.
 
 ## Added
 
-### new:held-context-invalid-live-config
+### APP-168
 After normal project discovery, context for a selected change owned by the caller's
 worktree MUST return the held context even when live fireweed.yaml is malformed or
 its binary pin excludes the running binary.
 
-### new:release-invalid-live-config
+### APP-169
 After normal project discovery, release for a selected claim owned by the caller's
 worktree MUST release that claim even when live fireweed.yaml is malformed or its
 binary pin excludes the running binary.
@@ -41,3 +43,13 @@ preserves HEAD, the index and edits. Give release an unrelated change selector
 while the live configuration is malformed and confirm the caller's claim survives.
 Reuse the existing selector and ownership assertions. Keep fresh start and other
 live-config consumers on their existing admission paths.
+
+Fail-first: `go test ./packages/app/evals -run '^Test_APP_16[89]_' -count=1 -v`
+reproduced C01 with exit 2 for both commands with malformed YAML and with an
+excluding binary pin. `fireweed verify recover-held-change-with-invalid-live-config`
+passed in the evals phase. The implementation-writable admission path for both
+commands is `packages/app/internal/entry/lifecycle.go`.
+## Provenance
+
+- evals 2026-11-18T20:21:42.83617Z agent=codex fireweed=0.2.1 playbook=d2fd7216b035a9614c390d254dd9195ac2c65ae1ed18f07ac93c77b9732d4156 tests=409 failing=6 passing=403
+
