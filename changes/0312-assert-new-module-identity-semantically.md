@@ -3,7 +3,7 @@ eval_fix:
     - APP-050
     - APP-101
 module: app
-phase: audit
+phase: impl
 run: 20261118T015424-f8725c36286415815fca4063
 ---
 
@@ -48,4 +48,9 @@ module with the specified identity and no dependencies.
 ## Provenance
 
 - evals 2026-11-18T02:08:25.052085Z agent=codex fireweed=0.2.1 playbook=d2fd7216b035a9614c390d254dd9195ac2c65ae1ed18f07ac93c77b9732d4156 tests=403 failing=0 passing=403
+- audit 2026-11-18T02:11:23.979311Z agent=codex fireweed=0.2.1 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+
+## Audit
+
+No findings; checked APP-050, APP-101
 
