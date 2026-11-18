@@ -1,7 +1,9 @@
 ---
 already_satisfied:
-    - "new:load-module-metadata-code"
+    - PRJ-089
 module: project
+phase: audit
+run: 20261118T221926-515921cad4dae6f5a225516a
 ---
 
 ## Motivation
@@ -19,7 +21,7 @@ project.LoadAt.
 
 ## Added
 
-### new:load-module-metadata-code
+### PRJ-089
 Load and LoadAt MUST return a C12 error through contracts.ErrorCode for a matched
 module's invalid metadata or invalid zone field type. The error's subject MUST
 identify the repository-relative SPEC.md path.
@@ -37,3 +39,7 @@ reuse an invalid zone field fixture. Use the committed-spec fixture to confirm
 LoadAt reports the recorded invalid metadata even when the working copy has been
 repaired. Keep the existing Check and recorded syntax or duplicate item assertions.
 The current loaders return C12 with the matching path.
+## Provenance
+
+- evals 2026-11-18T22:20:55.783536Z agent=codex fireweed=0.2.1 playbook=d2fd7216b035a9614c390d254dd9195ac2c65ae1ed18f07ac93c77b9732d4156 tests=325 failing=0 passing=325
+

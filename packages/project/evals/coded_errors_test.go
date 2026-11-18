@@ -8,11 +8,16 @@ import (
 	"github.com/lurkshark/fireweed/packages/project"
 )
 
+func requireErrorCodeAndSubject(t *testing.T, err error, wantCode, wantSubject string) {
+	t.Helper()
+	if code, subject, ok := contracts.ErrorCode(err); !ok || code != wantCode || subject != wantSubject {
+		t.Errorf("error code = (%q, %q, %v); want (%q, %q, true): %v", code, subject, ok, wantCode, wantSubject, err)
+	}
+}
+
 func requirePathError(t *testing.T, err error, wantCode, path string) {
 	t.Helper()
-	if code, subject, ok := contracts.ErrorCode(err); !ok || code != wantCode || subject != path {
-		t.Errorf("error code = (%q, %q, %v); want (%q, %q, true): %v", code, subject, ok, wantCode, path, err)
-	}
+	requireErrorCodeAndSubject(t, err, wantCode, path)
 	if err == nil || !strings.Contains(err.Error(), path) {
 		t.Errorf("error = %v; want diagnostic containing %q", err, path)
 	}
