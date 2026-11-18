@@ -3,6 +3,8 @@ eval_fix:
     - APP-050
     - APP-101
 module: app
+phase: audit
+run: 20261118T015424-f8725c36286415815fca4063
 ---
 
 ## Motivation
@@ -43,3 +45,7 @@ module with the specified identity and no dependencies.
   frontmatter declares name `app` and ID prefix `APP`. In `GoInit`, also
   check that `depends_on` is an empty sequence. Keep the existing template
   substitution and layout assertions.
+## Provenance
+
+- evals 2026-11-18T02:08:25.052085Z agent=codex fireweed=0.2.1 playbook=d2fd7216b035a9614c390d254dd9195ac2c65ae1ed18f07ac93c77b9732d4156 tests=403 failing=0 passing=403
+

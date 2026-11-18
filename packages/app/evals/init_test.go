@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/lurkshark/fireweed/packages/assets"
+	"github.com/lurkshark/fireweed/packages/contracts"
 	"gopkg.in/yaml.v3"
 )
 
@@ -229,9 +230,15 @@ func Test_APP_041_APP_042_APP_043_APP_044_APP_045_APP_046_APP_050_APP_053_APP_05
 			t.Errorf("APP-045 %s differs from embedded recipe", name)
 		}
 	}
-	spec := readInitFile(t, root, "packages/app/SPEC.md")
-	if !strings.Contains(spec, "name: app") || !strings.Contains(spec, "id_prefix: APP") || !strings.Contains(spec, "depends_on: []") {
-		t.Errorf("APP-050 rendered app module metadata: %q", spec)
+	doc, err := contracts.ParseDocument(readInitFile(t, root, "packages/app/SPEC.md"))
+	if err != nil {
+		t.Fatalf("APP-050 parse generated app SPEC.md: %v", err)
+	}
+	if doc.Frontmatter["name"] != "app" || doc.Frontmatter["id_prefix"] != "APP" {
+		t.Errorf("APP-050 app identity: name=%#v id_prefix=%#v; want app and APP", doc.Frontmatter["name"], doc.Frontmatter["id_prefix"])
+	}
+	if dependencies, ok := doc.Frontmatter["depends_on"].([]any); !ok || len(dependencies) != 0 {
+		t.Errorf("APP-050 depends_on=%#v; want an empty sequence", doc.Frontmatter["depends_on"])
 	}
 	if !strings.Contains(readInitFile(t, root, "packages/app/api.go"), "package app") {
 		t.Error("APP-050 Go interface template was not rendered")
@@ -420,8 +427,12 @@ func Test_APP_042_APP_048_APP_049_APP_050_APP_053_APP_054_APP_060_APP_161_LocalI
 	if got := readInitFile(t, root, "packages/app/api.txt"); got != "package=app name=app prefix=APP\n" {
 		t.Errorf("APP-050 rendered template = %q", got)
 	}
-	if spec := readInitFile(t, root, "packages/app/SPEC.md"); !strings.Contains(spec, "name: app") || !strings.Contains(spec, "id_prefix: APP") {
-		t.Errorf("APP-050 rendered SPEC = %q", spec)
+	doc, err := contracts.ParseDocument(readInitFile(t, root, "packages/app/SPEC.md"))
+	if err != nil {
+		t.Fatalf("APP-050 parse generated app SPEC.md: %v", err)
+	}
+	if doc.Frontmatter["name"] != "app" || doc.Frontmatter["id_prefix"] != "APP" {
+		t.Errorf("APP-050 app identity: name=%#v id_prefix=%#v; want app and APP", doc.Frontmatter["name"], doc.Frontmatter["id_prefix"])
 	}
 	assertInitWorkerCommand(t, config, agent)
 	assertInitAuditCommand(t, config, auditor)

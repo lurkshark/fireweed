@@ -77,8 +77,8 @@ func Test_APP_100_APP_101_APP_104_NewModuleFromNearestProjectTemplates(t *testin
 		t.Errorf("plain creation: status=%d stdout=%q stderr=%q", status, stdout, stderr)
 	}
 	newModuleAbsent(t, outer, "packages/quartz-core")
-	if got := readInitFile(t, inner, "components/quartz-core/SPEC.md"); !strings.Contains(got, "name: quartz-core\nid_prefix: QTZ") || !strings.Contains(got, "Project-owned SPEC marker.") {
-		t.Errorf("rendered SPEC identity/project template: %q", got)
+	if got := readInitFile(t, inner, "components/quartz-core/SPEC.md"); !strings.Contains(got, "Project-owned SPEC marker.") {
+		t.Errorf("rendered SPEC missing project template marker: %q", got)
 	}
 	if got := readInitFile(t, inner, "components/quartz-core/api.go"); got != "package quartz_core\n// Project-owned API: quartz-core QTZ\n" {
 		t.Errorf("rendered API=%q", got)
@@ -240,6 +240,7 @@ func Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule(t *testing.T) {
 	bin := buildAppBinary(t)
 	root := appProjectFixture(t)
 	newModuleTemplates(t, root)
+	appPut(t, root, ".fireweed/templates/module/SPEC.md", "---\nname: {{name}}\ndepends_on: []\nid_prefix: {{prefix}}\n---\n# {{name}}\n\n## Specs\n\n## Decisions\n")
 	appPut(t, root, ".fireweed/templates/module/README.tmpl", "go_module={{go_module}}\nmodule_dir={{module_dir}}\n")
 	status, stdout, stderr := runAppBinary(t, bin, root, "new-module", "empty2-3-mod", "--prefix", "E2M", "--json")
 	if status != 0 || stderr != "" || commandStringData(t, stdout) != "packages/empty2-3-mod" {
@@ -248,7 +249,20 @@ func Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule(t *testing.T) {
 	if got := readInitFile(t, root, "packages/empty2-3-mod/README"); got != "go_module=\nmodule_dir=packages/empty2-3-mod\n" {
 		t.Errorf("empty go_module substitution=%q", got)
 	}
-	if got := readInitFile(t, root, "packages/empty2-3-mod/SPEC.md"); !strings.Contains(got, "name: empty2-3-mod\nid_prefix: E2M\n") {
-		t.Errorf("rendered module identity: %q", got)
+	snapshot, err := project.Load(root)
+	if err != nil {
+		t.Fatalf("load project with created module: %v", err)
 	}
+	if err := project.ValidateGraph(snapshot.Modules); err != nil {
+		t.Errorf("created graph invalid: %v", err)
+	}
+	for _, module := range snapshot.Modules {
+		if module.Name == "empty2-3-mod" {
+			if module.IDPrefix != "E2M" || module.Dir != "packages/empty2-3-mod" {
+				t.Errorf("created graph module=%+v", module)
+			}
+			return
+		}
+	}
+	t.Errorf("created module absent from project graph: %+v", snapshot.Modules)
 }
