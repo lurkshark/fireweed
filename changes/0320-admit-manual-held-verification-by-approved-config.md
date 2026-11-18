@@ -1,6 +1,6 @@
 ---
 module: app
-phase: audit
+phase: impl
 run: 20261118T211523-367996b36514155d10a9e10e
 ---
 
@@ -49,4 +49,9 @@ returned U02. The implementation step can update command admission in
 ## Provenance
 
 - evals 2026-11-18T21:24:56.944228Z agent=codex fireweed=0.2.1 playbook=d2fd7216b035a9614c390d254dd9195ac2c65ae1ed18f07ac93c77b9732d4156 tests=415 failing=6 passing=409
+- audit 2026-11-18T21:25:35.84693Z agent=manual fireweed=0.2.1 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+
+## Audit
+
+No findings; checked APP-170
 
