@@ -15,10 +15,11 @@ import (
 	"github.com/lurkshark/fireweed/packages/workflow"
 )
 
-func Test_FLOW_059_AuditVerifyChecksSubmissionWithoutAdvancing(t *testing.T) {
+func Test_FLOW_059_FLOW_145_AuditVerifyChecksSubmissionWithoutAdvancing(t *testing.T) {
 	root := fixture(t, "", "", "", "", "")
 	toAudit(t, root)
 	base := head(t, root)
+	approved := readFile(t, root, pendingCommitChange)
 	current, err := workflow.Current(root, "manual")
 	if err != nil {
 		t.Fatal(err)
@@ -57,9 +58,10 @@ func Test_FLOW_059_AuditVerifyChecksSubmissionWithoutAdvancing(t *testing.T) {
 		t.Error("finding audit Verify normalized submission or committed")
 	}
 
-	// A complete submission is accepted by Verify without Done's normalization.
-	audit(t, root, "Checked IDs: ALP-001\nNo findings\n")
-	before := readFile(t, root, pendingCommitChange)
+	// Append the first Audit section to the approved change with a new blank separator.
+	const auditAppend = "\n## Audit\nChecked IDs: ALP-001\nNo findings\n"
+	before := approved + auditAppend
+	write(t, root, pendingCommitChange, before)
 	if result, err := verify(root, true); err != nil || result.State.Phase != "audit" {
 		t.Errorf("complete audit Verify = phase %q, error %v", result.State.Phase, err)
 	}
@@ -69,6 +71,22 @@ func Test_FLOW_059_AuditVerifyChecksSubmissionWithoutAdvancing(t *testing.T) {
 	if now, err := workflow.Current(root, "manual"); err != nil || now.ClaimOID != current.ClaimOID || now.Phase != "audit" || now.PhaseBase != base {
 		t.Errorf("successful Verify changed claim or phase: %#v, %v", now, err)
 	}
+
+	prefix, provenance, found := strings.Cut(approved, "\n## Provenance\n")
+	edited := strings.Replace(provenance, " agent=manual ", " agent=other ", 1)
+	if !found || edited == provenance {
+		t.Fatal("fixture is missing the approved Provenance entry")
+	}
+	write(t, root, pendingCommitChange, prefix+"\n## Provenance\n"+edited+auditAppend)
+	_, err = verify(root, true)
+	assertErrorCode(t, "audit Verify with edited Provenance", err, "P03")
+	_, err = done(root)
+	assertErrorCode(t, "audit Done with edited Provenance", err, "P03")
+	if now, err := workflow.Current(root, "manual"); head(t, root) != base || err != nil || now.ClaimOID != current.ClaimOID || now.Phase != "audit" || now.PhaseBase != base {
+		t.Fatalf("rejected Provenance edit changed HEAD, claim or phase: %#v, %v", now, err)
+	}
+
+	write(t, root, pendingCommitChange, before)
 	if result, err := done(root); err != nil || result.State.Phase != "impl" {
 		t.Errorf("complete audit Done = phase %q, error %v", result.State.Phase, err)
 	}

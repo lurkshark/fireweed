@@ -1,7 +1,9 @@
 ---
 already_satisfied:
-    - "new:audit-section-separators"
+    - FLOW-145
 module: workflow
+phase: audit
+run: 20261118T230233-82dc861e69273b7516b156a7
 ---
 
 ## Motivation
@@ -20,7 +22,7 @@ against the approved change.
 
 ## Added
 
-### new:audit-section-separators
+### FLOW-145
 In audit phase, Verify and Done MUST treat blank separator lines adjoining an
 otherwise permitted Audit edit as formatting when comparing the submission with
 the approved change.
@@ -38,3 +40,7 @@ section after Provenance with a blank separator. Verify the submission before Do
 and check the resulting phase. In the same fixture, change the adjacent approved
 Provenance line as a negative control and require P03 before advancing. Keep
 existing validity and zone assertions. The current workflow accepts the valid form.
+## Provenance
+
+- evals 2026-11-18T23:06:52.771177Z agent=codex fireweed=0.2.1 playbook=d2fd7216b035a9614c390d254dd9195ac2c65ae1ed18f07ac93c77b9732d4156 tests=218 failing=0 passing=218
+
