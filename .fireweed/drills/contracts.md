@@ -1,9 +1,9 @@
 ---
 agent: opencode
-base_commit: 8ee60066ed3a30b16d025f0f429368b1aa8ca5db
-date: "2026-11-17T21:49:25.865629Z"
+base_commit: 00df0cafe8c23730fefae118499d1083d002ad00
+date: "2026-11-18T06:52:25.028785Z"
 model: opencode/inkling-2-small-free#high
-result: fail
+result: pass
 ---
 
 ## Own evals
@@ -570,6 +570,7 @@ result: fail
 - assets / Test_AST_027_DoctorExplanations/C16 / AST-027 / pass
 - assets / Test_AST_059_SpecOutsideModuleGlobsExplanation / AST-059 / pass
 - assets / Test_AST_064_AuthorChangeProtocol / AST-064 / pass
+- assets / Test_AST_072_AuthorChangeFailureGuidance / AST-072 / pass
 - assets / Test_AST_008_Help / AST-008 / pass
 - assets / Test_AST_061_CommandPages / AST-061 / pass
 - assets / Test_AST_061_CommandOptions / AST-061 / pass
@@ -733,6 +734,9 @@ result: fail
 - checks / Test_CHK_003_CHK_032_CHK_033_CHK_034_CHK_035_GlobalShellHookQuotesAndOnePassExpansion / CHK-003, CHK-032, CHK-033, CHK-034, CHK-035 / pass
 - checks / Test_CHK_003_CHK_031_CHK_032_CHK_033_CHK_034_CHK_035_ModuleOverrideArgvAndOutput / CHK-003, CHK-031, CHK-032, CHK-033, CHK-034, CHK-035 / pass
 - checks / Test_CHK_038_ExitAndReportAgreement / CHK-038 / pass
+- checks / Test_CHK_038_ExitAndReportAgreement/zero-with-failure / CHK-038 / pass
+- checks / Test_CHK_038_ExitAndReportAgreement/nonzero-with-pass / CHK-038 / pass
+- checks / Test_CHK_038_ExitAndReportAgreement/nonzero-with-failure / CHK-038 / pass
 - checks / Test_CHK_080_EvaluateRetainsParsedFailureDetails / CHK-080 / pass
 - checks / Test_CHK_080_EvaluateRetainsParsedFailureDetails/nonzero_failure / CHK-080 / pass
 - checks / Test_CHK_080_EvaluateRetainsParsedFailureDetails/zero_passing / CHK-080 / pass
@@ -743,18 +747,9 @@ result: fail
 - checks / Test_CHK_046_EvaluateHookSetupCauses/invalid_hook_command / CHK-046 / pass
 - checks / Test_CHK_046_EvaluateHookSetupCauses/unavailable_report_directory / CHK-046 / pass
 - checks / Test_CHK_047_EvaluateUnknownModuleCause / CHK-047 / pass
-- checks / Test_CHK_048_EvaluateModuleItemCauses / CHK-048 / fail
-
-=== RUN   Test_CHK_048_EvaluateModuleItemCauses
---- FAIL: Test_CHK_048_EvaluateModuleItemCauses (0.00s)
-
+- checks / Test_CHK_048_EvaluateModuleItemCauses / CHK-048 / pass
 - checks / Test_CHK_048_EvaluateModuleItemCauses/malformed_item / CHK-048 / pass
-- checks / Test_CHK_048_EvaluateModuleItemCauses/duplicate_item / CHK-048 / fail
-
-=== RUN   Test_CHK_048_EvaluateModuleItemCauses/duplicate_item
-    hooks_test.go:218: error = "duplicate item heading \"CHK-003\""; want cause "duplicate item ID"
---- FAIL: Test_CHK_048_EvaluateModuleItemCauses/duplicate_item (0.00s)
-
+- checks / Test_CHK_048_EvaluateModuleItemCauses/duplicate_item / CHK-048 / pass
 - checks / Test_CHK_028_EvaluatePreservesJUnitDiagnostic / CHK-028 / pass
 - checks / Test_CHK_003_CHK_032_ArgvPlaceholdersAreOnePass / CHK-003, CHK-032 / pass
 - checks / Test_CHK_001_CHK_029_CHK_030_NestedJUnitIDsResultsAndTime / CHK-001, CHK-029, CHK-030 / pass
@@ -789,9 +784,10 @@ result: fail
 - gitstore / Test_GIT_010_DeleteWithAbsentExpectedRef/Empty / GIT-010 / pass
 - gitstore / Test_GIT_010_DeleteWithAbsentExpectedRef/ZeroSHA1 / GIT-010 / pass
 - gitstore / Test_GIT_005_RunRequiresExecutableForGitSubcommand / GIT-005 / pass
-- gitstore / Test_GIT_005_RunCaptureExitTimeoutAndGroupCancel / GIT-005 / pass
-- gitstore / Test_GIT_005_RunCaptureExitTimeoutAndGroupCancel/TimeoutTerminatesGroup / GIT-005 / pass
-- gitstore / Test_GIT_005_RunCaptureExitTimeoutAndGroupCancel/ContextCancellationTerminatesGroup / GIT-005 / pass
+- gitstore / Test_GIT_011_RunLaunchFailure / GIT-011 / pass
+- gitstore / Test_GIT_005_GIT_011_RunCaptureExitTimeoutAndGroupCancel / GIT-005, GIT-011 / pass
+- gitstore / Test_GIT_005_GIT_011_RunCaptureExitTimeoutAndGroupCancel/TimeoutTerminatesGroup / GIT-005, GIT-011 / pass
+- gitstore / Test_GIT_005_GIT_011_RunCaptureExitTimeoutAndGroupCancel/ContextCancellationTerminatesGroup / GIT-005, GIT-011 / pass
 - gitstore / Test_GIT_005_RunCancelWhileShellLaunchesChild / GIT-005 / pass
 - project / Test_PRJ_086_ResolveExplicitWorkerAlias / PRJ-086 / pass
 - project / Test_PRJ_086_ResolveExplicitWorkerAlias/select_listed_alias / PRJ-086 / pass
@@ -971,22 +967,13 @@ result: fail
 - project / Test_PRJ_006_PRJ_038_StampPrecedingProjectionAndPreservation / PRJ-006, PRJ-038 / pass
 - project / Test_PRJ_037_PRJ_039_StampAddedOnlyAndAbsentID / PRJ-037, PRJ-039 / pass
 - project / Test_PRJ_007_CheckValidAndDiagnostics / PRJ-007 / pass
-- project / Test_PRJ_015_PRJ_016_CheckDiagnostics / PRJ-015, PRJ-016 / fail
-
-=== RUN   Test_PRJ_015_PRJ_016_CheckDiagnostics
---- FAIL: Test_PRJ_015_PRJ_016_CheckDiagnostics (0.23s)
-
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics / PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-008_missing_motivation / PRJ-008, PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-009_nonnormative_module / PRJ-009, PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-009_nonnormative_change / PRJ-009, PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-010_invalid_review_tag / PRJ-010, PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-010_invalid_quarantine_tag / PRJ-010, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id / PRJ-011, PRJ-015, PRJ-016 / fail
-
-=== RUN   Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id
-    queue_test.go:366: Check did not report C05 for duplicate item ID: []model.Diagnostic{model.Diagnostic{Code:"C05", Message:"packages/alpha/SPEC.md: duplicate item heading \"ALP-001\"", Path:"packages/alpha/SPEC.md", Warning:false}}
---- FAIL: Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id (0.00s)
-
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_PRJ-068_duplicate_module_id / PRJ-011, PRJ-015, PRJ-016, PRJ-068 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-012_foreign_module_id / PRJ-012, PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-012_foreign_change_id / PRJ-012, PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-013_duplicate_edit_identity / PRJ-013, PRJ-015, PRJ-016 / pass
@@ -1562,140 +1549,94 @@ result: fail
 - workflow / Test_FLOW_138_ContextExplainsHowToDeclareWorkerBlock/impl / FLOW-138 / pass
 
 ## Contradicted Decisions
-None. [0128-coded-parse-errors] is consistent with the retained model.go
-(CodedError with optional Cause, Error returns the cause's text, Unwrap
-returns Cause) and with the evals, which only require Error() text to carry
-the duplicated ID / heading and errors.As-compatible chains. One nuance was a
-burden, not a contradiction: evals wrap CodedErrors as `*CodedError` with
-%w while other tests use value `CodedError`, and the spec does not say which
-form chains carry, so ErrorCode must accept both.
+None. Decision [0128-coded-parse-errors] was applied as written: `model.CodedError`
+exposes the optional `Cause`, `Error` returns the cause's text when present
+and the code otherwise, and `Unwrap` returns `Cause`. No eval or spec clause
+contradicts it.
 
 ## Gaps
-1. CON-016 does not state whether an error chain carries CodedError by value,
-   by pointer, or both, yet evals exercise both forms. Nearest spec: CON-016.
-   Target module for a fixing change: contracts (packages/contracts).
-
-2. No spec defines the fence grammar that bounds Section/ReplaceSection:
-   tilde vs backtick fences, info strings after the opening fence, the
-   closing fence needing at least as many marker characters as the opener,
-   up to three leading spaces, and what may follow a closing fence.
-   Nearest spec: CON-002 (also relied on by CON-009). Target module:
-   contracts (packages/contracts).
-
-3. No spec defines ATX heading parsing details: closing hash runs
-   (`## Notes ##`), the mandatory space/tab after the leading hashes, up to
-   three leading spaces, or how level-1 vs level-2 headings beyond the
-   target section bound the body. Nearest spec: CON-002 (also relied on by
-   CON-009 and, for level<=2 boundaries, CON-010). Target module:
-   contracts (packages/contracts).
-
-4. No spec defines the tag grammar inside the optional bracketed tag:
-   allowed characters, whether spaces are permitted, whether the tag is
-   trimmed, and whether an empty tag (`[]`) is legal. Empty tags were
-   rejected as malformed and inner whitespace is trimmed. Nearest spec:
-   CON-010 and CON-011. Target module: contracts (packages/contracts).
-
-5. No spec states how ParseItems treats headings below level three, or
-   level-one/level-two headings appearing inside the input: item bodies end
-   at the next item heading, at a level-1/2 heading, or at end of input.
-   Nearest spec: CON-010. Target module: contracts (packages/contracts).
-
-6. No spec states line-ending handling outside SpecHash (CON-003 mandates
-   CRLF to LF only for hashing): whether ParseDocument, Section,
-   ReplaceSection and ParseItems preserve CRLF bodies verbatim or normalize,
-   and whether a final line lacking a newline is preserved. CRLF bodies are
-   preserved verbatim and the missing terminator is kept. Nearest spec:
-   CON-001, CON-002, CON-010. Target module: contracts (packages/contracts).
-
-7. No spec defines the exact boundaries for MatchesID beyond "preceded by a
-   letter/digit or followed by a digit": which character classes count as
-   letter/digit (ASCII vs Unicode) and whether other punctuation
-   (underscore, dot) always acts as a boundary. Unicode letter/digit
-   classes are used and any other separator acts as a boundary. Nearest
-   spec: CON-004. Target module: contracts (packages/contracts).
-
-8. No spec defines MatchGlob edge semantics: whether `*` matches an empty
-   run, whether a trailing or double `**` matches zero components, whether
-   `?` is supported (it is not; treated literally), and whether empty
-   pattern components are legal. `*` matches empty runs and `**` spans zero
-   or more components. Nearest spec: CON-005. Target module: contracts
-   (packages/contracts).
-
-9. No spec states what RenderDocument/ParseDocument must do with empty
-   frontmatter (`---\n---`), delimiters with trailing whitespace, YAML
-   stream-end markers (`...`), or whether a bare `---` closing fence is the
-   only accepted terminator. A YAML decode yielding nil is treated as a
-   non-mapping and rejected with C03. Nearest spec: CON-001, CON-007,
-   CON-019. Target module: contracts (packages/contracts).
-
-10. No spec states what ReplaceSection writes when the input does not end
-    with a newline: a newline is inserted before the appended
-    "## <name>" heading. Nearest spec: CON-009. Target module: contracts
-    (packages/contracts).
-
-11. No spec states the precedence between C03 (malformed heading) and C05
-    (duplicate heading) when a heading is both: validation of the heading
-    shape happens before the duplicate check, so C03 wins. Nearest spec:
-    CON-012, CON-017, CON-018. Target module: contracts (packages/contracts).
+- ATX/fence grammar is unspecified: which fence characters are legal (implemented
+  backtick and tilde, >=3 run, <=3 leading spaces, closing fence at least as long
+  with no info string), whether closing ATX sequences (`## Name ##`) are allowed,
+  trailing-whitespace handling, and whether section-name comparison is exact.
+  Nearest spec: CON-002 (also CON-009). Fixing change target: contracts.
+- ParseItems has no fenced-code carve-out, unlike Section. A `### ` line inside a
+  fenced code block in an item body is treated as an item heading (or an error),
+  while CON-002 protects fences for sections; the spec never says whether item
+  bodies are fence-aware. Nearest spec: CON-010 (also CON-011). Fixing change
+  target: contracts.
+- MatchesID does not say how the ID is split from hyphens (implementation splits at
+  the last hyphen), how multi-hyphen IDs match with an omitted separator, or what
+  happens for a malformed `id` argument; followed-by-letter is accepted because
+  only "preceded by letter/digit" and "followed by digit" are forbidden. Nearest
+  spec: CON-004. Fixing change target: contracts.
+- ParseDocument scope is unclear for CRLF sources (tolerated by the implementation
+  by stripping trailing CR for delimiter comparison only) and for empty frontmatter
+  (`---` / `---` decodes to an empty YAML document; implementation maps it to an
+  empty non-nil mapping). Nearest spec: CON-001 (also CON-007/CON-019). Fixing
+  change target: contracts.
+- RenderDocument must reject nil frontmatter but no diagnostic code is assigned to
+  that rejection; the implementation returns a plain error rather than a CodedError,
+  and CON-016 makes codes the machine-readable contract elsewhere. Nearest spec:
+  CON-008. Fixing change target: contracts.
+- C03 errors carry no specified `Subject` or message shape; the evals only assert
+  the code and (for CON-018) that the heading text appears in `Error()`. The
+  implementation uses the heading line as subject for malformed items and
+  "frontmatter" otherwise, which is a local choice, not a spec'd contract. Nearest
+  spec: CON-018 (also CON-019). Fixing change target: contracts.
+- The root-spec zone label (`spec`) never appears in the spec text; it is implied
+  only by the evals and by treating `SPEC.md` as the module root. Whether a
+  configurable pattern list can or should select it is also unspecified. Nearest
+  spec: CON-014. Fixing change target: contracts.
+- SpecHash normalization lists CRLF→LF and trailing-space/tab removal but is silent
+  on lone CR, on leading/trailing blank-line or `\r`-only bodies, and on whether
+  canonicalization applies to the heading portion (implementation normalizes the
+  whole rendered item). Nearest spec: CON-003. Fixing change target: contracts.
+- RenderItem is silent on empty tags: the implementation omits the brackets when
+  `Item.Tag == ""`, which loses an empty-tag round trip; `[ ]`-style empty tags are
+  otherwise accepted by the parser. Nearest spec: CON-013 (also CON-010). Fixing
+  change target: contracts.
+- Item-heading grammar in the spec does not say whether tag bodies may be empty or
+  contain nested brackets, whether trailing whitespace after the tag is legal, or
+  whether Windows-style `\r`-terminated heading lines parse; the bracketed-tag regex
+  (`[^\]]*`, trailing spaces tolerated) is an implementation choice. Nearest spec:
+  CON-011. Fixing change target: contracts.
+- CON-017 scopes the duplicate-heading error to "a Specs section", but CON-012 and
+  the evals treat the whole input as one scope; duplicate detection is implemented
+  globally, including across mixed assigned-ID and handle items. Nearest spec:
+  CON-017 (also CON-012). Fixing change target: contracts.
+- Item heading delimiter rules (which lines count as a level-three heading for body
+  bounding: column-0 only, bare `###` included) and required heading indentation
+  are unspecified; the implementation matches `###` at column 0 only. Nearest spec:
+  CON-010. Fixing change target: contracts.
 
 ## Agent observations
 
 ### Invocation 1
-Log: .fireweed/runs/20261117T214925-488f251ad92d85eb16f8905e/drill-1.log
+Log: .fireweed/runs/20261118T065225-23516b2084743e4ce275a6a1/drill-1.log
 
-The workspace is clear. Now I'll implement the disposable `internal/primitives` package.
-That frontmatter logic is too convoluted. Let me rewrite it cleanly.
-Now a clean full rewrite — the draft had duplicated functions and broken fence/rune helpers:
-Let me fix the redundant/buggy bracket handling in ParseItems:
-`errors.As` with a value target doesn't match `*CodedError`. Return value `CodedError` consistently:
-`errors.As` can't match both value and pointer `CodedError` forms while preserving chain order. I'll walk the chain manually:
-Tests pass. Now the eval hook:
-All 68 eval cases pass. Let me check git status and whether DRILL_NOTES.md exists anywhere:
-Now DRILL_NOTES.md:
-Gap 13 is muddled and 11 is basically covered by CON-003. Cleaning up:
-Done. Summary:
+Now let me check the hooks and design doc briefly for context, and grep for other references to `internal/primitives`.
+The spec, decision, retained interfaces and evals are all clear. The disposable area is `internal/**`, so I'll create `packages/contracts/internal/primitives/` implementing everything api.go imports. Let me write the implementation.
+Now the items, hash, matching and zones files:
+The root module needs packages that don't exist in this drill input workspace. Building and testing just the target module:
+All evals pass. Now running the drill eval hook as instructed:
+All 68 cases pass. Writing `DRILL_NOTES.md`:
+Done. All evals pass and the retained module files are untouched.
 
-**Rebuilt (disposable `internal/**` only):** `packages/contracts/internal/primitives/primitives.go` — implements parsing/rendering of frontmatter documents (CON-001/007/008/019), fence-aware ATX section logic (`Section`, `ReplaceSection`, CON-002/009), item parsing/rendering (CON-006/010/011/012/013/015/017/018), `SpecHash` canonicalization (CON-003), `MatchesID` boundary-aware matching (CON-004), `MatchGlob` (CON-005), `ResolveZone` zone order (CON-014), and `ErrorCode` chain walk that recognizes both value and pointer `CodedError` (CON-016). Retained files (`api.go`, `model/**`, `evals/**`, `SPEC.md`) untouched.
+## What was rebuilt
 
-**Key design notes:**
-- `ErrorCode` walks the chain manually (including `Unwrap() []error`) because `errors.As` with a single target type cannot match both value and `*CodedError` while preserving first-in-chain order — evals wrap `*CodedError` with `%w` and also use values.
-- Coded errors are returned as `model.CodedError` values, matching the retained model and decision [0128-coded-parse-errors].
-- fences (``` / ~~~, closing run ≥ opening) and levels ≤2 ATX headings (outside fences) bound sections and items.
+Only the disposable path (`packages/contracts/internal/primitives/`), implementing the behaviors its `api.go` facade imports:
 
-**Verification:** `go test ./packages/contracts/...` ok; the eval hook ran with the prescribed command and reported PASS — 68 testcases, 0 failures (`.fireweed/drill-eval.xml`).
+- `document.go` — `ParseDocument`/`RenderDocument`: leading `---`-delimited YAML mapping frontmatter, C03 `CodedError`s for missing/unterminated/invalid/non-mapping frontmatter, nil-frontmatter rejection, byte-exact body retention.
+- `section.go` — `Section`/`ReplaceSection`: level-two sections bounded by the next level-one/level-two ATX heading outside fenced code (backtick/tilde fences tracked), first-match semantics, byte-preserving replacement, append-when-absent.
+- `items.go` — `ParseItems`/`RenderItem`/`SpecHash`: `###` items in source order, assigned-ID grammar (`[A-Z0-9]+-[0-9]+`) and `new:<slug>` handles, C03 malformed / C05 duplicate (subject = duplicated ID/handle), canonical hash (CRLF→LF, rstrip spaces/tabs, trailing blank lines → one final newline).
+- `match.go` — `MatchesID` (case-insensitive, hyphen/underscore/omitted separators, boundaries per spec) and `MatchGlob` (`*` within a component, `**` spanning zero or more).
+- `zones.go` — `ResolveZone` in the specified order; `SPEC.md` treated as the module root spec.
+- `errors.go` — `ErrorCode` walking the chain (including `%w`-wrapped value and pointer `CodedError`s).
 
-**DRILL_NOTES.md** (workspace root): *Contradicted Decisions* — none; *Gaps* — 11 entries, each naming its nearest spec ID and target module (contracts), covering ErrorCode value/pointer ambiguity (CON-016), fence grammar (CON-002), ATX heading parsing details (CON-002/009/010), tag grammar (CON-010/011), non-item headings in ParseItems input (CON-010), CRLF handling outside SpecHash, MatchesID character classes, MatchGlob edge semantics, frontmatter delimiter edge cases, ReplaceSection newline insertion, and C03/C05 precedence.
+## Verification
 
+`go test ./packages/contracts/...` passes, and the drill eval hook wrote `.fireweed/drill-eval.xml` with **0 failing cases** (68 testcases). `go vet` is clean; only `internal/`, `DRILL_NOTES.md` and the hook output are added — `api.go`, `model/`, evals and SPEC.md unchanged.
 
-## Failures
-checks: failed case "Test_CHK_048_EvaluateModuleItemCauses" for CHK-048
-Test_CHK_048_EvaluateModuleItemCauses: === RUN   Test_CHK_048_EvaluateModuleItemCauses
---- FAIL: Test_CHK_048_EvaluateModuleItemCauses (0.00s)
-Test_CHK_048_EvaluateModuleItemCauses/duplicate_item: === RUN   Test_CHK_048_EvaluateModuleItemCauses/duplicate_item
-    hooks_test.go:218: error = "duplicate item heading \"CHK-003\""; want cause "duplicate item ID"
---- FAIL: Test_CHK_048_EvaluateModuleItemCauses/duplicate_item (0.00s)
-?   	github.com/lurkshark/fireweed/packages/checks	[no test files]
-?   	github.com/lurkshark/fireweed/packages/checks/internal/engine	[no test files]
-?   	github.com/lurkshark/fireweed/packages/checks/model	[no test files]
-FAIL
-FAIL	github.com/lurkshark/fireweed/packages/checks/evals	266.954s
-
-exit status 1
-
-project: failed case "Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id" for PRJ-011
-Test_PRJ_015_PRJ_016_CheckDiagnostics: === RUN   Test_PRJ_015_PRJ_016_CheckDiagnostics
---- FAIL: Test_PRJ_015_PRJ_016_CheckDiagnostics (0.23s)
-Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id: === RUN   Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id
-    queue_test.go:366: Check did not report C05 for duplicate item ID: []model.Diagnostic{model.Diagnostic{Code:"C05", Message:"packages/alpha/SPEC.md: duplicate item heading \"ALP-001\"", Path:"packages/alpha/SPEC.md", Warning:false}}
---- FAIL: Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id (0.00s)
-?   	github.com/lurkshark/fireweed/packages/project	[no test files]
-?   	github.com/lurkshark/fireweed/packages/project/internal/fixture	[no test files]
-?   	github.com/lurkshark/fireweed/packages/project/internal/history	[no test files]
-?   	github.com/lurkshark/fireweed/packages/project/internal/queue	[no test files]
-?   	github.com/lurkshark/fireweed/packages/project/internal/source	[no test files]
-?   	github.com/lurkshark/fireweed/packages/project/model	[no test files]
-FAIL
-FAIL	github.com/lurkshark/fireweed/packages/project/evals	4.290s
-
-exit status 1
+`DRILL_NOTES.md` records **no contradicted decisions** ([0128-coded-parse-errors] holds as written) and 12 gaps (fence/ATX grammar, no fence carve-out for items, MatchesID ID-splitting, CRLF/empty frontmatter, uncoded RenderDocument rejection, C03 subject shape, the unspec'd `spec` zone label, SpecHash lone-CR handling, empty-tag rendering, duplicate-detection scope, item-heading indentation), each naming its nearest spec ID and `contracts` as the fixing change target.
 
