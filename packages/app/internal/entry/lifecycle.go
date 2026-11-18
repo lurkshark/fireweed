@@ -13,10 +13,12 @@ import (
 
 func (c command) workflowCommand(root string) response {
 	selector := c.arg(0)
-	if c.name == "status" {
+	action := "Use fireweed list and fireweed context to check the change and correct its state."
+	var recoveryErr error
+	switch c.name {
+	case "status":
 		return status(root)
-	}
-	if c.name == "pr-body" {
+	case "pr-body":
 		report, err := workflow.PRBody(root, selector)
 		if err != nil {
 			if workflow.IsEndpointConfigError(err) {
@@ -27,11 +29,28 @@ func (c command) workflowCommand(root string) response {
 		result := verbatim(report.Body)
 		result.diagnostics = report.Diagnostics
 		return result
+	case "context":
+		body, err := workflow.Context(root, selector, c.has("--full"))
+		if err == nil {
+			return verbatim(body)
+		}
+		recoveryErr = err
+	case "release":
+		err := workflow.Release(root, selector)
+		if err == nil {
+			return message("Released " + selector + ".")
+		}
+		recoveryErr = err
+		action = "Use fireweed release from the worktree that owns the claim and check the change selector."
 	}
+	// Recovery can succeed independently of live configuration. On failure,
+	// retain the configuration diagnostic when the live project is invalid.
 	if _, err := project.Load(root); err != nil && cause(err, "") == "C01" {
 		return configFailure(err)
 	}
-	action := "Use fireweed list and fireweed context to check the change and correct its state."
+	if recoveryErr != nil {
+		return configuredOperationFailure(recoveryErr, action)
+	}
 	switch c.name {
 	case "start":
 		var state workflow.State
@@ -52,12 +71,6 @@ func (c command) workflowCommand(root string) response {
 		}
 		result.diagnostics = append(result.diagnostics, state.Diagnostics...)
 		return result
-	case "context":
-		body, err := workflow.Context(root, selector, c.has("--full"))
-		if err != nil {
-			return configuredOperationFailure(err, action)
-		}
-		return verbatim(body)
 	case "verify", "done":
 		request := workflow.Request{Root: root, Change: selector, Bin: invokingBin(), Quick: c.has("--quick")}
 		check := workflow.Verify
@@ -82,11 +95,6 @@ func (c command) workflowCommand(root string) response {
 		result := output(fmt.Sprintf("%s passed (%s).\n", c.name, report.State.Phase), report)
 		result.diagnostics = diagnostics
 		return result
-	case "release":
-		if err := workflow.Release(root, selector); err != nil {
-			return configuredOperationFailure(err, "Use fireweed release from the worktree that owns the claim and check the change selector.")
-		}
-		return message("Released " + selector + ".")
 	case "commits", "abandon":
 		var err error
 		if c.name == "commits" {
