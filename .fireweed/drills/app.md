@@ -1,8 +1,8 @@
 ---
 agent: opencode
-base_commit: b25dc332978dd5fcf7c32b78f5e394fa441b1320
-date: "2026-11-17T08:08:42.118943Z"
-model: opencode/deepseek-v4.1-flash#high
+base_commit: cc7e8c38591d18f4c69a51841a48de6fbc7d4e59
+date: "2026-11-18T13:40:54.937856Z"
+model: opencode/inkling-2-small-free#high
 result: pass
 ---
 
@@ -414,43 +414,124 @@ result: pass
 ## Dependent evals
 
 ## Contradicted Decisions
-None. The reconstruction follows the retained Decisions: doctor leaves the
-request timeout unset, new-module uses the first literal-parent module glob,
-show history uses lowercase JSON keys and labels every plain section, and local
-recipe init uses `recipe.yaml`, `recipe.md` and the `files/` payload.
+None observed. The retained Decisions (0074 doctor setup commands, 0112 new-module
+command, 0127 show-history command, init-prompt-file-commands) were followed as
+written; in particular the new-module glob destination rule, the underscore
+package substitution, the lowercase history JSON, and the local-recipe payload
+model (`recipe.yaml` metadata, `recipe.md` instructions, `files/` payload and
+`none`'s empty language defaults) are all implemented as stated.
 
 ## Gaps
-- APP-101 — `new-module` validates that a rendered `SPEC.md` parses, but it does
-  not overwrite a project-owned template that declares a different `name` or
-  `id_prefix`. A fixing change belongs in the **app** module.
-- APP-012/APP-160 — while a change is held, `coverage --with-change` for a
-  different queued change reads that change's projection through the live
-  configuration. The spec does not say whether a missing or malformed live
-  configuration should still allow an otherwise readable selected spec text.
-  A fixing change belongs in the **app** module.
-- APP-004 — if an owned claim exists but its stored approved snapshot cannot be
-  read, `modules` currently falls back to the live graph instead of reporting a
-  claim error. The spec does not define that malformed-claim case. A fixing
-  change belongs in the **app** module.
-- no spec — `init` writes local recipe instructions over any `files/` payload
-  that already targets `.fireweed/recipes/local.md`. The precedence between the
-  two project-owned sources is unspecified. A fixing change belongs in the
-  **app** module.
-- no spec — when `fireweed.yaml` is absent, project discovery falls back to the
-  enclosing Git worktree so held claims remain findable. The exact fallback
-  boundary for non-held commands in a Git repository without configuration is
-  unspecified. A fixing change belongs in the **app** module.
+- APP-067 (doctor JSON checks): the `checks.Doctor` engine reports each canary
+  check name as one string, `"<probe> <hook scope>"` (e.g. `baseline global
+  eval`). APP-067 requires the probe name in `name` and the hook scope in
+  `detail`. The spec pins the envelope keys and their loading, but not that the
+  backend emits the two as one string, so the CLI has to reparse them. The
+  engine contract is undocumented elsewhere; a fixing change to the checks
+  engine would emit `name` and a `scope`-distinguishing `detail` (or the app
+  spec would document the split). Target module for a fixing change: checks
+  (nearest spec APP-067).
+- APP-066 / APP-112 (exit-code mapping for configuration vs static failures):
+  neither spec states that a snapshot-load failure whose D006 code is C05
+  (e.g. duplicate item IDs surfaced by the strict parser `LoadForCheck` uses
+  inside `project.Check`) counts as a static failure (exit 1) for `check`,
+  `ci` and `doctor`, while C01 counts as a configuration failure (exit 2).
+  The mapping was inferred from the retained fixtures. Nearest specs APP-066
+  and APP-112; target module for a fixing change: app.
+- APP-165 (compatibility admission boundaries for `pr-body`): the spec carves
+  pr-body out of compatibility admission but does not state how a missing
+  nearest `fireweed.yaml` for pr-body maps (the implementation returns the
+  generic C01 it uses for absent project configuration), nor how `doctor` and
+  `ci` perform admission against malformed configuration at the snapshot stage
+  (the implementation admits with `CheckCompatibility` only and leaves static
+  diagnostics to `project.Check`/probes). Nearest spec APP-165 (and APP-066);
+  target module for a fixing change: app.
+- APP-163 (lifecycle exit codes for lookup vs usage/configuration errors):
+  APP-010/APP-029 say 0 for success, 1 for failed checks or blocked state,
+  and 2 for usage or configuration errors, but do not state that an unknown
+  change selector for `verify`/`done` maps to 1 (not 2) and that
+  `commits`/`abandon` map unknown selectors to 2 (U02). The mapping was taken
+  from the retained lifecycle and commits/abandon evals. Nearest specs
+  APP-010/APP-029 (APP-095/APP-098 for the U02-at-exit-2 commands); target
+  module for a fixing change: app.
+- no spec: plain output grammars for `modules`, `list`, `status`, `gc` and
+  `check-commits` are not fixed by the spec (only required substrings and
+  JSON row shapes are). The implementation prints labelled lines chosen to
+  satisfy the retained evals. Nearest spec APP-014/APP-076 (no fixing change
+  intended; recorded for completeness); target module: app.
+- APP-143/APP-144 (`show --stale` diff format): the spec requires a line
+  diff distinguishing removed and added lines and forbids presenting an
+  unverified historical text as a diff, but does not fix the presentation
+  format. The implementation prints whole-line `-`/`+` prefixes per entry and
+  prints `Recorded hash:` plus the current text with an "unavailable" marker
+  for unrecovered entries. Nearest spec APP-143; target module: app.
 
 ## Agent observations
 
 ### Invocation 1
-Log: .fireweed/runs/20261117T080842-7657dfd1727318f5a0a97303/drill-1.log
+Log: .fireweed/runs/20261118T134054-6d3e92d2eeb86d21d82563ce/drill-1.log
 
-Reconstructed the `app` module under `packages/app/internal/entry/` with command dispatch, JSON envelopes, project discovery, lifecycle/runner integration, init/new-module scaffolding, coverage, doctor, status, history/stale views, and maintenance commands.
+Now let me look at the eval tests to understand the expected interface. Let me read them in batches.
+Now let me dig into the internal implementations of the dependencies to understand error codes and behaviors.
+I now have a complete picture. Let me check a few more format-critical details — `workflow.Context` output and `workflow.Status` cost handling, plus the Makefile build process.
+I have the full picture now. Time to build. Let me start with the shared plumbing in `internal/entry/`.
+Let me clean up the convoluted helper section:
+Now the flag parsing framework:
+Now the entry dispatcher:
+The help handling got messy — let me rewrite it cleanly:
+Now the information commands (modules):
+Let me restructure more deliberately — shared helpers in one file first:
+Now the coverage command — the most intricate one:
+Let me rewrite coverage properly:
+Now the show command with its current/projected/history/stale modes:
+Let me create temporary stubs so it compiles, then replace them one by one:
+It builds. Let me check how the existing eval tests behave:
+Fixing the newline parity and help-form edge cases:
+Let me fix failUsage to always leave a valid help reference, and teach parseCommand to reject single-dash options:
+The read path may not invoke git. I'll gate the held-probe on the filesystem marker first:
+Now the lifecycle commands (start, verify/done, context, next, run, release, commits, abandon, drill):
+Let me rewrite the next/run implementation carefully:
+Let me rewrite it correctly with the stop handling inline:
+The held fallback needs a git root. Let me rework discovery to support held-but-configless projects:
+The module document used for hook/testcase mapping must match the enforced specs. Fixing coverage to patch the body only:
+While the next/run suite runs, let me implement gc, migrate and agents-md:
+While the next/run suite runs, let me write list and status:
+Now the ci command:
+Now the new-module command:
+Now the big one — init:
+The init implementation needs a full rewrite with a proper plan/apply structure:
+Now the plan/apply engine for init, replacing the sketch helpers:
+The templates use plain `{{key}}` substitution, not Go text/template. Fixing both renderers:
+Found it — non-.tmpl template files were not being substituted. All template contents must render; only filenames strip `.tmpl`:
+One failure left — invalid usage policy must exit 2. Let me classify config-coded runner errors as usage errors for next/run:
+Show-history plain output must keep multi-line sections verbatim — fixing the indent:
+Let me check how project.Check and Load behave on the CI fixture to design the admission correctly:
+CI and doctor need compatibility-only admission with diagnostics-driven exit mapping. Let me restructure:
+The doctor engine emits `name scope` as a single name — the CLI must split probe name from hook scope. Fixing:
+Let me check the full suite progress:
+Let me check the drill suite separately since it was never run:
+Let me check the full suite progress while I draft the notes:
+One failure left — let me fix the help reference condition in failUsage:
+While the suite runs, let me write DRILL_NOTES.md draft and then finalize it after results:
+Let me remove the stray temp binary and check the working tree state:
+The tail output was mangled by the harness. Let me inspect the actual log file directly:
+Mystery solved — that giant dump was just `ps aux` printing the harness agent's own command line (which contains the spec). The suite log itself is empty while tests run. Let me wait quietly:
+The full suite passes. Now let me look at the eval hook before running it as instructed:
+All 403 testcases pass. Let me verify the whole repo still builds and vets clean:
+Let me harden the init plan to also reject regular-file conflicts at the module directories:
+Done. The module was rebuilt and everything passes.
 
-Validation:
-- `go build ./...` passes.
-- Full app eval suite passes: `go test ./packages/app/evals -count=1 -timeout 30m`.
-- Target eval hook passes and wrote `.fireweed/drill-eval.xml`.
-- Added `DRILL_NOTES.md` with `## Contradicted Decisions` and `## Gaps`.
+**What was rebuilt** — `packages/app/internal/**` (the only disposable paths), as a fresh `internal/entry` package behind the retained `api.go` facade. Roughly 20 files covering:
+
+- **Run/dispatch** (`entry.go`): all 31 supported commands, the `help`/`--help`/`-h` standalone forms (work outside a project and with an invalid `fireweed.yaml`), unknown-command/option handling, and the schema-1 JSON envelope (`{"schema":1,"data":…,"diagnostics":[…]}`) everywhere with `null` data + code/message diagnostics on failure.
+- **Admission** (`helpers.go`): nearest-ancestor `fireweed.yaml` discovery; compatibility admission via `project.CheckCompatibility` before any effect; graph validation (→ C02) for ordinary commands; and held-approved-snapshot admission for exactly the four commands APP-164 requires (modules, coverage, next, run) — approved config checked instead of live, without ever parsing live config on those paths, so they work despite missing/malformed live inputs (APP-004/APP-160/APP-164). Read-only commands never invoke Git.
+- **Commands**: informational (version/explain/playbook/modules), authoring (new-change, stamp, check/`--fix`, show with current/projected/history/stale views), lifecycle (start/verify/done/context, next/run with the exit-0/1/2/3 matrix, time/usage stops with retained applied summaries and reasons, release, commits, abandon, drill with `--agent`), and project/maintenance (list, status with the exact 8-key JSON shape and JUnit cost rows, pr-body, ci, check-commits, new-module with recipe-template rendering, doctor with canary name/scope split, agents-md, gc, migrate, full init with plan-then-write: builtin/local/none recipes, managed AGENTS.md block, `.gitignore` merge, queue-dir and file conflict P01s).
+- The behavior contract came from the retained evals; where the spec left presentation free-form I matched required substrings only.
+
+**Verification**:
+- `go test ./packages/app/evals` — **ok, 403 testcases, 0 failures** (all packages/app specs APP-001…APP-167, also via the mandated `hooks.go` eval → `.fireweed/drill-eval.xml`, since removed)
+- `go test ./...` — all 8 packages pass; `go build`/`go vet` clean
+- `DRILL_NOTES.md` at the workspace root with separate `## Contradicted Decisions` (none observed — the retained Decisions were all implementable as written) and `## Gaps` sections; each gap names its nearest spec ID (or "no spec") and the target module for a fixing change.
+
+Only intended files added: `packages/app/internal/` and `DRILL_NOTES.md`; no protected files touched.
 
