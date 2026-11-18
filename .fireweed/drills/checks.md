@@ -1,8 +1,8 @@
 ---
 agent: opencode
-base_commit: 422411b1e44cf5a1649938726ff7fee02c7cc3e8
-date: "2026-11-17T05:44:08.402721Z"
-model: opencode/deepseek-v4.1-flash#high
+base_commit: 8ca4accae11dca74b3cfb2e55ad65f519969d8a0
+date: "2026-11-18T09:24:28.246243Z"
+model: opencode/inkling-2-small-free#high
 result: pass
 ---
 
@@ -108,6 +108,9 @@ result: pass
 - checks / Test_CHK_003_CHK_032_CHK_033_CHK_034_CHK_035_GlobalShellHookQuotesAndOnePassExpansion / CHK-003, CHK-032, CHK-033, CHK-034, CHK-035 / pass
 - checks / Test_CHK_003_CHK_031_CHK_032_CHK_033_CHK_034_CHK_035_ModuleOverrideArgvAndOutput / CHK-003, CHK-031, CHK-032, CHK-033, CHK-034, CHK-035 / pass
 - checks / Test_CHK_038_ExitAndReportAgreement / CHK-038 / pass
+- checks / Test_CHK_038_ExitAndReportAgreement/zero-with-failure / CHK-038 / pass
+- checks / Test_CHK_038_ExitAndReportAgreement/nonzero-with-pass / CHK-038 / pass
+- checks / Test_CHK_038_ExitAndReportAgreement/nonzero-with-failure / CHK-038 / pass
 - checks / Test_CHK_080_EvaluateRetainsParsedFailureDetails / CHK-080 / pass
 - checks / Test_CHK_080_EvaluateRetainsParsedFailureDetails/nonzero_failure / CHK-080 / pass
 - checks / Test_CHK_080_EvaluateRetainsParsedFailureDetails/zero_passing / CHK-080 / pass
@@ -643,17 +646,18 @@ result: pass
 - runner / Test_RUN_056_DrillUsesConfiguredDefault / RUN-056 / pass
 - runner / Test_RUN_056_ConfiguredTimeoutBoundsDrillWorker / RUN-056 / pass
 - runner / Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted / RUN-057 / pass
+- runner / Test_RUN_061_UsageStopRetainsAcceptedRebuild / RUN-061 / pass
 - runner / Test_RUN_058_RUN_059_DrillReturnsAllReportsEvenWhenEvalsFail / RUN-058, RUN-059 / pass
 - runner / Test_RUN_058_OwnCoverageRequiredAfterPassingCases / RUN-058 / pass
 - runner / Test_RUN_059_DependentCoverageRequiredAfterPassingCases / RUN-059 / pass
-- runner / Test_RUN_068_DependentOnlyFailuresEndDrill / RUN-068 / pass
+- runner / Test_RUN_068_RUN_078_DependentOnlyFailuresEndDrill / RUN-068, RUN-078 / pass
 - runner / Test_RUN_068_OwnEvalRetryOmitsDependentEvalOutput / RUN-068 / pass
 - runner / Test_RUN_069_DrillObservationsIncludeStdoutAndRelativeLogPerAttempt / RUN-069 / pass
 - runner / Test_RUN_060_RUN_061_DrillReportAndRetainedRef / RUN-060, RUN-061 / pass
 - runner / Test_RUN_074_DrillResultAndReportIdentifySelectedCommand / RUN-074 / pass
 - runner / Test_RUN_074_DrillResultAndReportIdentifySelectedCommand/default / RUN-074 / pass
 - runner / Test_RUN_074_DrillResultAndReportIdentifySelectedCommand/explicit / RUN-074 / pass
-- runner / Test_RUN_060_RUN_061_FailedDrillReportsFailuresAndRetainsCode / RUN-060, RUN-061 / pass
+- runner / Test_RUN_060_RUN_061_RUN_078_FailedDrillReportsFailuresAndRetainsCode / RUN-060, RUN-061, RUN-078 / pass
 - runner / Test_RUN_062_CleanupOnSuccessAndFailures / RUN-062 / pass
 - runner / Test_RUN_062_CleanupOnSuccessAndFailures/success / RUN-062 / pass
 - runner / Test_RUN_062_CleanupOnSuccessAndFailures/agent_retry / RUN-062 / pass
@@ -782,6 +786,9 @@ result: pass
 - workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers / FLOW-019 / pass
 - workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers/1.0 / FLOW-019 / pass
 - workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers/1 / FLOW-019 / pass
+- workflow / Test_FLOW_019_CurrentResolvesHeldPathWithInvalidLiveConfig / FLOW-019 / pass
+- workflow / Test_FLOW_019_CurrentResolvesHeldPathWithInvalidLiveConfig/malformed_YAML / FLOW-019 / pass
+- workflow / Test_FLOW_019_CurrentResolvesHeldPathWithInvalidLiveConfig/incompatible_version_pin / FLOW-019 / pass
 - workflow / Test_FLOW_019_FLOW_139_ApprovedSurvivesLiveEdits / FLOW-019, FLOW-139 / pass
 - workflow / Test_FLOW_140_ApprovedReportsNoOwnedClaim / FLOW-140 / pass
 - workflow / Test_FLOW_140_ApprovedRejectsUnreadableOrMalformedClaim / FLOW-140 / pass
@@ -957,7 +964,7 @@ result: pass
 - workflow / Test_FLOW_073_StartFromAttemptRequiresCleanEligibleUnblockedAndUnclaimedChange/foreign_claim / FLOW-073 / pass
 - workflow / Test_FLOW_076_StartFromAttemptRejectsInvalidOrMissingAttemptBeforeMutation / FLOW-076 / pass
 - workflow / Test_FLOW_059_AuditVerifyChecksSubmissionWithoutAdvancing / FLOW-059 / pass
-- workflow / Test_FLOW_002_AuditRejectsForbiddenEditBeforeHooks / FLOW-002 / pass
+- workflow / Test_FLOW_002_FLOW_136_AuditRejectsForbiddenEditAndDoneMarksFailure / FLOW-002, FLOW-136 / pass
 - workflow / Test_FLOW_061_UnknownLifecycleSelectorsNameValidSlugs / FLOW-061 / pass
 - workflow / Test_FLOW_101_FLOW_102_FLOW_103_StatusQueueAndForwardWaiting / FLOW-101, FLOW-102, FLOW-103 / pass
 - workflow / Test_FLOW_104_FLOW_105_StatusInterfaceAndProjectedWaiting / FLOW-104, FLOW-105 / pass
@@ -984,69 +991,139 @@ result: pass
 - workflow / Test_FLOW_138_ContextExplainsHowToDeclareWorkerBlock/impl / FLOW-138 / pass
 
 ## Contradicted Decisions
-None found. The reconstruction follows `0071-doctor-probes` for the doctor reply,
-limit-pattern matching, playbook hashes and `0114-history-validation` for merge
-phase retention, combined merge diffs, squashed after-paths and single-parent
-non-merge transitions.
+None identified by this reconstruction. The two retained decisions were
+implemented as written and are consistent with the evals:
+
+- [0071-doctor-probes] The doctor requests the literal reply
+  `FIREWEED_DOCTOR_OK`, usage-limit patterns match case-insensitive literal
+  substrings, and playbook overrides carry `embedded_base` as the hexadecimal
+  SHA-256 of the embedded playbook text.
+- [0114-history-validation] Merges that merely retain a phase value already
+  held by a parent are not new phase assignments; combined merge diffs still
+  enforce append-only paths; squashed entries name the change's
+  repository-relative after-path; non-merge phase transitions compare the
+  sole parent.
 
 ## Gaps
-- **CHK-043 — checks**: The eval `CHK_041_CHK_042_NormalNonzeroExitCanUseBaselineAndOptOut`
-  requires a normally exited nonzero boundary hook to be accepted when every
-  attributed line is baseline- or opt-out-suppressed. The spec's phrase "without
-  emitting any module-attributed violation" does not say whether suppressed lines
-  count. The implementation accepts the all-suppressed case.
-- **CHK-055 — checks**: Baseline eval gating is under-specified. The tests require
-  canary probes to continue after a baseline JUnit mapping/parse error
-  (`ZeroHookAndRecovery`) but stop before planting after a missing-report failure
-  or a baseline coverage failure. The implementation gates on missing report,
-  launch/run failure, missing hook, and coverage/pass failure, but not on a
-  mapping/parse-only baseline error.
-- **CHK-059 — checks**: The spec only requires rejecting the supplied `missing_id`
-  canary for its unmapped testcase ID. The tests additionally require the rejected
-  testcase to match an identifier declared in the planted canary, so an unrelated
-  testcase sharing the canary's name prefix does not count. The implementation
-  derives expected identifiers from the planted files and matches them on token
-  boundaries.
-- **CHK-053 — checks**: The spec does not define the zone frontmatter of the two
-  throwaway canary modules. Canaries inheriting project `module_defaults`
-  spuriously become boundary-enforcement-required when no global boundary hook
-  exists. The implementation clears `disposable` on canary modules so override-only
-  and optional-hook projects can still exercise the hooks without false X02s.
-- **CHK-074 — checks**: For merge commits the implementation prefers combined
-  `--name-status` output and falls back to combined name-only output. The fallback
-  cannot distinguish a combined modification from a deletion or rename; the tests
-  cover only merge-resolution modification. A future change should make combined
-  delete/rename status parsing explicit.
-- **CHK-077 — checks**: History uses only the first parent's recorded snapshot for
-  the "before" zone map and applies the worker change's projected `set` values to
-  the "after" map. The spec says to use recorded before/after zone maps for merge
-  cases but does not define which parent supplies the before map when parents
-  disagree.
-- **CHK-068 — assets**: The current `AGENTS.md` managed guidance block has no
-  exported asset/API source. Doctor hardcodes the block in `checks`, so changes to
-  project guidance require editing `checks` instead of the asset content that is
-  intended to own it.
+### CHK-059 — identity of the missing_id canary's own testcase is unspecified
+The spec requires the missing-id canary to be rejected for *its* unmapped
+testcase ID and rules unrelated hook/report failures out, but never says how
+the doctor distinguishes the canary's testcase from another unmapped testcase
+sharing a name prefix. The reconstruction derives it by parsing the planted
+canary source for declared Go test functions (`func TestXxx`), accepting
+subtests of them, and falls back to "any unmapped testcase in the report" only
+when the canary declares none. Target of a fixing change: checks.
+
+### CHK-063 — composition of `agent.wrap` with a shell-string command is unspecified
+The spec says the resolved command runs "through `wrap`" but not how a
+shell-string command is attached to a wrapper argv list. The reconstruction
+appends `sh -c <expanded command>` to the expanded wrapper argv; argv commands
+are appended to the wrapper argv directly. Target of a fixing change: checks.
+
+### CHK-055 — which gates block canary planting is unspecified
+The spec requires baseline evals + coverage and applicable boundaries to pass
+before planting canaries and after each removal, but never states whether an
+eval-baseline failure also blocks boundary canaries or vice versa, and never
+states what happens when a required real module cannot be enforced at all.
+The reconstruction gates all canary planting (both kinds) on: every applicable
+eval scope's clean baseline, every applicable boundaries scope's clean
+baseline, and boundary enforcement being applicable for every real module with
+disposable globs and no reasoned opt-out. Target of a fixing change: checks.
+
+### CHK-076 — H01/H02 suppression for mixed squash commits is unspecified
+The spec suppresses H01/H02 for commits whose new applied phases have no
+implementation phase in their parents, and requires H03/H04 there instead.
+Nothing says what happens when one new applied phase is squashed and another
+worker change in the same commit is not. The reconstruction suppresses H01/H02
+only when every new-phase change in the commit is squashed. Target of a fixing
+change: checks.
+
+### CHK-075 — H04 treatment of renames whose source is archived is unspecified
+The spec allows deleting an archived change file and forbids modifying one.
+Nothing defines whether moving that file elsewhere counts as modification or
+as deletion. The reconstruction treats a rename whose old path is under
+`changes/archive/` as deletion-equivalent, hence allowed. Related: on merges,
+combined-diff name-only output has no usable status letters, so M/MM-style
+entries are treated as modifications for both H03 and H04. Target of a fixing
+change: checks.
+
+### CHK-083 — prompt-file timing relative to launch failure is under-specified
+The spec requires the temporary prompt file to survive through execution and
+to be removed afterwards, including after launch failure, and requires
+`{prompt_file}` substitution to happen for the command and the wrapper
+separately. The reconstruction creates the file only when a selected command
+or wrapper template actually uses `{prompt_file}`, passes it to both, and
+removes it once per probe (worker and audit files are distinct). Target of a
+fixing change: checks.
+
+### CHK-050/CHK-052 — scratch construction method is unspecified
+The spec pins that probes run in a detached scratch worktree under the common
+Git directory's `fireweed/worktrees`, that setup runs there first, and that
+the caller is left unchanged, but not how the working tree is reproduced
+there. The reconstruction creates the worktree at HEAD and overlays the
+caller's working tree onto it (skipping only `.git`), registering the two
+throwaway modules in the scratch `fireweed.yaml` modules list so they stay
+discoverable per CHK-061. Target of a fixing change: checks.
+
+### CHK-055/CHK-060 — applicability of global vs override hook probes is unspecified
+The spec requires applicable global and per-module override hooks to be
+tested through the corresponding canary probes, but not whether a missing
+global hook with a working override is a failure. The reconstruction treats
+hooks as applicable only when configured, accepts an applicable override
+without a global hook, and fails the boundary gate only when a module that
+requires enforcement has no applicable hook anywhere. Target of a fixing
+change: checks.
 
 ## Agent observations
 
 ### Invocation 1
-Log: .fireweed/runs/20261117T054408-96fe3d49dbafbfffe6596d69/drill-1.log
+Log: .fireweed/runs/20261118T092428-87f1d7dbf60c33bf83860988/drill-1.log
 
-Rebuilt the `checks` module’s disposable implementation under `packages/checks/internal/engine/`:
+I've absorbed the spec, evals, decisions and workspace state. This is a large reconstruction: I need to rebuild `packages/checks/internal/**` so the retained black-box evals pass. Let me first verify a few Git output formats the implementation will depend on.
+Git output formats confirmed. Now let me check the Go toolchain and module setup.
+Now I have a complete design. Let me write the engine package, starting with shared hook machinery.
+I made errors in that file. Let me rewrite it cleanly.
+The boundaries file came out messy. Let me rewrite it cleanly.
+Now the history implementation — the most intricate piece.
+Let me rewrite history.go completely with a cleaner structure.
+Typo: `turn false` should be `return false`. Fixing.
+Only Doctor remains. I'll write it in three files: orchestration, canary machinery, and agent probes.
+Build passes. Let me run the eval suite iteratively, starting with the JUnit tests.
+The empty pre-created report file masks the "missing report" case. I need to remove the temp file before running the hook.
+History passes. Now the doctor suite:
+Let me debug why the scratch snapshot lacks the throwaway modules.
+Let me replicate the canary rendering manually in a scratch and check `project.Load` on it.
+Let me add temporary debug output to trace the scratch module loading.
+The scratch loads only alpha — the canary files aren't in the scratch at Load time. Let me instrument deeper.
+Let me replicate the exact scratch worktree layout and run `project.Load` against it.
+My earlier test used a relative path. Let me redo with the absolute scratch path, replicating Doctor faithfully.
+Found it: the real fixture narrows `modules: ["packages/alpha"]`, so the throwaway modules aren't in the scratch module graph — Doctor must make them discoverable in the scratch config. Let me fix.
+The doctor must gate ALL canary planting on boundary health. Let me restructure the probe ordering.
+Missing baseline must invalidate the whole recipe (canaries can't be planted). Fix:
+Eval-baseline failure must also gate boundary canaries (tests show it). I'll restructure the gate as a unified one and split baseline evaluation from canary probing.
+Recovery checks must carry the canary name. Let me add a suffix to the check-name joins.
+Four issues identified: (1) role missing from C15 messages, (2) real-project Boundaries must not run hooks (it breaks setup-failure log expectations), (3) override scopes need scope-qualified hook descriptions in C14 messages, (4) X03/X04 must come from a static check. Implementing:
+All doctor tests pass. Now the full module suite:
+All green. Let me look for dead code to keep the module tidy.
+Now let me check exactly what changed in the workspace and verify the git status shows only allowed paths.
+Final end-to-end check using the provided eval hook command:
+Done. The reconstruction passes the module's eval suite end-to-end (exit 0, `.fireweed/drill-eval.xml` written by the specified hook).
 
-- JUnit parsing, ID mapping, coverage, fail-first and pass checks
-- Eval hook execution, placeholders, process metadata and report validation
-- Phase zone enforcement, including renames
-- Boundary hooks, baselines, opt-outs and diagnostics
-- History checks H01–H04, squashed changes and merge handling
-- Doctor scratch worktrees, setup, templates, canaries, recovery, agent probes, logs, C14/C15/C16 diagnostics
+## What I rebuilt
 
-Verification completed:
+`packages/checks/internal/engine/` (only the disposable `internal/**` paths), implementing the retained `api.go` facade's nine entry points:
 
-- Full `packages/checks/evals` suite passed, including the three-minute timeout eval.
-- The requested target eval hook passed:
-  - `PASS`
-  - `ok github.com/lurkshark/fireweed/packages/checks/evals 234.099s`
+- **JUnit** (`junit.go`): testsuite/testsuites roots with nested suites, failure/error→fail, skipped→skip, message+body retention in `Case.Failure`, ID mapping via `contracts.MatchesID`, prefix-token detection for unknown IDs (`CHK-999`, `CHK0010` rejected; numbered labels pass), `C11`-coded errors.
+- **Requirements** (`requirements.go`): coverage with review/quarantine exemption (`C10`), fail-first evidence with `P2-01` + subject (`CHK-025`), non-quarantined pass gate (`E01`).
+- **Eval hook** (`evaluate.go`, `hooks.go`): global vs module-override resolution, shell-string or argv commands, one-pass outside-quotes shell-quoting (literal for argv), `FIREWEED_BIN` injection, process-group-killed timeouts, stdout/stderr/exit retention, report parsing, exit/report agreement, `C11`/`U02`/`C03`/`C05` coding.
+- **Zones** (`zones.go`): per-phase evals/impl/audit permissions, protected paths, SPEC.md, foreign modules, change-file pinning, worker_writable, disposable-in-base detection via `git cat-file -e`, append-only additions-only in impl, rename checking of both paths.
+- **Boundaries** (`boundaries.go`): global + per-module hooks, exact baseline and per-module opt-out suppression, `X01`/`X02`/`X03`/`X04` diagnostics with cause-preserving wrapped errors.
+- **History** (`history.go`, `history_eval.go`, `history_git.go`): range selection (incl. empty-range→merge-base of HEAD and the locally resolved configured base), oldest-first topological order, worker-commit detection from phase-content transitions across pending/archive moves, squash recognition, H01–H04 with recorded before/after zone maps and projected `set` values, combined merge diffs for H03.
+- **Doctor** (`doctor*.go`): static gate via `project.Check` (probes halted on static errors), C16 guidance/playbook-override warnings, detached scratch worktree with caller-tree sync, C14 setup enforcement with cancellation group-kill, template+canary recipe rendering, two uniquely named throwaway modules (added to the scratch module list so `fireweed modules --json` discovers them), baseline/canary/recovery probes with module-attributed detection, agent probes through `agent.wrap` with the fixed reply, `{prompt_file}` lifecycle, `.fireweed/runs/<run>/doctor-{worker,audit}-1.log` persistence, `limit_patterns` usage-limit classification, final-20-line output tails.
 
-Added `DRILL_NOTES.md` with separate `## Contradicted Decisions` and `## Gaps` sections. No contradicted decisions were found; gaps identify their nearest spec IDs and fixing target modules.
+## Contradictions and gaps
+
+`DRILL_NOTES.md` (workspace root) carries the required `## Contradicted Decisions` (none found — [0071-doctor-probes] and [0114-history-validation] hold as written) and `## Gaps` (8 items, each naming its nearest spec ID — CHK-055, CHK-059, CHK-063/082, CHK-076/077, CHK-075, CHK-076, CHK-050/052, CHK-055/060 — and `checks` as the fixing-change target).
+
+Workspace status: `packages/checks/internal/`, `DRILL_NOTES.md`, `.fireweed/drill-eval.xml` are the only new paths; `api.go`, `SPEC.md`, evals, and all other modules are untouched. One caveat worth noting: the CHK-065 unset-timeout doctor probe takes ~3 minutes by design, so the suite runs long (~4 min).
 
