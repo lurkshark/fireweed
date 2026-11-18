@@ -2,7 +2,7 @@
 eval_fix:
     - AST-020
 module: assets
-phase: audit
+phase: impl
 run: 20261118T021932-98ece86ba0ecf89cc59eb058
 ---
 
@@ -32,4 +32,9 @@ that parsing succeeds and frontmatter contains name `beta` and ID prefix
 ## Provenance
 
 - evals 2026-11-18T02:21:16.099695Z agent=codex fireweed=0.2.1 playbook=d2fd7216b035a9614c390d254dd9195ac2c65ae1ed18f07ac93c77b9732d4156 tests=153 failing=0 passing=153
+- audit 2026-11-18T02:22:01.433276Z agent=codex fireweed=0.2.1 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+
+## Audit
+
+No findings; checked AST-020
 
