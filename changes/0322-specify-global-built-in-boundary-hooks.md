@@ -36,5 +36,6 @@ each detected violation to its source module.
 Run the returned boundaries command with the same empty module and module directory
 values as checks.Boundaries uses for a global hook. Use a clean fixture with two
 graph modules, then place an undeclared import only in the second module and require
-its module-prefixed violation. Reuse the existing recipe fixtures and offline tool
-setup. The current three built-in hooks already scan the full graph.
+a violation line beginning with that module's name. Look for that line in the hook
+output without assuming a summary's placement. Reuse the existing recipe fixtures
+and offline tool setup. The current three built-in hooks already scan the full graph.

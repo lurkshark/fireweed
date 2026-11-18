@@ -1,6 +1,4 @@
 ---
-bases:
-    APP-164: b5a418dc
 module: app
 ---
 
@@ -14,20 +12,18 @@ source-selection issue seen in the runner drill.
 
 ## Interface
 
-Extend APP-164's held compatibility admission to verify and done. These commands
-still run workflow's ordinary author, phase, zone and live project checks.
+Use held compatibility admission when verify or done selects an owned change. These
+commands still run workflow's ordinary author, phase, zone and live project checks.
 
 ## Added
 
-## Modified
+### new:manual-held-verification-config
+When verify or done selects a change owned by the caller's worktree, compatibility
+admission MUST use that change's held approved configuration without parsing live
+fireweed.yaml for admission. An incompatible approved configuration MUST return
+exit 2 with C01 and corrective guidance before running hooks or changing phase.
 
-### APP-164
-While a change is owned, modules, coverage, verify, done, next and run MUST check
-compatibility against the held approved configuration used by their operations.
-Compatibility admission MUST NOT add live-config parsing to their approved-snapshot
-paths or replace live configuration required by other commands with a held snapshot.
-An approved-configuration rejection MUST return exit 2 with C01 and corrective
-guidance before command effects or hook/agent execution.
+## Modified
 
 ## Removed
 
@@ -36,7 +32,8 @@ guidance before command effects or hook/agent execution.
 ## Notes
 
 Extend the alternate-binary approved-pin fixture to verify and done. Use a valid
-live pin and an incompatible held pin to show the held pin governs admission. With a
-compatible held pin and a malformed protected live config, assert the workflow's
-zone rejection identifying fireweed.yaml and zero hook calls or phase commits. Keep
-the live static and applied-project checks exercised by the existing fixtures.
+live pin and an incompatible held pin to show the selected claim governs admission.
+Check that an unknown selector still reports the selector error in that fixture.
+With a compatible held pin and malformed protected live configuration, assert Z01
+for fireweed.yaml and zero hook calls or phase commits. Keep the existing live
+static and applied-project checks.

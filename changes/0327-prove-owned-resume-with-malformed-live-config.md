@@ -28,5 +28,5 @@ Extend the existing owned-resume fixture at the runner.Next interface. After a c
 usage stop, make the live YAML malformed and resume with the already-approved
 bounded fake agent. Assert the usage-stop classification, approved configuration,
 unchanged run, phase, assigned IDs and saved work, and the approved agent
-invocations. Keep the existing valid-but-different budget scenario and normal
-approval checks for fresh work.
+invocations. Assert that the malformed live file is preserved. Keep the existing
+valid-but-different budget scenario and normal approval checks for fresh work.

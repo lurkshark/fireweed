@@ -19,9 +19,9 @@ unattributed nonzero exit. Use the existing diagnostic schema and exit behavior.
 
 ### new:boundary-hook-failure-output
 When a boundary hook exits nonzero without a module-attributed violation, its X02
-diagnostic MUST identify the hook's scope and include a bounded tail of its stderr
-when present. If the tail omits earlier output, the diagnostic MUST indicate that it
-was truncated.
+diagnostic MUST identify the global hook or module override and include the end of
+its stderr, if present, up to 4,096 bytes of valid UTF-8. The diagnostic MUST mark
+any truncation of the excerpt.
 
 ## Modified
 
@@ -31,9 +31,9 @@ was truncated.
 
 ## Notes
 
-Extend the existing checks.Boundaries unattributed-exit fixtures with stderr
-explaining the failure. Exercise a global hook and a module override, and exercise
-long UTF-8 stderr in one case to check a visible tail, truncation indication and
-valid text. Preserve the exit status and X02 classification, including when stderr
-is empty. Keep existing module-attributed violation, baseline, opt-out and
-launch-error behavior.
+Extend the existing checks.Boundaries unattributed-exit fixtures. Use short stderr
+for a global failure and long UTF-8 stderr with distinct head and tail markers for
+a module override. Check the identified scope, the excerpt byte ceiling, the tail
+marker, valid UTF-8 and a visible omission indicator. Retain a silent failure case,
+and preserve existing exit status, attribution, baseline, opt-out and launch-error
+assertions.

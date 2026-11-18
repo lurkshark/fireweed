@@ -21,9 +21,9 @@ against the approved change.
 ## Added
 
 ### new:audit-section-separators
-In audit phase, Verify and Done MUST accept a valid Audit submission whose only
-edits outside Audit are blank lines separating it from an adjacent section. Changes
-to approved author content or runtime fields MUST still be rejected.
+In audit phase, Verify and Done MUST treat blank separator lines adjoining an
+otherwise permitted Audit edit as formatting when comparing the submission with
+the approved change.
 
 ## Modified
 
@@ -34,7 +34,7 @@ to approved author content or runtime fields MUST still be rejected.
 ## Notes
 
 Use the existing public audit lifecycle fixture. Append the first valid Audit
-section after Provenance with a blank separator, then verify and advance through
-Done. Exercise a substantive change to the adjacent approved content as a negative
-control for P03. Scope the new assertion to separators adjacent to Audit. The
-current workflow accepts the valid form.
+section after Provenance with a blank separator. Verify the submission before Done
+and check the resulting phase. In the same fixture, change the adjacent approved
+Provenance line as a negative control and require P03 before advancing. Keep
+existing validity and zone assertions. The current workflow accepts the valid form.

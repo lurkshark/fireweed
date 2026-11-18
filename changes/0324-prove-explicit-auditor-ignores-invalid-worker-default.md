@@ -26,6 +26,6 @@ worker default alongside the explicit auditor.
 
 Extend Test_PRJ_088_ResolveAuditAliasOrInheritWorkerDefault with a listed explicit
 audit command and an unlisted agent.default. Assert the selected command and that
-inheritance is false. Use the same fixture with audit.agent omitted to confirm the
-invalid worker reference then matters. Retain the existing invalid-audit-reference
-and worker inheritance assertions.
+inheritance is false. With audit.agent omitted in the same fixture, require C01
+identifying agent.default. Retain the existing invalid-audit-reference and worker
+inheritance assertions.

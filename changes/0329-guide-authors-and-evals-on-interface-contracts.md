@@ -24,12 +24,16 @@ The author-change playbook MUST direct authors to specify which inputs govern an
 operation when more than one source can supply them. It MUST direct authors to state
 fallback, merge or preservation behavior when callers rely on it.
 
-### new:eval-playbook-semantic-contracts
+### new:eval-playbook-input-authority
 The evals playbook MUST guide workers to test source selection through the supplying
-public interface by varying an unused input when the contract permits it. It MUST
-direct workers to assert equivalent results for different valid representations when
-formatting or order is incidental, and to retain exact assertions where the contract
-promises exactness.
+public interface by making a competing input conflicting or invalid when the
+contract permits ignoring it.
+
+### new:eval-playbook-semantic-contracts
+The evals playbook MUST guide workers to assert the contracted result of structured
+outputs and assert exact representation only when required by the spec. For a
+regression caused by incidental format or order, it MUST advise using a second
+valid representation to exercise the distinction.
 
 ## Modified
 
