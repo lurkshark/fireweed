@@ -266,6 +266,13 @@ through public operations. It MUST direct workers to assert structured
 diagnostic codes and subjects when contracted, and to inspect typed values before encoding
 when type affects callers.
 
+### AST-072
+The author-change playbook MUST direct authors to specify, in terms testable
+through the producing interface, how callers or users can distinguish failure
+outcomes that require different actions. It MUST direct authors to specify what
+changes or remains available after failure when that affects the next action.
+It MUST advise requiring exact wording only when the interface promises it.
+
 ## Decisions
 
 [0014-go-setup-bundle] Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,

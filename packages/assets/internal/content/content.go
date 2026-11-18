@@ -34,6 +34,8 @@ var playbooks = map[string]string{
 	"author-change": `# Author change
 Read the design, SYSTEM.md and the module spec before writing a change. Give its Motivation a user-visible need or a clause of the design or SYSTEM.md; a probe showing a theoretical failure is insufficient. State each observable behavior at the module interface and keep the change focused. If a requirement costs more than it is worth, narrow or remove the spec and use already_satisfied for behavior the current implementation already meets.
 
+When a caller or user must respond differently to two failure outcomes, specify how they can tell those outcomes apart at the interface that produces them. State what remains available or changes after failure when it affects the next action. Make the distinction testable through that interface. Require exact wording only when the interface promises it.
+
 Use a unique change-local new:<slug> handle for each Added spec. Use lowercase letters, digits and hyphens in the slug. If one change needs a handle from another change, combine the changes into one. For example, declare new:lockout under Added in the same change that refers to it in Interface.
 
 Run fireweed stamp <change> after drafting edits under Modified or Removed. If a base is stale, inspect the conflict with fireweed show --stale <change>. Reconcile the edit with the current projected spec before running fireweed stamp again.
