@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -251,13 +252,21 @@ func Test_APP_009_APP_027_APP_028_APP_040_StartPreservesApprovalWarning(t *testi
 			if stderr != "" || !strings.Contains(cliString(t, output), playbook) {
 				t.Errorf("JSON start omitted context or wrote stderr: %q %q", output, stderr)
 			}
-			var diagnostics []struct {
+			type diagnostic struct {
 				Code    string `json:"code"`
 				Message string `json:"message"`
 				Warning bool   `json:"warning"`
 			}
-			if err := json.Unmarshal(decodeEnvelope(t, output)["diagnostics"], &diagnostics); err != nil || len(diagnostics) == 0 || diagnostics[0].Code != "P04" || diagnostics[0].Message == "" || !diagnostics[0].Warning {
-				t.Errorf("approval warning missing: %s, %v", output, err)
+			var diagnostics []diagnostic
+			if err := json.Unmarshal(decodeEnvelope(t, output)["diagnostics"], &diagnostics); err != nil {
+				t.Fatalf("decode start diagnostics: %v", err)
+			}
+			for _, code := range []string{"P04", "P05"} {
+				if !slices.ContainsFunc(diagnostics, func(d diagnostic) bool {
+					return d.Code == code && d.Warning && strings.TrimSpace(d.Message) != ""
+				}) {
+					t.Errorf("start diagnostics=%+v; want %s warning with a nonempty message", diagnostics, code)
+				}
 			}
 		} else if !strings.Contains(output, playbook) || !strings.Contains(output+stderr, "P04") {
 			t.Errorf("plain start omitted context or P04 warning: %q %q", output, stderr)
@@ -364,6 +373,54 @@ func Test_APP_011_APP_032_APP_033_ContextCompactFullAndErrors(t *testing.T) {
 	appPut(t, bad, "fireweed.yaml", "modules: [broken\n")
 	status, out, errOut := runLifecycleBinary(t, bin, bad, "context", "manual", "--json")
 	lifecycleCommandFailure(t, status, 2, out, errOut, true)
+}
+
+func Test_APP_168_ContextRecoversWithInvalidLiveConfiguration(t *testing.T) {
+	root := lifecycleCLIProject(t, "fixture-start-does-not-run-hooks", false)
+	dir := appNestedDir(t, root)
+	config := readInitFile(t, root, "fireweed.yaml")
+	cliHold(t, root)
+	const changePath = "changes/0001-manual.md"
+	heldChange := readInitFile(t, root, changePath)
+
+	for _, tc := range []struct {
+		name, liveConfig, selector string
+		full                       bool
+	}{
+		{"malformed-yaml", "modules: [broken\n", "manual", false},
+		{"excluding-pin", incompatibleConfig(config), changePath, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			want, err := workflow.Context(root, tc.selector, tc.full)
+			if err != nil {
+				t.Fatal(err)
+			}
+			appPut(t, root, "fireweed.yaml", tc.liveConfig)
+			t.Cleanup(func() { appPut(t, root, "fireweed.yaml", config) })
+			args := []string{"context", tc.selector}
+			if tc.full {
+				args = append(args, "--full", "--json")
+			}
+			status, out, stderr := runSavedAttemptApp(t, dir, args...)
+			if status != 0 || stderr != "" {
+				t.Fatalf("context: exit=%d stdout=%q stderr=%q", status, out, stderr)
+			}
+			if tc.full {
+				out = commandStringData(t, out)
+			}
+			if out != want {
+				t.Error("context with invalid live configuration differs from the original held context")
+			}
+			change, projected, found := strings.Cut(out, "\n# Projected spec\n")
+			if !found || !strings.Contains(change, heldChange) {
+				t.Error("context omitted the held change")
+			}
+			spec, _, _ := strings.Cut(projected, "\n# Interface\n")
+			if !strings.Contains(spec, "### ALP-002\nAlpha MUST return the additional value.") {
+				t.Error("context omitted the assigned requirement from the projected spec")
+			}
+		})
+	}
 }
 
 func Test_APP_012_APP_034_APP_035_APP_036_CoverageCurrentProjectionAndErrors(t *testing.T) {

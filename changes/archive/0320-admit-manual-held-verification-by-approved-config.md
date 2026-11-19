@@ -1,5 +1,7 @@
 ---
 module: app
+phase: applied
+run: 20261118T211523-367996b36514155d10a9e10e
 ---
 
 ## Motivation
@@ -17,7 +19,7 @@ commands still run workflow's ordinary author, phase, zone and live project chec
 
 ## Added
 
-### new:manual-held-verification-config
+### APP-170
 When verify or done selects a change owned by the caller's worktree, compatibility
 admission MUST use that change's held approved configuration without parsing live
 fireweed.yaml for admission. An incompatible approved configuration MUST return
@@ -37,3 +39,20 @@ Check that an unknown selector still reports the selector error in that fixture.
 With a compatible held pin and malformed protected live configuration, assert Z01
 for fireweed.yaml and zero hook calls or phase commits. Keep the existing live
 static and applied-project checks.
+
+The APP-170 evals failed before implementation. With a valid live pin and an
+incompatible held pin, both commands returned exit 1 with Z01 where exit 2 with
+C01 is required. With a compatible held pin and malformed protected YAML, both
+returned exit 2 with C01 where exit 1 with Z01 is required. The unknown selectors
+returned U02. The implementation step can update command admission in
+`packages/app/internal/entry/lifecycle.go`.
+## Provenance
+
+- evals 2026-11-18T21:24:56.944228Z agent=codex fireweed=0.2.1 playbook=d2fd7216b035a9614c390d254dd9195ac2c65ae1ed18f07ac93c77b9732d4156 tests=415 failing=6 passing=409
+- audit 2026-11-18T21:25:35.84693Z agent=manual fireweed=0.2.1 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-18T21:34:21.968506Z agent=codex fireweed=0.2.1 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=415 failing=0 passing=415
+
+## Audit
+
+No findings; checked APP-170
+

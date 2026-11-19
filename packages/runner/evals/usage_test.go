@@ -43,7 +43,11 @@ fi
 `
 	case "always":
 		addition = `if [ "$phase" = evals ]; then
-  printf 'package evals\n// USAGE_PARTIAL_WORK\n' > packages/alpha/evals/partial_test.go
+  work=packages/alpha/evals/partial_test.go
+  if [ "$attempt" -eq 1 ]; then
+    printf 'package evals\n// USAGE_PARTIAL_WORK\n' > "$work" || exit 8
+  fi
+  [ -f "$work" ] || { echo 'prior eval work missing' >&2; exit 8; }
   printf 'limited evals'; printf 'RATE LIMIT' >&2; exit 9
 fi
 `
@@ -222,7 +226,19 @@ func Test_RUN_030_RUN_031_RUN_033_ShortBudgetResumeOwnedStep(t *testing.T) {
 	}
 }
 
-func Test_RUN_033_OwnedResumeUsesApprovedUsageBudget(t *testing.T) {
+func Test_RUN_033_OwnedResumeUsesApprovedSnapshot(t *testing.T) {
+	for _, tc := range []struct{ name, liveBudget string }{
+		{"different budget", "limit_budget: 0s\n"},
+		{"malformed YAML", "limit_budget: [\n"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			assertOwnedResumeUsesApprovedSnapshot(t, tc.liveBudget)
+		})
+	}
+}
+
+func assertOwnedResumeUsesApprovedSnapshot(t *testing.T, liveBudget string) {
+	t.Helper()
 	f := newNextFixture(t, true, true, "normal")
 	usagePolicy(t, f.root, "limit_wait: 5ms\nlimit_budget: 5ms\nattempts: 1\n")
 	nextUsageAgent(t, f, "always")
@@ -238,10 +254,11 @@ func Test_RUN_033_OwnedResumeUsesApprovedUsageBudget(t *testing.T) {
 	}
 	held := usageHeld(t, f.root, "next", "evals", first.State.Run, head, first.State.ClaimOID)
 	approved := held.Snapshot
-	if approved.Config["limit_budget"] != "5ms" || held.Change.Added[0].ID != "ALP-002" {
-		t.Fatalf("approved state lost budget or assigned ID: %#v", held)
+	if approved.Config["limit_budget"] != "5ms" || len(held.Change.Added) != 1 || held.Change.Added[0].ID != "ALP-002" {
+		t.Fatalf("approved budget = %v, assigned items = %#v", approved.Config["limit_budget"], held.Change.Added)
 	}
-	partialWork := nextRead(t, f.root, "packages/alpha/evals/partial_test.go")
+	const partialPath = "packages/alpha/evals/partial_test.go"
+	partialWork := nextRead(t, f.root, partialPath)
 	if !strings.Contains(partialWork, "USAGE_PARTIAL_WORK") || len(nextInvocations(t, f)) != 2 {
 		t.Fatal("first stop lost partial work or usage invocations")
 	}
@@ -249,33 +266,41 @@ func Test_RUN_033_OwnedResumeUsesApprovedUsageBudget(t *testing.T) {
 	if !strings.Contains(config, "limit_budget: 5ms\n") {
 		t.Fatal("fixture budget missing")
 	}
-	unapproved := strings.Replace(config, "limit_budget: 5ms\n", "limit_budget: 0s\n", 1)
+	unapproved := strings.Replace(config, "limit_budget: 5ms\n", liveBudget, 1)
 	nextWrite(t, f.root, "fireweed.yaml", unapproved)
 
 	second, err := f.run(false)
-	if err == nil || !runner.IsUsageStop(err) || len(second.Steps) != 2 {
-		t.Fatalf("resume with approved budget = %#v, %v", second, err)
+	if !runner.IsUsageStop(err) || len(second.Steps) != 2 {
+		t.Fatalf("resume returned %d invocations and error %v, want two invocations and a clean usage stop", len(second.Steps), err)
 	}
 	for i, step := range second.Steps {
-		if step.Phase != "evals" || !step.Agent.UsageLimit || step.Agent.ExitCode != 9 {
+		if step.Phase != "evals" || step.Role != "worker" || !step.Agent.UsageLimit ||
+			step.Agent.ExitCode != 9 || step.Agent.Stdout != "limited evals" || step.Agent.Stderr != "RATE LIMIT" {
 			t.Errorf("resumed invocation %d = %#v", i, step)
 		}
 	}
 	resumed := usageHeld(t, f.root, "next", "evals", held.Run, head, held.ClaimOID)
-	if resumed.Change.Added[0].ID != held.Change.Added[0].ID || second.State.Run != held.Run || second.State.Phase != held.Phase || second.State.Head != head || second.State.ClaimOID != held.ClaimOID || !reflect.DeepEqual(second.State.Snapshot, approved) || !reflect.DeepEqual(resumed.Snapshot, approved) {
-		t.Errorf("resume changed approved State: returned=%#v held=%#v", second.State, resumed)
+	returned := second.State
+	if second.Empty || returned.Change.Slug != held.Change.Slug || returned.Run != held.Run ||
+		returned.Phase != held.Phase || returned.Head != head || returned.ClaimOID != held.ClaimOID {
+		t.Errorf("resume changed held identity: empty=%t slug=%q run=%q phase=%q head=%q claim=%q",
+			second.Empty, returned.Change.Slug, returned.Run, returned.Phase, returned.Head, returned.ClaimOID)
 	}
-	if got := nextRead(t, f.root, "packages/alpha/evals/partial_test.go"); got != partialWork {
+	if !reflect.DeepEqual(returned.Change.Added, held.Change.Added) || !reflect.DeepEqual(resumed.Change.Added, held.Change.Added) {
+		t.Errorf("resume changed assigned items: returned=%#v held=%#v want=%#v", returned.Change.Added, resumed.Change.Added, held.Change.Added)
+	}
+	if !reflect.DeepEqual(returned.Snapshot, approved) || !reflect.DeepEqual(resumed.Snapshot, approved) {
+		t.Error("resume did not retain the approved snapshot in the returned and held states")
+	}
+	if got := nextRead(t, f.root, partialPath); got != partialWork {
 		t.Errorf("resume changed partial eval work: got %q, want %q", got, partialWork)
 	}
 	if got := nextRead(t, f.root, "fireweed.yaml"); got != unapproved {
-		t.Errorf("resume changed unapproved on-disk policy: %q", got)
+		t.Errorf("resume changed live configuration: got %q, want %q", got, unapproved)
 	}
-	if got := len(nextInvocations(t, f)); got != 4 {
-		t.Errorf("total usage invocations = %d, want 4", got)
-	}
-	if got := nextGit(t, f.root, "rev-parse", "HEAD"); got != head {
-		t.Errorf("resume committed: HEAD = %s, want %s", got, head)
+	call := "evals|" + f.root + "|/fixture/next-bin"
+	if got := nextInvocations(t, f); !reflect.DeepEqual(got, []string{call, call, call, call}) {
+		t.Errorf("usage invocations = %q, want four calls to %q", got, call)
 	}
 }
 

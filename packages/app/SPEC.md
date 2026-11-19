@@ -644,6 +644,22 @@ drill --agent <alias> MUST pass the supplied alias to runner.Drill as AgentAlias
 ### APP-167
 An unknown drill agent alias MUST return exit 2 with U02 naming the alias and pointing to the agent.commands mapping in the project configuration. In JSON mode, drill MUST emit this diagnostic in a schema 1 envelope with null data and empty stderr.
 
+### APP-168
+After normal project discovery, context for a selected change owned by the caller's
+worktree MUST return the held context even when live fireweed.yaml is malformed or
+its binary pin excludes the running binary.
+
+### APP-169
+After normal project discovery, release for a selected claim owned by the caller's
+worktree MUST release that claim even when live fireweed.yaml is malformed or its
+binary pin excludes the running binary.
+
+### APP-170
+When verify or done selects a change owned by the caller's worktree, compatibility
+admission MUST use that change's held approved configuration without parsing live
+fireweed.yaml for admission. An incompatible approved configuration MUST return
+exit 2 with C01 and corrective guidance before running hooks or changing phase.
+
 ## Decisions
 
 

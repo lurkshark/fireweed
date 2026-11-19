@@ -34,6 +34,8 @@ var playbooks = map[string]string{
 	"author-change": `# Author change
 Read the design, SYSTEM.md and the module spec before writing a change. Give its Motivation a user-visible need or a clause of the design or SYSTEM.md; a probe showing a theoretical failure is insufficient. State each observable behavior at the module interface and keep the change focused. If a requirement costs more than it is worth, narrow or remove the spec and use already_satisfied for behavior the current implementation already meets.
 
+When more than one source can supply inputs to an operation, specify at the supplying module's interface which inputs govern. State any fallback rules, how inputs merge, or which existing settings are preserved when callers rely on that behavior.
+
 When a caller or user must respond differently to two failure outcomes, specify how they can tell those outcomes apart at the interface that produces them. State what remains available or changes after failure when it affects the next action. Make the distinction testable through that interface. Require exact wording only when the interface promises it.
 
 Use a unique change-local new:<slug> handle for each Added spec. Use lowercase letters, digits and hyphens in the slug. If one change needs a handle from another change, combine the changes into one. For example, declare new:lockout under Added in the same change that refers to it in Interface.
@@ -44,7 +46,11 @@ Do not commit during a worker step.`,
 	"evals": `# Write evals
 Read the change, projected spec and public interface. Add tests for every assigned added, modified or fixed spec ID in the evals zone.
 
-Exercise the module's public behavior that consumers depend on through its public interface. Build ordinary dependency state through public operations. Assert structured diagnostic codes and subjects when the public contract defines them. When the type affects callers, inspect typed values before encoding. Assert exact wording or layout where the public spec requires it.
+Exercise the module's public behavior that consumers depend on through its public interface. Build ordinary dependency state through public operations. Assert structured diagnostic codes and subjects when the public contract defines them. When the type affects callers, inspect typed values before encoding.
+
+Test source selection through the supplying module's public interface. If the contract permits ignoring a competing input, make that input conflicting or invalid and assert the result from the selected source. For example, if an explicit config path makes the default file inactive, put malformed YAML in the default file and assert that loading returns the settings from the explicit file.
+
+For structured outputs, assert the values and relationships the spec promises. Assert the exact representation, including wording or layout, only when the spec requires it. When a regression depends on incidental format or order, exercise it with a second valid representation. For example, load equivalent YAML with the same fields in reverse order and assert that both inputs yield the same settings.
 
 Run the tests against the current implementation and record genuine fail-first evidence: at least one test for each ID must fail, unless the change marks it already_satisfied. Keep implementation out of this step and do not commit.
 

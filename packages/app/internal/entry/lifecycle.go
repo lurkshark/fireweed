@@ -13,10 +13,14 @@ import (
 
 func (c command) workflowCommand(root string) response {
 	selector := c.arg(0)
-	if c.name == "status" {
+	action := "Use fireweed list and fireweed context to check the change and correct its state."
+	var recoveryErr error
+	switch c.name {
+	case "status":
 		return status(root)
-	}
-	if c.name == "pr-body" {
+	case "verify", "done":
+		return c.verifyCommand(root, selector)
+	case "pr-body":
 		report, err := workflow.PRBody(root, selector)
 		if err != nil {
 			if workflow.IsEndpointConfigError(err) {
@@ -27,11 +31,28 @@ func (c command) workflowCommand(root string) response {
 		result := verbatim(report.Body)
 		result.diagnostics = report.Diagnostics
 		return result
+	case "context":
+		body, err := workflow.Context(root, selector, c.has("--full"))
+		if err == nil {
+			return verbatim(body)
+		}
+		recoveryErr = err
+	case "release":
+		err := workflow.Release(root, selector)
+		if err == nil {
+			return message("Released " + selector + ".")
+		}
+		recoveryErr = err
+		action = "Use fireweed release from the worktree that owns the claim and check the change selector."
 	}
+	// Recovery can succeed independently of live configuration. On failure,
+	// retain the configuration diagnostic when the live project is invalid.
 	if _, err := project.Load(root); err != nil && cause(err, "") == "C01" {
 		return configFailure(err)
 	}
-	action := "Use fireweed list and fireweed context to check the change and correct its state."
+	if recoveryErr != nil {
+		return configuredOperationFailure(recoveryErr, action)
+	}
 	switch c.name {
 	case "start":
 		var state workflow.State
@@ -52,41 +73,6 @@ func (c command) workflowCommand(root string) response {
 		}
 		result.diagnostics = append(result.diagnostics, state.Diagnostics...)
 		return result
-	case "context":
-		body, err := workflow.Context(root, selector, c.has("--full"))
-		if err != nil {
-			return configuredOperationFailure(err, action)
-		}
-		return verbatim(body)
-	case "verify", "done":
-		request := workflow.Request{Root: root, Change: selector, Bin: invokingBin(), Quick: c.has("--quick")}
-		check := workflow.Verify
-		if c.name == "done" {
-			check = workflow.Done
-		}
-		report, err := check(background(), request)
-		diagnostics := slices.Concat(report.Diagnostics, report.State.Diagnostics)
-		if err != nil {
-			result := configuredOperationFailure(err, "Correct the reported issue and run fireweed verify again.")
-			// The workflow can return the same cause both as a diagnostic and
-			// as the command error. Retain the report without repeating it.
-			for _, d := range diagnostics {
-				if !d.Warning && d.Code == result.diagnostics[0].Code && strings.Contains(err.Error(), d.Message) {
-					result.diagnostics = nil
-					break
-				}
-			}
-			result.diagnostics = append(result.diagnostics, diagnostics...)
-			return result
-		}
-		result := output(fmt.Sprintf("%s passed (%s).\n", c.name, report.State.Phase), report)
-		result.diagnostics = diagnostics
-		return result
-	case "release":
-		if err := workflow.Release(root, selector); err != nil {
-			return configuredOperationFailure(err, "Use fireweed release from the worktree that owns the claim and check the change selector.")
-		}
-		return message("Released " + selector + ".")
 	case "commits", "abandon":
 		var err error
 		if c.name == "commits" {
@@ -131,6 +117,48 @@ func (c command) workflowCommand(root string) response {
 		}{array(result.Pruned)})
 	}
 	panic("unexpected workflow command: " + c.name)
+}
+
+func (c command) verifyCommand(root, selector string) response {
+	const action = "Correct the reported issue and run fireweed verify again."
+	state, err := workflow.Current(root, selector)
+	switch {
+	case state.Snapshot.Config != nil:
+		if err := project.CheckCompatibility(state.Snapshot.Config); err != nil {
+			return approvedConfigFailure(err, state.Change.Slug)
+		}
+	case state.ClaimOID == "":
+		if _, err := project.Load(root); err != nil && cause(err, "") == "C01" {
+			return configFailure(err)
+		}
+	}
+	if err != nil {
+		return configuredOperationFailure(err, action)
+	}
+
+	request := workflow.Request{Root: root, Change: selector, Bin: invokingBin(), Quick: c.has("--quick")}
+	check := workflow.Verify
+	if c.name == "done" {
+		check = workflow.Done
+	}
+	report, err := check(background(), request)
+	diagnostics := slices.Concat(report.Diagnostics, report.State.Diagnostics)
+	if err != nil {
+		result := configuredOperationFailure(err, action)
+		// The workflow can return the same cause both as a diagnostic and
+		// as the command error. Retain the report without repeating it.
+		for _, d := range diagnostics {
+			if !d.Warning && d.Code == result.diagnostics[0].Code && strings.Contains(err.Error(), d.Message) {
+				result.diagnostics = nil
+				break
+			}
+		}
+		result.diagnostics = append(result.diagnostics, diagnostics...)
+		return result
+	}
+	result := output(fmt.Sprintf("%s passed (%s).\n", c.name, report.State.Phase), report)
+	result.diagnostics = diagnostics
+	return result
 }
 
 type changeSummary struct {

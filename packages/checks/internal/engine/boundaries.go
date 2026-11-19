@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/lurkshark/fireweed/packages/checks/model"
 	"github.com/lurkshark/fireweed/packages/project"
@@ -15,6 +16,23 @@ import (
 func boundaryReason(module project.Module) string {
 	reason, _ := module.Document.Frontmatter["boundaries_opt_out"].(string)
 	return strings.TrimSpace(reason)
+}
+
+func boundaryStderrExcerpt(stderr string) string {
+	if stderr == "" {
+		return ""
+	}
+
+	const maxBytes = 4096
+	stderr = strings.ToValidUTF8(stderr, "\uFFFD")
+	if len(stderr) <= maxBytes {
+		return "\nstderr:\n" + stderr
+	}
+	start := len(stderr) - maxBytes
+	for !utf8.RuneStart(stderr[start]) {
+		start++
+	}
+	return "\nstderr (truncated):\n" + stderr[start:]
 }
 
 func Boundaries(ctx context.Context, request model.BoundaryRequest) ([]project.Diagnostic, error) {
@@ -99,9 +117,9 @@ func Boundaries(ctx context.Context, request model.BoundaryRequest) ([]project.D
 		if result.ExitCode != 0 && !attributed {
 			name := "global boundary hook"
 			if hook.module.Name != "" {
-				name = hook.module.Name + " boundary hook"
+				name = hook.module.Name + " boundary hook override"
 			}
-			err := fmt.Errorf("%s: exit status %d without a module-attributed violation", name, result.ExitCode)
+			err := fmt.Errorf("%s: exit status %d without a module-attributed violation%s", name, result.ExitCode, boundaryStderrExcerpt(result.Stderr))
 			diagnostics = append(diagnostics, project.Diagnostic{Code: "X02", Message: err.Error()})
 			hookErrors = append(hookErrors, err)
 		}

@@ -49,6 +49,10 @@ matching `Result.ExitCode`. An error from a failure to launch MUST NOT match
 `*exec.ExitError`. When caller cancellation stops a running process, Run MUST
 return an error matching `context.Canceled` via `errors.Is`.
 
+### GIT-012
+Run MUST inherit the caller's environment and apply Request.Env as per-variable
+overrides to the launched process. Omitted keys MUST retain their inherited values.
+
 ## Decisions
 
 [0010-manual-lifecycle-git] Change.Status uses the leading letter of Git's name-status code for tracked changes; untracked paths use `?`.

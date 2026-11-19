@@ -305,14 +305,14 @@ func (w *extraWorkspace) hook(name, module string) (junitSuite, string, error) {
 	if !ok || cmdText == "" {
 		w.t.Fatalf("missing %s hook", name)
 	}
-	report := filepath.Join(w.root, module+"-report.xml")
-	_ = os.Remove(report)
-	for k, v := range map[string]string{"{module}": module, "{module_dir}": "packages/" + module, "{report}": report} {
-		cmdText = strings.ReplaceAll(cmdText, k, v)
+	var report string
+	if name == "eval" {
+		report = filepath.Join(w.root, module+"-report.xml")
+		_ = os.Remove(report)
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
 	defer cancel()
-	cmd := exec.CommandContext(ctx, "sh", "-c", cmdText)
+	cmd := exec.CommandContext(ctx, "sh", "-c", expandRecipeHook(cmdText, module, report))
 	cmd.Dir = w.root
 	cmd.Env = append(os.Environ(), "FIREWEED_BIN="+filepath.Join(w.root, "fake-fireweed"), "FIREWEED_MODULES_JSON="+filepath.Join(w.root, "modules.json"), "FIREWEED_QUERY_LOG="+filepath.Join(w.root, "modules-query.log"), "UV_CACHE_DIR="+filepath.Join(w.root, "uv-cache"), "UV_OFFLINE=1", "COREPACK_ENABLE_NETWORK=0")
 	out, err := cmd.CombinedOutput()
@@ -352,7 +352,7 @@ func Test_AST_053_BaselineHooks(t *testing.T) {
 					t.Errorf("%s baseline eval: %v %s %+v", module, err, out, s.Cases)
 				}
 			}
-			_, out, err := w.hook("boundaries", "alpha")
+			_, out, err := w.hook("boundaries", "")
 			if err != nil {
 				t.Errorf("baseline boundaries: %v %s", err, out)
 			}
@@ -446,7 +446,7 @@ func Test_AST_056_GraphDerivedBoundaries(t *testing.T) {
 	for _, name := range additionalRecipeNames {
 		t.Run(name, func(t *testing.T) {
 			w := newExtraWorkspace(t, name)
-			_, out, err := w.hook("boundaries", "alpha")
+			_, out, err := w.hook("boundaries", "")
 			if err != nil {
 				t.Fatalf("clean boundaries: %v %s", err, out)
 			}
@@ -455,12 +455,12 @@ func Test_AST_056_GraphDerivedBoundaries(t *testing.T) {
 				t.Errorf("no FIREWEED_BIN modules --json query: %s %v", query, err)
 			}
 			paths := w.apply(w.canaries.Undeclared, "alpha")
-			_, out, err = w.hook("boundaries", "alpha")
+			_, out, err = w.hook("boundaries", "")
 			if err == nil || !strings.Contains(out, "alpha:") {
 				t.Errorf("undeclared dependency not derived: %v %s", err, out)
 			}
 			w.graph([]string{"beta"}, "evals/**", w.recipe.ModuleDefaults.Interface)
-			_, out, err = w.hook("boundaries", "alpha")
+			_, out, err = w.hook("boundaries", "")
 			if err != nil {
 				t.Errorf("declared dependency rejected: %v %s", err, out)
 			}
@@ -472,12 +472,12 @@ func Test_AST_056_GraphDerivedBoundaries(t *testing.T) {
 				w.write(filepath.Join("packages/relocated", strings.TrimSuffix(renderExtra(path, "alpha"), ".tmpl")), renderExtra(body, "alpha"))
 			}
 			w.graph(nil, "evals/**", w.recipe.ModuleDefaults.Interface)
-			_, out, err = w.hook("boundaries", "alpha")
+			_, out, err = w.hook("boundaries", "")
 			if err != nil {
 				t.Errorf("import outside graph directory was scanned: %v %s", err, out)
 			}
 			w.graphAt("packages/relocated", nil, "evals/**", w.recipe.ModuleDefaults.Interface)
-			_, out, err = w.hook("boundaries", "alpha")
+			_, out, err = w.hook("boundaries", "")
 			if err == nil || !strings.Contains(out, "alpha:") {
 				t.Errorf("relocated graph directory not scanned: %v %s", err, out)
 			}
@@ -493,12 +493,12 @@ func Test_AST_056_GraphDerivedBoundaries(t *testing.T) {
 			}
 			file := map[string]string{"typescript-pnpm": "packages/alpha/evals/public.test.ts", "python-uv": "packages/alpha/evals/test_public.py"}[name]
 			w.write(file, publicImport)
-			_, out, err = w.hook("boundaries", "alpha")
+			_, out, err = w.hook("boundaries", "")
 			if err != nil {
 				t.Errorf("retained interface import rejected: %v %s", err, out)
 			}
 			w.graph([]string{"beta"}, "evals/**", []string{"unrelated/**"})
-			_, out, err = w.hook("boundaries", "alpha")
+			_, out, err = w.hook("boundaries", "")
 			if err == nil || !strings.Contains(out, "alpha:") {
 				t.Errorf("resolved interface zone change ignored: %v %s", err, out)
 			}
@@ -513,12 +513,12 @@ func Test_AST_057_EvalInterfaceAndOwnImplementation(t *testing.T) {
 			w := newExtraWorkspace(t, name)
 			w.graph([]string{"beta"}, "evals/**", w.recipe.ModuleDefaults.Interface)
 			paths := w.apply(w.canaries.InternalEval, "alpha")
-			_, out, err := w.hook("boundaries", "alpha")
+			_, out, err := w.hook("boundaries", "")
 			if err == nil || !strings.Contains(out, "alpha:") {
 				t.Errorf("own implementation import not reported: %v %s", err, out)
 			}
 			w.remove(paths)
-			_, out, err = w.hook("boundaries", "alpha")
+			_, out, err = w.hook("boundaries", "")
 			if err != nil {
 				t.Errorf("clean interface rejected: %v %s", err, out)
 			}
@@ -549,12 +549,12 @@ func Test_AST_057_EvalInterfaceAndOwnImplementation(t *testing.T) {
 				}
 				w.write(foreignEval, "import "+importName+"\n")
 			}
-			_, out, err = w.hook("boundaries", "alpha")
+			_, out, err = w.hook("boundaries", "")
 			if err == nil || !strings.Contains(out, "alpha:") {
 				t.Errorf("declared dependency implementation import not reported: %v %s", err, out)
 			}
 			w.remove(append(foreignSource, foreignEval))
-			_, out, err = w.hook("boundaries", "alpha")
+			_, out, err = w.hook("boundaries", "")
 			if err != nil {
 				t.Errorf("dependency interface recovery: %v %s", err, out)
 			}
@@ -575,7 +575,11 @@ func Test_AST_058_CanaryDetectionAndRecovery(t *testing.T) {
 			} {
 				t.Run(tc.name, func(t *testing.T) {
 					paths := w.apply(tc.files, "alpha")
-					s, out, err := w.hook(tc.hook, "alpha")
+					module := "alpha"
+					if tc.hook == "boundaries" {
+						module = ""
+					}
+					s, out, err := w.hook(tc.hook, module)
 					switch tc.name {
 					case "undeclared", "internal_eval":
 						if err == nil || !strings.Contains(out, "alpha:") {
@@ -597,7 +601,7 @@ func Test_AST_058_CanaryDetectionAndRecovery(t *testing.T) {
 						}
 					}
 					w.remove(paths)
-					s, out, err = w.hook(tc.hook, "alpha")
+					s, out, err = w.hook(tc.hook, module)
 					if err != nil || (tc.hook == "eval" && (s.hasFailure() || s.hasUnlinked("ALC-001"))) {
 						t.Errorf("recovery failed: %v %s %+v", err, out, s.Cases)
 					}

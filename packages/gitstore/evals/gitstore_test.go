@@ -493,6 +493,42 @@ func Test_GIT_005_GIT_011_RunCaptureExitTimeoutAndGroupCancel(t *testing.T) {
 	}
 }
 
+func Test_GIT_012_RunEnvironmentOverrides(t *testing.T) {
+	t.Setenv("FIREWEED_EVAL_ENV_OVERRIDE", "parent-value")
+	t.Setenv("FIREWEED_EVAL_ENV_INHERITED", "inherited-value")
+
+	const script = `#!/bin/sh
+printf '%s\n' "$FIREWEED_EVAL_ENV_OVERRIDE" "$FIREWEED_EVAL_ENV_INHERITED"
+`
+	dir := t.TempDir()
+	fixture := filepath.Join(dir, "print-environment.sh")
+	if err := os.WriteFile(fixture, []byte(script), 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	for _, tc := range []struct {
+		name string
+		env  map[string]string
+		want string
+	}{
+		{name: "Override", env: map[string]string{"FIREWEED_EVAL_ENV_OVERRIDE": "request-value"}, want: "request-value\ninherited-value\n"},
+		{name: "NilMap", want: "parent-value\ninherited-value\n"},
+		{name: "EmptyMap", env: map[string]string{}, want: "parent-value\ninherited-value\n"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := gitstore.Run(context.Background(), gitstore.Request{
+				Args: []string{fixture}, Dir: dir, Env: tc.env, Timeout: 3 * time.Second,
+			})
+			if err != nil {
+				t.Fatalf("Run: %v, stderr = %q", err, result.Stderr)
+			}
+			if result.Stdout != tc.want {
+				t.Errorf("Run stdout = %q, want %q", result.Stdout, tc.want)
+			}
+		})
+	}
+}
+
 func Test_GIT_005_RunCancelWhileShellLaunchesChild(t *testing.T) {
 	const script = `#!/bin/bash
 printf 'captured stdout\n'

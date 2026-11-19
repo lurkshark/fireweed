@@ -171,13 +171,15 @@ func Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs(t *testing.T) {
 	}
 }
 
-func Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics(t *testing.T) {
+func Test_PRJ_050_PRJ_089_LoadAtPreservesRecordedSpecDiagnostics(t *testing.T) {
 	const path = "packages/alpha/SPEC.md"
 	const validItem = "### ALP-001\nAlpha MUST work.\n"
 	for _, tc := range []struct{ name, spec, code string }{
 		{"malformed_frontmatter", "---\nname: [broken\n---\n# Alpha\n", "C03"},
 		{"malformed_item_heading", alphaSpecHeader + "### ALP-001 [broken\nAlpha MUST work.\n", "C03"},
 		{"duplicate_item_identity", alphaSpecHeader + validItem + "\n### ALP-001\nAlpha MUST retry.\n", "C05"},
+		{"invalid_depends_on", invalidDependsOnSpec, "C12"},
+		{"invalid_zone_type", invalidEvalZoneSpec, "C12"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			root := fixture(t)
@@ -190,7 +192,11 @@ func Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics(t *testing.T) {
 			}
 
 			_, err := project.LoadAt(root, recorded)
-			requirePathError(t, err, tc.code, path)
+			if tc.code == "C12" {
+				requireErrorCodeAndSubject(t, err, tc.code, path)
+			} else {
+				requirePathError(t, err, tc.code, path)
+			}
 		})
 	}
 }

@@ -79,6 +79,7 @@ limit_budget: 0s
 printf 'eval\n' >> %q
 printf '<testsuite><testcase name="ALP-001"/><testcase name="ALP-002"/></testsuite>' > "$2"
 `, calls))
+	appPut(t, root, ".fireweed/boundaries.sh", fmt.Sprintf("#!/bin/sh\nprintf 'boundaries\\n' >> %q\n", calls))
 	cliCommit(t, root, "configure bounded compatibility fixture commands")
 	return root, calls
 }
@@ -182,14 +183,42 @@ func buildAlternateAppBinary(t *testing.T, version string) string {
 	return bin
 }
 
-func Test_APP_164_RejectsIncompatibleApprovedConfiguration(t *testing.T) {
-	bin := buildAppBinary(t)
+func alternateCompatibilityBinary(t *testing.T) (bin, pin string) {
+	t.Helper()
 	version := "0.2.1"
 	if version == assets.Version() {
 		version = "0.2.2"
 	}
-	alternateBin := buildAlternateAppBinary(t, version)
-	alternatePin := "=" + version
+	return buildAlternateAppBinary(t, version), "=" + version
+}
+
+func holdAlternateCompatibilityProject(t *testing.T, bin, alternateBin, alternatePin string) (root, dir, calls string) {
+	t.Helper()
+	root, calls = compatibilityProject(t, bin)
+	dir = appNestedDir(t, root)
+	config := string(staleCLIText(t, root, "fireweed.yaml"))
+	appPut(t, root, "fireweed.yaml", strings.Replace(config, fixtureBinaryPin, alternatePin, 1))
+	cliCommit(t, root, "approve alternate binary pin")
+	if status, out, stderr := runLifecycleBinary(t, alternateBin, dir, "start", "manual"); status != 0 {
+		t.Fatalf("alternate start: exit=%d stdout=%q stderr=%q", status, out, stderr)
+	}
+	appPut(t, root, "fireweed.yaml", config)
+	if _, err := project.Load(root); err != nil {
+		t.Fatalf("live configuration must admit the CLI under test: %v", err)
+	}
+	approved, held, err := workflow.Approved(root)
+	if err != nil || !held || approved.Slug != "manual" {
+		t.Fatalf("alternate start did not hold manual: slug=%q held=%v err=%v", approved.Slug, held, err)
+	}
+	if got := approved.Snapshot.Config["fireweed"]; got != alternatePin || project.CheckCompatibility(approved.Snapshot.Config) == nil {
+		t.Fatalf("approved pin=%q; want %q excluding the CLI under test", got, alternatePin)
+	}
+	return root, dir, calls
+}
+
+func Test_APP_164_RejectsIncompatibleApprovedConfiguration(t *testing.T) {
+	bin := buildAppBinary(t)
+	alternateBin, alternatePin := alternateCompatibilityBinary(t)
 	for _, args := range [][]string{
 		{"modules"},
 		{"coverage", "alpha", "--with-change", "manual", "--json"},
@@ -197,25 +226,53 @@ func Test_APP_164_RejectsIncompatibleApprovedConfiguration(t *testing.T) {
 		{"run"},
 	} {
 		t.Run(args[0], func(t *testing.T) {
-			root, calls := compatibilityProject(t, bin)
-			dir := appNestedDir(t, root)
-			config := string(staleCLIText(t, root, "fireweed.yaml"))
-			appPut(t, root, "fireweed.yaml", strings.Replace(config, fixtureBinaryPin, alternatePin, 1))
-			cliCommit(t, root, "approve alternate binary pin")
-			if status, out, stderr := runLifecycleBinary(t, alternateBin, dir, "start", "manual"); status != 0 {
-				t.Fatalf("alternate start: exit=%d stdout=%q stderr=%q", status, out, stderr)
-			}
-			appPut(t, root, "fireweed.yaml", config)
-			approved, held, err := workflow.Approved(root)
-			if err != nil || !held || approved.Slug != "manual" {
-				t.Fatalf("alternate start did not hold manual: slug=%q held=%v err=%v", approved.Slug, held, err)
-			}
-			if got := approved.Snapshot.Config["fireweed"]; got != alternatePin || project.CheckCompatibility(approved.Snapshot.Config) == nil {
-				t.Fatalf("approved pin=%q; want %q excluding the CLI under test", got, alternatePin)
-			}
+			root, dir, calls := holdAlternateCompatibilityProject(t, bin, alternateBin, alternatePin)
 			before := migrateCapture(t, root)
 			t.Cleanup(func() { assertCompatibilityState(t, root, before, calls) })
 			assertCompatibilityRejection(t, bin, dir, alternatePin, args...)
+		})
+	}
+}
+
+func Test_APP_170_ManualVerificationRejectsIncompatibleApprovedConfiguration(t *testing.T) {
+	bin := buildAppBinary(t)
+	alternateBin, alternatePin := alternateCompatibilityBinary(t)
+	for _, command := range []string{"verify", "done"} {
+		t.Run(command, func(t *testing.T) {
+			root, dir, calls := holdAlternateCompatibilityProject(t, bin, alternateBin, alternatePin)
+			before := migrateCapture(t, root)
+			assertCompatibilityRejection(t, bin, dir, alternatePin, command, "changes/0001-manual.md", "--json")
+			assertCompatibilityState(t, root, before, calls)
+			assertCompatibilityRejection(t, bin, dir, alternatePin, command)
+			assertCompatibilityState(t, root, before, calls)
+
+			const unknown = "unknown-change"
+			status, out, stderr := runLifecycleBinary(t, bin, dir, command, unknown, "--json")
+			assertAppHistoryFailure(t, status, 1, out, stderr, true, "U02", unknown)
+			assertCompatibilityState(t, root, before, calls)
+		})
+	}
+}
+
+func Test_APP_170_ManualVerificationReportsProtectedConfigEdit(t *testing.T) {
+	bin := buildAppBinary(t)
+	for _, command := range []string{"verify", "done"} {
+		t.Run(command, func(t *testing.T) {
+			root, calls := compatibilityProject(t, bin)
+			cliHold(t, root)
+			appPut(t, root, "fireweed.yaml", "modules: [broken\n")
+			before := migrateCapture(t, root)
+			t.Cleanup(func() { assertCompatibilityState(t, root, before, calls) })
+
+			status, out, stderr := runLifecycleBinary(t, bin, appNestedDir(t, root), command, "0001-manual.md", "--json")
+			if status != 1 || stderr != "" {
+				t.Errorf("exit=%d stdout=%q stderr=%q; want exit 1 and empty stderr", status, out, stderr)
+			}
+			assertFailedJSON(t, out, "Z01")
+			diagnostics := migrateDiagnostics(t, out)
+			if diagnostics[0].Path != "fireweed.yaml" || diagnostics[0].Warning {
+				t.Errorf("diagnostic=%+v; want a zone error for fireweed.yaml", diagnostics[0])
+			}
 		})
 	}
 }

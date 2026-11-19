@@ -10,6 +10,7 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"unicode/utf8"
 
 	"github.com/lurkshark/fireweed/packages/checks"
 	"github.com/lurkshark/fireweed/packages/contracts"
@@ -194,20 +195,64 @@ func Test_CHK_041_CHK_042_NormalNonzeroExitCanUseBaselineAndOptOut(t *testing.T)
 	}
 }
 
-func requireBoundaryExitFailure(t *testing.T, diags []project.Diagnostic, err error, status int) {
+func requireBoundaryExitFailure(t *testing.T, diags []project.Diagnostic, err error, status int) string {
 	t.Helper()
-	requireBoundaryDiagnostic(t, diags, "X02", false, "")
 	exitStatus := regexp.MustCompile(fmt.Sprintf(`(?i)\b(?:exit(?:ed)?|status|code)\b[^0-9\n]*\b%d\b`, status))
 	if err == nil || !exitStatus.MatchString(err.Error()) || strings.HasPrefix(err.Error(), "X02:") {
 		t.Errorf("boundary hook error = %v; want exit status %d without X02 prefix", err, status)
 	}
+	for _, d := range diags {
+		if d.Code == "X02" && !d.Warning {
+			return d.Message
+		}
+	}
+	t.Fatalf("missing X02 error diagnostic: %#v", diags)
+	return ""
 }
 
-func Test_CHK_043_RequiredGlobalHookRejectsUnattributedNonzeroExit(t *testing.T) {
+func Test_CHK_043_CHK_086_RequiredGlobalHookRejectsUnattributedNonzeroExit(t *testing.T) {
+	const reason = "startup error: missing tool"
 	snap := boundarySnapshot(t, nil)
-	snap.Config["hooks"] = map[string]any{"boundaries": boundaryScript(t, snap.Root, `printf 'startup error: missing tool\n' >&2; exit 3`)}
+	snap.Config["hooks"] = map[string]any{"boundaries": boundaryScript(t, snap.Root, fmt.Sprintf(`printf '%%s\n' '%s' >&2; exit 3`, reason))}
 	diags, err := checks.Boundaries(context.Background(), checks.BoundaryRequest{Snapshot: snap, Timeout: time.Second})
-	requireBoundaryExitFailure(t, diags, err, 3)
+	message := requireBoundaryExitFailure(t, diags, err, 3)
+	if !regexp.MustCompile(`(?i)\bglobal\b`).MatchString(message) || !strings.Contains(message, reason) {
+		t.Errorf("X02 message = %q; want the global hook scope and stderr %q", message, reason)
+	}
+}
+
+func Test_CHK_086_OverrideFailureIncludesBoundedUTF8StderrTail(t *testing.T) {
+	const (
+		head = "override-stderr-head"
+		fill = "界"
+		tail = "override-stderr-tail"
+	)
+	// A 4,096-byte suffix of this payload starts inside a three-byte rune.
+	stderr := head + strings.Repeat(fill, 2000) + tail
+	snap := boundarySnapshot(t, nil)
+	snap.Modules[0].Document.Frontmatter["hooks"] = map[string]any{
+		"boundaries": boundaryScript(t, snap.Root, fmt.Sprintf(`printf '%%s' '%s' >&2; exit 7`, stderr)),
+	}
+	diags, err := checks.Boundaries(context.Background(), checks.BoundaryRequest{Snapshot: snap, Timeout: time.Second})
+	message := requireBoundaryExitFailure(t, diags, err, 7)
+	if !regexp.MustCompile(`\balpha\b`).MatchString(message) {
+		t.Error("X02 message does not identify the alpha override")
+	}
+	if !utf8.ValidString(message) {
+		t.Error("X02 message is not valid UTF-8")
+	}
+	if strings.Contains(message, head) || !strings.Contains(message, fill+tail) {
+		t.Error("X02 message must omit the stderr head and retain its UTF-8 tail")
+	}
+	excerptBytes := strings.Count(message, fill)*len(fill) + strings.Count(message, tail)*len(tail)
+	excerptBytes += strings.Count(message, "\uFFFD") * len("\uFFFD")
+	if excerptBytes > 4096 {
+		t.Errorf("X02 contains at least %d bytes of stderr; want at most 4096", excerptBytes)
+	}
+	omission := regexp.MustCompile(`(?i)\b(?:truncat(?:ed|ion)|omitted|elided)\b|…|\.{3}`)
+	if !omission.MatchString(message) {
+		t.Error("X02 message lacks a visible truncation marker")
+	}
 }
 
 func Test_CHK_043_SilentNonzeroOverrideIsIndependentOfGlobalViolation(t *testing.T) {

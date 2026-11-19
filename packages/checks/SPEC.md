@@ -281,6 +281,12 @@ Each canary DoctorCheck Name MUST begin with its probe name (baseline, undeclare
 ### CHK-085
 Doctor MUST report an agent selection error as a failed C15 probe identifying the setting at fault and skip invocation for that unresolved role.
 
+### CHK-086
+When a boundary hook exits nonzero without a module-attributed violation, its X02
+diagnostic MUST identify the global hook or module override and include the end of
+its stderr, if present, up to 4,096 bytes of valid UTF-8. The diagnostic MUST mark
+any truncation of the excerpt.
+
 ## Decisions
 
 [0071-doctor-probes] Doctor requests the literal reply FIREWEED_DOCTOR_OK; limit_patterns match

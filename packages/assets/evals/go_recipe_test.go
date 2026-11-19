@@ -473,14 +473,9 @@ func (w *goRecipeWorkspace) runHook(name, module, report string) (string, error)
 	if !ok || strings.TrimSpace(command) == "" {
 		w.t.Fatalf("recipe has no %s hook command", name)
 	}
-	for key, value := range map[string]string{
-		"{module}": module, "{module_dir}": "packages/" + module, "{report}": report,
-	} {
-		command = strings.ReplaceAll(command, key, value)
-	}
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	cmd := exec.CommandContext(ctx, "sh", "-c", command)
+	cmd := exec.CommandContext(ctx, "sh", "-c", expandRecipeHook(command, module, report))
 	cmd.Dir = w.root
 	cmd.Env = append(os.Environ(),
 		"FIREWEED_BIN="+filepath.Join(w.root, "fake-fireweed"),
@@ -511,7 +506,7 @@ func (w *goRecipeWorkspace) eval(module string) (junitSuite, string, error) {
 }
 
 func (w *goRecipeWorkspace) boundaries() (string, error) {
-	return w.runHook("boundaries", "alpha", "")
+	return w.runHook("boundaries", "", "")
 }
 
 func (w *goRecipeWorkspace) applyCanary(files map[string]string, module string) []string {

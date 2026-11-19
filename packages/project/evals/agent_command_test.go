@@ -122,6 +122,16 @@ func Test_PRJ_088_ResolveAuditAliasOrInheritWorkerDefault(t *testing.T) {
 		config["audit"] = map[string]any{"agent": "reviewer"}
 		requireAgentCommand(t, config, "audit", "", []any{"review-tool", "--message", "{prompt}"}, false)
 	})
+	t.Run("unlisted_worker_default", func(t *testing.T) {
+		config := namedAgentConfig()
+		config["agent"].(map[string]any)["default"] = "absent-worker"
+		audit := map[string]any{"agent": "reviewer"}
+		config["audit"] = audit
+		requireAgentCommand(t, config, "audit", "", []any{"review-tool", "--message", "{prompt}"}, false)
+
+		delete(audit, "agent")
+		requireAgentCommandError(t, config, "audit", "", "C01", "agent.default")
+	})
 	t.Run("explicitly_name_worker_default", func(t *testing.T) {
 		config := namedAgentConfig()
 		config["audit"] = map[string]any{"agent": "standard"}

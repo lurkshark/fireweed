@@ -1,8 +1,11 @@
 package evals_test
 
 import (
+	"bytes"
 	"os"
 	"path/filepath"
+	"reflect"
+	"slices"
 	"strings"
 	"testing"
 
@@ -105,6 +108,82 @@ func Test_APP_091_APP_092_APP_093_ReleaseOwnedClaimRetainsDirtyWork(t *testing.T
 			releaseAppFailure(t, status, 1, out, errOut, tc.json, "P02")
 			if got := releaseAppRefs(t, root); got != wantRefs {
 				t.Errorf("repeated release changed refs: %q -> %q", wantRefs, got)
+			}
+		})
+	}
+}
+
+func Test_APP_169_ReleaseRecoversWithInvalidLiveConfiguration(t *testing.T) {
+	for _, tc := range []struct {
+		name, selector string
+		liveConfig     func(string) string
+		json           bool
+	}{
+		{"malformed-yaml", "changes/0001-manual.md", func(string) string { return "modules: [broken\n" }, false},
+		{"excluding-pin", "0001-manual.md", incompatibleConfig, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := lifecycleCLIProject(t, "fixture-start-does-not-run-hooks", false)
+			dir := appNestedDir(t, root)
+			config := readInitFile(t, root, "fireweed.yaml")
+			authoringChange(t, root, "0002-other.md", "Users need another change.\n", "### new:other\nAlpha MUST return another value.\n", "")
+			cliCommit(t, root, "queue unrelated change")
+			linked := filepath.Join(t.TempDir(), "linked")
+			cliGit(t, root, "worktree", "add", "-b", "linked", linked, "HEAD")
+			cliGit(t, linked, "rm", "changes/0001-manual.md")
+			cliCommit(t, linked, "select only the unrelated change")
+			foreign, err := workflow.Start(linked, "other")
+			if err != nil || foreign.ClaimOID == "" {
+				t.Fatalf("fixture could not claim other in linked worktree: %v", err)
+			}
+			owned, err := workflow.Start(root, "manual")
+			if err != nil || owned.ClaimOID == "" {
+				t.Fatalf("fixture could not claim manual: %v", err)
+			}
+
+			const edited = "packages/alpha/api.go"
+			appPut(t, root, edited, "package alpha // staged edit\n")
+			cliGit(t, root, "add", edited)
+			appPut(t, root, edited, "package alpha // unstaged edit\n")
+			appPut(t, root, "worker-untracked.txt", "unfinished work\n")
+			appPut(t, root, ".fireweed/runs/"+owned.Run+"/work.txt", "runtime file\n")
+			appPut(t, root, "fireweed.yaml", tc.liveConfig(config))
+			before := migrateCapture(t, root)
+			if tc.name == "malformed-yaml" {
+				status, out, stderr := runSavedAttemptApp(t, dir, "release", "other", "--json")
+				if status == 0 || stderr != "" {
+					t.Errorf("release other: exit=%d stdout=%q stderr=%q; want JSON failure", status, out, stderr)
+				} else {
+					assertFailedJSON(t, out)
+				}
+				if got := releaseAppRefs(t, root); got != before.refs {
+					t.Errorf("release with unrelated selector changed refs: before=%q after=%q", before.refs, got)
+				}
+			}
+
+			args := []string{"release", tc.selector}
+			if tc.json {
+				args = append(args, "--json")
+			}
+			status, out, stderr := runSavedAttemptApp(t, dir, args...)
+			if status != 0 || stderr != "" {
+				t.Fatalf("release: exit=%d stdout=%q stderr=%q", status, out, stderr)
+			}
+			confirmation := out
+			if tc.json {
+				confirmation = commandStringData(t, out)
+			}
+			if !strings.Contains(strings.ToLower(confirmation), "releas") || !strings.Contains(confirmation, "manual") {
+				t.Errorf("missing release confirmation: %q", confirmation)
+			}
+			after := migrateCapture(t, root)
+			claimLine := "refs/fireweed/claims/manual " + owned.ClaimOID
+			wantRefs := slices.DeleteFunc(strings.Split(before.refs, "\n"), func(line string) bool { return line == claimLine })
+			if after.refs != strings.Join(wantRefs, "\n") {
+				t.Errorf("release must drop only %q: before=%q after=%q", claimLine, before.refs, after.refs)
+			}
+			if after.head != before.head || !bytes.Equal(after.index, before.index) || !reflect.DeepEqual(after.files, before.files) {
+				t.Error("release changed HEAD, index or working files")
 			}
 		})
 	}

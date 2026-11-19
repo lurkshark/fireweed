@@ -545,6 +545,16 @@ Context MUST use the complete text of .fireweed/playbooks/<name>.md when that ov
 ### FLOW-144
 The playbook hash appended by Done MUST be the full hexadecimal SHA-256 of the exact override or embedded text selected for that completed phase under the Context playbook-selection rule.
 
+### FLOW-145
+In audit phase, Verify and Done MUST treat blank separator lines adjoining an
+otherwise permitted Audit edit as formatting when comparing the submission with
+the approved change.
+
+### FLOW-146
+When audit Done retains a finding, it MUST preserve the finding line's text apart
+from surrounding whitespace in the recorded Audit section. If the finding blocks the
+change, its line in Questions MUST retain the same text.
+
 ## Decisions
 
 [0012-manual-lifecycle] Provenance lines begin `- <phase>` and use `playbook=<full SHA-256>` plus `tests=N failing=N passing=N` for the reports verified by that Done call.

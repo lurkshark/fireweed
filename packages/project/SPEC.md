@@ -318,6 +318,11 @@ With no explicit worker alias, ResolveAgentCommand MUST select the command named
 ### PRJ-088
 For audit, ResolveAgentCommand MUST select the command named by audit.agent in agent.commands when that reference is configured. An invalid audit reference MUST return C01 identifying the setting at fault. An omitted audit reference MUST use the worker default and report that inheritance.
 
+### PRJ-089
+Load and LoadAt MUST return a C12 error through contracts.ErrorCode for a matched
+module's invalid metadata or invalid zone field type. The error's subject MUST
+identify the repository-relative SPEC.md path.
+
 ## Decisions
 
 [0126-spec-history-query] History reads the project's current archive files, as the archive-backed show

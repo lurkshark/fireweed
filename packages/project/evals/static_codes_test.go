@@ -117,16 +117,23 @@ func Test_PRJ_042_CheckDocumentAndItemCauses(t *testing.T) {
 	}
 }
 
-func Test_PRJ_043_CheckMetadataAndSetCauses(t *testing.T) {
+const invalidDependsOnSpec = "---\nname: alpha\nid_prefix: ALP\ndepends_on: [7]\n---\n# Alpha\n\n## Specs\n"
+const invalidEvalZoneSpec = "---\nname: alpha\nid_prefix: ALP\ndepends_on: []\nevals: 7\n---\n# Alpha\n\n## Specs\n"
+
+func Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses(t *testing.T) {
+	const path = "packages/alpha/SPEC.md"
 	for _, tc := range []struct {
 		name, source string
 		edit         func(*testing.T, string)
 	}{
 		{"metadata_type", "load", func(t *testing.T, root string) {
-			put(t, root, "packages/alpha/SPEC.md", "---\nname: [alpha]\nid_prefix: ALP\ndepends_on: []\n---\n# Alpha\n\n## Specs\n")
+			put(t, root, path, "---\nname: [alpha]\nid_prefix: ALP\ndepends_on: []\n---\n# Alpha\n\n## Specs\n")
+		}},
+		{"invalid_depends_on", "load", func(t *testing.T, root string) {
+			put(t, root, path, invalidDependsOnSpec)
 		}},
 		{"zone_type", "load", func(t *testing.T, root string) {
-			put(t, root, "packages/alpha/SPEC.md", "---\nname: alpha\nid_prefix: ALP\ndepends_on: []\nevals: 7\n---\n# Alpha\n\n## Specs\n")
+			put(t, root, path, invalidEvalZoneSpec)
 		}},
 		{"identity_set_key", "project", func(t *testing.T, root string) {
 			queued(t, root, "0001-invalid.md", "set:\n  name: renamed\n", "Needed.\n", "", "", "")
@@ -144,6 +151,7 @@ func Test_PRJ_043_CheckMetadataAndSetCauses(t *testing.T) {
 			var cause error
 			if tc.source == "load" {
 				_, cause = project.Load(root)
+				requireErrorCodeAndSubject(t, cause, "C12", path)
 			} else {
 				_, cause = project.Project(root, "")
 			}
