@@ -278,6 +278,22 @@ Each built-in recipe's global boundaries command MUST run without a module selec
 and check all modules returned by FIREWEED_BIN modules --json. It MUST attribute
 each detected violation to its source module.
 
+### AST-074
+The author-change playbook MUST direct authors to specify which inputs govern an
+operation when more than one source can supply them. It MUST direct authors to state
+fallback, merge or preservation behavior when callers rely on it.
+
+### AST-075
+The evals playbook MUST guide workers to test source selection through the supplying
+public interface by making a competing input conflicting or invalid when the
+contract permits ignoring it.
+
+### AST-076
+The evals playbook MUST guide workers to assert the contracted result of structured
+outputs and assert exact representation only when required by the spec. For a
+regression caused by incidental format or order, it MUST advise using a second
+valid representation to exercise the distinction.
+
 ## Decisions
 
 [0014-go-setup-bundle] Recipe files use .fireweed/recipes/go.md, .fireweed/hooks.go,
