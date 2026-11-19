@@ -1,7 +1,9 @@
 ---
 already_satisfied:
-    - new:queue-malformed-config
+    - PRJ-090
 module: project
+phase: audit
+run: 20261119T225940-c0d588746bc6509e821ea05b
 ---
 
 ## Motivation
@@ -16,7 +18,7 @@ absent.
 
 ## Added
 
-### new:queue-malformed-config
+### PRJ-090
 If `fireweed.yaml` contains malformed YAML, `Queue` MUST return an error whose
 `contracts.ErrorCode` is `C01`, even when the `changes/` directory is absent.
 
@@ -32,3 +34,7 @@ Add an eval through the public `project.Queue` API. Use an otherwise valid
 project fixture with no `changes/` directory, write malformed YAML to
 `fireweed.yaml`, and assert that `contracts.ErrorCode` reports `C01`. The
 current implementation loads the project before reading the queue.
+## Provenance
+
+- evals 2026-11-19T23:00:27.774915Z agent=codex fireweed=0.2.4 playbook=5e05bacdae954379b468564c11429c5532016e26a7afbcd418f9bdb9441e151c tests=327 failing=0 passing=327
+
