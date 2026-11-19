@@ -1,6 +1,6 @@
 ---
 module: assets
-phase: audit
+phase: impl
 run: 20261119T002320-1d7087d5d40dd94906df1936
 ---
 
@@ -55,4 +55,9 @@ each failed on missing guidance in the current `Playbook` output.
 ## Provenance
 
 - evals 2026-11-19T00:29:27.972428Z agent=codex fireweed=0.2.1 playbook=d2fd7216b035a9614c390d254dd9195ac2c65ae1ed18f07ac93c77b9732d4156 tests=160 failing=3 passing=157
+- audit 2026-11-19T00:30:01.66117Z agent=manual fireweed=0.2.1 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+
+## Audit
+
+No findings; checked AST-074, AST-075, AST-076
 
