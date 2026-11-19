@@ -65,6 +65,10 @@ v0.2.0**. Gate **6 retains its eight accepted historical proofs**.
 
 ## Controller and history
 
+The controller for queued changes 0330 and 0331 reports 0.2.4 and was built
+with `-trimpath` from clean committed main at
+`8ad16e50aa3e2531594f7f76ff86d214c4e069ea` with no active run or claim.
+
 The local main controller reports 0.2.1. It was built with `-trimpath`
 from clean committed main at `23d41e6b2b1e543a9d453b3efd86828095c4d3b6`
 after PR #24 merged, with no active run or claim. The rebuilt controller
