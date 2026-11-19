@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -251,13 +252,21 @@ func Test_APP_009_APP_027_APP_028_APP_040_StartPreservesApprovalWarning(t *testi
 			if stderr != "" || !strings.Contains(cliString(t, output), playbook) {
 				t.Errorf("JSON start omitted context or wrote stderr: %q %q", output, stderr)
 			}
-			var diagnostics []struct {
+			type diagnostic struct {
 				Code    string `json:"code"`
 				Message string `json:"message"`
 				Warning bool   `json:"warning"`
 			}
-			if err := json.Unmarshal(decodeEnvelope(t, output)["diagnostics"], &diagnostics); err != nil || len(diagnostics) == 0 || diagnostics[0].Code != "P04" || diagnostics[0].Message == "" || !diagnostics[0].Warning {
-				t.Errorf("approval warning missing: %s, %v", output, err)
+			var diagnostics []diagnostic
+			if err := json.Unmarshal(decodeEnvelope(t, output)["diagnostics"], &diagnostics); err != nil {
+				t.Fatalf("decode start diagnostics: %v", err)
+			}
+			for _, code := range []string{"P04", "P05"} {
+				if !slices.ContainsFunc(diagnostics, func(d diagnostic) bool {
+					return d.Code == code && d.Warning && strings.TrimSpace(d.Message) != ""
+				}) {
+					t.Errorf("start diagnostics=%+v; want %s warning with a nonempty message", diagnostics, code)
+				}
 			}
 		} else if !strings.Contains(output, playbook) || !strings.Contains(output+stderr, "P04") {
 			t.Errorf("plain start omitted context or P04 warning: %q %q", output, stderr)
