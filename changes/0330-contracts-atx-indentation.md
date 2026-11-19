@@ -4,6 +4,8 @@ already_satisfied:
 bases:
     CON-002: d56419d5
 module: contracts
+phase: audit
+run: 20261119T222831-c3e628bd39ef3cc8cb6aae11
 ---
 
 ## Motivation
@@ -34,3 +36,7 @@ and return the expected body. Assert that indented level-one and level-two
 headings end an open section and that a heading-like line with four leading
 spaces remains in its body. The current implementation already follows this
 indentation rule.
+## Provenance
+
+- evals 2026-11-19T22:29:30.917421Z agent=codex fireweed=0.2.4 playbook=5e05bacdae954379b468564c11429c5532016e26a7afbcd418f9bdb9441e151c tests=72 failing=0 passing=72
+
