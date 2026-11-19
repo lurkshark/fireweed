@@ -323,6 +323,10 @@ Load and LoadAt MUST return a C12 error through contracts.ErrorCode for a matche
 module's invalid metadata or invalid zone field type. The error's subject MUST
 identify the repository-relative SPEC.md path.
 
+### PRJ-090
+If `fireweed.yaml` contains malformed YAML, `Queue` MUST return an error whose
+`contracts.ErrorCode` is `C01`, even when the `changes/` directory is absent.
+
 ## Decisions
 
 [0126-spec-history-query] History reads the project's current archive files, as the archive-backed show
