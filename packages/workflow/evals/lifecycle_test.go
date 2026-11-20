@@ -564,6 +564,40 @@ func Test_FLOW_002_FLOW_020_FLOW_021_RejectsAuthorMetadataAndZonesBeforeHooks(t 
 	}
 }
 
+func Test_FLOW_002_HeldConfigZoneViolationPrecedesLiveConfigError(t *testing.T) {
+	const configPath = "fireweed.yaml"
+	for _, operation := range []struct {
+		name string
+		call func(string) (workflow.Result, error)
+	}{
+		{"Verify", func(root string) (workflow.Result, error) { return verify(root, false) }},
+		{"Done", done},
+	} {
+		t.Run(operation.name, func(t *testing.T) {
+			root := fixture(t, "", "", "", "", "")
+			marker := hookMarker(t, root)
+			start(t, root)
+			write(t, root, configPath, "modules: [\n")
+
+			_, loadErr := project.Load(root)
+			assertErrorCode(t, "Load malformed live config", loadErr, "C01")
+
+			result, err := operation.call(root)
+			if code, subject, ok := contracts.ErrorCode(err); !ok || code != "Z01" || subject != configPath {
+				t.Errorf("%s error = %v (code %q, subject %q); want Z01 for %s", operation.name, err, code, subject, configPath)
+			}
+			if !slices.ContainsFunc(result.Diagnostics, func(d project.Diagnostic) bool {
+				return d.Code == "Z01" && d.Path == configPath && !d.Warning
+			}) {
+				t.Errorf("%s diagnostics = %v; want a Z01 error for %s", operation.name, result.Diagnostics, configPath)
+			}
+			if _, err := os.Stat(marker); !os.IsNotExist(err) {
+				t.Errorf("eval hook marker should be absent after %s: %v", operation.name, err)
+			}
+		})
+	}
+}
+
 func Test_FLOW_022_FLOW_023_FLOW_031_EvalsRequireCoverageAndPerIDFailFirst(t *testing.T) {
 	for _, scenario := range []string{"missing-coverage", "passing-target-unrelated-failure", "already-satisfied", "fixes"} {
 		t.Run(scenario, func(t *testing.T) {
