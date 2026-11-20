@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strings"
 	"testing"
@@ -382,6 +383,7 @@ func Test_APP_168_ContextRecoversWithInvalidLiveConfiguration(t *testing.T) {
 	cliHold(t, root)
 	const changePath = "changes/0001-manual.md"
 	heldChange := readInitFile(t, root, changePath)
+	assignedRequirement := regexp.MustCompile(`(?m)^[ \t]*(?:#{1,6}[ \t]+)?ALP-002[ \t]*\n\s*Alpha MUST return the additional value\.[ \t]*$`)
 
 	for _, tc := range []struct {
 		name, liveConfig, selector string
@@ -411,12 +413,12 @@ func Test_APP_168_ContextRecoversWithInvalidLiveConfiguration(t *testing.T) {
 			if out != want {
 				t.Error("context with invalid live configuration differs from the original held context")
 			}
-			change, projected, found := strings.Cut(out, "\n# Projected spec\n")
-			if !found || !strings.Contains(change, heldChange) {
-				t.Error("context omitted the held change")
+			before, after, found := strings.Cut(out, heldChange)
+			if !found {
+				t.Fatal("context omitted the complete held change")
 			}
-			spec, _, _ := strings.Cut(projected, "\n# Interface\n")
-			if !strings.Contains(spec, "### ALP-002\nAlpha MUST return the additional value.") {
+			// The held change already contains the assigned requirement.
+			if !assignedRequirement.MatchString(before) && !assignedRequirement.MatchString(after) {
 				t.Error("context omitted the assigned requirement from the projected spec")
 			}
 		})

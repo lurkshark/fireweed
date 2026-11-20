@@ -2,6 +2,8 @@
 eval_fix:
     - APP-168
 module: app
+phase: audit
+run: 20261120T214929-cb5917c650aa8e8aec7bca59
 ---
 
 ## Motivation
@@ -31,3 +33,7 @@ in the returned text. Exclude that matched block when checking for the
 assigned spec ID and its normative text, since the held change already
 contains the same requirement. Match the content without requiring a
 particular Markdown heading level.
+## Provenance
+
+- evals 2026-11-20T21:57:34.333427Z agent=codex fireweed=0.2.4 playbook=5e05bacdae954379b468564c11429c5532016e26a7afbcd418f9bdb9441e151c tests=415 failing=0 passing=415
+
