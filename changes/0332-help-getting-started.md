@@ -2,6 +2,8 @@
 bases:
     AST-008: 9ce0d11f
 module: assets
+phase: audit
+run: 20261120T204331-fef9419b1f49f900fe2dfbbb
 ---
 
 ## Motivation
@@ -19,12 +21,12 @@ Extend the overview returned by `Help()`.
 
 ## Added
 
-### new:help-purpose
+### AST-077
 Help MUST briefly describe Fireweed as a CLI for spec-driven development in Git.
 It MUST explain that coding agents write evals and implementation in separate
 steps that Fireweed verifies and records in Git.
 
-### new:help-setup-sequence
+### AST-078
 Help MUST direct users starting a Git project to `fireweed help init` to choose
 a recipe and worker. It MUST instruct them to run `fireweed init`, follow the
 printed recipe instructions, and describe the project in `SYSTEM.md`. It MUST
@@ -42,3 +44,12 @@ descriptions on the command pages rather than the overview.
 ## Removed
 
 ## Decisions
+
+## Notes
+
+The targeted evals fail on the current overview for AST-008, AST-077 and AST-078.
+The overview lives in the implementation-writable `packages/assets/internal/content/content.go`.
+## Provenance
+
+- evals 2026-11-20T20:48:07.964843Z agent=codex fireweed=0.2.4 playbook=5e05bacdae954379b468564c11429c5532016e26a7afbcd418f9bdb9441e151c tests=162 failing=3 passing=159
+
