@@ -86,6 +86,20 @@ func Test_PRJ_027_PRJ_028_QueueOrderContentAndArchive(t *testing.T) {
 	}
 }
 
+func Test_PRJ_090_QueueRejectsMalformedConfigWithoutChangesDirectory(t *testing.T) {
+	root := fixture(t)
+	put(t, root, "packages/alpha/SPEC.md", alphaSpecHeader+"### ALP-001\nAlpha MUST work.\n")
+	if _, err := os.Lstat(filepath.Join(root, "changes")); !os.IsNotExist(err) {
+		t.Fatalf("fixture must omit changes/ (Lstat error: %v)", err)
+	}
+	put(t, root, "fireweed.yaml", "modules: [broken\n")
+
+	_, err := project.Queue(root)
+	if code, _, ok := contracts.ErrorCode(err); !ok || code != "C01" {
+		t.Errorf("Queue error = %v (code %q); want C01 for malformed fireweed.yaml", err, code)
+	}
+}
+
 func Test_PRJ_029_QueueAndProjectPreservePendingParseDiagnostics(t *testing.T) {
 	const slug = "bad-change"
 	const path = "changes/0001-" + slug + ".md"

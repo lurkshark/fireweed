@@ -51,3 +51,27 @@ func Test_CON_002_CON_009_LevelOneSectionBoundary(t *testing.T) {
 		t.Errorf("ReplaceSection(Notes) = %q; want %q", got, want)
 	}
 }
+
+func Test_CON_002_IndentedSectionHeadings(t *testing.T) {
+	for _, tc := range []struct{ name, indent string }{
+		{"one_space", " "},
+		{"two_spaces", "  "},
+		{"three_spaces", "   "},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			const specs = "Original specs.\n\n    # Example title\n    ## Example section\n\nMore specs.\n\n"
+			const decisions = "Project decisions.\n\n"
+			source := "# Module\n\n    ## Specs\n    Example specs.\n\n" +
+				tc.indent + "## Specs\n" + specs +
+				tc.indent + "## Decisions\n" + decisions +
+				tc.indent + "# Appendix\n\nAppendix text.\n"
+
+			if got, ok := contracts.Section(source, "Specs"); !ok || got != specs {
+				t.Errorf("Section(Specs) = %q, %v; want %q, true", got, ok, specs)
+			}
+			if got, ok := contracts.Section(source, "Decisions"); !ok || got != decisions {
+				t.Errorf("Section(Decisions) = %q, %v; want %q, true", got, ok, decisions)
+			}
+		})
+	}
+}

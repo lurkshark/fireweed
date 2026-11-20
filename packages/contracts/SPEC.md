@@ -15,7 +15,7 @@ name: contracts
 ParseDocument MUST decode leading --- delimited YAML mapping frontmatter and retain the remaining Markdown body.
 
 ### CON-002
-Section MUST return the body and presence of the first matching named level-two Markdown section. A section MUST end at the next level-one or level-two ATX heading outside fenced code; headings inside fenced code MUST NOT start or end a section.
+Section MUST return the body and presence of the first matching named level-two Markdown section. A section MUST end at the next level-one or level-two ATX heading outside fenced code. For section starts and boundaries, ATX headings can have zero to three leading spaces. Headings inside fenced code MUST NOT start or end a section.
 
 ### CON-003
 SpecHash MUST return the first eight lowercase hex characters of SHA-256 over the rendered item, including its ID and tag, after normalizing CRLF to LF, removing spaces/tabs at line ends and canonicalizing trailing blank lines to one final newline.
