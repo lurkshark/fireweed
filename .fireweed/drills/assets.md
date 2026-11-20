@@ -1,9 +1,9 @@
 ---
 agent: opencode
-base_commit: 4e3ac848d768e7836a69e5a5ba9db38e58dcb5a0
-date: "2026-11-17T22:43:13.821459Z"
+base_commit: 454cb35ae66aa58cb5c086c6a60ee94f4da7e8e3
+date: "2026-11-19T16:22:20.811968Z"
 model: opencode/inkling-2-small-free#high
-result: fail
+result: pass
 ---
 
 ## Own evals
@@ -97,6 +97,7 @@ result: fail
 - assets / Test_AST_027_DoctorExplanations/C16 / AST-027 / pass
 - assets / Test_AST_059_SpecOutsideModuleGlobsExplanation / AST-059 / pass
 - assets / Test_AST_064_AuthorChangeProtocol / AST-064 / pass
+- assets / Test_AST_072_AuthorChangeFailureGuidance / AST-072 / pass
 - assets / Test_AST_008_Help / AST-008 / pass
 - assets / Test_AST_061_CommandPages / AST-061 / pass
 - assets / Test_AST_061_CommandOptions / AST-061 / pass
@@ -126,6 +127,10 @@ result: fail
 - assets / Test_AST_029_EvalFixEvalsGuidance / AST-029 / pass
 - assets / Test_AST_030_EvalFixAuditGuidance / AST-030 / pass
 - assets / Test_AST_031_EvalFixImplGuidance / AST-031 / pass
+- assets / Test_AST_073_GlobalRecipeBoundaries / AST-073 / pass
+- assets / Test_AST_073_GlobalRecipeBoundaries/go / AST-073 / pass
+- assets / Test_AST_073_GlobalRecipeBoundaries/typescript-pnpm / AST-073 / pass
+- assets / Test_AST_073_GlobalRecipeBoundaries/python-uv / AST-073 / pass
 - assets / Test_AST_047_GoRecipeEvalNameBoundary / AST-047 / pass
 - assets / Test_AST_047_GoRecipeEvalNameBoundary/recipe_instructions / AST-047 / pass
 - assets / Test_AST_047_GoRecipeEvalNameBoundary/module_SPEC_template / AST-047 / pass
@@ -145,6 +150,9 @@ result: fail
 - assets / Test_AST_035_H02Explanation / AST-035 / pass
 - assets / Test_AST_036_H03Explanation / AST-036 / pass
 - assets / Test_AST_037_H04Explanation / AST-037 / pass
+- assets / Test_AST_074_AuthorInputContracts / AST-074 / pass
+- assets / Test_AST_075_EvalInputSelection / AST-075 / pass
+- assets / Test_AST_076_EvalStructuredResults / AST-076 / pass
 - assets / Test_AST_033_MixedEvalFixExplanation / AST-033 / pass
 - assets / Test_AST_042_B04Explanation / AST-042 / pass
 - assets / Test_AST_032_RegenerateWarningExplanation / AST-032 / pass
@@ -263,6 +271,12 @@ result: fail
 - app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/coverage / APP-164 / pass
 - app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/next / APP-164 / pass
 - app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/run / APP-164 / pass
+- app / Test_APP_170_ManualVerificationRejectsIncompatibleApprovedConfiguration / APP-170 / pass
+- app / Test_APP_170_ManualVerificationRejectsIncompatibleApprovedConfiguration/verify / APP-170 / pass
+- app / Test_APP_170_ManualVerificationRejectsIncompatibleApprovedConfiguration/done / APP-170 / pass
+- app / Test_APP_170_ManualVerificationReportsProtectedConfigEdit / APP-170 / pass
+- app / Test_APP_170_ManualVerificationReportsProtectedConfigEdit/verify / APP-170 / pass
+- app / Test_APP_170_ManualVerificationReportsProtectedConfigEdit/done / APP-170 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration / APP-164 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/check_--json / APP-164 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/show_alpha / APP-164 / pass
@@ -396,6 +410,9 @@ result: fail
 - app / Test_APP_009_APP_027_APP_028_APP_040_StartPreservesApprovalWarning / APP-009, APP-027, APP-028, APP-040 / pass
 - app / Test_APP_004_APP_164_HeldModulesUseApprovedProjection / APP-004, APP-164 / pass
 - app / Test_APP_011_APP_032_APP_033_ContextCompactFullAndErrors / APP-011, APP-032, APP-033 / pass
+- app / Test_APP_168_ContextRecoversWithInvalidLiveConfiguration / APP-168 / pass
+- app / Test_APP_168_ContextRecoversWithInvalidLiveConfiguration/malformed-yaml / APP-168 / pass
+- app / Test_APP_168_ContextRecoversWithInvalidLiveConfiguration/excluding-pin / APP-168 / pass
 - app / Test_APP_012_APP_034_APP_035_APP_036_CoverageCurrentProjectionAndErrors / APP-012, APP-034, APP-035, APP-036 / pass
 - app / Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelectedSpecs / APP-012, APP-160, APP-164 / pass
 - app / Test_APP_010_APP_029_APP_030_APP_031_VerifyDoneAuditAndFullChecks / APP-010, APP-029, APP-030, APP-031 / pass
@@ -440,12 +457,7 @@ result: fail
 - app / Test_APP_159_NewModuleRejectsInvalidIdentities/prefix-hyphen / APP-159 / pass
 - app / Test_APP_159_NewModuleRejectsInvalidIdentities/digit-led-prefix / APP-159 / pass
 - app / Test_APP_159_NewModuleRejectsInvalidIdentities/non-ASCII-prefix / APP-159 / pass
-- app / Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule / APP-101, APP-104, APP-159 / fail
-
-=== RUN   Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule
-    new_module_cli_test.go:252: rendered module identity: "---\nname: empty2-3-mod\ndepends_on: []\nid_prefix: E2M\ninterface:\n    - api.go\nevals:\n    - evals/**\ndisposable:\n    - internal/**\n---\n\n# empty2-3-mod\n\nempty2-3-mod is a fireweed module. Its interface is retained (api.go); its evals\nare the contract; everything under internal/** is disposable.\n\n## Specs\n\n### E2M-001\nThe empty2-3-mod module MUST expose its documented facade from api.go without\nleaking disposable implementation types to callers.\n\n## Evals\n\nEval testcases map to spec IDs by matching the spec prefix and number in the\ntestcase name or classname. A letter immediately before a spec prefix prevents ID matching: Test_GRT_001_Name matches GRT-001, while TestGRT001 does not match GRT-001, because the G directly precedes the prefix and looks like the tail of a longer identifier. Keep the separator underscore or hyphen when the name would otherwise start with a letter. Test functions such as Test_E2M_001_Name match E2M-001.\n"
---- FAIL: Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule (0.56s)
-
+- app / Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule / APP-101, APP-104, APP-159 / pass
 - app / Test_APP_074_APP_076_APP_077_NextDiscoversRootAndAppliesChange / APP-074, APP-076, APP-077 / pass
 - app / Test_APP_075_NextAllowUnmergedAndUsage / APP-075 / pass
 - app / Test_APP_076_NextPlainEmptyQueue / APP-076 / pass
@@ -495,6 +507,9 @@ result: fail
 - app / Test_APP_091_APP_092_APP_093_ReleaseOwnedClaimRetainsDirtyWork / APP-091, APP-092, APP-093 / pass
 - app / Test_APP_091_APP_092_APP_093_ReleaseOwnedClaimRetainsDirtyWork/plain-path / APP-091, APP-092, APP-093 / pass
 - app / Test_APP_091_APP_092_APP_093_ReleaseOwnedClaimRetainsDirtyWork/json-filename / APP-091, APP-092, APP-093 / pass
+- app / Test_APP_169_ReleaseRecoversWithInvalidLiveConfiguration / APP-169 / pass
+- app / Test_APP_169_ReleaseRecoversWithInvalidLiveConfiguration/malformed-yaml / APP-169 / pass
+- app / Test_APP_169_ReleaseRecoversWithInvalidLiveConfiguration/excluding-pin / APP-169 / pass
 - app / Test_APP_092_APP_093_ReleaseForeignClaimKeepsOwner / APP-092, APP-093 / pass
 - app / Test_APP_092_APP_093_ReleaseUsageAndConfiguration / APP-092, APP-093 / pass
 - app / Test_APP_092_APP_093_ReleaseUsageAndConfiguration/missing-argument / APP-092, APP-093 / pass
@@ -574,7 +589,8 @@ result: fail
 - checks / Test_CHK_039_CHK_040_OptOutSuppressesOnlyItsModuleAndWarns / CHK-039, CHK-040 / pass
 - checks / Test_CHK_044_CHK_045_MissingHookRequiredVersusOptional / CHK-044, CHK-045 / pass
 - checks / Test_CHK_041_CHK_042_NormalNonzeroExitCanUseBaselineAndOptOut / CHK-041, CHK-042 / pass
-- checks / Test_CHK_043_RequiredGlobalHookRejectsUnattributedNonzeroExit / CHK-043 / pass
+- checks / Test_CHK_043_CHK_086_RequiredGlobalHookRejectsUnattributedNonzeroExit / CHK-043, CHK-086 / pass
+- checks / Test_CHK_086_OverrideFailureIncludesBoundedUTF8StderrTail / CHK-086 / pass
 - checks / Test_CHK_043_SilentNonzeroOverrideIsIndependentOfGlobalViolation / CHK-043 / pass
 - checks / Test_CHK_043_LaunchCancellationAndTimeoutStayErrors / CHK-043 / pass
 - checks / Test_CHK_065_CHK_066_DoctorAgentTailAcrossStreams / CHK-065, CHK-066 / pass
@@ -670,6 +686,9 @@ result: fail
 - checks / Test_CHK_003_CHK_032_CHK_033_CHK_034_CHK_035_GlobalShellHookQuotesAndOnePassExpansion / CHK-003, CHK-032, CHK-033, CHK-034, CHK-035 / pass
 - checks / Test_CHK_003_CHK_031_CHK_032_CHK_033_CHK_034_CHK_035_ModuleOverrideArgvAndOutput / CHK-003, CHK-031, CHK-032, CHK-033, CHK-034, CHK-035 / pass
 - checks / Test_CHK_038_ExitAndReportAgreement / CHK-038 / pass
+- checks / Test_CHK_038_ExitAndReportAgreement/zero-with-failure / CHK-038 / pass
+- checks / Test_CHK_038_ExitAndReportAgreement/nonzero-with-pass / CHK-038 / pass
+- checks / Test_CHK_038_ExitAndReportAgreement/nonzero-with-failure / CHK-038 / pass
 - checks / Test_CHK_080_EvaluateRetainsParsedFailureDetails / CHK-080 / pass
 - checks / Test_CHK_080_EvaluateRetainsParsedFailureDetails/nonzero_failure / CHK-080 / pass
 - checks / Test_CHK_080_EvaluateRetainsParsedFailureDetails/zero_passing / CHK-080 / pass
@@ -726,6 +745,7 @@ result: fail
 - project / Test_PRJ_087_ResolveNamedWorkerDefault/invalid_default_command / PRJ-087 / pass
 - project / Test_PRJ_088_ResolveAuditAliasOrInheritWorkerDefault / PRJ-088 / pass
 - project / Test_PRJ_088_ResolveAuditAliasOrInheritWorkerDefault/select_independent_audit_alias / PRJ-088 / pass
+- project / Test_PRJ_088_ResolveAuditAliasOrInheritWorkerDefault/unlisted_worker_default / PRJ-088 / pass
 - project / Test_PRJ_088_ResolveAuditAliasOrInheritWorkerDefault/explicitly_name_worker_default / PRJ-088 / pass
 - project / Test_PRJ_088_ResolveAuditAliasOrInheritWorkerDefault/inherit_without_audit_section / PRJ-088 / pass
 - project / Test_PRJ_088_ResolveAuditAliasOrInheritWorkerDefault/inherit_without_audit_reference / PRJ-088 / pass
@@ -891,7 +911,7 @@ result: fail
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-009_nonnormative_change / PRJ-009, PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-010_invalid_review_tag / PRJ-010, PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-010_invalid_quarantine_tag / PRJ-010, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id / PRJ-011, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_PRJ-068_duplicate_module_id / PRJ-011, PRJ-015, PRJ-016, PRJ-068 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-012_foreign_module_id / PRJ-012, PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-012_foreign_change_id / PRJ-012, PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-013_duplicate_edit_identity / PRJ-013, PRJ-015, PRJ-016 / pass
@@ -920,10 +940,12 @@ result: fail
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/missing_recorded_config / PRJ-050 / pass
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/malformed_recorded_config / PRJ-050 / pass
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/missing_recorded_SPEC / PRJ-050 / pass
-- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics / PRJ-050 / pass
-- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/malformed_frontmatter / PRJ-050 / pass
-- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/malformed_item_heading / PRJ-050 / pass
-- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/duplicate_item_identity / PRJ-050 / pass
+- project / Test_PRJ_050_PRJ_089_LoadAtPreservesRecordedSpecDiagnostics / PRJ-050, PRJ-089 / pass
+- project / Test_PRJ_050_PRJ_089_LoadAtPreservesRecordedSpecDiagnostics/malformed_frontmatter / PRJ-050, PRJ-089 / pass
+- project / Test_PRJ_050_PRJ_089_LoadAtPreservesRecordedSpecDiagnostics/malformed_item_heading / PRJ-050, PRJ-089 / pass
+- project / Test_PRJ_050_PRJ_089_LoadAtPreservesRecordedSpecDiagnostics/duplicate_item_identity / PRJ-050, PRJ-089 / pass
+- project / Test_PRJ_050_PRJ_089_LoadAtPreservesRecordedSpecDiagnostics/invalid_depends_on / PRJ-050, PRJ-089 / pass
+- project / Test_PRJ_050_PRJ_089_LoadAtPreservesRecordedSpecDiagnostics/invalid_zone_type / PRJ-050, PRJ-089 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs / PRJ-004 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs/Project / PRJ-004 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs/Stamp / PRJ-004 / pass
@@ -1007,12 +1029,13 @@ result: fail
 - project / Test_PRJ_042_CheckDocumentAndItemCauses/malformed_module / PRJ-042 / pass
 - project / Test_PRJ_042_CheckDocumentAndItemCauses/malformed_change / PRJ-042 / pass
 - project / Test_PRJ_042_CheckDocumentAndItemCauses/malformed_item / PRJ-042 / pass
-- project / Test_PRJ_043_CheckMetadataAndSetCauses / PRJ-043 / pass
-- project / Test_PRJ_043_CheckMetadataAndSetCauses/metadata_type / PRJ-043 / pass
-- project / Test_PRJ_043_CheckMetadataAndSetCauses/zone_type / PRJ-043 / pass
-- project / Test_PRJ_043_CheckMetadataAndSetCauses/identity_set_key / PRJ-043 / pass
-- project / Test_PRJ_043_CheckMetadataAndSetCauses/unknown_set_key / PRJ-043 / pass
-- project / Test_PRJ_043_CheckMetadataAndSetCauses/set_value_type / PRJ-043 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses / PRJ-043, PRJ-089 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses/metadata_type / PRJ-043, PRJ-089 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses/invalid_depends_on / PRJ-043, PRJ-089 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses/zone_type / PRJ-043, PRJ-089 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses/identity_set_key / PRJ-043, PRJ-089 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses/unknown_set_key / PRJ-043, PRJ-089 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses/set_value_type / PRJ-043, PRJ-089 / pass
 - project / Test_PRJ_044_CheckQueueIdentityCause / PRJ-044 / pass
 - project / Test_PRJ_069_RegularFileAtChangesReportsQueueCause / PRJ-069 / pass
 - project / Test_PRJ_045_CheckPendingModuleTargetCause / PRJ-045 / pass
@@ -1240,7 +1263,9 @@ result: fail
 - runner / Test_RUN_029_RUN_031_DefaultUsageDurationsStopImmediately/default_wait / RUN-029, RUN-031 / pass
 - runner / Test_RUN_029_RUN_031_DefaultUsageDurationsStopImmediately/default_budget / RUN-029, RUN-031 / pass
 - runner / Test_RUN_030_RUN_031_RUN_033_ShortBudgetResumeOwnedStep / RUN-030, RUN-031, RUN-033 / pass
-- runner / Test_RUN_033_OwnedResumeUsesApprovedUsageBudget / RUN-033 / pass
+- runner / Test_RUN_033_OwnedResumeUsesApprovedSnapshot / RUN-033 / pass
+- runner / Test_RUN_033_OwnedResumeUsesApprovedSnapshot/different_budget / RUN-033 / pass
+- runner / Test_RUN_033_OwnedResumeUsesApprovedSnapshot/malformed_YAML / RUN-033 / pass
 - runner / Test_RUN_030_UsageRetryPreservesVerificationFeedback / RUN-030 / pass
 - runner / Test_RUN_030_RUN_031_WaitBudgetSharedAcrossNextPhases / RUN-030, RUN-031 / pass
 - runner / Test_RUN_032_RunSharesWaitAcrossChangesAndRetainsApplied / RUN-032 / pass
@@ -1379,7 +1404,7 @@ result: fail
 - workflow / Test_FLOW_032_FLOW_033_FLOW_046_FLOW_135_EvalsDoneAdvancesAndKeepsRunArtifactsLocal/default_audit/unignored / FLOW-032, FLOW-033, FLOW-046, FLOW-135 / pass
 - workflow / Test_FLOW_032_FLOW_033_FLOW_046_FLOW_135_EvalsDoneAdvancesAndKeepsRunArtifactsLocal/disabled_audit/ignored / FLOW-032, FLOW-033, FLOW-046, FLOW-135 / pass
 - workflow / Test_FLOW_034_FLOW_036_FLOW_041_FLOW_046_AuditAcceptsOnlyExactClauseFindingsAndCheckedNoFindings / FLOW-034, FLOW-036, FLOW-041, FLOW-046 / pass
-- workflow / Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_FLOW_046_AuditFindingsConvergeAndPersistTwoRoundBound / FLOW-035, FLOW-037, FLOW-038, FLOW-039, FLOW-042, FLOW-043, FLOW-046 / pass
+- workflow / Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_FLOW_046_FLOW_146_AuditFindingsConvergeAndPersistTwoRoundBound / FLOW-035, FLOW-037, FLOW-038, FLOW-039, FLOW-042, FLOW-043, FLOW-046, FLOW-146 / pass
 - workflow / Test_FLOW_040_FLOW_042_FLOW_043_UntestableFindingBlocksWithQuestion / FLOW-040, FLOW-042, FLOW-043 / pass
 - workflow / Test_FLOW_004_FLOW_028_FLOW_044_FLOW_045_FLOW_046_FLOW_047_FLOW_050_ImplDoneAppliesSpecsSetAndDecisionsAndArchives / FLOW-004, FLOW-028, FLOW-044, FLOW-045, FLOW-046, FLOW-047, FLOW-050 / pass
 - workflow / Test_FLOW_003_FLOW_024_FLOW_048_FLOW_049_FailedDoneKeepsPhaseAndHead / FLOW-003, FLOW-024, FLOW-048, FLOW-049 / pass
@@ -1439,7 +1464,7 @@ result: fail
 - workflow / Test_FLOW_073_StartFromAttemptRequiresCleanEligibleUnblockedAndUnclaimedChange/not_first_eligible / FLOW-073 / pass
 - workflow / Test_FLOW_073_StartFromAttemptRequiresCleanEligibleUnblockedAndUnclaimedChange/foreign_claim / FLOW-073 / pass
 - workflow / Test_FLOW_076_StartFromAttemptRejectsInvalidOrMissingAttemptBeforeMutation / FLOW-076 / pass
-- workflow / Test_FLOW_059_AuditVerifyChecksSubmissionWithoutAdvancing / FLOW-059 / pass
+- workflow / Test_FLOW_059_FLOW_145_AuditVerifyChecksSubmissionWithoutAdvancing / FLOW-059, FLOW-145 / pass
 - workflow / Test_FLOW_002_FLOW_136_AuditRejectsForbiddenEditAndDoneMarksFailure / FLOW-002, FLOW-136 / pass
 - workflow / Test_FLOW_061_UnknownLifecycleSelectorsNameValidSlugs / FLOW-061 / pass
 - workflow / Test_FLOW_101_FLOW_102_FLOW_103_StatusQueueAndForwardWaiting / FLOW-101, FLOW-102, FLOW-103 / pass
@@ -1467,119 +1492,95 @@ result: fail
 - workflow / Test_FLOW_138_ContextExplainsHowToDeclareWorkerBlock/impl / FLOW-138 / pass
 
 ## Contradicted Decisions
-None. The go bundle layout and setup behavior match the 0014-go-setup-bundle
-decision (setup runs `go mod download` once the project has a Go module, the
-instructions explain that prerequisite, recipe paths are `.fireweed/recipes/go.md`,
-`.fireweed/hooks.go`, `.fireweed/templates/module/SPEC.md`, `api.go.tmpl`,
-`.fireweed/canaries/canaries.yaml`). The additional-language-recipes decision
-holds as well: the TypeScript eval hook runs Node's built-in TypeScript test
-runner through pnpm, and the Python eval hook uses unittest through uv with
-the module directory itself as the importable package.
+None. Both Decisions are honored as written:
+
+- Recipe file paths (`.fireweed/recipes/<name>.md`, `.fireweed/hooks.go`,
+  `.fireweed/templates/module/SPEC.md` + `api.go.tmpl`,
+  `.fireweed/canaries/canaries.yaml`) match the embedded bundle exactly, and
+  the Go setup hook runs `go mod download` with the prerequisite explained in
+  the instructions and the bundled `go.md`.
+- The TypeScript eval hook uses Node's built-in TypeScript test runner
+  (`node --test --test-reporter=junit`) through pnpm (`pnpm --dir <module_dir>
+  exec node ...`); Python modules are importable packages at their module
+  directories in a uv workspace (`from alpha import greet` works with
+  `packages/` on `sys.path`), and their eval hook runs `unittest` through uv
+  (`uv run --no-project python .fireweed/hooks.py ...`).
+
+One implementation choice deliberately avoids conflicting with the second
+decision: `uv run --no-project` is used instead of a synced `uv sync`
+environment so evals need no package build and no network in offline doctor
+and CI fixture runs; the recipe's setup hook remains `uv sync --frozen`.
 
 ## Gaps
-- TS eval hook lost started-but-unfinished test names. Node's built-in
-  `--test --test-reporter=junit` collapses a test that calls `process.exit()`
-  into a single file-level failure named after the file, so the declared
-  test name never reaches the report. Nearest spec: AST-055 (started-but-
-  unfinished tests must be visible failures). The bundle now ships
-  `.fireweed/eval_junit.mjs`, which re-synthesizes any test declared in
-  source but absent from the runner's report as a failing testcase. Target
-  module for a fixing change: assets.
-
-- The specs do not give a Python JUnit path at all. unittest has no JUnit
-  output, so `.fireweed/eval_junit.py` (bundled) discovers `test_*.py`, runs
-  each in a child process, and writes JUnit XML with names, classnames,
-  pass/fail/skip and elapsed seconds; a child that dies is re-expanded from
-  the test declarations in the file so AST-055 still sees visible failures.
-  Nearest spec: AST-054 (names, classnames, pass/fail/skip, elapsed seconds,
-  preserved exit status) and AST-055. Target module for a fixing change:
-  assets.
-
-- `uv run --no-project` prints `WARN Ignoring project discovery error due
-  to --no-project ... missing a pyproject.toml` to stderr for the required
-  uv-workspace fixtures (members intentionally have no pyproject.toml). The
-  hooks exit 0; the noise is cosmetic and goes to stderr, never into the
-  report. Nearest spec: no spec. Target module for a fixing change: assets.
-
-- JUnit classname format is unspecified for the additional recipes: AST-054
-  requires classnames be present but not their shape. The Python hook uses a
-  dotted `evals.test_<name>.TestClass`; the TS hook's classname is whatever
-  Node's built-in reporter emits (currently the literal `test`). Nearest
-  spec: AST-054. Target module for a fixing change: assets.
-
-- `{{other_dir}}` for python-uv renders `packages/beta`, which cannot be
-  interpolated into a Python import statement (the slash makes it a syntax
-  error). The undeclared canary therefore hardcodes the sibling
-  `import beta` (documenting `{{other_dir}}` in a comment) and the
-  boundaries hook resolves both bare basenames and dotted directory paths
-  (`packages.beta` → `packages/beta`). Nearest spec: AST-051 (substitutable
-  templates and canary snippets). Target module for a fixing change: assets.
-
-- Synthesized failing testcases (for runners killed mid-test) report
-  `time="0.000"`, since the real elapsed time died with the child. AST-055
-  requires visibility, not a measured duration, so this satisfies the spec,
-  but no spec pins the elapsed value for synthesized evidence. Nearest spec:
-  AST-055. Target module for a fixing change: assets.
-
-- Go setup also runs `go work sync` when a `go.work` file exists, slightly
-  beyond the "Setup runs go mod download" wording in the go-setup decision;
-  it is an addition authorized by the same prerequisite logic, not a change
-  to what the decision names. Nearest spec: no spec; see decision
-  0014-go-setup-bundle. Target module for a fixing change: assets.
-
-- The boundaries hooks deliberately treat only quoted strings containing a
-  slash as import specifiers, so vendored code or string literals with
-  slashes that resolve into the module graph could be misread. No eval
-  exercises this and the spec does not pin import parsing. Nearest spec:
-  no spec. Target module for a fixing change: assets.
+- Nearest spec ID: no spec. The eval hooks' JUnit `classname` content is
+  pinned only for Go (`alpha/evals` must appear). The Python hook sets
+  classname to the eval file's path, and the TypeScript hook rewrites the
+  runner's `classname="test"` to the eval file's path so evidence names the
+  file, but no clause fixes that format for additional recipes. Target module
+  for a fixing change: `assets` (pin the classname format in evals there).
+- Nearest spec ID: AST-049. The bundle requires a `setup` command hook for
+  each recipe; the Go, typescript-pnpm and python-uv setup hooks
+  (`go mod download`, `pnpm install --frozen-lockfile`, `uv sync --frozen`)
+  are embedded but nothing in the module drills or evals exercises them —
+  their behavior (and whether they work offline under doctor) is unverified.
+  Target module for a fixing change: `assets` (extend the hook fixtures to
+  run setup).
+- Nearest spec ID: AST-055 (Go counterpart: AST-016). For a test
+  file whose process dies hard (SIGKILL/`os._exit`/`process.exit(3)`), the
+  written `<failure>` entry is synthesized from a static scan of test names in
+  the source file; the spec requires the failure to be visible, but no spec
+  pins *how* an interrupted suite is reconstructed into testcase entries, and
+  the synthetic case cannot carry the test's real elapsed time or logs.
+  Target module for a fixing change: `assets` (decide and pin an interrupted-
+  suite evidence format).
+- Nearest spec ID: AST-017. The boundary hooks parse import specifiers
+  textually; computed or dynamic imports (`import(f"{pkg}.{mod}")`,
+  `require` of a variable) are invisible to every language linter in this
+  bundle, so a violation can hide behind runtime-computed specifiers. No
+  clause covers dynamic imports yet. Target module for a fixing change:
+  `assets` (extend the boundaries hooks or document the blind spot in the
+  recipe guides).
+- Nearest spec ID: AST-013 and AST-049. The recipe canary fixtures substitute
+  `{{name}}`, `{{prefix}}`, `{{package}}`, `{{module_dir}}`, `{{other_dir}}`
+  (and `{{go_module}}` for Go) into hook source and test bodies, but doctor's
+  actual render contract for `other_dir` relative paths is not pinned by any
+  eval; each language hook resolves `other_dir`-imports with its own path
+  normalisation, which could drift from the controller that renders them.
+  Target module for a fixing change: `assets` (add a fixture that renders the
+  canaries through the same substitution code path the doctor uses, or pin
+  `other_dir` semantics in the recipes).
+- Nearest spec ID: no spec. The content of `Version()` (currently `0.2.4`,
+  inherited from the retained VERSION file) and the large hand-authored help,
+  playbook and explanation texts are validated only by regex-shape evals; no
+  spec clause pins their wording, and a careless edit can satisfy the evals
+  while shipping weaker guidance. Target module for a fixing change: `assets`
+  (stronger content assertions, or a spec clause covering the playbook text
+  invariants).
 
 ## Agent observations
 
 ### Invocation 1
-Log: .fireweed/runs/20261117T224313-ea6b689b3db2606e9b5fdafa/drill-1.log
+Log: .fireweed/runs/20261119T162220-b4a7309a7888e86f6de81509/drill-1.log
 
-I've reviewed the workspace. Now let me probe the tooling available for the recipe hooks (node, pnpm, uv, go).
-Environment is good: Go 1.27, Node 24 (built-in TS runner), pnpm 12, uv 0.13 with Python 3.15. I have a full picture now. Let me build the module. First, the content package scaffolding:
-Now the command help pages — this is the largest file. Let me write it in sections:
-Let me restructure to avoid duplicated `--help`/`See also` blocks — I'll inline the shared flags cleanly:
-The shared block duplicates per-page options; I'll rewrite both files cleanly with a consistent template:
-Now the playbooks:
-Now the explanations file:
-Now the Go recipe bundle — templates, canaries, hooks:
-Now the TypeScript bundle:
-Now the python-uv bundle:
-The python `undeclared` canary can't interpolate `packages/beta` into an import statement (slash), so make it a sibling import with a rendering comment, matching the tests' alpha/beta fixtures:
-Now let me build and fix compile errors:
-Node loses the individual test name when a test calls `process.exit`, so I'll add a small Node wrapper for the TS eval hook that keeps runners visible:
-My TS canary used the path wrong (`../../packages/beta` from `src/`). The tests' fixture uses `../../beta/...`, so the canary should do the same:
-The stub handoff requires the guide's stub and replacement to export the same name (`greet`), and the retained interface must re-export it. Rewriting both guide stub examples:
-The GRT examples must be on a single line:
-All module evals pass. Now run the official drill eval hook:
-The drill hook passes all 152 testcases. Let me do housekeeping — gofmt and then write DRILL_NOTES.md:
-Done. The assets module's disposable paths (`packages/assets/internal/**`) were rebuilt from the spec, retained interfaces, evals and decisions — nothing outside them was touched (`internal/content/VERSION`, `api.go`, `model/`, `evals/` all untouched; `main.go`'s missing `packages/app` is unrelated).
+Environment verified. Now I'll build the module. First, the embedded recipe files for Go:
+All evals pass. Now run the target eval hook from the workspace as instructed:
+Done. The module is reconstructed and the drill eval hook passes from this workspace (`.fireweed/drill-eval.xml`, 160/160 testcases green, rerun with `-count=1`).
 
-**What was built**
-- `internal/content/` — `Version()` from the embedded VERSION, the fireweed Help overview (all 32 commands grouped by purpose), full CommandHelp pages for every command (usage, options, examples, `--help`/`-h`/`--json`, exit statuses, gc/doctor/drill-specific config guidance), playbooks (author-change, evals, audit, impl, regenerate) and explanations for every diagnostic code the spec and evals require.
-- `internal/recipe/` — embedded bundles for `go`, `typescript-pnpm` and `python-uv`, each with instructions, hooks (eval/boundaries/setup), module templates, version-1 canary maps, and the project-relative `.fireweed/**` files. Go eval hook runs `go test -json` and emits JUnit with pass/fail/skip and elapsed seconds, keeping crashes/compile failures visible; boundaries hooks derive everything from `FIREWEED_BIN modules --json`. TS uses Node's built-in test runner through pnpm; Python uses unittest through uv.
+## What was rebuilt (`internal/**` only)
 
-**Verification**
-- `go test ./packages/assets/evals` — all 152 testcases pass.
-- The required drill command (`FIREWEED_BIN=.../fireweed go run .fireweed/hooks.go eval packages/assets .fireweed/drill-eval.xml`) exits 0 with a JUnit report listing all 152 cases, zero failures.
+**`internal/content/`** — `version.go` (embeds `VERSION` for `Version()`), `help.go` (overview with all 31 commands grouped under Setup, Authoring, Reading, Checks, Lifecycle, Regeneration, Maintenance, Information), `command_help.go` (31 command pages with purpose, usage, args/options, examples, `-h`/`--help`/`--json`, and cross-links — including the gc drill-ref/`gc.drill_max_age` and drill `--agent` alias pages), `playbooks.go` (author-change, evals, audit, impl, regenerate with all required guidance), `explanations.go` (all 47 diagnostic codes, each with cause + corrective action).
 
-**DRILL_NOTES.md** — records no contradicted decisions, and 8 gaps (the notable ones: Node's built-in reporter collapses a `process.exit` crash into a file-level failure whose declared test name is lost, so the TS bundle carries a `.fireweed/eval_junit.mjs` wrapper that re-synthesizes missing testcases; Python has no JUnit at all, so the bundle carries a child-process JUnit emitter; `{{other_dir}}` can't be interpolated into a Python import; classname format and synthesized-case times are unspecified). Each gap names its nearest spec ID or "no spec" plus the target module for a fixing change (assets).
+**`internal/recipe/`** — `recipe.go` (`BuiltinRecipe` for go, typescript-pnpm, python-uv, unknown-name rejection) plus embedded `.fireweed/` bundles per language: hooks (`hooks.go`, `hooks.mjs`, `hooks.py`), guides, templates, version-1 canaries (baseline/undeclared/internal_eval/failing_eval/missing_id) and the project-relative paths (`.fireweed/recipes/*.md`, `hooks.go`, `templates/module/SPEC.md`, `api.go.tmpl`).
 
-One residual note: the `go.mod`-less hook wrapper approach and stderr `WARN Ignoring project discovery error` from `uv run --no-project` under the required fixtures are documented in DRILL_NOTES.md; they don't affect exit codes or reports.
+## How the spec decisions were honored
 
+- Go recipe: same `.fireweed/` layout as 0014; setup runs `go mod download` with the prerequisite documented; the hooks are stdlib-only (`go test -json` → JUnit with names/classnames/pass/fail/skip/elapsed, unfinished tests and compile failures kept as visible failures; graph-derived boundaries from `FIREWEED_BIN modules --json` with per-module prefixes).
+- Additional recipes: TS evals run through pnpm + Node's built-in TS runner with JUnit rewritten to file-locating classnames; Python modules are packages at their module directories, evaluated with unittest through `uv run` with incremental JUnit so killed runs (`os._exit(3)`) still leave failing evidence. CI-verified canaries detect and recover per recipe.
 
-## Failures
-app: failed case "Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule" for APP-101
-Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule: === RUN   Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule
-    new_module_cli_test.go:252: rendered module identity: "---\nname: empty2-3-mod\ndepends_on: []\nid_prefix: E2M\ninterface:\n    - api.go\nevals:\n    - evals/**\ndisposable:\n    - internal/**\n---\n\n# empty2-3-mod\n\nempty2-3-mod is a fireweed module. Its interface is retained (api.go); its evals\nare the contract; everything under internal/** is disposable.\n\n## Specs\n\n### E2M-001\nThe empty2-3-mod module MUST expose its documented facade from api.go without\nleaking disposable implementation types to callers.\n\n## Evals\n\nEval testcases map to spec IDs by matching the spec prefix and number in the\ntestcase name or classname. A letter immediately before a spec prefix prevents ID matching: Test_GRT_001_Name matches GRT-001, while TestGRT001 does not match GRT-001, because the G directly precedes the prefix and looks like the tail of a longer identifier. Keep the separator underscore or hyphen when the name would otherwise start with a letter. Test functions such as Test_E2M_001_Name match E2M-001.\n"
---- FAIL: Test_APP_101_APP_104_APP_159_NewModuleEmptyGoModule (0.56s)
-?   	github.com/lurkshark/fireweed/packages/app	[no test files]
-?   	github.com/lurkshark/fireweed/packages/app/internal/entry	[no test files]
-FAIL
-FAIL	github.com/lurkshark/fireweed/packages/app/evals	296.067s
+One correction along the way: my first Python layout used `src/<pkg>/`, which contradicted the decision "importable packages at their module directories" — reworked to package-at-module-dir and retested.
 
-exit status 1
+## Notes
+
+- `.fireweed/drill-eval.xml` is the prescribed hook output; `DRILL_NOTES.md` at the root records **Contradicted Decisions: none found** and the **Gaps** (none tied to spec errors; all point at `packages/assets` for fixing changes and name a nearest spec ID or "no spec").
+- Nothing outside `packages/assets/internal/**`, `DRILL_NOTES.md` and `.fireweed/drill-eval.xml` was changed; retained interfaces and evals are untouched. Nothing is committed.
 

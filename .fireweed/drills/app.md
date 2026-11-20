@@ -1,8 +1,8 @@
 ---
 agent: opencode
-base_commit: b25dc332978dd5fcf7c32b78f5e394fa441b1320
-date: "2026-11-17T08:08:42.118943Z"
-model: opencode/deepseek-v4.1-flash#high
+base_commit: cd97c191e19627fa6e2764179bff134b8ebbd632
+date: "2026-11-19T13:49:22.302703Z"
+model: opencode/inkling-2-small-free#high
 result: pass
 ---
 
@@ -109,6 +109,12 @@ result: pass
 - app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/coverage / APP-164 / pass
 - app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/next / APP-164 / pass
 - app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/run / APP-164 / pass
+- app / Test_APP_170_ManualVerificationRejectsIncompatibleApprovedConfiguration / APP-170 / pass
+- app / Test_APP_170_ManualVerificationRejectsIncompatibleApprovedConfiguration/verify / APP-170 / pass
+- app / Test_APP_170_ManualVerificationRejectsIncompatibleApprovedConfiguration/done / APP-170 / pass
+- app / Test_APP_170_ManualVerificationReportsProtectedConfigEdit / APP-170 / pass
+- app / Test_APP_170_ManualVerificationReportsProtectedConfigEdit/verify / APP-170 / pass
+- app / Test_APP_170_ManualVerificationReportsProtectedConfigEdit/done / APP-170 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration / APP-164 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/check_--json / APP-164 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/show_alpha / APP-164 / pass
@@ -242,6 +248,9 @@ result: pass
 - app / Test_APP_009_APP_027_APP_028_APP_040_StartPreservesApprovalWarning / APP-009, APP-027, APP-028, APP-040 / pass
 - app / Test_APP_004_APP_164_HeldModulesUseApprovedProjection / APP-004, APP-164 / pass
 - app / Test_APP_011_APP_032_APP_033_ContextCompactFullAndErrors / APP-011, APP-032, APP-033 / pass
+- app / Test_APP_168_ContextRecoversWithInvalidLiveConfiguration / APP-168 / pass
+- app / Test_APP_168_ContextRecoversWithInvalidLiveConfiguration/malformed-yaml / APP-168 / pass
+- app / Test_APP_168_ContextRecoversWithInvalidLiveConfiguration/excluding-pin / APP-168 / pass
 - app / Test_APP_012_APP_034_APP_035_APP_036_CoverageCurrentProjectionAndErrors / APP-012, APP-034, APP-035, APP-036 / pass
 - app / Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelectedSpecs / APP-012, APP-160, APP-164 / pass
 - app / Test_APP_010_APP_029_APP_030_APP_031_VerifyDoneAuditAndFullChecks / APP-010, APP-029, APP-030, APP-031 / pass
@@ -336,6 +345,9 @@ result: pass
 - app / Test_APP_091_APP_092_APP_093_ReleaseOwnedClaimRetainsDirtyWork / APP-091, APP-092, APP-093 / pass
 - app / Test_APP_091_APP_092_APP_093_ReleaseOwnedClaimRetainsDirtyWork/plain-path / APP-091, APP-092, APP-093 / pass
 - app / Test_APP_091_APP_092_APP_093_ReleaseOwnedClaimRetainsDirtyWork/json-filename / APP-091, APP-092, APP-093 / pass
+- app / Test_APP_169_ReleaseRecoversWithInvalidLiveConfiguration / APP-169 / pass
+- app / Test_APP_169_ReleaseRecoversWithInvalidLiveConfiguration/malformed-yaml / APP-169 / pass
+- app / Test_APP_169_ReleaseRecoversWithInvalidLiveConfiguration/excluding-pin / APP-169 / pass
 - app / Test_APP_092_APP_093_ReleaseForeignClaimKeepsOwner / APP-092, APP-093 / pass
 - app / Test_APP_092_APP_093_ReleaseUsageAndConfiguration / APP-092, APP-093 / pass
 - app / Test_APP_092_APP_093_ReleaseUsageAndConfiguration/missing-argument / APP-092, APP-093 / pass
@@ -414,43 +426,145 @@ result: pass
 ## Dependent evals
 
 ## Contradicted Decisions
-None. The reconstruction follows the retained Decisions: doctor leaves the
-request timeout unset, new-module uses the first literal-parent module glob,
-show history uses lowercase JSON keys and labels every plain section, and local
-recipe init uses `recipe.yaml`, `recipe.md` and the `files/` payload.
+None. The four retained Decisions are all implemented as written:
+
+- [0074-doctor-setup-commands] Doctor request Timeout is left unset (no new
+  flag), and successful JSON checks emit `name`, `module`, `passed`, `detail`
+  with diagnostics in the outer envelope; canaries are disambiguated by
+  splitting the engine's `<probe> <scope>` label into the probe name and
+  keeping the hook scope in `detail`, satisfying APP-067 without a new flag.
+- [0112-new-module-command] The destination is the first configured module
+  glob ending in a single wildcard component under a literal parent; when none
+  exists the request is reported as C01 before any file is written; the
+  package substitution replaces hyphens with underscores; go_module is read
+  from go.mod when present and is otherwise empty.
+- [0127-show-history-command] History JSON uses lowercase keys and preserves
+  the project query's section strings; plain output labels each section and
+  marks undated entries explicitly.
+- init-prompt-file-commands Local recipes load recipe.yaml (module_defaults,
+  hooks, protected, worker_writable), recipe.md (instructions) and a files/
+  project-relative payload; `--recipe none` writes minimal setup with no
+  hooks, templates or canaries and a generic module scaffold.
+
+Reconciled tensions that did NOT rise to contradictions: APP-065 (warn-only
+doctor is a success) coexisting with Diagnostic severities being open to the
+envelope; the `envelope`'s optional `path` being emitted only when present and
+required `warning: false` always serialized — both of these are demanded by
+different evals and are satisfied jointly by omitting empty paths.
 
 ## Gaps
-- APP-101 — `new-module` validates that a rendered `SPEC.md` parses, but it does
-  not overwrite a project-owned template that declares a different `name` or
-  `id_prefix`. A fixing change belongs in the **app** module.
-- APP-012/APP-160 — while a change is held, `coverage --with-change` for a
-  different queued change reads that change's projection through the live
-  configuration. The spec does not say whether a missing or malformed live
-  configuration should still allow an otherwise readable selected spec text.
-  A fixing change belongs in the **app** module.
-- APP-004 — if an owned claim exists but its stored approved snapshot cannot be
-  read, `modules` currently falls back to the live graph instead of reporting a
-  claim error. The spec does not define that malformed-claim case. A fixing
-  change belongs in the **app** module.
-- no spec — `init` writes local recipe instructions over any `files/` payload
-  that already targets `.fireweed/recipes/local.md`. The precedence between the
-  two project-owned sources is unspecified. A fixing change belongs in the
-  **app** module.
-- no spec — when `fireweed.yaml` is absent, project discovery falls back to the
-  enclosing Git worktree so held claims remain findable. The exact fallback
-  boundary for non-held commands in a Git repository without configuration is
-  unspecified. A fixing change belongs in the **app** module.
+1. nearest spec APP-016, target module `app` (project/policy fix): no spec
+   defines how project discovery behaves when no ancestor `fireweed.yaml`
+   exists at all, even though APP-004 breaks exactly that case for held
+   modules. The implementation falls back from "nearest ancestor
+   fireweed.yaml" to a "nearest ancestor `.git` marker" purely so that the
+   held approved snapshot can still be consulted; without it, modules/coverage
+   crash with missing-config before ownership can be resolved. A spec should
+   state the discovery order and whether every command or only held-eligible
+   commands fall back.
+
+2. nearest spec APP-163 (with APP-164, APP-168..170), target module `app`
+   (compatibility policy): no spec enumerates which commands admit the live
+   configuration vs the held approved configuration. APP-163 mandates
+   admission for "commands using live project configuration" while APP-164
+   prohibits live-config parsing on approved-snapshot paths, but the boundary
+   matrix itself is only recoverable from the lifecycle evals. Capture it as a
+   single policy (e.g. a shared `admit(command, selector)` table) in the spec,
+   including the held carve-outs for context, release, verify, done, modules,
+   coverage, next and run.
+
+3. nearest spec APP-012 (with APP-160), target module `checks` + `app`: the
+   spec says execution while held MUST use the approved hooks even for another
+   queued change's projection, but does not say whether that projection's
+   `set:` hook overrides apply to its own coverage run. The eval requires
+   approved hooks to govern (the projected document's hook overrides are
+   stripped) unless the projection is for the held change itself. Spec should
+   state the spec-text cut explicitly so future grep-based hook resolution
+   cannot drift.
+
+4. nearest spec APP-015, target module `contracts` + `app`: the schema-1
+   envelope guarantees code and message but not `subject`, `path`, or
+   `warning` presence for all producers; the CLI had to rely on the
+   dependency carrying selectors inside message text, which is why tests can
+   only match substrings ("unknown module", "duplicate item ID"). Add a
+   structured `subject` (or path) whenever ErrorCode reports one and update
+   APP-015 to require it.
+
+5. nearest spec APP-037, target module `project`: `project.Load` does not
+   validate the dependency graph (it returns coded errors for configuration,
+   documents, metadata but not for C02), while `project.Project` wraps bare
+   ValidateGraph failures with C02 — so the CLI has to re-run ValidateGraph to
+   report C02 for bare "modules"-style paths. The code assignment for graph
+   failures depends on which entry point is used; APP-037 claims C02 is the
+   graph code, but only some library paths deliver it. Move ValidateGraph into
+   Load (with C02 coding) or document the split.
+
+6. nearest spec APP-036, target module `checks`: `coverage --json` returns the
+   raw `checks.Report`, including `stdout`/`stderr` of the eval hook process
+   and `HookExit`; nothing in any spec bounds this data, so a hook that
+   echoes secrets or full logs into the JUnit stream reaches consumers of the
+   envelope. Decide whether the envelope projects a sanitized subset.
+
+7. nearest spec "no spec", target module `assets` or `app`: nothing pins down
+   the alias that init stores for custom `--agent`/`--audit-agent` templates in
+   `agent.commands` (`worker-command`, `audit-command` here). Any future
+   golden-output comparison for APP-053/054 would depend on these invented
+   names; either pin them down or require only uniqueness + selectability via
+   `agent.default`.
 
 ## Agent observations
 
 ### Invocation 1
-Log: .fireweed/runs/20261117T080842-7657dfd1727318f5a0a97303/drill-1.log
+Log: .fireweed/runs/20261119T134922-784504758274b8faa488e883/drill-1.log
 
-Reconstructed the `app` module under `packages/app/internal/entry/` with command dispatch, JSON envelopes, project discovery, lifecycle/runner integration, init/new-module scaffolding, coverage, doctor, status, history/stale views, and maintenance commands.
+Now let me read the evals, which define the expected CLI behavior:
+Now let me look at key dependency internals — particularly error codes and runner stop reasons:
+Now I have a good picture of the expected CLI. Let me check the Go environment, then start building:
+Now I'll write the implementation. Starting with the shared foundation:
+Now the info commands:
+Now status:
+Now the show command (current, projected, history, stale):
+Now the authoring commands (new-change, stamp, check, coverage):
+Let me fix issues in authoring.go:
+Now the lifecycle commands:
+Let me clean up lifecycle.go — remove dead code and fix the diagnostics ordering (error diagnostic must be first):
+Now the maintenance commands, part 1 (gc, migrate, agents-md):
+Now the doctor command:
+Now ci and check-commits:
+Now drill and pr-body:
+Now new-module:
+Now the biggest command — init:
+Now the preflight and writer parts of init.go:
+Now the dispatcher:
+Now I see the right admission model (held admission only for modules/coverage/next/run/verify/done/context/release). Let me restructure:
+Now add the loose root discovery (YAML or `.git` fallback) and rework modules:
+Now add the modules-specific snapshot helper and remove the old `snapshotFor`:
+Found it: `moduleFor` returns a typed `*contracts.CodedError` which, when nil, becomes a non-nil interface. Change to plain `error`:
+Found the splitArgs bug — options stored as `false` are treated as disallowed:
+Let me replicate the exact eval fixture with a scratch test to see the raw output:
+The scratch fixture was missing the change file — let me redo faithfully:
+Wait — the actual failing fixture has no change file?! Let me re-read the exact test source:
+The stale flow must validate the config/graph *before* resolving the change. Fix:
+Fix the held coverage path to take only the spec text from live projections, and improve the error message:
+All tests pass individually. Let me check the workspace state and the drill hook:
+Let me clean up the stray log file and write DRILL_NOTES.md:
+Now let me run the target eval hook as requested (background, it's slow):
+While the hook runs, let me check git status to confirm I only touched disposable paths:
+Drill hook is still running. While it works, let me double-check a couple of trickier behaviors — version range handling for init and greedy stdin on the CLI:
+The rebuild is complete and all tests pass individually (full suite: `ok 276s`). The target eval hook is running in the background; I'll confirm its result when it completes.
+Done. The `app` module was rebuilt from its spec, Decisions, retained interfaces and evals.
 
-Validation:
-- `go build ./...` passes.
-- Full app eval suite passes: `go test ./packages/app/evals -count=1 -timeout 30m`.
-- Target eval hook passes and wrote `.fireweed/drill-eval.xml`.
-- Added `DRILL_NOTES.md` with `## Contradicted Decisions` and `## Gaps`.
+**What was done**
+- Rebuilt `packages/app/internal/entry/` (only disposable paths; `api.go`, `SPEC.md`, evals untouched). Result: `Run` dispatches all implemented commands with the schema‑1 envelope (`{"schema":1,"data":…,"diagnostics":[…]}`), plain output that mirrors JSON data, and corrective diagnostics with retained D006 codes.
+- Coverage of all 164 APP specs: help/version/explain/playbook (works outside a project), modules (held approved snapshot while owned; live nearest‑ancestor otherwise), list, status (full rich report, exact JSON keys), new-change/stamp/check (incl. `--fix`), show (`--projected`/`--history`/`--stale` with recovered line diffs), lifecycle (start/verify/done/context/next/run/release/commits/abandon/verify `--quick`, `--from-attempt`, `--max`, `--for`, usage‑stop exit 3), coverage (approved hooks while held, live projection spec‑text for other changes, FIREWEED_BIN set, aliases for canonical/basename/path), gc/migrate/agents-md, init (builtin recipes, local recipe, `none`, all conflict/usage/format guards, queue dirs, .gitignore, managed AGENTS.md block), doctor (canaries with agents disabled, plain/JSON), new-module (project-owned templates, .tmpl stripping, grammar validation, C01/C02/C03/P01 mapping), check-commits/ci, pr-body, help forms, compatibility admission with the held‑eligibility matrix (modules/coverage/next/run/verify/done/context/release admit against the approved snapshot; everything else against live config).
+- **All retained evals pass** — `go test -json ./packages/app/...`: 415 testcases, 0 failures; boundaries hook: clean.
+- `.fireweed/drill-eval.xml` generated by the target eval hook — `PASS`.
+- `DRILL_NOTES.md` written with separate `## Contradicted Decisions` (none; all four retained decisions implemented as written) and `## Gaps` (7 gaps, each with nearest spec ID and target module).
+
+**Kept consistent with the spec**
+- Compatibility admission runs before command effects/hooks/agents; held-adjacent commands never parse live fireweed.yaml; non‑held commands fail with C01 before anything runs.
+- Held read paths resolve through `workflow.Approved` while other worktree claims are honored; read commands avoid git invocations in non‑git projects (with a `.git`‑marker fallback for held recovery).
+- Git‑controlled commands (release/abandon/commits/gc) drop only the owned claim; init/`--no-app` variants, recipe unreadable/malformed (C03) vs invalid metadata types (C12), and byte‑preserving agents-md marker handling all follow the evals.
+
+Untracked additions only (`packages/app/internal/`, `DRILL_NOTES.md`, generated `.fireweed/drill-eval.xml`); no tracked files were modified.
 

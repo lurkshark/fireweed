@@ -1,7 +1,7 @@
 ---
 agent: opencode
-base_commit: 8ee60066ed3a30b16d025f0f429368b1aa8ca5db
-date: "2026-11-17T21:49:25.865629Z"
+base_commit: 404be9cfde16f7cabee79fe34b2b53fe82920084
+date: "2026-11-19T15:21:52.660779Z"
 model: opencode/inkling-2-small-free#high
 result: fail
 ---
@@ -179,6 +179,12 @@ result: fail
 - app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/coverage / APP-164 / pass
 - app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/next / APP-164 / pass
 - app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/run / APP-164 / pass
+- app / Test_APP_170_ManualVerificationRejectsIncompatibleApprovedConfiguration / APP-170 / pass
+- app / Test_APP_170_ManualVerificationRejectsIncompatibleApprovedConfiguration/verify / APP-170 / pass
+- app / Test_APP_170_ManualVerificationRejectsIncompatibleApprovedConfiguration/done / APP-170 / pass
+- app / Test_APP_170_ManualVerificationReportsProtectedConfigEdit / APP-170 / pass
+- app / Test_APP_170_ManualVerificationReportsProtectedConfigEdit/verify / APP-170 / pass
+- app / Test_APP_170_ManualVerificationReportsProtectedConfigEdit/done / APP-170 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration / APP-164 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/check_--json / APP-164 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/show_alpha / APP-164 / pass
@@ -312,6 +318,9 @@ result: fail
 - app / Test_APP_009_APP_027_APP_028_APP_040_StartPreservesApprovalWarning / APP-009, APP-027, APP-028, APP-040 / pass
 - app / Test_APP_004_APP_164_HeldModulesUseApprovedProjection / APP-004, APP-164 / pass
 - app / Test_APP_011_APP_032_APP_033_ContextCompactFullAndErrors / APP-011, APP-032, APP-033 / pass
+- app / Test_APP_168_ContextRecoversWithInvalidLiveConfiguration / APP-168 / pass
+- app / Test_APP_168_ContextRecoversWithInvalidLiveConfiguration/malformed-yaml / APP-168 / pass
+- app / Test_APP_168_ContextRecoversWithInvalidLiveConfiguration/excluding-pin / APP-168 / pass
 - app / Test_APP_012_APP_034_APP_035_APP_036_CoverageCurrentProjectionAndErrors / APP-012, APP-034, APP-035, APP-036 / pass
 - app / Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelectedSpecs / APP-012, APP-160, APP-164 / pass
 - app / Test_APP_010_APP_029_APP_030_APP_031_VerifyDoneAuditAndFullChecks / APP-010, APP-029, APP-030, APP-031 / pass
@@ -406,6 +415,9 @@ result: fail
 - app / Test_APP_091_APP_092_APP_093_ReleaseOwnedClaimRetainsDirtyWork / APP-091, APP-092, APP-093 / pass
 - app / Test_APP_091_APP_092_APP_093_ReleaseOwnedClaimRetainsDirtyWork/plain-path / APP-091, APP-092, APP-093 / pass
 - app / Test_APP_091_APP_092_APP_093_ReleaseOwnedClaimRetainsDirtyWork/json-filename / APP-091, APP-092, APP-093 / pass
+- app / Test_APP_169_ReleaseRecoversWithInvalidLiveConfiguration / APP-169 / pass
+- app / Test_APP_169_ReleaseRecoversWithInvalidLiveConfiguration/malformed-yaml / APP-169 / pass
+- app / Test_APP_169_ReleaseRecoversWithInvalidLiveConfiguration/excluding-pin / APP-169 / pass
 - app / Test_APP_092_APP_093_ReleaseForeignClaimKeepsOwner / APP-092, APP-093 / pass
 - app / Test_APP_092_APP_093_ReleaseUsageAndConfiguration / APP-092, APP-093 / pass
 - app / Test_APP_092_APP_093_ReleaseUsageAndConfiguration/missing-argument / APP-092, APP-093 / pass
@@ -570,6 +582,7 @@ result: fail
 - assets / Test_AST_027_DoctorExplanations/C16 / AST-027 / pass
 - assets / Test_AST_059_SpecOutsideModuleGlobsExplanation / AST-059 / pass
 - assets / Test_AST_064_AuthorChangeProtocol / AST-064 / pass
+- assets / Test_AST_072_AuthorChangeFailureGuidance / AST-072 / pass
 - assets / Test_AST_008_Help / AST-008 / pass
 - assets / Test_AST_061_CommandPages / AST-061 / pass
 - assets / Test_AST_061_CommandOptions / AST-061 / pass
@@ -599,6 +612,10 @@ result: fail
 - assets / Test_AST_029_EvalFixEvalsGuidance / AST-029 / pass
 - assets / Test_AST_030_EvalFixAuditGuidance / AST-030 / pass
 - assets / Test_AST_031_EvalFixImplGuidance / AST-031 / pass
+- assets / Test_AST_073_GlobalRecipeBoundaries / AST-073 / pass
+- assets / Test_AST_073_GlobalRecipeBoundaries/go / AST-073 / pass
+- assets / Test_AST_073_GlobalRecipeBoundaries/typescript-pnpm / AST-073 / pass
+- assets / Test_AST_073_GlobalRecipeBoundaries/python-uv / AST-073 / pass
 - assets / Test_AST_047_GoRecipeEvalNameBoundary / AST-047 / pass
 - assets / Test_AST_047_GoRecipeEvalNameBoundary/recipe_instructions / AST-047 / pass
 - assets / Test_AST_047_GoRecipeEvalNameBoundary/module_SPEC_template / AST-047 / pass
@@ -618,6 +635,9 @@ result: fail
 - assets / Test_AST_035_H02Explanation / AST-035 / pass
 - assets / Test_AST_036_H03Explanation / AST-036 / pass
 - assets / Test_AST_037_H04Explanation / AST-037 / pass
+- assets / Test_AST_074_AuthorInputContracts / AST-074 / pass
+- assets / Test_AST_075_EvalInputSelection / AST-075 / pass
+- assets / Test_AST_076_EvalStructuredResults / AST-076 / pass
 - assets / Test_AST_033_MixedEvalFixExplanation / AST-033 / pass
 - assets / Test_AST_042_B04Explanation / AST-042 / pass
 - assets / Test_AST_032_RegenerateWarningExplanation / AST-032 / pass
@@ -637,7 +657,8 @@ result: fail
 - checks / Test_CHK_039_CHK_040_OptOutSuppressesOnlyItsModuleAndWarns / CHK-039, CHK-040 / pass
 - checks / Test_CHK_044_CHK_045_MissingHookRequiredVersusOptional / CHK-044, CHK-045 / pass
 - checks / Test_CHK_041_CHK_042_NormalNonzeroExitCanUseBaselineAndOptOut / CHK-041, CHK-042 / pass
-- checks / Test_CHK_043_RequiredGlobalHookRejectsUnattributedNonzeroExit / CHK-043 / pass
+- checks / Test_CHK_043_CHK_086_RequiredGlobalHookRejectsUnattributedNonzeroExit / CHK-043, CHK-086 / pass
+- checks / Test_CHK_086_OverrideFailureIncludesBoundedUTF8StderrTail / CHK-086 / pass
 - checks / Test_CHK_043_SilentNonzeroOverrideIsIndependentOfGlobalViolation / CHK-043 / pass
 - checks / Test_CHK_043_LaunchCancellationAndTimeoutStayErrors / CHK-043 / pass
 - checks / Test_CHK_065_CHK_066_DoctorAgentTailAcrossStreams / CHK-065, CHK-066 / pass
@@ -733,6 +754,9 @@ result: fail
 - checks / Test_CHK_003_CHK_032_CHK_033_CHK_034_CHK_035_GlobalShellHookQuotesAndOnePassExpansion / CHK-003, CHK-032, CHK-033, CHK-034, CHK-035 / pass
 - checks / Test_CHK_003_CHK_031_CHK_032_CHK_033_CHK_034_CHK_035_ModuleOverrideArgvAndOutput / CHK-003, CHK-031, CHK-032, CHK-033, CHK-034, CHK-035 / pass
 - checks / Test_CHK_038_ExitAndReportAgreement / CHK-038 / pass
+- checks / Test_CHK_038_ExitAndReportAgreement/zero-with-failure / CHK-038 / pass
+- checks / Test_CHK_038_ExitAndReportAgreement/nonzero-with-pass / CHK-038 / pass
+- checks / Test_CHK_038_ExitAndReportAgreement/nonzero-with-failure / CHK-038 / pass
 - checks / Test_CHK_080_EvaluateRetainsParsedFailureDetails / CHK-080 / pass
 - checks / Test_CHK_080_EvaluateRetainsParsedFailureDetails/nonzero_failure / CHK-080 / pass
 - checks / Test_CHK_080_EvaluateRetainsParsedFailureDetails/zero_passing / CHK-080 / pass
@@ -743,18 +767,9 @@ result: fail
 - checks / Test_CHK_046_EvaluateHookSetupCauses/invalid_hook_command / CHK-046 / pass
 - checks / Test_CHK_046_EvaluateHookSetupCauses/unavailable_report_directory / CHK-046 / pass
 - checks / Test_CHK_047_EvaluateUnknownModuleCause / CHK-047 / pass
-- checks / Test_CHK_048_EvaluateModuleItemCauses / CHK-048 / fail
-
-=== RUN   Test_CHK_048_EvaluateModuleItemCauses
---- FAIL: Test_CHK_048_EvaluateModuleItemCauses (0.00s)
-
+- checks / Test_CHK_048_EvaluateModuleItemCauses / CHK-048 / pass
 - checks / Test_CHK_048_EvaluateModuleItemCauses/malformed_item / CHK-048 / pass
-- checks / Test_CHK_048_EvaluateModuleItemCauses/duplicate_item / CHK-048 / fail
-
-=== RUN   Test_CHK_048_EvaluateModuleItemCauses/duplicate_item
-    hooks_test.go:218: error = "duplicate item heading \"CHK-003\""; want cause "duplicate item ID"
---- FAIL: Test_CHK_048_EvaluateModuleItemCauses/duplicate_item (0.00s)
-
+- checks / Test_CHK_048_EvaluateModuleItemCauses/duplicate_item / CHK-048 / pass
 - checks / Test_CHK_028_EvaluatePreservesJUnitDiagnostic / CHK-028 / pass
 - checks / Test_CHK_003_CHK_032_ArgvPlaceholdersAreOnePass / CHK-003, CHK-032 / pass
 - checks / Test_CHK_001_CHK_029_CHK_030_NestedJUnitIDsResultsAndTime / CHK-001, CHK-029, CHK-030 / pass
@@ -789,9 +804,14 @@ result: fail
 - gitstore / Test_GIT_010_DeleteWithAbsentExpectedRef/Empty / GIT-010 / pass
 - gitstore / Test_GIT_010_DeleteWithAbsentExpectedRef/ZeroSHA1 / GIT-010 / pass
 - gitstore / Test_GIT_005_RunRequiresExecutableForGitSubcommand / GIT-005 / pass
-- gitstore / Test_GIT_005_RunCaptureExitTimeoutAndGroupCancel / GIT-005 / pass
-- gitstore / Test_GIT_005_RunCaptureExitTimeoutAndGroupCancel/TimeoutTerminatesGroup / GIT-005 / pass
-- gitstore / Test_GIT_005_RunCaptureExitTimeoutAndGroupCancel/ContextCancellationTerminatesGroup / GIT-005 / pass
+- gitstore / Test_GIT_011_RunLaunchFailure / GIT-011 / pass
+- gitstore / Test_GIT_005_GIT_011_RunCaptureExitTimeoutAndGroupCancel / GIT-005, GIT-011 / pass
+- gitstore / Test_GIT_005_GIT_011_RunCaptureExitTimeoutAndGroupCancel/TimeoutTerminatesGroup / GIT-005, GIT-011 / pass
+- gitstore / Test_GIT_005_GIT_011_RunCaptureExitTimeoutAndGroupCancel/ContextCancellationTerminatesGroup / GIT-005, GIT-011 / pass
+- gitstore / Test_GIT_012_RunEnvironmentOverrides / GIT-012 / pass
+- gitstore / Test_GIT_012_RunEnvironmentOverrides/Override / GIT-012 / pass
+- gitstore / Test_GIT_012_RunEnvironmentOverrides/NilMap / GIT-012 / pass
+- gitstore / Test_GIT_012_RunEnvironmentOverrides/EmptyMap / GIT-012 / pass
 - gitstore / Test_GIT_005_RunCancelWhileShellLaunchesChild / GIT-005 / pass
 - project / Test_PRJ_086_ResolveExplicitWorkerAlias / PRJ-086 / pass
 - project / Test_PRJ_086_ResolveExplicitWorkerAlias/select_listed_alias / PRJ-086 / pass
@@ -812,6 +832,7 @@ result: fail
 - project / Test_PRJ_087_ResolveNamedWorkerDefault/invalid_default_command / PRJ-087 / pass
 - project / Test_PRJ_088_ResolveAuditAliasOrInheritWorkerDefault / PRJ-088 / pass
 - project / Test_PRJ_088_ResolveAuditAliasOrInheritWorkerDefault/select_independent_audit_alias / PRJ-088 / pass
+- project / Test_PRJ_088_ResolveAuditAliasOrInheritWorkerDefault/unlisted_worker_default / PRJ-088 / pass
 - project / Test_PRJ_088_ResolveAuditAliasOrInheritWorkerDefault/explicitly_name_worker_default / PRJ-088 / pass
 - project / Test_PRJ_088_ResolveAuditAliasOrInheritWorkerDefault/inherit_without_audit_section / PRJ-088 / pass
 - project / Test_PRJ_088_ResolveAuditAliasOrInheritWorkerDefault/inherit_without_audit_reference / PRJ-088 / pass
@@ -971,22 +992,13 @@ result: fail
 - project / Test_PRJ_006_PRJ_038_StampPrecedingProjectionAndPreservation / PRJ-006, PRJ-038 / pass
 - project / Test_PRJ_037_PRJ_039_StampAddedOnlyAndAbsentID / PRJ-037, PRJ-039 / pass
 - project / Test_PRJ_007_CheckValidAndDiagnostics / PRJ-007 / pass
-- project / Test_PRJ_015_PRJ_016_CheckDiagnostics / PRJ-015, PRJ-016 / fail
-
-=== RUN   Test_PRJ_015_PRJ_016_CheckDiagnostics
---- FAIL: Test_PRJ_015_PRJ_016_CheckDiagnostics (0.23s)
-
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics / PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-008_missing_motivation / PRJ-008, PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-009_nonnormative_module / PRJ-009, PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-009_nonnormative_change / PRJ-009, PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-010_invalid_review_tag / PRJ-010, PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-010_invalid_quarantine_tag / PRJ-010, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id / PRJ-011, PRJ-015, PRJ-016 / fail
-
-=== RUN   Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id
-    queue_test.go:366: Check did not report C05 for duplicate item ID: []model.Diagnostic{model.Diagnostic{Code:"C05", Message:"packages/alpha/SPEC.md: duplicate item heading \"ALP-001\"", Path:"packages/alpha/SPEC.md", Warning:false}}
---- FAIL: Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id (0.00s)
-
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_PRJ-068_duplicate_module_id / PRJ-011, PRJ-015, PRJ-016, PRJ-068 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-012_foreign_module_id / PRJ-012, PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-012_foreign_change_id / PRJ-012, PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-013_duplicate_edit_identity / PRJ-013, PRJ-015, PRJ-016 / pass
@@ -1015,10 +1027,12 @@ result: fail
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/missing_recorded_config / PRJ-050 / pass
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/malformed_recorded_config / PRJ-050 / pass
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/missing_recorded_SPEC / PRJ-050 / pass
-- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics / PRJ-050 / pass
-- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/malformed_frontmatter / PRJ-050 / pass
-- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/malformed_item_heading / PRJ-050 / pass
-- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/duplicate_item_identity / PRJ-050 / pass
+- project / Test_PRJ_050_PRJ_089_LoadAtPreservesRecordedSpecDiagnostics / PRJ-050, PRJ-089 / pass
+- project / Test_PRJ_050_PRJ_089_LoadAtPreservesRecordedSpecDiagnostics/malformed_frontmatter / PRJ-050, PRJ-089 / pass
+- project / Test_PRJ_050_PRJ_089_LoadAtPreservesRecordedSpecDiagnostics/malformed_item_heading / PRJ-050, PRJ-089 / pass
+- project / Test_PRJ_050_PRJ_089_LoadAtPreservesRecordedSpecDiagnostics/duplicate_item_identity / PRJ-050, PRJ-089 / pass
+- project / Test_PRJ_050_PRJ_089_LoadAtPreservesRecordedSpecDiagnostics/invalid_depends_on / PRJ-050, PRJ-089 / pass
+- project / Test_PRJ_050_PRJ_089_LoadAtPreservesRecordedSpecDiagnostics/invalid_zone_type / PRJ-050, PRJ-089 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs / PRJ-004 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs/Project / PRJ-004 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs/Stamp / PRJ-004 / pass
@@ -1058,13 +1072,27 @@ result: fail
 - project / Test_PRJ_073_CheckCountsDistinctItemsInTheFinalProjection/empty_queue / PRJ-073 / pass
 - project / Test_PRJ_074_CheckWarnsOnlyForModulesOverTheDecisionsLimit / PRJ-074 / pass
 - project / Test_PRJ_070_CheckWarnsForTrackedSpecsOutsideModuleGlobs / PRJ-070 / pass
-- project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule / PRJ-077 / pass
+- project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule / PRJ-077 / fail
+
+=== RUN   Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule
+--- FAIL: Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule (0.07s)
+
 - project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/absent / PRJ-077 / pass
 - project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/duplicate_with_repeated_id / PRJ-077 / pass
-- project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/duplicate_with_atx_closing_hashes / PRJ-077 / pass
+- project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/duplicate_with_atx_closing_hashes / PRJ-077 / fail
+
+=== RUN   Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/duplicate_with_atx_closing_hashes
+    spec_sections_test.go:44: Check diagnostics = []model.Diagnostic(nil); want a non-warning C03 at "packages/alpha/SPEC.md"
+--- FAIL: Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/duplicate_with_atx_closing_hashes (0.01s)
+
 - project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/single_empty / PRJ-077 / pass
 - project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/single_populated / PRJ-077 / pass
-- project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/single_atx_heading_with_crlf / PRJ-077 / pass
+- project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/single_atx_heading_with_crlf / PRJ-077 / fail
+
+=== RUN   Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/single_atx_heading_with_crlf
+    spec_sections_test.go:38: valid module received error diagnostic: model.Diagnostic{Code:"C03", Message:"packages/alpha/SPEC.md: expected exactly one level-two Specs section", Path:"packages/alpha/SPEC.md", Warning:false}
+--- FAIL: Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/single_atx_heading_with_crlf (0.00s)
+
 - project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/single_with_backtick_example / PRJ-077 / pass
 - project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/single_with_tilde_example / PRJ-077 / pass
 - project / Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/fenced_example_only / PRJ-077 / pass
@@ -1102,12 +1130,13 @@ result: fail
 - project / Test_PRJ_042_CheckDocumentAndItemCauses/malformed_module / PRJ-042 / pass
 - project / Test_PRJ_042_CheckDocumentAndItemCauses/malformed_change / PRJ-042 / pass
 - project / Test_PRJ_042_CheckDocumentAndItemCauses/malformed_item / PRJ-042 / pass
-- project / Test_PRJ_043_CheckMetadataAndSetCauses / PRJ-043 / pass
-- project / Test_PRJ_043_CheckMetadataAndSetCauses/metadata_type / PRJ-043 / pass
-- project / Test_PRJ_043_CheckMetadataAndSetCauses/zone_type / PRJ-043 / pass
-- project / Test_PRJ_043_CheckMetadataAndSetCauses/identity_set_key / PRJ-043 / pass
-- project / Test_PRJ_043_CheckMetadataAndSetCauses/unknown_set_key / PRJ-043 / pass
-- project / Test_PRJ_043_CheckMetadataAndSetCauses/set_value_type / PRJ-043 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses / PRJ-043, PRJ-089 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses/metadata_type / PRJ-043, PRJ-089 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses/invalid_depends_on / PRJ-043, PRJ-089 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses/zone_type / PRJ-043, PRJ-089 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses/identity_set_key / PRJ-043, PRJ-089 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses/unknown_set_key / PRJ-043, PRJ-089 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses/set_value_type / PRJ-043, PRJ-089 / pass
 - project / Test_PRJ_044_CheckQueueIdentityCause / PRJ-044 / pass
 - project / Test_PRJ_069_RegularFileAtChangesReportsQueueCause / PRJ-069 / pass
 - project / Test_PRJ_045_CheckPendingModuleTargetCause / PRJ-045 / pass
@@ -1335,7 +1364,9 @@ result: fail
 - runner / Test_RUN_029_RUN_031_DefaultUsageDurationsStopImmediately/default_wait / RUN-029, RUN-031 / pass
 - runner / Test_RUN_029_RUN_031_DefaultUsageDurationsStopImmediately/default_budget / RUN-029, RUN-031 / pass
 - runner / Test_RUN_030_RUN_031_RUN_033_ShortBudgetResumeOwnedStep / RUN-030, RUN-031, RUN-033 / pass
-- runner / Test_RUN_033_OwnedResumeUsesApprovedUsageBudget / RUN-033 / pass
+- runner / Test_RUN_033_OwnedResumeUsesApprovedSnapshot / RUN-033 / pass
+- runner / Test_RUN_033_OwnedResumeUsesApprovedSnapshot/different_budget / RUN-033 / pass
+- runner / Test_RUN_033_OwnedResumeUsesApprovedSnapshot/malformed_YAML / RUN-033 / pass
 - runner / Test_RUN_030_UsageRetryPreservesVerificationFeedback / RUN-030 / pass
 - runner / Test_RUN_030_RUN_031_WaitBudgetSharedAcrossNextPhases / RUN-030, RUN-031 / pass
 - runner / Test_RUN_032_RunSharesWaitAcrossChangesAndRetainsApplied / RUN-032 / pass
@@ -1474,7 +1505,7 @@ result: fail
 - workflow / Test_FLOW_032_FLOW_033_FLOW_046_FLOW_135_EvalsDoneAdvancesAndKeepsRunArtifactsLocal/default_audit/unignored / FLOW-032, FLOW-033, FLOW-046, FLOW-135 / pass
 - workflow / Test_FLOW_032_FLOW_033_FLOW_046_FLOW_135_EvalsDoneAdvancesAndKeepsRunArtifactsLocal/disabled_audit/ignored / FLOW-032, FLOW-033, FLOW-046, FLOW-135 / pass
 - workflow / Test_FLOW_034_FLOW_036_FLOW_041_FLOW_046_AuditAcceptsOnlyExactClauseFindingsAndCheckedNoFindings / FLOW-034, FLOW-036, FLOW-041, FLOW-046 / pass
-- workflow / Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_FLOW_046_AuditFindingsConvergeAndPersistTwoRoundBound / FLOW-035, FLOW-037, FLOW-038, FLOW-039, FLOW-042, FLOW-043, FLOW-046 / pass
+- workflow / Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_FLOW_046_FLOW_146_AuditFindingsConvergeAndPersistTwoRoundBound / FLOW-035, FLOW-037, FLOW-038, FLOW-039, FLOW-042, FLOW-043, FLOW-046, FLOW-146 / pass
 - workflow / Test_FLOW_040_FLOW_042_FLOW_043_UntestableFindingBlocksWithQuestion / FLOW-040, FLOW-042, FLOW-043 / pass
 - workflow / Test_FLOW_004_FLOW_028_FLOW_044_FLOW_045_FLOW_046_FLOW_047_FLOW_050_ImplDoneAppliesSpecsSetAndDecisionsAndArchives / FLOW-004, FLOW-028, FLOW-044, FLOW-045, FLOW-046, FLOW-047, FLOW-050 / pass
 - workflow / Test_FLOW_003_FLOW_024_FLOW_048_FLOW_049_FailedDoneKeepsPhaseAndHead / FLOW-003, FLOW-024, FLOW-048, FLOW-049 / pass
@@ -1534,7 +1565,7 @@ result: fail
 - workflow / Test_FLOW_073_StartFromAttemptRequiresCleanEligibleUnblockedAndUnclaimedChange/not_first_eligible / FLOW-073 / pass
 - workflow / Test_FLOW_073_StartFromAttemptRequiresCleanEligibleUnblockedAndUnclaimedChange/foreign_claim / FLOW-073 / pass
 - workflow / Test_FLOW_076_StartFromAttemptRejectsInvalidOrMissingAttemptBeforeMutation / FLOW-076 / pass
-- workflow / Test_FLOW_059_AuditVerifyChecksSubmissionWithoutAdvancing / FLOW-059 / pass
+- workflow / Test_FLOW_059_FLOW_145_AuditVerifyChecksSubmissionWithoutAdvancing / FLOW-059, FLOW-145 / pass
 - workflow / Test_FLOW_002_FLOW_136_AuditRejectsForbiddenEditAndDoneMarksFailure / FLOW-002, FLOW-136 / pass
 - workflow / Test_FLOW_061_UnknownLifecycleSelectorsNameValidSlugs / FLOW-061 / pass
 - workflow / Test_FLOW_101_FLOW_102_FLOW_103_StatusQueueAndForwardWaiting / FLOW-101, FLOW-102, FLOW-103 / pass
@@ -1562,132 +1593,107 @@ result: fail
 - workflow / Test_FLOW_138_ContextExplainsHowToDeclareWorkerBlock/impl / FLOW-138 / pass
 
 ## Contradicted Decisions
-None. [0128-coded-parse-errors] is consistent with the retained model.go
-(CodedError with optional Cause, Error returns the cause's text, Unwrap
-returns Cause) and with the evals, which only require Error() text to carry
-the duplicated ID / heading and errors.As-compatible chains. One nuance was a
-burden, not a contradiction: evals wrap CodedErrors as `*CodedError` with
-%w while other tests use value `CodedError`, and the spec does not say which
-form chains carry, so ErrorCode must accept both.
+None. Decision 0128-coded-parse-errors (CodedError exposes an optional Cause;
+Error returns the cause's text when present, else the code; Unwrap returns
+Cause) is consistent with the retained `model.CodedError` implementation and
+with evals CON-016/017/018/019, which were satisfied as written: C03/C05
+diagnostics carry a Cause whose text embeds the offending ID/heading so
+`err.Error()` contains it, and happy paths need no Cause at all. No retained
+decision had to be overridden to pass the evals.
 
 ## Gaps
-1. CON-016 does not state whether an error chain carries CodedError by value,
-   by pointer, or both, yet evals exercise both forms. Nearest spec: CON-016.
-   Target module for a fixing change: contracts (packages/contracts).
+- **CON-017 / CON-018** — the specs and decision 0128 pin the code (C05/C03)
+  and, for CON-017, the subject, but nowhere require `err.Error()` to contain
+  the duplicated ID or the malformed heading text; only the evals do. Neither
+  spec nor decision states what the Cause text should contain, so the
+  cause-message format is an eval-derived invention. Fix target: contracts
+  (`packages/contracts/SPEC.md`; consider extending CON-017/CON-018 to name
+  the cause-text contract).
+- **CON-019** — subject of the C03 CodedError for missing/unterminated/
+  invalid/non-mapping frontmatter is unspecified (evals check only code and
+  chain membership). Contracts module does not record what, if anything, the
+  subject should carry. Fix target: contracts.
+- **CON-001 / CON-019** — an empty frontmatter block (`---\n---\n`, YAML
+  `null`) is treated here as C03 "not a mapping", since CON-007/CON-019 reject
+  non-mappings and say nothing about the empty document; CON-008 only
+  guarantees round-trip for non-nil maps. The classification of empty/null
+  frontmatter is unspecified. Fix target: contracts.
+- **CON-001 / CON-002 / CON-010** — CRLF handling is only specified for
+  SpecHash (CON-003). This implementation tolerates `\r\n` line endings on
+  delimiter/fence/heading detection (trailing `\r` is ignored on structural
+  lines) but preserves body bytes verbatim; the spec never states whether
+  CRLF documents are supported or rejected. Fix target: contracts.
+- **CON-002** — section-name matching is exact string equality on the ATX
+  heading title after optional closing-hash trimming; the spec does not state
+  whether matching is case-sensitive, whether trailing `##` closing sequences
+  or leading indentation (CommonMark allows up to three spaces) are honored,
+  or how headings with no text compare. Fix target: contracts.
+- **CON-010 / CON-011 / CON-012** — the spec does not say how ParseItems
+  treats ATX headings of level 1–2 inside the input (this implementation ends
+  the open item body there), how content before the first item heading is
+  handled (ignored here), or whether headings inside fenced code blocks are
+  item candidates (not, here). The `###` grammar for tags also leaves empty
+  tags (`[]`) and the tag character set undefined; this implementation
+  rejects `[]` as C03. Fix target: contracts.
+- **CON-014** — the order in CON-014 (protected, SPEC.md, evals, …) implies
+  protected is checked before the SPEC.md special case, and this
+  implementation applies it in that order; but whether the root-spec match is
+  literally `path == "SPEC.md"` or any `SPEC.md` with no directory component
+  is never stated beyond the eval. Fix target: contracts.
+- **CON-005** — the handling of a trailing slash, empty path components, and
+  a pattern of `**` alone (matches everything here) is unspecified; only the
+  listed eval cases pin the semantics of `*` and `**`. Fix target: contracts.
+- **CON-016** — the chain walk handles single `Unwrap() error` links (incl.
+  `%w`); multi-error chains (`errors.Join`, `Unwrap() []error`) are
+  unspecified and unsupported. Fix target: contracts.
+- **CON-004** — as specified, a match followed by an ASCII letter is accepted
+  while one followed by a digit is rejected (and vice versa is rejected only
+  for letters/digits before the match); whether that asymmetry is intended,
+  and how non-ASCII alphanumerics classify, is not stated. This
+  implementation keeps the spec verbatim (`[^A-Za-z0-9]` / `[^0-9]` bounds).
+  Fix target: contracts.
+- **CON-003** — canonicalization drops trailing all-blank lines and re-adds
+  exactly one trailing newline; the spec does not cover lone-`\r` line
+  endings or whether the heading line itself is subject to trailing-space
+  trimming (it is, here, uniformly per line). Fix target: contracts.
 
-2. No spec defines the fence grammar that bounds Section/ReplaceSection:
-   tilde vs backtick fences, info strings after the opening fence, the
-   closing fence needing at least as many marker characters as the opener,
-   up to three leading spaces, and what may follow a closing fence.
-   Nearest spec: CON-002 (also relied on by CON-009). Target module:
-   contracts (packages/contracts).
-
-3. No spec defines ATX heading parsing details: closing hash runs
-   (`## Notes ##`), the mandatory space/tab after the leading hashes, up to
-   three leading spaces, or how level-1 vs level-2 headings beyond the
-   target section bound the body. Nearest spec: CON-002 (also relied on by
-   CON-009 and, for level<=2 boundaries, CON-010). Target module:
-   contracts (packages/contracts).
-
-4. No spec defines the tag grammar inside the optional bracketed tag:
-   allowed characters, whether spaces are permitted, whether the tag is
-   trimmed, and whether an empty tag (`[]`) is legal. Empty tags were
-   rejected as malformed and inner whitespace is trimmed. Nearest spec:
-   CON-010 and CON-011. Target module: contracts (packages/contracts).
-
-5. No spec states how ParseItems treats headings below level three, or
-   level-one/level-two headings appearing inside the input: item bodies end
-   at the next item heading, at a level-1/2 heading, or at end of input.
-   Nearest spec: CON-010. Target module: contracts (packages/contracts).
-
-6. No spec states line-ending handling outside SpecHash (CON-003 mandates
-   CRLF to LF only for hashing): whether ParseDocument, Section,
-   ReplaceSection and ParseItems preserve CRLF bodies verbatim or normalize,
-   and whether a final line lacking a newline is preserved. CRLF bodies are
-   preserved verbatim and the missing terminator is kept. Nearest spec:
-   CON-001, CON-002, CON-010. Target module: contracts (packages/contracts).
-
-7. No spec defines the exact boundaries for MatchesID beyond "preceded by a
-   letter/digit or followed by a digit": which character classes count as
-   letter/digit (ASCII vs Unicode) and whether other punctuation
-   (underscore, dot) always acts as a boundary. Unicode letter/digit
-   classes are used and any other separator acts as a boundary. Nearest
-   spec: CON-004. Target module: contracts (packages/contracts).
-
-8. No spec defines MatchGlob edge semantics: whether `*` matches an empty
-   run, whether a trailing or double `**` matches zero components, whether
-   `?` is supported (it is not; treated literally), and whether empty
-   pattern components are legal. `*` matches empty runs and `**` spans zero
-   or more components. Nearest spec: CON-005. Target module: contracts
-   (packages/contracts).
-
-9. No spec states what RenderDocument/ParseDocument must do with empty
-   frontmatter (`---\n---`), delimiters with trailing whitespace, YAML
-   stream-end markers (`...`), or whether a bare `---` closing fence is the
-   only accepted terminator. A YAML decode yielding nil is treated as a
-   non-mapping and rejected with C03. Nearest spec: CON-001, CON-007,
-   CON-019. Target module: contracts (packages/contracts).
-
-10. No spec states what ReplaceSection writes when the input does not end
-    with a newline: a newline is inserted before the appended
-    "## <name>" heading. Nearest spec: CON-009. Target module: contracts
-    (packages/contracts).
-
-11. No spec states the precedence between C03 (malformed heading) and C05
-    (duplicate heading) when a heading is both: validation of the heading
-    shape happens before the duplicate check, so C03 wins. Nearest spec:
-    CON-012, CON-017, CON-018. Target module: contracts (packages/contracts).
+No spec-listed behavior had to be violated to pass the evals; all gaps above
+are places where the contract is silent and only evals or this
+implementation's choice fills in the detail.
 
 ## Agent observations
 
 ### Invocation 1
-Log: .fireweed/runs/20261117T214925-488f251ad92d85eb16f8905e/drill-1.log
+Log: .fireweed/runs/20261119T152152-a30e0176b6e91b423a9d9056/drill-1.log
 
-The workspace is clear. Now I'll implement the disposable `internal/primitives` package.
-That frontmatter logic is too convoluted. Let me rewrite it cleanly.
-Now a clean full rewrite — the draft had duplicated functions and broken fence/rune helpers:
-Let me fix the redundant/buggy bracket handling in ParseItems:
-`errors.As` with a value target doesn't match `*CodedError`. Return value `CodedError` consistently:
-`errors.As` can't match both value and pointer `CodedError` forms while preserving chain order. I'll walk the chain manually:
+Now I'll write the implementation. Disposable paths are `internal/**`, so everything goes in `packages/contracts/internal/primitives/`.
 Tests pass. Now the eval hook:
-All 68 eval cases pass. Let me check git status and whether DRILL_NOTES.md exists anywhere:
-Now DRILL_NOTES.md:
-Gap 13 is muddled and 11 is basically covered by CON-003. Cleaning up:
-Done. Summary:
+All evals pass. Now I'll write DRILL_NOTES.md documenting contradicted decisions and gaps.
+Done. The module contracts was rebuilt from spec + retained interfaces + evals, and the eval hook reports **PASS**.
 
-**Rebuilt (disposable `internal/**` only):** `packages/contracts/internal/primitives/primitives.go` — implements parsing/rendering of frontmatter documents (CON-001/007/008/019), fence-aware ATX section logic (`Section`, `ReplaceSection`, CON-002/009), item parsing/rendering (CON-006/010/011/012/013/015/017/018), `SpecHash` canonicalization (CON-003), `MatchesID` boundary-aware matching (CON-004), `MatchGlob` (CON-005), `ResolveZone` zone order (CON-014), and `ErrorCode` chain walk that recognizes both value and pointer `CodedError` (CON-016). Retained files (`api.go`, `model/**`, `evals/**`, `SPEC.md`) untouched.
+**What was built** (disposable path only — `internal/**`):
+- `packages/contracts/internal/primitives/primitives.go` — implements `ErrorCode`, `ParseDocument`, `RenderDocument`, `Section`, `ReplaceSection`, `ParseItems`, `RenderItem`, `SpecHash`, `MatchesID`, `MatchGlob`, `ResolveZone`, called by the retained `api.go`.
+- Retained files (`api.go`, `model/model.go`, `evals/**`, `SPEC.md`) untouched. `gofmt`/`go vet` clean.
 
-**Key design notes:**
-- `ErrorCode` walks the chain manually (including `Unwrap() []error`) because `errors.As` with a single target type cannot match both value and `*CodedError` while preserving first-in-chain order — evals wrap `*CodedError` with `%w` and also use values.
-- Coded errors are returned as `model.CodedError` values, matching the retained model and decision [0128-coded-parse-errors].
-- fences (``` / ~~~, closing run ≥ opening) and levels ≤2 ATX headings (outside fences) bound sections and items.
+**Key behaviors:** C03/C05 CodedErrors with subjects and message text containing the offending ID/heading (as the evals require); fenced-code-aware ATX heading scanning for sections and items (backtick/tilde fences); first-match section replace or append; canonical SpecHash (CRLF→LF, trailing-space strip per line, trailing blank lines collapsed to one newline, first 8 hex of SHA-256); `*`/`**` glob with zero-or-more component `**`; zone resolution in the CON-014 order with `SPEC.md` as the root spec; chain-walking `ErrorCode` handling both value and pointer `CodedError` with `%w`.
 
-**Verification:** `go test ./packages/contracts/...` ok; the eval hook ran with the prescribed command and reported PASS — 68 testcases, 0 failures (`.fireweed/drill-eval.xml`).
+**DRILL_NOTES.md** records:
+- `## Contradicted Decisions` — none; decision 0128-coded-parse-errors is consistent with the retained model and evals.
+- `## Gaps` — 11 gaps, each naming its nearest spec ID (CON-001…CON-019) and `contracts` as the fix target, covering: eval-required cause text not pinned by spec/decision, unspecified C03 subject, empty/null frontmatter classification, CRLF semantics outside SpecHash, section-name matching rules, ParseItems edge cases (level ≤2 headings, preamble, fences, empty tags), `SPEC.md` detection literalness, glob edge cases, multi-error chains, the MatchesID asymmetry, and lone-`\r` handling.
 
-**DRILL_NOTES.md** (workspace root): *Contradicted Decisions* — none; *Gaps* — 11 entries, each naming its nearest spec ID and target module (contracts), covering ErrorCode value/pointer ambiguity (CON-016), fence grammar (CON-002), ATX heading parsing details (CON-002/009/010), tag grammar (CON-010/011), non-item headings in ParseItems input (CON-010), CRLF handling outside SpecHash, MatchesID character classes, MatchGlob edge semantics, frontmatter delimiter edge cases, ReplaceSection newline insertion, and C03/C05 precedence.
+Note: `.fireweed/drill-eval.xml` was regenerated by the eval hook (untracked); `DRILL_NOTES.md` and `packages/contracts/internal/` are the new artifacts.
 
 
 ## Failures
-checks: failed case "Test_CHK_048_EvaluateModuleItemCauses" for CHK-048
-Test_CHK_048_EvaluateModuleItemCauses: === RUN   Test_CHK_048_EvaluateModuleItemCauses
---- FAIL: Test_CHK_048_EvaluateModuleItemCauses (0.00s)
-Test_CHK_048_EvaluateModuleItemCauses/duplicate_item: === RUN   Test_CHK_048_EvaluateModuleItemCauses/duplicate_item
-    hooks_test.go:218: error = "duplicate item heading \"CHK-003\""; want cause "duplicate item ID"
---- FAIL: Test_CHK_048_EvaluateModuleItemCauses/duplicate_item (0.00s)
-?   	github.com/lurkshark/fireweed/packages/checks	[no test files]
-?   	github.com/lurkshark/fireweed/packages/checks/internal/engine	[no test files]
-?   	github.com/lurkshark/fireweed/packages/checks/model	[no test files]
-FAIL
-FAIL	github.com/lurkshark/fireweed/packages/checks/evals	266.954s
-
-exit status 1
-
-project: failed case "Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id" for PRJ-011
-Test_PRJ_015_PRJ_016_CheckDiagnostics: === RUN   Test_PRJ_015_PRJ_016_CheckDiagnostics
---- FAIL: Test_PRJ_015_PRJ_016_CheckDiagnostics (0.23s)
-Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id: === RUN   Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id
-    queue_test.go:366: Check did not report C05 for duplicate item ID: []model.Diagnostic{model.Diagnostic{Code:"C05", Message:"packages/alpha/SPEC.md: duplicate item heading \"ALP-001\"", Path:"packages/alpha/SPEC.md", Warning:false}}
---- FAIL: Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id (0.00s)
+project: failed case "Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule" for PRJ-077
+Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule: === RUN   Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule
+--- FAIL: Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule (0.07s)
+Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/duplicate_with_atx_closing_hashes: === RUN   Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/duplicate_with_atx_closing_hashes
+    spec_sections_test.go:44: Check diagnostics = []model.Diagnostic(nil); want a non-warning C03 at "packages/alpha/SPEC.md"
+--- FAIL: Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/duplicate_with_atx_closing_hashes (0.01s)
+Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/single_atx_heading_with_crlf: === RUN   Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/single_atx_heading_with_crlf
+    spec_sections_test.go:38: valid module received error diagnostic: model.Diagnostic{Code:"C03", Message:"packages/alpha/SPEC.md: expected exactly one level-two Specs section", Path:"packages/alpha/SPEC.md", Warning:false}
+--- FAIL: Test_PRJ_077_CheckRequiresExactlyOneSpecsSectionPerModule/single_atx_heading_with_crlf (0.00s)
 ?   	github.com/lurkshark/fireweed/packages/project	[no test files]
 ?   	github.com/lurkshark/fireweed/packages/project/internal/fixture	[no test files]
 ?   	github.com/lurkshark/fireweed/packages/project/internal/history	[no test files]
@@ -1695,7 +1701,7 @@ Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id: === RUN   Tes
 ?   	github.com/lurkshark/fireweed/packages/project/internal/source	[no test files]
 ?   	github.com/lurkshark/fireweed/packages/project/model	[no test files]
 FAIL
-FAIL	github.com/lurkshark/fireweed/packages/project/evals	4.290s
+FAIL	github.com/lurkshark/fireweed/packages/project/evals	4.571s
 
 exit status 1
 

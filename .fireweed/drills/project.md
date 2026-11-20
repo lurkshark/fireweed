@@ -1,8 +1,8 @@
 ---
 agent: opencode
-base_commit: b15846df67b7d6b3a0ea02456979e06fabf4ff44
-date: "2026-11-17T05:18:23.636398Z"
-model: opencode/deepseek-v4.1-flash#high
+base_commit: 1c36b67cc0882cd0e0cd8d6f91b554df3ce657cb
+date: "2026-11-19T17:03:35.622018Z"
+model: opencode/inkling-2-small-free#high
 result: fail
 ---
 
@@ -26,6 +26,7 @@ result: fail
 - project / Test_PRJ_087_ResolveNamedWorkerDefault/invalid_default_command / PRJ-087 / pass
 - project / Test_PRJ_088_ResolveAuditAliasOrInheritWorkerDefault / PRJ-088 / pass
 - project / Test_PRJ_088_ResolveAuditAliasOrInheritWorkerDefault/select_independent_audit_alias / PRJ-088 / pass
+- project / Test_PRJ_088_ResolveAuditAliasOrInheritWorkerDefault/unlisted_worker_default / PRJ-088 / pass
 - project / Test_PRJ_088_ResolveAuditAliasOrInheritWorkerDefault/explicitly_name_worker_default / PRJ-088 / pass
 - project / Test_PRJ_088_ResolveAuditAliasOrInheritWorkerDefault/inherit_without_audit_section / PRJ-088 / pass
 - project / Test_PRJ_088_ResolveAuditAliasOrInheritWorkerDefault/inherit_without_audit_reference / PRJ-088 / pass
@@ -128,6 +129,10 @@ result: fail
 - project / Test_PRJ_085_CheckCompatibilityProjectFormat/excluding_pin_with_initial / PRJ-085 / pass
 - project / Test_PRJ_085_LoadAndCheckRejectUnsupportedLiveFormat / PRJ-085 / pass
 - project / Test_PRJ_047_LoadAtReadsUnsupportedRecordedFormat / PRJ-047 / pass
+- project / Test_PRJ_014_CheckHandlesInChangeProse / PRJ-014 / pass
+- project / Test_PRJ_014_CheckHandlesInChangeProse/undeclared_in_motivation / PRJ-014 / pass
+- project / Test_PRJ_014_CheckHandlesInChangeProse/undeclared_in_interface / PRJ-014 / pass
+- project / Test_PRJ_014_CheckHandlesInChangeProse/declared_in_added / PRJ-014 / pass
 - project / Test_PRJ_046_CheckEvalFixCannotMixWithFixesOrSpecEdits / PRJ-046 / pass
 - project / Test_PRJ_046_CheckEvalFixCannotMixWithFixesOrSpecEdits/eval_fix_with_fixes / PRJ-046 / pass
 - project / Test_PRJ_046_CheckEvalFixCannotMixWithFixesOrSpecEdits/eval_fix_with_added / PRJ-046 / pass
@@ -181,21 +186,21 @@ result: fail
 - project / Test_PRJ_006_PRJ_038_StampPrecedingProjectionAndPreservation / PRJ-006, PRJ-038 / pass
 - project / Test_PRJ_037_PRJ_039_StampAddedOnlyAndAbsentID / PRJ-037, PRJ-039 / pass
 - project / Test_PRJ_007_CheckValidAndDiagnostics / PRJ-007 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics / PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-008_missing_motivation / PRJ-008, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-009_nonnormative_module / PRJ-009, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-009_nonnormative_change / PRJ-009, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-010_invalid_review_tag / PRJ-010, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-010_invalid_quarantine_tag / PRJ-010, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id / PRJ-011, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-012_foreign_module_id / PRJ-012, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-012_foreign_change_id / PRJ-012, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-013_duplicate_edit_identity / PRJ-013, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-014_undeclared_handle / PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-015_missing_base / PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-015_stale_base / PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-016_absent_modified / PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-016_absent_removed / PRJ-014, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics / PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-008_missing_motivation / PRJ-008, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-009_nonnormative_module / PRJ-009, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-009_nonnormative_change / PRJ-009, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-010_invalid_review_tag / PRJ-010, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-010_invalid_quarantine_tag / PRJ-010, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_PRJ-068_duplicate_module_id / PRJ-011, PRJ-015, PRJ-016, PRJ-068 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-012_foreign_module_id / PRJ-012, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-012_foreign_change_id / PRJ-012, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-013_duplicate_edit_identity / PRJ-013, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-014_undeclared_handle / PRJ-014, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-015_missing_base / PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-015_stale_base / PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-016_absent_modified / PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-016_absent_removed / PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_078_CheckRemovedSectionContainsOnlyHeadings / PRJ-078 / pass
 - project / Test_PRJ_078_CheckRemovedSectionContainsOnlyHeadings/item_body / PRJ-078 / pass
 - project / Test_PRJ_078_CheckRemovedSectionContainsOnlyHeadings/leading_prose / PRJ-078 / pass
@@ -216,10 +221,12 @@ result: fail
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/missing_recorded_config / PRJ-050 / pass
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/malformed_recorded_config / PRJ-050 / pass
 - project / Test_PRJ_050_LoadAtRejectsInvalidRecordedInputs/missing_recorded_SPEC / PRJ-050 / pass
-- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics / PRJ-050 / pass
-- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/malformed_frontmatter / PRJ-050 / pass
-- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/malformed_item_heading / PRJ-050 / pass
-- project / Test_PRJ_050_LoadAtPreservesRecordedSpecParseDiagnostics/duplicate_item_identity / PRJ-050 / pass
+- project / Test_PRJ_050_PRJ_089_LoadAtPreservesRecordedSpecDiagnostics / PRJ-050, PRJ-089 / pass
+- project / Test_PRJ_050_PRJ_089_LoadAtPreservesRecordedSpecDiagnostics/malformed_frontmatter / PRJ-050, PRJ-089 / pass
+- project / Test_PRJ_050_PRJ_089_LoadAtPreservesRecordedSpecDiagnostics/malformed_item_heading / PRJ-050, PRJ-089 / pass
+- project / Test_PRJ_050_PRJ_089_LoadAtPreservesRecordedSpecDiagnostics/duplicate_item_identity / PRJ-050, PRJ-089 / pass
+- project / Test_PRJ_050_PRJ_089_LoadAtPreservesRecordedSpecDiagnostics/invalid_depends_on / PRJ-050, PRJ-089 / pass
+- project / Test_PRJ_050_PRJ_089_LoadAtPreservesRecordedSpecDiagnostics/invalid_zone_type / PRJ-050, PRJ-089 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs / PRJ-004 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs/Project / PRJ-004 / pass
 - project / Test_PRJ_004_UnknownProjectAndStampSelectorsListPendingSlugs/Stamp / PRJ-004 / pass
@@ -303,12 +310,13 @@ result: fail
 - project / Test_PRJ_042_CheckDocumentAndItemCauses/malformed_module / PRJ-042 / pass
 - project / Test_PRJ_042_CheckDocumentAndItemCauses/malformed_change / PRJ-042 / pass
 - project / Test_PRJ_042_CheckDocumentAndItemCauses/malformed_item / PRJ-042 / pass
-- project / Test_PRJ_043_CheckMetadataAndSetCauses / PRJ-043 / pass
-- project / Test_PRJ_043_CheckMetadataAndSetCauses/metadata_type / PRJ-043 / pass
-- project / Test_PRJ_043_CheckMetadataAndSetCauses/zone_type / PRJ-043 / pass
-- project / Test_PRJ_043_CheckMetadataAndSetCauses/identity_set_key / PRJ-043 / pass
-- project / Test_PRJ_043_CheckMetadataAndSetCauses/unknown_set_key / PRJ-043 / pass
-- project / Test_PRJ_043_CheckMetadataAndSetCauses/set_value_type / PRJ-043 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses / PRJ-043, PRJ-089 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses/metadata_type / PRJ-043, PRJ-089 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses/invalid_depends_on / PRJ-043, PRJ-089 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses/zone_type / PRJ-043, PRJ-089 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses/identity_set_key / PRJ-043, PRJ-089 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses/unknown_set_key / PRJ-043, PRJ-089 / pass
+- project / Test_PRJ_043_PRJ_089_CheckAndLoadMetadataAndSetCauses/set_value_type / PRJ-043, PRJ-089 / pass
 - project / Test_PRJ_044_CheckQueueIdentityCause / PRJ-044 / pass
 - project / Test_PRJ_069_RegularFileAtChangesReportsQueueCause / PRJ-069 / pass
 - project / Test_PRJ_045_CheckPendingModuleTargetCause / PRJ-045 / pass
@@ -429,17 +437,19 @@ result: fail
 - app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/coverage / APP-164 / pass
 - app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/next / APP-164 / pass
 - app / Test_APP_164_RejectsIncompatibleApprovedConfiguration/run / APP-164 / pass
+- app / Test_APP_170_ManualVerificationRejectsIncompatibleApprovedConfiguration / APP-170 / pass
+- app / Test_APP_170_ManualVerificationRejectsIncompatibleApprovedConfiguration/verify / APP-170 / pass
+- app / Test_APP_170_ManualVerificationRejectsIncompatibleApprovedConfiguration/done / APP-170 / pass
+- app / Test_APP_170_ManualVerificationReportsProtectedConfigEdit / APP-170 / pass
+- app / Test_APP_170_ManualVerificationReportsProtectedConfigEdit/verify / APP-170 / pass
+- app / Test_APP_170_ManualVerificationReportsProtectedConfigEdit/done / APP-170 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration / APP-164 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/check_--json / APP-164 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/show_alpha / APP-164 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/new-change_alpha_new-work / APP-164 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next / APP-164 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run / APP-164 / pass
-- app / Test_APP_037_StaticCauses / APP-037 / fail
-
-=== RUN   Test_APP_037_StaticCauses
---- FAIL: Test_APP_037_StaticCauses (0.77s)
-
+- app / Test_APP_037_StaticCauses / APP-037 / pass
 - app / Test_APP_037_StaticCauses/configuration / APP-037 / pass
 - app / Test_APP_037_StaticCauses/graph / APP-037 / pass
 - app / Test_APP_037_StaticCauses/syntax / APP-037 / pass
@@ -448,17 +458,7 @@ result: fail
 - app / Test_APP_037_StaticCauses/tag / APP-037 / pass
 - app / Test_APP_037_StaticCauses/structure / APP-037 / pass
 - app / Test_APP_037_StaticCauses/base / APP-037 / pass
-- app / Test_APP_037_StaticCauses/handle / APP-037 / fail
-
-=== RUN   Test_APP_037_StaticCauses/handle
-    diagnostic_causes_test.go:134: status=0; want 1; stdout="Check passed.\n" stderr=""
-    diagnostic_causes_test.go:134: plain diagnostic="Check passed.\n"; want code and message
-    diagnostic_causes_test.go:134: missing C09 diagnostic with subject "new:missing" and pending slugs [] in plain output "Check passed.\n"
-    diagnostic_causes_test.go:134: status=0; want 1; stdout="{\"schema\":1,\"data\":\"Check passed.\\n\",\"diagnostics\":[]}\n" stderr=""
-    diagnostic_causes_test.go:134: data="Check passed.\n"; want null
-    diagnostic_causes_test.go:134: diagnostics=[]; want nonempty array: <nil>
---- FAIL: Test_APP_037_StaticCauses/handle (0.03s)
-
+- app / Test_APP_037_StaticCauses/handle / APP-037 / pass
 - app / Test_APP_037_StaticCauses/metadata / APP-037 / pass
 - app / Test_APP_037_StaticCauses/queue-identity / APP-037 / pass
 - app / Test_APP_037_APP_038_ShowStaticCauses / APP-037, APP-038 / pass
@@ -491,13 +491,7 @@ result: fail
 - app / Test_APP_166_DrillRejectsInvalidAgentOptionBeforeInvocation/missing / APP-166 / pass
 - app / Test_APP_166_DrillRejectsInvalidAgentOptionBeforeInvocation/empty / APP-166 / pass
 - app / Test_APP_166_DrillRejectsInvalidAgentOptionBeforeInvocation/repeated / APP-166 / pass
-- app / Test_APP_167_DrillRejectsUnknownAgentAlias / APP-167 / fail
-
-=== RUN   Test_APP_167_DrillRejectsUnknownAgentAlias
-    drill_cli_test.go:278: drill exit=1; want 2; stdout="" stderr="U02: command alias \"unlisted-drill-agent\" is not listed in agent.commands. Correct the reported issue before retrying.\n"
-    drill_cli_test.go:278: drill exit=1; want 2; stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"U02\",\"message\":\"command alias \\\"unlisted-drill-agent\\\" is not listed in agent.commands. Correct the reported issue before retrying.\",\"warning\":false}]}\n" stderr=""
---- FAIL: Test_APP_167_DrillRejectsUnknownAgentAlias (0.85s)
-
+- app / Test_APP_167_DrillRejectsUnknownAgentAlias / APP-167 / pass
 - app / Test_APP_140_DrillProjectAndConfigurationFailures / APP-140 / pass
 - app / Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts / APP-141 / pass
 - app / Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/own-plain / APP-141 / pass
@@ -582,6 +576,9 @@ result: fail
 - app / Test_APP_009_APP_027_APP_028_APP_040_StartPreservesApprovalWarning / APP-009, APP-027, APP-028, APP-040 / pass
 - app / Test_APP_004_APP_164_HeldModulesUseApprovedProjection / APP-004, APP-164 / pass
 - app / Test_APP_011_APP_032_APP_033_ContextCompactFullAndErrors / APP-011, APP-032, APP-033 / pass
+- app / Test_APP_168_ContextRecoversWithInvalidLiveConfiguration / APP-168 / pass
+- app / Test_APP_168_ContextRecoversWithInvalidLiveConfiguration/malformed-yaml / APP-168 / pass
+- app / Test_APP_168_ContextRecoversWithInvalidLiveConfiguration/excluding-pin / APP-168 / pass
 - app / Test_APP_012_APP_034_APP_035_APP_036_CoverageCurrentProjectionAndErrors / APP-012, APP-034, APP-035, APP-036 / pass
 - app / Test_APP_012_APP_160_APP_164_CoverageUsesApprovedHooksWithSelectedSpecs / APP-012, APP-160, APP-164 / pass
 - app / Test_APP_010_APP_029_APP_030_APP_031_VerifyDoneAuditAndFullChecks / APP-010, APP-029, APP-030, APP-031 / pass
@@ -630,7 +627,13 @@ result: fail
 - app / Test_APP_074_APP_076_APP_077_NextDiscoversRootAndAppliesChange / APP-074, APP-076, APP-077 / pass
 - app / Test_APP_075_NextAllowUnmergedAndUsage / APP-075 / pass
 - app / Test_APP_076_NextPlainEmptyQueue / APP-076 / pass
-- app / Test_APP_077_NextExitClasses / APP-077 / pass
+- app / Test_APP_077_NextExitClasses / APP-077 / fail
+
+=== RUN   Test_APP_077_NextExitClasses
+    next_cli_test.go:273: exit=0, want 2; stdout="Queue is empty.\n" stderr=""
+    next_cli_test.go:273: plain diagnostic stdout="Queue is empty.\n" stderr=""; want C01 and action
+--- FAIL: Test_APP_077_NextExitClasses (1.18s)
+
 - app / Test_APP_078_NextWrappedCauseAndAction / APP-078 / pass
 - app / Test_APP_079_NextJSONSuccessAndFailure / APP-079 / pass
 - app / Test_APP_127_APP_128_APP_129_PRBodyExplicitHistoricalEndpoint / APP-127, APP-128, APP-129 / pass
@@ -676,6 +679,9 @@ result: fail
 - app / Test_APP_091_APP_092_APP_093_ReleaseOwnedClaimRetainsDirtyWork / APP-091, APP-092, APP-093 / pass
 - app / Test_APP_091_APP_092_APP_093_ReleaseOwnedClaimRetainsDirtyWork/plain-path / APP-091, APP-092, APP-093 / pass
 - app / Test_APP_091_APP_092_APP_093_ReleaseOwnedClaimRetainsDirtyWork/json-filename / APP-091, APP-092, APP-093 / pass
+- app / Test_APP_169_ReleaseRecoversWithInvalidLiveConfiguration / APP-169 / pass
+- app / Test_APP_169_ReleaseRecoversWithInvalidLiveConfiguration/malformed-yaml / APP-169 / pass
+- app / Test_APP_169_ReleaseRecoversWithInvalidLiveConfiguration/excluding-pin / APP-169 / pass
 - app / Test_APP_092_APP_093_ReleaseForeignClaimKeepsOwner / APP-092, APP-093 / pass
 - app / Test_APP_092_APP_093_ReleaseUsageAndConfiguration / APP-092, APP-093 / pass
 - app / Test_APP_092_APP_093_ReleaseUsageAndConfiguration/missing-argument / APP-092, APP-093 / pass
@@ -685,7 +691,13 @@ result: fail
 - app / Test_APP_083_RunPlainMultiple / APP-083 / pass
 - app / Test_APP_086_RunJSONLimited / APP-086 / pass
 - app / Test_APP_082_RunAllowUnmerged / APP-082 / pass
-- app / Test_APP_081_APP_084_RunUsageAndConfiguration / APP-081, APP-084 / pass
+- app / Test_APP_081_APP_084_RunUsageAndConfiguration / APP-081, APP-084 / fail
+
+=== RUN   Test_APP_081_APP_084_RunUsageAndConfiguration
+    run_cli_test.go:394: exit=0, want 2; stdout="Applied 0 changes.\nQueue is empty.\n" stderr=""
+    run_cli_test.go:394: plain diagnostic stdout="Applied 0 changes.\nQueue is empty.\n" stderr=""; want C01 and action
+--- FAIL: Test_APP_081_APP_084_RunUsageAndConfiguration (0.80s)
+
 - app / Test_APP_084_APP_085_APP_086_RunWrappedFailure / APP-084, APP-085, APP-086 / pass
 - app / Test_APP_089_APP_090_APP_084_RunForJSONRetainsAppliedAndResumes / APP-084, APP-089, APP-090 / pass
 - app / Test_APP_090_APP_084_RunForPlainStop / APP-084, APP-090 / pass
@@ -755,7 +767,8 @@ result: fail
 - checks / Test_CHK_039_CHK_040_OptOutSuppressesOnlyItsModuleAndWarns / CHK-039, CHK-040 / pass
 - checks / Test_CHK_044_CHK_045_MissingHookRequiredVersusOptional / CHK-044, CHK-045 / pass
 - checks / Test_CHK_041_CHK_042_NormalNonzeroExitCanUseBaselineAndOptOut / CHK-041, CHK-042 / pass
-- checks / Test_CHK_043_RequiredGlobalHookRejectsUnattributedNonzeroExit / CHK-043 / pass
+- checks / Test_CHK_043_CHK_086_RequiredGlobalHookRejectsUnattributedNonzeroExit / CHK-043, CHK-086 / pass
+- checks / Test_CHK_086_OverrideFailureIncludesBoundedUTF8StderrTail / CHK-086 / pass
 - checks / Test_CHK_043_SilentNonzeroOverrideIsIndependentOfGlobalViolation / CHK-043 / pass
 - checks / Test_CHK_043_LaunchCancellationAndTimeoutStayErrors / CHK-043 / pass
 - checks / Test_CHK_065_CHK_066_DoctorAgentTailAcrossStreams / CHK-065, CHK-066 / pass
@@ -851,6 +864,9 @@ result: fail
 - checks / Test_CHK_003_CHK_032_CHK_033_CHK_034_CHK_035_GlobalShellHookQuotesAndOnePassExpansion / CHK-003, CHK-032, CHK-033, CHK-034, CHK-035 / pass
 - checks / Test_CHK_003_CHK_031_CHK_032_CHK_033_CHK_034_CHK_035_ModuleOverrideArgvAndOutput / CHK-003, CHK-031, CHK-032, CHK-033, CHK-034, CHK-035 / pass
 - checks / Test_CHK_038_ExitAndReportAgreement / CHK-038 / pass
+- checks / Test_CHK_038_ExitAndReportAgreement/zero-with-failure / CHK-038 / pass
+- checks / Test_CHK_038_ExitAndReportAgreement/nonzero-with-pass / CHK-038 / pass
+- checks / Test_CHK_038_ExitAndReportAgreement/nonzero-with-failure / CHK-038 / pass
 - checks / Test_CHK_080_EvaluateRetainsParsedFailureDetails / CHK-080 / pass
 - checks / Test_CHK_080_EvaluateRetainsParsedFailureDetails/nonzero_failure / CHK-080 / pass
 - checks / Test_CHK_080_EvaluateRetainsParsedFailureDetails/zero_passing / CHK-080 / pass
@@ -981,17 +997,18 @@ result: fail
 - runner / Test_RUN_056_DrillUsesConfiguredDefault / RUN-056 / pass
 - runner / Test_RUN_056_ConfiguredTimeoutBoundsDrillWorker / RUN-056 / pass
 - runner / Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted / RUN-057 / pass
+- runner / Test_RUN_061_UsageStopRetainsAcceptedRebuild / RUN-061 / pass
 - runner / Test_RUN_058_RUN_059_DrillReturnsAllReportsEvenWhenEvalsFail / RUN-058, RUN-059 / pass
 - runner / Test_RUN_058_OwnCoverageRequiredAfterPassingCases / RUN-058 / pass
 - runner / Test_RUN_059_DependentCoverageRequiredAfterPassingCases / RUN-059 / pass
-- runner / Test_RUN_068_DependentOnlyFailuresEndDrill / RUN-068 / pass
+- runner / Test_RUN_068_RUN_078_DependentOnlyFailuresEndDrill / RUN-068, RUN-078 / pass
 - runner / Test_RUN_068_OwnEvalRetryOmitsDependentEvalOutput / RUN-068 / pass
 - runner / Test_RUN_069_DrillObservationsIncludeStdoutAndRelativeLogPerAttempt / RUN-069 / pass
 - runner / Test_RUN_060_RUN_061_DrillReportAndRetainedRef / RUN-060, RUN-061 / pass
 - runner / Test_RUN_074_DrillResultAndReportIdentifySelectedCommand / RUN-074 / pass
 - runner / Test_RUN_074_DrillResultAndReportIdentifySelectedCommand/default / RUN-074 / pass
 - runner / Test_RUN_074_DrillResultAndReportIdentifySelectedCommand/explicit / RUN-074 / pass
-- runner / Test_RUN_060_RUN_061_FailedDrillReportsFailuresAndRetainsCode / RUN-060, RUN-061 / pass
+- runner / Test_RUN_060_RUN_061_RUN_078_FailedDrillReportsFailuresAndRetainsCode / RUN-060, RUN-061, RUN-078 / pass
 - runner / Test_RUN_062_CleanupOnSuccessAndFailures / RUN-062 / pass
 - runner / Test_RUN_062_CleanupOnSuccessAndFailures/success / RUN-062 / pass
 - runner / Test_RUN_062_CleanupOnSuccessAndFailures/agent_retry / RUN-062 / pass
@@ -1098,7 +1115,9 @@ result: fail
 - runner / Test_RUN_029_RUN_031_DefaultUsageDurationsStopImmediately/default_wait / RUN-029, RUN-031 / pass
 - runner / Test_RUN_029_RUN_031_DefaultUsageDurationsStopImmediately/default_budget / RUN-029, RUN-031 / pass
 - runner / Test_RUN_030_RUN_031_RUN_033_ShortBudgetResumeOwnedStep / RUN-030, RUN-031, RUN-033 / pass
-- runner / Test_RUN_033_OwnedResumeUsesApprovedUsageBudget / RUN-033 / pass
+- runner / Test_RUN_033_OwnedResumeUsesApprovedSnapshot / RUN-033 / pass
+- runner / Test_RUN_033_OwnedResumeUsesApprovedSnapshot/different_budget / RUN-033 / pass
+- runner / Test_RUN_033_OwnedResumeUsesApprovedSnapshot/malformed_YAML / RUN-033 / pass
 - runner / Test_RUN_030_UsageRetryPreservesVerificationFeedback / RUN-030 / pass
 - runner / Test_RUN_030_RUN_031_WaitBudgetSharedAcrossNextPhases / RUN-030, RUN-031 / pass
 - runner / Test_RUN_032_RunSharesWaitAcrossChangesAndRetainsApplied / RUN-032 / pass
@@ -1120,6 +1139,9 @@ result: fail
 - workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers / FLOW-019 / pass
 - workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers/1.0 / FLOW-019 / pass
 - workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers/1 / FLOW-019 / pass
+- workflow / Test_FLOW_019_CurrentResolvesHeldPathWithInvalidLiveConfig / FLOW-019 / pass
+- workflow / Test_FLOW_019_CurrentResolvesHeldPathWithInvalidLiveConfig/malformed_YAML / FLOW-019 / pass
+- workflow / Test_FLOW_019_CurrentResolvesHeldPathWithInvalidLiveConfig/incompatible_version_pin / FLOW-019 / pass
 - workflow / Test_FLOW_019_FLOW_139_ApprovedSurvivesLiveEdits / FLOW-019, FLOW-139 / pass
 - workflow / Test_FLOW_140_ApprovedReportsNoOwnedClaim / FLOW-140 / pass
 - workflow / Test_FLOW_140_ApprovedRejectsUnreadableOrMalformedClaim / FLOW-140 / pass
@@ -1234,7 +1256,7 @@ result: fail
 - workflow / Test_FLOW_032_FLOW_033_FLOW_046_FLOW_135_EvalsDoneAdvancesAndKeepsRunArtifactsLocal/default_audit/unignored / FLOW-032, FLOW-033, FLOW-046, FLOW-135 / pass
 - workflow / Test_FLOW_032_FLOW_033_FLOW_046_FLOW_135_EvalsDoneAdvancesAndKeepsRunArtifactsLocal/disabled_audit/ignored / FLOW-032, FLOW-033, FLOW-046, FLOW-135 / pass
 - workflow / Test_FLOW_034_FLOW_036_FLOW_041_FLOW_046_AuditAcceptsOnlyExactClauseFindingsAndCheckedNoFindings / FLOW-034, FLOW-036, FLOW-041, FLOW-046 / pass
-- workflow / Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_FLOW_046_AuditFindingsConvergeAndPersistTwoRoundBound / FLOW-035, FLOW-037, FLOW-038, FLOW-039, FLOW-042, FLOW-043, FLOW-046 / pass
+- workflow / Test_FLOW_035_FLOW_037_FLOW_038_FLOW_039_FLOW_042_FLOW_043_FLOW_046_FLOW_146_AuditFindingsConvergeAndPersistTwoRoundBound / FLOW-035, FLOW-037, FLOW-038, FLOW-039, FLOW-042, FLOW-043, FLOW-046, FLOW-146 / pass
 - workflow / Test_FLOW_040_FLOW_042_FLOW_043_UntestableFindingBlocksWithQuestion / FLOW-040, FLOW-042, FLOW-043 / pass
 - workflow / Test_FLOW_004_FLOW_028_FLOW_044_FLOW_045_FLOW_046_FLOW_047_FLOW_050_ImplDoneAppliesSpecsSetAndDecisionsAndArchives / FLOW-004, FLOW-028, FLOW-044, FLOW-045, FLOW-046, FLOW-047, FLOW-050 / pass
 - workflow / Test_FLOW_003_FLOW_024_FLOW_048_FLOW_049_FailedDoneKeepsPhaseAndHead / FLOW-003, FLOW-024, FLOW-048, FLOW-049 / pass
@@ -1294,8 +1316,8 @@ result: fail
 - workflow / Test_FLOW_073_StartFromAttemptRequiresCleanEligibleUnblockedAndUnclaimedChange/not_first_eligible / FLOW-073 / pass
 - workflow / Test_FLOW_073_StartFromAttemptRequiresCleanEligibleUnblockedAndUnclaimedChange/foreign_claim / FLOW-073 / pass
 - workflow / Test_FLOW_076_StartFromAttemptRejectsInvalidOrMissingAttemptBeforeMutation / FLOW-076 / pass
-- workflow / Test_FLOW_059_AuditVerifyChecksSubmissionWithoutAdvancing / FLOW-059 / pass
-- workflow / Test_FLOW_002_AuditRejectsForbiddenEditBeforeHooks / FLOW-002 / pass
+- workflow / Test_FLOW_059_FLOW_145_AuditVerifyChecksSubmissionWithoutAdvancing / FLOW-059, FLOW-145 / pass
+- workflow / Test_FLOW_002_FLOW_136_AuditRejectsForbiddenEditAndDoneMarksFailure / FLOW-002, FLOW-136 / pass
 - workflow / Test_FLOW_061_UnknownLifecycleSelectorsNameValidSlugs / FLOW-061 / pass
 - workflow / Test_FLOW_101_FLOW_102_FLOW_103_StatusQueueAndForwardWaiting / FLOW-101, FLOW-102, FLOW-103 / pass
 - workflow / Test_FLOW_104_FLOW_105_StatusInterfaceAndProjectedWaiting / FLOW-104, FLOW-105 / pass
@@ -1322,75 +1344,135 @@ result: fail
 - workflow / Test_FLOW_138_ContextExplainsHowToDeclareWorkerBlock/impl / FLOW-138 / pass
 
 ## Contradicted Decisions
-No contradicted Decisions. `[0126-spec-history-query]` (read the current archive as the history source, do not infer chronology from commits or filenames, and return the filtered ID in each entry) is consistent with PRJ-051 through PRJ-056.
+None. The one recorded decision was honored exactly:
+
+- [0126-spec-history-query] — SpecHistory reads the current archive files (it
+  does not infer chronology from commit ancestry or filenames). Entry metadata
+  are the Markdown section contents without their level-two heading
+  (Motivation, Decisions, "Removed decisions", Provenance), and with a nonempty
+  ID filter each entry's IDs field is exactly that matching ID. Module target:
+  project (enforced as-is; no fixing change needed until it must change).
+
+No spec, decision or retained interface forced a contradictory behavior during
+reconstruction.
 
 ## Gaps
-- PRJ-051 / PRJ-056 — Archives are discovered only as `changes/archive/NNNN-slug.md`; the specs do not state how archived files with other names are selected or rejected. Target module: `project`.
-- PRJ-047 / PRJ-050 — `LoadAt` discovers module directories from the ancestor directories of recorded files, so an empty recorded directory matches only when Git has another file beneath it. The specs do not define module discovery for empty recorded directories. Target module: `project`.
-- PRJ-061 — "The Git commit that last changed that change file's bases mapping" is detected by comparing the decoded `bases` mapping with the first parent's mapping. The specs do not define merge commits, root commits or uncommitted bases edits. Target module: `project`.
-- PRJ-005 — No spec defines how `Project` handles a Modified ID absent from the preceding projection; the implementation appends the item rather than rejecting it. Nearest spec: PRJ-005 (or "no spec"). Target module: `project`.
-- PRJ-033 / PRJ-034 — The `set` allow-list omits `protected` while PRJ-033 names the other zone fields; the implementation treats `protected` as an unknown field. The specs do not say whether a project may change `protected` through a queued set. Target module: `project`.
-- PRJ-070 — "Tracked" SPEC.md files are taken from `git ls-files`, which includes index-only (deleted from the worktree) entries and silently degrades to no warning outside a Git repository. The specs do not define the index-only or detached-worktree cases. Target module: `project`.
-- PRJ-072 — Normative-keyword scanning treats `MUST NOT` as one clause and requires uppercase word-boundary matches, so `MUSTARD`, `SHOULDERS` and lowercase `must` are not clauses. The specs name the keywords but do not define tokenization. Target module: `project`.
-- PRJ-073 — Repeated sentences are split at `.`, `!` and `?`, then normalized by lowercasing and dropping all non-alphanumeric characters. The specs do not define sentence boundaries or punctuation classes. Target module: `project`.
-- PRJ-075 — Possible eval/disposable path overlap is computed structurally over `*` and `**` components; the specs do not state whether non-file paths, leading slashes or empty components participate. Target module: `project`.
-- PRJ-039 / PRJ-064 — `Stamp` on an Added-only change and `StampMissing` when every edited ID already has a base return without rewriting the file. The specs require success and preservation but do not say whether an identical rewrite is required. Target module: `project`.
-- PRJ-023 / PRJ-067 — `NewChange` numbers changes only from files named `NNNN-slug.md` and creates `changes/` if needed; the specs do not define nonconforming filenames or how directory creation failures are reported. Target module: `project`.
+- PRJ-046 (and PRJ-080) — The specs do not say how a mixed eval_fix change
+  (eval_fix together with fixes or Added/Modified/Removed edits) interacts with
+  PRJ-080's absent-projection check. The eval suite requires *exactly one* C07
+  diagnostic for the mixture, so the implementation must suppress PRJ-080's
+  secondary C07 once the mixture is present. The spec pair is underdetermined
+  and should state which subordinate diagnostics are omitted for mixed changes
+  (or require independent diagnostics, in which case the eval would need to
+  change). Target module: project.
+
+- PRJ-010 — "Spec tags other than review or quarantine with a nonempty reason"
+  under-specifies the valid tag grammar. The evals require `review` (bare) and
+  `quarantine: <nonempty reason>` to be valid, while `review: reason` and a
+  bare `quarantine` must be rejected. The spec does not state that review never
+  takes a reason nor that quarantine requires one. The spec item should spell
+  out the tag grammar. Target module: project.
+
+- PRJ-060 (shared with PRJ-015) — bases entries that YAML decodes as numbers
+  (e.g. `12345678`, an all-digit 8-hex hash) arrive as integers, not strings.
+  "Items without a bases entry MUST be omitted" does not state the treatment of
+  numeric scalars, yet the fixtures and any unlucky SpecHash require numeric
+  bases to remain comparable. The implementation coerces numeric scalars to
+  their decimal text for comparisons. The spec should state this coercion.
+  Target module: project.
+
+- PRJ-081 (design choice) — the same "before/after Start" underspecification
+  noted for PRJ-079/080's sibling applies here: no marker in a pending
+  change's frontmatter distinguishes the two states inside the project module.
+  The implementation accepts identities naming this change's own Added or
+  Modified items regardless of phase.
+
+- PRJ-078 — "valid assigned-ID headings" in the Removed section does not say
+  whether a tagged heading (`### ALP-001 [review]`) is a valid assigned-ID
+  heading there. The implementation accepts tagged headings via the item
+  heading grammar. The spec should state whether tags are allowed in Removed
+  headings. Target module: project.
+
+- PRJ-070 — Check detects tracked files named SPEC.md outside configured
+  globs via `git ls-files`, which presupposes a Git repository and a working
+  `git` binary. In a plain fixture directory (or when git fails) the C20
+  warning is silently omitted; the spec does not state the no-git fallback
+  (skip the rule or report a configuration diagnostic). Whether staged-but-
+  deleted index entries count as "tracked" is also unspecified (the
+  implementation counts them). Target module: project.
+
+- no spec — StaleSpecs omits (silently) Modified/Removed IDs absent from the
+  preceding projection and leaves the worktree untouched; PRJ-060 does not say
+  whether such items should appear with a marker, be omitted, or error. The
+  nearest spec is PRJ-060, which currently treats only "without a bases entry"
+  as omissible. Target module: project.
 
 ## Agent observations
 
 ### Invocation 1
-Log: .fireweed/runs/20261117T051823-5ce7bb337472e82ca7f7abf1/drill-1.log
+Log: .fireweed/runs/20261119T170335-469f5d57ac1bf08390f05466/drill-1.log
 
-I'll start by exploring the workspace to understand the structure and what's missing.
-Now I understand the requirements. Let me build the internal implementation.
-Implemented the `project` module internals under the disposable `packages/project/internal/**` paths.
+Now let me read the eval tests to understand the expected API behavior:
+Let me check environment details before implementing:
+Now I have the full picture. Let me create the core implementation package. Starting with shared helpers:
+Let me clean up the scaffolding issues in load.go:
+Now the projection engine:
+Let me fix issues in project.go — remove the broken `itemSpans` helpers and make `specsHeading` fence-aware:
+Now the queue and selector implementation:
+Now the stamping, stale-detection, change creation and agent/compat ops:
+Let me rewrite ops.go cleanly, removing the junk and fixing type mismatches:
+Now the graph validation and compatibility/agent resolution:
+Now spec history:
+Now the Check implementation:
+Now the zone overlap, aggregate warnings and outside-globs diagnostics:
+Now the wrapper packages:
+Good progress — 5 failures. Fixing them one by one:
+Now fix CheckCompatibility to do syntax-then-semantics passes:
+Now fix the mixed eval_fix handling and Added block append, plus numeric bases coercion:
+All module evals pass. Let me check the eval hook before running it:
+All 326 eval cases pass, 0 failures. Let me verify formatting and the dependent modules still build, then write DRILL_NOTES.md:
+Now writing DRILL_NOTES.md:
+Done. The module is rebuilt and all evals pass. Summary of what was done:
 
-### Reconstructed packages
-- `internal/fixture` — configuration loading, module discovery, revision snapshots, compatibility, agent resolution, graph validation, change creation, projection state
-- `internal/queue` — queue parsing, projection, stamping, stale-base analysis, static checks, glob overlap
-- `internal/history` — archive-backed spec history ordering and metadata
+## What was rebuilt
+`packages/project/internal/**` only (the disposable paths), from the spec, decisions, retained interfaces and evals:
 
-### Verification
-The documented eval hook passes and produced a failure-free report:
+- `internal/core/` — implementation of everything the spec requires:
+  - Load/LoadAt: fireweed.yaml discovery, module glob matching (including the `.` root-module rule), zone inheritance with explicit-empty-list preservation, `spec_limits` validation with defaults (3/80/300), spec-item syntax validation, live-binary compatibility gating (Load only), recorded-revision loading for LoadAt with relative `Module.Dir` and canonical `Root`.
+  - Graph validation: duplicate/empty names and prefixes, missing/self/cyclic dependencies, explanatory errors.
+  - Queue: ordered pending changes (numeric then slug), frontmatter/item parsing preserving parser codes with repository-relative path subjects, duplicate-slug rejection, changes-regular-file detection.
+  - Projection engine: applies Added (verbatim append), Modified (verbatim span replacement) and Removed edits per module with change-local `new:` handles, `set` field application (identity/unknown keys and value types rejected with C12), graph rejection C02.
+  - Check: full diagnostic pipeline (C01–C20) incl. bases validation against preceding projections, C09 handle references, PRJ-077 Specs-section counting, C17/C18/C19 limits, eval/disposable glob overlap over the current graph and every preceding-through-current queued projection, C20 outside-glob tracked SPEC.md warnings.
+  - Stamp/StampMissing/StaleSpecs: bases frontmatter handling, before-recovery by projecting the queue at the Git commit that last changed the change file's bases mapping (read-only, Recovered iff the hash matches), best-effort reporting, alias resolution (slug/basename/path) with U02/C13.
+  - SpecHistory: archive-backed history, latest valid `impl` Provenance timestamp ordering with path fallback, module-wide lexical-unique IDs, U02/C01/C03 codes.
+  - CheckCompatibility (pin syntax/semantics, format version 1 rules) and ResolveAgentCommand (worker/audit selection with inheritance).
+- `internal/fixture`, `internal/queue`, `internal/history` — thin wrappers satisfying the retained `api.go` imports.
 
-```sh
-go run .fireweed/hooks.go eval 'packages/project' '.fireweed/drill-eval.xml'
-```
+## Verification
+- `go test ./packages/project/evals -count=1` → **ok**, `.fireweed/drill-eval.xml` reports **326 test cases, 0 failures**.
+- `go vet ./packages/...` and `gofmt` clean on rebuilt files; `git status` shows only the new `packages/project/internal/`, `.fireweed/drill-eval.xml` and `DRILL_NOTES.md`.
+- `main.go`/`packages/app` is out of scope (the target-module drill workspace doesn't build the app composition root).
 
-```text
-PASS
-ok github.com/lurkshark/fireweed/packages/project/evals
-```
+## DRILL_NOTES.md
+Written at workspace root with `## Contradicted Decisions` (none — decision 0126 was followed exactly) and `## Gaps` (7 entries, each naming its nearest spec ID and target module `project`). The most notable: PRJ-046/PRJ-080 underdetermines subordinate diagnostics for mixed eval_fix changes (the eval requires exactly one C07 error); PRJ-010 does not define the tag grammar that evals enforce; and PRJ-060/`bases` handling of YAML-integer hashes is unspecified (the fixtures' literal `12345678` only works with scalar coercion).
 
-No retained files were changed outside `packages/project/internal/**`.
-
-### Notes
-Added `DRILL_NOTES.md` with the required:
-- `## Contradicted Decisions` — none found
-- `## Gaps` — each gap names its nearest spec ID (or “no spec”) and the target module `project`
+One process note: the prescribed drill hook ran successfully and its output `.fireweed/drill-eval.xml` is left untracked in the workspace (drill reports are committed by fireweed itself, not by hand).
 
 
 ## Failures
-app: failed case "Test_APP_037_StaticCauses" for APP-037
-Test_APP_037_StaticCauses: === RUN   Test_APP_037_StaticCauses
---- FAIL: Test_APP_037_StaticCauses (0.77s)
-Test_APP_037_StaticCauses/handle: === RUN   Test_APP_037_StaticCauses/handle
-    diagnostic_causes_test.go:134: status=0; want 1; stdout="Check passed.\n" stderr=""
-    diagnostic_causes_test.go:134: plain diagnostic="Check passed.\n"; want code and message
-    diagnostic_causes_test.go:134: missing C09 diagnostic with subject "new:missing" and pending slugs [] in plain output "Check passed.\n"
-    diagnostic_causes_test.go:134: status=0; want 1; stdout="{\"schema\":1,\"data\":\"Check passed.\\n\",\"diagnostics\":[]}\n" stderr=""
-    diagnostic_causes_test.go:134: data="Check passed.\n"; want null
-    diagnostic_causes_test.go:134: diagnostics=[]; want nonempty array: <nil>
---- FAIL: Test_APP_037_StaticCauses/handle (0.03s)
-Test_APP_167_DrillRejectsUnknownAgentAlias: === RUN   Test_APP_167_DrillRejectsUnknownAgentAlias
-    drill_cli_test.go:278: drill exit=1; want 2; stdout="" stderr="U02: command alias \"unlisted-drill-agent\" is not listed in agent.commands. Correct the reported issue before retrying.\n"
-    drill_cli_test.go:278: drill exit=1; want 2; stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"U02\",\"message\":\"command alias \\\"unlisted-drill-agent\\\" is not listed in agent.commands. Correct the reported issue before retrying.\",\"warning\":false}]}\n" stderr=""
---- FAIL: Test_APP_167_DrillRejectsUnknownAgentAlias (0.85s)
+app: failed case "Test_APP_077_NextExitClasses" for APP-077
+Test_APP_077_NextExitClasses: === RUN   Test_APP_077_NextExitClasses
+    next_cli_test.go:273: exit=0, want 2; stdout="Queue is empty.\n" stderr=""
+    next_cli_test.go:273: plain diagnostic stdout="Queue is empty.\n" stderr=""; want C01 and action
+--- FAIL: Test_APP_077_NextExitClasses (1.18s)
+Test_APP_081_APP_084_RunUsageAndConfiguration: === RUN   Test_APP_081_APP_084_RunUsageAndConfiguration
+    run_cli_test.go:394: exit=0, want 2; stdout="Applied 0 changes.\nQueue is empty.\n" stderr=""
+    run_cli_test.go:394: plain diagnostic stdout="Applied 0 changes.\nQueue is empty.\n" stderr=""; want C01 and action
+--- FAIL: Test_APP_081_APP_084_RunUsageAndConfiguration (0.80s)
 ?   	github.com/lurkshark/fireweed/packages/app	[no test files]
 ?   	github.com/lurkshark/fireweed/packages/app/internal/entry	[no test files]
 FAIL
-FAIL	github.com/lurkshark/fireweed/packages/app/evals	256.695s
+FAIL	github.com/lurkshark/fireweed/packages/app/evals	265.819s
 
 exit status 1
 
