@@ -2,7 +2,7 @@
 eval_fix:
     - APP-168
 module: app
-phase: impl
+phase: applied
 run: 20261120T214929-cb5917c650aa8e8aec7bca59
 ---
 
@@ -37,6 +37,7 @@ particular Markdown heading level.
 
 - evals 2026-11-20T21:57:34.333427Z agent=codex fireweed=0.2.4 playbook=5e05bacdae954379b468564c11429c5532016e26a7afbcd418f9bdb9441e151c tests=415 failing=0 passing=415
 - audit 2026-11-20T21:59:05.80253Z agent=manual fireweed=0.2.4 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-20T21:59:22.244268Z agent=manual fireweed=0.2.4 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=415 failing=0 passing=415
 
 ## Audit
 
