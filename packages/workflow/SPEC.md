@@ -20,7 +20,11 @@ name: workflow
 Start MUST atomically create the local claim for the selected queued change.
 
 ### FLOW-002
-Verify MUST reject edits forbidden by the approved projected phase zones before running hooks, checking differences since the held phase base.
+Verify MUST reject edits forbidden by the approved projected phase zones before
+running hooks, checking differences since the held phase base. For a held
+step, Verify and Done MUST return an error whose contracts.ErrorCode is Z01
+for an edit to protected fireweed.yaml even when loading the edited live file
+would return C01.
 
 ### FLOW-003
 Done MUST require full verification to succeed before committing a phase transition.
