@@ -1,8 +1,8 @@
 ---
 agent: opencode
-base_commit: b15846df67b7d6b3a0ea02456979e06fabf4ff44
-date: "2026-11-17T05:18:23.636398Z"
-model: opencode/deepseek-v4.1-flash#high
+base_commit: 43259e616b4639421ed8a91bea2fc822d43efacb
+date: "2026-11-18T08:42:32.594252Z"
+model: opencode/inkling-2-small-free#high
 result: fail
 ---
 
@@ -128,6 +128,10 @@ result: fail
 - project / Test_PRJ_085_CheckCompatibilityProjectFormat/excluding_pin_with_initial / PRJ-085 / pass
 - project / Test_PRJ_085_LoadAndCheckRejectUnsupportedLiveFormat / PRJ-085 / pass
 - project / Test_PRJ_047_LoadAtReadsUnsupportedRecordedFormat / PRJ-047 / pass
+- project / Test_PRJ_014_CheckHandlesInChangeProse / PRJ-014 / pass
+- project / Test_PRJ_014_CheckHandlesInChangeProse/undeclared_in_motivation / PRJ-014 / pass
+- project / Test_PRJ_014_CheckHandlesInChangeProse/undeclared_in_interface / PRJ-014 / pass
+- project / Test_PRJ_014_CheckHandlesInChangeProse/declared_in_added / PRJ-014 / pass
 - project / Test_PRJ_046_CheckEvalFixCannotMixWithFixesOrSpecEdits / PRJ-046 / pass
 - project / Test_PRJ_046_CheckEvalFixCannotMixWithFixesOrSpecEdits/eval_fix_with_fixes / PRJ-046 / pass
 - project / Test_PRJ_046_CheckEvalFixCannotMixWithFixesOrSpecEdits/eval_fix_with_added / PRJ-046 / pass
@@ -181,21 +185,21 @@ result: fail
 - project / Test_PRJ_006_PRJ_038_StampPrecedingProjectionAndPreservation / PRJ-006, PRJ-038 / pass
 - project / Test_PRJ_037_PRJ_039_StampAddedOnlyAndAbsentID / PRJ-037, PRJ-039 / pass
 - project / Test_PRJ_007_CheckValidAndDiagnostics / PRJ-007 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics / PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-008_missing_motivation / PRJ-008, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-009_nonnormative_module / PRJ-009, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-009_nonnormative_change / PRJ-009, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-010_invalid_review_tag / PRJ-010, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-010_invalid_quarantine_tag / PRJ-010, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_duplicate_module_id / PRJ-011, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-012_foreign_module_id / PRJ-012, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-012_foreign_change_id / PRJ-012, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-013_duplicate_edit_identity / PRJ-013, PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-014_undeclared_handle / PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-015_missing_base / PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-015_stale_base / PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-016_absent_modified / PRJ-014, PRJ-015, PRJ-016 / pass
-- project / Test_PRJ_014_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-016_absent_removed / PRJ-014, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics / PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-008_missing_motivation / PRJ-008, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-009_nonnormative_module / PRJ-009, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-009_nonnormative_change / PRJ-009, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-010_invalid_review_tag / PRJ-010, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-010_invalid_quarantine_tag / PRJ-010, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-011_PRJ-068_duplicate_module_id / PRJ-011, PRJ-015, PRJ-016, PRJ-068 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-012_foreign_module_id / PRJ-012, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-012_foreign_change_id / PRJ-012, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-013_duplicate_edit_identity / PRJ-013, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-014_undeclared_handle / PRJ-014, PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-015_missing_base / PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-015_stale_base / PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-016_absent_modified / PRJ-015, PRJ-016 / pass
+- project / Test_PRJ_015_PRJ_016_CheckDiagnostics/PRJ-016_absent_removed / PRJ-015, PRJ-016 / pass
 - project / Test_PRJ_078_CheckRemovedSectionContainsOnlyHeadings / PRJ-078 / pass
 - project / Test_PRJ_078_CheckRemovedSectionContainsOnlyHeadings/item_body / PRJ-078 / pass
 - project / Test_PRJ_078_CheckRemovedSectionContainsOnlyHeadings/leading_prose / PRJ-078 / pass
@@ -435,11 +439,7 @@ result: fail
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/new-change_alpha_new-work / APP-164 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next / APP-164 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run / APP-164 / pass
-- app / Test_APP_037_StaticCauses / APP-037 / fail
-
-=== RUN   Test_APP_037_StaticCauses
---- FAIL: Test_APP_037_StaticCauses (0.77s)
-
+- app / Test_APP_037_StaticCauses / APP-037 / pass
 - app / Test_APP_037_StaticCauses/configuration / APP-037 / pass
 - app / Test_APP_037_StaticCauses/graph / APP-037 / pass
 - app / Test_APP_037_StaticCauses/syntax / APP-037 / pass
@@ -448,17 +448,7 @@ result: fail
 - app / Test_APP_037_StaticCauses/tag / APP-037 / pass
 - app / Test_APP_037_StaticCauses/structure / APP-037 / pass
 - app / Test_APP_037_StaticCauses/base / APP-037 / pass
-- app / Test_APP_037_StaticCauses/handle / APP-037 / fail
-
-=== RUN   Test_APP_037_StaticCauses/handle
-    diagnostic_causes_test.go:134: status=0; want 1; stdout="Check passed.\n" stderr=""
-    diagnostic_causes_test.go:134: plain diagnostic="Check passed.\n"; want code and message
-    diagnostic_causes_test.go:134: missing C09 diagnostic with subject "new:missing" and pending slugs [] in plain output "Check passed.\n"
-    diagnostic_causes_test.go:134: status=0; want 1; stdout="{\"schema\":1,\"data\":\"Check passed.\\n\",\"diagnostics\":[]}\n" stderr=""
-    diagnostic_causes_test.go:134: data="Check passed.\n"; want null
-    diagnostic_causes_test.go:134: diagnostics=[]; want nonempty array: <nil>
---- FAIL: Test_APP_037_StaticCauses/handle (0.03s)
-
+- app / Test_APP_037_StaticCauses/handle / APP-037 / pass
 - app / Test_APP_037_StaticCauses/metadata / APP-037 / pass
 - app / Test_APP_037_StaticCauses/queue-identity / APP-037 / pass
 - app / Test_APP_037_APP_038_ShowStaticCauses / APP-037, APP-038 / pass
@@ -491,13 +481,7 @@ result: fail
 - app / Test_APP_166_DrillRejectsInvalidAgentOptionBeforeInvocation/missing / APP-166 / pass
 - app / Test_APP_166_DrillRejectsInvalidAgentOptionBeforeInvocation/empty / APP-166 / pass
 - app / Test_APP_166_DrillRejectsInvalidAgentOptionBeforeInvocation/repeated / APP-166 / pass
-- app / Test_APP_167_DrillRejectsUnknownAgentAlias / APP-167 / fail
-
-=== RUN   Test_APP_167_DrillRejectsUnknownAgentAlias
-    drill_cli_test.go:278: drill exit=1; want 2; stdout="" stderr="U02: command alias \"unlisted-drill-agent\" is not listed in agent.commands. Correct the reported issue before retrying.\n"
-    drill_cli_test.go:278: drill exit=1; want 2; stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"U02\",\"message\":\"command alias \\\"unlisted-drill-agent\\\" is not listed in agent.commands. Correct the reported issue before retrying.\",\"warning\":false}]}\n" stderr=""
---- FAIL: Test_APP_167_DrillRejectsUnknownAgentAlias (0.85s)
-
+- app / Test_APP_167_DrillRejectsUnknownAgentAlias / APP-167 / pass
 - app / Test_APP_140_DrillProjectAndConfigurationFailures / APP-140 / pass
 - app / Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts / APP-141 / pass
 - app / Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/own-plain / APP-141 / pass
@@ -647,7 +631,11 @@ result: fail
 - app / Test_APP_004_APP_016_APP_017_APP_018_ModulesGraphAndNearestAncestor/plain / APP-004, APP-016, APP-017, APP-018 / pass
 - app / Test_APP_004_APP_016_APP_017_APP_018_ModulesGraphAndNearestAncestor/JSON / APP-004, APP-016, APP-017, APP-018 / pass
 - app / Test_APP_004_APP_016_APP_017_APP_018_ModulesGraphAndNearestAncestor/nearest-ancestor / APP-004, APP-016, APP-017, APP-018 / pass
-- app / Test_APP_018_ModulesConfigurationErrors / APP-018 / pass
+- app / Test_APP_018_ModulesConfigurationErrors / APP-018 / fail
+
+=== RUN   Test_APP_018_ModulesConfigurationErrors
+--- FAIL: Test_APP_018_ModulesConfigurationErrors (0.69s)
+
 - app / Test_APP_018_ModulesConfigurationErrors/missing/plain / APP-018 / pass
 - app / Test_APP_018_ModulesConfigurationErrors/missing/JSON / APP-018 / pass
 - app / Test_APP_018_ModulesConfigurationErrors/malformed/plain / APP-018 / pass
@@ -656,8 +644,19 @@ result: fail
 - app / Test_APP_018_ModulesConfigurationErrors/invalid-graph/JSON / APP-018 / pass
 - app / Test_APP_018_ModulesConfigurationErrors/invalid-document/plain / APP-018 / pass
 - app / Test_APP_018_ModulesConfigurationErrors/invalid-document/JSON / APP-018 / pass
-- app / Test_APP_018_ModulesConfigurationErrors/invalid-metadata/plain / APP-018 / pass
-- app / Test_APP_018_ModulesConfigurationErrors/invalid-metadata/JSON / APP-018 / pass
+- app / Test_APP_018_ModulesConfigurationErrors/invalid-metadata/plain / APP-018 / fail
+
+=== RUN   Test_APP_018_ModulesConfigurationErrors/invalid-metadata/plain
+    project_commands_test.go:252: plain diagnostic="C01: module packages/beta/SPEC.md: depends_on must be a list of strings, got invalid. Correct the project configuration or module declarations and retry.\n"; want corrective C12
+--- FAIL: Test_APP_018_ModulesConfigurationErrors/invalid-metadata/plain (0.01s)
+
+- app / Test_APP_018_ModulesConfigurationErrors/invalid-metadata/JSON / APP-018 / fail
+
+=== RUN   Test_APP_018_ModulesConfigurationErrors/invalid-metadata/JSON
+    project_commands_test.go:239: diagnostic code="C01"; want "C12"
+    project_commands_test.go:246: JSON diagnostic needs C12: {"schema":1,"data":null,"diagnostics":[{"code":"C01","message":"module packages/beta/SPEC.md: depends_on must be a list of strings, got invalid. Correct the project configuration or module declarations and retry.","warning":false}]}
+--- FAIL: Test_APP_018_ModulesConfigurationErrors/invalid-metadata/JSON (0.01s)
+
 - app / Test_APP_005_APP_020_NewChangePlainAndJSON / APP-005, APP-020 / pass
 - app / Test_APP_019_NewChangeErrorsPreserveFiles / APP-019 / pass
 - app / Test_APP_019_NewChangeErrorsPreserveFiles/missing-argument/plain / APP-019 / pass
@@ -813,8 +812,64 @@ result: fail
 - checks / Test_CHK_060_OverridesMustDetectTheirCanaries/boundary / CHK-060 / pass
 - checks / Test_CHK_063_DoctorRunsNamedWorkerAndAuditInScratchThroughWrapper / CHK-063 / pass
 - checks / Test_CHK_064_DoctorProbesInheritedWorkerDefaultAndWarns / CHK-064 / pass
-- checks / Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRole / CHK-085 / pass
-- checks / Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRole/worker / CHK-085 / pass
+- checks / Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRole / CHK-085 / fail
+
+=== RUN   Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRole
+--- FAIL: Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRole (1.56s)
+
+- checks / Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRole/worker / CHK-085 / fail
+
+=== RUN   Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRole/worker
+    doctor_test.go:926: only resolved audit should run through the wrapper: checks=[{Name:baseline global eval Module:doctoref7fc5da51 Passed:true Detail:eval and coverage pass} {Name:failing_eval global eval Module:doctoref7fc5da51 Passed:true Detail:eval detected failing_eval} {Name:recovery global eval Module:doctoref7fc5da51 Passed:true Detail:failing_eval: eval and coverage pass} {Name:missing_id global eval Module:doctoref7fc5da51 Passed:true Detail:eval detected missing_id} {Name:recovery global eval Module:doctoref7fc5da51 Passed:true Detail:missing_id: eval and coverage pass} {Name:baseline global boundaries Module:doctoref7fc5da51 Passed:true Detail:boundaries pass} {Name:undeclared global boundaries Module:doctoref7fc5da51 Passed:true Detail:boundaries detected undeclared} {Name:recovery global boundaries Module:doctoref7fc5da51 Passed:true Detail:undeclared: boundaries pass} {Name:internal_eval global boundaries Module:doctor3d81ff0fa2 Passed:true Detail:boundaries detected internal_eval} {Name:recovery global boundaries Module:doctor3d81ff0fa2 Passed:true Detail:internal_eval: boundaries pass} {Name:worker Module: Passed:false Detail:worker agent selection: agent.default names "unlisted-command", which is not an entry in agent.commands} {Name:audit Module: Passed:false Detail:audit agent selection: agent.default names "unlisted-command", which is not an entry in agent.commands}] diagnostics=[{Code:C15 Message:worker agent selection: agent.default names "unlisted-command", which is not an entry in agent.commands Path: Warning:false} {Code:C15 Message:audit agent selection: agent.default names "unlisted-command", which is not an entry in agent.commands Path: Warning:false}]; log=setup:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctor3d81ff0fa2:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctor3d81ff0fa2:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctor3d81ff0fa2:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctor3d81ff0fa2:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctor3d81ff0fa2:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctor3d81ff0fa2:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctor3d81ff0fa2:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctor3d81ff0fa2:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+--- FAIL: Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRole/worker (0.78s)
+
 - checks / Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRole/audit / CHK-085 / pass
 - checks / Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes / CHK-063, CHK-065, CHK-066, CHK-067 / pass
 - checks / Test_CHK_063_CHK_065_CHK_066_CHK_067_DoctorAgentProbeOutcomes/wrong_reply / CHK-063, CHK-065, CHK-066, CHK-067 / pass
@@ -851,6 +906,9 @@ result: fail
 - checks / Test_CHK_003_CHK_032_CHK_033_CHK_034_CHK_035_GlobalShellHookQuotesAndOnePassExpansion / CHK-003, CHK-032, CHK-033, CHK-034, CHK-035 / pass
 - checks / Test_CHK_003_CHK_031_CHK_032_CHK_033_CHK_034_CHK_035_ModuleOverrideArgvAndOutput / CHK-003, CHK-031, CHK-032, CHK-033, CHK-034, CHK-035 / pass
 - checks / Test_CHK_038_ExitAndReportAgreement / CHK-038 / pass
+- checks / Test_CHK_038_ExitAndReportAgreement/zero-with-failure / CHK-038 / pass
+- checks / Test_CHK_038_ExitAndReportAgreement/nonzero-with-pass / CHK-038 / pass
+- checks / Test_CHK_038_ExitAndReportAgreement/nonzero-with-failure / CHK-038 / pass
 - checks / Test_CHK_080_EvaluateRetainsParsedFailureDetails / CHK-080 / pass
 - checks / Test_CHK_080_EvaluateRetainsParsedFailureDetails/nonzero_failure / CHK-080 / pass
 - checks / Test_CHK_080_EvaluateRetainsParsedFailureDetails/zero_passing / CHK-080 / pass
@@ -981,17 +1039,18 @@ result: fail
 - runner / Test_RUN_056_DrillUsesConfiguredDefault / RUN-056 / pass
 - runner / Test_RUN_056_ConfiguredTimeoutBoundsDrillWorker / RUN-056 / pass
 - runner / Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted / RUN-057 / pass
+- runner / Test_RUN_061_UsageStopRetainsAcceptedRebuild / RUN-061 / pass
 - runner / Test_RUN_058_RUN_059_DrillReturnsAllReportsEvenWhenEvalsFail / RUN-058, RUN-059 / pass
 - runner / Test_RUN_058_OwnCoverageRequiredAfterPassingCases / RUN-058 / pass
 - runner / Test_RUN_059_DependentCoverageRequiredAfterPassingCases / RUN-059 / pass
-- runner / Test_RUN_068_DependentOnlyFailuresEndDrill / RUN-068 / pass
+- runner / Test_RUN_068_RUN_078_DependentOnlyFailuresEndDrill / RUN-068, RUN-078 / pass
 - runner / Test_RUN_068_OwnEvalRetryOmitsDependentEvalOutput / RUN-068 / pass
 - runner / Test_RUN_069_DrillObservationsIncludeStdoutAndRelativeLogPerAttempt / RUN-069 / pass
 - runner / Test_RUN_060_RUN_061_DrillReportAndRetainedRef / RUN-060, RUN-061 / pass
 - runner / Test_RUN_074_DrillResultAndReportIdentifySelectedCommand / RUN-074 / pass
 - runner / Test_RUN_074_DrillResultAndReportIdentifySelectedCommand/default / RUN-074 / pass
 - runner / Test_RUN_074_DrillResultAndReportIdentifySelectedCommand/explicit / RUN-074 / pass
-- runner / Test_RUN_060_RUN_061_FailedDrillReportsFailuresAndRetainsCode / RUN-060, RUN-061 / pass
+- runner / Test_RUN_060_RUN_061_RUN_078_FailedDrillReportsFailuresAndRetainsCode / RUN-060, RUN-061, RUN-078 / pass
 - runner / Test_RUN_062_CleanupOnSuccessAndFailures / RUN-062 / pass
 - runner / Test_RUN_062_CleanupOnSuccessAndFailures/success / RUN-062 / pass
 - runner / Test_RUN_062_CleanupOnSuccessAndFailures/agent_retry / RUN-062 / pass
@@ -1120,6 +1179,9 @@ result: fail
 - workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers / FLOW-019 / pass
 - workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers/1.0 / FLOW-019 / pass
 - workflow / Test_FLOW_019_ClaimReloadPreservesApprovedConfigNumbers/1 / FLOW-019 / pass
+- workflow / Test_FLOW_019_CurrentResolvesHeldPathWithInvalidLiveConfig / FLOW-019 / pass
+- workflow / Test_FLOW_019_CurrentResolvesHeldPathWithInvalidLiveConfig/malformed_YAML / FLOW-019 / pass
+- workflow / Test_FLOW_019_CurrentResolvesHeldPathWithInvalidLiveConfig/incompatible_version_pin / FLOW-019 / pass
 - workflow / Test_FLOW_019_FLOW_139_ApprovedSurvivesLiveEdits / FLOW-019, FLOW-139 / pass
 - workflow / Test_FLOW_140_ApprovedReportsNoOwnedClaim / FLOW-140 / pass
 - workflow / Test_FLOW_140_ApprovedRejectsUnreadableOrMalformedClaim / FLOW-140 / pass
@@ -1295,7 +1357,7 @@ result: fail
 - workflow / Test_FLOW_073_StartFromAttemptRequiresCleanEligibleUnblockedAndUnclaimedChange/foreign_claim / FLOW-073 / pass
 - workflow / Test_FLOW_076_StartFromAttemptRejectsInvalidOrMissingAttemptBeforeMutation / FLOW-076 / pass
 - workflow / Test_FLOW_059_AuditVerifyChecksSubmissionWithoutAdvancing / FLOW-059 / pass
-- workflow / Test_FLOW_002_AuditRejectsForbiddenEditBeforeHooks / FLOW-002 / pass
+- workflow / Test_FLOW_002_FLOW_136_AuditRejectsForbiddenEditAndDoneMarksFailure / FLOW-002, FLOW-136 / pass
 - workflow / Test_FLOW_061_UnknownLifecycleSelectorsNameValidSlugs / FLOW-061 / pass
 - workflow / Test_FLOW_101_FLOW_102_FLOW_103_StatusQueueAndForwardWaiting / FLOW-101, FLOW-102, FLOW-103 / pass
 - workflow / Test_FLOW_104_FLOW_105_StatusInterfaceAndProjectedWaiting / FLOW-104, FLOW-105 / pass
@@ -1322,75 +1384,216 @@ result: fail
 - workflow / Test_FLOW_138_ContextExplainsHowToDeclareWorkerBlock/impl / FLOW-138 / pass
 
 ## Contradicted Decisions
-No contradicted Decisions. `[0126-spec-history-query]` (read the current archive as the history source, do not infer chronology from commits or filenames, and return the filtered ID in each entry) is consistent with PRJ-051 through PRJ-056.
+None. The single recorded decision was re-checked against the retained evals
+and the spec text during reconstruction and was not contradicted:
+
+- `0126-spec-history-query` ("History reads the project's current archive
+  files... Entry metadata are Markdown section contents without their
+  level-two heading; a nonempty ID filter returns that matching ID in each
+  entry's IDs field"). SpecHistory selects matching archives from the working
+  tree `changes/archive/*.md` only (no Git ancestry or filename chronology),
+  carries `Motivation`, `Decisions` and `Removed decisions` raw section bodies
+  into each entry, orders dated entries by the latest valid implementation
+  Provenance timestamp (newest first, undated after dated), falls back to
+  archive-path lexical order for ties and for undated entries, and returns
+  exactly the filtered ID in each entry's IDs field — matching the retained
+  `spec_history_test.go` expectations.
 
 ## Gaps
-- PRJ-051 / PRJ-056 — Archives are discovered only as `changes/archive/NNNN-slug.md`; the specs do not state how archived files with other names are selected or rejected. Target module: `project`.
-- PRJ-047 / PRJ-050 — `LoadAt` discovers module directories from the ancestor directories of recorded files, so an empty recorded directory matches only when Git has another file beneath it. The specs do not define module discovery for empty recorded directories. Target module: `project`.
-- PRJ-061 — "The Git commit that last changed that change file's bases mapping" is detected by comparing the decoded `bases` mapping with the first parent's mapping. The specs do not define merge commits, root commits or uncommitted bases edits. Target module: `project`.
-- PRJ-005 — No spec defines how `Project` handles a Modified ID absent from the preceding projection; the implementation appends the item rather than rejecting it. Nearest spec: PRJ-005 (or "no spec"). Target module: `project`.
-- PRJ-033 / PRJ-034 — The `set` allow-list omits `protected` while PRJ-033 names the other zone fields; the implementation treats `protected` as an unknown field. The specs do not say whether a project may change `protected` through a queued set. Target module: `project`.
-- PRJ-070 — "Tracked" SPEC.md files are taken from `git ls-files`, which includes index-only (deleted from the worktree) entries and silently degrades to no warning outside a Git repository. The specs do not define the index-only or detached-worktree cases. Target module: `project`.
-- PRJ-072 — Normative-keyword scanning treats `MUST NOT` as one clause and requires uppercase word-boundary matches, so `MUSTARD`, `SHOULDERS` and lowercase `must` are not clauses. The specs name the keywords but do not define tokenization. Target module: `project`.
-- PRJ-073 — Repeated sentences are split at `.`, `!` and `?`, then normalized by lowercasing and dropping all non-alphanumeric characters. The specs do not define sentence boundaries or punctuation classes. Target module: `project`.
-- PRJ-075 — Possible eval/disposable path overlap is computed structurally over `*` and `**` components; the specs do not state whether non-file paths, leading slashes or empty components participate. Target module: `project`.
-- PRJ-039 / PRJ-064 — `Stamp` on an Added-only change and `StampMissing` when every edited ID already has a base return without rewriting the file. The specs require success and preservation but do not say whether an identical rewrite is required. Target module: `project`.
-- PRJ-023 / PRJ-067 — `NewChange` numbers changes only from files named `NNNN-slug.md` and creates `changes/` if needed; the specs do not define nonconforming filenames or how directory creation failures are reported. Target module: `project`.
+Each gap names its nearest spec ID (or "no spec") and the module a fixing
+change should target.
+
+- `PRJ-055` (module project): SpecHistory returns `U02` naming the target
+  module when the module cannot be located in the loaded module set. If the
+  module exists but its SPEC.md fails to parse (so its name is unknowable to
+  the loader), the same `U02` is returned even though the problem is a
+  malformed document — a case the spec does not distinguish from a module
+  that genuinely does not exist. An implementation cannot tell the two apart,
+  so the spec should say which error wins.
+
+- `PRJ-014` (module project): Check's undeclared-handle scan is applied to
+  the raw pending-change document; fenced code blocks and frontmatter
+  containing `new:example` are therefore treated as references. The spec asks
+  for references "in a pending change document" and mentions Motivation and
+  Interface, but does not say whether fenced examples are references.
+
+- `PRJ-073` (with PRJ-036) (module project): before spec assignment, two
+  queued changes may declare the same `new:x` handle; the projection retains
+  both sections, and the repeated-sentence rule counts them as two distinct
+  "spec items". The spec does not define how projected handle duplicates are
+  counted for the "three or more spec items" threshold.
+
+- `PRJ-067` (with PRJ-023) (module project): the queued filename number and
+  the duplicate-slug scan consider only regular files matching
+  `NNNN-slug.md`; an occupied queued path that is a directory is reported by
+  the create operation (as PRJ-067's example requires) rather than treated as
+  a numbering or duplicate participant. The spec does not say whether
+  non-regular or nonconforming files count as "largest pending or archived
+  change number" or as overwrite candidates.
+
+- `PRJ-047` (module project): LoadAt intentionally does not apply
+  CheckCompatibility — recorded incompatible pins and future format versions
+  are accepted (as the retained revision_snapshot_test and
+  format_compatibility_test require). The spec text never says LoadAt is
+  exempt from the binary-range and format gates; the exemption lives only in
+  tests and in the independence sentence of PRJ-085. A stand-alone clause
+  would make the behavior obvious.
+
+- `PRJ-050` (module project): my LoadAt validates `spec_limits` (PRJ-071) in
+  recorded configurations as well as live ones, because the spec does not
+  say whether recorded configs face different validation than live ones.
+  This may be stricter or looser than intended; an auditor cannot derive
+  the intended rule from the current spec.
+
+- `PRJ-046` (with PRJ-080) (module project): when a pending change combines
+  `eval_fix` with `fixes` or spec edits, I report the C07 mix and suppress
+  the projection-absence complaint for the same identities (the retained
+  eval requires exactly one error diagnostic there). The spec does not say
+  whether the PRJ-080 identity check still runs for mixed changes.
+
+- `no spec` (module project): files in `changes/` that do not match the
+  pending `NNNN-slug.md` naming pattern (e.g. `changes/draft.md`) are
+  silently ignored by Queue and Check. No spec requires that they be
+  reported, ignored, or archived; behavior is implementation choice.
+
+- `PRJ-077` (module contracts or project): "heading recognition MUST follow
+  CON-002's fenced-code and ATX-heading rules" is inherited verbatim, so an
+  ATX `## Specs` heading inside a blockquote or a 4-space-indented code line
+  counts (or fails to count) exactly as CON-002 defines. Module authors
+  showing an example `## Specs` in indented code blocks would get a C03
+  for a missing or extra Specs section; CON-002 does not exclude indented
+  code or block quotes, and PRJ-077 inherits the quirk.
+
+- `PRJ-056` (module project): a missing `changes/archive` directory yields
+  "no archives" (empty history) rather than an error, and a regular file at
+  that path yields an uncoded read failure (not a C03-identified document
+  error). The spec requires C03 only for malformed documents, not for the
+  shape of the archive directory; the behavior is an inference, not a clause.
 
 ## Agent observations
 
 ### Invocation 1
-Log: .fireweed/runs/20261117T051823-5ce7bb337472e82ca7f7abf1/drill-1.log
+Log: .fireweed/runs/20261118T084232-4b3fcf834c906738282b41e4/drill-1.log
 
-I'll start by exploring the workspace to understand the structure and what's missing.
-Now I understand the requirements. Let me build the internal implementation.
-Implemented the `project` module internals under the disposable `packages/project/internal/**` paths.
+Now let me look at gitstore internals and the fireweed-design for anything relevant:
+I have a good picture now. Let me check the repo state and a couple of helper expectations:
+Now I understand the full picture. Let me verify the baseline builds, then write the internal packages:
+Baseline failure is exactly the missing internal packages. Now I'll build them. Starting with the `fixture` package (shared machinery: config, load, graph, compatibility, agent commands):
+The file content is fine except the import quotes got stripped. Let me fix that:
+fixture builds. Now the projection engine and queue machinery in `fixture`:
+Now the `queue` package — first the basic operations:
+Now the big one — `queue/check.go`. First a helpers file for shared item-rule checks:
+Now the Check implementation:
+Everything compiles. Now run the evals:
+`Chain` always returns ≥1 element, so the panic means `queueFailed` was true and `chain` stayed nil — the zone-overlap line must guard against that. Let me make that slice safe and add debug output to the failing subtest:
+Found it — the duplicate_module_id case drops the broken alpha module, making the pending change "unknown module" and `queueFailed` true, which then indexed `chain[1:]`. Let me fix all five issues:
+Several issues to fix. First the glob intersection DP (missing "star absorbs a character" transitions):
+All evals pass. Let me verify thoroughly with vet and a fresh test run:
+Evals pass. Let me polish one semantic wrinkle (skip queue checks when the config itself failed), then check the eval hook:
+Let me make a small semantic fix (don't write empty `bases` maps), then verify code quality:
+Evals pass and code is formatted. Let me examine the repo's own state — I can use it as an integration check of Check behavior:
+No false positives on the real repo. Cleaning up the debug file:
+Now writing the required `DRILL_NOTES.md`:
+Final review pass — re-read the queue package meta files and run the complete verification:
+Done. Here's a summary of the reconstruction:
 
-### Reconstructed packages
-- `internal/fixture` — configuration loading, module discovery, revision snapshots, compatibility, agent resolution, graph validation, change creation, projection state
-- `internal/queue` — queue parsing, projection, stamping, stale-base analysis, static checks, glob overlap
-- `internal/history` — archive-backed spec history ordering and metadata
+## What was rebuilt
 
-### Verification
-The documented eval hook passes and produced a failure-free report:
+`packages/project/internal/**` only (~3,100 lines), keeping the retained facade `api.go` and `model/**` untouched:
 
-```sh
-go run .fireweed/hooks.go eval 'packages/project' '.fireweed/drill-eval.xml'
-```
+- **internal/fixture** — `Load`/`LoadAt` (working-tree and recorded-revision discovery through configured module globs, canonical roots, zone inheritance with explicit-empty override), `ValidateGraph` (names/prefixes/deps/cycles), `CheckCompatibility` (format v1 + numeric binary pin ranges with `=`, `<`, `<=`, `>`, `>=` via big-int version comparison), `ResolveAgentCommand` (worker alias / `agent.default` / `audit.agent` with inheritance reporting), `NewChange`, plus the shared pending-queue and projection engines used by the other two packages.
+- **internal/queue** — `Queue`, `Project` (inclusive-through selector, `set` field validation/application, per-prefix projections), `Stamp`/`StampMissing`, `StaleSpecs` (Git-history recovery of the bases-mapping change), and `Check` (C01–C20 diagnostics: config/graph/document failures, spec limits/repeated-sentence/Decisions warnings, eval-vs-disposable glob overlap per projection step, Removed-section, eval_fix mixing, target-list accounting, tracked SPEC.md outside module globs, etc.).
+- **internal/history** — `SpecHistory` (archive-tree reads, tag-only modifications, implementation-date ordering with path fallback, U02/C01/C03 error discipline).
 
-```text
-PASS
-ok github.com/lurkshark/fireweed/packages/project/evals
-```
+## Verification
 
-No retained files were changed outside `packages/project/internal/**`.
+- `go test ./packages/project/evals/` — **all evals pass** (`-count=2` stable), `go vet` clean, `gofmt` clean.
+- Target eval hook run with `FIREWEED_BIN=/Users/joel/Workspace/fireweed/.fireweed/bin/fireweed go run .fireweed/hooks.go eval packages/project .fireweed/drill-eval.xml` — **PASS** (report written to `.fireweed/drill-eval.xml`).
+- No false positives on this repository's own healthy modules.
 
-### Notes
-Added `DRILL_NOTES.md` with the required:
-- `## Contradicted Decisions` — none found
-- `## Gaps` — each gap names its nearest spec ID (or “no spec”) and the target module `project`
+## Notes
+
+- `DRILL_NOTES.md` records `## Contradicted Decisions` (none — `0126-spec-history-query` was verified against the retained evals) and `## Gaps` with nearest spec IDs (e.g. PRJ-055, PRJ-014, PRJ-073, PRJ-067, PRJ-047, PRJ-046, PRJ-056, PRJ-077, or "no spec") and the target module for a fixing change.
+- `.fireweed/drill-eval.xml` (untracked) is the hook's required report artifact.
+- Pre-existing unrelated build failures in other packages (`packages/app`, `gitstore`, `main.go`, …) were untouched.
 
 
 ## Failures
-app: failed case "Test_APP_037_StaticCauses" for APP-037
-Test_APP_037_StaticCauses: === RUN   Test_APP_037_StaticCauses
---- FAIL: Test_APP_037_StaticCauses (0.77s)
-Test_APP_037_StaticCauses/handle: === RUN   Test_APP_037_StaticCauses/handle
-    diagnostic_causes_test.go:134: status=0; want 1; stdout="Check passed.\n" stderr=""
-    diagnostic_causes_test.go:134: plain diagnostic="Check passed.\n"; want code and message
-    diagnostic_causes_test.go:134: missing C09 diagnostic with subject "new:missing" and pending slugs [] in plain output "Check passed.\n"
-    diagnostic_causes_test.go:134: status=0; want 1; stdout="{\"schema\":1,\"data\":\"Check passed.\\n\",\"diagnostics\":[]}\n" stderr=""
-    diagnostic_causes_test.go:134: data="Check passed.\n"; want null
-    diagnostic_causes_test.go:134: diagnostics=[]; want nonempty array: <nil>
---- FAIL: Test_APP_037_StaticCauses/handle (0.03s)
-Test_APP_167_DrillRejectsUnknownAgentAlias: === RUN   Test_APP_167_DrillRejectsUnknownAgentAlias
-    drill_cli_test.go:278: drill exit=1; want 2; stdout="" stderr="U02: command alias \"unlisted-drill-agent\" is not listed in agent.commands. Correct the reported issue before retrying.\n"
-    drill_cli_test.go:278: drill exit=1; want 2; stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"U02\",\"message\":\"command alias \\\"unlisted-drill-agent\\\" is not listed in agent.commands. Correct the reported issue before retrying.\",\"warning\":false}]}\n" stderr=""
---- FAIL: Test_APP_167_DrillRejectsUnknownAgentAlias (0.85s)
+app: failed case "Test_APP_018_ModulesConfigurationErrors" for APP-018
+Test_APP_018_ModulesConfigurationErrors: === RUN   Test_APP_018_ModulesConfigurationErrors
+--- FAIL: Test_APP_018_ModulesConfigurationErrors (0.69s)
+Test_APP_018_ModulesConfigurationErrors/invalid-metadata/plain: === RUN   Test_APP_018_ModulesConfigurationErrors/invalid-metadata/plain
+    project_commands_test.go:252: plain diagnostic="C01: module packages/beta/SPEC.md: depends_on must be a list of strings, got invalid. Correct the project configuration or module declarations and retry.\n"; want corrective C12
+--- FAIL: Test_APP_018_ModulesConfigurationErrors/invalid-metadata/plain (0.01s)
+Test_APP_018_ModulesConfigurationErrors/invalid-metadata/JSON: === RUN   Test_APP_018_ModulesConfigurationErrors/invalid-metadata/JSON
+    project_commands_test.go:239: diagnostic code="C01"; want "C12"
+    project_commands_test.go:246: JSON diagnostic needs C12: {"schema":1,"data":null,"diagnostics":[{"code":"C01","message":"module packages/beta/SPEC.md: depends_on must be a list of strings, got invalid. Correct the project configuration or module declarations and retry.","warning":false}]}
+--- FAIL: Test_APP_018_ModulesConfigurationErrors/invalid-metadata/JSON (0.01s)
 ?   	github.com/lurkshark/fireweed/packages/app	[no test files]
 ?   	github.com/lurkshark/fireweed/packages/app/internal/entry	[no test files]
 FAIL
-FAIL	github.com/lurkshark/fireweed/packages/app/evals	256.695s
+FAIL	github.com/lurkshark/fireweed/packages/app/evals	261.371s
+
+exit status 1
+
+checks: failed case "Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRole" for CHK-085
+Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRole: === RUN   Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRole
+--- FAIL: Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRole (1.56s)
+Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRole/worker: === RUN   Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRole/worker
+    doctor_test.go:926: only resolved audit should run through the wrapper: checks=[{Name:baseline global eval Module:doctoref7fc5da51 Passed:true Detail:eval and coverage pass} {Name:failing_eval global eval Module:doctoref7fc5da51 Passed:true Detail:eval detected failing_eval} {Name:recovery global eval Module:doctoref7fc5da51 Passed:true Detail:failing_eval: eval and coverage pass} {Name:missing_id global eval Module:doctoref7fc5da51 Passed:true Detail:eval detected missing_id} {Name:recovery global eval Module:doctoref7fc5da51 Passed:true Detail:missing_id: eval and coverage pass} {Name:baseline global boundaries Module:doctoref7fc5da51 Passed:true Detail:boundaries pass} {Name:undeclared global boundaries Module:doctoref7fc5da51 Passed:true Detail:boundaries detected undeclared} {Name:recovery global boundaries Module:doctoref7fc5da51 Passed:true Detail:undeclared: boundaries pass} {Name:internal_eval global boundaries Module:doctor3d81ff0fa2 Passed:true Detail:boundaries detected internal_eval} {Name:recovery global boundaries Module:doctor3d81ff0fa2 Passed:true Detail:internal_eval: boundaries pass} {Name:worker Module: Passed:false Detail:worker agent selection: agent.default names "unlisted-command", which is not an entry in agent.commands} {Name:audit Module: Passed:false Detail:audit agent selection: agent.default names "unlisted-command", which is not an entry in agent.commands}] diagnostics=[{Code:C15 Message:worker agent selection: agent.default names "unlisted-command", which is not an entry in agent.commands Path: Warning:false} {Code:C15 Message:audit agent selection: agent.default names "unlisted-command", which is not an entry in agent.commands Path: Warning:false}]; log=setup:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctor3d81ff0fa2:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctor3d81ff0fa2:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctor3d81ff0fa2:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctor3d81ff0fa2:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctor3d81ff0fa2:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctor3d81ff0fa2:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctor3d81ff0fa2:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctoref7fc5da51:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        eval:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:doctor3d81ff0fa2:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+        boundaries:/private/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/001/.git/fireweed/worktrees/doctor-73d4927881eecb4a:/var/folders/yh/crwgnf9d41911rdbn5g8q3v00000gn/T/Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRoleworker1325087131/003/fake-fireweed
+--- FAIL: Test_CHK_085_DoctorSelectionErrorSkipsOnlyUnresolvedRole/worker (0.78s)
+?   	github.com/lurkshark/fireweed/packages/checks	[no test files]
+?   	github.com/lurkshark/fireweed/packages/checks/internal/engine	[no test files]
+?   	github.com/lurkshark/fireweed/packages/checks/model	[no test files]
+FAIL
+FAIL	github.com/lurkshark/fireweed/packages/checks/evals	257.593s
 
 exit status 1
 

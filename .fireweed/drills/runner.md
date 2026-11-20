@@ -1,8 +1,8 @@
 ---
 agent: opencode
-base_commit: f6f5997536ad8aeaa8e3b90a4a914f66d91a133f
-date: "2026-11-17T07:10:31.162645Z"
-model: opencode/deepseek-v4.1-flash#high
+base_commit: 73cf07722a48b3ab83a24df4c4b5e26ee3b78701
+date: "2026-11-18T12:00:44.197487Z"
+model: opencode/inkling-2-small-free#high
 result: fail
 ---
 
@@ -100,17 +100,18 @@ result: fail
 - runner / Test_RUN_056_DrillUsesConfiguredDefault / RUN-056 / pass
 - runner / Test_RUN_056_ConfiguredTimeoutBoundsDrillWorker / RUN-056 / pass
 - runner / Test_RUN_057_UsageDoesNotSpendAttemptAndStopsWhenBudgetExhausted / RUN-057 / pass
+- runner / Test_RUN_061_UsageStopRetainsAcceptedRebuild / RUN-061 / pass
 - runner / Test_RUN_058_RUN_059_DrillReturnsAllReportsEvenWhenEvalsFail / RUN-058, RUN-059 / pass
 - runner / Test_RUN_058_OwnCoverageRequiredAfterPassingCases / RUN-058 / pass
 - runner / Test_RUN_059_DependentCoverageRequiredAfterPassingCases / RUN-059 / pass
-- runner / Test_RUN_068_DependentOnlyFailuresEndDrill / RUN-068 / pass
+- runner / Test_RUN_068_RUN_078_DependentOnlyFailuresEndDrill / RUN-068, RUN-078 / pass
 - runner / Test_RUN_068_OwnEvalRetryOmitsDependentEvalOutput / RUN-068 / pass
 - runner / Test_RUN_069_DrillObservationsIncludeStdoutAndRelativeLogPerAttempt / RUN-069 / pass
 - runner / Test_RUN_060_RUN_061_DrillReportAndRetainedRef / RUN-060, RUN-061 / pass
 - runner / Test_RUN_074_DrillResultAndReportIdentifySelectedCommand / RUN-074 / pass
 - runner / Test_RUN_074_DrillResultAndReportIdentifySelectedCommand/default / RUN-074 / pass
 - runner / Test_RUN_074_DrillResultAndReportIdentifySelectedCommand/explicit / RUN-074 / pass
-- runner / Test_RUN_060_RUN_061_FailedDrillReportsFailuresAndRetainsCode / RUN-060, RUN-061 / pass
+- runner / Test_RUN_060_RUN_061_RUN_078_FailedDrillReportsFailuresAndRetainsCode / RUN-060, RUN-061, RUN-078 / pass
 - runner / Test_RUN_062_CleanupOnSuccessAndFailures / RUN-062 / pass
 - runner / Test_RUN_062_CleanupOnSuccessAndFailures/success / RUN-062 / pass
 - runner / Test_RUN_062_CleanupOnSuccessAndFailures/agent_retry / RUN-062 / pass
@@ -331,7 +332,7 @@ result: fail
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration / APP-164 / fail
 
 === RUN   Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration
---- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration (1.77s)
+--- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration (1.21s)
 
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/check_--json / APP-164 / pass
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/show_alpha / APP-164 / pass
@@ -339,14 +340,14 @@ result: fail
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next / APP-164 / fail
 
 === RUN   Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next
-    compatibility_cli_test.go:246: stop reason "usage wait stopped: completed 0s, next wait 5ms, budget 0s" lacks a labeled completed wait of 0s
---- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next (0.33s)
+    compatibility_cli_test.go:244: held next: exit=2 stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"fireweed.yaml: yaml: line 1: did not find expected ',' or ']'. Correct the project configuration or module declarations and retry.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" stderr=""; want a usage stop
+--- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next (0.06s)
 
 - app / Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run / APP-164 / fail
 
 === RUN   Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run
-    compatibility_cli_test.go:246: stop reason "usage wait stopped: completed 0s, next wait 5ms, budget 0s" lacks a labeled completed wait of 0s
---- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run (0.35s)
+    compatibility_cli_test.go:244: held run: exit=2 stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"fireweed.yaml: fireweed pin \\\"\\u003e0.2.1\\\" excludes running binary version 0.2.1. Correct the project configuration or module declarations and retry.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" stderr=""; want a usage stop
+--- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run (0.07s)
 
 - app / Test_APP_037_StaticCauses / APP-037 / pass
 - app / Test_APP_037_StaticCauses/configuration / APP-037 / pass
@@ -392,30 +393,11 @@ result: fail
 - app / Test_APP_166_DrillRejectsInvalidAgentOptionBeforeInvocation/repeated / APP-166 / pass
 - app / Test_APP_167_DrillRejectsUnknownAgentAlias / APP-167 / pass
 - app / Test_APP_140_DrillProjectAndConfigurationFailures / APP-140 / pass
-- app / Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts / APP-141 / fail
-
-=== RUN   Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts
---- FAIL: Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts (1.69s)
-
-- app / Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/own-plain / APP-141 / fail
-
-=== RUN   Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/own-plain
-    drill_cli_test.go:344: plain failure stdout="" stderr="P01: own evals: failed case \"ALP-001_case\" for ALP-001. Correct the reported issue before retrying. Report: .fireweed/drills/alpha.md. Rebuilt ref: refs/fireweed/drills/alpha/2026-11-17.\n"; want empty stdout and E01
---- FAIL: Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/own-plain (0.83s)
-
-- app / Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/dependent-json / APP-141 / fail
-
-=== RUN   Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/dependent-json
-    drill_cli_test.go:344: diagnostic code="P01"; want "E01"
---- FAIL: Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/dependent-json (0.55s)
-
+- app / Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts / APP-141 / pass
+- app / Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/own-plain / APP-141 / pass
+- app / Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/dependent-json / APP-141 / pass
 - app / Test_APP_141_DrillSetupFailureHasNoArtifacts / APP-141 / pass
-- app / Test_APP_142_DrillCleanUsageStopPlainAndJSON / APP-142 / fail
-
-=== RUN   Test_APP_142_DrillCleanUsageStopPlainAndJSON
-    drill_cli_test.go:410: clean stop data=map[base_commit:58061d73485e99eb9895e3981029d9a3fcb44f92 module:alpha reason:usage wait stopped: completed 0s, next wait 5ms, budget 0s ref: report:.fireweed/drills/alpha.md result:stopped]
---- FAIL: Test_APP_142_DrillCleanUsageStopPlainAndJSON (1.56s)
-
+- app / Test_APP_142_DrillCleanUsageStopPlainAndJSON / APP-142 / pass
 - app / Test_APP_136_DrillUsesConfiguredTimeout / APP-136 / pass
 - app / Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty / APP-150, APP-151 / pass
 - app / Test_APP_150_APP_151_GCNearestProjectSortedAndEmpty/plain / APP-150, APP-151 / pass
@@ -654,109 +636,175 @@ result: fail
 - app / Test_APP_118_APP_119_APP_120_APP_121_APP_122_APP_123_APP_124_APP_125_StatusRichReport / APP-118, APP-119, APP-120, APP-121, APP-122, APP-123, APP-124, APP-125 / pass
 - app / Test_APP_118_APP_119_APP_122_StatusNearestRootEmptyContainers / APP-118, APP-119, APP-122 / pass
 - app / Test_APP_126_StatusUsageConfigurationAndOperationalFailures / APP-126 / pass
-- app / Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume / APP-076, APP-077, APP-079 / fail
-
-=== RUN   Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume
-    usage_cli_test.go:141: stop reason "usage wait stopped: completed 0s, next wait 5ms, budget 0s" lacks a labeled completed wait of 0s
---- FAIL: Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume (4.15s)
-
-- app / Test_APP_076_APP_077_NextPlainUsageStop / APP-076, APP-077 / fail
-
-=== RUN   Test_APP_076_APP_077_NextPlainUsageStop
-    usage_cli_test.go:240: stop reason "Stopped on held-quota-work: usage wait stopped: completed 0s, next wait 5ms, budget 0s. Use fireweed next to resume.\n" lacks a labeled completed wait of 0s
---- FAIL: Test_APP_076_APP_077_NextPlainUsageStop (1.31s)
-
-- app / Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume / APP-083, APP-084, APP-086 / fail
-
-=== RUN   Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume
-    usage_cli_test.go:254: stop reason "usage wait stopped: completed 5ms, next wait 5ms, budget 5ms" lacks a labeled completed wait of 5ms
---- FAIL: Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume (7.21s)
-
-- app / Test_APP_083_APP_084_RunPlainSharedUsageStop / APP-083, APP-084 / fail
-
-=== RUN   Test_APP_083_APP_084_RunPlainSharedUsageStop
-    usage_cli_test.go:337: stop reason "Applied 1 changes.\nalpha\nStopped: usage wait stopped: completed 5ms, next wait 5ms, budget 5ms. Use fireweed run to resume.\n" lacks a labeled completed wait of 5ms
---- FAIL: Test_APP_083_APP_084_RunPlainSharedUsageStop (4.25s)
-
+- app / Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume / APP-076, APP-077, APP-079 / pass
+- app / Test_APP_076_APP_077_NextPlainUsageStop / APP-076, APP-077 / pass
+- app / Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume / APP-083, APP-084, APP-086 / pass
+- app / Test_APP_083_APP_084_RunPlainSharedUsageStop / APP-083, APP-084 / pass
 - app / Test_APP_084_APP_086_EarlierBlockPrecedesUsageStop / APP-084, APP-086 / pass
 - app / Test_APP_077_APP_079_APP_084_APP_086_InvalidUsagePolicyBeforeMutation / APP-077, APP-079, APP-084, APP-086 / pass
 - app / Test_APP_077_APP_079_APP_084_APP_086_InvalidUsagePolicyBeforeMutation/next / APP-077, APP-079, APP-084, APP-086 / pass
 - app / Test_APP_077_APP_079_APP_084_APP_086_InvalidUsagePolicyBeforeMutation/run / APP-077, APP-079, APP-084, APP-086 / pass
 
 ## Contradicted Decisions
-None. The runner reconstruction follows the retained Decisions, including the
-90-minute default invocation timeout and the length-labeled append-only agent
-logs.
+- [0075-bounded-agent-invocation]: Not contradicted. The decision reads
+  "using the final 20 lines of stdout followed by stderr with terminal
+  newline separators trimmed"; the reconstruction applies the joined-tail
+  reading — the last 20 lines of stdout followed by stderr with trailing
+  newline separators trimmed — because RUN-008's evals pin it (see Gaps).
+- agent-invocation-logs (part of 0075): Not contradicted. The decision's
+  "length-labeled stdout and stderr records" phrase leaves the label schema
+  free; the reconstruction writes byte-counted labels
+  (`---- stdout <n> bytes attempt <a> ----`) and preserves stream bytes.
 
 ## Gaps
-- RUN-063, module runner: the exact framing of length-labeled log records is not
-  specified beyond preserving both streams and appending. The implementation
-  records `stdout <bytes>` followed by `stderr <bytes>` per invocation.
-- RUN-003, module runner: shell quote-state handling for escaped quotes in mixed
-  command templates is outside the stated contract. The implementation tracks
-  single and double quotes and backslash escapes when deciding whether to quote
-  substituted values.
-- no spec, module runner: the disposable internal package decomposition
-  (`invoke`, `next`, `run`, `drill`, `stop`) is not specified; only `api.go` and
-  `model/**` are retained public boundaries.
+- no spec, module runner: the eval-hook invocation command taught to the
+  drill worker is rendered by expanding the project's `hooks.eval` template
+  (`{module}`, `{module_dir}`, `{report}`) inline into the prompt; the spec
+  (RUN-054) does not name which expansion rules apply or whether a project
+  with an exotic hook shape should be refused — a fixing change should pin
+  the expansion contract for `hooks.eval` and the failure mode when the
+  template contains unknown placeholders (currently they pass through
+  unexpanded).
+- RUN-008, module runner: the decision's "final 20 lines of stdout followed
+  by stderr" admits two readings (last 20 lines of stdout followed by all of
+  stderr, vs. last 20 lines of the concatenated streams). RUN-008's evals
+  pin the concatenated reading; a fixing change should rewrite the decision
+  text to say "the final 20 lines of stdout followed by stderr, with
+  trailing newline separators trimmed from each stream before joining".
+- RUN-021, module runner: whether a passing verification consumes the
+  phase's verification-attempt allowance is not stated. The rebuilt
+  implementation consumes one attempt per verification that runs (pass or
+  fail), which is what makes the audit→evals round trip terminate within
+  the shared allowance; a fixing change should state that attempts are
+  consumed by verifications, not only by failures.
+- RUN-024 / RUN-070, module runner: when the shared evals allowance is
+  exhausted by passing verifications and audit returns to evals (or the
+  audit's own allowance is spent first), there is no "last verification
+  cause" to retain even though RUN-024 tells the error to retain it; the
+  reconstruction synthesises a coded P2-01 allowance-exhaustion cause when
+  none exists. A fixing change should say which error wins when the two
+  clauses conflict.
+- RUN-022, module runner: "the retry prompt MUST include the last
+  verification output" does not define composition (verification error text
+  vs. hook stdout/stderr vs. the failed-case detail section). The
+  reconstruction includes all three, failed cases last; a fixing change
+  should define the required sections and their order if the eval suite is
+  the source of truth.
+- RUN-036 / RUN-039, module runner: the For bound is enforced through a
+  context deadline plus a context-value marker carrying (start, limit).
+  Any other reader of the derived context cannot distinguish the parent's
+  deadline from Run's; IsTimeStop's exclusion of parent-context cancellation
+  depends on Run keeping the two contexts separate, which the spec does not
+  forbid. A fixing change should state where the For limit lives.
+- RUN-045 / RUN-049, module runner: the restricted audit workspace's Git
+  identity (the commit that holds the synthesised inputs) is not specified;
+  the reconstruction commits as "Fireweed <fireweed@localhost>" with hooks
+  disabled. A fixing change should name the identity and whether the seed
+  commit should exist at all.
+- RUN-060, module runner: `.fireweed/drills/<module>.md` is untracked and
+  not covered by the protected/`.gitignore` rules in every project, so a
+  completed drill can leave the invoking checkout dirty for the next
+  drill's RUN-050 preflight; the spec does not say whether the drill's
+  report write is exempt from the cleanliness bound. A fixing change should
+  declare the report path exempt from RUN-050 or written elsewhere.
+- RUN-061, module runner: the drills ref `<date>` component format and the
+  collision behaviour when two drills of the same module run on the same
+  date are unspecified (the reconstruction uses
+  `2006-01-02-150405` UTC and overwrites the ref). A fixing change should
+  define the ref layout and whether re-drilling the same day replaces or
+  versions the ref.
+- RUN-063, module runner: the agent log record format is only documented as
+  "length-labeled stdout and stderr records ... even without final
+  newlines"; the reconstruction appends a single newline after each raw
+  stream to keep records parseable, which the spec neither forbids nor
+  requires. A fixing change should state whether record framing may inject
+  separator bytes.
+- RUN-070, module runner: after an audit-triggered block of the held evals
+  step, the error must "retain the last verification cause and identify the
+  saved attempt ref", but there may be no last verification cause when the
+  allowance was spent on passing checks (see RUN-024 / RUN-070 above); the
+  reconstruction identifies the allowance exhaustion and suppresses the
+  absent cause. A fixing change should keep the two requirements consistent.
+- RUN-043, module runner: failed cases are selected by lexical module name
+  and report order, excluding passing and skipped cases; case ordering and
+  budget overflow behaviour beyond the 4,096-code-point excerpt cap and the
+  16,384-code-point section cap (truncation and omission markers shown as
+  `…[truncated]` / `… [omitted N remaining cases]`) are not
+  fixture-relevant but also not contractual. A fixing change should pin the
+  marker spellings if downstream tooling parses them.
+- no spec, module runner: the drill, Next and the checks engine each expand
+  hook argv templates with local logic and no shared helper; a reconstruction
+  change that touches one copy can silently diverge the others. A fixing
+  change should extract the expansion into a shared internal package.
 
 ## Agent observations
 
 ### Invocation 1
-Log: .fireweed/runs/20261117T071031-edb15b349c113463d682c8ae/drill-1.log
+Log: .fireweed/runs/20261118T120044-c88a28d6d7060ea7a78717da/drill-1.log
 
-Reconstructed `packages/runner/internal/**` and added `DRILL_NOTES.md`.
+Now I have a good picture of the codebase and the specs. Let me start implementing. First, the shared stop/budget types:
+Now the invoke package:
+Now let me check how gitstore.Run handles context, since verification interruption depends on it:
+Now a small shared config helper package:
+Now the failed-case detail section helper (RUN-043/044):
+Now the audit workspace implementation:
+Now the main `next` implementation:
+Let me fix the issues in next.go:
+Now the run package:
+Now the drill package — first the helpers file:
+Now the main drill implementation:
+Now the drill report writer:
+Now the main drill runner logic:
+Two bugs: the remote/base config extraction and the audit workspace baseline comparison. Fixing both:
+The strip comparison fails on trailing-newline handling. Let me fix `checkEditable` to compare with trailing newlines normalized:
+The allowance counts attempts consumed, not just failed verification. Fixing the accounting:
+The usage tracker isn't installed for direct Next calls. Fixing:
+The For-derived context needs its own check before the ordinary-failure path:
+Variable shadowing hides the own report. Fixing:
+All runner evals pass. Now run the official eval hook:
+All green. Now check workspace hygiene before writing DRILL_NOTES:
+Let me refine Run's final Empty handling:
+Let me re-read the runner spec to double-check a few subtle contract points:
+Let me run gofmt and final verification gates:
+Let me handle the soft-reset failure path (currently silently swallowed):
+Done. The `runner` module is reconstructed from its spec. All 18 eval files pass, and both hooks are green:
 
-Implemented:
-- `internal/invoke` — command selection, wrappers, placeholders, prompt files, timeouts, usage-limit detection, process-group handling, and append-only invocation logs.
-- `internal/next` — lifecycle driving, approvals, retries, commit recovery, blocking, audit isolation/copy-back, usage waits/budgets, diagnostics, run resumption, and stop classification.
-- `internal/run` — bounded/unbounded queue execution, shared usage/time budgets, blocked-change continuation, and result flags.
-- `internal/drill` — preflight, scratch/input workspaces, filtered Git inputs, reconstruction retries, eval verification, dependent evaluation, reports, refs, and cleanup.
-- `internal/stop` — shared clean usage/time/blocked error classifications.
+- `go test ./packages/runner/evals/` → **ok** (all RUN-nnn cases, ~346s)
+- `go run .fireweed/hooks.go boundaries` → OK
+- `go run .fireweed/hooks.go eval packages/runner .fireweed/drill-eval.xml` → exit 0
 
-Validation:
-- Full `packages/runner/evals` suite passes.
-- The supplied eval hook command passes:
-  - `ok github.com/lurkshark/fireweed/packages/runner/evals`
+## What was rebuilt (`packages/runner/internal/**`, plus `DRILL_NOTES.md`)
+
+| Package | Contents |
+|---|---|
+| `internal/invoke` | Agent invocation: command selection via `project.ResolveAgentCommand`, shell/argv templates with one-pass `{prompt}`/`{prompt_file}`/`{git_common_dir}` expansion (shell-quoted for shells, literals for argv), `agent.wrap` prefix, `FIREWEED_BIN`, process-group kill on timeout/cancel, final-20-lines case-insensitive `limit_patterns` usage detection, timeout defaulting (request > configured > 90m), append-only length-labeled logs at `.fireweed/runs/<run>/<phase>-<attempt>.log`, `{prompt_file}` temp-file lifetime. |
+| `internal/next` | `Next`: eligibility/approval/policy validation before claiming, fresh `workflow.Start` vs. approved-snapshot resume, evals/impl worker + restricted audit workspace (change + projected spec + evals + independent git only, Audit-only edits copied back, workspace always removed), phase loop with one full `workflow.Done` verification per attempt, shared evals allowance across audit round-trips, per-phase allowances, verification-feedback retry prompts with the 16,384-rune / 4,096-rune failed-case detail section, soft-reset commit recovery with P05 diagnostics, usage-stop/time-stop retention of held work, blocking via `workflow.Block` with attempt refs. |
+| `internal/run` | `Run`: shared `For` elapsed-time budget and shared usage tracker across phases and changes, `Max` bound (`Limited`/`Empty` semantics), continue-after-block (excludes blocked changes from `Applied`, retains cause/ref), clean time-stop classification; parent-context cancellation stays an ordinary failure. |
+| `internal/drill` | `Drill`: preflight (unknown module/dirty checkout/live claims), resolution-before-workspace, `drill.exclude` parsing/validation/conflict detection, detached scratch verification worktree under `commonDir/fireweed/worktrees`, target-disposable deletion, filtered input workspace with a fresh single-commit repo, setup hooks with `FIREWEED_BIN`, input-integrity manifests, reconstruction agent with usage/attempts accounting, own + lexical-ordered transitive dependent evals via `checks`, report writer (`.fireweed/drills/<module>.md`), retained rebuilt tree at `refs/fireweed/drills/<module>/<date>`, guaranteed workspace cleanup. |
+| `internal/stop`, `internal/conf` | Shared stop classifications (`IsUsageStop`/`IsTimeStop`), usage policy + tracker, and config parsing helpers. |
+
+`packages/runner/api.go` and `packages/runner/model/model.go` (retained interfaces) are unchanged, as are the retained evals.
+
+## DRILL_NOTES.md
+Written with separate `## Contradicted Decisions` ([0075-bounded-agent-invocation] not contradicted; two ambiguities identified) and `## Gaps` sections — each naming its nearest spec ID (e.g. RUN-008/RUN-021/RUN-024/RUN-070) or "no spec", the target module, and suggesting a fixing change. Notable gaps include the ambiguous "final 20 lines" wording in RUN-008, the unspecified consumption of passing verification attempts by the allowance in RUN-021, the RUN-024/RUN-070 conflict when no verification cause exists at block time, and the untracked-report/preflight tension in RUN-060.
+
+One deliberate spec reading worth flagging: RUN-008's "final 20 lines of stdout followed by stderr" is implemented as the last 20 lines of the concatenated streams (the reading the evals pin), not tail-of-stdout followed by all stderr.
 
 
 ## Failures
-app: failed case "Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume" for APP-076
+app: failed case "Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration" for APP-164
 Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration: === RUN   Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration
---- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration (1.77s)
+--- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration (1.21s)
 Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next: === RUN   Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next
-    compatibility_cli_test.go:246: stop reason "usage wait stopped: completed 0s, next wait 5ms, budget 0s" lacks a labeled completed wait of 0s
---- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next (0.33s)
+    compatibility_cli_test.go:244: held next: exit=2 stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"fireweed.yaml: yaml: line 1: did not find expected ',' or ']'. Correct the project configuration or module declarations and retry.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" stderr=""; want a usage stop
+--- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/next (0.06s)
 Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run: === RUN   Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run
-    compatibility_cli_test.go:246: stop reason "usage wait stopped: completed 0s, next wait 5ms, budget 0s" lacks a labeled completed wait of 0s
---- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run (0.35s)
-Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts: === RUN   Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts
---- FAIL: Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts (1.69s)
-Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/own-plain: === RUN   Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/own-plain
-    drill_cli_test.go:344: plain failure stdout="" stderr="P01: own evals: failed case \"ALP-001_case\" for ALP-001. Correct the reported issue before retrying. Report: .fireweed/drills/alpha.md. Rebuilt ref: refs/fireweed/drills/alpha/2026-11-17.\n"; want empty stdout and E01
---- FAIL: Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/own-plain (0.83s)
-Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/dependent-json: === RUN   Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/dependent-json
-    drill_cli_test.go:344: diagnostic code="P01"; want "E01"
---- FAIL: Test_APP_141_DrillOwnAndDependentFailuresRetainArtifacts/dependent-json (0.55s)
-Test_APP_142_DrillCleanUsageStopPlainAndJSON: === RUN   Test_APP_142_DrillCleanUsageStopPlainAndJSON
-    drill_cli_test.go:410: clean stop data=map[base_commit:58061d73485e99eb9895e3981029d9a3fcb44f92 module:alpha reason:usage wait stopped: completed 0s, next wait 5ms, budget 0s ref: report:.fireweed/drills/alpha.md result:stopped]
---- FAIL: Test_APP_142_DrillCleanUsageStopPlainAndJSON (1.56s)
-Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume: === RUN   Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume
-    usage_cli_test.go:141: stop reason "usage wait stopped: completed 0s, next wait 5ms, budget 0s" lacks a labeled completed wait of 0s
---- FAIL: Test_APP_076_APP_077_APP_079_NextJSONUsageStopAndOwnedResume (4.15s)
-Test_APP_076_APP_077_NextPlainUsageStop: === RUN   Test_APP_076_APP_077_NextPlainUsageStop
-    usage_cli_test.go:240: stop reason "Stopped on held-quota-work: usage wait stopped: completed 0s, next wait 5ms, budget 0s. Use fireweed next to resume.\n" lacks a labeled completed wait of 0s
---- FAIL: Test_APP_076_APP_077_NextPlainUsageStop (1.31s)
-Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume: === RUN   Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume
-    usage_cli_test.go:254: stop reason "usage wait stopped: completed 5ms, next wait 5ms, budget 5ms" lacks a labeled completed wait of 5ms
---- FAIL: Test_APP_083_APP_084_APP_086_RunJSONSharedUsageStopAndResume (7.21s)
-Test_APP_083_APP_084_RunPlainSharedUsageStop: === RUN   Test_APP_083_APP_084_RunPlainSharedUsageStop
-    usage_cli_test.go:337: stop reason "Applied 1 changes.\nalpha\nStopped: usage wait stopped: completed 5ms, next wait 5ms, budget 5ms. Use fireweed run to resume.\n" lacks a labeled completed wait of 5ms
---- FAIL: Test_APP_083_APP_084_RunPlainSharedUsageStop (4.25s)
+    compatibility_cli_test.go:244: held run: exit=2 stdout="{\"schema\":1,\"data\":null,\"diagnostics\":[{\"code\":\"C01\",\"message\":\"fireweed.yaml: fireweed pin \\\"\\u003e0.2.1\\\" excludes running binary version 0.2.1. Correct the project configuration or module declarations and retry.\",\"path\":\"fireweed.yaml\",\"warning\":false}]}\n" stderr=""; want a usage stop
+--- FAIL: Test_APP_164_HeldRunnerAdmissionUsesApprovedConfiguration/run (0.07s)
 ?   	github.com/lurkshark/fireweed/packages/app	[no test files]
 ?   	github.com/lurkshark/fireweed/packages/app/internal/entry	[no test files]
 FAIL
-FAIL	github.com/lurkshark/fireweed/packages/app/evals	269.459s
+FAIL	github.com/lurkshark/fireweed/packages/app/evals	258.088s
 
 exit status 1
 
