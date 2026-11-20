@@ -3,7 +3,7 @@ eval_fix:
     - CHK-044
     - CHK-045
 module: checks
-phase: impl
+phase: applied
 run: 20261120T211958-bec677b122f4e1e75663cd15
 ---
 
@@ -34,6 +34,7 @@ disposable globs and with a reasoned opt-out.
 
 - evals 2026-11-20T21:29:12.318159Z agent=codex fireweed=0.2.4 playbook=5e05bacdae954379b468564c11429c5532016e26a7afbcd418f9bdb9441e151c tests=142 failing=0 passing=142
 - audit 2026-11-20T21:29:29.180606Z agent=codex fireweed=0.2.4 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
+- impl 2026-11-20T21:49:27.155823Z agent=codex fireweed=0.2.4 playbook=5f856d6bcab308b9ff1a8a7c03b9d2547744112aba81dd30dea8f61ec8062b03 tests=995 failing=0 passing=995
 
 ## Audit
 
