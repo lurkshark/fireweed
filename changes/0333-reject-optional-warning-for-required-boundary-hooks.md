@@ -3,6 +3,8 @@ eval_fix:
     - CHK-044
     - CHK-045
 module: checks
+phase: audit
+run: 20261120T211958-bec677b122f4e1e75663cd15
 ---
 
 ## Motivation
@@ -28,3 +30,7 @@ In `Test_CHK_044_CHK_045_MissingHookRequiredVersusOptional`, assert that the
 missing-required-hook case returns an error and X02 and contains no diagnostic
 with code X04. Keep the positive X04 assertions for the cases with no
 disposable globs and with a reasoned opt-out.
+## Provenance
+
+- evals 2026-11-20T21:29:12.318159Z agent=codex fireweed=0.2.4 playbook=5e05bacdae954379b468564c11429c5532016e26a7afbcd418f9bdb9441e151c tests=142 failing=0 passing=142
+

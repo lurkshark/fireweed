@@ -160,6 +160,11 @@ func Test_CHK_044_CHK_045_MissingHookRequiredVersusOptional(t *testing.T) {
 		t.Error("missing required hook returned no error")
 	}
 	requireBoundaryDiagnostic(t, diags, "X02", false, "alpha: missing boundaries hook")
+	for _, d := range diags {
+		if d.Code == "X04" {
+			t.Errorf("missing required hook returned X04: %#v", d)
+		}
+	}
 	snap.Modules[0].Zones.Disposable = nil
 	diags, err = checks.Boundaries(context.Background(), checks.BoundaryRequest{Snapshot: snap, Timeout: time.Second})
 	if boundaryHasError(diags, err) || !boundaryHasWarning(diags) {
