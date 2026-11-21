@@ -2,7 +2,7 @@
 bases:
     FLOW-145: 889731d8
 module: workflow
-phase: audit
+phase: impl
 run: 20261121T001337-9c2d72f129f4ea534ca5854d
 ---
 
@@ -65,7 +65,12 @@ and saved-attempt restoration both pass against the current lifecycle.
 
 The ApplyAuditEdit stub is in `internal/lifecycle/audit_edit.go` under the
 workflow module. The approval check is in `internal/lifecycle/claim.go`.
+## Audit
+
+No findings; checked FLOW-145, FLOW-147
+
 ## Provenance
 
 - evals 2026-11-21T00:19:24.331633Z agent=codex fireweed=0.2.4 playbook=5e05bacdae954379b468564c11429c5532016e26a7afbcd418f9bdb9441e151c tests=229 failing=4 passing=225
+- audit 2026-11-21T00:19:41.607921Z agent=codex fireweed=0.2.4 playbook=af82dfbbb21a41a13c693f48de95ff7540e3b1a20f18c8f6a1a65e0106b7dc96 tests=0 failing=0 passing=0
 
