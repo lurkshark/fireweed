@@ -37,9 +37,9 @@ The Go bundle MUST provide module SPEC/api.go templates and version-1 baseline, 
 ### AST-008
 Help MUST identify fireweed and list every command in the design's CLI table,
 including help, version, explain and playbook, grouped by purpose. It MUST
-advertise help <command> and <command> --help, with a concrete command example.
-It MUST keep command-specific option and configuration descriptions on the
-command pages rather than the overview.
+advertise help <command> and <command> --help, using `fireweed help init` as
+the concrete example. It MUST keep command-specific option and configuration
+descriptions on the command pages rather than the overview.
 
 ### AST-009
 The audit playbook MUST restrict findings to exact spec clauses without assertions.
@@ -293,6 +293,17 @@ The evals playbook MUST guide workers to assert the contracted result of structu
 outputs and assert exact representation only when required by the spec. For a
 regression caused by incidental format or order, it MUST advise using a second
 valid representation to exercise the distinction.
+
+### AST-077
+Help MUST briefly describe Fireweed as a CLI for spec-driven development in Git.
+It MUST explain that coding agents write evals and implementation in separate
+steps that Fireweed verifies and records in Git.
+
+### AST-078
+Help MUST direct users starting a Git project to `fireweed help init` to choose
+a recipe and worker. It MUST instruct them to run `fireweed init`, follow the
+printed recipe instructions, and describe the project in `SYSTEM.md`. It MUST
+direct them to commit the setup before running `fireweed doctor`.
 
 ## Decisions
 

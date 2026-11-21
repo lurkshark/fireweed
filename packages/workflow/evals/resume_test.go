@@ -250,14 +250,16 @@ func Test_FLOW_074_StartFromAttemptSelectsRequestedSavedRef(t *testing.T) {
 func Test_FLOW_075_StartFromAttemptRestoresAuditBodyAndRetainsCurrentApproval(t *testing.T) {
 	root := blockFixture(t, "", "", "", "", "")
 	auditState := toAudit(t, root)
-	path := "changes/0001-manual.md"
-	committed, err := contracts.ParseDocument(readFile(t, root, path))
+	const path = pendingCommitChange
+	approved := readFile(t, root, path)
+	committed, err := contracts.ParseDocument(approved)
 	if err != nil {
 		t.Fatal(err)
 	}
 	committedAudit, _ := contracts.Section(committed.Body, "Audit")
-	audit(t, root, "Checked IDs: ALP-001\nNo findings\n")
-	worker, err := contracts.ParseDocument(readFile(t, root, path))
+	submission := auditBeforeProvenance(t, approved)
+	write(t, root, path, submission)
+	worker, err := contracts.ParseDocument(submission)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -270,6 +272,7 @@ func Test_FLOW_075_StartFromAttemptRestoresAuditBodyAndRetainsCurrentApproval(t 
 		t.Fatalf("Block did not save audit attempt: %#v", saved)
 	}
 	unblockAttempt(t, root)
+	beforeHead := head(t, root)
 	before, err := contracts.ParseDocument(readFile(t, root, path))
 	if err != nil {
 		t.Fatal(err)
@@ -283,8 +286,8 @@ func Test_FLOW_075_StartFromAttemptRestoresAuditBodyAndRetainsCurrentApproval(t 
 	if err != nil {
 		t.Fatalf("audit StartFromAttempt(%s): %v", saved.AttemptRef, err)
 	}
-	if got.Phase != auditState.Phase || got.Run != auditState.Run {
-		t.Errorf("audit resume changed phase or run: %#v", got)
+	if got.Phase != auditState.Phase || got.Run != auditState.Run || got.PhaseBase != beforeHead || head(t, root) != beforeHead {
+		t.Errorf("audit resume changed phase, run or HEAD: phase=%q, run=%q, HEAD=%s", got.Phase, got.Run, head(t, root))
 	}
 	resumed, err := contracts.ParseDocument(readFile(t, root, path))
 	if err != nil {
@@ -293,7 +296,7 @@ func Test_FLOW_075_StartFromAttemptRestoresAuditBodyAndRetainsCurrentApproval(t 
 	if body, _ := contracts.Section(resumed.Body, "Audit"); body != savedAudit {
 		t.Errorf("restored Audit = %q, want saved worker body %q", body, savedAudit)
 	}
-	for _, name := range []string{"Motivation", "Interface", "Added", "Modified", "Removed", "Removed decisions", "Provenance"} {
+	for _, name := range []string{"Motivation", "Interface", "Added", "Modified", "Removed", "Decisions", "Removed decisions", "Provenance"} {
 		want, _ := contracts.Section(before.Body, name)
 		actual, _ := contracts.Section(resumed.Body, name)
 		if actual != want {
@@ -302,6 +305,9 @@ func Test_FLOW_075_StartFromAttemptRestoresAuditBodyAndRetainsCurrentApproval(t 
 	}
 	if !reflect.DeepEqual(resumed.Frontmatter, before.Frontmatter) {
 		t.Errorf("audit resume changed current author/runtime frontmatter: got %#v, want %#v", resumed.Frontmatter, before.Frontmatter)
+	}
+	if result, err := verify(root, false); err != nil || result.State.Phase != "audit" || result.State.Run != auditState.Run || head(t, root) != beforeHead {
+		t.Errorf("restored audit Verify = phase %q, run %q, error %v at HEAD %s", result.State.Phase, result.State.Run, err, head(t, root))
 	}
 }
 

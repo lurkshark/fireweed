@@ -51,7 +51,6 @@ var commandHelpCases = []struct {
 func Test_AST_008_Help(t *testing.T) {
 	overview := assets.Help()
 	requirePattern(t, overview, `(?i)\bfireweed\b`, "Fireweed name")
-	commandExamples := `\bfireweed\s+(?:help\s+(?:` + helpCommandNames() + `)(?:$|[^[:alnum:]_-])|(?:` + helpCommandNames() + `)\s+--help\b)`
 	entries := helpOverviewEntries(overview)
 	for _, command := range commandHelpCases {
 		if len(entries[command.name]) == 0 {
@@ -80,9 +79,11 @@ func Test_AST_008_Help(t *testing.T) {
 	}
 	requirePattern(t, overview, `\bhelp\s+<command>`, "help <command> navigation")
 	requirePattern(t, overview, `<command>\s+--help\b`, "<command> --help navigation")
-	requirePattern(t, overview, commandExamples, "concrete command-help example")
-	if regexp.MustCompile(`gc\.drill_max_age|720h`).MatchString(overview) {
-		t.Error("Help() includes gc configuration details that belong on the gc page")
+	requirePattern(t, overview, `\bfireweed\s+help\s+init(?:$|[^[:alnum:]_-])`, "fireweed help init as the concrete command-help example")
+	for _, detail := range []string{"agent.commands", "agent.default", "audit.agent", "gc.drill_max_age", "720h"} {
+		if strings.Contains(overview, detail) {
+			t.Errorf("Help() includes configuration detail %q that belongs on a command page", detail)
+		}
 	}
 	for _, option := range regexp.MustCompile(`\B--[a-z][a-z0-9-]*\b`).FindAllString(overview, -1) {
 		switch option {
@@ -91,6 +92,53 @@ func Test_AST_008_Help(t *testing.T) {
 			t.Errorf("Help() includes command-specific option %s, which belongs on its command page", option)
 		}
 	}
+}
+
+func Test_AST_077_HelpPurpose(t *testing.T) {
+	overview := helpOverviewProse()
+	const tool = `(?:CLI|command[- ]line (?:tool|interface|application))`
+	requirePattern(t, overview, `(?i)\b`+tool+`\b[^.!?]*\bspec[- ]driven development\b[^.!?]*\bGit\b`,
+		"a brief description as a CLI for spec-driven development in Git")
+	const agentsWrite = `\b(?:coding|AI|software) agents?\b[^.!?]*\b(?:writ\w*|creat\w*|produc\w*|develop\w*)\b`
+	const phaseWork = `(?:evals?|tests?)\b[^.!?]*\b(?:implementation|implement\w*|code)\b`
+	const separateSteps = `\b(?:separate|distinct|different) (?:steps|phases)\b`
+	requirePattern(t, overview, `(?i)`+agentsWrite+`[^.!?]*\b(?:`+phaseWork+`[^.!?]*`+separateSteps+`|`+separateSteps+`[^.!?]*`+phaseWork+`)`,
+		"coding agents write evals and implementation in separate steps")
+	requirePattern(t, overview, `(?i)\bFireweed\b[^.!?]*\b(?:verif\w*|check\w*)\b[^.!?]*\b(?:record\w*|commit\w*)\b[^.!?]*\b(?:in Git|Git (?:commits?|history))\b`,
+		"Fireweed verifies and records the steps in Git")
+}
+
+func Test_AST_078_HelpSetup(t *testing.T) {
+	overview := helpOverviewProse()
+	const choose = `\b(?:choos\w*|select\w*|pick\w*)\b[^.!?]*`
+	const recipe = `\brecipe\b`
+	const worker = `\b(?:worker|agent)\b`
+	const chooseSetup = choose + `(?:` + recipe + `[^.!?]*` + worker + `|` + worker + `[^.!?]*` + recipe + `)`
+	const helpInit = `\bfireweed help init(?:$|[^[:alnum:]_-])`
+	const runInit = `\bfireweed init(?:$|[^[:alnum:]_-])`
+	const follow = `\b(?:follow|complete|carry out)\b[^.!?]*`
+	const describe = `\b(?:describ\w*|description|document\w*|summariz\w*)\b`
+	const systemDoc = `\bSYSTEM\.md\b`
+	const commitSetup = `\bcommit\b[^.!?]*\b(?:setup|files|changes|initializ\w*)\b`
+	const doctor = `\bfireweed doctor(?:$|[^[:alnum:]_-])`
+	const runDoctorNext = `(?:\bbefore\b[^.!?]*|(?:[,.;]| and| -) +(?:then |next,? )?(?:run |use )?)` + doctor
+	for _, step := range []struct{ instruction, pattern string }{
+		{"use fireweed help init to choose a recipe and worker", helpInit + `[^.!?]*` + chooseSetup + `|` + chooseSetup + `[^.!?]*` + helpInit},
+		{"run fireweed init", runInit},
+		{"follow the printed recipe instructions", follow + `\b(?:printed|displayed|emitted)\b[^.!?]*\brecipe\b|` + follow + `\brecipe\b[^.!?]*\b(?:prints?|printed|displays?|outputs?)\b`},
+		{"describe the project in SYSTEM.md", describe + `[^.!?]*\bproject\b[^.!?]*` + systemDoc + `|` + systemDoc + `[^.!?]*` + describe + `[^.!?]*\bproject\b`},
+		{"commit the setup before running fireweed doctor", commitSetup + `[^.!?]*` + runDoctorNext + `|\bbefore\b[^.!?]*` + doctor + `[^.!?]*` + commitSetup},
+	} {
+		match := regexp.MustCompile(`(?i)` + step.pattern).FindStringIndex(overview)
+		if match == nil {
+			t.Fatalf("Help() must direct users to %s in the setup sequence", step.instruction)
+		}
+		overview = overview[match[1]:]
+	}
+}
+
+func helpOverviewProse() string {
+	return strings.Join(strings.Fields(strings.ReplaceAll(assets.Help(), "`", "")), " ")
 }
 
 func helpOverviewEntries(overview string) map[string][]string {

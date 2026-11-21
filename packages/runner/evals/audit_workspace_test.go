@@ -249,8 +249,9 @@ func Test_RUN_046_AuditCommitDoesNotEnterHeldGit(t *testing.T) {
 
 func Test_RUN_047_RUN_048_FirstAuditBeforeProvenanceIsImported(t *testing.T) {
 	f := newNextFixture(t, true, true, "normal")
-	const inserted = "## Audit\nNo findings\nChecked IDs: ALP-002\n\n"
-	auditBeforeEdit(t, f, `if [ -f "$1/audit.original" ]; then
+	const inserted = "\n## Audit\nNo findings\nChecked IDs: ALP-002\n\n"
+	auditBeforeEdit(t, f, `set -e
+if [ -f "$1/audit.original" ]; then
   cp changes/0001-next.md "$1/audit.retry-input"
   printf auditor
   exit 0
@@ -259,7 +260,7 @@ cp changes/0001-next.md "$1/audit.original"
 cp "$1/audit.cwd" "$1/first-audit.cwd"
 awk '
   /^## Provenance$/ && !inserted {
-    printf "## Audit\nNo findings\nChecked IDs: ALP-002\n\n"
+    printf "\n## Audit\nNo findings\nChecked IDs: ALP-002\n\n"
     inserted = 1
   }
   { print }
@@ -271,13 +272,41 @@ exit 9
 `)
 	first, firstErr := f.run(false)
 	if firstErr == nil || first.State.Phase != "audit" || first.State.ClaimOID == "" || len(first.Steps) != 2 {
-		t.Fatalf("first audit failure = %#v, %v", first, firstErr)
+		t.Fatalf("first audit returned phase %q, claim %q, %d steps and error %v", first.State.Phase, first.State.ClaimOID, len(first.Steps), firstErr)
+	}
+	if code, _, _ := contracts.ErrorCode(firstErr); code == "P09" {
+		t.Errorf("Next rejected the valid Audit insertion: %v", firstErr)
+	}
+	original := nextRead(t, f.logDir, "audit.original")
+	candidate := nextRead(t, f.logDir, "audit.candidate")
+	const provenanceHeading = "## Provenance\n"
+	if !strings.Contains(original, provenanceHeading) || candidate != strings.Replace(original, provenanceHeading, inserted+provenanceHeading, 1) {
+		t.Fatal("auditor did not insert the first Audit with blank separators before Provenance")
+	}
+	approved, parseErr := contracts.ParseDocument(original)
+	if parseErr != nil {
+		t.Fatal(parseErr)
+	}
+	submitted, parseErr := contracts.ParseDocument(candidate)
+	if parseErr != nil {
+		t.Fatal(parseErr)
+	}
+	wantBody, editErr := workflow.ApplyAuditEdit(approved.Body, submitted.Body)
+	if editErr != nil {
+		t.Fatalf("workflow rejected the fixture's Audit edit: %v", editErr)
+	}
+	wantHeld := strings.TrimSuffix(original, approved.Body) + wantBody
+	if held := nextRead(t, f.root, nextChange); held != wantHeld {
+		t.Errorf("held change after auditor exit differs from the approved frontmatter and workflow's merged body\ngot:  %q\nwant: %q", held, wantHeld)
 	}
 	auditWorkspaceGone(t, f)
 	r, err := f.run(false)
+	if retry := nextRead(t, f.logDir, "audit.retry-input"); retry != wantHeld {
+		t.Errorf("resumed audit received a different change from the expected import\ngot:  %q\nwant: %q", retry, wantHeld)
+	}
 	steps := append(first.Steps, r.Steps...)
-	if err != nil || r.State.Phase != "applied" || len(steps) != 4 {
-		t.Fatalf("audit before Provenance lifecycle = %#v, %v", r, err)
+	if err != nil || r.State.Phase != "applied" || r.State.Run != first.State.Run || len(steps) != 4 {
+		t.Fatalf("resumed audit returned phase %q, run %q, %d total steps and error %v", r.State.Phase, r.State.Run, len(steps), err)
 	}
 	for i, want := range []struct {
 		phase, role string
@@ -290,22 +319,7 @@ exit 9
 	if cwd := nextRead(t, f.logDir, "first-audit.cwd"); cwd == nextRead(t, f.logDir, "audit.cwd") {
 		t.Errorf("audit retry reused workspace %q", cwd)
 	}
-	original := nextRead(t, f.logDir, "audit.original")
-	candidate := nextRead(t, f.logDir, "audit.candidate")
-	if !strings.Contains(original, "## Provenance\n") || strings.Count(candidate, inserted) != 1 ||
-		strings.Replace(candidate, inserted, "", 1) != original ||
-		strings.Index(candidate, "## Audit\n") > strings.Index(candidate, "## Provenance\n") {
-		t.Errorf("auditor did not insert only the first Audit before Provenance")
-	}
 	beforeProvenance, hasOriginalProvenance := contracts.Section(original, "Provenance")
-	retryInput := nextRead(t, f.logDir, "audit.retry-input")
-	retryProvenance, hasRetryProvenance := contracts.Section(retryInput, "Provenance")
-	if !hasOriginalProvenance || !hasRetryProvenance || retryProvenance != beforeProvenance {
-		t.Errorf("Audit copying changed raw Provenance before successful Done: got %q, want %q", retryProvenance, beforeProvenance)
-	}
-	if audit, ok := contracts.Section(retryInput, "Audit"); !ok || !strings.Contains(audit, "No findings\nChecked IDs: ALP-002") {
-		t.Errorf("failed auditor's Audit was not imported before retry: %q", audit)
-	}
 	archived := nextRead(t, f.root, "changes/archive/0001-next.md")
 	for _, section := range []string{"Motivation", "Interface", "Added", "Modified", "Removed", "Decisions"} {
 		want, _ := contracts.Section(original, section)
@@ -325,7 +339,7 @@ exit 9
 		return lines
 	}
 	beforeLines, afterLines := nonblankLines(beforeProvenance), nonblankLines(afterProvenance)
-	preserved := hasProvenance && len(afterLines) >= len(beforeLines)
+	preserved := hasOriginalProvenance && hasProvenance && len(afterLines) >= len(beforeLines)
 	for i, line := range beforeLines {
 		if i >= len(afterLines) || afterLines[i] != line {
 			preserved = false
@@ -371,6 +385,10 @@ func Test_RUN_045_RUN_049_SeparateAuditsUseFreshWorkspaces(t *testing.T) {
 func Test_RUN_047_InvalidAuditWorkspaceEditsAreRejectedAtomically(t *testing.T) {
 	for _, tc := range []struct{ name, action string }{
 		{"change outside Audit", `sed 's/One new value is needed./Altered motivation./' changes/0001-next.md > "$1/altered-change"; cp "$1/altered-change" changes/0001-next.md`},
+		{"unrelated blank line", `sed '/^## Motivation$/G' changes/0001-next.md > "$1/altered-change"; cp "$1/altered-change" changes/0001-next.md`},
+		{"frontmatter", `sed '1a\
+# Auditor comment
+' changes/0001-next.md > "$1/altered-change"; cp "$1/altered-change" changes/0001-next.md`},
 		{"projected spec", `printf '\nAltered spec\n' >> packages/alpha/SPEC.md`},
 		{"eval", `printf '\n// altered eval\n' >> packages/alpha/evals/next_test.go`},
 		{"added file", `printf 'extra\n' > unexpected.txt`},
@@ -382,18 +400,19 @@ func Test_RUN_047_InvalidAuditWorkspaceEditsAreRejectedAtomically(t *testing.T) 
 			nextAttempts(t, f, 1)
 			spec := nextRead(t, f.root, "packages/alpha/SPEC.md")
 			existing := nextRead(t, f.root, "packages/alpha/evals/existing_test.go")
+			auditBeforeEdit(t, f, "set -e\ncp changes/0001-next.md \"$1/audit.original\"\n")
 			auditAction(t, f, tc.action+"\n")
 			r, err := f.run(false)
-			if err == nil || len(r.Steps) != 2 || r.State.Phase != "audit" || r.State.ClaimOID == "" {
-				t.Errorf("invalid audit was not rejected while retaining claim: phase=%q claim=%q steps=%d error=%v", r.State.Phase, r.State.ClaimOID, len(r.Steps), err)
+			if code, _, ok := contracts.ErrorCode(err); !ok || code != "P09" {
+				t.Errorf("invalid audit diagnostic = %q, want P09: %v", code, err)
 			}
-			heldBytes, readErr := os.ReadFile(filepath.Join(f.root, nextChange))
-			if readErr != nil {
-				t.Fatalf("rejected edit removed held change: %v", readErr)
+			if len(r.Steps) != 2 || r.State.Phase != "audit" || r.State.ClaimOID == "" {
+				t.Errorf("invalid audit did not retain claim: phase=%q claim=%q steps=%d error=%v", r.State.Phase, r.State.ClaimOID, len(r.Steps), err)
+			} else if step := r.Steps[1]; step.Role != "audit" || step.Agent.ExitCode != 0 {
+				t.Errorf("fixture auditor failed to submit its edit: %#v", step)
 			}
-			held := string(heldBytes)
-			if strings.Contains(held, "No findings") || strings.Contains(held, "Altered motivation") || !strings.Contains(held, "One new value is needed.") {
-				t.Errorf("rejected edit reached held change: %q", held)
+			if held, original := nextRead(t, f.root, nextChange), nextRead(t, f.logDir, "audit.original"); held != original {
+				t.Errorf("rejected edit reached held change\ngot:  %q\nwant: %q", held, original)
 			}
 			if got := nextRead(t, f.root, "packages/alpha/SPEC.md"); got != spec {
 				t.Error("rejected audit edit reached held spec")
@@ -406,6 +425,9 @@ func Test_RUN_047_InvalidAuditWorkspaceEditsAreRejectedAtomically(t *testing.T) 
 			}
 			if _, statErr := os.Stat(filepath.Join(f.root, "unexpected.txt")); !os.IsNotExist(statErr) {
 				t.Errorf("rejected file reached held checkout: %v", statErr)
+			}
+			if status := nextGit(t, f.root, "--no-optional-locks", "status", "--porcelain", "-uall"); status != "" {
+				t.Errorf("rejected workspace left edits in the held checkout: %q", status)
 			}
 			if got := nextInvocations(t, f); len(got) != 2 {
 				t.Errorf("invalid audit advanced phase: %#v", got)

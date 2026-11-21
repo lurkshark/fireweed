@@ -43,6 +43,11 @@ func Done(ctx context.Context, request Request) (Result, error) {
 	return lifecycle.Done(ctx, request)
 }
 
+// ApplyAuditEdit imports an Audit section edit into the original change body.
+func ApplyAuditEdit(original, submitted string) (string, error) {
+	return lifecycle.ApplyAuditEdit(original, submitted)
+}
+
 // IsVerificationFailure reports whether err wraps a failure from Done's full verification.
 func IsVerificationFailure(err error) bool { return lifecycle.IsVerificationFailure(err) }
 

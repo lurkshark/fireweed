@@ -648,20 +648,20 @@ func removeDisposable(state model.State) error {
 	return nil
 }
 
-func verifyApproval(state model.State, c claim, declaringBlock bool) error {
+func verifyApproval(state model.State, c claim, declaringBlock bool) (string, error) {
 	approved, err := c.approvedDocument()
 	if err != nil {
-		return err
+		return "", err
 	}
 	actual := state.Change.Document
 	for _, key := range []string{"run", "phase"} {
 		if !reflect.DeepEqual(actual.Frontmatter[key], approved.Frontmatter[key]) {
-			return failure("P03", c.Path, "approved run or phase changed")
+			return "", failure("P03", c.Path, "approved run or phase changed")
 		}
 	}
 	if !reflect.DeepEqual(actual.Frontmatter["audit_rounds"], approved.Frontmatter["audit_rounds"]) ||
 		state.Phase != "audit" && !sameSection(approved, actual, "Audit") {
-		return failure("P03", c.Path, "approved audit state changed")
+		return "", failure("P03", c.Path, "approved audit state changed")
 	}
 	a, b := maps.Clone(approved.Frontmatter), maps.Clone(actual.Frontmatter)
 	for _, key := range []string{"run", "phase", "audit_rounds"} {
@@ -672,21 +672,25 @@ func verifyApproval(state model.State, c claim, declaringBlock bool) error {
 		delete(b, "blocked")
 	}
 	if !reflect.DeepEqual(a, b) {
-		return failure("P03", c.Path, "approved author metadata changed")
+		return "", failure("P03", c.Path, "approved author metadata changed")
 	}
 
-	// Compare the rest of the body after removing only worker-editable sections.
-	editable := []string{"Decisions", "Questions", "Notes"}
+	body := actual.Body
 	if state.Phase == "audit" {
-		editable = []string{"Audit"}
-	}
-	if immutableBody(approved, editable) != immutableBody(actual, editable) {
-		return failure("P03", c.Path, "approved author metadata changed")
+		body, err = ApplyAuditEdit(approved.Body, actual.Body)
+		if err != nil {
+			return "", coded("P03", c.Path, fmt.Errorf("approved author metadata changed: %w", err))
+		}
+	} else {
+		editable := []string{"Decisions", "Questions", "Notes"}
+		if immutableBody(approved, editable) != immutableBody(actual, editable) {
+			return "", failure("P03", c.Path, "approved author metadata changed")
+		}
 	}
 	if state.Head != c.Base {
-		return coded("P05", c.Path, fmt.Errorf("phase base %s differs from HEAD %s", c.Base, state.Head))
+		return "", coded("P05", c.Path, fmt.Errorf("phase base %s differs from HEAD %s", c.Base, state.Head))
 	}
-	return nil
+	return body, nil
 }
 
 func sameSection(a, b contracts.Document, name string) bool {

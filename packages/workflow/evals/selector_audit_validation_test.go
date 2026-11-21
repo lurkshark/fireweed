@@ -58,9 +58,7 @@ func Test_FLOW_059_FLOW_145_AuditVerifyChecksSubmissionWithoutAdvancing(t *testi
 		t.Error("finding audit Verify normalized submission or committed")
 	}
 
-	// Append the first Audit section to the approved change with a new blank separator.
-	const auditAppend = "\n## Audit\nChecked IDs: ALP-001\nNo findings\n"
-	before := approved + auditAppend
+	before := auditBeforeProvenance(t, approved)
 	write(t, root, pendingCommitChange, before)
 	if result, err := verify(root, true); err != nil || result.State.Phase != "audit" {
 		t.Errorf("complete audit Verify = phase %q, error %v", result.State.Phase, err)
@@ -72,12 +70,11 @@ func Test_FLOW_059_FLOW_145_AuditVerifyChecksSubmissionWithoutAdvancing(t *testi
 		t.Errorf("successful Verify changed claim or phase: %#v, %v", now, err)
 	}
 
-	prefix, provenance, found := strings.Cut(approved, "\n## Provenance\n")
-	edited := strings.Replace(provenance, " agent=manual ", " agent=other ", 1)
-	if !found || edited == provenance {
+	edited := strings.Replace(before, " agent=manual ", " agent=other ", 1)
+	if edited == before {
 		t.Fatal("fixture is missing the approved Provenance entry")
 	}
-	write(t, root, pendingCommitChange, prefix+"\n## Provenance\n"+edited+auditAppend)
+	write(t, root, pendingCommitChange, edited)
 	_, err = verify(root, true)
 	assertErrorCode(t, "audit Verify with edited Provenance", err, "P03")
 	_, err = done(root)
@@ -87,8 +84,29 @@ func Test_FLOW_059_FLOW_145_AuditVerifyChecksSubmissionWithoutAdvancing(t *testi
 	}
 
 	write(t, root, pendingCommitChange, before)
-	if result, err := done(root); err != nil || result.State.Phase != "impl" {
-		t.Errorf("complete audit Done = phase %q, error %v", result.State.Phase, err)
+	if result, err := done(root); err != nil || result.State.Phase != "impl" || head(t, root) == base || result.State.PhaseBase != head(t, root) {
+		t.Errorf("complete audit Done = phase %q, phase base %s, error %v; want impl at new HEAD", result.State.Phase, result.State.PhaseBase, err)
+	}
+}
+
+func Test_FLOW_145_AuditRejectsBlankLineInProtectedContent(t *testing.T) {
+	root := fixture(t, "", "", "", "", "")
+	held := toAudit(t, root)
+	valid := auditBeforeProvenance(t, readFile(t, root, pendingCommitChange))
+	const motivation = "## Motivation\nUsers need a revised alpha value."
+	edited := strings.Replace(valid, motivation, "## Motivation\n\nUsers need a revised alpha value.", 1)
+	if edited == valid {
+		t.Fatal("fixture is missing the approved Motivation section")
+	}
+	write(t, root, pendingCommitChange, edited)
+
+	_, err := verify(root, false)
+	assertErrorCode(t, "audit Verify with a blank line in Motivation", err, "P03")
+	_, err = done(root)
+	assertErrorCode(t, "audit Done with a blank line in Motivation", err, "P03")
+	current, err := workflow.Current(root, "manual")
+	if err != nil || current.Phase != "audit" || current.PhaseBase != held.PhaseBase || current.ClaimOID != held.ClaimOID || head(t, root) != held.PhaseBase {
+		t.Errorf("rejected blank-line edit changed HEAD, claim or phase: phase=%q, HEAD=%s, error=%v", current.Phase, head(t, root), err)
 	}
 }
 

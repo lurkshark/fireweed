@@ -33,7 +33,7 @@ func block(state model.State, held claim, reason, questions string) (model.Block
 	if err := supported(state); err != nil {
 		return result, err
 	}
-	if err := verifyApproval(state, held, questions != ""); err != nil {
+	if _, err := verifyApproval(state, held, questions != ""); err != nil {
 		return result, err
 	}
 	root := state.Snapshot.Root

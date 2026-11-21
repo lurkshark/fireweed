@@ -15,6 +15,19 @@ func Version() string { return version }
 
 var help = `fireweed ` + version + `
 
+Fireweed is a CLI for spec-driven development in Git. Coding agents write
+evals and implementation in separate steps. Fireweed verifies each step
+and records it in Git.
+
+Use fireweed help <command> or fireweed <command> --help for usage.
+
+Getting started in a Git project
+  1. Read fireweed help init to choose a recipe and worker.
+  2. Run fireweed init with your selections and follow the printed recipe
+     instructions.
+  3. Describe your project in SYSTEM.md.
+  4. Commit the setup before running fireweed doctor.
+
 Setup         init, doctor
 Authoring     new-module, new-change, stamp
 Reading       list, status, show, modules, context
@@ -23,9 +36,6 @@ Lifecycle     start, verify, done, next, run, release, commits, abandon
 Regeneration  drill
 Maintenance   gc, migrate, agents-md
 Information   help, version, explain, playbook
-
-Use fireweed help <command> or fireweed <command> --help for usage.
-Example       fireweed help agents-md
 `
 
 func Help() string { return help }

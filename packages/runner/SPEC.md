@@ -217,8 +217,11 @@ The audit workspace's Git metadata MUST contain none of the held repository's hi
 Audit-agent commits within this workspace MUST remain absent from the held checkout's history and refs.
 
 ### RUN-047
-Next MUST accept only edits to the Audit section of the copied current change.
-Edits elsewhere in that change, edits to copied specs or evals, or added or deleted files outside Git metadata MUST reject the submission without copying any workspace edits to the held checkout.
+Next MUST use workflow's Audit edit rule to accept an Audit section edit to
+the copied current change, including adjoining blank separators. It MUST
+reject edits to the change's frontmatter and edits, additions, or deletions
+outside the change file and the workspace's Git metadata. A rejected import
+MUST copy none of the workspace edits to the held checkout.
 
 ### RUN-048
 When audit workspace edits are permitted, Next MUST copy its Audit section back before retrying or returning, including agent failures and time or usage stops.

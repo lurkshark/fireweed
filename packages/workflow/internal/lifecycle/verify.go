@@ -37,7 +37,7 @@ func verify(ctx context.Context, request model.Request, state model.State, held 
 	if err := supported(state); err != nil {
 		return result, err
 	}
-	if err := verifyApproval(state, held, false); err != nil {
+	if _, err := verifyApproval(state, held, false); err != nil {
 		return result, err
 	}
 	for _, d := range project.Check(state.Snapshot.Root) {
