@@ -65,10 +65,13 @@ v0.2.0**. Gate **6 retains its eight accepted historical proofs**.
 
 ## Controller and history
 
-The local main controller reports 0.2.4. It was built with `-trimpath`
-from clean committed main at `dcf5de5a12a215a57e3afc444ea774ef69cad584`
+The local main controller reports 0.3.0. It was built with `-trimpath`
+from clean committed main at `a49529e81a69e8c5a3d64d7a9afc280b0856c592`
 with no active run or claim. The installed controller passed `fireweed check`
 with five existing C18 warnings.
+
+The 0.2.4 controller built from `dcf5de5a12a215a57e3afc444ea774ef69cad584`
+ran queued changes 0332–0337.
 
 The controller for queued changes 0330 and 0331 reports 0.2.4 and was built
 with `-trimpath` from clean committed main at
