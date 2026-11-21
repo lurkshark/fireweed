@@ -1,4 +1,4 @@
-fireweed: '>=0.2, <0.3'
+fireweed: '>=0.3, <0.4'
 version: 1
 remote: origin
 modules:
