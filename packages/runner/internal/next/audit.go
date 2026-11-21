@@ -154,7 +154,20 @@ func importAudit(root, heldRoot, changePath string, inputs map[string]workspace.
 	if candidate == original.Data {
 		return nil
 	}
-	if err := onlyAuditChanged(original.Data, candidate); err != nil {
+	approved, err := contracts.ParseDocument(original.Data)
+	if err != nil {
+		return reject(err)
+	}
+	submitted, err := contracts.ParseDocument(candidate)
+	if err != nil {
+		return reject(err)
+	}
+	frontmatter := original.Data[:len(original.Data)-len(approved.Body)]
+	if frontmatter != candidate[:len(candidate)-len(submitted.Body)] {
+		return reject(fmt.Errorf("change frontmatter was modified"))
+	}
+	body, err := workflow.ApplyAuditEdit(approved.Body, submitted.Body)
+	if err != nil {
 		return reject(err)
 	}
 	current, err := workspace.Read(heldRoot, changePath)
@@ -164,48 +177,5 @@ func importAudit(root, heldRoot, changePath string, inputs map[string]workspace.
 	if current != original {
 		return reject(fmt.Errorf("held change was modified during audit"))
 	}
-	return workspace.Write(heldRoot, changePath, []byte(candidate), original.Mode.Perm())
-}
-
-func onlyAuditChanged(original, candidate string) error {
-	split := func(source string) (before, after string, found bool, err error) {
-		doc, err := contracts.ParseDocument(source)
-		if err != nil {
-			return "", "", false, err
-		}
-		if _, found := contracts.Section(doc.Body, "Audit"); !found {
-			return source, "", false, nil
-		}
-		marker := "\x00"
-		for strings.Contains(source, marker) {
-			marker += "\x00"
-		}
-		body := contracts.ReplaceSection(doc.Body, "Audit", marker)
-		prefix, suffix, _ := strings.Cut(body, marker)
-		if _, duplicate := contracts.Section(suffix, "Audit"); duplicate {
-			return "", "", false, fmt.Errorf("multiple Audit sections")
-		}
-		heading := strings.LastIndex(strings.TrimSuffix(prefix, "\n"), "\n") + 1
-		return source[:len(source)-len(doc.Body)] + prefix[:heading], suffix, true, nil
-	}
-	before, after, hadAudit, err := split(original)
-	if err != nil {
-		return err
-	}
-	newBefore, newAfter, hasAudit, err := split(candidate)
-	if err != nil {
-		return err
-	}
-	switch {
-	case hadAudit && hasAudit && before == newBefore && after == newAfter:
-		return nil
-	case !hadAudit && hasAudit && original == newBefore+newAfter:
-		return nil
-	case !hadAudit && hasAudit && newAfter == "" && strings.TrimRight(original, "\r\n") == strings.TrimRight(newBefore, "\r\n"):
-		// Appending a heading may need a newline or a blank separator.
-		return nil
-	case hadAudit && !hasAudit && candidate == before+after:
-		return nil
-	}
-	return fmt.Errorf("only the Audit section may change")
+	return workspace.Write(heldRoot, changePath, []byte(frontmatter+body), original.Mode.Perm())
 }
