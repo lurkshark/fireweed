@@ -2,6 +2,8 @@
 bases:
     RUN-047: d927095a
 module: runner
+phase: audit
+run: 20261121T004139-c180dc2ec5057749af044a61
 ---
 
 ## Motivation
@@ -41,3 +43,14 @@ changing the protected body or frontmatter, including when an audit invocation
 fails and Next later resumes. Retain the existing workspace rejection cases
 and add an unrelated blank-line edit to the copied change. Assert P09 and
 that no workspace edit reaches the held checkout.
+
+Fail-first evidence for RUN-047 came from
+`Test_RUN_047_RUN_048_FirstAuditBeforeProvenanceIsImported`. Next returned P09
+for the valid insertion and left the Audit section out of the held change and
+the resumed auditor's input. All eight invalid-submission cases passed.
+The implementation-writable import code is in
+`packages/runner/internal/next/audit.go`.
+## Provenance
+
+- evals 2026-11-21T00:53:07.977628Z agent=codex fireweed=0.2.4 playbook=5e05bacdae954379b468564c11429c5532016e26a7afbcd418f9bdb9441e151c tests=222 failing=1 passing=221
+
