@@ -550,14 +550,22 @@ Context MUST use the complete text of .fireweed/playbooks/<name>.md when that ov
 The playbook hash appended by Done MUST be the full hexadecimal SHA-256 of the exact override or embedded text selected for that completed phase under the Context playbook-selection rule.
 
 ### FLOW-145
-In audit phase, Verify and Done MUST treat blank separator lines adjoining an
-otherwise permitted Audit edit as formatting when comparing the submission with
-the approved change.
+In audit phase, Verify and Done MUST compare the submitted body with the
+approved body under the ApplyAuditEdit rule. A change to protected body
+content, including a blank line away from the Audit boundary, MUST fail with
+P03.
 
 ### FLOW-146
 When audit Done retains a finding, it MUST preserve the finding line's text apart
 from surrounding whitespace in the recorded Audit section. If the finding blocks the
 change, its line in Questions MUST retain the same text.
+
+### FLOW-147
+ApplyAuditEdit MUST accept an Audit section edit and any changes to blank
+separator lines immediately adjoining that edit. It MUST return the body
+with the submitted Audit edit applied to the original, preserving the
+original content and separators outside Audit. It MUST reject changes
+elsewhere in the body and submissions with multiple Audit sections.
 
 ## Decisions
 

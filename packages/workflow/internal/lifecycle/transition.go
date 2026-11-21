@@ -55,7 +55,8 @@ func Done(ctx context.Context, request model.Request) (model.Result, error) {
 	if current.ClaimOID != state.ClaimOID {
 		return result, failure("P02", state.Change.Path, "claim changed during verification")
 	}
-	if err := verifyApproval(current, currentClaim, false); err != nil {
+	body, err := verifyApproval(current, currentClaim, false)
+	if err != nil {
 		return result, err
 	}
 	result.State = current
@@ -64,6 +65,7 @@ func Done(ctx context.Context, request model.Request) (model.Result, error) {
 	}
 
 	doc := current.Change.Document
+	doc.Body = body
 	doc.Frontmatter = maps.Clone(doc.Frontmatter)
 	next, blockReason := "applied", ""
 	switch current.Phase {
@@ -78,7 +80,8 @@ func Done(ctx context.Context, request model.Request) (model.Result, error) {
 			return result, err
 		}
 		next, blockReason = audit.next, audit.blocked
-		doc.Body = contracts.ReplaceSection(doc.Body, "Audit", audit.text)
+		_, separator := splitTrailingBlankLines(section(doc, "Audit"))
+		doc.Body = contracts.ReplaceSection(doc.Body, "Audit", strings.TrimSuffix(audit.text, "\n")+separator)
 		if next == "evals" {
 			doc.Frontmatter["audit_rounds"] = audit.rounds
 		}
